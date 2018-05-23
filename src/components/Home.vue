@@ -193,6 +193,17 @@
 <script>
     export default {
         name: "Home",
+        created:function(){
+            /*this.$axios({
+                url:"/cfm/adminProcess",
+                method: "post",
+                data: {"optype":"orgs_list"}
+            }).then(function(result){
+                console.log(result.data);
+            }).catch(function(error){
+                console.log(error);
+            })*/
+        },
         data: function () {
             return {
                 currentAddress: "(北京)",

@@ -156,13 +156,16 @@
                     <div class="error-message" v-text="errorMessage"></div>
                     <div class="user-name">
                         <span></span>
-                        <input type="text" placeholder="请输入您的手机号"/>
+                        <input type="text" placeholder="请输入您的手机号" v-model="userIdentify"/>
                     </div>
                     <div class="user-pass">
                         <span></span>
-                        <input type="password"/>
+                        <input type="password" v-model="passWord"/>
                     </div>
-                    <el-button type="primary" size="mini" class="login-button">登录</el-button>
+                    <el-button type="primary" size="mini"
+                               class="login-button"
+                               @click="submit">登录
+                    </el-button>
                     <el-button type="text" class="text-button" size="mini">忘记密码？</el-button>
                 </div>
                 <div v-show="!isPassword" class="code-login">
@@ -174,17 +177,66 @@
 </template>
 
 <script>
+    //引入密码加密方式
+    import security from "../js/security";
+
     export default {
         name: "",
-        created:function(){
-            console.log(this.$store.state.count);
+        created: function () {
+            var routeThis = this;
+            this.$axios({
+                url: "/cfm/",
+                method: "get"
+            }).then(function (result) {
+                var data = result.data;
+                routeThis.exponent = data.exponent;
+                routeThis.modulus = data.modulus;
+            }).catch(function (error) {
+                console.log(error);
+            })
         },
         data: function () {
             return {
                 isPassword: true,
-                errorMessage: ""
+                errorMessage: "",
+                //加密模板
+                exponent: "",
+                modulus: "",
+                //账号密码
+                userIdentify: "",
+                passWord: ""
             }
         },
-        methods: {}
+        methods: {
+            //提交
+            submit: function () {
+                //密码加密
+                var key = RSAUtils.getKeyPair(this.exponent, '', this.modulus);
+                var encryptionPass = RSAUtils.encryptedString(key, this.passWord);
+
+                var routeThis = this;
+                this.$axios({
+                    url: "/cfm/login",
+                    method: "post",
+                    data: {
+                        optype: "login",
+                        params: {
+                            login_name: this.userIdentify,
+                            password: encryptionPass
+                        }
+                    }
+                }).then(function (result) {
+                    var data = result.data;
+                    //保存token和user信息
+                    if(data.token){
+                        routeThis.$store.commit("set_token",data);
+                        routeThis.$router.push("/home");
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                })
+            }
+        },
+        watch: {}
     }
 </script>

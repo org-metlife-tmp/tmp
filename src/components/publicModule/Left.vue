@@ -60,7 +60,7 @@
         height: 26px;
         margin: 3px auto 0;
         display: block;
-        background-image: url("../assets/icon_nav.png");
+        background-image: url("../../assets/icon_nav.png");
     }
 
     .menuList .el-submenu__title p {
@@ -79,6 +79,10 @@
     /*整体样式结束*/
 
     /*首页背景图定位*/
+    .menuList .icon-sjgl {
+        background-position: -30px -60px;
+    }
+
     .menuList .icon-yet {
         background-position: -30px 0;
     }
@@ -126,6 +130,10 @@
     /*首页背景图定位结束*/
 
     /*标签页样式设置*/
+    .noBgc .icon-sjgl {
+        background-position: 0 -60px;
+    }
+
     .noBgc .icon-yet {
         background-position: 0px 0;
     }
@@ -172,6 +180,10 @@
 
     .noBgc .el-submenu__title p {
         color: rgba(0, 0, 0, 0.5);
+    }
+
+    .noBgc .el-submenu__title:hover .icon-sjgl{
+        background-position: -30px -60px;
     }
 
     .noBgc .el-submenu__title:hover .icon-yet {
@@ -226,9 +238,21 @@
 
 <template>
     <div id="menuContent">
-        <el-menu default-active="1-11-1" :class="['el-menu-vertical-demo', 'menuList', {'noBgc':showBgc}]"
+        <el-menu default-active="1-12-1" :class="['el-menu-vertical-demo', 'menuList', {'noBgc':showBgc}]"
                  :collapse="isCollapse" :router="true">
             <el-submenu index="1">
+                <template slot="title" height="200px">
+                    <i class="icon-sjgl"></i>
+                    <p class="mg-four">数据管理</p>
+                </template>
+                <el-menu-item-group>
+                    <el-menu-item index="/data-manage/basic-data">基础数据维护</el-menu-item>
+                    <el-menu-item index="/data-manage/bank-account">银行账户管理</el-menu-item>
+                    <el-menu-item index="1-3">接口管理</el-menu-item>
+                    <el-menu-item index="1-4">清算通道管理</el-menu-item>
+                </el-menu-item-group>
+            </el-submenu>
+            <el-submenu index="2">
                 <template slot="title" height="200px">
                     <i class="icon-yet"></i>
                     <p>余额通</p>
@@ -247,10 +271,9 @@
                     <el-menu-item index="1-4-1">选项1</el-menu-item>
                 </el-submenu>-->
             </el-submenu>
-            <el-submenu index="2">
+            <el-submenu index="3">
                 <template slot="title" height="200px">
                     <i class="icon-jyt"></i>
-
                     <p>交易通</p>
                 </template>
                 <el-menu-item-group>
@@ -259,7 +282,7 @@
                     <el-menu-item index="1-3">选项3</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="3">
+            <el-submenu index="4">
                 <template slot="title" height="200px">
                     <i class="icon-dbt"></i>
                     <p>调拨通</p>
@@ -270,10 +293,9 @@
                     <el-menu-item index="1-3">内部调拨-查看</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="4">
+            <el-submenu index="5">
                 <template slot="title" height="200px">
                     <i class="icon-zft"></i>
-
                     <p>支付通</p>
                 </template>
                 <el-menu-item-group>
@@ -282,10 +304,9 @@
                     <el-menu-item index="1-3">选项3</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="5">
+            <el-submenu index="6">
                 <template slot="title" height="200px">
                     <i class="icon-gjt"></i>
-
                     <p>归集通</p>
                 </template>
                 <el-menu-item-group>
@@ -294,7 +315,7 @@
                     <el-menu-item index="1-3">选项3</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="6">
+            <el-submenu index="7">
                 <template slot="title" height="200px">
                     <i class="icon-ywfk"></i>
 
@@ -306,7 +327,7 @@
                     <el-menu-item index="1-3">选项3</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="7">
+            <el-submenu index="8">
                 <template slot="title" height="200px">
                     <i class="icon-zht"></i>
 
@@ -318,7 +339,7 @@
                     <el-menu-item index="1-3">选项3</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="8">
+            <el-submenu index="9">
                 <template slot="title" height="200px">
                     <i class="icon-zjys"></i>
 
@@ -330,7 +351,7 @@
                     <el-menu-item index="1-3">选项3</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="9">
+            <el-submenu index="10">
                 <template slot="title" height="200px">
                     <i class="icon-sppt"></i>
 
@@ -342,7 +363,7 @@
                     <el-menu-item index="1-3">选项3</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="10">
+            <el-submenu index="11">
                 <template slot="title" height="200px">
                     <i class="icon-bb"></i>
 
@@ -354,7 +375,7 @@
                     <el-menu-item index="1-3">选项3</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="11">
+            <el-submenu index="12">
                 <template slot="title" height="200px">
                     <i class="icon-oa"></i>
 

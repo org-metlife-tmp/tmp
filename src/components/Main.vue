@@ -3,9 +3,20 @@
         height: 100%;
     }
 
-    /*修改框架样式-开始*/
+    /**********
+    修改框架样式-开始
+    ***********/
     .el-table th {
         background: #E9F2F9;
+        text-align: center;
+    }
+
+    .el-table td {
+        text-align: left;
+    }
+
+    .el-table {
+        font-size: 14px;
     }
 
     .el-header {
@@ -55,8 +66,9 @@
     .el-aside {
         overflow: hidden;
     }
-
-    /*修改框架样式-结束*/
+    /**********
+     修改框架样式-结束
+     ***********/
 
     #contented {
         padding-top: 52px;
@@ -114,8 +126,8 @@
 </template>
 
 <script>
-    import Top from "./Top.vue"
-    import Left from "./Left.vue"
+    import Top from "./publicModule/Top.vue"
+    import Left from "./publicModule/Left.vue"
 
     export default {
         name: "",

@@ -5,7 +5,6 @@
         margin: 0 auto;
         min-width: 800px;
     }
-
     .content {
         width: 100%;
         height: 90%;
@@ -14,8 +13,9 @@
         box-sizing: border-box;
         position: relative;
         padding: 20px;
+        background-color: #fff;
     }
-
+    /*按钮样式*/
     .content .button-list-left,
     .content .button-list-right {
         position: absolute;
@@ -32,13 +32,7 @@
     .el-button+.el-button {
         margin-left: 4px;
     }
-    .el-button--primary.is-plain {
-        /*background-color: #fff;*/
-    }
 
-    /*********
-    子组件公共样式
-    *********/
     /*表格部分*/
     .table-setion {
         position: absolute;
@@ -47,7 +41,6 @@
         transition: top 1s, height 1s;
         background-color: #fff;
     }
-
     .table-up {
         top: 0;
         height: 92%;
@@ -61,14 +54,6 @@
     .table-setion img {
         cursor: pointer;
         vertical-align: top;
-    }
-
-    .table-setion .el-table th {
-        text-align: center;
-    }
-
-    .table-setion .el-table {
-        font-size: 14px;
     }
 </style>
 

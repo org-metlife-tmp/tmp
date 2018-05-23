@@ -3,7 +3,7 @@
     #titleTop {
         height: 52px;
         width: 100%;
-        background: url("../assets/header_bg.jpg") no-repeat;
+        background: url("../../assets/header_bg.jpg") no-repeat;
         background-color: #649cc3;
         position: relative;
     }
@@ -26,7 +26,7 @@
     .company-name:before {
         content: " ";
         position: absolute;
-        background-image: url("../assets/icon_nav.png");
+        background-image: url("../../assets/icon_nav.png");
         background-position: -80px 0;
         width: 25px;
         height: 25px;
@@ -54,7 +54,7 @@
 
     .user-message:before {
         content: " ";
-        background-image: url("../assets/icon_nav.png");
+        background-image: url("../../assets/icon_nav.png");
         background-position: -80px -25px;
         width: 22px;
         height: 25px;
@@ -117,20 +117,9 @@
     import axios from "axios";
     export default {
         name: 'Top',
-        beforeCreate: function () {
-            /*axios({method:"post",
-             "url":"/cfm/process",
-             params:{
-             "optype":"acc_data_report",
-
-             }}).then(function(response){
-             debugger;
-             console.log(response.data);
-             });*/
-
-        },
-        created: function () {
-
+        created:function(){
+            console.log(this.$store.state.user);
+            this.userName = this.$store.state.user.name;
         },
         data: function () {
             return {
@@ -162,6 +151,7 @@
                 };
                 //退出
                 if(command == "4"){
+                    this.$store.commit("del_token");
                     this.$router.push({name:"Login"});
                 }
             }

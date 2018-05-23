@@ -13,6 +13,7 @@
         height: 8%;
         bottom: -6px;
     }
+
 </style>
 
 <template>

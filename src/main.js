@@ -8,20 +8,54 @@ import router from './router'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 Vue.use(ElementUI);
-//引入axios
-import axios from "axios";
-axios.defaults.withCredentials = true
-Vue.prototype.$axios = axios;
+
 //引入echarts
 var echarts = require('echarts/lib/echarts');
 require("echarts/lib/chart/pie");
 require('echarts/lib/component/tooltip');
 require("echarts/lib/component/legendScroll");
 Vue.prototype.$echarts = echarts;
-//import echarts from "echarts"
-//Vue.prototype.$echarts = echarts
 
-//Vue.use(Element, { size: 'small' });
+/*引入axios*/
+import axios from 'axios';
+axios.defaults.withCredentials = true;
+//设置axios请求头附带token
+import store from './js/store.js';
+axios.defaults.headers.common['Authorization'] = store.state.token;
+axios.interceptors.request.use(config => {
+        //判断是否存在token 如果存在将每个页面header都添加token
+        if (store.state.token) {
+            config.headers.common['Authorization'] = store.state.token;
+        }
+        return config;
+    },
+    err => {
+        //请求错误的做法
+        return Promise.reject(err);
+    }
+);
+//response拦截器
+axios.interceptors.response.use(
+    response => {
+        return response;
+    },
+    error => {
+        if(error.response){
+            switch(error.response.status) {
+                case 401:
+                    store.commit('del_store');
+                    router.replace({
+                        path: "/login",
+                        query: {redirect: router.currentRoute.fullPath}//登录成功后跳入浏览的当前页面
+                    })
+            }
+        }
+        return Promise.reject(error.response.data);
+    }
+)
+Vue.prototype.$axios = axios;
+
+
 Vue.config.productionTip = false
 /* eslint-disable no-new */
 
