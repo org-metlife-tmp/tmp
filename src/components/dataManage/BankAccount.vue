@@ -17,6 +17,16 @@
             top: -60px;
             right: -18px;
         }
+        //冻结按钮
+        .freeze {
+            width: 22px;
+            height: 22px;
+            background-image: url(../../assets/icon_nav.png);
+            background-position: -375px -100px;
+            border: none;
+            padding: 0;
+            vertical-align: middle;
+        }
     }
 </style>
 
@@ -38,12 +48,19 @@
                     label="操作"
                     width="100">
                 <template slot-scope="scope" class="operationBtn">
-                    <el-button type="success" icon="el-icon-plus" size="mini"></el-button>
-                    <el-button type="primary" icon="el-icon-edit" size="mini"></el-button>
-                    <el-button type="danger" icon="el-icon-delete" size="mini"></el-button>
+                    <el-tooltip content="编辑" placement="bottom" effect="light" :enterable="false" :open-delay="500">
+                        <el-button type="primary" icon="el-icon-edit" size="mini"></el-button>
+                    </el-tooltip>
+                    <el-tooltip content="冻结/解冻" placement="bottom" effect="light" :enterable="false" :open-delay="500">
+                        <el-button size="mini" class="freeze"></el-button>
+                    </el-tooltip>
+                    <el-tooltip content="删除" placement="bottom" effect="light" :enterable="false" :open-delay="500">
+                        <el-button type="danger" icon="el-icon-delete" size="mini"></el-button>
+                    </el-tooltip>
                 </template>
             </el-table-column>
         </el-table>
+        <!--分页部分-->
         <div class="botton-pag">
             <el-pagination
                     background

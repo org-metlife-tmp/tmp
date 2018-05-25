@@ -62,7 +62,7 @@
         <header>
             <h1 v-text="currentTitle"></h1>
         </header>
-        <section class="content">
+        <section class="content" v-loading="loading">
             <div class="button-list-left">
                 <el-button type="primary" plain size="mini">全部公司</el-button>
                 <el-button type="primary" plain size="mini">全部银行</el-button>
@@ -87,11 +87,13 @@
         data: function () {
             return {
                 currentTitle: "",
-                childData: {}
+                childData: {},
+                loading: true
             }
         },
         methods: {
             getRouterData: function (routerData) {
+                this.loading = true;
                 var currParams = {};
                 for(var k in routerData){
                     currParams[k] = routerData[k];
@@ -104,6 +106,7 @@
                 }).then(function (result) {
                     var currentData = result.data;
                     temporaryThis.childData = currentData;
+                    temporaryThis.loading = false;
                 }).catch(function (error) {
                     console.log(error);
                 })

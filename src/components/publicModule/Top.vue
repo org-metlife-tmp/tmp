@@ -118,7 +118,6 @@
     export default {
         name: 'Top',
         created:function(){
-            console.log(this.$store.state.user);
             this.userName = this.$store.state.user.name;
         },
         data: function () {

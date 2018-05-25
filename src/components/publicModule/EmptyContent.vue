@@ -28,7 +28,7 @@
     .el-dialog {
         text-align: left;
         .el-form {
-            width: 85%;
+            width: 90%;
             .el-select {
                 width: 100%;
             }
@@ -41,7 +41,7 @@
         <header>
             <h1 v-text="currentTitle"></h1>
         </header>
-        <section class="content">
+        <section class="content"  v-loading="loading">
             <router-view @transmitTitle="currentTitle= $event"
                          @getTableData="getRouterData"
                          :tableData="childData"></router-view>
@@ -55,11 +55,13 @@
         data: function () {
             return {
                 currentTitle: "",
-                childData: {}
+                childData: {},
+                loading: false
             }
         },
         methods: {
             getRouterData: function (routerData) {
+                this.loading = true;
                 var currParams = {};
                 for (var k in routerData) {
                     currParams[k] = routerData[k];
@@ -72,6 +74,7 @@
                 }).then(function (result) {
                     var currentData = result.data;
                     temporaryThis.childData = currentData;
+                    temporaryThis.loading = false;
                 }).catch(function (error) {
                     console.log(error);
                 })

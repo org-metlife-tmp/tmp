@@ -1,6 +1,13 @@
 <style lang="less" type="text/less">
     #main {
         height: 100%;
+
+        .header-none {
+            height: 0 !important;
+        }
+        .padding-none {
+            padding-top: 0;
+        }
     }
 
     /**********
@@ -27,6 +34,8 @@
         padding: 0;
         width: 100%;
         position: fixed;
+        overflow: hidden;
+        transition: height 0.5s;
     }
 
     .el-aside {
@@ -52,6 +61,7 @@
 
     #main .el-container {
         height: 100%;
+        transition: padding-top 0.5s;
     }
 
     .el-container:nth-child(5) .el-aside,
@@ -66,6 +76,7 @@
     .el-aside {
         overflow: hidden;
     }
+
     /**********
      修改框架样式-结束
      ***********/
@@ -78,19 +89,51 @@
             height: 150px;
             bottom: 15px;
             right: 15px;
-            .show-header {
+            div {
                 width: 100%;
                 box-sizing: border-box;
                 background-color: #fff;
                 padding: 5px;
                 height: 56px;
                 cursor: pointer;
+                font-size: 12px;
+                padding-bottom: 54px;
+                text-align: center;
+            }
+            div:hover {
+                background-color: #00B3ED;
+                color: #fff;
+            }
+
+            .show-header {
+                margin-top: 10px;
+            }
+            .phone-version:before, .show-header:before {
+                content: "";
+                display: block;
+                width: 50px;
+                height: 34px;
+                background: url(../assets/icon_nav.png) no-repeat;
+            }
+            .phone-version:before {
+                background-position: 10px -180px;
+            }
+            .phone-version:hover:before {
+                background-position: 10px -145px;
+            }
+            .show-header:before {
+                background-position: -32px -178px;
+            }
+            .show-header:hover:before {
+                background-position: -32px -144px;
+            }
+            .icon-position:before {
+                background-position: -78px -178px;
+            }
+            .icon-position:hover:before {
+                background-position: -78px -144px;
             }
         }
-    }
-
-    .header-none {
-        display: none;
     }
 
     /*首页背景设置*/
@@ -110,15 +153,17 @@
             <el-header :class="{'header-none':!headerShow}">
                 <Top></Top>
             </el-header>
-            <el-container id="contented" :class="{'home-bgc':showBgc}">
+            <el-container id="contented" :class="{'home-bgc':showBgc,'padding-none':!headerShow}">
                 <el-aside width="70px">
                     <Left></Left>
                 </el-aside>
                 <el-main :class="{'home-bgc-none':showBgc}">
                     <router-view></router-view>
                 </el-main>
-                <div id="plugin">
-                    <div class="show-header" @click=""></div>
+                <div id="plugin" v-show="!showBgc">
+                    <div class="phone-version">手机版</div>
+                    <div :class="['show-header',{'icon-position':!headerShow}]" @click="setHeader"
+                         v-text="topSet"></div>
                 </div>
             </el-container>
         </el-container>
@@ -133,10 +178,21 @@
         name: "",
         data: function () {
             return {
-                headerShow: true
+                headerShow: true,
+                topSet: "隐藏顶部"
             }
         },
-        methods: {},
+        methods: {
+            setHeader: function () {
+                if (this.headerShow) {
+                    this.headerShow = false;
+                    this.topSet = "显示顶部";
+                } else {
+                    this.headerShow = true;
+                    this.topSet = "隐藏顶部";
+                }
+            }
+        },
         computed: {
             showBgc: function () {
                 var pathName = this.$route.name;

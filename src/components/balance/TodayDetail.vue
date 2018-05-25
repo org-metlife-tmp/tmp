@@ -114,10 +114,14 @@
         watch: {
             //设置数据
             tableData: function (val, oldValue) {
-                var data = val.data;
-                this.tableList = data.list;
-                this.pagSize = data.pagesize * 1;
-                this.pagTotal = data.total * 1;
+                if(val.data){
+                    var data = val.data;
+                    this.tableList = data.list;
+                    this.pagSize = data.pagesize * 1;
+                    this.pagTotal = data.total * 1;
+                }else{
+                    return;
+                }
             }
         }
     }

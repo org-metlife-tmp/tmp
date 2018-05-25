@@ -160,7 +160,7 @@
                     </div>
                     <div class="user-pass">
                         <span></span>
-                        <input type="password" v-model="passWord"/>
+                        <input type="password" v-model="passWord" @keyup.enter="submit"/>
                     </div>
                     <el-button type="primary" size="mini"
                                class="login-button"
@@ -231,6 +231,9 @@
                     if(data.token){
                         routeThis.$store.commit("set_token",data);
                         routeThis.$router.push("/home");
+                    }
+                    if(data.constants){
+                        window.sessionStorage.setItem("constants",JSON.stringify(data.constants));
                     }
                 }).catch(function (error) {
                     console.log(error);
