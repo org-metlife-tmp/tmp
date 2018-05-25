@@ -11,6 +11,12 @@ import EmptyContent from '@/components/publicModule/EmptyContent'
 //数据管理
 import BasicData from '@/components/dataManage/BasicData'
 import BankAccount from '@/components/dataManage/BankAccount'
+import SettleAccount from '@/components/dataManage/SettleAccount'
+import ChannelSet from '@/components/dataManage/ChannelSet'
+//用户管理
+import UserMaintain from '@/components/userManage/UserMaintain'
+import UserGroup from '@/components/userManage/UserGroup'
+import UserMenu from '@/components/userManage/UserMenu'
 //余额通
 import TodayDetail from '@/components/balance/TodayDetail'
 import TodayAll from '@/components/balance/TodayAll'
@@ -49,7 +55,13 @@ const router = new Router({
                     children: [
                         //数据管理
                         {path: '/data-manage/basic-data', name: 'BasicData', component: BasicData, meta: {requireAuth: true}},
-                        {path: '/data-manage/bank-account', name: 'BankAccount', component: BankAccount, meta: {requireAuth: true}}
+                        {path: '/data-manage/bank-account', name: 'BankAccount', component: BankAccount, meta: {requireAuth: true}},
+                        {path: '/data-manage/settle-account', name: 'SettleAccount', component: SettleAccount, meta: {requireAuth: true}},
+                        {path: '/data-manage/channel-set', name: 'ChannelSet', component: ChannelSet, meta: {requireAuth: true}},
+                        //用户管理
+                        {path: '/user-manage/user-maintain', name: 'UserMaintain', component: UserMaintain, meta: {requireAuth: true}},
+                        {path: '/user-manage/bank-group', name: 'UserGroup', component: UserGroup, meta: {requireAuth: true}},
+                        {path: '/user-manage/bank-menu', name: 'UserMenu', component: UserMenu, meta: {requireAuth: true}}
                     ]
                 },
                 //调拨通

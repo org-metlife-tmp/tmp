@@ -253,7 +253,7 @@
                    width="30%"
                    :close-on-click-modal="false">
             <span slot="title" v-text="dialogTitle"></span>
-            <el-form :model="form" :label-width="formLabelWidth">
+            <el-form :model="form" :label-width="formLabelWidth" size="small">
                 <el-form-item label="公司名称">
                     <el-input v-model="form.name"></el-input>
                 </el-form-item>
@@ -276,15 +276,15 @@
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
-                <el-button @click="dialogVisible = false">取 消</el-button>
-                <el-button type="primary" @click="setCompany">确 定</el-button>
+                <el-button @click="dialogVisible = false" size="small">取 消</el-button>
+                <el-button type="primary" @click="setCompany" size="small">确 定</el-button>
             </span>
         </el-dialog>
         <el-dialog :visible.sync="deptDialog"
                    width="30%"
                    :close-on-click-modal="false">
             <span slot="title" v-text="deptDialogTitle"></span>
-            <el-form :model="deptForm" :label-width="formLabelWidth">
+            <el-form :model="deptForm" :label-width="formLabelWidth" size="small">
                 <el-form-item label="公司名称">
                     <el-input v-model="deptForm.name"></el-input>
                 </el-form-item>
@@ -295,8 +295,8 @@
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
-                <el-button @click="deptDialog = false">取 消</el-button>
-                <el-button type="primary" @click="setDept">确 定</el-button>
+                <el-button @click="deptDialog = false" size="small">取 消</el-button>
+                <el-button type="primary" @click="setDept" size="small">确 定</el-button>
             </span>
         </el-dialog>
     </div>

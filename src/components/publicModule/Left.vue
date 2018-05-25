@@ -83,6 +83,10 @@
         background-position: -30px -60px;
     }
 
+    .menuList .icon-yhgl {
+        background-position: -170px -143px;
+    }
+
     .menuList .icon-yet {
         background-position: -30px 0;
     }
@@ -132,6 +136,10 @@
     /*标签页样式设置*/
     .noBgc .icon-sjgl {
         background-position: 0 -60px;
+    }
+
+    .noBgc .icon-yhgl {
+        background-position: -138px -143px;
     }
 
     .noBgc .icon-yet {
@@ -184,6 +192,10 @@
 
     .noBgc .el-submenu__title:hover .icon-sjgl{
         background-position: -30px -60px;
+    }
+
+    .noBgc .el-submenu__title:hover .icon-yhgl{
+        background-position: -170px -143px;
     }
 
     .noBgc .el-submenu__title:hover .icon-yet {
@@ -246,13 +258,27 @@
                     <p class="mg-four">数据管理</p>
                 </template>
                 <el-menu-item-group>
+                    <el-menu-item index="/data-manage/settle-account">结算账户设置</el-menu-item>
+                    <el-menu-item index="/data-manage/channel-set">渠道设置</el-menu-item>
+                    <el-menu-item index="1-3">路由设置</el-menu-item>
                     <el-menu-item index="/data-manage/basic-data">基础数据维护</el-menu-item>
-                    <el-menu-item index="/data-manage/bank-account">银行账户管理</el-menu-item>
-                    <el-menu-item index="1-3">接口管理</el-menu-item>
-                    <el-menu-item index="1-4">清算通道管理</el-menu-item>
+                    <el-menu-item index="1-3">商户号设置</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
             <el-submenu index="2">
+                <template slot="title" height="200px">
+                    <i class="icon-yhgl"></i>
+                    <p class="mg-four">用户管理</p>
+                </template>
+                <el-menu-item-group>
+                    <el-menu-item index="/user-manage/user-maintain">用户维护</el-menu-item>
+                    <el-menu-item index="/user-manage/bank-group">用户组设置</el-menu-item>
+                    <el-menu-item index="/user-manage/bank-menu">用户菜单设置</el-menu-item>
+                </el-menu-item-group>
+            </el-submenu>
+
+
+            <el-submenu index="3">
                 <template slot="title" height="200px">
                     <i class="icon-yet"></i>
                     <p>余额通</p>
@@ -271,18 +297,19 @@
                     <el-menu-item index="1-4-1">选项1</el-menu-item>
                 </el-submenu>-->
             </el-submenu>
-            <el-submenu index="3">
+            <el-submenu index="4">
                 <template slot="title" height="200px">
                     <i class="icon-jyt"></i>
                     <p>交易通</p>
                 </template>
                 <el-menu-item-group>
+                    <el-menu-item index="/data-manage/bank-account">银行账户管理</el-menu-item>
                     <el-menu-item index="1-1">选项1</el-menu-item>
                     <el-menu-item index="1-2">选项2</el-menu-item>
                     <el-menu-item index="1-3">选项3</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="4">
+            <el-submenu index="5">
                 <template slot="title" height="200px">
                     <i class="icon-dbt"></i>
                     <p>调拨通</p>
@@ -293,7 +320,7 @@
                     <el-menu-item index="1-3">内部调拨-查看</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="5">
+            <el-submenu index="6">
                 <template slot="title" height="200px">
                     <i class="icon-zft"></i>
                     <p>支付通</p>
@@ -304,7 +331,7 @@
                     <el-menu-item index="1-3">选项3</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="6">
+            <el-submenu index="7">
                 <template slot="title" height="200px">
                     <i class="icon-gjt"></i>
                     <p>归集通</p>
@@ -315,7 +342,7 @@
                     <el-menu-item index="1-3">选项3</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="7">
+            <el-submenu index="8">
                 <template slot="title" height="200px">
                     <i class="icon-ywfk"></i>
 
@@ -327,7 +354,7 @@
                     <el-menu-item index="1-3">选项3</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="8">
+            <el-submenu index="9">
                 <template slot="title" height="200px">
                     <i class="icon-zht"></i>
 
@@ -339,7 +366,7 @@
                     <el-menu-item index="1-3">选项3</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="9">
+            <el-submenu index="10">
                 <template slot="title" height="200px">
                     <i class="icon-zjys"></i>
 
@@ -351,7 +378,7 @@
                     <el-menu-item index="1-3">选项3</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="10">
+            <el-submenu index="11">
                 <template slot="title" height="200px">
                     <i class="icon-sppt"></i>
 
@@ -363,7 +390,7 @@
                     <el-menu-item index="1-3">选项3</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="11">
+            <el-submenu index="12">
                 <template slot="title" height="200px">
                     <i class="icon-bb"></i>
 
@@ -375,7 +402,7 @@
                     <el-menu-item index="1-3">选项3</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="12">
+            <el-submenu index="13">
                 <template slot="title" height="200px">
                     <i class="icon-oa"></i>
 
