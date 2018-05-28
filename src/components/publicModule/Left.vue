@@ -1,19 +1,216 @@
-<style lang='less'>
+<style lang='less' type="text/less">
+    /*整体样式*/
+    #menuContent {
+        width: 87px;
+        height: 100%;
+        overflow-y: scroll;
+        overflow-x: hidden;
+
+        .menuList {
+            background-color: rgba(255, 255, 255, 0);
+
+            i:nth-child(1) {
+                content: "";
+                width: 26px;
+                height: 26px;
+                margin: 3px auto 0;
+                display: block;
+                background-image: url("../../assets/icon_nav.png");
+            }
+
+            /*修改框架样式*/
+            .el-submenu__title p {
+                color: rgba(255, 255, 255, 0.5);
+                height: 20px;
+                line-height: 20px;
+                margin-top: 4px;
+                margin-left: -6px;
+                font: 14px "Microsoft YaHei";
+            }
+
+            .el-submenu__title .mg-four {
+                margin-left: -14px;
+            }
+
+            .el-submenu__title:hover {
+                background-color: #48AEDF;
+            }
+            /*修改框架样式结束*/
+
+            /*首页背景图定位*/
+            .icon-sjgl {
+                background-position: -30px -60px;
+            }
+
+            .icon-yhgl {
+                background-position: -170px -143px;
+            }
+
+            .icon-yet {
+                background-position: -30px 0;
+            }
+
+            .icon-jyt {
+                background-position: -30px -29px;
+            }
+
+            .icon-dbt {
+                background-position: -170px -180px;
+            }
+
+            .icon-zft {
+                background-position: -168px -220px;
+            }
+
+            .icon-gjt {
+                background-position: -103px -116px;
+            }
+
+            .icon-ywfk {
+                background-position: -31px -219px;
+            }
+
+            .icon-zht {
+                background-position: -249px -193px;
+            }
+
+            .icon-zjys {
+                background-position: -32px 0px;
+            }
+
+            .icon-sppt {
+                background-position: -102px -86px;
+            }
+
+            .icon-bb {
+                background-position: -30px -55px;
+            }
+
+            .icon-oa {
+                background-position: -506px -190px;
+            }
+            /*首页背景图定位结束*/
+        }
+
+        /*标签页样式设置*/
+        .noBgc {
+            .icon-sjgl {
+                background-position: 0 -60px;
+            }
+            .icon-yhgl {
+                background-position: -138px -143px;
+            }
+            .icon-yet {
+                background-position: 0px 0;
+            }
+            .icon-jyt {
+                background-position: 0 -29px;
+            }
+            .icon-dbt {
+                background-position: -138px -180px;
+            }
+            .icon-zft {
+                background-position: -137px -220px;
+            }
+            .icon-gjt {
+                background-position: -69px -116px;
+            }
+            .icon-ywfk {
+                background-position: 0px -219px;
+            }
+            .icon-zht {
+                background-position: -213px -193px;
+            }
+            .icon-zjys {
+                background-position: 0px 0px;
+            }
+            .icon-sppt {
+                background-position: -68px -86px;
+            }
+            .icon-bb {
+                background-position: 0 -55px;
+            }
+            .icon-oa {
+                background-position: -506px -158px;
+            }
+            .el-submenu__title p {
+                color: rgba(0, 0, 0, 0.5);
+            }
+
+            .el-submenu__title:hover .icon-sjgl {
+                background-position: -30px -60px;
+            }
+
+            .el-submenu__title:hover .icon-yhgl {
+                background-position: -170px -143px;
+            }
+
+            .el-submenu__title:hover .icon-yet {
+                background-position: -30px 0;
+            }
+
+            .el-submenu__title:hover .icon-jyt {
+                background-position: -30px -29px;
+            }
+
+            .el-submenu__title:hover .icon-dbt {
+                background-position: -170px -180px;
+            }
+
+            .el-submenu__title:hover .icon-zft {
+                background-position: -168px -220px;
+            }
+
+            .el-submenu__title:hover .icon-gjt {
+                background-position: -103px -116px;
+            }
+
+            .el-submenu__title:hover .icon-ywfk {
+                background-position: -31px -219px;
+            }
+
+            .el-submenu__title:hover .icon-zht {
+                background-position: -249px -193px;
+            }
+
+            .el-submenu__title:hover .icon-zjys {
+                background-position: -32px 0px;
+            }
+
+            .el-submenu__title:hover .icon-sppt {
+                background-position: -102px -86px;
+            }
+
+            .el-submenu__title:hover .icon-bb {
+                background-position: -30px -55px;
+            }
+
+            .el-submenu__title:hover .icon-oa {
+                background-position: -506px -190px;
+            }
+
+            .el-submenu__title:hover p {
+                color: #fff;
+            }
+        }
+
+        /*修改框架样式*/
+        .el-menu-vertical-demo:not(.el-menu--collapse) {
+            width: 100%;
+            min-height: 400px;
+        }
+
+        .el-menu-vertical-demo {
+            width: 100%;
+        }
+
+        .el-submenu__title {
+            height: 70px;
+            padding-top: 12px;
+        }
+    }
+
     /*框架样式修改*/
-    .el-menu-vertical-demo:not(.el-menu--collapse) {
-        width: 100%;
-        min-height: 400px;
-    }
-
-    .el-menu-vertical-demo {
-        width: 100%;
-    }
-
-    .el-submenu__title {
-        height: 70px;
-        padding-top: 12px;
-    }
-
     .el-menu--vertical .el-menu {
         margin: 0;
         background-color: #48AEDF;
@@ -35,216 +232,8 @@
         background-color: rgba(23, 144, 201, 1);
         color: #fff;
     }
-
-    .menuList .el-submenu__title:hover {
-        background-color: #48AEDF;
-    }
-
     /*框架样式修改结束*/
 
-    /*整体样式*/
-    #menuContent {
-        width: 87px;
-        height: 100%;
-        overflow-y: scroll;
-        overflow-x: hidden;
-    }
-
-    .menuList {
-        background-color: rgba(255, 255, 255, 0);
-    }
-
-    .menuList i {
-        content: "";
-        width: 26px;
-        height: 26px;
-        margin: 3px auto 0;
-        display: block;
-        background-image: url("../../assets/icon_nav.png");
-    }
-
-    .menuList .el-submenu__title p {
-        color: rgba(255, 255, 255, 0.5);
-        height: 20px;
-        line-height: 20px;
-        margin-top: 4px;
-        margin-left: -6px;
-        font: 14px "Microsoft YaHei";
-    }
-
-    .menuList .el-submenu__title .mg-four {
-        margin-left: -14px;
-    }
-
-    /*整体样式结束*/
-
-    /*首页背景图定位*/
-    .menuList .icon-sjgl {
-        background-position: -30px -60px;
-    }
-
-    .menuList .icon-yhgl {
-        background-position: -170px -143px;
-    }
-
-    .menuList .icon-yet {
-        background-position: -30px 0;
-    }
-
-    .menuList .icon-jyt {
-        background-position: -30px -29px;
-    }
-
-    .menuList .icon-dbt {
-        background-position: -170px -180px;
-    }
-
-    .menuList .icon-zft {
-        background-position: -168px -220px;
-    }
-
-    .menuList .icon-gjt {
-        background-position: -103px -116px;
-    }
-
-    .menuList .icon-ywfk {
-        background-position: -31px -219px;
-    }
-
-    .menuList .icon-zht {
-        background-position: -249px -193px;
-    }
-
-    .menuList .icon-zjys {
-        background-position: -32px 0px;
-    }
-
-    .menuList .icon-sppt {
-        background-position: -102px -86px;
-    }
-
-    .menuList .icon-bb {
-        background-position: -30px -55px;
-    }
-
-    .menuList .icon-oa {
-        background-position: -506px -190px;
-    }
-
-    /*首页背景图定位结束*/
-
-    /*标签页样式设置*/
-    .noBgc .icon-sjgl {
-        background-position: 0 -60px;
-    }
-
-    .noBgc .icon-yhgl {
-        background-position: -138px -143px;
-    }
-
-    .noBgc .icon-yet {
-        background-position: 0px 0;
-    }
-
-    .noBgc .icon-jyt {
-        background-position: 0 -29px;
-    }
-
-    .noBgc .icon-dbt {
-        background-position: -138px -180px;
-    }
-
-    .noBgc .icon-zft {
-        background-position: -137px -220px;
-    }
-
-    .noBgc .icon-gjt {
-        background-position: -69px -116px;
-    }
-
-    .noBgc .icon-ywfk {
-        background-position: 0px -219px;
-    }
-
-    .noBgc .icon-zht {
-        background-position: -213px -193px;
-    }
-
-    .noBgc .icon-zjys {
-        background-position: 0px 0px;
-    }
-
-    .noBgc .icon-sppt {
-        background-position: -68px -86px;
-    }
-
-    .noBgc .icon-bb {
-        background-position: 0 -55px;
-    }
-
-    .noBgc .icon-oa {
-        background-position: -506px -158px;
-    }
-
-    .noBgc .el-submenu__title p {
-        color: rgba(0, 0, 0, 0.5);
-    }
-
-    .noBgc .el-submenu__title:hover .icon-sjgl{
-        background-position: -30px -60px;
-    }
-
-    .noBgc .el-submenu__title:hover .icon-yhgl{
-        background-position: -170px -143px;
-    }
-
-    .noBgc .el-submenu__title:hover .icon-yet {
-        background-position: -30px 0;
-    }
-
-    .noBgc .el-submenu__title:hover .icon-jyt {
-        background-position: -30px -29px;
-    }
-
-    .noBgc .el-submenu__title:hover .icon-dbt {
-        background-position: -170px -180px;
-    }
-
-    .noBgc .el-submenu__title:hover .icon-zft {
-        background-position: -168px -220px;
-    }
-
-    .noBgc .el-submenu__title:hover .icon-gjt {
-        background-position: -103px -116px;
-    }
-
-    .noBgc .el-submenu__title:hover .icon-ywfk {
-        background-position: -31px -219px;
-    }
-
-    .noBgc .el-submenu__title:hover .icon-zht {
-        background-position: -249px -193px;
-    }
-
-    .noBgc .el-submenu__title:hover .icon-zjys {
-        background-position: -32px 0px;
-    }
-
-    .noBgc .el-submenu__title:hover .icon-sppt {
-        background-position: -102px -86px;
-    }
-
-    .noBgc .el-submenu__title:hover .icon-bb {
-        background-position: -30px -55px;
-    }
-
-    .noBgc .el-submenu__title:hover .icon-oa {
-        background-position: -506px -190px;
-    }
-
-    .noBgc .el-submenu__title:hover p {
-        color: #fff;
-    }
 
 </style>
 
