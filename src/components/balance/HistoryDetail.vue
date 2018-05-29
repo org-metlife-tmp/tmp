@@ -1,24 +1,25 @@
-<style>
+<style scoped lang="less" type="text/less">
     #historyDetail {
         width: 100%;
         height: 100%;
         box-sizing: border-box;
         position: relative;
+
+        /*分页部分*/
+        .botton-pag {
+            position: absolute;
+            width: 100%;
+            height: 8%;
+            bottom: -6px;
+        }
+        .el-date-editor {
+            position: absolute;
+            top: -18px;
+            right: -18px;
+            width: 210px;
+        }
     }
 
-    /*分页部分*/
-    .botton-pag {
-        position: absolute;
-        width: 100%;
-        height: 8%;
-        bottom: -6px;
-    }
-    #historyDetail .el-date-editor{
-        position: absolute;
-        top: -18px;
-        right: -18px;
-        width: 210px;
-    }
 </style>
 
 <template>
@@ -32,7 +33,7 @@
                 size="mini">
         </el-date-picker>
         <!--饼图-->
-        <CakePicture :pieData="pieData" ></CakePicture>
+        <CakePicture :pieData="pieData"></CakePicture>
         <!--表格-->
         <div :class="['table-setion',{'table-up':!tableSite},{'table-down':tableSite}]">
             <img src="../../assets/icon_arrow_up.jpg" alt="" v-show="tableSite" @click="tableSite=!tableSite"/>
@@ -69,8 +70,8 @@
 
     export default {
         name: "HistoryDetail",
-        created:function(){
-            this.$emit('transmitTitle','历史余额明细');
+        created: function () {
+            this.$emit('transmitTitle', '历史余额明细');
             this.$emit('getTableData', this.routerMessage);
 
             //获取饼图数据
@@ -88,7 +89,7 @@
                 var pieData = [];
                 for (var i = 0; i < currentData.length; i++) {
                     var item = currentData[i];
-                    pieData.push({value: item.balance, name: item.name,code:item.code});
+                    pieData.push({value: item.balance, name: item.name, code: item.code});
                 }
                 routeThis.pieData = pieData
             }).catch(function (error) {
@@ -113,7 +114,7 @@
                 pagSize: 0,
                 //饼图数据
                 pieData: [],
-                value6:""
+                value6: ""
             }
         },
         components: {

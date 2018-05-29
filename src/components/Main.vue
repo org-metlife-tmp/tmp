@@ -2,13 +2,6 @@
     #main {
         height: 100%;
 
-        .header-none {
-            height: 0 !important;
-        }
-        .padding-none {
-            padding-top: 0;
-        }
-
         /**********
         修改框架样式-开始
         ***********/
@@ -144,6 +137,13 @@
         .home-bgc-none {
             background-color: rgba(0, 0, 0, 0);
         }
+
+        .header-none {
+            height: 0 !important;
+        }
+        .padding-none {
+            padding-top: 0 !important;
+        }
     }
 </style>
 
@@ -176,6 +176,22 @@
 
     export default {
         name: "",
+        created: function(){
+            /*this.$axios({
+                url:"/cfm/commProcess",
+                method: "post",
+                data: {
+                    optype: "area_toplevel",
+                    params: {
+
+                    }
+                }
+            }).then((result) => {
+                console.log(result.data);
+            }).catch(function(error){
+                console.log(error);
+            })*/
+        },
         data: function () {
             return {
                 headerShow: true,

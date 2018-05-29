@@ -1,80 +1,80 @@
-<style>
+<style scoped lang="less" type="text/less">
     #historyAll {
         width: 100%;
         height: 100%;
         box-sizing: border-box;
         position: relative;
+
+        /*分页部分*/
+        .botton-pag {
+            position: absolute;
+            width: 100%;
+            height: 8%;
+            bottom: -6px;
+        }
+
+        /*公司-银行切换*/
+        .company-bank {
+            position: absolute;
+            top: -20px;
+            right: -48px;
+            width: 28px;
+            height: 140px;
+
+            li {
+                width: 88%;
+                line-height: 26px;
+                height: 56px;
+                font-size: 14px;
+                border: 1px solid #00B3ED;
+                background-color: #fff;
+                color: #00B3ED;
+                cursor: pointer;
+                margin-bottom: 6px;
+                position: relative;
+            }
+
+            .current-select {
+                background-color: #00B3ED;
+                color: #fff;
+            }
+
+            .current-select:before {
+                border: 5px solid #00B3ED;
+                border-top-color: transparent;
+                border-bottom-color: transparent;
+                border-left: none;
+            }
+
+            li:hover {
+                background-color: #00B3ED;
+                color: #fff;
+            }
+
+            li:before {
+                content: "";
+                display: block;
+                position: absolute;
+                border: none;
+                top: 26px;
+                left: -5px;
+            }
+
+            li:hover:before {
+                border: 5px solid #00B3ED;
+                border-top-color: transparent;
+                border-bottom-color: transparent;
+                border-left: none;
+            }
+        }
+        .el-date-editor {
+            position: absolute;
+            top: -18px;
+            right: -18px;
+            width: 210px;
+        }
     }
 
-    /*分页部分*/
-    .botton-pag {
-        position: absolute;
-        width: 100%;
-        height: 8%;
-        bottom: -6px;
-    }
-
-    /*公司-银行切换*/
-    .company-bank {
-        position: absolute;
-        top: -20px;
-        right: -48px;
-        width: 28px;
-        height: 140px;
-    }
-
-    .company-bank li {
-        width: 88%;
-        line-height: 26px;
-        height: 56px;
-        font-size: 14px;
-        border: 1px solid #00B3ED;
-        background-color: #fff;
-        color: #00B3ED;
-        cursor: pointer;
-        margin-bottom: 6px;
-        position: relative;
-    }
-
-    .company-bank .current-select {
-        background-color: #00B3ED;
-        color: #fff;
-    }
-
-    .company-bank .current-select:before {
-        border: 5px solid #00B3ED;
-        border-top-color: transparent;
-        border-bottom-color: transparent;
-        border-left: none;
-    }
-
-    .company-bank li:hover {
-        background-color: #00B3ED;
-        color: #fff;
-    }
-
-    .company-bank li:before {
-        content: "";
-        display: block;
-        position: absolute;
-        border: none;
-        top: 26px;
-        left: -5px;
-    }
-
-    .company-bank li:hover:before {
-        border: 5px solid #00B3ED;
-        border-top-color: transparent;
-        border-bottom-color: transparent;
-        border-left: none;
-    }
-
-    #historyAll .el-date-editor{
-        position: absolute;
-        top: -18px;
-        right: -18px;
-        width: 210px;
-    }
 </style>
 
 <template>
@@ -119,9 +119,11 @@
         <div class="company-bank">
             <ul>
                 <li :class="{'current-select':btActive}"
-                    @click="isCompany">公司</li>
+                    @click="isCompany">公司
+                </li>
                 <li :class="{'current-select':!btActive}"
-                    @click="isBank">银行</li>
+                    @click="isBank">银行
+                </li>
             </ul>
         </div>
     </div>
@@ -132,8 +134,8 @@
 
     export default {
         name: "HistoryAll",
-        created:function(){
-            this.$emit('transmitTitle','历史余额汇总');
+        created: function () {
+            this.$emit('transmitTitle', '历史余额汇总');
             this.$emit('getTableData', this.routerMessage);
 
             //获取饼图数据
@@ -163,7 +165,7 @@
                 pieData: [],
                 //公司/银行激活状态
                 btActive: true,
-                value6:""
+                value6: ""
             }
         },
         components: {
@@ -177,9 +179,9 @@
             },
             //点击公司
             isCompany: function () {
-                if(this.btActive){
+                if (this.btActive) {
                     return;
-                }else{
+                } else {
                     this.btActive = true;
                     //获取表格数据
                     this.routerMessage.pageno = 1;
@@ -191,9 +193,9 @@
             },
             //点击银行
             isBank: function () {
-                if(!this.btActive){
+                if (!this.btActive) {
                     return;
-                }else{
+                } else {
                     this.btActive = false;
                     this.routerMessage.pageno = 1;
                     this.routerMessage.optype = "qhb_bank_list";
@@ -204,7 +206,7 @@
                 }
             },
             //获取饼图数据
-            getPieData: function(optype){
+            getPieData: function (optype) {
                 var routeThis = this;
                 this.$axios({
                     url: "/cfm/process",

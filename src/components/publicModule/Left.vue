@@ -233,8 +233,6 @@
         color: #fff;
     }
     /*框架样式修改结束*/
-
-
 </style>
 
 <template>
@@ -249,9 +247,9 @@
                 <el-menu-item-group>
                     <el-menu-item index="/data-manage/settle-account">结算账户设置</el-menu-item>
                     <el-menu-item index="/data-manage/channel-set">渠道设置</el-menu-item>
-                    <el-menu-item index="1-3">路由设置</el-menu-item>
+                    <el-menu-item index="/data-manage/router-set">路由设置</el-menu-item>
                     <el-menu-item index="/data-manage/basic-data">基础数据维护</el-menu-item>
-                    <el-menu-item index="1-3">商户号设置</el-menu-item>
+                    <el-menu-item index="/data-manage/merch-set">商户号设置</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
             <el-submenu index="2">

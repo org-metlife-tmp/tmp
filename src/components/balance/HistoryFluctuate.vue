@@ -1,23 +1,23 @@
-<style>
+<style scoped lang="less" type="text/less">
     #historyFluctuate {
         width: 100%;
         height: 100%;
         box-sizing: border-box;
         position: relative;
-    }
 
-    /*分页部分*/
-    .botton-pag {
-        position: absolute;
-        width: 100%;
-        height: 8%;
-        bottom: -6px;
-    }
-    #historyFluctuate .el-date-editor{
-        position: absolute;
-        top: -18px;
-        right: -18px;
-        width: 210px;
+        /*分页部分*/
+        .botton-pag {
+            position: absolute;
+            width: 100%;
+            height: 8%;
+            bottom: -6px;
+        }
+        .el-date-editor {
+            position: absolute;
+            top: -18px;
+            right: -18px;
+            width: 210px;
+        }
     }
 </style>
 
@@ -64,37 +64,37 @@
 <script>
     export default {
         name: "HistoryFluctuate",
-        created:function(){
-            this.$emit('transmitTitle','历史余额波动');
-            this.$emit('getTableData',this.routerMessage);
+        created: function () {
+            this.$emit('transmitTitle', '历史余额波动');
+            this.$emit('getTableData', this.routerMessage);
         },
-        props:["tableData"],
+        props: ["tableData"],
         data: function () {
             return {
                 tableSite: true,
-                routerMessage:{
+                routerMessage: {
                     optype: "qhb_acct_average",
                     pageno: 1,
                     pagesize: 8
                 },
-                tableList:[],
+                tableList: [],
                 pagTotal: 0,
                 pagSize: 0,
-                value6:""
+                value6: ""
             }
         },
         methods: {
-            pageChange:function(page){
+            pageChange: function (page) {
                 this.routerMessage.pageno = page;
-                this.$emit("getTableData",this.routerMessage);
+                this.$emit("getTableData", this.routerMessage);
             }
         },
-        watch:{
-            tableData:function(val,oldValue){
+        watch: {
+            tableData: function (val, oldValue) {
                 var data = val.data;
                 this.tableList = data.list;
-                this.pagSize = data.pagesize*1;
-                this.pagTotal = data.total*1;
+                this.pagSize = data.pagesize * 1;
+                this.pagTotal = data.total * 1;
             }
         }
     }

@@ -10,9 +10,10 @@ import WhiteContent from '@/components/publicModule/WhiteContent'
 import EmptyContent from '@/components/publicModule/EmptyContent'
 //数据管理
 import BasicData from '@/components/dataManage/BasicData'
-import BankAccount from '@/components/dataManage/BankAccount'
 import SettleAccount from '@/components/dataManage/SettleAccount'
 import ChannelSet from '@/components/dataManage/ChannelSet'
+import RouterSet from '@/components/dataManage/RouterSet'
+import MerchSet from '@/components/dataManage/MerchSet'
 //用户管理
 import UserMaintain from '@/components/userManage/UserMaintain'
 import UserGroup from '@/components/userManage/UserGroup'
@@ -26,6 +27,7 @@ import HistoryAll from '@/components/balance/HistoryAll'
 import HistoryFluctuate from '@/components/balance/HistoryFluctuate'
 //调拨通
 import MakeBill from '@/components/allot/MakeBill'
+import BankAccount from '@/components/allot/BankAccount'
 
 Vue.use(Router)
 
@@ -58,6 +60,8 @@ const router = new Router({
                         {path: '/data-manage/bank-account', name: 'BankAccount', component: BankAccount, meta: {requireAuth: true}},
                         {path: '/data-manage/settle-account', name: 'SettleAccount', component: SettleAccount, meta: {requireAuth: true}},
                         {path: '/data-manage/channel-set', name: 'ChannelSet', component: ChannelSet, meta: {requireAuth: true}},
+                        {path: '/data-manage/router-set', name: 'RouterSet', component: RouterSet, meta: {requireAuth: true}},
+                        {path: '/data-manage/merch-set', name: 'MerchSet', component: MerchSet, meta: {requireAuth: true}},
                         //用户管理
                         {path: '/user-manage/user-maintain', name: 'UserMaintain', component: UserMaintain, meta: {requireAuth: true}},
                         {path: '/user-manage/bank-group', name: 'UserGroup', component: UserGroup, meta: {requireAuth: true}},

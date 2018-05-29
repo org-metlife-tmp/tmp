@@ -1,121 +1,122 @@
-<style>
+<style lang="less" type="text/less" scoped>
     #makeBill {
         min-width: 800px;
         width: 70%;
         height: 100%;
         margin: 0 auto;
+
+        /*标题*/
+        header button {
+            float: right;
+            margin-top: -40px;
+        }
+
+        /*内容*/
+        section {
+            width: 100%;
+            height: 512px;
+            background-color: #fff;
+            box-sizing: border-box;
+            padding: 20px 20px 60px;
+            margin-bottom: 10px;
+        }
+
+        .title-date {
+            color: #ccc;
+            height: 40px;
+            text-align: left;
+        }
+
+        .title-date > span {
+            margin-right: 10px;
+        }
+
+        .title-date .serial-number {
+            float: right;
+        }
+
+        /*表格*/
+        .bill-content {
+            width: 100%;
+            height: 388px;
+            color: #363636;
+            box-sizing: border-box;
+            border: 3px solid #dde0e0;
+            background: url(../../assets/slice_bg.png) repeat;
+        }
+
+        .bill-content table {
+            width: 100%;
+            height: 100%;
+            border-collapse: collapse;
+        }
+
+        .bill-content td {
+            border: 1px solid #dde0e0;
+        }
+
+        .bill-content .title-erect {
+            width: 60px;
+            text-align: center;
+            padding: 0 16px;
+            box-sizing: border-box;
+            line-height: 20px;
+        }
+
+        .bill-content .title-small {
+            width: 82px;
+            text-align: center;
+            letter-spacing: 1em;
+            text-indent: 1em;
+            text-align: center;
+        }
+
+        .bill-content .title-space {
+            height: 2px;
+        }
+
+        .bill-content .set-space {
+            letter-spacing: 2em;
+            text-indent: 2em;
+        }
+
+        .bill-content .select-height {
+            height: 56px;
+        }
+
+        .bill-content .el-select {
+            width: 100%;
+        }
+
+        .bill-content .el-select input {
+            height: 56px;
+            border: none;
+        }
+
+        .bill-content .text-left {
+            text-align: left;
+            text-indent: 1em;
+        }
+
+        /*底部按钮组*/
+        .bill-operation {
+            text-align: left;
+            margin-top: 12px;
+        }
+
+        .bill-operation .arrows {
+            font-size: 20px;
+            vertical-align: middle;
+            font-family: initial;
+            margin-left: 10px;
+        }
+
+        .bill-operation .btnGroup {
+            float: right;
+        }
     }
 
-    /*标题*/
 
-    #makeBill header button {
-        float: right;
-        margin-top: -40px;
-    }
-
-    /*内容*/
-    #makeBill section {
-        width: 100%;
-        height: 512px;
-        background-color: #fff;
-        box-sizing: border-box;
-        padding: 20px 20px 60px;
-        margin-bottom: 10px;
-    }
-
-    #makeBill .title-date {
-        color: #ccc;
-        height: 40px;
-        text-align: left;
-    }
-
-    #makeBill .title-date > span {
-        margin-right: 10px;
-    }
-
-    #makeBill .title-date .serial-number {
-        float: right;
-    }
-
-    /*表格*/
-    #makeBill .bill-content {
-        width: 100%;
-        height: 388px;
-        color: #363636;
-        box-sizing: border-box;
-        border: 3px solid #dde0e0;
-        background: url(../../assets/slice_bg.png) repeat;
-    }
-
-    #makeBill .bill-content table {
-        width: 100%;
-        height: 100%;
-        border-collapse: collapse;
-    }
-
-    #makeBill .bill-content td {
-        border: 1px solid #dde0e0;
-    }
-
-    #makeBill .bill-content .title-erect {
-        width: 60px;
-        text-align: center;
-        padding: 0 16px;
-        box-sizing: border-box;
-        line-height: 20px;
-    }
-
-    #makeBill .bill-content .title-small {
-        width: 82px;
-        text-align: center;
-        letter-spacing: 1em;
-        text-indent: 1em;
-        text-align: center;
-    }
-
-    #makeBill .bill-content .title-space {
-        height: 2px;
-    }
-
-    #makeBill .bill-content .set-space {
-        letter-spacing: 2em;
-        text-indent: 2em;
-    }
-
-    #makeBill .bill-content .select-height {
-        height: 56px;
-    }
-
-    #makeBill .bill-content .el-select {
-        width: 100%;
-    }
-
-    #makeBill .bill-content .el-select input {
-        height: 56px;
-        border: none;
-    }
-
-    #makeBill .bill-content .text-left {
-        text-align: left;
-        text-indent: 1em;
-    }
-
-    /*底部按钮组*/
-    #makeBill .bill-operation {
-        text-align: left;
-        margin-top: 12px;
-    }
-
-    #makeBill .bill-operation .arrows {
-        font-size: 20px;
-        vertical-align: middle;
-        font-family: initial;
-        margin-left: 10px;
-    }
-
-    #makeBill .bill-operation .btnGroup {
-        float: right;
-    }
 </style>
 
 <template>

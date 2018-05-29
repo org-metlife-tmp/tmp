@@ -1,17 +1,17 @@
-<style>
+<style scoped lang="less" type="text/less">
     #todayFluctuate {
         width: 100%;
         height: 100%;
         box-sizing: border-box;
         position: relative;
-    }
 
-    /*分页部分*/
-    .botton-pag {
-        position: absolute;
-        width: 100%;
-        height: 8%;
-        bottom: -6px;
+        /*分页部分*/
+        .botton-pag {
+            position: absolute;
+            width: 100%;
+            height: 8%;
+            bottom: -6px;
+        }
     }
 
 </style>
@@ -51,36 +51,36 @@
 <script>
     export default {
         name: "TodayFluctuate",
-        created:function(){
-            this.$emit('transmitTitle','当日余额波动');
-            this.$emit('getTableData',this.routerMessage);
+        created: function () {
+            this.$emit('transmitTitle', '当日余额波动');
+            this.$emit('getTableData', this.routerMessage);
         },
-        props:["tableData"],
+        props: ["tableData"],
         data: function () {
             return {
                 tableSite: true,
-                routerMessage:{
+                routerMessage: {
                     optype: "qcb_detail_list",
                     pageno: 1,
                     pagesize: 8
                 },
-                tableList:[],
+                tableList: [],
                 pagTotal: 0,
                 pagSize: 0
             }
         },
         methods: {
-            pageChange:function(page){
+            pageChange: function (page) {
                 this.routerMessage.pageno = page;
-                this.$emit("getTableData",this.routerMessage);
+                this.$emit("getTableData", this.routerMessage);
             }
         },
-        watch:{
-            tableData:function(val,oldValue){
+        watch: {
+            tableData: function (val, oldValue) {
                 var data = val.data;
                 this.tableList = data.list;
-                this.pagSize = data.pagesize*1;
-                this.pagTotal = data.total*1;
+                this.pagSize = data.pagesize * 1;
+                this.pagTotal = data.total * 1;
             }
         }
     }

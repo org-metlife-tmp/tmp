@@ -14,21 +14,31 @@
             padding: 20px;
             background-color: #fff;
         }
+
+        //表格内部操作按钮
+        .el-table .el-button {
+            padding: 3px 3px;
+        }
+
+        .el-button + .el-button {
+            margin-left: 4px;
+        }
     }
 
-    //表格内部操作按钮
-    .el-table .el-button {
-        padding: 3px 3px;
-    }
-
-    .el-button + .el-button {
-        margin-left: 4px;
-    }
-
+    /*设置弹出框公共样式*/
     .el-dialog {
         text-align: left;
+        margin-bottom: 10px;
+        /*设置标题*/
+        .dialog-title {
+            margin-bottom: 0;
+        }
+        .el-dialog__body {
+            padding-top: 10px;
+            padding-bottom: 0;
+        }
         .el-form {
-            width: 90%;
+            width: 94%;
             .el-select {
                 width: 100%;
             }
@@ -41,7 +51,7 @@
         <header>
             <h1 v-text="currentTitle"></h1>
         </header>
-        <section class="content"  v-loading="loading">
+        <section class="content" v-loading="loading">
             <router-view @transmitTitle="currentTitle= $event"
                          @getTableData="getRouterData"
                          :tableData="childData"></router-view>

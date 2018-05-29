@@ -1,24 +1,24 @@
-<style>
+<style scoped lang="less" type="text/less">
     #todayDetail {
         width: 100%;
         height: 100%;
         box-sizing: border-box;
         position: relative;
-    }
 
-    /*分页部分*/
-    .botton-pag {
-        position: absolute;
-        width: 100%;
-        height: 8%;
-        bottom: -6px;
+        /*分页部分*/
+        .botton-pag {
+            position: absolute;
+            width: 100%;
+            height: 8%;
+            bottom: -6px;
+        }
     }
 </style>
 
 <template>
     <div id="todayDetail">
         <!--饼图-->
-        <CakePicture :pieData="pieData" ></CakePicture>
+        <CakePicture :pieData="pieData"></CakePicture>
         <!--表格-->
         <div :class="['table-setion',{'table-up':!tableSite},{'table-down':tableSite}]">
             <img src="../../assets/icon_arrow_up.jpg" alt="" v-show="tableSite" @click="tableSite=!tableSite"/>
@@ -74,7 +74,7 @@
                 var pieData = [];
                 for (var i = 0; i < currentData.length; i++) {
                     var item = currentData[i];
-                    pieData.push({value: item.balance, name: item.name,code:item.code});
+                    pieData.push({value: item.balance, name: item.name, code: item.code});
                 }
                 routeThis.pieData = pieData
             }).catch(function (error) {
@@ -114,12 +114,12 @@
         watch: {
             //设置数据
             tableData: function (val, oldValue) {
-                if(val.data){
+                if (val.data) {
                     var data = val.data;
                     this.tableList = data.list;
                     this.pagSize = data.pagesize * 1;
                     this.pagTotal = data.total * 1;
-                }else{
+                } else {
                     return;
                 }
             }

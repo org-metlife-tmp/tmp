@@ -1,49 +1,49 @@
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
+<style scoped lang="less" type="text/less">
     #titleTop {
         height: 52px;
         width: 100%;
         background: url("../../assets/header_bg.jpg") no-repeat;
         background-color: #649cc3;
         position: relative;
-    }
 
-    .company-name, .user-message {
-        position: absolute;
-        height: 100%;
-        line-height: 52px;
-        color: #fff;
-    }
+        .company-name, .user-message {
+            position: absolute;
+            height: 100%;
+            line-height: 52px;
+            color: #fff;
+        }
 
-    .company-name {
-        right: 220px;
-        width: 200px;
-        text-align: center;
-        border-right: 1px solid rgba(255, 255, 255, 0.1);
-        cursor: default;
-    }
+        .company-name {
+            right: 220px;
+            width: 200px;
+            text-align: center;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            cursor: default;
+        }
 
-    .company-name:before {
-        content: " ";
-        position: absolute;
-        background-image: url("../../assets/icon_nav.png");
-        background-position: -80px 0;
-        width: 25px;
-        height: 25px;
-        top: 13px;
-        left: 0;
-    }
+        .company-name:before {
+            content: " ";
+            position: absolute;
+            background-image: url("../../assets/icon_nav.png");
+            background-position: -80px 0;
+            width: 25px;
+            height: 25px;
+            top: 13px;
+            left: 0;
+        }
 
-    .company-name:after {
-        content: " ";
-        position: absolute;
-        width: 80%;
-        margin: 0;
-        height: 5px;
-        top: 29px;
-        left: 25px;
-        border-width: 0 1px 1px;
-        border-style: solid;
+        .company-name:after {
+            content: " ";
+            position: absolute;
+            width: 80%;
+            margin: 0;
+            height: 5px;
+            top: 29px;
+            left: 25px;
+            border-width: 0 1px 1px;
+            border-style: solid;
+        }
     }
 
     .user-message {

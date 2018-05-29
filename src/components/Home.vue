@@ -1,165 +1,161 @@
-<style>
+<style lang="less" type="text/less">
     #homeContent {
         position: relative;
         height: 100%;
         min-width: 1080px;
         line-height: 0;
         color: #fff;
+
+        /*地址 时间-开始*/
+        .location-time, .backlog-incident, .centre, .content-panel, .footer-text {
+            position: absolute;
+        }
+
+        .location-time {
+            top: 20px;
+            left: 20px;
+            width: 202px;
+            height: 40px;
+            color: #ffffff;
+            line-height: 40px;
+            .address {
+                font-size: 22px;
+                border-right: 1px solid rgba(255, 255, 255, 0.5);
+                padding: 0 10px 0 0;
+            }
+            .c-data {
+                padding: 0 10px;
+                vertical-align: top;
+            }
+        }
+        /*地址 时间-结束*/
+
+        /*待办事项-开始*/
+        .backlog-incident {
+            top: 200px;
+            left: 20px;
+            width: 210px;
+            height: 300px;
+            text-align: left;
+
+            h3 {
+                margin-bottom: 26px;
+            }
+
+            article {
+                margin-top: 20px;
+                height: 140px;
+                padding-top: 20px;
+            }
+
+            .backlog-content {
+                position: relative;
+                height: 110px;
+            }
+
+            .backlog-content, .backlog-content:after, .backlog-content:before {
+                background-color: rgba(255, 255, 255, 0.1);
+            }
+
+            .backlog-content:after, .backlog-content:before {
+                content: "";
+                width: 100%;
+                height: 15px;
+                display: block;
+                position: absolute;
+                left: 0;
+            }
+
+            .backlog-content:after {
+                background: linear-gradient(135deg, transparent 10px, rgba(255, 255, 255, 0.1) 0);
+                top: -15px;
+            }
+
+            .backlog-content:before {
+                background: linear-gradient(-45deg, transparent 10px, rgba(255, 255, 255, 0.1) 0);
+                bottom: -15px;
+            }
+        }
+        /*待办事项-结束*/
+
+        /*快捷面板*/
+        .centre {
+            left: 50%;
+            width: 400px;
+            height: 400px;
+            background-color: salmon;
+            margin: 20px 0 0 -240px;
+        }
+        /*快捷面板结束*/
+
+        /*金额信息-开始*/
+        .content-panel {
+            top: 20px;
+            right: 30px;
+            width: 320px;
+            height: 380px;
+
+            header {
+                font-size: 16px;
+                line-height: 22px;;
+            }
+
+            header span:before, header span:after {
+                content: "";
+                display: inline-block;
+                width: 64px;
+                height: 10px;
+                background-image: url("../assets/icon_nav.png");
+            }
+
+            header span:before {
+                background-position: -84px -53px;
+                margin-right: 5px;
+            }
+
+            header span:after {
+                background-position: -84px -63px;
+                margin-left: 5px;
+            }
+
+            article {
+                background: rgba(255, 255, 255, 0.1);
+                position: relative;
+                margin-top: 30px;
+                min-height: 335px;
+            }
+
+            article:before, article:after {
+                content: "";
+                width: 100%;
+                height: 15px;
+                position: absolute;
+                left: 0;
+            }
+
+            article:before {
+                background: linear-gradient(135deg, transparent 10px, rgba(255, 255, 255, 0.1) 0);
+                top: -15px;
+            }
+
+            article:after {
+                background: linear-gradient(-45deg, transparent 10px, rgba(255, 255, 255, 0.1) 0);
+                bottom: -15px;
+
+            }
+        }
+        /*金额信息-结束*/
+
+        /*公司信息*/
+        .footer-text {
+            bottom: 0px;
+            left: 50%;
+            margin-left: -223px;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 14px;
+        }
     }
 
-    /*地址 时间-开始*/
-    .location-time, .backlog-incident, .centre, .content-panel, .footer-text {
-        position: absolute;
-    }
-
-    .location-time {
-        top: 20px;
-        left: 20px;
-        width: 202px;
-        height: 40px;
-        color: #ffffff;
-        line-height: 40px;
-    }
-
-    .location-time .address {
-        font-size: 22px;
-        border-right: 1px solid rgba(255, 255, 255, 0.5);
-        padding: 0 10px 0 0;
-    }
-
-    .location-time .c-data {
-        padding: 0 10px;
-        vertical-align: top;
-    }
-
-    /*地址 时间-结束*/
-
-    /*待办事项-开始*/
-    .backlog-incident {
-        top: 200px;
-        left: 20px;
-        width: 210px;
-        height: 300px;
-        text-align: left;
-    }
-
-    .backlog-incident h3 {
-        margin-bottom: 26px;
-    }
-
-    .backlog-incident article {
-        margin-top: 20px;
-        height: 140px;
-        padding-top: 20px;
-    }
-
-    .backlog-incident .backlog-content {
-        position: relative;
-        height: 110px;
-    }
-
-    .backlog-content, .backlog-content:after, .backlog-content:before {
-        background-color: rgba(255, 255, 255, 0.1);
-    }
-
-    .backlog-content:after, .backlog-content:before {
-        content: "";
-        width: 100%;
-        height: 15px;
-        display: block;
-        position: absolute;
-        left: 0;
-    }
-
-    .backlog-content:after {
-        background: linear-gradient(135deg, transparent 10px, rgba(255, 255, 255, 0.1) 0);
-        top: -15px;
-    }
-
-    .backlog-content:before {
-        background: linear-gradient(-45deg, transparent 10px, rgba(255, 255, 255, 0.1) 0);
-        bottom: -15px;
-    }
-    /*待办事项-结束*/
-
-    /*快捷面板*/
-    .centre {
-        left: 50%;
-        width: 400px;
-        height: 400px;
-        background-color: salmon;
-        margin: 20px 0 0 -240px;
-    }
-
-    /*快捷面板*/
-
-    /*金额信息-开始*/
-    .content-panel {
-        top: 20px;
-        right: 30px;
-        width: 320px;
-        height: 380px;
-    }
-
-    .content-panel header {
-        font-size: 16px;
-        line-height: 22px;;
-    }
-
-    .content-panel header span:before, .content-panel header span:after {
-        content: "";
-        display: inline-block;
-        width: 64px;
-        height: 10px;
-        background-image: url("../assets/icon_nav.png");
-    }
-
-    .content-panel header span:before {
-        background-position: -84px -53px;
-        margin-right: 5px;
-    }
-
-    .content-panel header span:after {
-        background-position: -84px -63px;
-        margin-left: 5px;
-    }
-
-    .content-panel article {
-        background: rgba(255, 255, 255, 0.1);
-        position: relative;
-        margin-top: 30px;
-        min-height: 335px;
-    }
-
-    .content-panel article:before, .content-panel article:after {
-        content: "";
-        width: 100%;
-        height: 15px;
-        position: absolute;
-        left: 0;
-    }
-
-    .content-panel article:before {
-        background: linear-gradient(135deg, transparent 10px, rgba(255, 255, 255, 0.1) 0);
-        top: -15px;
-    }
-
-    .content-panel article:after {
-        background: linear-gradient(-45deg, transparent 10px, rgba(255, 255, 255, 0.1) 0);
-        bottom: -15px;
-
-    }
-
-    /*金额信息-结束*/
-
-    /*公司信息*/
-    .footer-text {
-        bottom: 0px;
-        left: 50%;
-        margin-left: -223px;
-        color: rgba(255, 255, 255, 0.5);
-        font-size: 14px;
-    }
 </style>
 <template>
     <div id="homeContent">
@@ -193,7 +189,7 @@
 <script>
     export default {
         name: "Home",
-        created:function(){
+        created: function () {
             /*this.$axios({
                 url:"/cfm/adminProcess",
                 method: "post",
@@ -211,8 +207,7 @@
                 currentDate: new Date()
             }
         },
-        methods: {
-        },
+        methods: {},
         computed: {
             //获取具体时间
             getDate: function () {

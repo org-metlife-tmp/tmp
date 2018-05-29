@@ -117,7 +117,7 @@
             padding: 3px 3px;
         }
 
-        /*按钮-开关*/
+        /*按钮-设置状态*/
         .on-off {
             width: 22px;
             height: 22px;
@@ -204,7 +204,7 @@
                                @click="setCurrency(scope.row,tableList)"
                                :class="{'text-button':!scope.row.is_default}">设为默认
                     </el-button>
-                    <el-tooltip content="开关" placement="bottom" effect="light" :enterable="false" :open-delay="500">
+                    <el-tooltip content="设置状态" placement="bottom" effect="light" :enterable="false" :open-delay="500">
                         <el-button size="mini"
                                    @click="setStatus(scope.row)"
                                    v-if="btActive.department"
