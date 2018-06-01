@@ -83,7 +83,7 @@
             left: 50%;
             width: 400px;
             height: 400px;
-            background-color: salmon;
+            /*background-color: salmon;*/
             margin: 20px 0 0 -240px;
         }
         /*快捷面板结束*/
@@ -190,15 +190,7 @@
     export default {
         name: "Home",
         created: function () {
-            /*this.$axios({
-                url:"/cfm/adminProcess",
-                method: "post",
-                data: {"optype":"orgs_list"}
-            }).then(function(result){
-                console.log(result.data);
-            }).catch(function(error){
-                console.log(error);
-            })*/
+
         },
         data: function () {
             return {

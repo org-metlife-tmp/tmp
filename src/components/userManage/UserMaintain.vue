@@ -165,7 +165,7 @@
                 dialogTitle: "新增",
                 dialogData: {},
                 formLabelWidth: "120px",
-                currentRouter: ""
+                currentUser: ""
             }
         },
         methods: {
@@ -180,7 +180,7 @@
                 this.dialogTitle = "编辑";
                 this.dialogData = {};
                 this.dialogVisible = true;
-                this.currentRouter = row;
+                this.currentUser = row;
                 for(var k in row){
                     this.dialogData[k] = row[k];
                 }

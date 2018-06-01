@@ -56,23 +56,19 @@
                 <el-row>
                     <el-col :span="7">
                         <el-form-item label="渠道名称">
-                            <el-select v-model="serachData.region" placeholder="活动区域">
-                                <el-option label="区域一" value="shanghai"></el-option>
-                                <el-option label="区域二" value="beijing"></el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="7">
-                        <el-form-item label="状态">
-                            <el-select v-model="serachData.region" placeholder="活动区域">
-                                <el-option label="区域一" value="shanghai"></el-option>
-                                <el-option label="区域二" value="beijing"></el-option>
+                            <el-select v-model="serachData.query_key" placeholder="请选择渠道"
+                                       clearable filterable>
+                                <el-option v-for="chiannel in channelList"
+                                           :key="chiannel.code"
+                                           :label="chiannel.desc"
+                                           :value="chiannel.desc">
+                                </el-option>
                             </el-select>
                         </el-form-item>
                     </el-col>
                     <el-col :span="3">
                         <el-form-item>
-                            <el-button type="primary" plain @click="">搜索</el-button>
+                            <el-button type="primary" plain @click="queryData">搜索</el-button>
                         </el-form-item>
                     </el-col>
                 </el-row>
@@ -88,22 +84,16 @@
                 <el-table-column prop="code" label="渠道代码" :show-overflow-tooltip="true" width="160"></el-table-column>
                 <el-table-column prop="name" label="渠道名称" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="memo" label="备注" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="is_activate" label="状态"
+                <el-table-column prop="is_activate" label="是否激活"
                                  :formatter="getStatus"
                                  width="100"
                                  :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column
-                        label="操作"
-                        width="80">
+                <el-table-column label="操作" width="50">
                     <template slot-scope="scope" class="operationBtn">
                         <el-tooltip content="设置状态" placement="bottom" effect="light" :enterable="false" :open-delay="500">
                             <el-button size="mini"
                                        @click="setStatus(scope.row)"
                                        class="on-off"></el-button>
-                        </el-tooltip>
-                        <el-tooltip content="删除" placement="bottom" effect="light" :enterable="false" :open-delay="500">
-                            <el-button type="danger" icon="el-icon-delete" size="mini"
-                                       @click=""></el-button>
                         </el-tooltip>
                     </template>
                 </el-table-column>
@@ -116,7 +106,7 @@
                     layout="prev, pager, next, jumper"
                     :page-size="pagSize"
                     :total="pagTotal"
-                    @current-change=""
+                    @current-change="getCurrentPage"
                     :pager-count="5">
             </el-pagination>
         </div>
@@ -129,32 +119,41 @@
                 <el-row>
                     <el-col :span="12">
                         <el-form-item label="渠道代码" :label-width="formLabelWidth">
-                            <el-select v-model="dialogData.region" placeholder="请选择活动区域">
-                                <el-option label="区域一" value="shanghai"></el-option>
-                                <el-option label="区域二" value="beijing"></el-option>
+                            <el-select v-model="dialogData.code"
+                                       placeholder="请选择渠道代码"
+                                       clearable filterable
+                                       @change="setChiannelName">
+                                <el-option v-for="chiannel in channelList"
+                                           :key="chiannel.code"
+                                           :value="chiannel.code">
+                                </el-option>
                             </el-select>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="渠道名称" :label-width="formLabelWidth">
-                            <el-input v-model="dialogData.name" auto-complete="off"></el-input>
+                            <el-input v-model="dialogData.name" auto-complete="off" :disabled="true"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="是否银企直联" :label-width="formLabelWidth">
-                            <el-input v-model="dialogData.name" auto-complete="off"></el-input>
+                            <el-switch
+                                    v-model="dialogData.third_party_flag"
+                                    active-value="1"
+                                    inactive-value="0">
+                            </el-switch>
                         </el-form-item>
                     </el-col>
                     <el-col :span="24">
                         <el-form-item label="备注" :label-width="formLabelWidth">
-                            <el-input v-model="dialogData.name" auto-complete="off"></el-input>
+                            <el-input v-model="dialogData.memo" auto-complete="off"></el-input>
                         </el-form-item>
                     </el-col>
                 </el-row>
             </el-form>
             <span slot="footer" class="dialog-footer">
-                <el-button @click="dialogVisible = false" size="mini">取 消</el-button>
-                <el-button type="primary" @click="" size="mini">确 定</el-button>
+                <el-button type="warning" plain size="mini" @click="dialogVisible = false">取 消</el-button>
+                <el-button type="warning" size="mini" @click="subCurrent" >确 定</el-button>
             </span>
         </el-dialog>
     </div>
@@ -166,6 +165,12 @@
         created: function () {
             this.$emit("transmitTitle", "渠道设置");
             this.$emit("getTableData", this.routerMessage);
+
+            //获取下拉框数据
+            var channelList = JSON.parse(window.sessionStorage.getItem("channelList"));
+            if (channelList) {
+                this.channelList = channelList;
+            }
         },
         props: ["tableData"],
         data: function () {
@@ -173,7 +178,7 @@
                 routerMessage: { //本页数据获取参数
                     optype: "handlechannel_list",
                     params: {
-                        page_size: 10,
+                        page_size: 7,
                         page_num: 1
                     }
                 },
@@ -183,17 +188,18 @@
                 serachData: {},
                 dialogVisible:false,
                 dialogData: {},
-                formLabelWidth:"120px"
+                formLabelWidth:"120px",
+                channelList: []
             }
         },
         methods: {
             //状态展示格式转换
             getStatus:function(row, column, cellValue, index){
                 var constants = JSON.parse(window.sessionStorage.getItem("constants"));
-                if(cellValue == "0"){
-                    return "（无效）";
+                if(constants.YesOrNo){
+                    return constants.YesOrNo[cellValue];
                 }else{
-                    return "（有效）";
+                    return "";
                 }
             },
             //设置状态
@@ -228,7 +234,69 @@
             addChannel:function(){
                 this.dialogData = {};
                 this.dialogVisible = true;
-            }
+            },
+            //点击页数 获取当前页数据
+            getCurrentPage: function (currPage) {
+                this.routerMessage.params.page_num = currPage;
+                this.$emit("getTableData", this.routerMessage);
+            },
+            //根据条件查询数据
+            queryData: function () {
+                var serachData = this.serachData;
+                for (var key in serachData) {
+                    this.routerMessage.params[key] = serachData[key];
+                }
+                this.$emit("getTableData", this.routerMessage);
+            },
+
+            /*弹出框事件*/
+            //根据渠道代码设置渠道名称
+            setChiannelName:function (value) {
+                if(!value){
+                    this.dialogData.name = "";
+                }
+                var channelList = JSON.parse(window.sessionStorage.getItem("channelList"));
+                for(var i=0; i<channelList.length; i++){
+                    var item = channelList[i];
+                    if(value == item.code){
+                        this.dialogData.name = item.desc;
+                        return;
+                    }
+                }
+            },
+            //提交当前修改或新增
+            subCurrent: function () {
+                var params = this.dialogData;
+
+                this.$axios({
+                    url: "/cfm/adminProcess",
+                    method: "post",
+                    data: {
+                        optype: "handlechannel_add",
+                        params: params
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                    }else {
+                        var data = result.data.data;
+                        this.tableList.push(data);
+                        this.dialogVisible = false;
+                        this.$message({
+                            type: 'success',
+                            message: "新增成功",
+                            duration: 2000
+                        });
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                })
+
+            },
         },
         watch: {
             tableData: function (val, oldVal) {

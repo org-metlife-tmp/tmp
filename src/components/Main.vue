@@ -167,31 +167,18 @@
                 </div>
             </el-container>
         </el-container>
+        <GetSelectData></GetSelectData>
     </div>
 </template>
 
 <script>
     import Top from "./publicModule/Top.vue"
     import Left from "./publicModule/Left.vue"
+    import GetSelectData from "./publicModule/GetSelectData.vue"
 
     export default {
         name: "",
-        created: function(){
-            /*this.$axios({
-                url:"/cfm/commProcess",
-                method: "post",
-                data: {
-                    optype: "area_toplevel",
-                    params: {
-
-                    }
-                }
-            }).then((result) => {
-                console.log(result.data);
-            }).catch(function(error){
-                console.log(error);
-            })*/
-        },
+        created: function(){},
         data: function () {
             return {
                 headerShow: true,
@@ -221,7 +208,8 @@
         },
         components: {
             Top: Top,
-            Left: Left
+            Left: Left,
+            GetSelectData: GetSelectData
         }
     }
 </script>

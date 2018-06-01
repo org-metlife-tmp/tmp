@@ -35,10 +35,66 @@
             height: 8%;
             bottom: -6px;
         }
-        .split-form{
+
+        /*弹框样式调整*/
+        /*分割线*/
+        .split-form {
             width: 100%;
-            height: 20px;
-            border-top: 1px solid #eee;
+            height: 26px;
+            border-bottom: 1px solid #eee;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            padding-bottom: 1px;
+            text-align: right;
+        }
+
+        .small-title{
+            margin: 0;
+            position: absolute;
+            top: 18px;
+        }
+
+        /*中间树内容*/
+        .tree-content {
+            height: 200px;
+
+            .el-row {
+                height: 100%;
+
+                .el-col {
+                    height: 100%;
+                }
+
+                h4 {
+                    margin: 0;
+                    text-align: center;
+                    font-weight: 100;
+                }
+
+                /*机构*/
+                .org-tree, .biz-type-list, .insure-type-list {
+                    width: 90%;
+                    height: 88%;
+                    border: 1px solid #eee;
+                    margin-left: 20px;
+                    overflow: auto;
+                }
+
+                .biz-type-list, .insure-type-list {
+                    box-sizing: border-box;
+                    padding-left: 20px;
+                }
+            }
+        }
+    }
+</style>
+<style lang="less" type="text/less">
+    #routerSet {
+        .el-dialog__wrapper {
+            .el-dialog__body {
+                height: 380px;
+                overflow-y: scroll;
+            }
         }
     }
 </style>
@@ -55,25 +111,34 @@
                 <el-row>
                     <el-col :span="7">
                         <el-form-item label="来源系统">
-                            <el-select v-model="serachData.region" placeholder="活动区域">
-                                <el-option label="区域一" value="shanghai"></el-option>
-                                <el-option label="区域二" value="beijing"></el-option>
+                            <el-select v-model="serachData.source_code" placeholder="请选择来源系统" clearable>
+                                <el-option label="个险" value="GX"></el-option>
+                                <el-option label="团险" value="TX"></el-option>
+                                <el-option label="移动展业" value="YD"></el-option>
                             </el-select>
                         </el-form-item>
                     </el-col>
                     <el-col :span="7">
                         <el-form-item label="机构">
-                            <el-select v-model="serachData.region" placeholder="活动区域">
-                                <el-option label="区域一" value="shanghai"></el-option>
-                                <el-option label="区域二" value="beijing"></el-option>
+                            <el-select v-model="serachData.org_exp" placeholder="请选择机构"
+                                       filterable clearable>
+                                <el-option v-for="org in orgList"
+                                           :key="org.org_id"
+                                           :label="org.name"
+                                           :value="org.org_id">
+                                </el-option>
                             </el-select>
                         </el-form-item>
                     </el-col>
                     <el-col :span="7">
                         <el-form-item label="支付方式">
-                            <el-select v-model="serachData.region" placeholder="活动区域">
-                                <el-option label="区域一" value="shanghai"></el-option>
-                                <el-option label="区域二" value="beijing"></el-option>
+                            <el-select v-model="serachData.pay_recv_mode" placeholder="请选择支付方式"
+                                       clearable>
+                                <el-option v-for="(name,k) in PayOrRecvMode"
+                                           :key="k"
+                                           :label="name"
+                                           :value="k">
+                                </el-option>
                             </el-select>
                         </el-form-item>
                     </el-col>
@@ -81,31 +146,39 @@
                 <el-row>
                     <el-col :span="7">
                         <el-form-item label="支付子项">
-                            <el-select v-model="serachData.region" placeholder="活动区域">
-                                <el-option label="区域一" value="shanghai"></el-option>
-                                <el-option label="区域二" value="beijing"></el-option>
+                            <el-select v-model="serachData.pay_item" placeholder="请选择支付子项" clearable>
+                                <el-option label="微信" value="WX"></el-option>
+                                <el-option label="支付宝" value="ZFB"></el-option>
                             </el-select>
                         </el-form-item>
                     </el-col>
                     <el-col :span="7">
                         <el-form-item label="业务类型">
-                            <el-select v-model="serachData.region" placeholder="活动区域">
-                                <el-option label="区域一" value="shanghai"></el-option>
-                                <el-option label="区域二" value="beijing"></el-option>
+                            <el-select v-model="serachData.biz_tyep_exp" placeholder="请选择业务类型"
+                                       clearable>
+                                <el-option v-for="(name,k) in bizTypeList"
+                                           :key="k"
+                                           :label="name"
+                                           :value="k">
+                                </el-option>
                             </el-select>
                         </el-form-item>
                     </el-col>
                     <el-col :span="7">
                         <el-form-item label="险种大类">
-                            <el-select v-model="serachData.region" placeholder="活动区域">
-                                <el-option label="区域一" value="shanghai"></el-option>
-                                <el-option label="区域二" value="beijing"></el-option>
+                            <el-select v-model="serachData.insurance_type_exp" placeholder="请选择险种大类"
+                                       clearable>
+                                <el-option v-for="(name,k) in insureTypeList"
+                                           :key="k"
+                                           :label="name"
+                                           :value="k">
+                                </el-option>
                             </el-select>
                         </el-form-item>
                     </el-col>
                     <el-col :span="3">
                         <el-form-item>
-                            <el-button type="primary" plain @click="">搜索</el-button>
+                            <el-button type="primary" plain @click="queryData">搜索</el-button>
                         </el-form-item>
                     </el-col>
                 </el-row>
@@ -124,9 +197,9 @@
                                  :formatter="getPay"></el-table-column>
                 <el-table-column prop="pay_item" label="支付子项" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="memo" label="备注" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="is_activate" label="状态"
+                <el-table-column prop="is_activate" label="是否激活"
                                  :formatter="getStatus"
-                                 width="100"
+                                 width="80"
                                  :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column
                         label="操作"
@@ -164,79 +237,152 @@
                 <el-row>
                     <el-col :span="12">
                         <el-form-item label="来源系统" :label-width="formLabelWidth">
-                            <el-select v-model="dialogData.region" placeholder="请选择活动区域">
-                                <el-option label="区域一" value="shanghai"></el-option>
-                                <el-option label="区域二" value="beijing"></el-option>
+                            <el-select v-model="dialogData.source_code" placeholder="请选择来源系统" clearable>
+                                <el-option label="个险" value="GX"></el-option>
+                                <el-option label="团险" value="TX"></el-option>
+                                <el-option label="移动展业" value="YD"></el-option>
                             </el-select>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="支付方式" :label-width="formLabelWidth">
-                            <el-input v-model="dialogData.name" auto-complete="off"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="支付子项" :label-width="formLabelWidth">
-                            <el-select v-model="dialogData.region" placeholder="请选择活动区域">
-                                <el-option label="区域一" value="shanghai"></el-option>
-                                <el-option label="区域二" value="beijing"></el-option>
+                            <el-select v-model="dialogData.pay_recv_mode" placeholder="请选择支付方式"
+                                       clearable filterable>
+                                <el-option v-for="(name,k) in PayOrRecvMode"
+                                           :key="k"
+                                           :label="name"
+                                           :value="k">
+                                </el-option>
                             </el-select>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="状态" :label-width="formLabelWidth">
-                            <el-select v-model="dialogData.region" placeholder="请选择活动区域">
-                                <el-option label="区域一" value="shanghai"></el-option>
-                                <el-option label="区域二" value="beijing"></el-option>
+                        <el-form-item label="支付子项" :label-width="formLabelWidth">
+                            <el-select v-model="dialogData.pay_item" placeholder="请选择支付子项" clearable>
+                                <el-option label="微信" value="WX"></el-option>
+                                <el-option label="支付宝" value="ZFB"></el-option>
                             </el-select>
                         </el-form-item>
                     </el-col>
                     <el-col :span="24">
                         <el-form-item label="备注" :label-width="formLabelWidth">
-                            <el-input v-model="dialogData.name" auto-complete="off"></el-input>
+                            <el-input v-model="dialogData.memo" auto-complete="off"></el-input>
                         </el-form-item>
                     </el-col>
-                    <el-col :span="24">
-                        <div class="split-form"></div>
+                    <el-col :span="24" class="tree-content">
+                        <el-row>
+                            <el-col :span="10">
+                                <h4>机构</h4>
+                                <div class="org-tree">
+                                    <el-tree :data="orgTreeList"
+                                             node-key="org_id"
+                                             highlight-current
+                                             accordion show-checkbox
+                                             :expand-on-click-node="false"
+                                             ref="orgTree">
+                                        <span class="custom-tree-node" slot-scope="{ node, data }">
+                                            <span>{{ node.data.name }}</span>
+                                        </span>
+                                    </el-tree>
+                                </div>
+                            </el-col>
+                            <el-col :span="7">
+                                <h4>业务类型</h4>
+                                <div class="biz-type-list">
+                                    <el-checkbox :indeterminate="isIndeterminate" v-model="biztypeAll"
+                                                 @change="biztypeAllChange">全选
+                                    </el-checkbox>
+                                    <el-checkbox-group v-model="biztypeSelect" @change="biztypeChange">
+                                        <el-checkbox v-for="(name,k) in bizTypeList"
+                                                     :label="k"
+                                                     :key="k"
+                                                     style="display:block;margin-left:0">{{name}}
+                                        </el-checkbox>
+                                    </el-checkbox-group>
+                                </div>
+                            </el-col>
+                            <el-col :span="7">
+                                <h4>险种大类</h4>
+                                <div class="insure-type-list">
+                                    <el-checkbox :indeterminate="insureIndeter" v-model="insureAll"
+                                                 @change="insureAllChange">全选
+                                    </el-checkbox>
+                                    <el-checkbox-group v-model="insureSelect" @change="insureChange">
+                                        <el-checkbox v-for="(name,k) in insureTypeList"
+                                                     :label="k"
+                                                     :key="k"
+                                                     style="display:block;margin-left:0">{{name}}
+                                        </el-checkbox>
+                                    </el-checkbox-group>
+                                </div>
+                            </el-col>
+                        </el-row>
                     </el-col>
-
-
+                    <el-col :span="24" style="position:relative">
+                        <h4 class="small-title">渠道账户</h4>
+                    </el-col>
+                </el-row>
+                <el-row v-for="item in items"
+                        :key="item.$id">
+                    <el-col :span="24">
+                        <div class="split-form">
+                            <el-button-group>
+                                <el-button size="mini" @click="removeAccount(item)"
+                                           v-show="showDel">删除</el-button>
+                                <el-button size="mini" style="margin-left:0"
+                                           @click="addAccount">新增</el-button>
+                            </el-button-group>
+                        </div>
+                    </el-col>
                     <el-col :span="12">
                         <el-form-item label="支付渠道" :label-width="formLabelWidth">
-                            <el-select v-model="dialogData.region" placeholder="请选择活动区域">
-                                <el-option label="区域一" value="shanghai"></el-option>
-                                <el-option label="区域二" value="beijing"></el-option>
+                            <el-select v-model="item.channel_code" placeholder="请选择支付渠道"
+                                       clearable>
+                                <el-option v-for="channel in channelList"
+                                           :key="channel.code"
+                                           :label="channel.desc"
+                                           :value="channel.code">
+                                </el-option>
                             </el-select>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
                         <el-form-item :label-width="formLabelWidth">
                             <div slot="label" style="line-height:16px">支付渠道<br>原子接口</div>
-                            <el-select v-model="dialogData.region" placeholder="请选择活动区域">
-                                <el-option label="区域一" value="shanghai"></el-option>
-                                <el-option label="区域二" value="beijing"></el-option>
+                            <el-select v-model="item.channel_interface_code" placeholder="请选择活动区域"
+                                       clearable>
+                                <el-option v-for="(name,k) in salesChannelList"
+                                           :key="k"
+                                           :label="name"
+                                           :value="k">
+                                </el-option>
                             </el-select>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
                         <el-form-item :label-width="formLabelWidth">
                             <div slot="label" style="line-height:16px">结算账户<br>/商户号</div>
-                            <el-select v-model="dialogData.region" placeholder="请选择活动区域">
-                                <el-option label="区域一" value="shanghai"></el-option>
-                                <el-option label="区域二" value="beijing"></el-option>
+                            <el-select v-model="item.settle_or_merchant_acc_id" placeholder="请选择账户"
+                                       clearable filterable
+                                       @visible-change="getAccountList(item.channel_code)">
+                                <el-option v-for="closeAccount in closeAccountList"
+                                           :key="closeAccount.id"
+                                           :label="closeAccount.acc_no"
+                                           :value="closeAccount.id">
+                                </el-option>
                             </el-select>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="优先级" :label-width="formLabelWidth">
-                            <el-input v-model="dialogData.name" auto-complete="off"></el-input>
+                            <el-input v-model="item.level" auto-complete="off"></el-input>
                         </el-form-item>
                     </el-col>
                 </el-row>
             </el-form>
             <span slot="footer" class="dialog-footer">
-                <el-button @click="dialogVisible = false" size="mini">取 消</el-button>
-                <el-button type="primary" @click="" size="mini">确 定</el-button>
+                <el-button type="warning" size="mini" plain @click="dialogVisible = false">取 消</el-button>
+                <el-button type="warning" size="mini" @click="subCurrent">确 定</el-button>
             </span>
         </el-dialog>
     </div>
@@ -248,6 +394,58 @@
         created: function () {
             this.$emit("transmitTitle", "路由设置");
             this.$emit("getTableData", this.routerMessage);
+
+            /*获取下拉框数据*/
+            //机构
+            var orgList = JSON.parse(window.sessionStorage.getItem("orgList"));
+            if (orgList) {
+                this.orgList = orgList;
+            }
+            //支付方式
+            var PayOrRecvMode = JSON.parse(window.sessionStorage.getItem("constants")).PayOrRecvMode;
+            if (PayOrRecvMode) {
+                this.PayOrRecvMode = PayOrRecvMode;
+            }
+            //常量里获取下拉框数据
+            var catgList = JSON.parse(window.sessionStorage.getItem("catgList"));
+            var bizType,insureType,salesChannel;
+            for (var i = 0; i < catgList.length; i++) {
+                if (catgList[i].code == "biz_type") {
+                    bizType = catgList[i];
+                    continue;
+                }
+                if (catgList[i].code == "insure_type") {
+                    insureType = catgList[i];
+                    continue;
+                }
+                if (catgList[i].code == "sales_channel") {
+                    salesChannel = catgList[i];
+                    continue;
+                }
+            }
+            //业务类型
+            if (bizType) {
+                this.bizTypeList = bizType.items;
+            }
+            //险种大类
+            if (insureType) {
+                this.insureTypeList = insureType.items;
+            }
+            //支付渠道原子接口
+            if(salesChannel){
+                this.salesChannelList = salesChannel.items;
+            }
+
+            //机构树
+            var orgTreeList = JSON.parse(window.sessionStorage.getItem("orgTreeList"));
+            if (orgTreeList) {
+                this.orgTreeList.push(orgTreeList);
+            }
+            //支付渠道
+            var channelList = JSON.parse(window.sessionStorage.getItem("channelList"));
+            if (channelList) {
+                this.channelList = channelList;
+            }
         },
         props: ["tableData"],
         data: function () {
@@ -259,59 +457,155 @@
                         page_num: 1
                     }
                 },
-                pagSize: 1,
+                pagSize: 1, //分页
                 pagTotal: 1,
-                serachData: {
-
-                },
-                tableList:[],
-                dialogVisible:false,
+                serachData: {}, //搜索区
+                tableList: [], //表格
+                currentRouter: "",
+                PayOrRecvMode: {}, //展示数据格式
+                orgList: [], //下拉框数据
+                bizTypeList: {},
+                insureTypeList: {},
+                channelList: [],
+                salesChannelList: {},
+                closeAccountList: [],
+                dialogVisible: false, //弹框
                 dialogTitle: "新增",
-                dialogData: {},
+                dialogData: {
+                    source_code: "",
+                    pay_recv_mode: "",
+                    pay_item: "",
+                    memo: ""
+                },
+                items: [
+                    {
+                        channel_code: "",
+                        channel_interface_code: "",
+                        settle_or_merchant_acc_id: "",
+                        level: "",
+                        $id: 1
+                    }
+                ],
                 formLabelWidth: "120px",
-                currentRouter: ""
+                orgTreeList: [], //弹框-机构
+                biztypeSelect: [], //弹框-业务类型
+                isIndeterminate: false,
+                biztypeAll: false,
+                insureIndeter: false, //弹框-险种大类
+                insureAll: false,
+                insureSelect: [],
+                isCloseAccount: false //结算账户的展开状态
             }
         },
         methods: {
             //展示格式转换-支付方式
-            getPay: function(row, column, cellValue, index){
+            getPay: function (row, column, cellValue, index) {
                 var constants = JSON.parse(window.sessionStorage.getItem("constants"));
                 if (constants.PayOrRecvMode) {
                     return constants.PayOrRecvMode[cellValue];
                 }
             },
             //展示格式转换-状态
-            getStatus: function(row, column, cellValue, index){
+            getStatus: function (row, column, cellValue, index) {
                 var constants = JSON.parse(window.sessionStorage.getItem("constants"));
-                if(cellValue == "0"){
-                    return "（无效）";
-                }else{
-                    return "（有效）";
+                if (constants.YesOrNo) {
+                    return constants.YesOrNo[cellValue];
+                } else {
+                    return "";
                 }
             },
             //换页后获取数据
-            getPageData:function (currPage) {
+            getPageData: function (currPage) {
                 this.routerMessage.params.page_num = currPage;
                 this.$emit("getTableData", this.routerMessage);
             },
             //新增路由
-            addRouter:function () {
+            addRouter: function () {
                 this.dialogTitle = "新增";
-                this.dialogData = {};
+                this.clearDialogData();
                 this.dialogVisible = true;
             },
             //编辑当前路由
-            editRouter:function (row) {
+            editRouter: function (row) {
                 this.dialogTitle = "编辑";
                 this.dialogVisible = true;
                 this.currentRouter = row;
-                this.dialogData = {};
-                for(var k in row){
-                    this.dialogData[k] = row[k];
+
+                var dialogData = this.dialogData;
+                row.pay_recv_mode += "";
+                for(var k in dialogData){
+                    dialogData[k] = row[k];
+                }
+                dialogData.id = row.id;
+
+                var orgExp = row.org_exp;
+                if(orgExp){
+                    orgExp = orgExp.split("@");
+                    orgExp.pop();
+                    orgExp.shift();
+                    setTimeout(() => {
+                        this.$refs.orgTree.setCheckedKeys(orgExp);
+                    },100)
+                }
+                var bizTypeExp = row.biz_type_exp;
+                if(bizTypeExp){
+                    bizTypeExp = bizTypeExp.split("@");
+                    bizTypeExp.pop();
+                    bizTypeExp.shift();
+                    this.biztypeSelect = bizTypeExp;
+                }
+                var insuranceTypeExp = row.insurance_type_exp;
+                if(insuranceTypeExp){
+                    insuranceTypeExp = insuranceTypeExp.split("@");
+                    insuranceTypeExp.pop();
+                    insuranceTypeExp.shift();
+                    this.insureSelect = insuranceTypeExp;
+                }
+                if(!row.items){
+                    this.$axios({
+                        url:"/cfm/adminProcess",
+                        method: "post",
+                        data: {
+                            optype: "handleroute_detail",
+                            params: {
+                                id:row.id
+                            }
+                        }
+                    }).then((result) => {
+                        if(result.data.error_msg){
+                            this.$message({
+                                type: "error",
+                                message: result.data.error_msg,
+                                duration: 2000
+                            })
+                        }else{
+                            var itemList = result.data.data.items;
+                            itemList.forEach((item) => {
+                                for(var key in item){
+                                    if(key == "id"){
+                                        item.$id = item[key];
+                                    }
+                                }
+                            })
+                            this.items = itemList;
+                        }
+                    }).catch(function(error){
+                        console.log(error);
+                    })
+                }else{
+                    var itemList = row.items;
+                    itemList.forEach((item) => {
+                        for(var key in item){
+                            if(key == "id"){
+                                item.$id = item[key];
+                            }
+                        }
+                    })
+                    this.items = itemList;
                 }
             },
             //删除当前路由
-            removeRouter:function (row, index, rows) {
+            removeRouter: function (row, index, rows) {
                 this.$confirm('确认删除当前公司吗?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
@@ -347,6 +641,194 @@
                     })
                 }).catch(() => {
                 });
+            },
+            //根据条件查询数据
+            queryData: function () {
+                var serachData = this.serachData;
+                for (var key in serachData) {
+                    this.routerMessage.params[key] = serachData[key];
+                }
+                this.$emit("getTableData", this.routerMessage);
+            },
+            /*弹出框相关*/
+            //业务类型选择
+            biztypeAllChange: function (value) {
+                var bizTypeList = Object.keys(this.bizTypeList);
+                this.biztypeSelect = value ? bizTypeList : [];
+                this.isIndeterminate = false;
+            },
+            biztypeChange: function (value) {
+                var allLength = Object.keys(this.bizTypeList).length;
+                let checkedCount = value.length;
+                this.biztypeAll = checkedCount === allLength;
+                this.isIndeterminate = checkedCount > 0 && checkedCount < allLength;
+            },
+            //险种大类选择
+            insureAllChange: function (value) {
+                var insureTypeList = Object.keys(this.insureTypeList);
+                this.insureSelect = value ? insureTypeList : [];
+                this.insureIndeter = false;
+            },
+            insureChange: function (value) {
+                var allLength = Object.keys(this.insureTypeList).length;
+                let checkedCount = value.length;
+                this.insureAll = checkedCount === allLength;
+                this.insureIndeter = checkedCount > 0 && checkedCount < allLength;
+            },
+            //新增渠道账户
+            addAccount:function () {
+                var item = {
+                    channel_code: "",
+                    channel_interface_code: "",
+                    settle_or_merchant_acc_id: "",
+                    level: "",
+                    $id: Date.now()
+                };
+                this.items.push(item);
+            },
+            //删除渠道账户
+            removeAccount:function (item) {
+                var index = this.items.indexOf(item);
+                if(index != -1){
+                    this.items.splice(index,1);
+                }
+            },
+            //获取结算账户数据
+            getAccountList:function(code){
+                this.isCloseAccount = !this.isCloseAccount;
+                if(this.isCloseAccount){
+                    this.closeAccountList = [];
+                }
+                if(this.isCloseAccount && code){
+                    this.$axios({
+                        url: "/cfm/adminProcess",
+                        method: "post",
+                        data: {
+                            optype: "handleroute_setormeracc",
+                            params: {
+                                code: code
+                            }
+                        }
+                    }).then((result) => {
+                        if (result.data.error_msg) {
+                        } else {
+                            this.closeAccountList = result.data.data;
+                        }
+                    }).catch(function (error) {
+                        console.log(error);
+                    })
+                }
+            },
+            //提交数据
+            subCurrent:function(){
+                var params = this.transitionData();
+                var optype = "";
+                if(this.dialogTitle == "新增"){
+                    optype = "handleroute_add";
+                }else{
+                    optype = "handleroute_chg";
+                }
+
+                this.$axios({
+                    url:"/cfm/adminProcess",
+                    method: "post",
+                    data: {
+                        optype: optype,
+                        params: params
+                    }
+                }).then((result) => {
+                    if(result.data.error_msg){
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                    }else{
+                        console.log(result.data);
+                        if(this.dialogTitle == "新增"){
+                            this.tableList.push(result.data.data);
+                            var message = "添加成功";
+                        }else{
+                            var data = result.data.data;
+                            for(var k in data){
+                                this.currentRouter[k] = data[k];
+                            }
+                            var message = "修改成功";
+                        }
+
+                        this.dialogVisible = false;
+                        this.$message({
+                            type: 'success',
+                            message: message,
+                            duration: 2000
+                        });
+                    }
+                }).catch(function(error){
+                    console.log(error);
+                })
+            },
+            //提交前转换数据格式
+            transitionData:function(){
+                var params = {};
+                var dialogData = this.dialogData;
+                for(var key in dialogData){
+                    params[key] = dialogData[key];
+                }
+
+                var org_exp = this.$refs.orgTree.getCheckedKeys();
+                if(org_exp.length){
+                    org_exp = org_exp.join("@");
+                    org_exp = "@" + org_exp + "@";
+                    params.org_exp = org_exp;
+                }
+                var biz_type_exp = this.biztypeSelect;
+                if(biz_type_exp.length){
+                    biz_type_exp = biz_type_exp.join("@");
+                    biz_type_exp = "@" + biz_type_exp + "@";
+                    params.biz_type_exp = biz_type_exp;
+                }
+                var insurance_type_exp = this.insureSelect;
+                if(insurance_type_exp.length){
+                    insurance_type_exp = insurance_type_exp.join("@");
+                    insurance_type_exp = "@" + insurance_type_exp + "@";
+                    params.insurance_type_exp = insurance_type_exp;
+                }
+                // console.log(this.dialogData);
+                var items = [];
+                this.items.forEach(function(item){
+                    var current = {};
+                    for(var k in item){
+                        if(k != "$id"){
+                            current[k] = item[k];
+                        }
+                    }
+                    items.push(current);
+                })
+                params.items = items;
+                return params;
+            },
+            //清空弹框数据
+            clearDialogData:function(){
+                var dialogData = this.dialogData;
+                for(var k in dialogData){
+                    dialogData[k] = "";
+                }
+                if(this.$refs.orgTree){
+                    this.$refs.orgTree.setCheckedKeys([]);
+                }
+                this.biztypeSelect = [];
+                this.isIndeterminate = false;
+                this.insureSelect = [];
+                this.insureIndeter = false;
+                this.items.splice(1,this.items.length-1);
+                var itemOne = this.items[0];
+                for(var key in itemOne){
+                    if(key != "$id"){
+                        itemOne[key] = "";
+                    }else{
+                        itemOne[key] = "1"
+                    }
+                }
             }
         },
         watch: {
@@ -354,6 +836,15 @@
                 this.pagSize = val.page_size;
                 this.pagTotal = val.total_line;
                 this.tableList = val.data;
+            }
+        },
+        computed: {
+            showDel:function(){
+                if(this.items.length > 1){
+                    return true;
+                }else{
+                    return false;
+                }
             }
         }
     }

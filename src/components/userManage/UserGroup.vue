@@ -25,7 +25,7 @@
     <div id="userGroup">
         <!-- 顶部按钮-->
         <div class="button-list-right">
-            <el-button type="warning" size="mini" @click="">新增</el-button>
+            <el-button type="warning" size="mini" @click="addUserGroup">新增</el-button>
             <el-button type="warning" size="mini" @click="">下载</el-button>
         </div>
         <!--数据展示区-->
@@ -41,11 +41,11 @@
                     <template slot-scope="scope" class="operationBtn">
                         <el-tooltip content="编辑" placement="bottom" effect="light" :enterable="false" :open-delay="500">
                             <el-button type="primary" icon="el-icon-edit" size="mini"
-                                       @click=""></el-button>
+                                       @click="editUserGroup(scope.row)"></el-button>
                         </el-tooltip>
                         <el-tooltip content="删除" placement="bottom" effect="light" :enterable="false" :open-delay="500">
                             <el-button type="danger" icon="el-icon-delete" size="mini"
-                                       @click=""></el-button>
+                                       @click="removeGroup(scope.row,scope.$index,tableList)"></el-button>
                         </el-tooltip>
                     </template>
                 </el-table-column>
@@ -62,6 +62,31 @@
                     :pager-count="5">
             </el-pagination>
         </div>
+        <!--添加/编辑 弹出框-->
+        <el-dialog :visible.sync="dialogVisible"
+                   width="800px" top="76px"
+                   :close-on-click-modal="false">
+            <h1 slot="title" v-text="dialogTitle" class="dialog-title"></h1>
+            <el-form :model="dialogData" size="small">
+                <el-row>
+                    <el-col :span="12">
+                        <el-form-item label="用户组名" :label-width="formLabelWidth">
+                            <el-input v-model="dialogData.name" auto-complete="off"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="用户组描述" :label-width="formLabelWidth">
+                            <el-input v-model="dialogData.memo" auto-complete="off"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="24">功能权限分配</el-col>
+                </el-row>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="dialogVisible = false" size="mini">取 消</el-button>
+                <el-button type="primary" @click="" size="mini">确 定</el-button>
+            </span>
+        </el-dialog>
     </div>
 </template>
 
@@ -84,10 +109,70 @@
                 },
                 pagSize: 1, //分页数据
                 pagTotal: 1,
-                tableList:[]
+                tableList:[],
+                dialogVisible: false,
+                dialogTitle: "新增",
+                dialogData: {},
+                formLabelWidth: "120px",
+                currentGroup: ""
             }
         },
-        methods: {},
+        methods: {
+            //新增用户组
+            addUserGroup:function () {
+                this.dialogTitle = "新增";
+                this.dialogData = {};
+                this.dialogVisible = true;
+            },
+            //编辑当前用户组
+            editUserGroup: function (row) {
+                this.dialogTitle = "编辑";
+                this.dialogData = {};
+                this.dialogVisible = true;
+                this.currentGroup = row;
+                for(var k in row){
+                    this.dialogData[k] = row[k];
+                }
+            },
+            //删除当前用户组
+            removeGroup:function (row, index, rows) {
+                this.$confirm('确认删除当前用户组吗?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.$axios({
+                        url: "/cfm/adminProcess",
+                        method: "post",
+                        data: {
+                            optype: "usrgroup_del",
+                            params: {
+                                group_id: row.group_id
+                            }
+                        }
+                    }).then((result) => {
+                        if (result.data.error_msg) {
+                            this.$message({
+                                type: "error",
+                                message: result.data.error_msg,
+                                duration: 2000
+                            })
+                            return;
+                        }
+                        rows.splice(index, 1);
+                        this.pagTotal--;
+                        this.$message({
+                            type: "success",
+                            message: "删除成功",
+                            duration: 2000
+                        })
+                    }).catch(function (error) {
+                        console.log(error);
+                    })
+                }).catch(() => {
+                });
+            }
+        },
         watch: {
             tableData: function (val, oldVal) {
                 this.pagSize = val.page_size;
