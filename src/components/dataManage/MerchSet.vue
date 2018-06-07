@@ -30,6 +30,16 @@
             height: 8%;
             bottom: -6px;
         }
+        /*按钮-设置状态*/
+        .on-off {
+            width: 22px;
+            height: 22px;
+            background-image: url(../../assets/icon_common.png);
+            background-position: -273px -62px;
+            border: none;
+            padding: 0;
+            vertical-align: middle;
+        }
     }
 </style>
 
@@ -45,28 +55,35 @@
                 <el-row>
                     <el-col :span="7">
                         <el-form-item label="机构">
-                            <el-select v-model="serachData.region" placeholder="活动区域">
-                                <el-option label="区域一" value="shanghai"></el-option>
-                                <el-option label="区域二" value="beijing"></el-option>
+                            <el-select v-model="serachData.org_id" placeholder="请选择机构" clearable>
+                                <el-option v-for="org in orgList"
+                                           :key="org.org_id"
+                                           :label="org.name"
+                                           :value="org.org_id">
+                                </el-option>
                             </el-select>
                         </el-form-item>
                     </el-col>
                     <el-col :span="7">
                         <el-form-item label="支付渠道">
-                            <el-select v-model="serachData.region" placeholder="活动区域">
-                                <el-option label="区域一" value="shanghai"></el-option>
-                                <el-option label="区域二" value="beijing"></el-option>
+                            <el-select v-model="serachData.channel_code" placeholder="请选择支付渠道"
+                                       clearable>
+                                <el-option v-for="channel in channelList"
+                                           :key="channel.code"
+                                           :label="channel.desc"
+                                           :value="channel.code">
+                                </el-option>
                             </el-select>
                         </el-form-item>
                     </el-col>
                     <el-col :span="7">
                         <el-form-item label="商户号">
-                            <el-input v-model="serachData.user" placeholder="审批人"></el-input>
+                            <el-input v-model="serachData.query_key" placeholder="请输入商户号" clearable></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="3">
                         <el-form-item>
-                            <el-button type="primary" plain @click="">搜索</el-button>
+                            <el-button type="primary" plain @click="queryData">搜索</el-button>
                         </el-form-item>
                     </el-col>
                 </el-row>
@@ -84,11 +101,16 @@
                 <el-table-column prop="channel_name" label="支付渠道"></el-table-column>
                 <el-table-column prop="org_name" label="所属机构"></el-table-column>
                 <el-table-column prop="pay_recv_attr" :formatter="setAccPay" label="账户属性"></el-table-column>
-                <el-table-column prop="curr_name" label="币种"></el-table-column>
+                <el-table-column prop="status" :formatter="setShowStatus" label="状态" width="80"></el-table-column>
                 <el-table-column
                         label="操作"
-                        width="70">
+                        width="110">
                     <template slot-scope="scope" class="operationBtn">
+                        <el-tooltip content="设置状态" placement="bottom" effect="light" :enterable="false" :open-delay="500">
+                            <el-button size="mini"
+                                       @click="setStatus(scope.row)"
+                                       class="on-off"></el-button>
+                        </el-tooltip>
                         <el-tooltip content="编辑" placement="bottom" effect="light" :enterable="false" :open-delay="500">
                             <el-button type="primary" icon="el-icon-edit" size="mini"
                                        @click="editMerch(scope.row)"></el-button>
@@ -108,7 +130,7 @@
                     layout="prev, pager, next, jumper"
                     :page-size="pagSize"
                     :total="pagTotal"
-                    @current-change=""
+                    @current-change="getCurrentPage"
                     :pager-count="5">
             </el-pagination>
         </div>
@@ -118,96 +140,98 @@
                    :close-on-click-modal="false"
                    top="56px">
             <h1 slot="title" v-text="dialogTitle" class="dialog-title"></h1>
-            <el-form :model="diaLogData" :label-width="formLabelWidth" size="small">
+            <el-form :model="dialogData" :label-width="formLabelWidth" size="small">
                 <el-row>
                     <el-col :span="12">
                         <el-form-item label="商户号">
-                            <el-input v-model="diaLogData.name"></el-input>
+                            <el-input v-model="dialogData.acc_no"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="商户名称">
-                            <el-input v-model="diaLogData.name"></el-input>
+                            <el-input v-model="dialogData.acc_name"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="支付渠道">
-                            <el-select v-model="diaLogData.city" placeholder="请选择市">
-                                <el-option label="朝阳区" value="朝阳区"></el-option>
-                                <el-option label="海淀区" value="海淀区"></el-option>
+                            <el-select v-model="dialogData.channel_code" placeholder="请选择支付渠道"
+                                       clearable>
+                                <el-option v-for="channel in channelList"
+                                           :key="channel.code"
+                                           :label="channel.desc"
+                                           :value="channel.code">
+                                </el-option>
                             </el-select>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="所属机构">
-                            <el-select v-model="diaLogData.city" placeholder="请选择市">
-                                <el-option label="朝阳区" value="朝阳区"></el-option>
-                                <el-option label="海淀区" value="海淀区"></el-option>
+                            <el-select v-model="dialogData.org_id" placeholder="请选择机构" clearable>
+                                <el-option v-for="org in orgList"
+                                           :key="org.org_id"
+                                           :label="org.name"
+                                           :value="org.org_id">
+                                </el-option>
                             </el-select>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="币种">
-                            <el-select v-model="diaLogData.city" placeholder="请选择市">
-                                <el-option label="朝阳区" value="朝阳区"></el-option>
-                                <el-option label="海淀区" value="海淀区"></el-option>
+                            <el-select v-model="dialogData.curr_id" placeholder="请选择币种"
+                                       filterable clearable>
+                                <el-option v-for="currency in currencyList"
+                                           :key="currency.id"
+                                           :label="currency.name"
+                                           :value="currency.id">
+                                </el-option>
                             </el-select>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="收付属性">
-                            <el-select v-model="diaLogData.city" placeholder="请选择市">
-                                <el-option label="朝阳区" value="朝阳区"></el-option>
-                                <el-option label="海淀区" value="海淀区"></el-option>
+                            <el-select v-model="dialogData.pay_recv_attr" placeholder="请选择收付属性"
+                                       filterable clearable>
+                                <el-option v-for="(name,k) in accOrRecvList"
+                                           :key="k"
+                                           :label="name"
+                                           :value="k">
+                                </el-option>
                             </el-select>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="开户日期">
-                            <el-date-picker
-                                    v-model="diaLogData.data"
-                                    type="date"
-                                    placeholder="选择日期"
-                                    style="width:100%">
-                            </el-date-picker>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="状态">
-                            <el-select v-model="diaLogData.city" placeholder="请选择市">
-                                <el-option label="朝阳区" value="朝阳区"></el-option>
-                                <el-option label="海淀区" value="海淀区"></el-option>
-                            </el-select>
+                            <el-date-picker type="date" placeholder="选择日期" v-model="dialogData.open_date"
+                                            style="width: 100%;"
+                                            format="yyyy 年 MM 月 dd 日"
+                                            value-format="yyyy-MM-dd"></el-date-picker>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="明细段">
-                            <el-select v-model="diaLogData.city" placeholder="请选择市">
-                                <el-option label="朝阳区" value="朝阳区"></el-option>
-                                <el-option label="海淀区" value="海淀区"></el-option>
-                            </el-select>
+                            <el-input v-model="dialogData.detail_seg"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="机构段">
-                            <el-input v-model="diaLogData.name"></el-input>
+                            <el-input v-model="dialogData.org_seg"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="结算账号">
-                            <el-input v-model="diaLogData.name"></el-input>
+                            <el-input v-model="dialogData.settle_acc_id"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="24">
                         <el-form-item label="备注">
-                            <el-input v-model="diaLogData.name" width="100%"></el-input>
+                            <el-input v-model="dialogData.memo" width="100%"></el-input>
                         </el-form-item>
                     </el-col>
                 </el-row>
             </el-form>
             <span slot="footer" class="dialog-footer">
-                <el-button @click="dialogVisible = false" size="small">取 消</el-button>
-                <el-button type="primary" @click="" size="small">确 定</el-button>
+                <el-button type="warning" size="mini" plain @click="dialogVisible = false">取 消</el-button>
+                <el-button type="warning" size="mini" @click="subCurrent">确 定</el-button>
             </span>
         </el-dialog>
     </div>
@@ -219,6 +243,28 @@
         created: function () {
             this.$emit("transmitTitle", "商户号设置");
             this.$emit("getTableData", this.routerMessage);
+
+            /*获取下拉框数据*/
+            //机构
+            var orgList = JSON.parse(window.sessionStorage.getItem("orgList"));
+            if (orgList) {
+                this.orgList = orgList;
+            }
+            //支付渠道
+            var channelList = JSON.parse(window.sessionStorage.getItem("channelList"));
+            if (channelList) {
+                this.channelList = channelList;
+            }
+            //币种
+            var currencyList = JSON.parse(window.sessionStorage.getItem("currencyList"));
+            if (currencyList) {
+                this.currencyList = currencyList;
+            }
+            //收付属性
+            var AccPayOrRecvAttr = JSON.parse(window.sessionStorage.getItem("constants")).AccPayOrRecvAttr;
+            if (AccPayOrRecvAttr) {
+                this.accOrRecvList = AccPayOrRecvAttr;
+            }
         },
         props: ["tableData"],
         data: function () {
@@ -226,7 +272,7 @@
                 routerMessage: {
                     optype: "merchacc_list",
                     params: {
-                        page_size: 10,
+                        page_size: 8,
                         page_num: 1
                     }
                 },
@@ -236,9 +282,19 @@
                 tableList: [], //表格数据
                 dialogVisible: false, //弹框数据
                 dialogTitle: "新增",
-                diaLogData: {},
+                dialogData: {
+                    channel_code: "",
+                    org_id: "",
+                    curr_id: "",
+                    pay_recv_attr: "",
+                    open_date: ""
+                },
                 formLabelWidth: '120px', //弹框表单的标签宽度
-                currentRouter: ""
+                currentRouter: "",
+                orgList: [], //下拉框数据
+                channelList: [],
+                currencyList: [],
+                accOrRecvList: {}
             }
         },
         methods: {
@@ -249,19 +305,33 @@
                     return constants.AccPayOrRecvAttr[cellValue];
                 }
             },
+            //展示格式转换-状态
+            setShowStatus:function(row, column, cellValue, index){
+                var constants = JSON.parse(window.sessionStorage.getItem("constants"));
+                if (constants.SetAccAndMerchStatus) {
+                    return constants.SetAccAndMerchStatus[cellValue];
+                }
+            },
             //添加商户号
             addMerch: function () {
                 this.dialogTitle = "新增";
                 this.dialogVisible = true;
-                this.diaLogData = {};
+                for(var k in this.dialogData){
+                    this.dialogData[k] = "";
+                }
             },
             //编辑商户号
             editMerch:function (row) {
                 this.dialogTitle = "编辑";
                 this.dialogVisible = true;
-                this.dialogData = {};
+                for(var k in this.dialogData){
+                    this.dialogData[k] = "";
+                }
                 this.currentRouter = row;
                 for(var k in row){
+                    if(k == "pay_recv_attr"){
+                        row[k] = row[k] + "";
+                    }
                     this.dialogData[k] = row[k];
                 }
             },
@@ -302,7 +372,98 @@
                     })
                 }).catch(() => {
                 });
-            }
+            },
+            //点击页数 获取当前页数据
+            getCurrentPage: function (currPage) {
+                this.routerMessage.params.page_num = currPage;
+                this.$emit("getTableData", this.routerMessage);
+            },
+            //根据条件查询数据
+            queryData: function () {
+                var serachData = this.serachData;
+                for (var key in serachData) {
+                    this.routerMessage.params[key] = serachData[key];
+                }
+                this.$emit("getTableData", this.routerMessage);
+            },
+            //提交当前修改或新增
+            subCurrent: function () {
+                var params = this.dialogData;
+                var optype = "";
+                if(this.dialogTitle == "新增"){
+                    optype = "merchacc_add";
+                }else {
+                    optype = "merchacc_chg";
+                }
+
+                this.$axios({
+                    url: "/cfm/adminProcess",
+                    method: "post",
+                    data: {
+                        optype: optype,
+                        params: params
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                    }else {
+                        var data = result.data.data;
+                        if(this.dialogTitle == "新增"){
+                            if(this.tableList.length < this.routerMessage.params.page_size){
+                                this.tableList.push(data);
+                            }
+                            this.pagTotal++;
+                            var message = "新增成功"
+                        }else{
+                            for(var k in data){
+                                this.currentRouter[k] = data[k];
+                            }
+                            var message = "修改成功"
+                        }
+                        this.dialogVisible = false;
+                        this.$message({
+                            type: 'success',
+                            message: message,
+                            duration: 2000
+                        });
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                })
+
+            },
+            //设置状态
+            setStatus:function (row) {
+                this.$axios({
+                    url:"/cfm/adminProcess",
+                    method: "post",
+                    data: {
+                        optype: "merchacc_setstatus",
+                        params: row
+                    }
+                }).then((result) => {
+                    if(result.data.error_msg){
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                    }else{
+                        row.status = result.data.data.status;
+                        this.$message({
+                            type: 'success',
+                            message: '修改成功!',
+                            duration: 2000
+                        });
+                    }
+                }).catch(function(error){
+                    console.log(error);
+                })
+            },
         },
         watch: {
             tableData: function (val, oldVal) {

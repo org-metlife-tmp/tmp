@@ -48,7 +48,7 @@
             text-align: right;
         }
 
-        .small-title{
+        .small-title {
             margin: 0;
             position: absolute;
             top: 18px;
@@ -92,7 +92,7 @@
     #routerSet {
         .el-dialog__wrapper {
             .el-dialog__body {
-                height: 380px;
+                height: 400px;
                 overflow-y: scroll;
             }
         }
@@ -279,6 +279,7 @@
                                              highlight-current
                                              accordion show-checkbox
                                              :expand-on-click-node="false"
+                                             :default-expanded-keys="expandData"
                                              ref="orgTree">
                                         <span class="custom-tree-node" slot-scope="{ node, data }">
                                             <span>{{ node.data.name }}</span>
@@ -328,9 +329,11 @@
                         <div class="split-form">
                             <el-button-group>
                                 <el-button size="mini" @click="removeAccount(item)"
-                                           v-show="showDel">删除</el-button>
+                                           v-show="showDel">删除
+                                </el-button>
                                 <el-button size="mini" style="margin-left:0"
-                                           @click="addAccount">新增</el-button>
+                                           @click="addAccount">新增
+                                </el-button>
                             </el-button-group>
                         </div>
                     </el-col>
@@ -408,7 +411,7 @@
             }
             //常量里获取下拉框数据
             var catgList = JSON.parse(window.sessionStorage.getItem("catgList"));
-            var bizType,insureType,salesChannel;
+            var bizType, insureType, salesChannel;
             for (var i = 0; i < catgList.length; i++) {
                 if (catgList[i].code == "biz_type") {
                     bizType = catgList[i];
@@ -432,7 +435,7 @@
                 this.insureTypeList = insureType.items;
             }
             //支付渠道原子接口
-            if(salesChannel){
+            if (salesChannel) {
                 this.salesChannelList = salesChannel.items;
             }
 
@@ -440,6 +443,7 @@
             var orgTreeList = JSON.parse(window.sessionStorage.getItem("orgTreeList"));
             if (orgTreeList) {
                 this.orgTreeList.push(orgTreeList);
+                console.log(this.orgTreeList);
             }
             //支付渠道
             var channelList = JSON.parse(window.sessionStorage.getItem("channelList"));
@@ -494,7 +498,8 @@
                 insureIndeter: false, //弹框-险种大类
                 insureAll: false,
                 insureSelect: [],
-                isCloseAccount: false //结算账户的展开状态
+                isCloseAccount: false, //结算账户的展开状态
+                expandData: []
             }
         },
         methods: {
@@ -533,70 +538,86 @@
 
                 var dialogData = this.dialogData;
                 row.pay_recv_mode += "";
-                for(var k in dialogData){
+                for (var k in dialogData) {
                     dialogData[k] = row[k];
                 }
                 dialogData.id = row.id;
 
                 var orgExp = row.org_exp;
-                if(orgExp){
+                if (orgExp) {
                     orgExp = orgExp.split("@");
                     orgExp.pop();
                     orgExp.shift();
                     setTimeout(() => {
+                        console.log(orgExp);
                         this.$refs.orgTree.setCheckedKeys(orgExp);
-                    },100)
+                        this.expandData = orgExp;
+                    }, 100)
                 }
                 var bizTypeExp = row.biz_type_exp;
-                if(bizTypeExp){
+                if (bizTypeExp) {
                     bizTypeExp = bizTypeExp.split("@");
                     bizTypeExp.pop();
                     bizTypeExp.shift();
                     this.biztypeSelect = bizTypeExp;
                 }
                 var insuranceTypeExp = row.insurance_type_exp;
-                if(insuranceTypeExp){
+                if (insuranceTypeExp) {
                     insuranceTypeExp = insuranceTypeExp.split("@");
                     insuranceTypeExp.pop();
                     insuranceTypeExp.shift();
                     this.insureSelect = insuranceTypeExp;
                 }
-                if(!row.items){
+                if (!row.items) {
                     this.$axios({
-                        url:"/cfm/adminProcess",
+                        url: "/cfm/adminProcess",
                         method: "post",
                         data: {
                             optype: "handleroute_detail",
                             params: {
-                                id:row.id
+                                id: row.id
                             }
                         }
                     }).then((result) => {
-                        if(result.data.error_msg){
+                        if (result.data.error_msg) {
                             this.$message({
                                 type: "error",
                                 message: result.data.error_msg,
                                 duration: 2000
                             })
-                        }else{
+                        } else {
                             var itemList = result.data.data.items;
                             itemList.forEach((item) => {
-                                for(var key in item){
-                                    if(key == "id"){
+                                for (var key in item) {
+                                    if (key == "id") {
                                         item.$id = item[key];
                                     }
                                 }
+                                var itemAccId = item.settle_or_merchant_acc_id;
+                                var pushData = true;
+                                this.closeAccountList.forEach((current) => {
+                                    if(current.id == itemAccId){
+                                        pushData = false;
+                                    }
+                                })
+                                if(pushData){
+                                    this.closeAccountList.push({
+                                        id: item.settle_or_merchant_acc_id,
+                                        acc_no: item.settle_or_merchant_acc_no
+                                    })
+                                }
                             })
                             this.items = itemList;
+                            row.items = itemList;
                         }
-                    }).catch(function(error){
+                    }).catch(function (error) {
                         console.log(error);
                     })
-                }else{
+                } else {
                     var itemList = row.items;
                     itemList.forEach((item) => {
-                        for(var key in item){
-                            if(key == "id"){
+                        for (var key in item) {
+                            if (key == "id") {
                                 item.$id = item[key];
                             }
                         }
@@ -676,7 +697,7 @@
                 this.insureIndeter = checkedCount > 0 && checkedCount < allLength;
             },
             //新增渠道账户
-            addAccount:function () {
+            addAccount: function () {
                 var item = {
                     channel_code: "",
                     channel_interface_code: "",
@@ -687,19 +708,19 @@
                 this.items.push(item);
             },
             //删除渠道账户
-            removeAccount:function (item) {
+            removeAccount: function (item) {
                 var index = this.items.indexOf(item);
-                if(index != -1){
-                    this.items.splice(index,1);
+                if (index != -1) {
+                    this.items.splice(index, 1);
                 }
             },
             //获取结算账户数据
-            getAccountList:function(code){
+            getAccountList: function (code) {
                 this.isCloseAccount = !this.isCloseAccount;
-                if(this.isCloseAccount){
+                if (this.isCloseAccount) {
                     this.closeAccountList = [];
                 }
-                if(this.isCloseAccount && code){
+                if (this.isCloseAccount && code) {
                     this.$axios({
                         url: "/cfm/adminProcess",
                         method: "post",
@@ -720,37 +741,39 @@
                 }
             },
             //提交数据
-            subCurrent:function(){
+            subCurrent: function () {
                 var params = this.transitionData();
                 var optype = "";
-                if(this.dialogTitle == "新增"){
+                if (this.dialogTitle == "新增") {
                     optype = "handleroute_add";
-                }else{
+                } else {
                     optype = "handleroute_chg";
                 }
 
                 this.$axios({
-                    url:"/cfm/adminProcess",
+                    url: "/cfm/adminProcess",
                     method: "post",
                     data: {
                         optype: optype,
                         params: params
                     }
                 }).then((result) => {
-                    if(result.data.error_msg){
+                    if (result.data.error_msg) {
                         this.$message({
                             type: "error",
                             message: result.data.error_msg,
                             duration: 2000
                         })
-                    }else{
-                        console.log(result.data);
-                        if(this.dialogTitle == "新增"){
-                            this.tableList.push(result.data.data);
+                    } else {
+                        var data = result.data.data;
+                        if (this.dialogTitle == "新增") {
+                            if(this.tableList.length < this.routerMessage.params.page_size){
+                                this.tableList.push(data);
+                            }
+                            this.pagTotal++;
                             var message = "添加成功";
-                        }else{
-                            var data = result.data.data;
-                            for(var k in data){
+                        } else {
+                            for (var k in data) {
                                 this.currentRouter[k] = data[k];
                             }
                             var message = "修改成功";
@@ -763,42 +786,42 @@
                             duration: 2000
                         });
                     }
-                }).catch(function(error){
+                }).catch(function (error) {
                     console.log(error);
                 })
             },
             //提交前转换数据格式
-            transitionData:function(){
+            transitionData: function () {
                 var params = {};
                 var dialogData = this.dialogData;
-                for(var key in dialogData){
+                for (var key in dialogData) {
                     params[key] = dialogData[key];
                 }
 
                 var org_exp = this.$refs.orgTree.getCheckedKeys();
-                if(org_exp.length){
+                if (org_exp.length) {
                     org_exp = org_exp.join("@");
                     org_exp = "@" + org_exp + "@";
                     params.org_exp = org_exp;
                 }
                 var biz_type_exp = this.biztypeSelect;
-                if(biz_type_exp.length){
+                if (biz_type_exp.length) {
                     biz_type_exp = biz_type_exp.join("@");
                     biz_type_exp = "@" + biz_type_exp + "@";
                     params.biz_type_exp = biz_type_exp;
                 }
                 var insurance_type_exp = this.insureSelect;
-                if(insurance_type_exp.length){
+                if (insurance_type_exp.length) {
                     insurance_type_exp = insurance_type_exp.join("@");
                     insurance_type_exp = "@" + insurance_type_exp + "@";
                     params.insurance_type_exp = insurance_type_exp;
                 }
                 // console.log(this.dialogData);
                 var items = [];
-                this.items.forEach(function(item){
+                this.items.forEach(function (item) {
                     var current = {};
-                    for(var k in item){
-                        if(k != "$id"){
+                    for (var k in item) {
+                        if (k != "$id") {
                             current[k] = item[k];
                         }
                     }
@@ -808,24 +831,24 @@
                 return params;
             },
             //清空弹框数据
-            clearDialogData:function(){
+            clearDialogData: function () {
                 var dialogData = this.dialogData;
-                for(var k in dialogData){
+                for (var k in dialogData) {
                     dialogData[k] = "";
                 }
-                if(this.$refs.orgTree){
+                if (this.$refs.orgTree) {
                     this.$refs.orgTree.setCheckedKeys([]);
                 }
                 this.biztypeSelect = [];
                 this.isIndeterminate = false;
                 this.insureSelect = [];
                 this.insureIndeter = false;
-                this.items.splice(1,this.items.length-1);
+                this.items.splice(1, this.items.length - 1);
                 var itemOne = this.items[0];
-                for(var key in itemOne){
-                    if(key != "$id"){
+                for (var key in itemOne) {
+                    if (key != "$id") {
                         itemOne[key] = "";
-                    }else{
+                    } else {
                         itemOne[key] = "1"
                     }
                 }
@@ -839,10 +862,10 @@
             }
         },
         computed: {
-            showDel:function(){
-                if(this.items.length > 1){
+            showDel: function () {
+                if (this.items.length > 1) {
                     return true;
-                }else{
+                } else {
                     return false;
                 }
             }

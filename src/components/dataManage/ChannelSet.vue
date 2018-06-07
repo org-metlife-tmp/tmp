@@ -284,7 +284,10 @@
                         })
                     }else {
                         var data = result.data.data;
-                        this.tableList.push(data);
+                        if(this.tableList.length < this.routerMessage.page_size){
+                            this.tableList.push(data);
+                        }
+                        this.pagTotal++;
                         this.dialogVisible = false;
                         this.$message({
                             type: 'success',

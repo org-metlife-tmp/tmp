@@ -20,6 +20,16 @@
         }
     }
 </style>
+<style lang="less" type="text/less">
+    #userGroup {
+        .el-dialog__wrapper {
+            .el-dialog__body {
+                max-height: 400px;
+                overflow-y: auto;
+            }
+        }
+    }
+</style>
 
 <template>
     <div id="userGroup">
@@ -58,7 +68,7 @@
                     layout="prev, pager, next, jumper"
                     :page-size="pagSize"
                     :total="pagTotal"
-                    @current-change=""
+                    @current-change="getCurrentPage"
                     :pager-count="5">
             </el-pagination>
         </div>
@@ -80,11 +90,23 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="24">功能权限分配</el-col>
+                    <el-col :span="24">
+                        <el-tree :data="jurisdTreeList"
+                                 node-key="code"
+                                 highlight-current
+                                 accordion show-checkbox
+                                 :expand-on-click-node="false"
+                                 ref="jurisdTree">
+                                        <span class="custom-tree-node" slot-scope="{ node, data }">
+                                            <span>{{ node.data.name }}</span>
+                                        </span>
+                        </el-tree>
+                    </el-col>
                 </el-row>
             </el-form>
             <span slot="footer" class="dialog-footer">
-                <el-button @click="dialogVisible = false" size="mini">取 消</el-button>
-                <el-button type="primary" @click="" size="mini">确 定</el-button>
+                <el-button type="warning" size="mini" plain @click="dialogVisible = false">取 消</el-button>
+                <el-button type="warning" size="mini" @click="subCurrent">确 定</el-button>
             </span>
         </el-dialog>
     </div>
@@ -96,6 +118,27 @@
         created: function () {
             this.$emit("transmitTitle", "用户组设置");
             this.$emit("getTableData", this.routerMessage);
+
+            //获取下拉框数据
+            this.$axios({
+                url:"/cfm/adminProcess",
+                method: "post",
+                data: {
+                    optype: "usrgroup_busmenu"
+                }
+            }).then((result) => {
+                var data = result.data.data;
+                if(result.data.error_msg){
+                }else{
+                    data.forEach((item) => {
+                        item.children = item.menus;
+                        this.jurisdTreeList.push(item);
+                    })
+                    this.jurisdTreeList = JSON.parse(JSON.stringify(this.jurisdTreeList));
+                }
+            }).catch(function(error){
+                console.log(error);
+            })
         },
         props: ["tableData"],
         data: function () {
@@ -114,7 +157,8 @@
                 dialogTitle: "新增",
                 dialogData: {},
                 formLabelWidth: "120px",
-                currentGroup: ""
+                currentGroup: "",
+                jurisdTreeList: []
             }
         },
         methods: {
@@ -129,9 +173,18 @@
                 this.dialogTitle = "编辑";
                 this.dialogData = {};
                 this.dialogVisible = true;
+
                 this.currentGroup = row;
                 for(var k in row){
-                    this.dialogData[k] = row[k];
+                    if(k == "menus"){
+                        var currentRow = row[k];
+                        setTimeout(() => {
+                            console.log(currentRow);
+                            this.$refs.jurisdTree.setCheckedKeys(currentRow);
+                        }, 100)
+                    }else{
+                        this.dialogData[k] = row[k];
+                    }
                 }
             },
             //删除当前用户组
@@ -171,7 +224,65 @@
                     })
                 }).catch(() => {
                 });
-            }
+            },
+            //提交数据
+            subCurrent: function () {
+                var params = this.dialogData;
+                params.menus = this.$refs.jurisdTree.getCheckedKeys();
+                var optype = "";
+                if (this.dialogTitle == "新增") {
+                    optype = "usrgroup_add";
+                } else {
+                    optype = "usrgroup_chg";
+                }
+
+                this.$axios({
+                    url: "/cfm/adminProcess",
+                    method: "post",
+                    data: {
+                        optype: optype,
+                        params: params
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                    } else {
+                        var data = result.data.data;
+                        if (this.dialogTitle == "新增") {
+                            if(this.tableList.length < this.routerMessage.params.page_size){
+                                this.tableList.push(data);
+                            }
+                            this.pagTotal++;
+                            var message = "添加成功";
+                        } else {
+                            console.log(data);
+                            return;
+                            for (var k in data) {
+                                this.currentRouter[k] = data[k];
+                            }
+                            var message = "修改成功";
+                        }
+
+                        this.dialogVisible = false;
+                        this.$message({
+                            type: 'success',
+                            message: message,
+                            duration: 2000
+                        });
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                })
+            },
+            //点击页数 获取当前页数据
+            getCurrentPage: function (currPage) {
+                this.routerMessage.params.page_num = currPage;
+                this.$emit("getTableData", this.routerMessage);
+            },
         },
         watch: {
             tableData: function (val, oldVal) {

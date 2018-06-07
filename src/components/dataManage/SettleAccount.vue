@@ -217,7 +217,7 @@
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="收付属性" :label-width="formLabelWidth">
-                            <el-select v-model="dialogData.pay_recv_attr" placeholder="请选择活动区域"
+                            <el-select v-model="dialogData.pay_recv_attr" placeholder="请选择收付属性"
                                        filterable clearable>
                                 <el-option v-for="(name,k) in accOrRecvList"
                                            :key="k"
@@ -403,7 +403,10 @@
                     }else {
                         var data = result.data.data;
                         if(this.dialogTitle == "新增"){
-                            this.tableList.push(data);
+                            if(this.tableList.length < this.routerMessage.page_size){
+                                this.tableList.push(data);
+                            }
+                            this.pagTotal++;
                             var message = "新增成功"
                         }else{
                             for(var k in data){

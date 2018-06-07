@@ -46,6 +46,10 @@
                 background-position: -170px -143px;
             }
 
+            .icon-ssjy {
+                background-position: -502px -95px;
+            }
+
             .icon-yet {
                 background-position: -30px 0;
             }
@@ -100,6 +104,10 @@
             .icon-yhgl {
                 background-position: -138px -143px;
             }
+            .icon-ssjy {
+                background-position: -470px -95px;
+            }
+
             .icon-yet {
                 background-position: 0px 0;
             }
@@ -143,6 +151,9 @@
 
             .el-submenu__title:hover .icon-yhgl {
                 background-position: -170px -143px;
+            }
+            .el-submenu__title:hover .icon-ssjy {
+                background-position: -502px -95px;
             }
 
             .el-submenu__title:hover .icon-yet {
@@ -259,13 +270,25 @@
                 </template>
                 <el-menu-item-group>
                     <el-menu-item index="/user-manage/user-maintain">用户维护</el-menu-item>
-                    <el-menu-item index="/user-manage/bank-group">用户组设置</el-menu-item>
-                    <el-menu-item index="/user-manage/bank-menu">用户菜单设置</el-menu-item>
+                    <el-menu-item index="/user-manage/user-group">用户组设置</el-menu-item>
+                    <el-menu-item index="/user-manage/user-menu">用户菜单设置</el-menu-item>
+                </el-menu-item-group>
+            </el-submenu>
+            <el-submenu index="3">
+                <template slot="title" height="200px">
+                    <i class="icon-ssjy"></i>
+                    <p class="mg-four">实时交易</p>
+                </template>
+                <el-menu-item-group>
+                    <el-menu-item index="/realtime-trade/personal-insurance">个险核心实时代付</el-menu-item>
+                    <el-menu-item index="/realtime-trade/group-insurance">团险核心实时代付</el-menu-item>
+                    <el-menu-item index="/realtime-trade/QRcode">移动展业二维码</el-menu-item>
+                    <el-menu-item index="/realtime-trade/move-withhold">移动展业实时代扣</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
 
 
-            <el-submenu index="3">
+            <!--<el-submenu index="3">
                 <template slot="title" height="200px">
                     <i class="icon-yet"></i>
                     <p>余额通</p>
@@ -279,10 +302,10 @@
                     <el-menu-item index="/whiteContent/history-fluctuate">历史余额波动</el-menu-item>
                     <el-menu-item index="1-8">余额数据导入</el-menu-item>
                 </el-menu-item-group>
-                <!--<el-submenu index="1-4">
+                &lt;!&ndash;<el-submenu index="1-4">
                     <span slot="title">选项4</span>
                     <el-menu-item index="1-4-1">选项1</el-menu-item>
-                </el-submenu>-->
+                </el-submenu>&ndash;&gt;
             </el-submenu>
             <el-submenu index="4">
                 <template slot="title" height="200px">
@@ -400,7 +423,7 @@
                     <el-menu-item index="1-2">选项2</el-menu-item>
                     <el-menu-item index="1-3">选项3</el-menu-item>
                 </el-menu-item-group>
-            </el-submenu>
+            </el-submenu>-->
         </el-menu>
     </div>
 </template>

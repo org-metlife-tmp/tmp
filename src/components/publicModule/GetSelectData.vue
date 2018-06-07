@@ -92,6 +92,68 @@
                     console.log(error);
                 })
             }
+            //部门
+            if (!window.sessionStorage.getItem("deptList")){
+                this.$axios({
+                    url: "/cfm/adminProcess",
+                    method: "post",
+                    data: {
+                        optype: "dept_list",
+                        params: {
+                            page_size: 1000,
+                            page_num: 1
+                        }
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        return;
+                    } else {
+                        var data = result.data.data;
+                        var deptList = [];
+                        data.forEach(function (item) {
+                            var itemNeed = {};
+                            for (var k in item) {
+                                itemNeed[k] = item[k];
+                            }
+                            deptList.push(itemNeed);
+                        });
+                        window.sessionStorage.setItem("deptList", JSON.stringify(deptList));
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                })
+            }
+            //用户组
+            if (!window.sessionStorage.getItem("usrgroupList")){
+                this.$axios({
+                    url: "/cfm/adminProcess",
+                    method: "post",
+                    data: {
+                        optype: "usrgroup_list",
+                        params: {
+                            page_size: 1000,
+                            page_num: 1
+                        }
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        return;
+                    } else {
+                        var data = result.data.data;
+                        var usrgroupList = [];
+                        data.forEach(function (item) {
+                            var itemNeed = {};
+                            for (var k in item) {
+                                itemNeed[k] = item[k];
+                            }
+                            usrgroupList.push(itemNeed);
+                        });
+                        window.sessionStorage.setItem("usrgroupList", JSON.stringify(usrgroupList));
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                })
+            }
             //银行大类
             if (!window.sessionStorage.getItem("bankTypeList")) {
                 this.$axios({
@@ -195,7 +257,6 @@
                     } else {
                         var data = result.data.data;
                         window.sessionStorage.setItem("catgList", JSON.stringify(data));
-
                     }
                 }).catch(function (error) {
                     console.log(error);

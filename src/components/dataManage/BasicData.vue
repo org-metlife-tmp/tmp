@@ -575,7 +575,10 @@
                             params: this.deptForm
                         }
                     }).then((result) => {
-                        this.tableList.push(result.data.data);
+                        if(this.tableList.length < this.routerMessage.params.page_size){
+                            this.tableList.push(result.data.data);
+                        }
+                        this.pagTotal++;
                         this.deptDialog = false;
                         this.$message({
                             type: "success",

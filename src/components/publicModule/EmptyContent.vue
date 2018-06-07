@@ -54,6 +54,7 @@
         <section class="content" v-loading="loading">
             <router-view @transmitTitle="currentTitle= $event"
                          @getTableData="getRouterData"
+                         @getCommTable="commRouterData"
                          :tableData="childData"></router-view>
         </section>
     </div>
@@ -79,6 +80,25 @@
                 var temporaryThis = this;
                 this.$axios({
                     url: "/cfm/adminProcess",
+                    method: "post",
+                    data: currParams
+                }).then(function (result) {
+                    var currentData = result.data;
+                    temporaryThis.childData = currentData;
+                    temporaryThis.loading = false;
+                }).catch(function (error) {
+                    console.log(error);
+                })
+            },
+            commRouterData:function(routerData){
+                this.loading = true;
+                var currParams = {};
+                for (var k in routerData) {
+                    currParams[k] = routerData[k];
+                }
+                var temporaryThis = this;
+                this.$axios({
+                    url: "/cfm/commProcess",
                     method: "post",
                     data: currParams
                 }).then(function (result) {

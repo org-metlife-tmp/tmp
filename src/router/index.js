@@ -18,6 +18,11 @@ import MerchSet from '@/components/dataManage/MerchSet'
 import UserMaintain from '@/components/userManage/UserMaintain'
 import UserGroup from '@/components/userManage/UserGroup'
 import UserMenu from '@/components/userManage/UserMenu'
+//实时交易
+import PersonalInsurance from '@/components/realtimeTrade/PersonalInsurance'
+import GroupInsurance from '@/components/realtimeTrade/GroupInsurance'
+import QRcode from '@/components/realtimeTrade/QRcode'
+import MoveWithhold from '@/components/realtimeTrade/MoveWithhold'
 //余额通
 import TodayDetail from '@/components/balance/TodayDetail'
 import TodayAll from '@/components/balance/TodayAll'
@@ -64,8 +69,13 @@ const router = new Router({
                         {path: '/data-manage/merch-set', name: 'MerchSet', component: MerchSet, meta: {requireAuth: true}},
                         //用户管理
                         {path: '/user-manage/user-maintain', name: 'UserMaintain', component: UserMaintain, meta: {requireAuth: true}},
-                        {path: '/user-manage/bank-group', name: 'UserGroup', component: UserGroup, meta: {requireAuth: true}},
-                        {path: '/user-manage/bank-menu', name: 'UserMenu', component: UserMenu, meta: {requireAuth: true}}
+                        {path: '/user-manage/user-group', name: 'UserGroup', component: UserGroup, meta: {requireAuth: true}},
+                        {path: '/user-manage/user-menu', name: 'UserMenu', component: UserMenu, meta: {requireAuth: true}},
+                        //实时交易
+                        {path: '/realtime-trade/personal-insurance', name: 'PersonalInsurance', component: PersonalInsurance, meta: {requireAuth: true}},
+                        {path: '/realtime-trade/group-insurance', name: 'GroupInsurance', component: GroupInsurance, meta: {requireAuth: true}},
+                        {path: '/realtime-trade/QRcode', name: 'QRcode', component: QRcode, meta: {requireAuth: true}},
+                        {path: '/realtime-trade/move-withhold', name: 'MoveWithhold', component: MoveWithhold, meta: {requireAuth: true}},
                     ]
                 },
                 //调拨通
