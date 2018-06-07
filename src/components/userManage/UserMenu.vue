@@ -25,7 +25,7 @@
                 margin-bottom: 6px;
                 position: relative;
             }
-            li:nth-child(2){
+            li:nth-child(2) {
                 height: 92px;
             }
 
@@ -82,6 +82,16 @@
         }
     }
 </style>
+<style lang="less" type="text/less">
+    #userMenu {
+        .el-dialog__wrapper {
+            .el-dialog__body {
+                max-height: 400px;
+                overflow-y: auto;
+            }
+        }
+    }
+</style>
 
 <template>
     <div id="userMenu">
@@ -97,18 +107,30 @@
             </ul>
         </div>
         <!--数据展示区-->
-        <section class="table-content">
+        <section class="table-content" style="height:100%">
             <el-table :data="tableList"
                       border
                       size="mini">
-                <el-table-column prop="name" label="姓名" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="org_name" label="机构名称" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="dept_name" label="部门名称" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="pos_name" label="职位" :show-overflow-tooltip="true"></el-table-column>
+                <!--用户信息-->
+                <el-table-column prop="name" label="姓名" :show-overflow-tooltip="true" v-if="btActive"></el-table-column>
+                <el-table-column prop="org_name" label="机构名称" :show-overflow-tooltip="true"
+                                 v-if="btActive"></el-table-column>
+                <el-table-column prop="dept_name" label="部门名称" :show-overflow-tooltip="true"
+                                 v-if="btActive"></el-table-column>
+                <el-table-column prop="pos_name" label="职位" :show-overflow-tooltip="true"
+                                 v-if="btActive"></el-table-column>
                 <el-table-column prop="is_default" label="是否默认"
                                  :show-overflow-tooltip="true"
                                  :formatter="transitDefault"
-                                 width="100"></el-table-column>
+                                 width="100" v-if="btActive">
+                </el-table-column>
+                <!--用户组信息-->
+                <el-table-column prop="is_builtin" label="是否内置" :show-overflow-tooltip="true"
+                                 v-if="!btActive"></el-table-column>
+                <el-table-column prop="memo" label="用户组描述" :show-overflow-tooltip="true"
+                                 v-if="!btActive"></el-table-column>
+                <el-table-column prop="name" label="用户组名称" :show-overflow-tooltip="true"
+                                 v-if="!btActive"></el-table-column>
                 <el-table-column
                         label="操作"
                         width="50">
@@ -132,7 +154,7 @@
                     :pager-count="5">
             </el-pagination>
         </div>
-        <!--弹出框-->
+        <!--用户弹出框-->
         <el-dialog title="编辑"
                    :visible.sync="dialogVisible"
                    width="800px" top="76px"
@@ -168,7 +190,7 @@
                     </el-col>
                     <el-col :span="24">
                         <div class="split-form">
-                            <h4>用户分配</h4>
+                            <h4>用户组分配</h4>
                         </div>
                     </el-col>
                     <el-col :span="24" style="margin-bottom:24px">
@@ -192,23 +214,138 @@
                 <el-button type="warning" size="mini" @click="subCurrent">确 定</el-button>
             </span>
         </el-dialog>
+        <!--用户组弹出框-->
+        <el-dialog title="编辑"
+                   :visible.sync="groupDialog"
+                   width="800px" top="76px"
+                   :close-on-click-modal="false">
+            <el-form :model="groupDiaData" size="small">
+                <el-row>
+                    <el-col :span="12">
+                        <el-form-item label="用户组名称" :label-width="formLabelWidth">
+                            <el-input v-model="groupDiaData.name" auto-complete="off" disabled></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="用户组描述" :label-width="formLabelWidth">
+                            <el-input v-model="groupDiaData.memo" auto-complete="off" disabled></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="是否内置" :label-width="formLabelWidth">
+                            <el-switch v-model="groupDiaData.is_default" disabled
+                                       active-value="1"
+                                       inactive-value="0"></el-switch>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="24">
+                        <div class="split-form">
+                            <h4>用户管理</h4>
+                            <el-button size="mini" style="float:right"
+                                       @click="innerVisible = true">添加用户
+                            </el-button>
+                        </div>
+                    </el-col>
+                    <el-col :span="24" style="margin-bottom:24px">
+                        <el-table :data="userList"
+                                  border size="mini"
+                                  style="width:96%;float:right"
+                                  empty-text="请添加用户">
+                            <el-table-column prop="name" label="姓名" :show-overflow-tooltip="true"></el-table-column>
+                            <el-table-column prop="org_name" label="机构名称" :show-overflow-tooltip="true"></el-table-column>
+                            <el-table-column prop="dept_name" label="部门名称" :show-overflow-tooltip="true"></el-table-column>
+                            <el-table-column prop="pos_name" label="职位" :show-overflow-tooltip="true"></el-table-column>
+                            <el-table-column
+                                    label="删除"
+                                    width="50">
+                                <template slot-scope="scope" class="operationBtn">
+                                    <el-button type="danger" icon="el-icon-delete" size="mini"
+                                               @click="delSeleUser(scope.row,scope.$index,userList)"></el-button>
+                                </template>
+                            </el-table-column>
+                        </el-table>
+                    </el-col>
+                </el-row>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button type="warning" size="mini" plain @click="dialogVisible = false">取 消</el-button>
+                <el-button type="warning" size="mini" @click="subGroup">确 定</el-button>
+            </span>
+            <el-dialog :visible.sync="innerVisible"
+                       width="50%" title="添加用户"
+                       append-to-body top="76px"
+                       :close-on-click-modal="false">
+                <el-table :data="selectUserList"
+                          size="mini">
+                    <!--用户信息-->
+                    <el-table-column prop="name" label="姓名" width="100" :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column prop="org_name" label="机构名称" :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column prop="dept_name" label="部门名称" :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column prop="pos_name" label="职位" :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column
+                            label=""
+                            width="60">
+                        <template slot-scope="scope" class="operationBtn">
+                            <el-button type="text" style="padding-top:6px;padding-bottom:6px"
+                                       @click="addSelectUser(scope.row)">添加</el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+
+                <span slot="footer" class="dialog-footer" style="text-align:center">
+                    <el-pagination
+                            background
+                            layout="prev, pager, next, jumper"
+                            :page-size="8"
+                            :total="selectTotal"
+                            @current-change="getPageUser"
+                            :pager-count="5">
+                    </el-pagination>
+                </span>
+            </el-dialog>
+        </el-dialog>
     </div>
 </template>
 
 <script>
     export default {
         name: "UserMenu",
-        created:function(){
-            this.$emit("transmitTitle","用户菜单设置");
+        created: function () {
+            this.$emit("transmitTitle", "用户菜单设置");
             this.$emit("getTableData", this.routerMessage);
 
-            //用户组表格
             /*获取下拉框数据*/
             //机构
             var usrgroupList = JSON.parse(window.sessionStorage.getItem("usrgroupList"));
             if (usrgroupList) {
                 this.usrgroupList = usrgroupList;
             }
+            //用户列表
+            if (!window.sessionStorage.getItem("userList")) {
+                this.$axios({
+                    url:"/cfm/adminProcess",
+                    method: "post",
+                    data: {
+                        optype: "usrmenu_list",
+                        params: {
+                            page_num: 1,
+                            page_size: 10000
+                        }
+                    }
+                }).then((result) => {
+                    var data = result.data.data;
+                    if(result.data.error_msg){
+
+                    }else{
+                        window.sessionStorage.setItem("userList", JSON.stringify(data));
+                    }
+                }).catch(function(error){
+                    console.log(error);
+                })
+            }
+        },
+        destroyed: function () {
+            window.sessionStorage.removeItem("userList");
         },
         props: ["tableData"],
         data: function () {
@@ -224,12 +361,18 @@
                 pagTotal: 1,
                 tableList: [], //表格数据
                 btActive: true, //右侧按钮状态控制
-                dialogVisible: false, //弹框数据
+                dialogVisible: false, //用户弹框数据
                 dialogData: {},
                 formLabelWidth: "120px",
                 userAllocation: [],
                 usrgroupList: [],
                 selectIds: [],
+                groupDialog: false, //用户组弹框数据
+                groupDiaData: {},
+                userList: [],
+                innerVisible: false,
+                selectUserList: [],
+                selectTotal: 8,
                 currentUser: {}, //当前用户
             }
         },
@@ -240,7 +383,7 @@
                 this.$emit("getTableData", this.routerMessage);
             },
             //右侧按钮点击
-            isUser:function(){
+            isUser: function () {
                 if (this.btActive) {
                     return;
                 } else {
@@ -251,57 +394,87 @@
                     this.$emit("getTableData", this.routerMessage);
                 }
             },
-            isGroup:function(){
+            isGroup: function () {
                 if (!this.btActive) {
                     return;
                 } else {
-                    this.$message({
-                        type:"error",
-                        message: "功能暂无",
-                        duration: 2000
-                    })
-                    return;
                     this.btActive = false;
                     //获取表格数据
                     this.routerMessage.pageno = 1;
-                    this.routerMessage.optype = "usrmenu_allot";
+                    this.routerMessage.optype = "usrgroup_list2";
                     this.$emit("getTableData", this.routerMessage);
+                    //设置添加用户列表
+                    var userAllList = JSON.parse(window.sessionStorage.getItem("userList"));
+                    if(userAllList.length){
+                        this.selectTotal = userAllList.length;
+                        if(userAllList.length >= 8){
+                            for(var i = 0; i<8; i++){
+                                this.selectUserList.push(userAllList[i]);
+                            }
+                        }else{
+                            userAllList.forEach((item) => {
+                                this.selectUserList.push(item);
+                            })
+                        }
+                    }
                 }
             },
             //编辑单签用户
-            editUser:function(row){
-                this.dialogVisible = true;
-                this.dialogData = {};
-                setTimeout(() => {
-                    this.$refs.usergroupTable.clearSelection();
-                    if(row.group_ids.length > 0){
-                        row.group_ids.forEach(item => {
-                            var usrgroupList = this.usrgroupList;
-                            for(var i = 0; i < usrgroupList.length; i++){
-                                if(item == usrgroupList[i].group_id){
-                                    this.$refs.usergroupTable.toggleRowSelection(usrgroupList[i]);
+            editUser: function (row) {
+                this.currentUser = row; //保存当前项
+                //编辑用户
+                if (row.usr_id) {
+                    this.dialogVisible = true;
+                    this.dialogData = {};
+                    setTimeout(() => {
+                        this.$refs.usergroupTable.clearSelection();
+                        if (row.group_ids.length > 0) {
+                            row.group_ids.forEach(item => {
+                                var usrgroupList = this.usrgroupList;
+                                for (var i = 0; i < usrgroupList.length; i++) {
+                                    if (item == usrgroupList[i].group_id) {
+                                        this.$refs.usergroupTable.toggleRowSelection(usrgroupList[i]);
+                                        break;
+                                    }
+                                }
+                            })
+                        }
+                    }, 100)
+
+                    row.is_default += "";
+                    this.dialogData = row;
+                } else { //编辑用户组
+                    this.groupDialog = true;
+                    this.groupDiaData = {};
+                    this.userList = [];
+                    row.is_builtin += "";
+                    this.groupDiaData = row;
+                    if(row.uodp_ids.length){
+                        var uodpIdList = row.uodp_ids;
+                        var userAllList = JSON.parse(window.sessionStorage.getItem("userList"));
+                        for(var j = 0; j<uodpIdList.length; j++){
+                            for(var k = 0; k<userAllList.length; k++){
+                                if(uodpIdList[j] == userAllList[k].uodp_id){
+                                    this.userList.push(userAllList[k]);
                                     break;
                                 }
                             }
-                        })
+                        }
                     }
-                },100)
-                this.currentUser = row;
-                row.is_default += "";
-                this.dialogData = row;
+                }
             },
             //展示格式转换-是否默认
-            transitDefault:function(row, column, cellValue, index){
-                if(cellValue){
+            transitDefault: function (row, column, cellValue, index) {
+                if (cellValue) {
                     return "是";
-                }else{
+                } else {
                     return "否";
                 }
             },
             //提交当前修改
-            subCurrent:function(){
+            subCurrent: function () {
                 this.$axios({
-                    url:"/cfm/adminProcess",
+                    url: "/cfm/adminProcess",
                     method: "post",
                     data: {
                         optype: "usrmenu_allot",
@@ -312,6 +485,91 @@
                     }
                 }).then((result) => {
                     var data = result.data.data;
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                    } else {
+                        this.currentUser.group_ids = data.group_ids;
+                        this.dialogVisible = false;
+                        this.$message({
+                            type: 'success',
+                            message: '修改成功!',
+                            duration: 2000
+                        });
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                })
+            },
+            //用户设置用户组改变后
+            usergroupChange: function (val) {
+                var groupIds = [];
+                val.forEach((item) => {
+                    groupIds.push(item.group_id);
+                })
+                this.selectIds = groupIds;
+            },
+            //添加用户列表换页
+            getPageUser:function(currPage){
+                var userAllList = JSON.parse(window.sessionStorage.getItem("userList"));
+                var actionOne = (currPage-1)*8;
+                var endOne = actionOne + 8;
+                this.selectUserList = [];
+                for(var i=actionOne; i<=endOne; i++){
+                    if(userAllList[i]){
+                        this.selectUserList.push(userAllList[i]);
+                    }
+                }
+            },
+            //添加用户
+            addSelectUser: function(row){
+                var userList = this.userList;
+                for(var i=0; i<userList.length; i++){
+                    if(userList[i].uodp_id == row.uodp_id){
+                        this.$message({
+                            type: "warning",
+                            message: "此用户已添加",
+                            duration: 2000
+                        });
+                        return;
+                    }
+                }
+                this.userList.push(row);
+                this.$message({
+                    message: '添加成功',
+                    type: 'success',
+                    duration: 2000
+                });
+            },
+            //删除用户
+            delSeleUser: function(row, index, rows){
+                rows.splice(index, 1);
+                this.$message({
+                    type: "success",
+                    message: "删除成功",
+                    duration: 2000
+                })
+            },
+            //提交用户组信息
+            subGroup: function(){
+                var idList = [];
+                this.userList.forEach((item) => {
+                    idList.push(item.uodp_id);
+                })
+                this.$axios({
+                    url:"/cfm/adminProcess",
+                    method: "post",
+                    data: {
+                        optype: "usrgroup_allot",
+                        params: {
+                            group_id: this.currentUser.group_id,
+                            uodp_ids: idList
+                        }
+                    }
+                }).then((result) => {
                     if(result.data.error_msg){
                         this.$message({
                             type: "error",
@@ -319,8 +577,8 @@
                             duration: 2000
                         })
                     }else{
-                        this.currentUser.group_ids = data.group_ids;
-                        this.dialogVisible = false;
+                        this.currentUser.uodp_ids = result.data.data.uodp_ids;
+                        this.groupDialog = false;
                         this.$message({
                             type: 'success',
                             message: '修改成功!',
@@ -330,13 +588,6 @@
                 }).catch(function(error){
                     console.log(error);
                 })
-            },
-            usergroupChange: function(val){
-                var groupIds = [];
-                val.forEach((item) => {
-                    groupIds.push(item.group_id);
-                })
-                this.selectIds = groupIds;
             }
         },
         watch: {
