@@ -179,7 +179,6 @@
                     if(k == "menus"){
                         var currentRow = row[k];
                         setTimeout(() => {
-                            console.log(currentRow);
                             this.$refs.jurisdTree.setCheckedKeys(currentRow);
                         }, 100)
                     }else{
@@ -259,10 +258,8 @@
                             this.pagTotal++;
                             var message = "添加成功";
                         } else {
-                            console.log(data);
-                            return;
                             for (var k in data) {
-                                this.currentRouter[k] = data[k];
+                                this.currentGroup[k] = data[k];
                             }
                             var message = "修改成功";
                         }
