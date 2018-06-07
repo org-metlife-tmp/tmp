@@ -98,7 +98,7 @@
                 }
                 var temporaryThis = this;
                 this.$axios({
-                    url: "/cfm/commProcess",
+                    url: "/cfm/normalProcess",
                     method: "post",
                     data: currParams
                 }).then(function (result) {

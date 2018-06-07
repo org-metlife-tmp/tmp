@@ -18,7 +18,7 @@
             }
         }
         .search-setion.show-more {
-            height: 184px;
+            height: 140px;
         }
 
         /*分隔栏*/
@@ -56,6 +56,7 @@
             }
         }
         .form-small-title{
+            font-weight: bold;
             span{
                 display:inline-block;
                 width: 4px;
@@ -74,6 +75,12 @@
                 .el-form-item__content {
                     width: 180px;
                 }
+            }
+        }
+        .el-dialog__wrapper {
+            .el-dialog__body {
+                height: 400px;
+                overflow-y: scroll;
             }
         }
     }
@@ -121,7 +128,7 @@
                     <el-col :span="7">
                         <el-form-item label="开始日期">
                             <el-date-picker type="date" placeholder="选择日期" v-model="searchData.start_date"
-                                            style="width: 100%;" disabled
+                                            style="width: 100%;"
                                             format="yyyy 年 MM 月 dd 日"
                                             value-format="yyyy-MM-dd"></el-date-picker>
                         </el-form-item>
@@ -129,7 +136,7 @@
                     <el-col :span="7">
                         <el-form-item label="结束日期">
                             <el-date-picker type="date" placeholder="选择日期" v-model="searchData.end_date"
-                                            style="width: 100%;" disabled
+                                            style="width: 100%;"
                                             format="yyyy 年 MM 月 dd 日"
                                             value-format="yyyy-MM-dd"></el-date-picker>
                         </el-form-item>
@@ -164,10 +171,7 @@
                       border
                       size="mini"
                       max-height="100%">
-                <el-table-column prop="bill_no" label="单据号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="serial_no" label="流水号" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="" label="来源系统" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="" label="支付方式" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="biz_type" :formatter="transitionType"
                                  label="业务类型" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="settle_or_merchant_acc_no" label="对方账号"
@@ -205,88 +209,24 @@
                    :close-on-click-modal="false">
             <el-form :model="dialogData" size="mini">
                 <el-row>
-                    <el-col :span="24" class="form-small-title"><span></span>业务信息</el-col>
-                    <el-col :span="12">
-                        <el-form-item label="金额：" :label-width="formLabelWidth">
-                            <div>{{ dialogData.amount }}</div>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="银行交互流水号：" :label-width="formLabelWidth">
-                            <div>{{ dialogData.bank_serial_no }}</div>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="单据号：" :label-width="formLabelWidth">
-                            <div>{{ dialogData.bill_no }}</div>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="账户编号：" :label-width="formLabelWidth">
-                            <div>{{}}</div>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="账户编号：" :label-width="formLabelWidth">
-                            <div>{{}}</div>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="账户编号：" :label-width="formLabelWidth">
-                            <div>{{}}</div>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="账户编号：" :label-width="formLabelWidth">
-                            <div>{{}}</div>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="账户编号：" :label-width="formLabelWidth">
-                            <div>{{}}</div>
-                        </el-form-item>
-                    </el-col>
                     <el-col :span="24" class="form-small-title"><span></span>支付信息</el-col>
-                    <el-col :span="12">
-                        <el-form-item label="账户编号：" :label-width="formLabelWidth">
-                            <div>{{}}</div>
+                    <el-col :span="12" v-for="payItem in payMessage" :key="payItem.title">
+                        <el-form-item label="保单号：" :label-width="formLabelWidth">
+                            <label slot="label">{{ payItem.title }}：</label>
+                            <div>{{ payItem.content }}</div>
                         </el-form-item>
                     </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="账户编号：" :label-width="formLabelWidth">
-                            <div>{{}}</div>
+
+
+                    <el-col :span="24" class="form-small-title"><span></span>业务信息</el-col>
+                    <el-col :span="12" v-for="business in businessMessage" :key="business.title">
+                        <el-form-item label="保单号：" :label-width="formLabelWidth">
+                            <label slot="label">{{ business.title }}：</label>
+                            <div>{{ business.content }}</div>
                         </el-form-item>
                     </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="账户编号：" :label-width="formLabelWidth">
-                            <div>{{}}</div>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="账户编号：" :label-width="formLabelWidth">
-                            <div>{{}}</div>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="账户编号：" :label-width="formLabelWidth">
-                            <div>{{}}</div>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="账户编号：" :label-width="formLabelWidth">
-                            <div>{{}}</div>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="账户编号：" :label-width="formLabelWidth">
-                            <div>{{}}</div>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="账户编号：" :label-width="formLabelWidth">
-                            <div>{{}}</div>
-                        </el-form-item>
-                    </el-col>
+
+
                 </el-row>
             </el-form>
             <span slot="footer" class="dialog-footer">
@@ -337,7 +277,10 @@
                 payStatList: {},
                 dialogVisible:false, //弹框数据
                 dialogData: {},
-                formLabelWidth: "140px"
+                formLabelWidth: "140px",
+
+                businessMessage: [],
+                payMessage: []
             }
         },
         methods: {
@@ -409,14 +352,71 @@
             /*弹框相关*/
             //查看详细信息
             lookParticular: function(row){
+                //支付信息数据设置
+                var payLabel = [
+                    {key:"create_date",value:"创建日期"},
+                    {key:"bank_serial_no",value:"银行交互流水号"},
+                    {key:"trade_status",value:"支付状态"},
+                    {key:"channel_code",value:"支付渠道编码"},
+                    {key:"channel_interface_code",value:"支付渠道原子接口"},
+                    {key:"trade_status",value:"平台响应码"},
+                    {key:"trade_msg",value:"平台响应信息"},
+                    {key:"channel_status",value:"渠道响应码"},
+                    {key:"channel_msg",value:"渠道响应信息"},
+                    {key:"real_date",value:"实付日期"},
+                    {key:"memo",value:"备注"}
+                ];
+                var payMessage = [];
+                payLabel.forEach((item) => {
+                    var current = {};
+                    current.title = item.value;
+                    current.content = row[item.key];
+                    payMessage.push(current);
+                })
+                this.payMessage = payMessage;
+
+                //业务信息数据设置
+                var businessLabel = [
+                    {key:"biz_type",value:"业务类型"},
+                    {key:"bill_no",value:"单据号"},
+                    {key:"serial_no",value:"流水号"},
+                    {key:"preinsure_bill_no",value:"投保单号"},
+                    {key:"insure_bill_no",value:"保单号"},
+                    {key:"cert_type",value:"证件类型"},
+                    {key:"cert_no",value:"证件号"},
+                    {key:"insure_type",value:"险种大类"},
+                    {key:"insure_code",value:"险种代码"},
+                    {key:"insure_name",value:"险种名称"},
+                    {key:"op_name",value:"操作员"},
+                    {key:"op_org",value:"操作员所属机构"},
+                    {key:"sales_channel",value:"销售渠道"},
+                    {key:"customer_acc",value:"客户账号"},
+                    {key:"customer_name",value:"客户姓名"},
+                    {key:"customer_bank",value:"开户银行"},
+                    {key:"amount",value:"金额"},
+                    {key:"business_no",value:"业务单号"},
+                    {key:"org_seg",value:"机构段"},
+                    {key:"detail_seg",value:"明细段"},
+                    {key:"repet_count",value:"重发次数"},
+                    {key:"settle_or_merchant_acc_name",value:"账户名称"},
+                    {key:"settle_or_merchant_acc_no",value:"账户编号"},
+                    {key:"due_date",value:"应付日期"}
+                ];
+                var businessMessage = [];
+                businessLabel.forEach((item) => {
+                    var current = {};
+                    current.title = item.value;
+                    current.content = row[item.key];
+                    businessMessage.push(current);
+                })
+                this.businessMessage = businessMessage;
+
                 this.dialogData = row;
                 this.dialogVisible = true;
-                console.log(row);
             }
         },
         watch: {
             tableData: function (val, oldVal) {
-                console.log(val.data);
                 this.pagSize = val.page_size;
                 this.pagTotal = val.total_line;
                 this.tableList = val.data;
