@@ -9,150 +9,153 @@
     export default {
         name: "GetSelectData",
         created: function () {
-            //机构
-            if (!window.sessionStorage.getItem("orgList")) {
-                this.$axios({
-                    url: "/cfm/adminProcess",
-                    method: "post",
-                    data: {
-                        optype: "org_list"
-                    }
-                }).then((result) => {
-                    if (result.data.error_msg) {
-                        return;
-                    } else {
-                        var data = result.data.data;
-                        var orgList = [];
-                        data.forEach(function (item) {
-                            var itemNeed = {};
-                            itemNeed.org_id = item.org_id;
-                            itemNeed.name = item.name;
-                            orgList.push(itemNeed);
-                        });
-                        window.sessionStorage.setItem("orgList", JSON.stringify(orgList));
-
-                        //保存机构树
-                        //设置根节点
-                        var treeData = {};
-                        var oneItem = data[0];
-                        for (var k in oneItem) {
-                            treeData[k] = oneItem[k];
+            var isAdmin = JSON.parse(window.sessionStorage.getItem("user")).is_admin;
+            if(isAdmin){
+                //机构
+                if (!window.sessionStorage.getItem("orgList")) {
+                    this.$axios({
+                        url: "/cfm/adminProcess",
+                        method: "post",
+                        data: {
+                            optype: "org_list"
                         }
-                        treeData.children = [];
+                    }).then((result) => {
+                        if (result.data.error_msg) {
+                            return;
+                        } else {
+                            var data = result.data.data;
+                            var orgList = [];
+                            data.forEach(function (item) {
+                                var itemNeed = {};
+                                itemNeed.org_id = item.org_id;
+                                itemNeed.name = item.name;
+                                orgList.push(itemNeed);
+                            });
+                            window.sessionStorage.setItem("orgList", JSON.stringify(orgList));
 
-                        //遍历设置子节点
-                        function setTreeData(data, tier, currentDatas) {
-                            var allDatas = []; //未使用全部数据
-                            //第二级数据的设置
-                            if (!currentDatas) {
-                                var newCurrentDatas = []; //当前层级数据
-                                for (var i = 0; i < data.length; i++) {
-                                    if (i > 0) {
+                            //保存机构树
+                            //设置根节点
+                            var treeData = {};
+                            var oneItem = data[0];
+                            for (var k in oneItem) {
+                                treeData[k] = oneItem[k];
+                            }
+                            treeData.children = [];
+
+                            //遍历设置子节点
+                            function setTreeData(data, tier, currentDatas) {
+                                var allDatas = []; //未使用全部数据
+                                //第二级数据的设置
+                                if (!currentDatas) {
+                                    var newCurrentDatas = []; //当前层级数据
+                                    for (var i = 0; i < data.length; i++) {
+                                        if (i > 0) {
+                                            var item = data[i];
+                                            if (item.level_num == 2) {
+                                                item.children = [];
+                                                treeData.children.push(item);
+                                                newCurrentDatas.push(item);
+                                            } else {
+                                                allDatas.push(item);
+                                            }
+                                        }
+                                    }
+                                    if (allDatas.length > 0) {
+                                        setTreeData(allDatas, ++tier, newCurrentDatas);
+                                    }
+                                }
+                                //第三级及以后层级数据设置
+                                if (currentDatas) {
+                                    var newCurrentDatas = [];
+                                    for (var i = 0; i < data.length; i++) {
                                         var item = data[i];
-                                        if (item.level_num == 2) {
-                                            item.children = [];
-                                            treeData.children.push(item);
-                                            newCurrentDatas.push(item);
+                                        if (item.level_num == tier) {
+                                            var thisParentId = item.parent_id;
+                                            currentDatas.forEach(function (value) {
+                                                if (value.org_id == thisParentId) {
+                                                    item.children = [];
+                                                    value.children.push(item);
+                                                    newCurrentDatas.push(item);
+                                                }
+                                            })
                                         } else {
                                             allDatas.push(item);
                                         }
                                     }
-                                }
-                                if (allDatas.length > 0) {
-                                    setTreeData(allDatas, ++tier, newCurrentDatas);
-                                }
-                            }
-                            //第三级及以后层级数据设置
-                            if (currentDatas) {
-                                var newCurrentDatas = [];
-                                for (var i = 0; i < data.length; i++) {
-                                    var item = data[i];
-                                    if (item.level_num == tier) {
-                                        var thisParentId = item.parent_id;
-                                        currentDatas.forEach(function (value) {
-                                            if (value.org_id == thisParentId) {
-                                                item.children = [];
-                                                value.children.push(item);
-                                                newCurrentDatas.push(item);
-                                            }
-                                        })
-                                    } else {
-                                        allDatas.push(item);
+                                    if (allDatas.length > 0) {
+                                        setTreeData(allDatas, ++tier, newCurrentDatas);
                                     }
                                 }
-                                if (allDatas.length > 0) {
-                                    setTreeData(allDatas, ++tier, newCurrentDatas);
+                            };
+                            setTreeData(data, 2);
+                            window.sessionStorage.setItem("orgTreeList", JSON.stringify(treeData));
+                        }
+                    }).catch(function (error) {
+                        console.log(error);
+                    })
+                }
+                //部门
+                if (!window.sessionStorage.getItem("deptList")){
+                    this.$axios({
+                        url: "/cfm/adminProcess",
+                        method: "post",
+                        data: {
+                            optype: "dept_list",
+                            params: {
+                                page_size: 1000,
+                                page_num: 1
+                            }
+                        }
+                    }).then((result) => {
+                        if (result.data.error_msg) {
+                            return;
+                        } else {
+                            var data = result.data.data;
+                            var deptList = [];
+                            data.forEach(function (item) {
+                                var itemNeed = {};
+                                for (var k in item) {
+                                    itemNeed[k] = item[k];
                                 }
-                            }
-                        };
-                        setTreeData(data, 2);
-                        window.sessionStorage.setItem("orgTreeList", JSON.stringify(treeData));
-                    }
-                }).catch(function (error) {
-                    console.log(error);
-                })
-            }
-            //部门
-            if (!window.sessionStorage.getItem("deptList")){
-                this.$axios({
-                    url: "/cfm/adminProcess",
-                    method: "post",
-                    data: {
-                        optype: "dept_list",
-                        params: {
-                            page_size: 1000,
-                            page_num: 1
+                                deptList.push(itemNeed);
+                            });
+                            window.sessionStorage.setItem("deptList", JSON.stringify(deptList));
                         }
-                    }
-                }).then((result) => {
-                    if (result.data.error_msg) {
-                        return;
-                    } else {
-                        var data = result.data.data;
-                        var deptList = [];
-                        data.forEach(function (item) {
-                            var itemNeed = {};
-                            for (var k in item) {
-                                itemNeed[k] = item[k];
+                    }).catch(function (error) {
+                        console.log(error);
+                    })
+                }
+                //用户组
+                if (!window.sessionStorage.getItem("usrgroupList")){
+                    this.$axios({
+                        url: "/cfm/adminProcess",
+                        method: "post",
+                        data: {
+                            optype: "usrgroup_list",
+                            params: {
+                                page_size: 1000,
+                                page_num: 1
                             }
-                            deptList.push(itemNeed);
-                        });
-                        window.sessionStorage.setItem("deptList", JSON.stringify(deptList));
-                    }
-                }).catch(function (error) {
-                    console.log(error);
-                })
-            }
-            //用户组
-            if (!window.sessionStorage.getItem("usrgroupList")){
-                this.$axios({
-                    url: "/cfm/adminProcess",
-                    method: "post",
-                    data: {
-                        optype: "usrgroup_list",
-                        params: {
-                            page_size: 1000,
-                            page_num: 1
                         }
-                    }
-                }).then((result) => {
-                    if (result.data.error_msg) {
-                        return;
-                    } else {
-                        var data = result.data.data;
-                        var usrgroupList = [];
-                        data.forEach(function (item) {
-                            var itemNeed = {};
-                            for (var k in item) {
-                                itemNeed[k] = item[k];
-                            }
-                            usrgroupList.push(itemNeed);
-                        });
-                        window.sessionStorage.setItem("usrgroupList", JSON.stringify(usrgroupList));
-                    }
-                }).catch(function (error) {
-                    console.log(error);
-                })
+                    }).then((result) => {
+                        if (result.data.error_msg) {
+                            return;
+                        } else {
+                            var data = result.data.data;
+                            var usrgroupList = [];
+                            data.forEach(function (item) {
+                                var itemNeed = {};
+                                for (var k in item) {
+                                    itemNeed[k] = item[k];
+                                }
+                                usrgroupList.push(itemNeed);
+                            });
+                            window.sessionStorage.setItem("usrgroupList", JSON.stringify(usrgroupList));
+                        }
+                    }).catch(function (error) {
+                        console.log(error);
+                    })
+                }
             }
             //银行大类
             if (!window.sessionStorage.getItem("bankTypeList")) {

@@ -627,7 +627,7 @@
             },
             //删除当前路由
             removeRouter: function (row, index, rows) {
-                this.$confirm('确认删除当前公司吗?', '提示', {
+                this.$confirm('确认删除当前路由吗?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'warning'
@@ -650,8 +650,13 @@
                             })
                             return;
                         }
-                        rows.splice(index, 1);
-                        this.pagTotal--;
+                        if((this.pagTotal/this.pagSize) > 1){
+                            this.$emit('getTableData', this.routerMessage);
+                        }else{
+                            rows.splice(index, 1);
+                            this.pagTotal--;
+                        }
+
                         this.$message({
                             type: "success",
                             message: "删除成功",

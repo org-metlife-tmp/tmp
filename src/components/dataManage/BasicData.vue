@@ -142,7 +142,8 @@
     <div id="basicData">
         <!-- 顶部按钮-->
         <div class="button-list-right">
-            <el-button type="warning" size="mini" v-if="btActive.department" @click="addDept">新增</el-button>
+            <el-button type="warning" size="mini" @click="addDept"
+                       v-if="btActive.department || btActive.post">新增</el-button>
             <el-button type="warning" size="mini">下载</el-button>
         </div>
         <!--公司内容-->
@@ -182,7 +183,7 @@
             </span>
             </el-tree>
         </div>
-        <!--币种/部门 表格-->
+        <!--币种/部门/职位 表格-->
         <el-table :data="tableList"
                   border
                   size="mini"
@@ -190,12 +191,16 @@
                   v-else>
             <el-table-column prop="iso_code" label="币种编号" v-if="btActive.currency"></el-table-column>
             <el-table-column prop="name" label="部门名称" v-else-if="btActive.department"></el-table-column>
+            <el-table-column prop="name" label="职位名称" v-else-if="btActive.post"></el-table-column>
 
             <el-table-column prop="name" label="币种名称" v-if="btActive.currency"></el-table-column>
+            <el-table-column prop="desc" label="职位描述" v-else-if="btActive.post"></el-table-column>
             <el-table-column prop="status" :formatter="transition" label="状态"
                              v-else-if="btActive.department"></el-table-column>
 
             <el-table-column prop="symbol" label="币种符号" v-if="btActive.currency"></el-table-column>
+            <el-table-column prop="status" :formatter="transition" label="职位状态"
+                             v-else-if="btActive.post"></el-table-column>
             <el-table-column
                     label="操作"
                     width="100">
@@ -207,17 +212,17 @@
                     <el-tooltip content="设置状态" placement="bottom" effect="light" :enterable="false" :open-delay="500">
                         <el-button size="mini"
                                    @click="setStatus(scope.row)"
-                                   v-if="btActive.department"
+                                   v-if="btActive.department || btActive.post"
                                    class="on-off"></el-button>
                     </el-tooltip>
                     <el-tooltip content="编辑" placement="bottom" effect="light" :enterable="false" :open-delay="500">
                         <el-button type="primary" icon="el-icon-edit" size="mini"
-                                   v-if="btActive.department"
+                                   v-if="btActive.department || btActive.post"
                                    @click="redact(scope.row)"></el-button>
                     </el-tooltip>
                     <el-tooltip content="删除" placement="bottom" effect="light" :enterable="false" :open-delay="500">
                         <el-button type="danger" icon="el-icon-delete" size="mini"
-                                   v-if="btActive.department"
+                                   v-if="btActive.department || btActive.post"
                                    @click="delDept(scope.row,scope.$index,tableList)"></el-button>
                     </el-tooltip>
                 </template>
@@ -229,11 +234,14 @@
                 <li :class="{'current-select':btActive.company}"
                     @click="isActive('company')">公司
                 </li>
-                <li :class="{'current-select':btActive.currency}"
-                    @click="isActive('currency')">币种
-                </li>
                 <li :class="{'current-select':btActive.department}"
                     @click="isActive('department')">部门
+                </li>
+                <li :class="{'current-select':btActive.post}"
+                    @click="isActive('post')">职位
+                </li>
+                <li :class="{'current-select':btActive.currency}"
+                    @click="isActive('currency')">币种
                 </li>
             </ul>
         </div>
@@ -299,6 +307,25 @@
                 <el-button type="primary" @click="setDept" size="small">确 定</el-button>
             </span>
         </el-dialog>
+        <el-dialog :visible.sync="postDialog"
+                   width="30%"
+                   :close-on-click-modal="false">
+            <span slot="title" v-text="postDialogTitle"></span>
+            <el-form :model="deptForm" :label-width="formLabelWidth" size="small">
+                <el-form-item label="职位名称">
+                    <el-input v-model="postForm.name"></el-input>
+                </el-form-item>
+                <el-form-item label="职位描述">
+                    <el-input v-model="postForm.desc"
+                              type="textarea"
+                              :rows="3"></el-input>
+                </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="postDialog = false" size="small">取 消</el-button>
+                <el-button type="primary" @click="setPost" size="small">确 定</el-button>
+            </span>
+        </el-dialog>
     </div>
 </template>
 
@@ -311,6 +338,27 @@
         created: function () {
             this.$emit('transmitTitle', '基础数据维护');
             this.$emit('getTableData', this.routerMessage);
+        },
+        destroyed: function(){
+           /* window.sessionStorage.removeItem("orgTreeList");
+            window.sessionStorage.removeItem("deptList");
+            this.$axios({
+                url: "/cfm/adminProcess",
+                method: "post",
+                data: {
+                    optype: "org_list"
+                }
+            }).then(result => {
+                if (result.data.error_msg) {
+                    return;
+                }else{
+                    var data = result.data.data;
+                    var treeData = this.setTreeData(data);
+                    window.sessionStorage.setItem("orgTreeList", JSON.stringify(treeData));
+                }
+            }).catch(error => {
+                console.log(error);
+            })*/
         },
         data: function () {
             return {
@@ -325,7 +373,8 @@
                 btActive: {
                     company: true,
                     currency: false,
-                    department: false
+                    department: false,
+                    post: false
                 },
                 dialogVisible: false, //弹框-公司
                 form: {},
@@ -335,6 +384,9 @@
                 deptForm: {},
                 currentDept: {},
                 deptDialogTitle: "编辑",
+                postDialog: false, //弹框-职位
+                postDialogTitle: "新增",
+                postForm: {},
                 formLabelWidth: '100px' //弹框表单的标签宽度
             }
         },
@@ -372,6 +424,17 @@
                 if (active == "department") {
                     btActive.department = true;
                     this.routerMessage.optype = "dept_list";
+                    this.routerMessage.params = {
+                        page_size: "10",
+                        page_num: "1"
+                    }
+                    this.$emit("getTableData", this.routerMessage);
+                    return;
+                }
+                //点击职位
+                if(active == "post"){
+                    btActive.post = true;
+                    this.routerMessage.optype = "position_list";
                     this.routerMessage.params = {
                         page_size: "10",
                         page_num: "1"
@@ -457,10 +520,15 @@
                             optype: "org_add",
                             params: params
                         }
-                    }).then(function (result) {
+                    }).then( (result) => {
                         if (result.data) {
                             result.data.data.children = [];
                             currentTree.children.push(result.data.data);
+                            this.$message({
+                                type: "success",
+                                message: '新增成功',
+                                duration: 2000
+                            })
                         }
                     }).catch(function (error) {
                         console.log(error);
@@ -473,12 +541,17 @@
                             optype: "org_chg",
                             params: params
                         }
-                    }).then(function (result) {
+                    }).then((result) => {
                         if (result.data) {
                             var data = result.data.data;
                             for (var k in data) {
                                 currentTree[k] = data[k];
                             }
+                            this.$message({
+                                type: "success",
+                                message: '修改成功',
+                                duration: 2000
+                            })
                         }
                     }).catch(function (error) {
                         console.log(error);
@@ -531,40 +604,81 @@
             },
             //设置部门状态
             setStatus: function (row) {
-                this.$axios({
-                    url: "/cfm/adminProcess",
-                    method: "post",
-                    data: {
-                        optype: "dept_setstatus",
-                        params: {
-                            dept_id: row.dept_id,
-                            status: row.status
+                //修改部门状态
+                if(this.btActive.department){
+                    this.$axios({
+                        url: "/cfm/adminProcess",
+                        method: "post",
+                        data: {
+                            optype: "dept_setstatus",
+                            params: {
+                                dept_id: row.dept_id,
+                                status: row.status
+                            }
                         }
-                    }
-                }).then((result) => {
-                    if (result.data.state == "ok") {
-                        row.status = result.data.data.status;
-                        this.$message({
-                            type: 'success',
-                            message: '状态更改成功',
-                            duration: 2000
-                        });
-                    }
-                }).catch(function (error) {
-                    console.log(error);
-                })
+                    }).then((result) => {
+                        if (result.data.state == "ok") {
+                            row.status = result.data.data.status;
+                            this.$message({
+                                type: 'success',
+                                message: '状态更改成功',
+                                duration: 2000
+                            });
+                        }
+                    }).catch(function (error) {
+                        console.log(error);
+                    })
+                }
+                //修改职位状态
+                if(this.btActive.post){
+                    this.$axios({
+                        url: "/cfm/adminProcess",
+                        method: "post",
+                        data: {
+                            optype: "position_setstatus",
+                            params: {
+                                pos_id: row.pos_id,
+                                status: row.status
+                            }
+                        }
+                    }).then((result) => {
+                        if (result.data.state == "ok") {
+                            row.status = result.data.data;
+                            this.$message({
+                                type: 'success',
+                                message: '状态更改成功',
+                                duration: 2000
+                            });
+                        }
+                    }).catch(function (error) {
+                        console.log(error);
+                    })
+                }
             },
             //编辑当前部门
             redact: function (row) {
-                this.deptDialogTitle = "编辑";
-                this.currentDept = row;
-                this.deptForm = {};
-                for (var k in row) {
-                    this.deptForm[k] = row[k];
+                //修改部门
+                if(this.btActive.department){
+                    this.deptDialogTitle = "编辑";
+                    this.currentDept = row;
+                    this.deptForm = {};
+                    for (var k in row) {
+                        this.deptForm[k] = row[k];
+                    }
+                    this.deptDialog = true;
                 }
-                this.deptDialog = true;
+                //修改职位
+                if(this.btActive.post){
+                    this.postDialogTitle = "编辑";
+                    this.currentDept = row;
+                    this.postForm = {};
+                    for (var k in row) {
+                        this.postForm[k] = row[k];
+                    }
+                    this.postDialog = true;
+                }
             },
-            //当前部门弹框-确定
+            //部门弹框-确定
             setDept: function () {
                 if (this.deptDialogTitle == "新增") {
                     this.$axios({
@@ -575,6 +689,14 @@
                             params: this.deptForm
                         }
                     }).then((result) => {
+                        if (result.data.error_msg) {
+                            this.$message({
+                                type: "error",
+                                message: result.data.error_msg,
+                                duration: 2000
+                            })
+                            return;
+                        }
                         if(this.tableList.length < this.routerMessage.params.page_size){
                             this.tableList.push(result.data.data);
                         }
@@ -598,7 +720,12 @@
                             params: this.deptForm
                         }
                     }).then((result) => {
-                        if (result.data.errorMessage) {
+                        if (result.data.error_msg) {
+                            this.$message({
+                                type: "error",
+                                message: result.data.error_msg,
+                                duration: 2000
+                            })
                             return;
                         }
                         var data = result.data.data;
@@ -618,44 +745,227 @@
             },
             //删除当前部门
             delDept: function (row, index, rows) {
-                this.$confirm('确认删除当前公司吗?', '提示', {
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                    type: 'warning'
-                }).then(() => {
-                    this.$axios({
-                        url: "/cfm/adminProcess",
-                        method: "post",
-                        data: {
-                            optype: "dept_del",
-                            params: {
-                                dept_id: row.dept_id
+                //删除部门
+                if(this.btActive.department){
+                    this.$confirm('确认删除当前部门吗?', '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    }).then(() => {
+                        this.$axios({
+                            url: "/cfm/adminProcess",
+                            method: "post",
+                            data: {
+                                optype: "dept_del",
+                                params: {
+                                    dept_id: row.dept_id
+                                }
                             }
-                        }
-                    }).then((result) => {
-                        if (result.errorMessage) {
-                            return;
-                        }
-                        rows.splice(index, 1);
-                        this.$message({
-                            type: "success",
-                            message: "删除成功",
-                            duration: 2000
+                        }).then((result) => {
+                            if (result.data.error_msg) {
+                                this.$message({
+                                    type: "error",
+                                    message: result.data.error_msg,
+                                    duration: 2000
+                                })
+                                return;
+                            }
+
+                            if((this.pagTotal/this.pagSize) > 1){
+                                this.$emit('getTableData', this.routerMessage);
+                            }else{
+                                rows.splice(index, 1);
+                                this.pagTotal--;
+                            }
+
+                            this.$message({
+                                type: "success",
+                                message: "删除成功",
+                                duration: 2000
+                            })
+                        }).catch(function (error) {
+                            console.log(error);
                         })
-                    }).catch(function (error) {
-                        console.log(error);
-                    })
-                }).catch(() => {
-                });
+                    }).catch(() => {
+                    });
+                }
+                //删除职位
+                if(this.btActive.post){
+                    this.$confirm('确认删除当前职位吗?', '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    }).then(() => {
+                        this.$axios({
+                            url: "/cfm/adminProcess",
+                            method: "post",
+                            data: {
+                                optype: "position_del",
+                                params: {
+                                    pos_id: row.pos_id
+                                }
+                            }
+                        }).then((result) => {
+                            if (result.data.error_msg) {
+                                this.$message({
+                                    type: "error",
+                                    message: result.data.error_msg,
+                                    duration: 2000
+                                })
+                                return;
+                            }
+
+                            if((this.pagTotal/this.pagSize) > 1){
+                                this.$emit('getTableData', this.routerMessage);
+                            }else{
+                                rows.splice(index, 1);
+                                this.pagTotal--;
+                            }
+
+                            this.$message({
+                                type: "success",
+                                message: "删除成功",
+                                duration: 2000
+                            })
+                        }).catch(function (error) {
+                            console.log(error);
+                        })
+                    }).catch(() => {
+                    });
+                }
             },
             //新增部门
             addDept: function () {
-                this.deptDialogTitle = "新增";
-                this.deptForm = {};
-                this.deptDialog = true;
+                //部门新增
+                if(this.btActive.department){
+                    this.deptDialogTitle = "新增";
+                    this.deptForm = {};
+                    this.deptDialog = true;
+                }
+                //职位新增
+                if(this.btActive.post){
+                    this.postDialogTitle = "新增";
+                    this.postForm = {};
+                    this.postDialog = true;
+                }
+            },
+            //职位弹框-确定
+            setPost:function(){
+                var optype = "";
+                var params = this.postForm;
+                if(this.postDialogTitle == "新增"){
+                    optype = "position_add";
+                }else{
+                    optype = "position_chg";
+                }
+                this.$axios({
+                    url: "/cfm/adminProcess",
+                    method: "post",
+                    data: {
+                        optype: optype,
+                        params: params
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                        return;
+                    }
+                    if(this.postDialogTitle == "新增"){
+                        if(this.tableList.length < this.routerMessage.params.page_size){
+                            this.tableList.push(result.data.data);
+                        }
+                        this.pagTotal++;
+                        var message = "新增成功"
+                    }else{
+                        var data = result.data.data;
+                        for (var key in data) {
+                            this.currentDept[key] = data[key];
+                        }
+                        var message = "修改成功"
+                    }
+                    this.postDialog = false;
+                    this.$message({
+                        type: "success",
+                        message: message,
+                        duration: 2000
+                    })
+                }).catch(function (error) {
+                    console.log(error);
+                })
+            },
+            //设置树数据的转换
+            setTreeData:function(data){
+                /*
+                *将后台返回的数据转换为树结构数据
+                *
+                *  1、创建树结构的数据 并保存根节点
+                *  2、递归将数据添加进根节点
+                *     2.1 遍历获取当前层级的下一层数据 并根据parentId添加到其父节点下面
+                *     2.2 保存当前层级数据 作为下一次遍历时的父节点
+                *  3、终止条件：当前data中无数据
+                *
+                * */
+                //设置根节点
+                var treeData = {};
+                var oneItem = data[0];
+                for (var k in oneItem) {
+                    treeData[k] = oneItem[k];
+                }
+                treeData.children = [];
+
+                //遍历设置子节点
+                function setTreeData(data, tier, currentDatas) {
+                    var allDatas = []; //未使用全部数据
+                    //第二级数据的设置
+                    if (!currentDatas) {
+                        var newCurrentDatas = []; //当前层级数据
+                        for (var i = 0; i < data.length; i++) {
+                            if (i > 0) {
+                                var item = data[i];
+                                if (item.level_num == 2) {
+                                    item.children = [];
+                                    treeData.children.push(item);
+                                    newCurrentDatas.push(item);
+                                } else {
+                                    allDatas.push(item);
+                                }
+                            }
+                        }
+                        if (allDatas.length > 0) {
+                            setTreeData(allDatas, ++tier, newCurrentDatas);
+                        }
+                    }
+                    //第三级及以后层级数据设置
+                    if (currentDatas) {
+                        var newCurrentDatas = [];
+                        for (var i = 0; i < data.length; i++) {
+                            var item = data[i];
+                            if (item.level_num == tier) {
+                                var thisParentId = item.parent_id;
+                                currentDatas.forEach(function (value) {
+                                    if (value.org_id == thisParentId) {
+                                        item.children = [];
+                                        value.children.push(item);
+                                        newCurrentDatas.push(item);
+                                    }
+                                })
+                            } else {
+                                allDatas.push(item);
+                            }
+                        }
+                        if (allDatas.length > 0) {
+                            setTreeData(allDatas, ++tier, newCurrentDatas);
+                        }
+                    }
+                };
+                setTreeData(data, 2);
+                return treeData;
             }
         },
-        computed: {},
         watch: {
             //根据父组件返回的信息进行设置
             tableData: function (val, oldValue) {
@@ -665,70 +975,8 @@
                     this.pagTotal = val.total_line * 1;
                     this.tableList = data;
                 } else { //公司
-                    /*
-                    *将后台返回的数据转换为树结构数据
-                    *
-                    *  1、创建树结构的数据 并保存根节点
-                    *  2、递归将数据添加进根节点
-                    *     2.1 遍历获取当前层级的下一层数据 并根据parentId添加到其父节点下面
-                    *     2.2 保存当前层级数据 作为下一次遍历时的父节点
-                    *  3、终止条件：当前data中无数据
-                    *
-                    * */
-                    //设置根节点
-                    var treeData = {};
-                    var oneItem = data[0];
-                    for (var k in oneItem) {
-                        treeData[k] = oneItem[k];
-                    }
-                    treeData.children = [];
 
-                    //遍历设置子节点
-                    function setTreeData(data, tier, currentDatas) {
-                        var allDatas = []; //未使用全部数据
-                        //第二级数据的设置
-                        if (!currentDatas) {
-                            var newCurrentDatas = []; //当前层级数据
-                            for (var i = 0; i < data.length; i++) {
-                                if (i > 0) {
-                                    var item = data[i];
-                                    if (item.level_num == 2) {
-                                        item.children = [];
-                                        treeData.children.push(item);
-                                        newCurrentDatas.push(item);
-                                    } else {
-                                        allDatas.push(item);
-                                    }
-                                }
-                            }
-                            if (allDatas.length > 0) {
-                                setTreeData(allDatas, ++tier, newCurrentDatas);
-                            }
-                        }
-                        //第三级及以后层级数据设置
-                        if (currentDatas) {
-                            var newCurrentDatas = [];
-                            for (var i = 0; i < data.length; i++) {
-                                var item = data[i];
-                                if (item.level_num == tier) {
-                                    var thisParentId = item.parent_id;
-                                    currentDatas.forEach(function (value) {
-                                        if (value.org_id == thisParentId) {
-                                            item.children = [];
-                                            value.children.push(item);
-                                            newCurrentDatas.push(item);
-                                        }
-                                    })
-                                } else {
-                                    allDatas.push(item);
-                                }
-                            }
-                            if (allDatas.length > 0) {
-                                setTreeData(allDatas, ++tier, newCurrentDatas);
-                            }
-                        }
-                    };
-                    setTreeData(data, 2);
+                    var treeData = this.setTreeData(data);
                     this.treeList.push(treeData);
                     this.treeList = JSON.parse(JSON.stringify(this.treeList));
                 }

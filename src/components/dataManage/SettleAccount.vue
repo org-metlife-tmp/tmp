@@ -348,6 +348,8 @@
                 this.dialogVisible = true;
 
                 this.bankCorrelation = {};
+                this.bankList = [];
+                this.bankSelect = true;
                 var dialogData = this.dialogData;
                 for(var k in dialogData){
                     dialogData[k] = "";
@@ -361,6 +363,7 @@
                 this.currentSettle = row;
 
                 this.bankCorrelation = {};
+                this.bankSelect = true;
                 var dialogData = this.dialogData;
                 for(var k in dialogData){
                     dialogData[k] = "";
@@ -403,7 +406,7 @@
                     }else {
                         var data = result.data.data;
                         if(this.dialogTitle == "新增"){
-                            if(this.tableList.length < this.routerMessage.page_size){
+                            if(this.tableList.length < this.routerMessage.params.page_size){
                                 this.tableList.push(data);
                             }
                             this.pagTotal++;
@@ -451,8 +454,14 @@
                             })
                             return;
                         }
-                        rows.splice(index, 1);
-                        this.pagTotal--;
+
+                        if((this.pagTotal/this.pagSize) > 1){
+                            this.$emit('getTableData', this.routerMessage);
+                        }else{
+                            rows.splice(index, 1);
+                            this.pagTotal--;
+                        }
+
                         this.$message({
                             type: "success",
                             message: "删除成功",

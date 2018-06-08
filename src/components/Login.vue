@@ -210,6 +210,15 @@
         methods: {
             //提交
             submit: function () {
+                //判断是否获取到加密信息
+                if(!this.exponent){
+                    this.$message({
+                        type:"error",
+                        message: "服务请求错误，请刷新页面或检查网络",
+                        duration: 2000
+                    })
+                    return;
+                }
                 //密码加密
                 var key = RSAUtils.getKeyPair(this.exponent, '', this.modulus);
                 var encryptionPass = RSAUtils.encryptedString(key, this.passWord);

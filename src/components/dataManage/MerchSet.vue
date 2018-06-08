@@ -360,8 +360,14 @@
                             })
                             return;
                         }
-                        rows.splice(index, 1);
-                        this.pagTotal--;
+
+                        if((this.pagTotal/this.pagSize) > 1){
+                            this.$emit('getTableData', this.routerMessage);
+                        }else{
+                            rows.splice(index, 1);
+                            this.pagTotal--;
+                        }
+
                         this.$message({
                             type: "success",
                             message: "删除成功",

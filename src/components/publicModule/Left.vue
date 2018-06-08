@@ -250,40 +250,40 @@
     <div id="menuContent">
         <el-menu default-active="1-12-1" :class="['el-menu-vertical-demo', 'menuList', {'noBgc':showBgc}]"
                  :collapse="isCollapse" :router="true">
-            <el-submenu index="1">
+            <el-submenu index="1" v-if="menuList.DMMGT">
                 <template slot="title" height="200px">
                     <i class="icon-sjgl"></i>
                     <p class="mg-four">数据管理</p>
                 </template>
                 <el-menu-item-group>
-                    <el-menu-item index="/data-manage/settle-account">结算账户设置</el-menu-item>
-                    <el-menu-item index="/data-manage/channel-set">渠道设置</el-menu-item>
-                    <el-menu-item index="/data-manage/router-set">路由设置</el-menu-item>
-                    <el-menu-item index="/data-manage/basic-data">基础数据维护</el-menu-item>
-                    <el-menu-item index="/data-manage/merch-set">商户号设置</el-menu-item>
+                    <el-menu-item index="/data-manage/basic-data" v-if="menuList.BasicDataMgt">基础数据维护</el-menu-item>
+                    <el-menu-item index="/data-manage/settle-account" v-if="menuList.SettAccMgt">结算账户设置</el-menu-item>
+                    <el-menu-item index="/data-manage/merch-set" v-if="menuList.MerchMgt">商户号设置</el-menu-item>
+                    <el-menu-item index="/data-manage/channel-set" v-if="menuList.ChannelMgt">渠道设置</el-menu-item>
+                    <el-menu-item index="/data-manage/router-set" v-if="menuList.RouteMgt">路由设置</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="2">
+            <el-submenu index="2" v-if="menuList.UMMGT">
                 <template slot="title" height="200px">
                     <i class="icon-yhgl"></i>
                     <p class="mg-four">用户管理</p>
                 </template>
                 <el-menu-item-group>
-                    <el-menu-item index="/user-manage/user-maintain">用户维护</el-menu-item>
-                    <el-menu-item index="/user-manage/user-group">用户组设置</el-menu-item>
-                    <el-menu-item index="/user-manage/user-menu">用户菜单设置</el-menu-item>
+                    <el-menu-item index="/user-manage/user-maintain" v-if="menuList.UsrMgt">用户维护</el-menu-item>
+                    <el-menu-item index="/user-manage/user-group" v-if="menuList.UsrGpMgt">用户组设置</el-menu-item>
+                    <el-menu-item index="/user-manage/user-menu" v-if="menuList.UsrMenuMgt">用户菜单设置</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="3">
+            <el-submenu index="3" v-if="menuList.RTPRMGT">
                 <template slot="title" height="200px">
                     <i class="icon-ssjy"></i>
                     <p class="mg-four">实时交易</p>
                 </template>
                 <el-menu-item-group>
-                    <el-menu-item index="/realtime-trade/personal-insurance">个险核心实时代付</el-menu-item>
-                    <el-menu-item index="/realtime-trade/group-insurance">团险核心实时代付</el-menu-item>
-                    <el-menu-item index="/realtime-trade/QRcode">移动展业二维码</el-menu-item>
-                    <el-menu-item index="/realtime-trade/move-withhold">移动展业实时代扣</el-menu-item>
+                    <el-menu-item index="/realtime-trade/personal-insurance" v-if="menuList.RTGXPayMgt">个险核心实时代付</el-menu-item>
+                    <el-menu-item index="/realtime-trade/group-insurance" v-if="menuList.RTTXPayMgt">团险核心实时代付</el-menu-item>
+                    <el-menu-item index="/realtime-trade/QRcode" v-if="menuList.RTYDQrCodeMgt">移动展业二维码</el-menu-item>
+                    <el-menu-item index="/realtime-trade/move-withhold" v-if="menuList.RTYDRecvMgt">移动展业实时代扣</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
 
@@ -431,9 +431,50 @@
 <script>
     export default {
         name: "Left",
+        created:function(){
+            var user = JSON.parse(window.sessionStorage.getItem("user"));
+            if(user){
+                var menuList = user.menu_info;
+                for(var i = 0; i < menuList.length; i++){
+                    var items = menuList[i].items;
+                    for(var j = 0; j < items.length; j++){
+                        var item = items[j];
+                        for(var k in this.menuList){
+                            if(item.code == k){
+                                this.menuList[k] = true;
+                                break;
+                            }
+                        }
+                    }
+                    for(var key in this.menuList){
+                        if(menuList[i].code == key){
+                            this.menuList[key] = true;
+                            break;
+                        }
+                    }
+                }
+            }
+        },
         data: function () {
             return {
-                isCollapse: true
+                isCollapse: true,
+                menuList: {
+                    DMMGT: false, //数据管理
+                    BasicDataMgt: false, //基础数据维护
+                    SettAccMgt: false, //结算账户设置
+                    MerchMgt: false, //商户号设置
+                    ChannelMgt: false, //渠道设置
+                    RouteMgt: false, //路由设置
+                    UMMGT: false, //用户管理
+                    UsrMgt: false, //用户维护
+                    UsrGpMgt: false, //用户组设置
+                    UsrMenuMgt: false, //用户菜单设置
+                    RTPRMGT: false, //实时交易
+                    RTGXPayMgt: false, //个险核心实时代付
+                    RTTXPayMgt: false, //团险核心实时代付
+                    RTYDQrCodeMgt: false, //移动展业二维码
+                    RTYDRecvMgt: false, //移动展业实时代扣
+                }
             }
         },
         methods: {},
