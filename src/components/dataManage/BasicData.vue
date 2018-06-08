@@ -359,25 +359,7 @@
             }
         },
         destroyed: function(){
-           /* window.sessionStorage.removeItem("orgTreeList");
-            window.sessionStorage.removeItem("deptList");
-            this.$axios({
-                url: "/cfm/adminProcess",
-                method: "post",
-                data: {
-                    optype: "org_list"
-                }
-            }).then(result => {
-                if (result.data.error_msg) {
-                    return;
-                }else{
-                    var data = result.data.data;
-                    var treeData = this.setTreeData(data);
-                    window.sessionStorage.setItem("orgTreeList", JSON.stringify(treeData));
-                }
-            }).catch(error => {
-                console.log(error);
-            })*/
+            window.sessionStorage.setItem("orgTreeList",JSON.stringify(this.treeList));
         },
         data: function () {
             return {
@@ -729,6 +711,7 @@
                         }
                         this.pagTotal++;
                         this.deptDialog = false;
+                        window.sessionStorage.setItem("deptList",JSON.stringify(this.tableList));
                         this.$message({
                             type: "success",
                             message: '新增成功',
@@ -760,6 +743,7 @@
                             currentDept[key] = data[key];
                         }
                         this.deptDialog = false;
+                        window.sessionStorage.setItem("deptList",JSON.stringify(this.tableList));
                         this.$message({
                             type: "success",
                             message: '修改成功',
