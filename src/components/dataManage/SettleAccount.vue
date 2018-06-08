@@ -180,7 +180,6 @@
                         <el-form-item label="" :label-width="formLabelWidth">
                             <el-select v-model="dialogData.cnaps_code" placeholder="请选择银行"
                                        clearable filterable
-                                       :filter-method="filterBankType"
                                        @visible-change="getBankList"
                                        :disabled="bankSelect">
                                 <el-option v-for="bankType in bankList"

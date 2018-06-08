@@ -219,7 +219,14 @@
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="结算账号">
-                            <el-input v-model="dialogData.settle_acc_id"></el-input>
+                            <el-select v-model="dialogData.settle_acc_id" placeholder="请选择支付渠道"
+                                       clearable>
+                                <el-option v-for="settacc in settaccList"
+                                           :key="settacc.id"
+                                           :label="settacc.acc_no"
+                                           :value="settacc.id">
+                                </el-option>
+                            </el-select>
                         </el-form-item>
                     </el-col>
                     <el-col :span="24">
@@ -265,6 +272,31 @@
             if (AccPayOrRecvAttr) {
                 this.accOrRecvList = AccPayOrRecvAttr;
             }
+            //结算账号
+            this.$axios({
+                url:"/cfm/adminProcess",
+                method: "post",
+                data: {
+                    optype: "settacc_list",
+                    params: {
+                        page_size:10000,
+                        page_num: 1
+                    }
+                }
+            }).then((result) => {
+                if(result.data.error_msg){
+                    this.$message({
+                        type: "error",
+                        message: result.data.error_msg,
+                        duration: 2000
+                    })
+                }else{
+                    var data = result.data.data;
+                    this.settaccList = data;
+                }
+            }).catch(function(error){
+                console.log(error);
+            })
         },
         props: ["tableData"],
         data: function () {
@@ -294,7 +326,8 @@
                 orgList: [], //下拉框数据
                 channelList: [],
                 currencyList: [],
-                accOrRecvList: {}
+                accOrRecvList: {},
+                settaccList: []
             }
         },
         methods: {

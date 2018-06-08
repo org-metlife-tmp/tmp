@@ -187,7 +187,9 @@
                 tableList: [],
                 serachData: {},
                 dialogVisible:false,
-                dialogData: {},
+                dialogData: {
+                    third_party_flag: "0"
+                },
                 formLabelWidth:"120px",
                 channelList: []
             }
@@ -232,7 +234,12 @@
             },
             //新增
             addChannel:function(){
-                this.dialogData = {};
+                for(var k in this.dialogData){
+                    if(k == "third_party_flag"){
+                        this.dialogData[k] = "0";
+                    }
+                    this.dialogData[k] = "";
+                }
                 this.dialogVisible = true;
             },
             //点击页数 获取当前页数据
@@ -267,7 +274,9 @@
             //提交当前修改或新增
             subCurrent: function () {
                 var params = this.dialogData;
-
+                if(params.third_party_flag == ""){
+                    params.third_party_flag = "0";
+                }
                 this.$axios({
                     url: "/cfm/adminProcess",
                     method: "post",
@@ -284,7 +293,7 @@
                         })
                     }else {
                         var data = result.data.data;
-                        if(this.tableList.length < this.routerMessage.page_size){
+                        if(this.tableList.length < this.routerMessage.params.page_size){
                             this.tableList.push(data);
                         }
                         this.pagTotal++;

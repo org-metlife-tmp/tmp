@@ -269,14 +269,26 @@
                     <el-input v-model="form.code"></el-input>
                 </el-form-item>
                 <el-form-item label="公司所在省">
-                    <el-select v-model="form.province" placeholder="请选择省份">
-                        <el-option label="北京" value="北京"></el-option>
+                    <el-select v-model="form.province"
+                               placeholder="请选择省份"
+                               @change="proIsSelect"
+                               filterable clearable>
+                        <el-option v-for="province in provinceList"
+                                   :key="province.name"
+                                   :label="province.name"
+                                   :value="province.name">
+                        </el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="公司所在市">
-                    <el-select v-model="form.city" placeholder="请选择市">
-                        <el-option label="朝阳区" value="朝阳区"></el-option>
-                        <el-option label="海淀区" value="海淀区"></el-option>
+                    <el-select v-model="form.city" placeholder="请选择市"
+                               :disabled="provinceSelect"
+                               filterable clearable>
+                        <el-option v-for="city in cityList"
+                                   :key="city.name"
+                                   :label="city.name"
+                                   :value="city.name">
+                        </el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="公司地址">
@@ -338,6 +350,13 @@
         created: function () {
             this.$emit('transmitTitle', '基础数据维护');
             this.$emit('getTableData', this.routerMessage);
+
+            /*获取下拉框数据*/
+            //省级列表
+            var provinceList = JSON.parse(window.sessionStorage.getItem("provinceList"));
+            if (provinceList) {
+                this.provinceList = provinceList;
+            }
         },
         destroyed: function(){
            /* window.sessionStorage.removeItem("orgTreeList");
@@ -377,7 +396,10 @@
                     post: false
                 },
                 dialogVisible: false, //弹框-公司
-                form: {},
+                form: {
+                    province: "",
+                    city: ""
+                },
                 currentTree: {},
                 dialogTitle: "编辑",
                 deptDialog: false, //弹框-部门
@@ -387,7 +409,10 @@
                 postDialog: false, //弹框-职位
                 postDialogTitle: "新增",
                 postForm: {},
-                formLabelWidth: '100px' //弹框表单的标签宽度
+                formLabelWidth: '100px', //弹框表单的标签宽度
+                provinceList: [], //下拉框数据
+                cityList: [],
+                provinceSelect:true
             }
         },
         methods: {
@@ -450,7 +475,9 @@
             },
             //添加下级公司 编辑当前公司
             addCompany: function (node, data, operation) {
-                this.form = {};
+                for(var k in this.form){
+                    this.form[k] = "";
+                }
                 this.currentTree = data;
                 if (operation == "add") {
                     this.dialogTitle = "添加下级公司";
@@ -964,6 +991,38 @@
                 };
                 setTreeData(data, 2);
                 return treeData;
+            },
+            proIsSelect: function (value) {
+                this.cityList = [];
+                if(value){
+                    this.$axios({
+                        url:"/cfm/commProcess",
+                        method: "post",
+                        data: {
+                            optype: "area_list",
+                            params: {
+                                top_super: value
+                            }
+                        }
+                    }).then((result) => {
+                        if(result.data.error_msg){
+                            this.$message({
+                                type: "error",
+                                message: result.data.error_msg,
+                                duration: 2000
+                            })
+                        }else{
+                            var data = result.data.data;
+                            this.cityList = data;
+                            this.provinceSelect = false;
+                        }
+                    }).catch(function(error){
+                        console.log(error);
+                    })
+                }else{
+                    this.form.city = "";
+                    this.provinceSelect = true;
+                }
             }
         },
         watch: {

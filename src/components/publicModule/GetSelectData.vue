@@ -265,6 +265,25 @@
                     console.log(error);
                 })
             }
+            //省/自治区 列表
+            if(!window.sessionStorage.getItem("provinceList")){
+                this.$axios({
+                    url: "/cfm/commProcess",
+                    method: "post",
+                    data: {
+                        optype: "area_toplevel"
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        return;
+                    } else {
+                        var data = result.data.data;
+                        window.sessionStorage.setItem("provinceList", JSON.stringify(data));
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                })
+            }
         },
         data: function () {
             return {}

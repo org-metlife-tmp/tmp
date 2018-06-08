@@ -234,7 +234,15 @@
                             password: encryptionPass
                         }
                     }
-                }).then(function (result) {
+                }).then( (result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                        return;
+                    }
                     var data = result.data;
                     //保存token和user信息
                     if(data.token){

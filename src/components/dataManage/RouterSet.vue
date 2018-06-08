@@ -86,6 +86,17 @@
                 }
             }
         }
+
+        /*按钮-设置状态*/
+        .on-off {
+            width: 22px;
+            height: 22px;
+            background-image: url(../../assets/icon_common.png);
+            background-position: -273px -62px;
+            border: none;
+            padding: 0;
+            vertical-align: middle;
+        }
     }
 </style>
 <style lang="less" type="text/less">
@@ -191,11 +202,14 @@
             <el-table :data="tableList"
                       border
                       size="mini">
-                <el-table-column prop="source_code" label="来源系统" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="source_code" label="来源系统" :show-overflow-tooltip="true"
+                                 :formatter="transiSource"></el-table-column>
                 <el-table-column prop="pay_recv_mode" label="支付方式"
                                  :show-overflow-tooltip="true"
                                  :formatter="getPay"></el-table-column>
-                <el-table-column prop="pay_item" label="支付子项" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="pay_item" label="支付子项"
+                                 :show-overflow-tooltip="true"
+                                 :formatter="transiPayitem"></el-table-column>
                 <el-table-column prop="memo" label="备注" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="is_activate" label="是否激活"
                                  :formatter="getStatus"
@@ -203,8 +217,13 @@
                                  :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column
                         label="操作"
-                        width="80">
+                        width="110">
                     <template slot-scope="scope" class="operationBtn">
+                        <el-tooltip content="设置状态" placement="bottom" effect="light" :enterable="false" :open-delay="500">
+                            <el-button size="mini"
+                                       @click="setStatus(scope.row)"
+                                       class="on-off"></el-button>
+                        </el-tooltip>
                         <el-tooltip content="编辑" placement="bottom" effect="light" :enterable="false" :open-delay="500">
                             <el-button type="primary" icon="el-icon-edit" size="mini"
                                        @click="editRouter(scope.row)"></el-button>
@@ -246,8 +265,10 @@
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="支付方式" :label-width="formLabelWidth">
-                            <el-select v-model="dialogData.pay_recv_mode" placeholder="请选择支付方式"
-                                       clearable filterable>
+                            <el-select v-model="dialogData.pay_recv_mode"
+                                       placeholder="请选择支付方式"
+                                       clearable filterable
+                                       @change="payChange">
                                 <el-option v-for="(name,k) in PayOrRecvMode"
                                            :key="k"
                                            :label="name"
@@ -258,7 +279,9 @@
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="支付子项" :label-width="formLabelWidth">
-                            <el-select v-model="dialogData.pay_item" placeholder="请选择支付子项" clearable>
+                            <el-select v-model="dialogData.pay_item"
+                                       placeholder="请选择支付子项"
+                                       clearable :disabled="hasPayRecv">
                                 <el-option label="微信" value="WX"></el-option>
                                 <el-option label="支付宝" value="ZFB"></el-option>
                             </el-select>
@@ -353,7 +376,8 @@
                         <el-form-item :label-width="formLabelWidth">
                             <div slot="label" style="line-height:16px">支付渠道<br>原子接口</div>
                             <el-select v-model="item.channel_interface_code" placeholder="请选择活动区域"
-                                       clearable>
+                                       clearable :disabled="item.channel_code?false:true"
+                                       @visible-change="getSalestList(item.channel_code)">
                                 <el-option v-for="(name,k) in salesChannelList"
                                            :key="k"
                                            :label="name"
@@ -366,7 +390,7 @@
                         <el-form-item :label-width="formLabelWidth">
                             <div slot="label" style="line-height:16px">结算账户<br>/商户号</div>
                             <el-select v-model="item.settle_or_merchant_acc_id" placeholder="请选择账户"
-                                       clearable filterable
+                                       clearable filterable :disabled="item.channel_code?false:true"
                                        @visible-change="getAccountList(item.channel_code)">
                                 <el-option v-for="closeAccount in closeAccountList"
                                            :key="closeAccount.id"
@@ -434,10 +458,6 @@
             if (insureType) {
                 this.insureTypeList = insureType.items;
             }
-            //支付渠道原子接口
-            if (salesChannel) {
-                this.salesChannelList = salesChannel.items;
-            }
 
             //机构树
             var orgTreeList = JSON.parse(window.sessionStorage.getItem("orgTreeList"));
@@ -499,7 +519,9 @@
                 insureAll: false,
                 insureSelect: [],
                 isCloseAccount: false, //结算账户的展开状态
-                expandData: []
+                isCloseSale: false, //原子接口的展开状态
+                expandData: [],
+                hasPayRecv: true
             }
         },
         methods: {
@@ -596,11 +618,11 @@
                                 var itemAccId = item.settle_or_merchant_acc_id;
                                 var pushData = true;
                                 this.closeAccountList.forEach((current) => {
-                                    if(current.id == itemAccId){
+                                    if (current.id == itemAccId) {
                                         pushData = false;
                                     }
                                 })
-                                if(pushData){
+                                if (pushData) {
                                     this.closeAccountList.push({
                                         id: item.settle_or_merchant_acc_id,
                                         acc_no: item.settle_or_merchant_acc_no
@@ -650,9 +672,9 @@
                             })
                             return;
                         }
-                        if((this.pagTotal/this.pagSize) > 1){
+                        if ((this.pagTotal / this.pagSize) > 1) {
                             this.$emit('getTableData', this.routerMessage);
-                        }else{
+                        } else {
                             rows.splice(index, 1);
                             this.pagTotal--;
                         }
@@ -745,6 +767,21 @@
                     })
                 }
             },
+            //设置原子接口数据
+            getSalestList:function(code){
+                this.isCloseSale = !this.isCloseSale;
+                if(this.isCloseSale){
+                    this.salesChannelList = {};
+                }
+                if(this.isCloseSale && code){
+                    var channelList = JSON.parse(window.sessionStorage.getItem("channelList"));
+                    for(var i = 0; i < channelList.length; i++){
+                        if(channelList[i].code = code){
+                            this.salesChannelList = channelList[i].items;
+                        }
+                    }
+                }
+            },
             //提交数据
             subCurrent: function () {
                 var params = this.transitionData();
@@ -772,7 +809,7 @@
                     } else {
                         var data = result.data.data;
                         if (this.dialogTitle == "新增") {
-                            if(this.tableList.length < this.routerMessage.params.page_size){
+                            if (this.tableList.length < this.routerMessage.params.page_size) {
                                 this.tableList.push(data);
                             }
                             this.pagTotal++;
@@ -857,7 +894,63 @@
                         itemOne[key] = "1"
                     }
                 }
-            }
+            },
+            //选择支付方式
+            payChange: function (value) {
+                if (value == "3") {
+                    this.hasPayRecv = false;
+                } else {
+                    this.hasPayRecv = true;
+                    this.dialogData.pay_item = "";
+                }
+            },
+            //展示格式转换-来源系统
+            transiSource: function (row, column, cellValue, index) {
+                var data = {
+                    GX: "个险",
+                    TX: "团险",
+                    YD: "移动展业",
+                }
+                return data[cellValue];
+            },
+            //展示格式转换-支付子项
+            transiPayitem:function (row, column, cellValue, index) {
+                if(cellValue == "WX"){
+                    return "微信";
+                }else{
+                    return "支付宝";
+                }
+            },
+            //设置状态
+            setStatus:function (row) {
+                this.$axios({
+                    url:"/cfm/adminProcess",
+                    method: "post",
+                    data: {
+                        optype: "handleroute_setstatus",
+                        params: {
+                            id: row.id
+                        }
+                    }
+                }).then((result) => {
+                    if(result.data.error_msg){
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                    }else{
+                        row.is_activate = result.data.data.is_activate;
+                        this.$message({
+                            type: 'success',
+                            message: '修改成功!',
+                            duration: 2000
+                        });
+                    }
+                }).catch(function(error){
+                    console.log(error);
+                })
+            },
         },
         watch: {
             tableData: function (val, oldVal) {
