@@ -165,7 +165,7 @@
                     </el-col>
                     <el-col :span="7">
                         <el-form-item label="业务类型">
-                            <el-select v-model="serachData.biz_tyep_exp" placeholder="请选择业务类型"
+                            <el-select v-model="serachData.biz_type_exp" placeholder="请选择业务类型"
                                        clearable>
                                 <el-option v-for="(name,k) in bizTypeList"
                                            :key="k"
