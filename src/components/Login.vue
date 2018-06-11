@@ -10,6 +10,7 @@
             box-sizing: border-box;
             padding: 0 60px;
             position: absolute;
+            z-index: 10;
 
             .logo{
                 width: 150px;
@@ -170,7 +171,7 @@
                     <div class="error-message" v-text="errorMessage"></div>
                     <div class="user-name">
                         <span></span>
-                        <input type="text" placeholder="请输入您的手机号" v-model="userIdentify"/>
+                        <input type="text" placeholder="请输入您的登录账号" v-model="userIdentify"/>
                     </div>
                     <div class="user-pass">
                         <span></span>

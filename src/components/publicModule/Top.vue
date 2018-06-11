@@ -97,7 +97,7 @@
 <template>
     <div id="titleTop">
         <router-link :to="{name:'Home'}" class="indexButton"></router-link>
-        <p class="company-name" v-text="companyName"></p>
+        <p class="company-name" v-text="companyName" v-show="showCompany"></p>
         <el-dropdown class="user-message"  @command="handleCommand">
             <p v-text="userName"></p>
             <el-dropdown-menu class="user-operation"
@@ -118,12 +118,25 @@
     export default {
         name: 'Top',
         created:function(){
-            this.userName = this.$store.state.user.name;
+            var user = this.$store.state.user;
+            this.userName = user.name;
+            if(user.is_admin){
+                this.showCompany = false;
+            }else{
+                var uodps = user.uodp;
+                for(var i = 0; i < uodps.length; i++){
+                    if(uodps[i].is_default == "1"){
+                        this.companyName = uodps[i].org_name;
+                        break;
+                    }
+                }
+            }
         },
         data: function () {
             return {
-                companyName: "集团公司",
+                companyName: "",
                 userName: "用户名",
+                showCompany: true,
                 userOperation: [
                     {content:"个人设置",id:"1"},
                     // {content:"修改登录密码",id:"2"},

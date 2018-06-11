@@ -119,12 +119,12 @@
         <!--分页部分-->
         <div class="botton-pag">
             <el-pagination
-                    background
-                    layout="prev, pager, next, jumper"
-                    :page-size="pagSize"
-                    :total="pagTotal"
+                    background :pager-count="5"
+                    layout="sizes , prev, pager, next, jumper"
+                    :page-size="pagSize" :total="pagTotal"
+                    :page-sizes="[8, 50, 100, 500]"
                     @current-change="getCurrentPage"
-                    :pager-count="5">
+                    @size-change="">
             </el-pagination>
         </div>
         <!--新增/修改 弹出框-->

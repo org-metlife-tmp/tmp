@@ -186,7 +186,7 @@
         <!--币种/部门/职位 表格-->
         <el-table :data="tableList"
                   border size="mini"
-                  max-height="100%"
+                  height="86.5%"
                   v-else>
             <el-table-column prop="iso_code" label="币种编号" v-if="btActive.currency"></el-table-column>
             <el-table-column prop="name" label="部门名称" v-else-if="btActive.department"></el-table-column>
@@ -248,11 +248,11 @@
         <div class="botton-pag" v-if="!btActive.company">
             <el-pagination
                     background
-                    layout="prev, pager, next, jumper"
+                    layout="sizes, prev, pager, next, jumper"
                     :page-size="pagSize"
                     :total="pagTotal"
                     @current-change="pageChange"
-                    @size-change="lala"
+                    @size-change="sizeChange"
                     :page-sizes="[10, 50, 100, 500]"
                     :pager-count="5">
             </el-pagination>
@@ -1009,7 +1009,13 @@
                     this.provinceSelect = true;
                 }
             },
-            lala:function(){}
+            sizeChange:function(val){
+                this.routerMessage.params = {
+                    page_size: val,
+                    page_num: "1"
+                };
+                this.$emit("getTableData", this.routerMessage);
+            }
         },
         watch: {
             //根据父组件返回的信息进行设置
