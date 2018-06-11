@@ -9,6 +9,9 @@ function resolve (dir) {
 }
 
 
+var ExtractTextPlugin = require("extract-text-webpack-plugin")
+
+
 
 module.exports = {
   context: path.resolve(__dirname, '../'),
@@ -71,6 +74,9 @@ module.exports = {
         }
     ]
   },
+  plugins: [
+    new ExtractTextPlugin("style.css")
+  ],
   node: {
     // prevent webpack from injecting useless setImmediate polyfill because Vue
     // source contains it (although only uses it if it's native).
