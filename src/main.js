@@ -10,11 +10,13 @@ import 'element-ui/lib/theme-chalk/index.css'
 Vue.use(ElementUI);
 
 //引入echarts
-var echarts = require('echarts/lib/echarts');
-require("echarts/lib/chart/pie");
-require('echarts/lib/component/tooltip');
-require("echarts/lib/component/legendScroll");
-Vue.prototype.$echarts = echarts;
+// var echarts = require('echarts/lib/echarts');
+// require("echarts/lib/chart/pie");
+// require('echarts/lib/component/tooltip');
+// require("echarts/lib/component/legendScroll");
+// Vue.prototype.$echarts = echarts;
+
+require("babel-polyfill");
 
 /*引入axios*/
 import axios from 'axios';

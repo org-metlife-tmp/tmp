@@ -153,64 +153,37 @@
                     console.log(error);
                 })
 
-            }
-            //银行大类
-            if (!window.sessionStorage.getItem("bankTypeList")) {
-                this.$axios({
-                    url: "/cfm/commProcess",
-                    method: "post",
-                    data: {
-                        optype: "bank_typelist"
-                    }
-                }).then((result) => {
-                    if (result.data.error_msg) {
-                        return;
-                    } else {
-                        var data = result.data.data;
-                        var bankTypeList = [];
-                        data.forEach(function (item) {
-                            var itemNeed = {};
-                            for (var k in item) {
-                                itemNeed[k] = item[k];
+                //币种
+                if (!window.sessionStorage.getItem("currencyList")) {
+                    this.$axios({
+                        url: "/cfm/adminProcess",
+                        method: "post",
+                        data: {
+                            optype: "currency_list",
+                            params: {
+                                page_size: 200,
+                                page_num: 1
                             }
-                            bankTypeList.push(itemNeed);
-                        });
-                        window.sessionStorage.setItem("bankTypeList", JSON.stringify(bankTypeList));
-                    }
-                }).catch(function (error) {
-                    console.log(error);
-                })
-            }
-            //币种
-            if (!window.sessionStorage.getItem("currencyList")) {
-                this.$axios({
-                    url: "/cfm/adminProcess",
-                    method: "post",
-                    data: {
-                        optype: "currency_list",
-                        params: {
-                            page_size: 200,
-                            page_num: 1
                         }
-                    }
-                }).then((result) => {
-                    if (result.data.error_msg) {
-                        return;
-                    } else {
-                        var data = result.data.data;
-                        var currencyList = [];
-                        data.forEach(function (item) {
-                            var itemNeed = {};
-                            for (var k in item) {
-                                itemNeed[k] = item[k];
-                            }
-                            currencyList.push(itemNeed);
-                        });
-                        window.sessionStorage.setItem("currencyList", JSON.stringify(currencyList));
-                    }
-                }).catch(function (error) {
-                    console.log(error);
-                })
+                    }).then((result) => {
+                        if (result.data.error_msg) {
+                            return;
+                        } else {
+                            var data = result.data.data;
+                            var currencyList = [];
+                            data.forEach(function (item) {
+                                var itemNeed = {};
+                                for (var k in item) {
+                                    itemNeed[k] = item[k];
+                                }
+                                currencyList.push(itemNeed);
+                            });
+                            window.sessionStorage.setItem("currencyList", JSON.stringify(currencyList));
+                        }
+                    }).catch(function (error) {
+                        console.log(error);
+                    })
+                }
             }
             //渠道名称
             if (!window.sessionStorage.getItem("channelList")) {
@@ -238,6 +211,33 @@
                             channelList.push(itemNeed);
                         });
                         window.sessionStorage.setItem("channelList", JSON.stringify(channelList));
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                })
+            }
+            //银行大类
+            if (!window.sessionStorage.getItem("bankTypeList")) {
+                this.$axios({
+                    url: "/cfm/commProcess",
+                    method: "post",
+                    data: {
+                        optype: "bank_typelist"
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        return;
+                    } else {
+                        var data = result.data.data;
+                        var bankTypeList = [];
+                        data.forEach(function (item) {
+                            var itemNeed = {};
+                            for (var k in item) {
+                                itemNeed[k] = item[k];
+                            }
+                            bankTypeList.push(itemNeed);
+                        });
+                        window.sessionStorage.setItem("bankTypeList", JSON.stringify(bankTypeList));
                     }
                 }).catch(function (error) {
                     console.log(error);
