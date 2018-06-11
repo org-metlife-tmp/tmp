@@ -16,13 +16,13 @@ export default new Vuex.Store({
         user: ''
     },
     mutations: {
-        set_token(state,data){
+        set_token:function(state,data){
             state.token = data.token;
             state.user = data.user;
             window.sessionStorage.setItem("token",data.token);
             window.sessionStorage.setItem("user",JSON.stringify(data.user));
         },
-        del_token(state){
+        del_token:function(state){
             state.token = '';
             state.user = '';
             window.sessionStorage.removeItem("token");
