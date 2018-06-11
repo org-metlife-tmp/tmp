@@ -36,7 +36,7 @@
         <!-- 顶部按钮-->
         <div class="button-list-right">
             <el-button type="warning" size="mini" @click="addUserGroup">新增</el-button>
-            <el-button type="warning" size="mini" @click="">下载</el-button>
+            <!--<el-button type="warning" size="mini" @click="">下载</el-button>-->
         </div>
         <!--数据展示区-->
         <section class="table-content">

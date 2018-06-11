@@ -61,7 +61,7 @@
         <!-- 顶部按钮-->
         <div class="button-list-right">
             <el-button type="warning" size="mini" @click="addStaff">添加员工</el-button>
-            <el-button type="warning" size="mini" @click="">下载</el-button>
+            <!--<el-button type="warning" size="mini" @click="">下载</el-button>-->
         </div>
         <!--数据展示区-->
         <section class="table-content">
@@ -483,7 +483,11 @@
             showPosDialog: function () {
                 this.innerVisible = true;
                 for(var k in this.posDialogData){
-                    this.posDialogData[k] = '';
+                    if(k == "is_default"){
+                        this.posDialogData[k] = '0';
+                    }else{
+                        this.posDialogData[k] = '';
+                    }
                 }
             },
             //删除当前职位

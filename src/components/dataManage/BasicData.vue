@@ -144,7 +144,7 @@
         <div class="button-list-right">
             <el-button type="warning" size="mini" @click="addDept"
                        v-if="btActive.department || btActive.post">新增</el-button>
-            <el-button type="warning" size="mini">下载</el-button>
+            <!--<el-button type="warning" size="mini">下载</el-button>-->
         </div>
         <!--公司内容-->
         <div class="tree-content" v-if="btActive.company">
@@ -185,8 +185,7 @@
         </div>
         <!--币种/部门/职位 表格-->
         <el-table :data="tableList"
-                  border
-                  size="mini"
+                  border size="mini"
                   max-height="100%"
                   v-else>
             <el-table-column prop="iso_code" label="币种编号" v-if="btActive.currency"></el-table-column>
@@ -253,6 +252,8 @@
                     :page-size="pagSize"
                     :total="pagTotal"
                     @current-change="pageChange"
+                    @size-change="lala"
+                    :page-sizes="[10, 50, 100, 500]"
                     :pager-count="5">
             </el-pagination>
         </div>
@@ -305,7 +306,7 @@
                    :close-on-click-modal="false">
             <span slot="title" v-text="deptDialogTitle"></span>
             <el-form :model="deptForm" :label-width="formLabelWidth" size="small">
-                <el-form-item label="公司名称">
+                <el-form-item label="部门名称">
                     <el-input v-model="deptForm.name"></el-input>
                 </el-form-item>
                 <el-form-item label="部门描述">
@@ -1007,7 +1008,8 @@
                     this.form.city = "";
                     this.provinceSelect = true;
                 }
-            }
+            },
+            lala:function(){}
         },
         watch: {
             //根据父组件返回的信息进行设置

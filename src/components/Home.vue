@@ -183,7 +183,7 @@
             <article></article>
         </div>
         <!-- 底部公司信息-->
-        <div class="footer-text">Copyright © 北京企航金服科技有限公司 京ICP备17016903号</div>
+        <div class="footer-text">Copyright &copy; 2009光大永明人寿保险有限公司 津ICP备05001011</div>
     </div>
 </template>
 <script>

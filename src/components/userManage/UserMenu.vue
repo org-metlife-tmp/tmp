@@ -313,13 +313,9 @@
         created: function () {
             this.$emit("transmitTitle", "用户菜单设置");
             this.$emit("getTableData", this.routerMessage);
-
+        },
+        mounted:function(){
             /*获取下拉框数据*/
-            //机构
-            var usrgroupList = JSON.parse(window.sessionStorage.getItem("usrgroupList"));
-            if (usrgroupList) {
-                this.usrgroupList = usrgroupList;
-            }
             //用户列表
             if (!window.sessionStorage.getItem("userList")) {
                 this.$axios({
@@ -342,6 +338,12 @@
                 }).catch(function(error){
                     console.log(error);
                 })
+            }
+            //用户组
+            var usrgroupList = JSON.parse(window.sessionStorage.getItem("usrgroupList"));
+            console.log(usrgroupList);
+            if (usrgroupList) {
+                this.usrgroupList = usrgroupList;
             }
         },
         destroyed: function () {

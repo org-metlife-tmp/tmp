@@ -70,7 +70,8 @@
                     </el-col>
                     <el-col :span="7">
                         <el-form-item label="账户">
-                            <el-input v-model="serachData.query_key" placeholder="输入账户号或账户名称"></el-input>
+                            <el-input v-model="serachData.query_key" clearable
+                                      placeholder="输入账户号或账户名称"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="3">
@@ -295,7 +296,7 @@
                 routerMessage: { //本页数据获取参数
                     optype: "settacc_list",
                     params: {
-                        page_size: 7,
+                        page_size: 8,
                         page_num: 1
                     }
                 },

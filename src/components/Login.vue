@@ -8,8 +8,13 @@
             width: 100%;
             background-color: #fff;
             box-sizing: border-box;
-            padding: 0 80px;
+            padding: 0 60px;
             position: absolute;
+
+            .logo{
+                width: 150px;
+                height: 50px;
+            }
         }
         .user-feedback {
             width: 200px;
@@ -132,6 +137,15 @@
                 color: #eab035;
             }
         }
+        /*公司信息*/
+        .footer-text {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            margin-left: -223px;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 14px;
+        }
     }
 
 </style>
@@ -140,15 +154,15 @@
     <div id="login">
         <header>
             <img class="logo" src="../assets/logo.jpg">
-            <ul class="user-feedback">
+            <!--<ul class="user-feedback">
                 <li>首页</li>
                 <li>用户反馈</li>
-            </ul>
+            </ul>-->
         </header>
         <div class="content">
             <div class="login-area">
-                <span :class="{'toggle-pass':!isPassword}"
-                      @click="isPassword=!isPassword"></span>
+                <!--<span :class="{'toggle-pass':!isPassword}"
+                      @click="isPassword=!isPassword"></span>-->
 
                 <div v-show="isPassword" class="user-message">
                     <h2>用户登录</h2>
@@ -166,13 +180,14 @@
                                class="login-button"
                                @click="submit">登录
                     </el-button>
-                    <el-button type="text" class="text-button" size="mini">忘记密码？</el-button>
+                    <!--<el-button type="text" class="text-button" size="mini">忘记密码？</el-button>-->
                 </div>
                 <div v-show="!isPassword" class="code-login">
                     <div>请使用<span>司库立方</span>扫码</div>
                 </div>
             </div>
         </div>
+        <div class="footer-text">Copyright &copy; 2009光大永明人寿保险有限公司 津ICP备05001011</div>
     </div>
 </template>
 

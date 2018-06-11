@@ -126,9 +126,8 @@
                 userName: "用户名",
                 userOperation: [
                     {content:"个人设置",id:"1"},
-                    {content:"修改登录密码",id:"2"},
-                    {content:"帮助中心",id:"3"},
-                    {content:"退出",id:"4"}
+                    // {content:"修改登录密码",id:"2"},
+                    {content:"退出",id:"3"}
                 ],
                 userNeed: false
             }
@@ -149,7 +148,7 @@
 
                 };
                 //退出
-                if(command == "4"){
+                if(command == "3"){
                     this.$store.commit("del_token");
                     this.$router.push({name:"Login"});
                 }
