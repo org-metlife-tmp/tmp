@@ -243,7 +243,8 @@
         created:function(){
             this.$emit("transmitTitle", "移动展业二维码");
             this.$emit("getCommTable", this.routerMessage);
-
+        },
+        mounted:function(){
             /*获取下拉框数据*/
             //支付渠道
             var channelList = JSON.parse(window.sessionStorage.getItem("channelList"));

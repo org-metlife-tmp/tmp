@@ -63,6 +63,10 @@
             }
         }
 
+        /*数据展示区*/
+        .table-content{
+            height: 397px;
+        }
         /*分页部分*/
         .botton-pag {
             position: absolute;
@@ -95,7 +99,7 @@
 
 <template>
     <div id="userMenu">
-        <!-- 公司/银行 选择-->
+        <!-- 用户/用户组 选择-->
         <div class="company-bank">
             <ul>
                 <li :class="{'current-select':btActive}"
@@ -107,9 +111,9 @@
             </ul>
         </div>
         <!--数据展示区-->
-        <section class="table-content" style="height:100%">
+        <section class="table-content">
             <el-table :data="tableList"
-                      border
+                      border height="100%"
                       size="mini">
                 <!--用户信息-->
                 <el-table-column prop="name" label="姓名" :show-overflow-tooltip="true" v-if="btActive"></el-table-column>
@@ -146,12 +150,13 @@
         <!--分页部分-->
         <div class="botton-pag">
             <el-pagination
-                    background
-                    layout="prev, pager, next, jumper"
-                    :page-size="pagSize"
-                    :total="pagTotal"
+                    background :pager-count="5"
+                    layout="sizes , prev, pager, next, jumper"
+                    :page-size="pagSize" :total="pagTotal"
+                    :page-sizes="[10, 50, 100, 500]"
                     @current-change="getCurrentPage"
-                    :pager-count="5">
+                    @size-change="sizeChange"
+                    :current-page="pagCurrent">
             </el-pagination>
         </div>
         <!--用户弹出框-->
@@ -341,7 +346,6 @@
             }
             //用户组
             var usrgroupList = JSON.parse(window.sessionStorage.getItem("usrgroupList"));
-            console.log(usrgroupList);
             if (usrgroupList) {
                 this.usrgroupList = usrgroupList;
             }
@@ -361,6 +365,7 @@
                 },
                 pagSize: 1, //分页数据
                 pagTotal: 1,
+                pagCurrent: 1,
                 tableList: [], //表格数据
                 btActive: true, //右侧按钮状态控制
                 dialogVisible: false, //用户弹框数据
@@ -384,6 +389,14 @@
                 this.routerMessage.params.page_num = currPage;
                 this.$emit("getTableData", this.routerMessage);
             },
+            //当前页数据条数发生变化
+            sizeChange:function(val){
+                this.routerMessage.params = {
+                    page_size: val,
+                    page_num: "1"
+                };
+                this.$emit("getTableData", this.routerMessage);
+            },
             //右侧按钮点击
             isUser: function () {
                 if (this.btActive) {
@@ -391,7 +404,7 @@
                 } else {
                     this.btActive = true;
                     //获取表格数据
-                    this.routerMessage.pageno = 1;
+                    this.routerMessage.params.page_num = 1;
                     this.routerMessage.optype = "usrmenu_list";
                     this.$emit("getTableData", this.routerMessage);
                 }
@@ -402,7 +415,7 @@
                 } else {
                     this.btActive = false;
                     //获取表格数据
-                    this.routerMessage.pageno = 1;
+                    this.routerMessage.params.page_num = 1;
                     this.routerMessage.optype = "usrgroup_list2";
                     this.$emit("getTableData", this.routerMessage);
                     //设置添加用户列表
@@ -596,6 +609,7 @@
             tableData: function (val, oldVal) {
                 this.pagSize = val.page_size;
                 this.pagTotal = val.total_line;
+                this.pagCurrent = val.page_num;
                 this.tableList = val.data;
             }
         }

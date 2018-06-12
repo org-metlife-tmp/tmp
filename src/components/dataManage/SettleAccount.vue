@@ -5,11 +5,15 @@
         box-sizing: border-box;
         position: relative;
 
-        //顶部按钮
+        /*顶部按钮*/
         .button-list-right {
             position: absolute;
             top: -60px;
             right: -18px;
+        }
+        /*数据展示区*/
+        .table-content{
+            height: 325px;
         }
         /*搜索区*/
         .search-setion {
@@ -88,6 +92,7 @@
         <section class="table-content">
             <el-table :data="tableList"
                       border
+                      height="100%"
                       size="mini">
                 <el-table-column prop="acc_no" label="账户编号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="acc_name" label="账户名称" :show-overflow-tooltip="true"></el-table-column>
@@ -124,7 +129,7 @@
                     :page-size="pagSize" :total="pagTotal"
                     :page-sizes="[8, 50, 100, 500]"
                     @current-change="getCurrentPage"
-                    @size-change="">
+                    @size-change="sizeChange">
             </el-pagination>
         </div>
         <!--新增/修改 弹出框-->
@@ -267,6 +272,8 @@
         created: function () {
             this.$emit("transmitTitle", "结算账户设置");
             this.$emit("getTableData", this.routerMessage);
+        },
+        mounted:function(){
             /*获取下拉框数据*/
             //机构
             var orgList = JSON.parse(window.sessionStorage.getItem("orgList"));
@@ -476,6 +483,14 @@
             //点击页数 获取当前页数据
             getCurrentPage: function (currPage) {
                 this.routerMessage.params.page_num = currPage;
+                this.$emit("getTableData", this.routerMessage);
+            },
+            //当前页数据条数发生变化
+            sizeChange:function(val){
+                this.routerMessage.params = {
+                    page_size: val,
+                    page_num: "1"
+                };
                 this.$emit("getTableData", this.routerMessage);
             },
             //根据条件查询数据

@@ -23,6 +23,10 @@
             background-color: #E7E7E7;
             margin-bottom: 20px;
         }
+        /*数据展示区*/
+        .table-content{
+            height: 333px;
+        }
         /*分页部分*/
         .botton-pag {
             position: absolute;
@@ -80,6 +84,7 @@
         <section class="table-content">
             <el-table :data="tableList"
                       border
+                      height="100%"
                       size="mini">
                 <el-table-column prop="code" label="渠道代码" :show-overflow-tooltip="true" width="160"></el-table-column>
                 <el-table-column prop="name" label="渠道名称" :show-overflow-tooltip="true"></el-table-column>
@@ -102,12 +107,12 @@
         <!--分页部分-->
         <div class="botton-pag">
             <el-pagination
-                    background
-                    layout="prev, pager, next, jumper"
-                    :page-size="pagSize"
-                    :total="pagTotal"
+                    background :pager-count="5"
+                    layout="sizes , prev, pager, next, jumper"
+                    :page-size="pagSize" :total="pagTotal"
+                    :page-sizes="[8, 50, 100, 500]"
                     @current-change="getCurrentPage"
-                    :pager-count="5">
+                    @size-change="sizeChange">
             </el-pagination>
         </div>
         <!--新增弹出框-->
@@ -165,7 +170,8 @@
         created: function () {
             this.$emit("transmitTitle", "渠道设置");
             this.$emit("getTableData", this.routerMessage);
-
+        },
+        mounted:function(){
             //获取下拉框数据
             var channelList = JSON.parse(window.sessionStorage.getItem("channelList"));
             if (channelList) {
@@ -178,7 +184,7 @@
                 routerMessage: { //本页数据获取参数
                     optype: "handlechannel_list",
                     params: {
-                        page_size: 7,
+                        page_size: 8,
                         page_num: 1
                     }
                 },
@@ -245,6 +251,14 @@
             //点击页数 获取当前页数据
             getCurrentPage: function (currPage) {
                 this.routerMessage.params.page_num = currPage;
+                this.$emit("getTableData", this.routerMessage);
+            },
+            //当前页数据条数发生变化
+            sizeChange:function(val){
+                this.routerMessage.params = {
+                    page_size: val,
+                    page_num: "1"
+                };
                 this.$emit("getTableData", this.routerMessage);
             },
             //根据条件查询数据

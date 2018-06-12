@@ -11,6 +11,10 @@
             top: -60px;
             right: -18px;
         }
+        /*数据展示区*/
+        .table-content{
+            height: 408px;
+        }
         /*分页部分*/
         .botton-pag {
             position: absolute;
@@ -66,7 +70,7 @@
         <!--数据展示区-->
         <section class="table-content">
             <el-table :data="tableList"
-                      border
+                      border height="100%"
                       size="mini">
                 <el-table-column prop="login_name" label="登录名称" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="name" label="姓名" :show-overflow-tooltip="true"></el-table-column>
@@ -101,12 +105,12 @@
         <!--分页部分-->
         <div class="botton-pag">
             <el-pagination
-                    background
-                    layout="prev, pager, next, jumper"
-                    :page-size="pagSize"
-                    :total="pagTotal"
+                    background :pager-count="5"
+                    layout="sizes , prev, pager, next, jumper"
+                    :page-size="pagSize" :total="pagTotal"
+                    :page-sizes="[10, 50, 100, 500]"
                     @current-change="getCurrentPage"
-                    :pager-count="5">
+                    @size-change="sizeChange">
             </el-pagination>
         </div>
         <!--添加/编辑员工 弹出框-->
@@ -254,7 +258,8 @@
         created: function () {
             this.$emit("transmitTitle", "用户维护");
             this.$emit("getTableData", this.routerMessage);
-
+        },
+        mounted:function(){
             /*获取下拉框数据*/
             //机构
             var orgList = JSON.parse(window.sessionStorage.getItem("orgList"));
@@ -332,7 +337,6 @@
             },
             //编辑员工
             editStaff: function (row) {
-                console.log(row);
                 this.dialogTitle = "编辑";
                 this.dialogData = {};
                 this.udopsList.splice(0,this.udopsList.length);
@@ -435,6 +439,14 @@
             //点击页数 获取当前页数据
             getCurrentPage: function (currPage) {
                 this.routerMessage.params.page_num = currPage;
+                this.$emit("getTableData", this.routerMessage);
+            },
+            //当前页数据条数发生变化
+            sizeChange:function(val){
+                this.routerMessage.params = {
+                    page_size: val,
+                    page_num: "1"
+                };
                 this.$emit("getTableData", this.routerMessage);
             },
             //展示格式转换-机构

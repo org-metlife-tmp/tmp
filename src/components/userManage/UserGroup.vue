@@ -11,6 +11,10 @@
             top: -60px;
             right: -18px;
         }
+        /*数据展示区*/
+        .table-content{
+            height: 397px;
+        }
         /*分页部分*/
         .botton-pag {
             position: absolute;
@@ -41,7 +45,7 @@
         <!--数据展示区-->
         <section class="table-content">
             <el-table :data="tableList"
-                      border
+                      border height="100%"
                       size="mini">
                 <el-table-column prop="name" label="用户组名" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="memo" label="用户组描述" :show-overflow-tooltip="true"></el-table-column>
@@ -64,12 +68,12 @@
         <!--分页部分-->
         <div class="botton-pag">
             <el-pagination
-                    background
-                    layout="prev, pager, next, jumper"
-                    :page-size="pagSize"
-                    :total="pagTotal"
+                    background :pager-count="5"
+                    layout="sizes , prev, pager, next, jumper"
+                    :page-size="pagSize" :total="pagTotal"
+                    :page-sizes="[10, 50, 100, 500]"
                     @current-change="getCurrentPage"
-                    :pager-count="5">
+                    @size-change="sizeChange">
             </el-pagination>
         </div>
         <!--添加/编辑 弹出框-->
@@ -118,7 +122,8 @@
         created: function () {
             this.$emit("transmitTitle", "用户组设置");
             this.$emit("getTableData", this.routerMessage);
-
+        },
+        mounted:function(){
             //获取下拉框数据
             this.$axios({
                 url:"/cfm/adminProcess",
@@ -288,6 +293,14 @@
                 this.routerMessage.params.page_num = currPage;
                 this.$emit("getTableData", this.routerMessage);
             },
+            //当前页数据条数发生变化
+            sizeChange:function(val){
+                this.routerMessage.params = {
+                    page_size: val,
+                    page_num: "1"
+                };
+                this.$emit("getTableData", this.routerMessage);
+            }
         },
         watch: {
             tableData: function (val, oldVal) {

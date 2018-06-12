@@ -265,7 +265,8 @@
         created: function () {
             this.$emit("transmitTitle", "个险核心实时代付");
             this.$emit("getCommTable", this.routerMessage);
-
+        },
+        mounted:function(){
             /*获取下拉框数据*/
             //银行大类
             var bankTypeList = JSON.parse(window.sessionStorage.getItem("bankTypeList"));
@@ -382,16 +383,17 @@
             lookParticular: function(row){
                 //支付信息数据设置
                 var payLabel = [
-                    {key:"create_date",value:"创建日期"},
                     {key:"bank_serial_no",value:"银行交互流水号"},
+                    {key:"amount",value:"交易金额"},
+                    {key:"create_date",value:"创建日期"},
+                    {key:"real_date",value:"实付日期"},
                     {key:"trade_status",value:"支付状态"},
-                    {key:"channel_code",value:"支付渠道编码"},
-                    {key:"channel_interface_code",value:"支付渠道原子接口"},
-                    {key:"trade_status",value:"平台响应码"},
-                    {key:"trade_msg",value:"平台响应信息"},
                     {key:"channel_status",value:"渠道响应码"},
                     {key:"channel_msg",value:"渠道响应信息"},
-                    {key:"real_date",value:"实付日期"},
+                    {key:"trade_status",value:"平台响应码"},
+                    {key:"trade_msg",value:"平台响应信息"},
+                    {key:"channel_code",value:"支付渠道"},
+                    {key:"channel_interface_code",value:"支付渠道原子接口"},
                     {key:"memo",value:"备注"}
                 ];
                 var payMessage = [];
@@ -410,7 +412,9 @@
                         var channelList = JSON.parse(window.sessionStorage.getItem("channelList"));
                         if(channelList){
                             for(var i = 0; i<channelList.length; i++){
-
+                                if(channelList[i].code == row[item.key]){
+                                    current.content = channelList[i].desc;
+                                }
                             }
                         }
                     }else {
@@ -424,29 +428,28 @@
                 //业务信息数据设置
                 var businessLabel = [
                     {key:"biz_type",value:"业务类型"},
+                    {key:"business_no",value:"业务单号"},
                     {key:"bill_no",value:"单据号"},
                     {key:"serial_no",value:"流水号"},
                     {key:"preinsure_bill_no",value:"投保单号"},
                     {key:"insure_bill_no",value:"保单号"},
-                    {key:"cert_type",value:"证件类型"},
-                    {key:"cert_no",value:"证件号"},
                     {key:"insure_type",value:"险种大类"},
                     {key:"insure_code",value:"险种代码"},
                     {key:"insure_name",value:"险种名称"},
                     {key:"op_name",value:"操作员"},
                     {key:"op_org",value:"操作员所属机构"},
                     {key:"sales_channel",value:"销售渠道"},
-                    {key:"customer_acc",value:"客户账号"},
                     {key:"customer_name",value:"客户姓名"},
+                    {key:"customer_acc",value:"客户账号"},
                     {key:"customer_bank",value:"开户银行"},
-                    {key:"amount",value:"金额"},
-                    {key:"business_no",value:"业务单号"},
-                    {key:"org_seg",value:"机构段"},
-                    {key:"detail_seg",value:"明细段"},
+                    {key:"cert_type",value:"证件类型"},
+                    {key:"cert_no",value:"证件号"},
                     {key:"repet_count",value:"重发次数"},
                     {key:"settle_or_merchant_acc_name",value:"账户名称"},
                     {key:"settle_or_merchant_acc_no",value:"账户编号"},
-                    {key:"due_date",value:"应付日期"}
+                    {key:"due_date",value:"应付日期"},
+                    {key:"org_seg",value:"机构段"},
+                    {key:"detail_seg",value:"明细段"}
                 ];
                 var businessMessage = [];
                 businessLabel.forEach((item) => {

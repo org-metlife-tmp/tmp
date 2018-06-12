@@ -14,11 +14,17 @@
         /*搜索区*/
         .search-setion {
             text-align: right;
+            height: 42px;
+            overflow: hidden;
+            transition: height 1s;
         }
         @media (max-width: 1340px) {
             .search-setion {
                 text-align: left;
             }
+        }
+        .search-setion.show-more {
+            height: 92px;
         }
         /*分隔栏*/
         .split-bar {
@@ -27,6 +33,14 @@
             margin-left: -20px;
             background-color: #E7E7E7;
             margin-bottom: 20px;
+        }
+        /*数据展示区*/
+        .table-content {
+            height: 333px;
+            transition: height 1s;
+        }
+        .is-small {
+            height: 65%;
         }
         /*分页部分*/
         .botton-pag {
@@ -117,7 +131,7 @@
             <el-button type="warning" size="mini" @click="addRouter">新增</el-button>
         </div>
         <!--搜索区-->
-        <div class="search-setion">
+        <div :class="['search-setion',{'show-more':showMore}]">
             <el-form :inline="true" :model="serachData" size="mini" :label-position="'left'">
                 <el-row>
                     <el-col :span="7">
@@ -152,6 +166,12 @@
                                 </el-option>
                             </el-select>
                         </el-form-item>
+                    </el-col>
+                    <el-col :span="3">
+                        <el-button type="primary" plain @click="showMore = !showMore" size="mini">
+                            高级<i
+                                :class="['el-icon--right',{'el-icon-arrow-down':!showMore},{'el-icon-arrow-right':showMore}]"></i>
+                        </el-button>
                     </el-col>
                 </el-row>
                 <el-row>
@@ -198,9 +218,9 @@
         <!--分隔栏-->
         <div class="split-bar"></div>
         <!--数据展示区-->
-        <section class="table-content">
+        <section :class="['table-content',{'is-small':showMore}]">
             <el-table :data="tableList"
-                      border
+                      border height=100%
                       size="mini">
                 <el-table-column prop="source_code" label="来源系统" :show-overflow-tooltip="true"
                                  :formatter="transiSource"></el-table-column>
@@ -239,12 +259,12 @@
         <!--分页部分-->
         <div class="botton-pag">
             <el-pagination
-                    background
-                    layout="prev, pager, next, jumper"
-                    :page-size="pagSize"
-                    :total="pagTotal"
-                    @current-change="getPageData"
-                    :pager-count="5">
+                    background :pager-count="5"
+                    layout="sizes , prev, pager, next, jumper"
+                    :page-size="pagSize" :total="pagTotal"
+                    :page-sizes="[8, 50, 100, 500]"
+                    @current-change="getCurrentPage"
+                    @size-change="sizeChange">
             </el-pagination>
         </div>
         <!--新增/修改 弹出框-->
@@ -299,6 +319,7 @@
                                 <div class="org-tree">
                                     <el-tree :data="orgTreeList"
                                              node-key="org_id"
+                                             :check-strictly="true"
                                              highlight-current
                                              accordion show-checkbox
                                              :expand-on-click-node="false"
@@ -421,7 +442,8 @@
         created: function () {
             this.$emit("transmitTitle", "路由设置");
             this.$emit("getTableData", this.routerMessage);
-
+        },
+        mounted:function(){
             /*获取下拉框数据*/
             //机构
             var orgList = JSON.parse(window.sessionStorage.getItem("orgList"));
@@ -463,7 +485,6 @@
             var orgTreeList = JSON.parse(window.sessionStorage.getItem("orgTreeList"));
             if (orgTreeList) {
                 this.orgTreeList.push(orgTreeList);
-                console.log(this.orgTreeList);
             }
             //支付渠道
             var channelList = JSON.parse(window.sessionStorage.getItem("channelList"));
@@ -477,7 +498,7 @@
                 routerMessage: { //本页数据获取参数
                     optype: "handleroute_list",
                     params: {
-                        page_size: 7,
+                        page_size: 8,
                         page_num: 1
                     }
                 },
@@ -487,7 +508,7 @@
                 tableList: [], //表格
                 currentRouter: "",
                 PayOrRecvMode: {}, //展示数据格式
-                orgList: [], //下拉框数据
+                    orgList: [], //下拉框数据
                 bizTypeList: {},
                 insureTypeList: {},
                 channelList: [],
@@ -521,7 +542,8 @@
                 isCloseAccount: false, //结算账户的展开状态
                 isCloseSale: false, //原子接口的展开状态
                 expandData: [],
-                hasPayRecv: true
+                hasPayRecv: true,
+                showMore: false,
             }
         },
         methods: {
@@ -542,8 +564,16 @@
                 }
             },
             //换页后获取数据
-            getPageData: function (currPage) {
+            getCurrentPage: function (currPage) {
                 this.routerMessage.params.page_num = currPage;
+                this.$emit("getTableData", this.routerMessage);
+            },
+            //当前页数据条数发生变化
+            sizeChange:function(val){
+                this.routerMessage.params = {
+                    page_size: val,
+                    page_num: "1"
+                };
                 this.$emit("getTableData", this.routerMessage);
             },
             //新增路由
@@ -555,6 +585,7 @@
             //编辑当前路由
             editRouter: function (row) {
                 this.dialogTitle = "编辑";
+                this.clearDialogData();
                 this.dialogVisible = true;
                 this.currentRouter = row;
 
@@ -570,8 +601,10 @@
                     orgExp = orgExp.split("@");
                     orgExp.pop();
                     orgExp.shift();
+                    for(var i = 0; i<orgExp.length; i++){
+                        orgExp[i] = orgExp[i]*1;
+                    }
                     setTimeout(() => {
-                        console.log(orgExp);
                         this.$refs.orgTree.setCheckedKeys(orgExp);
                         this.expandData = orgExp;
                     }, 100)
@@ -858,7 +891,7 @@
                     insurance_type_exp = "@" + insurance_type_exp + "@";
                     params.insurance_type_exp = insurance_type_exp;
                 }
-                // console.log(this.dialogData);
+
                 var items = [];
                 this.items.forEach(function (item) {
                     var current = {};

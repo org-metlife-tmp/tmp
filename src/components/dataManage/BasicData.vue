@@ -73,6 +73,8 @@
         .tree-content {
             width: 96%;
             margin: 0 auto;
+            height: 100%;
+            overflow-y: auto;
 
             ul {
                 width: 100%;
@@ -254,7 +256,8 @@
                     @current-change="pageChange"
                     @size-change="sizeChange"
                     :page-sizes="[10, 50, 100, 500]"
-                    :pager-count="5">
+                    :pager-count="5"
+                    :current-page="pagCurrent">
             </el-pagination>
         </div>
         <!--弹出框-->
@@ -351,7 +354,8 @@
         created: function () {
             this.$emit('transmitTitle', '基础数据维护');
             this.$emit('getTableData', this.routerMessage);
-
+        },
+        mounted:function(){
             /*获取下拉框数据*/
             //省级列表
             var provinceList = JSON.parse(window.sessionStorage.getItem("provinceList"));
@@ -371,6 +375,7 @@
                 treeList: [], //公司数据
                 pagSize: 0, //分页数据
                 pagTotal: 0,
+                pagCurrent: 1,
                 //右侧按钮控制
                 btActive: {
                     company: true,
@@ -1009,6 +1014,7 @@
                     this.provinceSelect = true;
                 }
             },
+            //当前页数据条数发生变化
             sizeChange:function(val){
                 this.routerMessage.params = {
                     page_size: val,
@@ -1024,6 +1030,7 @@
                 if (val.page_size) { //币种 部门
                     this.pagSize = val.page_size * 1;
                     this.pagTotal = val.total_line * 1;
+                    this.pagCurrent = val.page_num * 1;
                     this.tableList = data;
                 } else { //公司
 

@@ -255,7 +255,8 @@
         created:function(){
             this.$emit("transmitTitle", "移动展业实时代扣");
             this.$emit("getCommTable", this.routerMessage);
-
+        },
+        mounted:function(){
             /*获取下拉框数据*/
             //银行大类
             var bankTypeList = JSON.parse(window.sessionStorage.getItem("bankTypeList"));

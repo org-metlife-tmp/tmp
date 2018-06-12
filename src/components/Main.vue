@@ -69,6 +69,16 @@
             overflow: hidden;
         }
 
+        .el-table.el-table--border:before{
+            /*height: 0;*/
+        }
+        .el-table.el-table--border:after{
+            /*width: 0;*/
+        }
+        .el-table.el-table--border{
+            /*border-left: none;*/
+        }
+
         /**********
          修改框架样式-结束
          ***********/

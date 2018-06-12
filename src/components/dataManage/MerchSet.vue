@@ -23,6 +23,10 @@
             margin-bottom: 20px;
             background-color: #E7E7E7;
         }
+        /*数据展示区*/
+        .table-content{
+            height: 333px;
+        }
         /*分页部分*/
         .botton-pag {
             position: absolute;
@@ -95,6 +99,7 @@
         <section class="table-content">
             <el-table :data="tableList"
                       border
+                      height="100%"
                       size="mini">
                 <el-table-column prop="acc_no" label="商户号" width="180px"></el-table-column>
                 <el-table-column prop="acc_name" label="商户名称"></el-table-column>
@@ -126,12 +131,12 @@
         <!--分页部分-->
         <div class="botton-pag">
             <el-pagination
-                    background
-                    layout="prev, pager, next, jumper"
-                    :page-size="pagSize"
-                    :total="pagTotal"
+                    background :pager-count="5"
+                    layout="sizes , prev, pager, next, jumper"
+                    :page-size="pagSize" :total="pagTotal"
+                    :page-sizes="[8, 50, 100, 500]"
                     @current-change="getCurrentPage"
-                    :pager-count="5">
+                    @size-change="sizeChange">
             </el-pagination>
         </div>
         <!--弹出框-->
@@ -250,7 +255,8 @@
         created: function () {
             this.$emit("transmitTitle", "商户号设置");
             this.$emit("getTableData", this.routerMessage);
-
+        },
+        mounted:function(){
             /*获取下拉框数据*/
             //机构
             var orgList = JSON.parse(window.sessionStorage.getItem("orgList"));
@@ -502,6 +508,14 @@
                 }).catch(function(error){
                     console.log(error);
                 })
+            },
+            //当前页数据条数发生变化
+            sizeChange:function(val){
+                this.routerMessage.params = {
+                    page_size: val,
+                    page_num: "1"
+                };
+                this.$emit("getTableData", this.routerMessage);
             },
         },
         watch: {
