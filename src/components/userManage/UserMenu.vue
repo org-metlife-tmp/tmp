@@ -273,7 +273,7 @@
                 </el-row>
             </el-form>
             <span slot="footer" class="dialog-footer">
-                <el-button type="warning" size="mini" plain @click="dialogVisible = false">取 消</el-button>
+                <el-button type="warning" size="mini" plain @click="groupDialog = false">取 消</el-button>
                 <el-button type="warning" size="mini" @click="subGroup">确 定</el-button>
             </span>
             <el-dialog :visible.sync="innerVisible"

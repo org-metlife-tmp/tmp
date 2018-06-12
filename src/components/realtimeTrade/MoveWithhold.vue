@@ -32,11 +32,11 @@
 
         /*数据展示区*/
         .table-content {
-            height: 76%;
+            height: 326px;
             transition: height 1s;
         }
         .is-small {
-            height: 44%;
+            height: 50%;
         }
 
         /*分页部分*/
@@ -184,7 +184,7 @@
             <el-table :data="tableList"
                       border
                       size="mini"
-                      max-height="100%">
+                      height="100%">
                 <el-table-column prop="serial_no" label="流水号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="biz_type" :formatter="transitionType"
                                  label="业务类型" :show-overflow-tooltip="true"></el-table-column>
@@ -208,12 +208,13 @@
         <!--分页部分-->
         <div class="botton-pag">
             <el-pagination
-                    background
-                    layout="prev, pager, next, jumper"
-                    :page-size="pagSize"
-                    :total="pagTotal"
-                    @current-change="getPageData"
-                    :pager-count="5">
+                    background :pager-count="5"
+                    layout="sizes , prev, pager, next, jumper"
+                    :page-size="pagSize" :total="pagTotal"
+                    :page-sizes="[8, 50, 100, 500]"
+                    @current-change="getCurrentPage"
+                    @size-change="sizeChange"
+                    :current-page="pagCurrent">
             </el-pagination>
         </div>
         <!--详情弹出框-->
@@ -289,6 +290,7 @@
                 showMore: false,
                 pagSize: 1, //分页数据
                 pagTotal: 1,
+                pagCurrent: 1,
                 tableList: [], //表格数据
                 bankAllList: [], //下拉框数据
                 bankTypeList: [],
@@ -335,8 +337,16 @@
                 }
             },
             //换页后获取数据
-            getPageData: function (currPage) {
+            getCurrentPage: function (currPage) {
                 this.routerMessage.params.page_num = currPage;
+                this.$emit("getCommTable", this.routerMessage);
+            },
+            //当前页数据条数发生变化
+            sizeChange:function(val){
+                this.routerMessage.params = {
+                    page_size: val,
+                    page_num: 1
+                };
                 this.$emit("getCommTable", this.routerMessage);
             },
             /*下拉框相关设置*/
@@ -371,67 +381,116 @@
             /*弹框相关*/
             //查看详细信息
             lookParticular: function(row){
-                //支付信息数据设置
-                var payLabel = [
-                    {key:"create_date",value:"创建日期"},
-                    {key:"bank_serial_no",value:"银行交互流水号"},
-                    {key:"trade_status",value:"支付状态"},
-                    {key:"channel_code",value:"支付渠道编码"},
-                    {key:"channel_interface_code",value:"支付渠道原子接口"},
-                    {key:"trade_status",value:"平台响应码"},
-                    {key:"trade_msg",value:"平台响应信息"},
-                    {key:"channel_status",value:"渠道响应码"},
-                    {key:"channel_msg",value:"渠道响应信息"},
-                    {key:"real_date",value:"实付日期"},
-                    {key:"memo",value:"备注"}
-                ];
-                var payMessage = [];
-                payLabel.forEach((item) => {
-                    var current = {};
-                    current.title = item.value;
-                    current.content = row[item.key];
-                    payMessage.push(current);
-                })
-                this.payMessage = payMessage;
+                this.$axios({
+                    url: "/cfm/normalProcess",
+                    method: "post",
+                    data: {
+                        optype: "ydssdk_detail",
+                        params: {
+                            id: row.id
+                        }
+                    }
+                }).then((result) => {
+                    var data = result.data.data;
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                    } else {
+                        //支付信息数据设置
+                        var payLabel = [
+                            {key: "bank_serial_no", value: "银行交互流水号"},
+                            {key: "amount", value: "交易金额"},
+                            {key: "create_date", value: "创建日期"},
+                            {key: "real_date", value: "实付日期"},
+                            {key: "trade_status", value: "支付状态"},
+                            {key: "channel_status", value: "渠道响应码"},
+                            {key: "channel_msg", value: "渠道响应信息"},
+                            {key: "trade_status", value: "平台响应码"},
+                            {key: "trade_msg", value: "平台响应信息"},
+                            {key: "channel_code", value: "支付渠道"},
+                            {key: "channel_interface_code", value: "支付渠道原子接口"},
+                            {key: "memo", value: "备注"}
+                        ];
+                        var payMessage = [];
+                        payLabel.forEach((item) => {
+                            var current = {};
+                            current.title = item.value;
+                            //展示格式转换
+                            if (item.key == "trade_status") {
+                                var constants = JSON.parse(window.sessionStorage.getItem("constants"));
+                                if (constants.PayStatus) {
+                                    current.content = constants.PayStatus[data[item.key]];
+                                } else {
+                                    current.content = data[item.key];
+                                }
+                            } else if (item.key == "channel_code") {
+                                current.content = data.channel_name;
+                            } else if (item.key == "channel_interface_code") {
+                                current.content = data.channel_interface_name;
+                            } else {
+                                current.content = data[item.key];
+                            }
 
-                //业务信息数据设置
-                var businessLabel = [
-                    {key:"biz_type",value:"业务类型"},
-                    {key:"bill_no",value:"单据号"},
-                    {key:"serial_no",value:"流水号"},
-                    {key:"preinsure_bill_no",value:"投保单号"},
-                    {key:"insure_bill_no",value:"保单号"},
-                    {key:"cert_type",value:"证件类型"},
-                    {key:"cert_no",value:"证件号"},
-                    {key:"insure_type",value:"险种大类"},
-                    {key:"insure_code",value:"险种代码"},
-                    {key:"insure_name",value:"险种名称"},
-                    {key:"op_name",value:"操作员"},
-                    {key:"op_org",value:"操作员所属机构"},
-                    {key:"sales_channel",value:"销售渠道"},
-                    {key:"customer_acc",value:"客户账号"},
-                    {key:"customer_name",value:"客户姓名"},
-                    {key:"customer_bank",value:"开户银行"},
-                    {key:"amount",value:"金额"},
-                    {key:"business_no",value:"业务单号"},
-                    {key:"org_seg",value:"机构段"},
-                    {key:"detail_seg",value:"明细段"},
-                    {key:"repet_count",value:"重发次数"},
-                    {key:"settle_or_merchant_acc_name",value:"账户名称"},
-                    {key:"settle_or_merchant_acc_no",value:"账户编号"},
-                    {key:"due_date",value:"应付日期"}
-                ];
-                var businessMessage = [];
-                businessLabel.forEach((item) => {
-                    var current = {};
-                    current.title = item.value;
-                    current.content = row[item.key];
-                    businessMessage.push(current);
-                })
-                this.businessMessage = businessMessage;
+                            payMessage.push(current);
+                        })
+                        this.payMessage = payMessage;
 
-                this.dialogData = row;
-                this.dialogVisible = true;
+                        //业务信息数据设置
+                        var businessLabel = [
+                            {key: "biz_type", value: "业务类型"},
+                            {key: "business_no", value: "业务单号"},
+                            {key: "bill_no", value: "单据号"},
+                            {key: "serial_no", value: "流水号"},
+                            {key: "preinsure_bill_no", value: "投保单号"},
+                            {key: "insure_bill_no", value: "保单号"},
+                            {key: "insure_type", value: "险种大类"},
+                            {key: "insure_code", value: "险种代码"},
+                            {key: "insure_name", value: "险种名称"},
+                            {key: "op_name", value: "操作员"},
+                            {key: "op_org", value: "操作员所属机构"},
+                            {key: "sales_channel", value: "销售渠道"},
+                            {key: "customer_name", value: "客户姓名"},
+                            {key: "customer_acc", value: "客户账号"},
+                            {key: "customer_bank", value: "开户银行"},
+                            {key: "cert_type", value: "证件类型"},
+                            {key: "cert_no", value: "证件号"},
+                            {key: "repet_count", value: "重发次数"},
+                            {key: "settle_or_merchant_acc_name", value: "账户名称"},
+                            {key: "settle_or_merchant_acc_no", value: "账户编号"},
+                            {key: "due_date", value: "应付日期"},
+                            {key: "org_seg", value: "机构段"},
+                            {key: "detail_seg", value: "明细段"}
+                        ];
+                        var businessMessage = [];
+                        businessLabel.forEach((item) => {
+                            var current = {};
+                            current.title = item.value;
+                            if (item.key == "biz_type") {
+                                current.content = data.biz_type_name;
+                            }else if(item.key == "insure_type"){
+                                current.content = data.insure_type_name;
+                            }else if(item.key == "sales_channel"){
+                                current.content = data.sales_channel_name;
+                            }else if(item.key == "customer_bank"){
+                                current.content = data.customer_name;
+                            }else if(item.key == "cert_type"){
+                                current.content = data.cert_type_name;
+                            }else{
+                                current.content = data[item.key];
+                            }
+                            businessMessage.push(current);
+                        })
+                        this.businessMessage = businessMessage;
+
+                        this.dialogData = data;
+                        this.dialogVisible = true;
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                })
             }
         },
         watch: {

@@ -32,7 +32,7 @@
 
         /*数据展示区*/
         .table-content {
-            height: 76%;
+            height: 326px;
             transition: height 1s;
         }
         .is-small {
@@ -48,17 +48,17 @@
         }
 
         /*弹框*/
-        .el-dialog{
-            .el-form{
-                .el-form-item{
+        .el-dialog {
+            .el-form {
+                .el-form-item {
                     margin-bottom: 0;
                 }
             }
         }
-        .form-small-title{
+        .form-small-title {
             font-weight: bold;
-            span{
-                display:inline-block;
+            span {
+                display: inline-block;
                 width: 4px;
                 height: 16px;
                 background-color: orange;
@@ -195,7 +195,7 @@
             <el-table :data="tableList"
                       border
                       size="mini"
-                      max-height="100%">
+                      height="100%">
                 <el-table-column prop="bill_no" label="单据号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="serial_no" label="流水号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="biz_type" :formatter="transitionType"
@@ -220,18 +220,19 @@
         <!--分页部分-->
         <div class="botton-pag">
             <el-pagination
-                    background
-                    layout="prev, pager, next, jumper"
-                    :page-size="pagSize"
-                    :total="pagTotal"
-                    @current-change="getPageData"
-                    :pager-count="5">
+                    background :pager-count="5"
+                    layout="sizes , prev, pager, next, jumper"
+                    :page-size="pagSize" :total="pagTotal"
+                    :page-sizes="[8, 50, 100, 500]"
+                    @current-change="getCurrentPage"
+                    @size-change="sizeChange"
+                    :current-page="pagCurrent">
             </el-pagination>
         </div>
         <!--详情弹出框-->
         <el-dialog title="详情"
                    :visible.sync="dialogVisible"
-                   width="800px" top="76px"
+                   width="820px" top="76px"
                    :close-on-click-modal="false">
             <el-form :model="dialogData" size="mini">
                 <el-row>
@@ -266,7 +267,7 @@
             this.$emit("transmitTitle", "个险核心实时代付");
             this.$emit("getCommTable", this.routerMessage);
         },
-        mounted:function(){
+        mounted: function () {
             /*获取下拉框数据*/
             //银行大类
             var bankTypeList = JSON.parse(window.sessionStorage.getItem("bankTypeList"));
@@ -299,12 +300,13 @@
                 showMore: false,
                 pagSize: 1, //分页数据
                 pagTotal: 1,
+                pagCurrent: 1,
                 tableList: [], //表格数据
                 bankAllList: [], //下拉框数据
                 bankTypeList: [],
                 channelList: [],
                 payStatList: {},
-                dialogVisible:false, //弹框数据
+                dialogVisible: false, //弹框数据
                 dialogData: {},
                 formLabelWidth: "140px",
 
@@ -338,15 +340,23 @@
                 this.$emit("getCommTable", this.routerMessage);
             },
             //清空查询条件
-            clearSearData:function(){
+            clearSearData: function () {
                 var searchData = this.searchData;
-                for(var k in searchData){
+                for (var k in searchData) {
                     searchData[k] = "";
                 }
             },
             //换页后获取数据
-            getPageData: function (currPage) {
+            getCurrentPage: function (currPage) {
                 this.routerMessage.params.page_num = currPage;
+                this.$emit("getCommTable", this.routerMessage);
+            },
+            //当前页数据条数发生变化
+            sizeChange: function (val) {
+                this.routerMessage.params = {
+                    page_size: val,
+                    page_num: 1
+                };
                 this.$emit("getCommTable", this.routerMessage);
             },
             /*下拉框相关设置*/
@@ -380,89 +390,117 @@
             },
             /*弹框相关*/
             //查看详细信息
-            lookParticular: function(row){
-                //支付信息数据设置
-                var payLabel = [
-                    {key:"bank_serial_no",value:"银行交互流水号"},
-                    {key:"amount",value:"交易金额"},
-                    {key:"create_date",value:"创建日期"},
-                    {key:"real_date",value:"实付日期"},
-                    {key:"trade_status",value:"支付状态"},
-                    {key:"channel_status",value:"渠道响应码"},
-                    {key:"channel_msg",value:"渠道响应信息"},
-                    {key:"trade_status",value:"平台响应码"},
-                    {key:"trade_msg",value:"平台响应信息"},
-                    {key:"channel_code",value:"支付渠道"},
-                    {key:"channel_interface_code",value:"支付渠道原子接口"},
-                    {key:"memo",value:"备注"}
-                ];
-                var payMessage = [];
-                payLabel.forEach((item) => {
-                    var current = {};
-                    current.title = item.value;
-                    //展示格式转换
-                    if(item.key == "trade_status"){
-                        var constants = JSON.parse(window.sessionStorage.getItem("constants"));
-                        if(constants.PayStatus){
-                            current.content = constants.PayStatus[row[item.key]];
-                        }else{
-                            current.content = row[item.key];
+            lookParticular: function (row) {
+                this.$axios({
+                    url: "/cfm/normalProcess",
+                    method: "post",
+                    data: {
+                        optype: "gxssdf_detail",
+                        params: {
+                            id: row.id
                         }
-                    } else if (item.key == "channel_code"){
-                        var channelList = JSON.parse(window.sessionStorage.getItem("channelList"));
-                        if(channelList){
-                            for(var i = 0; i<channelList.length; i++){
-                                if(channelList[i].code == row[item.key]){
-                                    current.content = channelList[i].desc;
-                                }
-                            }
-                        }
-                    }else {
-                        current.content = row[item.key];
                     }
+                }).then((result) => {
+                    var data = result.data.data;
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                    } else {
+                        //支付信息数据设置
+                        var payLabel = [
+                            {key: "bank_serial_no", value: "银行交互流水号"},
+                            {key: "amount", value: "交易金额"},
+                            {key: "create_date", value: "创建日期"},
+                            {key: "real_date", value: "实付日期"},
+                            {key: "trade_status", value: "支付状态"},
+                            {key: "channel_status", value: "渠道响应码"},
+                            {key: "channel_msg", value: "渠道响应信息"},
+                            {key: "trade_status", value: "平台响应码"},
+                            {key: "trade_msg", value: "平台响应信息"},
+                            {key: "channel_code", value: "支付渠道"},
+                            {key: "channel_interface_code", value: "支付渠道原子接口"},
+                            {key: "memo", value: "备注"}
+                        ];
+                        var payMessage = [];
+                        payLabel.forEach((item) => {
+                            var current = {};
+                            current.title = item.value;
+                            //展示格式转换
+                            if (item.key == "trade_status") {
+                                var constants = JSON.parse(window.sessionStorage.getItem("constants"));
+                                if (constants.PayStatus) {
+                                    current.content = constants.PayStatus[data[item.key]];
+                                } else {
+                                    current.content = data[item.key];
+                                }
+                            } else if (item.key == "channel_code") {
+                                current.content = data.channel_name;
+                            } else if (item.key == "channel_interface_code") {
+                                current.content = data.channel_interface_name;
+                            } else {
+                                current.content = data[item.key];
+                            }
 
-                    payMessage.push(current);
+                            payMessage.push(current);
+                        })
+                        this.payMessage = payMessage;
+
+                        //业务信息数据设置
+                        var businessLabel = [
+                            {key: "biz_type", value: "业务类型"},
+                            {key: "business_no", value: "业务单号"},
+                            {key: "bill_no", value: "单据号"},
+                            {key: "serial_no", value: "流水号"},
+                            {key: "preinsure_bill_no", value: "投保单号"},
+                            {key: "insure_bill_no", value: "保单号"},
+                            {key: "insure_type", value: "险种大类"},
+                            {key: "insure_code", value: "险种代码"},
+                            {key: "insure_name", value: "险种名称"},
+                            {key: "op_name", value: "操作员"},
+                            {key: "op_org", value: "操作员所属机构"},
+                            {key: "sales_channel", value: "销售渠道"},
+                            {key: "customer_name", value: "客户姓名"},
+                            {key: "customer_acc", value: "客户账号"},
+                            {key: "customer_bank", value: "开户银行"},
+                            {key: "cert_type", value: "证件类型"},
+                            {key: "cert_no", value: "证件号"},
+                            {key: "repet_count", value: "重发次数"},
+                            {key: "settle_or_merchant_acc_name", value: "账户名称"},
+                            {key: "settle_or_merchant_acc_no", value: "账户编号"},
+                            {key: "due_date", value: "应付日期"},
+                            {key: "org_seg", value: "机构段"},
+                            {key: "detail_seg", value: "明细段"}
+                        ];
+                        var businessMessage = [];
+                        businessLabel.forEach((item) => {
+                            var current = {};
+                            current.title = item.value;
+                            if (item.key == "biz_type") {
+                                current.content = data.biz_type_name;
+                            }else if(item.key == "insure_type"){
+                                current.content = data.insure_type_name;
+                            }else if(item.key == "sales_channel"){
+                                current.content = data.sales_channel_name;
+                            }else if(item.key == "customer_bank"){
+                                current.content = data.customer_name;
+                            }else if(item.key == "cert_type"){
+                                current.content = data.cert_type_name;
+                            }else{
+                                current.content = data[item.key];
+                            }
+                            businessMessage.push(current);
+                        })
+                        this.businessMessage = businessMessage;
+
+                        this.dialogData = data;
+                        this.dialogVisible = true;
+                    }
+                }).catch(function (error) {
+                    console.log(error);
                 })
-                this.payMessage = payMessage;
-
-                //业务信息数据设置
-                var businessLabel = [
-                    {key:"biz_type",value:"业务类型"},
-                    {key:"business_no",value:"业务单号"},
-                    {key:"bill_no",value:"单据号"},
-                    {key:"serial_no",value:"流水号"},
-                    {key:"preinsure_bill_no",value:"投保单号"},
-                    {key:"insure_bill_no",value:"保单号"},
-                    {key:"insure_type",value:"险种大类"},
-                    {key:"insure_code",value:"险种代码"},
-                    {key:"insure_name",value:"险种名称"},
-                    {key:"op_name",value:"操作员"},
-                    {key:"op_org",value:"操作员所属机构"},
-                    {key:"sales_channel",value:"销售渠道"},
-                    {key:"customer_name",value:"客户姓名"},
-                    {key:"customer_acc",value:"客户账号"},
-                    {key:"customer_bank",value:"开户银行"},
-                    {key:"cert_type",value:"证件类型"},
-                    {key:"cert_no",value:"证件号"},
-                    {key:"repet_count",value:"重发次数"},
-                    {key:"settle_or_merchant_acc_name",value:"账户名称"},
-                    {key:"settle_or_merchant_acc_no",value:"账户编号"},
-                    {key:"due_date",value:"应付日期"},
-                    {key:"org_seg",value:"机构段"},
-                    {key:"detail_seg",value:"明细段"}
-                ];
-                var businessMessage = [];
-                businessLabel.forEach((item) => {
-                    var current = {};
-                    current.title = item.value;
-                    current.content = row[item.key];
-                    businessMessage.push(current);
-                })
-                this.businessMessage = businessMessage;
-
-
-                this.dialogData = row;
-                this.dialogVisible = true;
             }
         },
         watch: {
@@ -470,6 +508,7 @@
                 this.pagSize = val.page_size;
                 this.pagTotal = val.total_line;
                 this.tableList = val.data;
+                this.pagCurrent = val.page_num;
             }
         }
     }
