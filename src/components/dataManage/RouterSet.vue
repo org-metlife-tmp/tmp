@@ -917,8 +917,11 @@
             transiPayitem:function (row, column, cellValue, index) {
                 if(cellValue == "WX"){
                     return "微信";
-                }else{
+                }
+                if(cellValue == "ZFB"){
                     return "支付宝";
+                }else{
+                    return "";
                 }
             },
             //设置状态

@@ -190,7 +190,6 @@
     export default {
         name: "Home",
         created: function () {
-            console.log(this.$store.state.user);
             var user = this.$store.state.user;
             this.userName = user.name;
         },

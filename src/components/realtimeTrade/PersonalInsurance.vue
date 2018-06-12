@@ -398,7 +398,25 @@
                 payLabel.forEach((item) => {
                     var current = {};
                     current.title = item.value;
-                    current.content = row[item.key];
+                    //展示格式转换
+                    if(item.key == "trade_status"){
+                        var constants = JSON.parse(window.sessionStorage.getItem("constants"));
+                        if(constants.PayStatus){
+                            current.content = constants.PayStatus[row[item.key]];
+                        }else{
+                            current.content = row[item.key];
+                        }
+                    } else if (item.key == "channel_code"){
+                        var channelList = JSON.parse(window.sessionStorage.getItem("channelList"));
+                        if(channelList){
+                            for(var i = 0; i<channelList.length; i++){
+
+                            }
+                        }
+                    }else {
+                        current.content = row[item.key];
+                    }
+
                     payMessage.push(current);
                 })
                 this.payMessage = payMessage;
