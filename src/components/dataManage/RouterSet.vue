@@ -508,7 +508,7 @@
                 tableList: [], //表格
                 currentRouter: "",
                 PayOrRecvMode: {}, //展示数据格式
-                    orgList: [], //下拉框数据
+                orgList: [], //下拉框数据
                 bizTypeList: {},
                 insureTypeList: {},
                 channelList: [],
@@ -605,10 +605,15 @@
                     for(var i = 0; i<orgExp.length; i++){
                         orgExp[i] = orgExp[i]*1;
                     }
-                    setTimeout(() => {
+                    if(this.$refs.orgTree){
                         this.$refs.orgTree.setCheckedKeys(orgExp);
                         this.expandData = orgExp;
-                    }, 100)
+                    }else{
+                        setTimeout(() => {
+                            this.$refs.orgTree.setCheckedKeys(orgExp);
+                            this.expandData = orgExp;
+                        }, 800)
+                    }
                 }
                 //设置业务类型
                 var bizTypeExp = row.biz_type_exp;

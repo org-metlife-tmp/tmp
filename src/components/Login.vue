@@ -171,7 +171,7 @@
                     <div class="error-message" v-text="errorMessage"></div>
                     <div class="user-name">
                         <span></span>
-                        <input type="text" placeholder="请输入您的登录账号" v-model="userIdentify"/>
+                        <input type="text" placeholder="请输入您的登录账号" v-model="userIdentify" autofocus/>
                     </div>
                     <div class="user-pass">
                         <span></span>
@@ -226,6 +226,25 @@
         methods: {
             //提交
             submit: function () {
+                var userIdentify = this.userIdentify.trim();
+                var passWord = this.passWord.trim();
+                if(!userIdentify){
+                    this.$message({
+                        type:"error",
+                        message: "请输入登录名",
+                        duration: 2000
+                    })
+                    return;
+                }
+                if(!passWord){
+                    this.$message({
+                        type:"error",
+                        message: "请输入密码",
+                        duration: 2000
+                    })
+                    return;
+                }
+
                 //判断是否获取到加密信息
                 if(!this.exponent){
                     this.$message({

@@ -12,7 +12,7 @@
             right: -18px;
         }
         /*数据展示区*/
-        .table-content{
+        .table-content {
             height: 325px;
         }
         /*搜索区*/
@@ -137,15 +137,16 @@
                    width="860px" top="76px"
                    :close-on-click-modal="false">
             <h1 slot="title" v-text="dialogTitle" class="dialog-title"></h1>
-            <el-form :model="dialogData" size="small">
+            <el-form :model="dialogData" size="small"
+                     :rules="rules" ref="dialogForm">
                 <el-row>
                     <el-col :span="12">
-                        <el-form-item label="账户编号" :label-width="formLabelWidth">
+                        <el-form-item label="账户编号" :label-width="formLabelWidth" prop="acc_no">
                             <el-input v-model="dialogData.acc_no" auto-complete="off"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="账户名称" :label-width="formLabelWidth">
+                        <el-form-item label="账户名称" :label-width="formLabelWidth" prop="acc_name">
                             <el-input v-model="dialogData.acc_name" auto-complete="off"></el-input>
                         </el-form-item>
                     </el-col>
@@ -183,7 +184,7 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="18">
-                        <el-form-item label="" :label-width="formLabelWidth">
+                        <el-form-item label=" " :label-width="formLabelWidth" prop="cnaps_code">
                             <el-select v-model="dialogData.cnaps_code" placeholder="请选择银行"
                                        clearable filterable
                                        @visible-change="getBankList"
@@ -197,7 +198,7 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="所属机构" :label-width="formLabelWidth">
+                        <el-form-item label="所属机构" :label-width="formLabelWidth" prop="org_id">
                             <el-select v-model="dialogData.org_id" placeholder="请选择机构"
                                        filterable clearable>
                                 <el-option v-for="org in orgList"
@@ -209,7 +210,7 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="币种" :label-width="formLabelWidth">
+                        <el-form-item label="币种" :label-width="formLabelWidth" prop="curr_id">
                             <el-select v-model="dialogData.curr_id" placeholder="请选择币种"
                                        filterable clearable>
                                 <el-option v-for="currency in currencyList"
@@ -221,7 +222,7 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="收付属性" :label-width="formLabelWidth">
+                        <el-form-item label="收付属性" :label-width="formLabelWidth" prop="pay_recv_attr">
                             <el-select v-model="dialogData.pay_recv_attr" placeholder="请选择收付属性"
                                        filterable clearable>
                                 <el-option v-for="(name,k) in accOrRecvList"
@@ -233,7 +234,7 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="开户日期" :label-width="formLabelWidth">
+                        <el-form-item label="开户日期" :label-width="formLabelWidth" prop="open_date">
                             <el-date-picker type="date" placeholder="选择日期" v-model="dialogData.open_date"
                                             style="width: 100%;"
                                             format="yyyy 年 MM 月 dd 日"
@@ -241,12 +242,12 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="机构段" :label-width="formLabelWidth">
+                        <el-form-item label="机构段" :label-width="formLabelWidth" prop="org_seg">
                             <el-input v-model="dialogData.org_seg" auto-complete="off"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="明细段" :label-width="formLabelWidth">
+                        <el-form-item label="明细段" :label-width="formLabelWidth" prop="detail_seg">
                             <el-input v-model="dialogData.detail_seg" auto-complete="off"></el-input>
                         </el-form-item>
                     </el-col>
@@ -273,7 +274,7 @@
             this.$emit("transmitTitle", "结算账户设置");
             this.$emit("getTableData", this.routerMessage);
         },
-        mounted:function(){
+        mounted: function () {
             /*获取下拉框数据*/
             //机构
             var orgList = JSON.parse(window.sessionStorage.getItem("orgList"));
@@ -338,7 +339,90 @@
                 accOrRecvList: {}, //收付属性
                 bankCorrelation: {},
                 loading: false, //地区加载数据时状态显示
-                bankSelect: true //银行可选控制
+                bankSelect: true, //银行可选控制
+                //校验规则设置
+                rules: {
+                    acc_no: [
+                        {
+                            required: true,
+                            message: "请输入账户编码",
+                            trigger: "blur",
+                            transform: function (value) {
+                            if (value) {
+                                value = value.trim();
+                                return value.trim();
+                            }
+                        }
+                        },
+                        {
+                            validator:function(rule, value, callback, source, options) {
+                                callback();
+                                var reg = /\D\a-\z\A-\Z/;
+                                if(reg.test(value)){
+                                    callback();
+                                }else{
+                                    var errors = [];
+                                    callback(new Error("只能输入字母、数字和符号"));
+                                }
+                            }
+                        }
+                    ],
+                    acc_name: {
+                        required: true,
+                        message: "请输入账户名称",
+                        trigger: "blur",
+                        transform: function (value) {
+                            if (value) {
+                                return value.trim();
+                            }
+                        }
+                    },
+                    cnaps_code: {
+                        required: true,
+                        message: "请选择银行",
+                        trigger: "change"
+                    },
+                    org_id: [{
+                        required: true,
+                        message: "请选择机构",
+                        trigger: "change"
+                    }],
+                    curr_id: {
+                        required: true,
+                        message: "请选择币种",
+                        trigger: "change"
+                    },
+                    pay_recv_attr: {
+                        required: true,
+                        message: "请选择收支属性",
+                        trigger: "change"
+                    },
+                    open_date: {
+                        required: true,
+                        message: "请选择时间",
+                        trigger: "change"
+                    },
+                    org_seg: {
+                        required: true,
+                        message: "请输入机构段",
+                        trigger: "blur",
+                        transform: function (value) {
+                            if (value) {
+                                return value.trim();
+                            }
+                        }
+                    },
+                    detail_seg: {
+                        required: true,
+                        message: "请输入明细段",
+                        trigger: "blur",
+                        transform: function (value) {
+                            if (value) {
+                                return value.trim();
+                            }
+                        }
+                    }
+                },
             }
         },
         methods: {
@@ -358,8 +442,12 @@
                 this.bankList = [];
                 this.bankSelect = true;
                 var dialogData = this.dialogData;
-                for(var k in dialogData){
+                for (var k in dialogData) {
                     dialogData[k] = "";
+                }
+
+                if (this.$refs.dialogForm) {
+                    this.$refs.dialogForm.clearValidate();
                 }
             },
             //编辑数据
@@ -370,13 +458,16 @@
                 this.currentSettle = row;
 
                 this.bankCorrelation = {};
+                if (this.$refs.dialogForm) {
+                    this.$refs.dialogForm.clearValidate();
+                }
                 this.bankSelect = true;
                 var dialogData = this.dialogData;
-                for(var k in dialogData){
+                for (var k in dialogData) {
                     dialogData[k] = "";
                 }
 
-                if(row.cnaps_code){
+                if (row.cnaps_code) {
                     this.$set(this.bankList, 0, {
                         cnaps_code: row.cnaps_code,
                         name: row.bank_name
@@ -388,53 +479,58 @@
             },
             //提交当前修改或新增
             subCurrent: function () {
-                var params = this.dialogData;
-                var optype = "";
-                if(this.dialogTitle == "新增"){
-                    optype = "settacc_add";
-                }else {
-                    optype = "settacc_chg";
-                }
-
-                this.$axios({
-                    url: "/cfm/adminProcess",
-                    method: "post",
-                    data: {
-                        optype: optype,
-                        params: params
-                    }
-                }).then((result) => {
-                    if (result.data.error_msg) {
-                        this.$message({
-                            type: "error",
-                            message: result.data.error_msg,
-                            duration: 2000
-                        })
-                    }else {
-                        var data = result.data.data;
-                        if(this.dialogTitle == "新增"){
-                            if(this.tableList.length < this.routerMessage.params.page_size){
-                                this.tableList.push(data);
-                            }
-                            this.pagTotal++;
-                            var message = "新增成功"
-                        }else{
-                            for(var k in data){
-                                this.currentSettle[k] = data[k];
-                            }
-                            var message = "修改成功"
+                this.$refs.dialogForm.validate((valid, object) => {
+                    if (valid) {
+                        var params = this.dialogData;
+                        var optype = "";
+                        if (this.dialogTitle == "新增") {
+                            optype = "settacc_add";
+                        } else {
+                            optype = "settacc_chg";
                         }
-                        this.dialogVisible = false;
-                        this.$message({
-                            type: 'success',
-                            message: message,
-                            duration: 2000
-                        });
-                    }
-                }).catch(function (error) {
-                    console.log(error);
-                })
 
+                        this.$axios({
+                            url: "/cfm/adminProcess",
+                            method: "post",
+                            data: {
+                                optype: optype,
+                                params: params
+                            }
+                        }).then((result) => {
+                            if (result.data.error_msg) {
+                                this.$message({
+                                    type: "error",
+                                    message: result.data.error_msg,
+                                    duration: 2000
+                                })
+                            } else {
+                                var data = result.data.data;
+                                if (this.dialogTitle == "新增") {
+                                    if (this.tableList.length < this.routerMessage.params.page_size) {
+                                        this.tableList.push(data);
+                                    }
+                                    this.pagTotal++;
+                                    var message = "新增成功"
+                                } else {
+                                    for (var k in data) {
+                                        this.currentSettle[k] = data[k];
+                                    }
+                                    var message = "修改成功"
+                                }
+                                this.dialogVisible = false;
+                                this.$message({
+                                    type: 'success',
+                                    message: message,
+                                    duration: 2000
+                                });
+                            }
+                        }).catch(function (error) {
+                            console.log(error);
+                        })
+                    } else {
+                        return false;
+                    }
+                })
             },
             //删除数据
             removeSettle: function (row, index, rows) {
@@ -462,9 +558,9 @@
                             return;
                         }
 
-                        if((this.pagTotal/this.pagSize) > 1){
+                        if ((this.pagTotal / this.pagSize) > 1) {
                             this.$emit('getTableData', this.routerMessage);
-                        }else{
+                        } else {
                             rows.splice(index, 1);
                             this.pagTotal--;
                         }
@@ -486,7 +582,7 @@
                 this.$emit("getTableData", this.routerMessage);
             },
             //当前页数据条数发生变化
-            sizeChange:function(val){
+            sizeChange: function (val) {
                 this.routerMessage.params = {
                     page_size: val,
                     page_num: "1"

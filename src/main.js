@@ -7,6 +7,7 @@ import router from './router'
 //引入elementUI库
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
+
 Vue.use(ElementUI);
 
 //引入echarts
@@ -20,9 +21,11 @@ require("babel-polyfill");
 
 /*引入axios*/
 import axios from 'axios';
+
 axios.defaults.withCredentials = true;
 //设置axios请求头附带token
 import store from './js/store.js';
+
 axios.defaults.headers.common['Authorization'] = store.state.token;
 axios.interceptors.request.use(config => {
         //判断是否存在token 如果存在将每个页面header都添加token
@@ -42,14 +45,27 @@ axios.interceptors.response.use(
         return response;
     },
     error => {
-        if(error.response){
-            switch(error.response.status) {
+        if (error.response) {
+            switch (error.response.status) {
                 case 401:
                     store.commit('del_store');
+                    ElementUI.Message({
+                        type: 'warning',
+                        message: "部分数据无请求权限",
+                        duration: 2000
+                    });
                     router.replace({
                         path: "/login",
                         query: {redirect: router.currentRoute.fullPath}//登录成功后跳入浏览的当前页面
-                    })
+                    });
+                    break;
+                case 500:
+                    ElementUI.Message({
+                        type: 'error',
+                        message: "数据请求错误,请检查服务器",
+                        duration: 2000
+                    });
+                    break;
             }
         }
         return Promise.reject(error.response.data);

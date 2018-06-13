@@ -145,7 +145,8 @@
         <!-- 顶部按钮-->
         <div class="button-list-right">
             <el-button type="warning" size="mini" @click="addDept"
-                       v-if="btActive.department || btActive.post">新增</el-button>
+                       v-if="btActive.department || btActive.post">新增
+            </el-button>
             <!--<el-button type="warning" size="mini">下载</el-button>-->
         </div>
         <!--公司内容-->
@@ -265,14 +266,16 @@
                    width="30%"
                    :close-on-click-modal="false">
             <span slot="title" v-text="dialogTitle"></span>
-            <el-form :model="form" :label-width="formLabelWidth" size="small">
-                <el-form-item label="公司名称">
+            <el-form :model="form" size="small"
+                     :label-width="formLabelWidth"
+                     :rules="rules" ref="orgForm">
+                <el-form-item label="公司名称" prop="name">
                     <el-input v-model="form.name"></el-input>
                 </el-form-item>
-                <el-form-item label="公司编号">
+                <el-form-item label="公司编号" prop="code">
                     <el-input v-model="form.code"></el-input>
                 </el-form-item>
-                <el-form-item label="公司所在省">
+                <el-form-item label="公司所在省" prop="province">
                     <el-select v-model="form.province"
                                placeholder="请选择省份"
                                @change="proIsSelect"
@@ -308,8 +311,10 @@
                    width="30%"
                    :close-on-click-modal="false">
             <span slot="title" v-text="deptDialogTitle"></span>
-            <el-form :model="deptForm" :label-width="formLabelWidth" size="small">
-                <el-form-item label="部门名称">
+            <el-form :model="deptForm" size="small"
+                     :label-width="formLabelWidth"
+                     :rules="deptRules" ref="deptForm">
+                <el-form-item label="部门名称" prop="name">
                     <el-input v-model="deptForm.name"></el-input>
                 </el-form-item>
                 <el-form-item label="部门描述">
@@ -327,8 +332,10 @@
                    width="30%"
                    :close-on-click-modal="false">
             <span slot="title" v-text="postDialogTitle"></span>
-            <el-form :model="deptForm" :label-width="formLabelWidth" size="small">
-                <el-form-item label="职位名称">
+            <el-form :model="postForm" size="small"
+                     :label-width="formLabelWidth"
+                     :rules="postRules" ref="postForm">
+                <el-form-item label="职位名称" prop="name">
                     <el-input v-model="postForm.name"></el-input>
                 </el-form-item>
                 <el-form-item label="职位描述">
@@ -355,7 +362,7 @@
             this.$emit('transmitTitle', '基础数据维护');
             this.$emit('getTableData', this.routerMessage);
         },
-        mounted:function(){
+        mounted: function () {
             /*获取下拉框数据*/
             //省级列表
             var provinceList = JSON.parse(window.sessionStorage.getItem("provinceList"));
@@ -363,8 +370,8 @@
                 this.provinceList = provinceList;
             }
         },
-        destroyed: function(){
-            window.sessionStorage.setItem("orgTreeList",JSON.stringify(this.treeList));
+        destroyed: function () {
+            window.sessionStorage.setItem("orgTreeList", JSON.stringify(this.treeList[0]));
         },
         data: function () {
             return {
@@ -385,8 +392,11 @@
                 },
                 dialogVisible: false, //弹框-公司
                 form: {
+                    name: "",
+                    code: "",
                     province: "",
-                    city: ""
+                    city: "",
+                    address: ""
                 },
                 currentTree: {},
                 dialogTitle: "编辑",
@@ -400,7 +410,54 @@
                 formLabelWidth: '100px', //弹框表单的标签宽度
                 provinceList: [], //下拉框数据
                 cityList: [],
-                provinceSelect:true
+                provinceSelect: true,
+                //校验规则设置
+                rules: {
+                    name: {
+                        required: true,
+                        message: "请输入公司名称",
+                        trigger: "blur",
+                        transform: function (value) {
+                            if(value){
+                                return value.trim();
+                            }
+                        }
+                    },
+                    code: {
+                        required: true,
+                        message: "请输入公司编号",
+                        trigger: "blur",
+                        transform: function (value) {
+                            if(value){
+                                return value.trim();
+                            }
+                        }
+                    }
+                },
+                deptRules: {
+                    name: {
+                        required: true,
+                        message: "请输入部门名称",
+                        trigger: "blur",
+                        transform: function (value) {
+                            if(value){
+                                return value.trim();
+                            }
+                        }
+                    }
+                },
+                postRules: {
+                    name: {
+                        required: true,
+                        message: "请输入职位名称",
+                        trigger: "blur",
+                        transform: function (value) {
+                            if(value){
+                                return value.trim();
+                            }
+                        }
+                    }
+                }
             }
         },
         methods: {
@@ -445,7 +502,7 @@
                     return;
                 }
                 //点击职位
-                if(active == "post"){
+                if (active == "post") {
                     btActive.post = true;
                     this.routerMessage.optype = "position_list";
                     this.routerMessage.params = {
@@ -461,12 +518,26 @@
                 this.routerMessage.params.page_num = currentPage;
                 this.$emit("getTableData", this.routerMessage);
             },
+            //当前页数据条数发生变化
+            sizeChange: function (val) {
+                this.routerMessage.params = {
+                    page_size: val,
+                    page_num: "1"
+                };
+                this.$emit("getTableData", this.routerMessage);
+            },
             //添加下级公司 编辑当前公司
             addCompany: function (node, data, operation) {
-                for(var k in this.form){
+                //清空数据和校验信息
+                for (var k in this.form) {
                     this.form[k] = "";
                 }
+                if (this.$refs.orgForm) {
+                    this.$refs.orgForm.clearValidate();
+                }
+
                 this.currentTree = data;
+                //设置弹框
                 if (operation == "add") {
                     this.dialogTitle = "添加下级公司";
                     this.dialogVisible = true;
@@ -520,62 +591,83 @@
                 }).catch(() => {
                 });
             },
-            //弹出框-确定
+            //新增/修改公司弹出框-确定
             setCompany: function () {
-                var params = this.form;
-                var currentTree = this.currentTree;
-                if (params.children) {
-                    delete params.children;
-                }
-                if (this.dialogTitle == "添加下级公司") {
-                    this.$axios({
-                        url: "/cfm/adminProcess",
-                        method: "post",
-                        data: {
-                            optype: "org_add",
-                            params: params
+                this.$refs.orgForm.validate((valid, object) => { //校验
+                    if (valid) {
+                        var params = this.form;
+                        var currentTree = this.currentTree;
+                        if (params.children || (params.children == "")) {
+                            delete params.children;
                         }
-                    }).then( (result) => {
-                        if (result.data) {
-                            result.data.data.children = [];
-                            currentTree.children.push(result.data.data);
-                            this.$message({
-                                type: "success",
-                                message: '新增成功',
-                                duration: 2000
+                        if (this.dialogTitle == "添加下级公司") {
+                            this.$axios({
+                                url: "/cfm/adminProcess",
+                                method: "post",
+                                data: {
+                                    optype: "org_add",
+                                    params: params
+                                }
+                            }).then((result) => {
+                                if (result.data.error_msg) {
+                                    this.$message({
+                                        type: "error",
+                                        message: result.data.error_msg,
+                                        duration: 2000
+                                    })
+                                    return;
+                                } else {
+                                    result.data.data.children = [];
+                                    currentTree.children.push(result.data.data);
+                                    this.$message({
+                                        type: "success",
+                                        message: '新增成功',
+                                        duration: 2000
+                                    });
+                                    this.dialogVisible = false;
+                                }
+                            }).catch(function (error) {
+                                console.log(error);
+                            })
+                        } else { //编辑当前公司
+                            this.$axios({
+                                url: "/cfm/adminProcess",
+                                method: "post",
+                                data: {
+                                    optype: "org_chg",
+                                    params: params
+                                }
+                            }).then((result) => {
+                                if (result.data.error_msg) {
+                                    this.$message({
+                                        type: "error",
+                                        message: result.data.error_msg,
+                                        duration: 2000
+                                    });
+                                    return;
+                                } else {
+                                    var data = result.data.data;
+                                    for (var k in data) {
+                                        currentTree[k] = data[k];
+                                    }
+                                    this.$message({
+                                        type: "success",
+                                        message: '修改成功',
+                                        duration: 2000
+                                    });
+                                    this.dialogVisible = false;
+                                }
+                            }).catch(function (error) {
+                                console.log(error);
                             })
                         }
-                    }).catch(function (error) {
-                        console.log(error);
-                    })
-                } else { //编辑当前公司
-                    this.$axios({
-                        url: "/cfm/adminProcess",
-                        method: "post",
-                        data: {
-                            optype: "org_chg",
-                            params: params
-                        }
-                    }).then((result) => {
-                        if (result.data) {
-                            var data = result.data.data;
-                            for (var k in data) {
-                                currentTree[k] = data[k];
-                            }
-                            this.$message({
-                                type: "success",
-                                message: '修改成功',
-                                duration: 2000
-                            })
-                        }
-                    }).catch(function (error) {
-                        console.log(error);
-                    })
-                }
-                this.dialogVisible = false;
+                    } else {
+                        return false;
+                    }
+                });
             },
             //币种-设为默认币种
-            setCurrency: function (currentRow,rows) {
+            setCurrency: function (currentRow, rows) {
                 this.$axios({
                     url: "/cfm/adminProcess",
                     method: "post",
@@ -594,8 +686,8 @@
                         })
                     }
                     if (result.data.state == "ok") {
-                        rows.forEach(function(item){
-                            if(item.is_default){
+                        rows.forEach(function (item) {
+                            if (item.is_default) {
                                 item.is_default = 0;
                                 return;
                             }
@@ -620,7 +712,7 @@
             //设置部门状态
             setStatus: function (row) {
                 //修改部门状态
-                if(this.btActive.department){
+                if (this.btActive.department) {
                     this.$axios({
                         url: "/cfm/adminProcess",
                         method: "post",
@@ -645,7 +737,7 @@
                     })
                 }
                 //修改职位状态
-                if(this.btActive.post){
+                if (this.btActive.post) {
                     this.$axios({
                         url: "/cfm/adminProcess",
                         method: "post",
@@ -670,23 +762,50 @@
                     })
                 }
             },
-            //编辑当前部门
+            //新增部门/职位
+            addDept: function () {
+                //部门新增
+                if (this.btActive.department) {
+                    this.deptDialogTitle = "新增";
+                    this.deptForm = {};
+                    if (this.$refs.deptForm) {
+                        this.$refs.deptForm.clearValidate();
+                    }
+                    this.deptDialog = true;
+                }
+                //职位新增
+                if (this.btActive.post) {
+                    this.postDialogTitle = "新增";
+                    this.postForm = {};
+                    if (this.$refs.postForm) {
+                        this.$refs.postForm.clearValidate();
+                    }
+                    this.postDialog = true;
+                }
+            },
+            //编辑当前部门/职位
             redact: function (row) {
                 //修改部门
-                if(this.btActive.department){
+                if (this.btActive.department) {
                     this.deptDialogTitle = "编辑";
-                    this.currentDept = row;
                     this.deptForm = {};
+                    if (this.$refs.deptForm) {
+                        this.$refs.deptForm.clearValidate();
+                    }
+                    this.currentDept = row;
                     for (var k in row) {
                         this.deptForm[k] = row[k];
                     }
                     this.deptDialog = true;
                 }
                 //修改职位
-                if(this.btActive.post){
+                if (this.btActive.post) {
                     this.postDialogTitle = "编辑";
-                    this.currentDept = row;
                     this.postForm = {};
+                    if (this.$refs.postForm) {
+                        this.$refs.postForm.clearValidate();
+                    }
+                    this.currentDept = row;
                     for (var k in row) {
                         this.postForm[k] = row[k];
                     }
@@ -695,75 +814,81 @@
             },
             //部门弹框-确定
             setDept: function () {
-                if (this.deptDialogTitle == "新增") {
-                    this.$axios({
-                        url: "/cfm/adminProcess",
-                        method: "post",
-                        data: {
-                            optype: "dept_add",
-                            params: this.deptForm
-                        }
-                    }).then((result) => {
-                        if (result.data.error_msg) {
-                            this.$message({
-                                type: "error",
-                                message: result.data.error_msg,
-                                duration: 2000
+                this.$refs.deptForm.validate((valid, object) => { //校验
+                    if (valid) {
+                        if (this.deptDialogTitle == "新增") {
+                            this.$axios({
+                                url: "/cfm/adminProcess",
+                                method: "post",
+                                data: {
+                                    optype: "dept_add",
+                                    params: this.deptForm
+                                }
+                            }).then((result) => {
+                                if (result.data.error_msg) {
+                                    this.$message({
+                                        type: "error",
+                                        message: result.data.error_msg,
+                                        duration: 2000
+                                    })
+                                    return;
+                                }
+                                if (this.tableList.length < this.routerMessage.params.page_size) {
+                                    this.tableList.push(result.data.data);
+                                }
+                                this.pagTotal++;
+                                this.deptDialog = false;
+                                window.sessionStorage.setItem("deptList", JSON.stringify(this.tableList));
+                                this.$message({
+                                    type: "success",
+                                    message: '新增成功',
+                                    duration: 2000
+                                })
+                            }).catch(function (error) {
+                                console.log(error);
                             })
-                            return;
-                        }
-                        if(this.tableList.length < this.routerMessage.params.page_size){
-                            this.tableList.push(result.data.data);
-                        }
-                        this.pagTotal++;
-                        this.deptDialog = false;
-                        window.sessionStorage.setItem("deptList",JSON.stringify(this.tableList));
-                        this.$message({
-                            type: "success",
-                            message: '新增成功',
-                            duration: 2000
-                        })
-                    }).catch(function (error) {
-                        console.log(error);
-                    })
-                } else {
-                    var currentDept = this.currentDept
-                    this.$axios({
-                        url: "/cfm/adminProcess",
-                        method: "post",
-                        data: {
-                            optype: "dept_chg",
-                            params: this.deptForm
-                        }
-                    }).then((result) => {
-                        if (result.data.error_msg) {
-                            this.$message({
-                                type: "error",
-                                message: result.data.error_msg,
-                                duration: 2000
+                        } else {
+                            var currentDept = this.currentDept
+                            this.$axios({
+                                url: "/cfm/adminProcess",
+                                method: "post",
+                                data: {
+                                    optype: "dept_chg",
+                                    params: this.deptForm
+                                }
+                            }).then((result) => {
+                                if (result.data.error_msg) {
+                                    this.$message({
+                                        type: "error",
+                                        message: result.data.error_msg,
+                                        duration: 2000
+                                    })
+                                    return;
+                                }
+                                var data = result.data.data;
+                                for (var key in data) {
+                                    currentDept[key] = data[key];
+                                }
+                                this.deptDialog = false;
+                                window.sessionStorage.setItem("deptList", JSON.stringify(this.tableList));
+                                this.$message({
+                                    type: "success",
+                                    message: '修改成功',
+                                    duration: 2000
+                                })
+                            }).catch(function (error) {
+                                console.log(error);
                             })
-                            return;
                         }
-                        var data = result.data.data;
-                        for (var key in data) {
-                            currentDept[key] = data[key];
-                        }
-                        this.deptDialog = false;
-                        window.sessionStorage.setItem("deptList",JSON.stringify(this.tableList));
-                        this.$message({
-                            type: "success",
-                            message: '修改成功',
-                            duration: 2000
-                        })
-                    }).catch(function (error) {
-                        console.log(error);
-                    })
-                }
+                    } else {
+                        return false;
+                    }
+                })
             },
             //删除当前部门
             delDept: function (row, index, rows) {
                 //删除部门
-                if(this.btActive.department){
+                if (this.btActive.department) {
                     this.$confirm('确认删除当前部门吗?', '提示', {
                         confirmButtonText: '确定',
                         cancelButtonText: '取消',
@@ -788,9 +913,9 @@
                                 return;
                             }
 
-                            if((this.pagTotal/this.pagSize) > 1){
+                            if ((this.pagTotal / this.pagSize) > 1) {
                                 this.$emit('getTableData', this.routerMessage);
-                            }else{
+                            } else {
                                 rows.splice(index, 1);
                                 this.pagTotal--;
                             }
@@ -807,7 +932,7 @@
                     });
                 }
                 //删除职位
-                if(this.btActive.post){
+                if (this.btActive.post) {
                     this.$confirm('确认删除当前职位吗?', '提示', {
                         confirmButtonText: '确定',
                         cancelButtonText: '取消',
@@ -832,9 +957,9 @@
                                 return;
                             }
 
-                            if((this.pagTotal/this.pagSize) > 1){
+                            if ((this.pagTotal / this.pagSize) > 1) {
                                 this.$emit('getTableData', this.routerMessage);
-                            }else{
+                            } else {
                                 rows.splice(index, 1);
                                 this.pagTotal--;
                             }
@@ -851,71 +976,62 @@
                     });
                 }
             },
-            //新增部门
-            addDept: function () {
-                //部门新增
-                if(this.btActive.department){
-                    this.deptDialogTitle = "新增";
-                    this.deptForm = {};
-                    this.deptDialog = true;
-                }
-                //职位新增
-                if(this.btActive.post){
-                    this.postDialogTitle = "新增";
-                    this.postForm = {};
-                    this.postDialog = true;
-                }
-            },
             //职位弹框-确定
-            setPost:function(){
-                var optype = "";
-                var params = this.postForm;
-                if(this.postDialogTitle == "新增"){
-                    optype = "position_add";
-                }else{
-                    optype = "position_chg";
-                }
-                this.$axios({
-                    url: "/cfm/adminProcess",
-                    method: "post",
-                    data: {
-                        optype: optype,
-                        params: params
-                    }
-                }).then((result) => {
-                    if (result.data.error_msg) {
-                        this.$message({
-                            type: "error",
-                            message: result.data.error_msg,
-                            duration: 2000
+            setPost: function () {
+                this.$refs.postForm.validate((valid, object) => {
+                    if(valid){
+                        var optype = "";
+                        var params = this.postForm;
+                        if (this.postDialogTitle == "新增") {
+                            optype = "position_add";
+                        } else {
+                            optype = "position_chg";
+                        }
+                        this.$axios({
+                            url: "/cfm/adminProcess",
+                            method: "post",
+                            data: {
+                                optype: optype,
+                                params: params
+                            }
+                        }).then((result) => {
+                            if (result.data.error_msg) {
+                                this.$message({
+                                    type: "error",
+                                    message: result.data.error_msg,
+                                    duration: 2000
+                                })
+                                return;
+                            }
+                            if (this.postDialogTitle == "新增") {
+                                if (this.tableList.length < this.routerMessage.params.page_size) {
+                                    this.tableList.push(result.data.data);
+                                }
+                                this.pagTotal++;
+                                var message = "新增成功"
+                            } else {
+                                var data = result.data.data;
+                                for (var key in data) {
+                                    this.currentDept[key] = data[key];
+                                }
+                                var message = "修改成功"
+                            }
+                            this.postDialog = false;
+                            this.$message({
+                                type: "success",
+                                message: message,
+                                duration: 2000
+                            })
+                        }).catch(function (error) {
+                            console.log(error);
                         })
-                        return;
-                    }
-                    if(this.postDialogTitle == "新增"){
-                        if(this.tableList.length < this.routerMessage.params.page_size){
-                            this.tableList.push(result.data.data);
-                        }
-                        this.pagTotal++;
-                        var message = "新增成功"
                     }else{
-                        var data = result.data.data;
-                        for (var key in data) {
-                            this.currentDept[key] = data[key];
-                        }
-                        var message = "修改成功"
+                        return false;
                     }
-                    this.postDialog = false;
-                    this.$message({
-                        type: "success",
-                        message: message,
-                        duration: 2000
-                    })
-                }).catch(function (error) {
-                    console.log(error);
                 })
             },
             //设置树数据的转换
-            setTreeData:function(data){
+            setTreeData: function (data) {
                 /*
                 *将后台返回的数据转换为树结构数据
                 *
@@ -984,9 +1100,9 @@
             },
             proIsSelect: function (value) {
                 this.cityList = [];
-                if(value){
+                if (value) {
                     this.$axios({
-                        url:"/cfm/commProcess",
+                        url: "/cfm/commProcess",
                         method: "post",
                         data: {
                             optype: "area_list",
@@ -995,32 +1111,24 @@
                             }
                         }
                     }).then((result) => {
-                        if(result.data.error_msg){
+                        if (result.data.error_msg) {
                             this.$message({
                                 type: "error",
                                 message: result.data.error_msg,
                                 duration: 2000
                             })
-                        }else{
+                        } else {
                             var data = result.data.data;
                             this.cityList = data;
                             this.provinceSelect = false;
                         }
-                    }).catch(function(error){
+                    }).catch(function (error) {
                         console.log(error);
                     })
-                }else{
+                } else {
                     this.form.city = "";
                     this.provinceSelect = true;
                 }
-            },
-            //当前页数据条数发生变化
-            sizeChange:function(val){
-                this.routerMessage.params = {
-                    page_size: val,
-                    page_num: "1"
-                };
-                this.$emit("getTableData", this.routerMessage);
             }
         },
         watch: {
