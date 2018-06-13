@@ -384,7 +384,7 @@
                     <el-col :span="12">
                         <el-form-item label="支付渠道" :label-width="formLabelWidth">
                             <el-select v-model="item.channel_code" placeholder="请选择支付渠道"
-                                       clearable>
+                                       clearable @change="clearElse(item)">
                                 <el-option v-for="channel in channelList"
                                            :key="channel.code"
                                            :label="channel.desc"
@@ -596,6 +596,7 @@
                 }
                 dialogData.id = row.id;
 
+                //设置机构
                 var orgExp = row.org_exp;
                 if (orgExp) {
                     orgExp = orgExp.split("@");
@@ -609,6 +610,7 @@
                         this.expandData = orgExp;
                     }, 100)
                 }
+                //设置业务类型
                 var bizTypeExp = row.biz_type_exp;
                 if (bizTypeExp) {
                     bizTypeExp = bizTypeExp.split("@");
@@ -616,6 +618,7 @@
                     bizTypeExp.shift();
                     this.biztypeSelect = bizTypeExp;
                 }
+                //设置险种大类
                 var insuranceTypeExp = row.insurance_type_exp;
                 if (insuranceTypeExp) {
                     insuranceTypeExp = insuranceTypeExp.split("@");
@@ -642,12 +645,18 @@
                             })
                         } else {
                             var itemList = result.data.data.items;
+                            row.items = [];
                             itemList.forEach((item) => {
+                                //将id转为$id
+                                var currentItem = {};
                                 for (var key in item) {
                                     if (key == "id") {
                                         item.$id = item[key];
                                     }
+                                    currentItem[key] = item[key];
                                 }
+                                row.items.push(currentItem);
+                                //判断商户号下拉数据中是否存有此条数据
                                 var itemAccId = item.settle_or_merchant_acc_id;
                                 var pushData = true;
                                 this.closeAccountList.forEach((current) => {
@@ -661,23 +670,41 @@
                                         acc_no: item.settle_or_merchant_acc_no
                                     })
                                 }
+                                //判断原子接口下拉数据中是否存有此条数据
+                                var itemChaCode = item.channel_interface_code;
+                                var pushCode = true;
+                                for(var k in this.salesChannelList){
+                                    if(k == itemChaCode){
+                                        pushCode = false;
+                                        break;
+                                    }
+                                }
+                                if(pushCode){
+                                    this.salesChannelList[itemChaCode] = item.channel_interface_name;
+                                }
                             })
+                            //设置当前items并保存当前数据中
                             this.items = itemList;
-                            row.items = itemList;
+
                         }
                     }).catch(function (error) {
                         console.log(error);
                     })
                 } else {
                     var itemList = row.items;
+                    //清除掉默认的一条空数据
+                    this.items.splice(0,1);
+                    //遍历添加数据
                     itemList.forEach((item) => {
+                        var current = {};
                         for (var key in item) {
                             if (key == "id") {
                                 item.$id = item[key];
                             }
+                            current[key] = item[key];
                         }
+                        this.items.push(current);
                     })
-                    this.items = itemList;
                 }
             },
             //删除当前路由
@@ -809,11 +836,19 @@
                 if(this.isCloseSale && code){
                     var channelList = JSON.parse(window.sessionStorage.getItem("channelList"));
                     for(var i = 0; i < channelList.length; i++){
-                        if(channelList[i].code = code){
+                        if(channelList[i].code == code){
                             this.salesChannelList = channelList[i].items;
+                            break;
                         }
                     }
                 }
+            },
+            //支付渠道值变化后清空相关下拉框的值
+            clearElse:function(item){
+                item.channel_interface_code = "";
+                item.channel_interface_name = "";
+                item.settle_or_merchant_acc_id = "";
+                item.settle_or_merchant_acc_no = "";
             },
             //提交数据
             subCurrent: function () {
