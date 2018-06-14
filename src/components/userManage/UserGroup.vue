@@ -81,15 +81,17 @@
                    width="800px" top="76px"
                    :close-on-click-modal="false">
             <h1 slot="title" v-text="dialogTitle" class="dialog-title"></h1>
-            <el-form :model="dialogData" size="small">
+            <el-form :model="dialogData" size="small"
+                     :label-width="formLabelWidth"
+                     :rules="rules" ref="dialogForm">
                 <el-row>
                     <el-col :span="12">
-                        <el-form-item label="用户组名" :label-width="formLabelWidth">
+                        <el-form-item label="用户组名" prop="name">
                             <el-input v-model="dialogData.name" auto-complete="off"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="用户组描述" :label-width="formLabelWidth">
+                        <el-form-item label="用户组描述">
                             <el-input v-model="dialogData.memo" auto-complete="off"></el-input>
                         </el-form-item>
                     </el-col>
@@ -166,7 +168,20 @@
                 dialogData: {},
                 formLabelWidth: "120px",
                 currentGroup: "",
-                jurisdTreeList: []
+                jurisdTreeList: [],
+                //校验规则配置
+                rules: {
+                    name:{
+                        required: true,
+                        message: "请输入用户组名",
+                        trigger: "blur",
+                        transform: function (value) {
+                            if (value) {
+                                return value.trim();
+                            }
+                        }
+                    }
+                }
             }
         },
         methods: {
@@ -174,12 +189,18 @@
             addUserGroup:function () {
                 this.dialogTitle = "新增";
                 this.dialogData = {};
+                if (this.$refs.dialogForm) {
+                    this.$refs.dialogForm.clearValidate();
+                }
                 this.dialogVisible = true;
             },
             //编辑当前用户组
             editUserGroup: function (row) {
                 this.dialogTitle = "编辑";
                 this.dialogData = {};
+                if (this.$refs.dialogForm) {
+                    this.$refs.dialogForm.clearValidate();
+                }
                 this.dialogVisible = true;
 
                 this.currentGroup = row;
@@ -239,53 +260,70 @@
             },
             //提交数据
             subCurrent: function () {
-                var params = this.dialogData;
-                params.menus = this.$refs.jurisdTree.getCheckedKeys();
-                var optype = "";
-                if (this.dialogTitle == "新增") {
-                    optype = "usrgroup_add";
-                } else {
-                    optype = "usrgroup_chg";
-                }
-
-                this.$axios({
-                    url: "/cfm/adminProcess",
-                    method: "post",
-                    data: {
-                        optype: optype,
-                        params: params
-                    }
-                }).then((result) => {
-                    if (result.data.error_msg) {
-                        this.$message({
-                            type: "error",
-                            message: result.data.error_msg,
-                            duration: 2000
-                        })
-                    } else {
-                        var data = result.data.data;
-                        if (this.dialogTitle == "新增") {
-                            if(this.tableList.length < this.routerMessage.params.page_size){
-                                this.tableList.push(data);
-                            }
-                            this.pagTotal++;
-                            var message = "添加成功";
-                        } else {
-                            for (var k in data) {
-                                this.currentGroup[k] = data[k];
-                            }
-                            var message = "修改成功";
+                this.$refs.dialogForm.validate((valid, object) => {
+                    if(valid){
+                        //校验是否分配功能权限
+                        var treeLength = this.$refs.jurisdTree.getCheckedKeys().length;
+                        if(!treeLength){
+                            this.$message({
+                                type: 'warning',
+                                message: '请为用户组分配功能权限',
+                                duration: 2000
+                            });
+                            return false;
                         }
 
-                        this.dialogVisible = false;
-                        this.$message({
-                            type: 'success',
-                            message: message,
-                            duration: 2000
-                        });
+                        var params = this.dialogData;
+                        params.menus = this.$refs.jurisdTree.getCheckedKeys();
+                        var optype = "";
+                        if (this.dialogTitle == "新增") {
+                            optype = "usrgroup_add";
+                        } else {
+                            optype = "usrgroup_chg";
+                        }
+
+                        this.$axios({
+                            url: "/cfm/adminProcess",
+                            method: "post",
+                            data: {
+                                optype: optype,
+                                params: params
+                            }
+                        }).then((result) => {
+                            if (result.data.error_msg) {
+                                this.$message({
+                                    type: "error",
+                                    message: result.data.error_msg,
+                                    duration: 2000
+                                })
+                            } else {
+                                var data = result.data.data;
+                                if (this.dialogTitle == "新增") {
+                                    if(this.tableList.length < this.routerMessage.params.page_size){
+                                        this.tableList.push(data);
+                                    }
+                                    this.pagTotal++;
+                                    var message = "添加成功";
+                                } else {
+                                    for (var k in data) {
+                                        this.currentGroup[k] = data[k];
+                                    }
+                                    var message = "修改成功";
+                                }
+
+                                this.dialogVisible = false;
+                                this.$message({
+                                    type: 'success',
+                                    message: message,
+                                    duration: 2000
+                                });
+                            }
+                        }).catch(function (error) {
+                            console.log(error);
+                        })
+                    }else{
+                        return false;
                     }
-                }).catch(function (error) {
-                    console.log(error);
                 })
             },
             //点击页数 获取当前页数据

@@ -420,7 +420,7 @@
                     this.$emit("getTableData", this.routerMessage);
                     //设置添加用户列表
                     var userAllList = JSON.parse(window.sessionStorage.getItem("userList"));
-                    if(userAllList.length){
+                    if(userAllList.length && !this.selectUserList.length){
                         this.selectTotal = userAllList.length;
                         if(userAllList.length >= 8){
                             for(var i = 0; i<8; i++){

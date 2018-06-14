@@ -24,7 +24,7 @@
             margin-bottom: 20px;
         }
         /*数据展示区*/
-        .table-content{
+        .table-content {
             height: 333px;
         }
         /*分页部分*/
@@ -95,7 +95,8 @@
                                  :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column label="操作" width="50">
                     <template slot-scope="scope" class="operationBtn">
-                        <el-tooltip content="设置状态" placement="bottom" effect="light" :enterable="false" :open-delay="500">
+                        <el-tooltip content="设置状态" placement="bottom" effect="light" :enterable="false"
+                                    :open-delay="500">
                             <el-button size="mini"
                                        @click="setStatus(scope.row)"
                                        class="on-off"></el-button>
@@ -120,28 +121,30 @@
                    :visible.sync="dialogVisible"
                    width="800px" top="76px"
                    :close-on-click-modal="false">
-            <el-form :model="dialogData" size="small">
+            <el-form :model="dialogData" size="small"
+                     :label-width="formLabelWidth"
+                     :rules="rules" ref="dialogForm">
                 <el-row>
                     <el-col :span="12">
-                        <el-form-item label="渠道代码" :label-width="formLabelWidth">
-                            <el-select v-model="dialogData.code"
+                        <el-form-item label="渠道名称" prop="name">
+                            <el-select v-model="dialogData.name"
                                        placeholder="请选择渠道代码"
                                        clearable filterable
                                        @change="setChiannelName">
                                 <el-option v-for="chiannel in channelList"
-                                           :key="chiannel.code"
-                                           :value="chiannel.code">
+                                           :key="chiannel.desc"
+                                           :value="chiannel.desc">
                                 </el-option>
                             </el-select>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="渠道名称" :label-width="formLabelWidth">
-                            <el-input v-model="dialogData.name" auto-complete="off" :disabled="true"></el-input>
+                        <el-form-item label="渠道代码">
+                            <el-input v-model="dialogData.code" auto-complete="off" :disabled="true"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="是否银企直联" :label-width="formLabelWidth">
+                        <el-form-item label="是否银企直联">
                             <el-switch
                                     v-model="dialogData.third_party_flag"
                                     active-value="1"
@@ -150,7 +153,7 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="24">
-                        <el-form-item label="备注" :label-width="formLabelWidth">
+                        <el-form-item label="备注">
                             <el-input v-model="dialogData.memo" auto-complete="off"></el-input>
                         </el-form-item>
                     </el-col>
@@ -158,7 +161,7 @@
             </el-form>
             <span slot="footer" class="dialog-footer">
                 <el-button type="warning" plain size="mini" @click="dialogVisible = false">取 消</el-button>
-                <el-button type="warning" size="mini" @click="subCurrent" >确 定</el-button>
+                <el-button type="warning" size="mini" @click="subCurrent">确 定</el-button>
             </span>
         </el-dialog>
     </div>
@@ -171,7 +174,7 @@
             this.$emit("transmitTitle", "渠道设置");
             this.$emit("getTableData", this.routerMessage);
         },
-        mounted:function(){
+        mounted: function () {
             //获取下拉框数据
             var channelList = JSON.parse(window.sessionStorage.getItem("channelList"));
             if (channelList) {
@@ -192,41 +195,49 @@
                 pagTotal: 1,
                 tableList: [],
                 serachData: {},
-                dialogVisible:false,
+                dialogVisible: false,
                 dialogData: {
                     third_party_flag: "0"
                 },
-                formLabelWidth:"120px",
-                channelList: []
+                formLabelWidth: "120px",
+                channelList: [],
+                //校验规则
+                rules: {
+                    name: {
+                        required: true,
+                        message: "请选择渠道代码",
+                        trigger: "change"
+                    }
+                }
             }
         },
         methods: {
             //状态展示格式转换
-            getStatus:function(row, column, cellValue, index){
+            getStatus: function (row, column, cellValue, index) {
                 var constants = JSON.parse(window.sessionStorage.getItem("constants"));
-                if(constants.YesOrNo){
+                if (constants.YesOrNo) {
                     return constants.YesOrNo[cellValue];
-                }else{
+                } else {
                     return "";
                 }
             },
             //设置状态
-            setStatus:function (row) {
+            setStatus: function (row) {
                 this.$axios({
-                    url:"/cfm/adminProcess",
+                    url: "/cfm/adminProcess",
                     method: "post",
                     data: {
                         optype: "handlechannel_setstatus",
                         params: row
                     }
                 }).then((result) => {
-                    if(result.data.error_msg){
+                    if (result.data.error_msg) {
                         this.$message({
                             type: "error",
                             message: result.data.error_msg,
                             duration: 2000
                         })
-                    }else{
+                    } else {
                         row.is_activate = result.data.data;
                         this.$message({
                             type: 'success',
@@ -234,17 +245,20 @@
                             duration: 2000
                         });
                     }
-                }).catch(function(error){
+                }).catch(function (error) {
                     console.log(error);
                 })
             },
             //新增
-            addChannel:function(){
-                for(var k in this.dialogData){
-                    if(k == "third_party_flag"){
+            addChannel: function () {
+                for (var k in this.dialogData) {
+                    if (k == "third_party_flag") {
                         this.dialogData[k] = "0";
                     }
                     this.dialogData[k] = "";
+                }
+                if (this.$refs.dialogForm) {
+                    this.$refs.dialogForm.clearValidate();
                 }
                 this.dialogVisible = true;
             },
@@ -254,7 +268,7 @@
                 this.$emit("getTableData", this.routerMessage);
             },
             //当前页数据条数发生变化
-            sizeChange:function(val){
+            sizeChange: function (val) {
                 this.routerMessage.params = {
                     page_size: val,
                     page_num: "1"
@@ -272,56 +286,61 @@
 
             /*弹出框事件*/
             //根据渠道代码设置渠道名称
-            setChiannelName:function (value) {
-                if(!value){
-                    this.dialogData.name = "";
+            setChiannelName: function (value) {
+                if (!value) {
+                    this.dialogData.code = "";
                 }
                 var channelList = JSON.parse(window.sessionStorage.getItem("channelList"));
-                for(var i=0; i<channelList.length; i++){
+                for (var i = 0; i < channelList.length; i++) {
                     var item = channelList[i];
-                    if(value == item.code){
-                        this.dialogData.name = item.desc;
+                    if (value == item.desc) {
+                        this.dialogData.code = item.code;
                         return;
                     }
                 }
             },
-            //提交当前修改或新增
+            //提交当前新增
             subCurrent: function () {
-                var params = this.dialogData;
-                if(params.third_party_flag == ""){
-                    params.third_party_flag = "0";
-                }
-                this.$axios({
-                    url: "/cfm/adminProcess",
-                    method: "post",
-                    data: {
-                        optype: "handlechannel_add",
-                        params: params
-                    }
-                }).then((result) => {
-                    if (result.data.error_msg) {
-                        this.$message({
-                            type: "error",
-                            message: result.data.error_msg,
-                            duration: 2000
-                        })
-                    }else {
-                        var data = result.data.data;
-                        if(this.tableList.length < this.routerMessage.params.page_size){
-                            this.tableList.push(data);
+                this.$refs.dialogForm.validate((valid, object) => {
+                    if (valid) {
+                        var params = this.dialogData;
+                        if (params.third_party_flag == "") {
+                            params.third_party_flag = "0";
                         }
-                        this.pagTotal++;
-                        this.dialogVisible = false;
-                        this.$message({
-                            type: 'success',
-                            message: "新增成功",
-                            duration: 2000
-                        });
+                        this.$axios({
+                            url: "/cfm/adminProcess",
+                            method: "post",
+                            data: {
+                                optype: "handlechannel_add",
+                                params: params
+                            }
+                        }).then((result) => {
+                            if (result.data.error_msg) {
+                                this.$message({
+                                    type: "error",
+                                    message: result.data.error_msg,
+                                    duration: 2000
+                                })
+                            } else {
+                                var data = result.data.data;
+                                if (this.tableList.length < this.routerMessage.params.page_size) {
+                                    this.tableList.push(data);
+                                }
+                                this.pagTotal++;
+                                this.dialogVisible = false;
+                                this.$message({
+                                    type: 'success',
+                                    message: "新增成功",
+                                    duration: 2000
+                                });
+                            }
+                        }).catch(function (error) {
+                            console.log(error);
+                        })
+                    } else {
+                        return false;
                     }
-                }).catch(function (error) {
-                    console.log(error);
                 })
-
             },
         },
         watch: {

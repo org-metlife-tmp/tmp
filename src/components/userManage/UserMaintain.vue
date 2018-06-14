@@ -12,7 +12,7 @@
             right: -18px;
         }
         /*数据展示区*/
-        .table-content{
+        .table-content {
             height: 408px;
         }
         /*分页部分*/
@@ -27,8 +27,8 @@
         .on-off {
             width: 22px;
             height: 22px;
-            background-image: url(../../assets/icon_nav.png);
-            background-position: -375px -100px;
+            background-image: url(../../assets/icon_common.png);
+            background-position: -273px -62px;
             border: none;
             padding: 0;
             vertical-align: middle;
@@ -80,6 +80,9 @@
                 <el-table-column prop="phone" label="手机号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="email" label="邮箱" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="register_date" label="注册日期" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="status" label="状态" width="80"
+                                 :formatter="transitionStatus"
+                                 :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column
                         label="操作"
                         width="110">
@@ -118,30 +121,35 @@
                    width="800px" top="76px"
                    :close-on-click-modal="false">
             <h1 slot="title" v-text="dialogTitle" class="dialog-title"></h1>
-            <el-form :model="dialogData" size="small">
+            <el-form :model="dialogData" size="small"
+                     :label-width="formLabelWidth"
+                     :rules="rules" ref="dialogForm">
                 <el-row>
                     <el-col :span="12">
-                        <el-form-item label="姓名" :label-width="formLabelWidth">
+                        <el-form-item label="姓名" prop="name">
                             <el-input v-model="dialogData.name" auto-complete="off"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="邮箱" :label-width="formLabelWidth">
+                        <el-form-item label="邮箱" prop="email">
                             <el-input v-model="dialogData.email" auto-complete="off"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="登录名称" :label-width="formLabelWidth">
+                        <el-form-item label="登录名称" prop="login_name">
                             <el-input v-model="dialogData.login_name" auto-complete="off"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="密码" :label-width="formLabelWidth">
-                            <el-input type="password" v-model="dialogData.password" auto-complete="off"></el-input>
+                            <el-input type="password"
+                                      v-model="dialogData.password"
+                                      auto-complete="off"
+                                      placeholder="密码默认为123456"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="手机号" :label-width="formLabelWidth">
+                        <el-form-item label="手机号" prop="phone">
                             <el-input v-model="dialogData.phone" auto-complete="off"></el-input>
                         </el-form-item>
                     </el-col>
@@ -198,10 +206,12 @@
                        width="38%" title="添加职位"
                        append-to-body
                        :close-on-click-modal="false">
-                <el-form :model="posDialogData" size="small">
+                <el-form :model="posDialogData" size="small"
+                         :label-width="formLabelWidth"
+                         :rules="posRules" ref="innerDialogForm">
                     <el-row>
                         <el-col :span="24">
-                            <el-form-item label="所属机构" :label-width="formLabelWidth">
+                            <el-form-item label="所属机构" prop="org_id">
                                 <el-select v-model="posDialogData.org_id" placeholder="请选择机构" clearable>
                                     <el-option v-for="org in orgList"
                                                :key="org.org_id"
@@ -212,7 +222,7 @@
                             </el-form-item>
                         </el-col>
                         <el-col :span="24">
-                            <el-form-item label="所属部门" :label-width="formLabelWidth">
+                            <el-form-item label="所属部门" prop="dept_id">
                                 <el-select v-model="posDialogData.dept_id" placeholder="请选择部门" clearable>
                                     <el-option v-for="dept in deptList"
                                                :key="dept.dept_id"
@@ -223,7 +233,7 @@
                             </el-form-item>
                         </el-col>
                         <el-col :span="24">
-                            <el-form-item label="所属职位" :label-width="formLabelWidth">
+                            <el-form-item label="所属职位" prop="post_id">
                                 <el-select v-model="posDialogData.post_id" placeholder="请选择职位" clearable>
                                     <el-option v-for="position in positionList"
                                                :key="position.pos_id"
@@ -259,7 +269,7 @@
             this.$emit("transmitTitle", "用户维护");
             this.$emit("getTableData", this.routerMessage);
         },
-        mounted:function(){
+        mounted: function () {
             /*获取下拉框数据*/
             //机构
             var orgList = JSON.parse(window.sessionStorage.getItem("orgList"));
@@ -324,7 +334,67 @@
                 orgList: [], //下拉框数据
                 deptList: [],
                 positionList: [],
-                emptyData: "" //为了展示数据为空
+                emptyData: "", //为了展示数据为空
+                //校验规则设置
+                rules: {
+                    name: {
+                        required: true,
+                        message: "请输入姓名",
+                        trigger: "blur",
+                        transform: function (value) {
+                            if (value) {
+                                return value.trim();
+                            }
+                        }
+                    },
+                    login_name: {
+                        required: true,
+                        message: "请输入登录名称",
+                        trigger: "blur",
+                        transform: function (value) {
+                            if (value) {
+                                return value.trim();
+                            }
+                        }
+                    },
+                    email: {
+                        type: "email",
+                        message: "请输入正确的邮箱格式",
+                        trigger: "blur"
+                    },
+                    phone: {
+                        validator: function (rule, value, callback, source, options) {
+                            if(!value){
+                                callback();
+                            }
+                            var reg = /^[1][0-9]{10}$/;
+                            if (reg.test(value)) {
+                                callback();
+                            } else {
+                                var errors = [];
+                                callback(new Error("请输入正确的手机号"));
+                            }
+                        },
+                        trigger: "blur"
+                    }
+                },
+                posRules: {
+                    org_id: {
+                        required: true,
+                        message: "请选择所属机构",
+                        trigger: "change"
+                    },
+                    dept_id: {
+                        required: true,
+                        message: "请选择所属部门",
+                        trigger: "change"
+                    },
+                    post_id: {
+                        required: true,
+                        message: "请选择所属职位",
+                        trigger: "change"
+                    }
+                }
             }
         },
         methods: {
@@ -332,27 +402,33 @@
             addStaff: function () {
                 this.dialogTitle = "新增";
                 this.dialogData = {};
-                this.udopsList.splice(0,this.udopsList.length);
+                if (this.$refs.dialogForm) {
+                    this.$refs.dialogForm.clearValidate();
+                }
+                this.udopsList.splice(0, this.udopsList.length);
                 this.dialogVisible = true;
             },
             //编辑员工
             editStaff: function (row) {
                 this.dialogTitle = "编辑";
                 this.dialogData = {};
-                this.udopsList.splice(0,this.udopsList.length);
+                if (this.$refs.dialogForm) {
+                    this.$refs.dialogForm.clearValidate();
+                }
+                this.udopsList.splice(0, this.udopsList.length);
                 this.dialogVisible = true;
                 this.currentUser = row;
 
                 for (var k in row) {
-                    if(k != "udops"){
+                    if (k != "udops") {
                         this.dialogData[k] = row[k];
-                    }else{
+                    } else {
                         row[k].forEach((current) => {
                             var udopsItem = {};
-                            for(var k in current){
-                                if(k == "is_default"){
+                            for (var k in current) {
+                                if (k == "is_default") {
                                     udopsItem[k] = current[k] + "";
-                                }else{
+                                } else {
                                     udopsItem[k] = current[k];
                                 }
                             }
@@ -383,6 +459,7 @@
                         })
                     } else {
                         row.status = result.data.data;
+                        console.log(row.status);
                         this.$message({
                             type: 'success',
                             message: '修改成功!',
@@ -418,9 +495,9 @@
                             })
                             return;
                         }
-                        if((this.pagTotal/this.pagSize) > 1){
+                        if ((this.pagTotal / this.pagSize) > 1) {
                             this.$emit('getTableData', this.routerMessage);
-                        }else{
+                        } else {
                             rows.splice(index, 1);
                             this.pagTotal--;
                         }
@@ -442,12 +519,19 @@
                 this.$emit("getTableData", this.routerMessage);
             },
             //当前页数据条数发生变化
-            sizeChange:function(val){
+            sizeChange: function (val) {
                 this.routerMessage.params = {
                     page_size: val,
                     page_num: "1"
                 };
                 this.$emit("getTableData", this.routerMessage);
+            },
+            //展示格式转换-状态
+            transitionStatus:function(row, column, cellValue, index){
+                var constants = JSON.parse(window.sessionStorage.getItem("constants"));
+                if (constants.UserStatus) {
+                    return constants.UserStatus[cellValue];
+                }
             },
             //展示格式转换-机构
             transitionOrg: function (row, column, cellValue, index) {
@@ -479,25 +563,34 @@
             /*弹框事件*/
             //添加所属机构部门
             addUdops: function () {
-                var tableItem = {};
-                for (var k in this.posDialogData) {
-                    tableItem[k] = this.posDialogData[k];
-                }
-                if(tableItem.is_default == "1"){
-                    this.udopsList.forEach((item) => {
-                        item.is_default = "0";
-                    })
-                }
-                this.udopsList.push(tableItem);
-                this.innerVisible = false;
+                this.$refs.innerDialogForm.validate((valid, object) => {
+                    if(valid){
+                        var tableItem = {};
+                        for (var k in this.posDialogData) {
+                            tableItem[k] = this.posDialogData[k];
+                        }
+                        if (tableItem.is_default == "1") {
+                            this.udopsList.forEach((item) => {
+                                item.is_default = "0";
+                            })
+                        }
+                        this.udopsList.push(tableItem);
+                        this.innerVisible = false;
+                    }else{
+                        return false;
+                    }
+                })
             },
             //添加职位弹框-显示
             showPosDialog: function () {
                 this.innerVisible = true;
-                for(var k in this.posDialogData){
-                    if(k == "is_default"){
+                if (this.$refs.innerDialogForm) {
+                    this.$refs.innerDialogForm.clearValidate();
+                }
+                for (var k in this.posDialogData) {
+                    if (k == "is_default") {
                         this.posDialogData[k] = '0';
-                    }else{
+                    } else {
                         this.posDialogData[k] = '';
                     }
                 }
@@ -520,58 +613,90 @@
             },
             //提交当前修改或新增
             subCurrent: function () {
-                var params = this.dialogData;
-                params.udops = this.udopsList;
-                var optype = "";
-                if(this.dialogTitle == "新增"){
-                    optype = "usr_add";
-                }else {
-                    optype = "usr_chg";
-                }
-
-                this.$axios({
-                    url: "/cfm/adminProcess",
-                    method: "post",
-                    data: {
-                        optype: optype,
-                        params: params
-                    }
-                }).then((result) => {
-                    if (result.data.error_msg) {
-                        this.$message({
-                            type: "error",
-                            message: result.data.error_msg,
-                            duration: 2000
-                        })
-                    }else {
-                        var data = result.data.data;
-                        if(this.dialogTitle == "新增"){
-                            if(this.tableList.length < this.routerMessage.params.page_size){
-                                this.tableList.push(data);
-                            }
-                            this.pagTotal++;
-                            var message = "新增成功";
+                this.$refs.dialogForm.validate((valid, object) => {
+                    if(valid){
+                        console.log(this.udopsList);
+                        var udopsList = this.udopsList;
+                        if(!udopsList.length){
+                            this.$message({
+                                type: "warning",
+                                message: "请选择所属机构",
+                                duration: 2000
+                            });
+                            return;
                         }else{
-                            for(var k in data){
-                                this.currentUser[k] = data[k];
+                            var hasDefault = false;
+                            for(var i = 0; i<udopsList.length; i++){
+                                if(udopsList[i].is_default == "1"){
+                                    hasDefault = true;
+                                    break;
+                                }
                             }
-                            var message = "修改成功";
+                            if(!hasDefault){
+                                this.$message({
+                                    type: "warning",
+                                    message: "请选择一条默认所属机构",
+                                    duration: 2000
+                                });
+                                return;
+                            }
                         }
-                        this.dialogVisible = false;
-                        this.$message({
-                            type: 'success',
-                            message: message,
-                            duration: 2000
-                        });
-                    }
-                }).catch(function (error) {
-                    console.log(error);
-                })
 
+                        var params = this.dialogData;
+                        params.udops = this.udopsList;
+                        var optype = "";
+                        if (this.dialogTitle == "新增") {
+                            optype = "usr_add";
+                        } else {
+                            optype = "usr_chg";
+                        }
+
+                        this.$axios({
+                            url: "/cfm/adminProcess",
+                            method: "post",
+                            data: {
+                                optype: optype,
+                                params: params
+                            }
+                        }).then((result) => {
+                            if (result.data.error_msg) {
+                                this.$message({
+                                    type: "error",
+                                    message: result.data.error_msg,
+                                    duration: 2000
+                                })
+                            } else {
+                                var data = result.data.data;
+                                if (this.dialogTitle == "新增") {
+                                    if (this.tableList.length < this.routerMessage.params.page_size) {
+                                        this.tableList.push(data);
+                                    }
+                                    this.pagTotal++;
+                                    var message = "新增成功";
+                                } else {
+                                    for (var k in data) {
+                                        this.currentUser[k] = data[k];
+                                    }
+                                    var message = "修改成功";
+                                }
+                                this.dialogVisible = false;
+                                this.$message({
+                                    type: 'success',
+                                    message: message,
+                                    duration: 2000
+                                });
+                            }
+                        }).catch(function (error) {
+                            console.log(error);
+                        })
+                    }else{
+                        return false;
+                    }
+                })
             },
             //职位当前项改变
             udopsCurrentChange: function (val) {
-                if(val){
+                if (val) {
                     this.udopsList.forEach((item) => {
                         item.is_default = "0";
                     })
@@ -581,6 +706,7 @@
         },
         watch: {
             tableData: function (val, oldVal) {
+                console.log(val);
                 this.pagSize = val.page_size;
                 this.pagTotal = val.total_line;
                 this.tableList = val.data;

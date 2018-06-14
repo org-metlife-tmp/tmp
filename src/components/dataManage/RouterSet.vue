@@ -68,6 +68,13 @@
             top: 18px;
         }
 
+        /*必填样式*/
+        .set-required:before {
+            content: '*';
+            color: #f56c6c;
+            margin-right: 4px;
+        }
+
         /*中间树内容*/
         .tree-content {
             height: 200px;
@@ -239,7 +246,8 @@
                         label="操作"
                         width="110">
                     <template slot-scope="scope" class="operationBtn">
-                        <el-tooltip content="设置状态" placement="bottom" effect="light" :enterable="false" :open-delay="500">
+                        <el-tooltip content="设置状态" placement="bottom" effect="light" :enterable="false"
+                                    :open-delay="500">
                             <el-button size="mini"
                                        @click="setStatus(scope.row)"
                                        class="on-off"></el-button>
@@ -272,10 +280,11 @@
                    width="860px" top="76px"
                    :close-on-click-modal="false">
             <h1 slot="title" v-text="dialogTitle" class="dialog-title"></h1>
-            <el-form :model="dialogData" size="small">
+            <el-form :model="dialogData" size="small"
+                     :rules="rules" ref="dialogForm">
                 <el-row>
                     <el-col :span="12">
-                        <el-form-item label="来源系统" :label-width="formLabelWidth">
+                        <el-form-item label="来源系统" :label-width="formLabelWidth" prop="source_code">
                             <el-select v-model="dialogData.source_code" placeholder="请选择来源系统" clearable>
                                 <el-option label="个险" value="GX"></el-option>
                                 <el-option label="团险" value="TX"></el-option>
@@ -284,7 +293,7 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="支付方式" :label-width="formLabelWidth">
+                        <el-form-item label="支付方式" :label-width="formLabelWidth" prop="pay_recv_mode">
                             <el-select v-model="dialogData.pay_recv_mode"
                                        placeholder="请选择支付方式"
                                        clearable filterable
@@ -315,7 +324,7 @@
                     <el-col :span="24" class="tree-content">
                         <el-row>
                             <el-col :span="10">
-                                <h4>机构</h4>
+                                <h4 class="set-required">机构</h4>
                                 <div class="org-tree">
                                     <el-tree :data="orgTreeList"
                                              node-key="org_id"
@@ -332,7 +341,7 @@
                                 </div>
                             </el-col>
                             <el-col :span="7">
-                                <h4>业务类型</h4>
+                                <h4 class="set-required">业务类型</h4>
                                 <div class="biz-type-list">
                                     <el-checkbox :indeterminate="isIndeterminate" v-model="biztypeAll"
                                                  @change="biztypeAllChange">全选
@@ -347,7 +356,7 @@
                                 </div>
                             </el-col>
                             <el-col :span="7">
-                                <h4>险种大类</h4>
+                                <h4 class="set-required">险种大类</h4>
                                 <div class="insure-type-list">
                                     <el-checkbox :indeterminate="insureIndeter" v-model="insureAll"
                                                  @change="insureAllChange">全选
@@ -381,8 +390,8 @@
                             </el-button-group>
                         </div>
                     </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="支付渠道" :label-width="formLabelWidth">
+                    <el-col :span="12" required>
+                        <el-form-item label="支付渠道" :label-width="formLabelWidth" required>
                             <el-select v-model="item.channel_code" placeholder="请选择支付渠道"
                                        clearable @change="clearElse(item)">
                                 <el-option v-for="channel in channelList"
@@ -395,7 +404,7 @@
                     </el-col>
                     <el-col :span="12">
                         <el-form-item :label-width="formLabelWidth">
-                            <div slot="label" style="line-height:16px">支付渠道<br>原子接口</div>
+                            <div slot="label" class="set-required" style="line-height:16px">支付渠道<br>原子接口</div>
                             <el-select v-model="item.channel_interface_code" placeholder="请选择活动区域"
                                        clearable :disabled="item.channel_code?false:true"
                                        @visible-change="getSalestList(item.channel_code)">
@@ -409,7 +418,7 @@
                     </el-col>
                     <el-col :span="12">
                         <el-form-item :label-width="formLabelWidth">
-                            <div slot="label" style="line-height:16px">结算账户<br>/商户号</div>
+                            <div slot="label" class="set-required" style="line-height:16px">结算账户<br>/商户号</div>
                             <el-select v-model="item.settle_or_merchant_acc_id" placeholder="请选择账户"
                                        clearable filterable :disabled="item.channel_code?false:true"
                                        @visible-change="getAccountList(item.channel_code)">
@@ -422,8 +431,12 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="优先级" :label-width="formLabelWidth">
-                            <el-input v-model="item.level" auto-complete="off"></el-input>
+                        <el-form-item label="优先级" required
+                                      :label-width="formLabelWidth">
+                            <el-input v-model="item.level" type="number"
+                                      placeholder="请输入1-9的数字"
+                                      @change="controlNum(item)" min="1" max="9"
+                                      auto-complete="off"></el-input>
                         </el-form-item>
                     </el-col>
                 </el-row>
@@ -443,7 +456,7 @@
             this.$emit("transmitTitle", "路由设置");
             this.$emit("getTableData", this.routerMessage);
         },
-        mounted:function(){
+        mounted: function () {
             /*获取下拉框数据*/
             //机构
             var orgList = JSON.parse(window.sessionStorage.getItem("orgList"));
@@ -544,6 +557,19 @@
                 expandData: [],
                 hasPayRecv: true,
                 showMore: false,
+                //校验规则设置
+                rules: {
+                    source_code: {
+                        required: true,
+                        message: "请选择来源系统",
+                        trigger: "change"
+                    },
+                    pay_recv_mode: {
+                        required: true,
+                        message: "请选择支付方式",
+                        trigger: "change"
+                    }
+                }
             }
         },
         methods: {
@@ -569,7 +595,7 @@
                 this.$emit("getTableData", this.routerMessage);
             },
             //当前页数据条数发生变化
-            sizeChange:function(val){
+            sizeChange: function (val) {
                 this.routerMessage.params = {
                     page_size: val,
                     page_num: "1"
@@ -602,13 +628,13 @@
                     orgExp = orgExp.split("@");
                     orgExp.pop();
                     orgExp.shift();
-                    for(var i = 0; i<orgExp.length; i++){
-                        orgExp[i] = orgExp[i]*1;
+                    for (var i = 0; i < orgExp.length; i++) {
+                        orgExp[i] = orgExp[i] * 1;
                     }
-                    if(this.$refs.orgTree){
+                    if (this.$refs.orgTree) {
                         this.$refs.orgTree.setCheckedKeys(orgExp);
                         this.expandData = orgExp;
-                    }else{
+                    } else {
                         setTimeout(() => {
                             this.$refs.orgTree.setCheckedKeys(orgExp);
                             this.expandData = orgExp;
@@ -678,13 +704,13 @@
                                 //判断原子接口下拉数据中是否存有此条数据
                                 var itemChaCode = item.channel_interface_code;
                                 var pushCode = true;
-                                for(var k in this.salesChannelList){
-                                    if(k == itemChaCode){
+                                for (var k in this.salesChannelList) {
+                                    if (k == itemChaCode) {
                                         pushCode = false;
                                         break;
                                     }
                                 }
-                                if(pushCode){
+                                if (pushCode) {
                                     this.salesChannelList[itemChaCode] = item.channel_interface_name;
                                 }
                             })
@@ -698,7 +724,7 @@
                 } else {
                     var itemList = row.items;
                     //清除掉默认的一条空数据
-                    this.items.splice(0,1);
+                    this.items.splice(0, 1);
                     //遍历添加数据
                     itemList.forEach((item) => {
                         var current = {};
@@ -833,15 +859,15 @@
                 }
             },
             //设置原子接口数据
-            getSalestList:function(code){
+            getSalestList: function (code) {
                 this.isCloseSale = !this.isCloseSale;
-                if(this.isCloseSale){
+                if (this.isCloseSale) {
                     this.salesChannelList = {};
                 }
-                if(this.isCloseSale && code){
+                if (this.isCloseSale && code) {
                     var channelList = JSON.parse(window.sessionStorage.getItem("channelList"));
-                    for(var i = 0; i < channelList.length; i++){
-                        if(channelList[i].code == code){
+                    for (var i = 0; i < channelList.length; i++) {
+                        if (channelList[i].code == code) {
                             this.salesChannelList = channelList[i].items;
                             break;
                         }
@@ -849,15 +875,19 @@
                 }
             },
             //支付渠道值变化后清空相关下拉框的值
-            clearElse:function(item){
+            clearElse: function (item) {
                 item.channel_interface_code = "";
-                item.channel_interface_name = "";
+                delete item.channel_interface_name;
                 item.settle_or_merchant_acc_id = "";
-                item.settle_or_merchant_acc_no = "";
+                delete item.settle_or_merchant_acc_no;
             },
             //提交数据
             subCurrent: function () {
                 var params = this.transitionData();
+                if(!params){
+                    return;
+                }
+
                 var optype = "";
                 if (this.dialogTitle == "新增") {
                     optype = "handleroute_add";
@@ -907,6 +937,65 @@
             },
             //提交前转换数据格式
             transitionData: function () {
+                /*校验*/
+                var treeLength = this.$refs.orgTree.getCheckedKeys().length;
+                var bizTypeLength = this.biztypeSelect.length;
+                var insureLength = this.insureSelect.length;
+                var itemList = this.items;
+                //输入部分
+                var flag = false;
+                this.$refs.dialogForm.validate((valid, object) => {
+                    if(valid){
+
+                    }else{
+                        flag = true;
+                    }
+                });
+                if(flag){
+                    return false;
+                }
+                //校验-机构
+                if(!treeLength){
+                    this.$message({
+                        type: 'warning',
+                        message: '请选择机构',
+                        duration: 2000
+                    });
+                    return false;
+                }
+                //校验-业务类型
+                if(!bizTypeLength){
+                    this.$message({
+                        type: 'warning',
+                        message: '请选择业务类型',
+                        duration: 2000
+                    });
+                    return false;
+                }
+                //校验-险种大类
+                if(!insureLength){
+                    this.$message({
+                        type: 'warning',
+                        message: '请选择险种大类',
+                        duration: 2000
+                    });
+                    return false;
+                }
+                //校验-渠道账户
+                for(var i = 0; i < itemList.length; i++){
+                    var current = itemList[i];
+                    for(var k in current){
+                        if(!current[k]){
+                            this.$message({
+                                type: 'warning',
+                                message: '请完善渠道账户信息',
+                                duration: 2000
+                            });
+                            return false;
+                        }
+                    }
+                }
+
                 var params = {};
                 var dialogData = this.dialogData;
                 for (var key in dialogData) {
@@ -951,6 +1040,9 @@
                 for (var k in dialogData) {
                     dialogData[k] = "";
                 }
+                if (this.$refs.dialogForm) {
+                    this.$refs.dialogForm.clearValidate();
+                }
                 if (this.$refs.orgTree) {
                     this.$refs.orgTree.setCheckedKeys([]);
                 }
@@ -987,20 +1079,20 @@
                 return data[cellValue];
             },
             //展示格式转换-支付子项
-            transiPayitem:function (row, column, cellValue, index) {
-                if(cellValue == "WX"){
+            transiPayitem: function (row, column, cellValue, index) {
+                if (cellValue == "WX") {
                     return "微信";
                 }
-                if(cellValue == "ZFB"){
+                if (cellValue == "ZFB") {
                     return "支付宝";
-                }else{
+                } else {
                     return "";
                 }
             },
             //设置状态
-            setStatus:function (row) {
+            setStatus: function (row) {
                 this.$axios({
-                    url:"/cfm/adminProcess",
+                    url: "/cfm/adminProcess",
                     method: "post",
                     data: {
                         optype: "handleroute_setstatus",
@@ -1009,13 +1101,13 @@
                         }
                     }
                 }).then((result) => {
-                    if(result.data.error_msg){
+                    if (result.data.error_msg) {
                         this.$message({
                             type: "error",
                             message: result.data.error_msg,
                             duration: 2000
                         })
-                    }else{
+                    } else {
                         row.is_activate = result.data.data.is_activate;
                         this.$message({
                             type: 'success',
@@ -1023,10 +1115,21 @@
                             duration: 2000
                         });
                     }
-                }).catch(function(error){
+                }).catch(function (error) {
                     console.log(error);
                 })
             },
+            //设置优先级输入范围
+            controlNum: function(item){
+                if(item.level<1 || item.level>9){
+                    item.level = 1;
+                    this.$message({
+                        type:"warning",
+                        message: "请输入1-9的数字",
+                        duration: 2000
+                    })
+                }
+            }
         },
         watch: {
             tableData: function (val, oldVal) {

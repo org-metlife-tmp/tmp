@@ -145,20 +145,22 @@
                    :close-on-click-modal="false"
                    top="56px">
             <h1 slot="title" v-text="dialogTitle" class="dialog-title"></h1>
-            <el-form :model="dialogData" :label-width="formLabelWidth" size="small">
+            <el-form :model="dialogData" size="small"
+                     :label-width="formLabelWidth"
+                     :rules="rules" ref="dialogForm">
                 <el-row>
                     <el-col :span="12">
-                        <el-form-item label="商户号">
+                        <el-form-item label="商户号" prop="acc_no">
                             <el-input v-model="dialogData.acc_no"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="商户名称">
+                        <el-form-item label="商户名称" prop="acc_name">
                             <el-input v-model="dialogData.acc_name"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="支付渠道">
+                        <el-form-item label="支付渠道" prop="channel_code">
                             <el-select v-model="dialogData.channel_code" placeholder="请选择支付渠道"
                                        clearable>
                                 <el-option v-for="channel in channelList"
@@ -170,7 +172,7 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="所属机构">
+                        <el-form-item label="所属机构" prop="org_id">
                             <el-select v-model="dialogData.org_id" placeholder="请选择机构" clearable>
                                 <el-option v-for="org in orgList"
                                            :key="org.org_id"
@@ -181,7 +183,7 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="币种">
+                        <el-form-item label="币种" prop="curr_id">
                             <el-select v-model="dialogData.curr_id" placeholder="请选择币种"
                                        filterable clearable>
                                 <el-option v-for="currency in currencyList"
@@ -193,7 +195,7 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="收付属性">
+                        <el-form-item label="收付属性" prop="pay_recv_attr">
                             <el-select v-model="dialogData.pay_recv_attr" placeholder="请选择收付属性"
                                        filterable clearable>
                                 <el-option v-for="(name,k) in accOrRecvList"
@@ -205,7 +207,7 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="开户日期">
+                        <el-form-item label="开户日期" prop="open_date">
                             <el-date-picker type="date" placeholder="选择日期" v-model="dialogData.open_date"
                                             style="width: 100%;"
                                             format="yyyy 年 MM 月 dd 日"
@@ -213,12 +215,12 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="明细段">
+                        <el-form-item label="明细段" prop="detail_seg">
                             <el-input v-model="dialogData.detail_seg"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="机构段">
+                        <el-form-item label="机构段" prop="org_seg">
                             <el-input v-model="dialogData.org_seg"></el-input>
                         </el-form-item>
                     </el-col>
@@ -333,7 +335,118 @@
                 channelList: [],
                 currencyList: [],
                 accOrRecvList: {},
-                settaccList: []
+                settaccList: [],
+                //校验规则设置
+                rules: {
+                    acc_no: [
+                        {
+                            required: true,
+                            message: "请输入商户号",
+                            trigger: "blur",
+                            transform: function (value) {
+                                if (value) {
+                                    return value.trim();
+                                }
+                            }
+                        },
+                        {
+                            validator: function (rule, value, callback, source, options) {
+                                console.log(2);
+                                var reg = /^[\w`~!@#$%^&*_+<>{}\/'[\]]+$/;
+                                if (reg.test(value)) {
+                                    callback();
+                                } else {
+                                    var errors = [];
+                                    callback(new Error("只能输入字母、数字和符号"));
+                                }
+                            },
+                            trigger: "blur"
+                        }
+                    ],
+                    acc_name: {
+                        required: true,
+                        message: "请输入商户名称",
+                        trigger: "blur",
+                        transform: function (value) {
+                            if (value) {
+                                return value.trim();
+                            }
+                        }
+                    },
+                    channel_code: {
+                        required: true,
+                        message: "请选择支付渠道",
+                        trigger: "change"
+                    },
+                    org_id: [{
+                        required: true,
+                        message: "请选择机构",
+                        trigger: "change"
+                    }],
+                    curr_id: {
+                        required: true,
+                        message: "请选择币种",
+                        trigger: "change"
+                    },
+                    pay_recv_attr: {
+                        required: true,
+                        message: "请选择收付属性",
+                        trigger: "change"
+                    },
+                    open_date: {
+                        required: true,
+                        message: "请选择开户日期",
+                        trigger: "change"
+                    },
+                    detail_seg: [
+                        {
+                            required: true,
+                            message: "请输入明细段",
+                            trigger: "blur",
+                            transform: function (value) {
+                                if (value) {
+                                    return value.trim();
+                                }
+                            }
+                        },
+                        {
+                            validator: function (rule, value, callback, source, options) {
+                                var reg = /^[\w`~!@#$%^&*_+<>{}\/'[\]]+$/;
+                                if (reg.test(value)) {
+                                    callback();
+                                } else {
+                                    var errors = [];
+                                    callback(new Error("只能输入字母、数字和符号"));
+                                }
+                            },
+                            trigger: "blur"
+                        }
+                    ],
+                    org_seg: [
+                        {
+                            required: true,
+                            message: "请输入机构段",
+                            trigger: "blur",
+                            transform: function (value) {
+                                if (value) {
+                                    return value.trim();
+                                }
+                            }
+                        },
+                        {
+                            validator: function (rule, value, callback, source, options) {
+                                var reg = /^[\w`~!@#$%^&*_+<>{}\/'[\]]+$/;
+                                if (reg.test(value)) {
+                                    callback();
+                                } else {
+                                    var errors = [];
+                                    callback(new Error("只能输入字母、数字和符号"));
+                                }
+                            },
+                            trigger: "blur"
+                        }
+                    ]
+                },
             }
         },
         methods: {
@@ -355,16 +468,24 @@
             addMerch: function () {
                 this.dialogTitle = "新增";
                 this.dialogVisible = true;
+                //清空数据和校验信息
                 for(var k in this.dialogData){
                     this.dialogData[k] = "";
+                }
+                if (this.$refs.dialogForm) {
+                    this.$refs.dialogForm.clearValidate();
                 }
             },
             //编辑商户号
             editMerch:function (row) {
                 this.dialogTitle = "编辑";
                 this.dialogVisible = true;
+                //清空数据和校验信息
                 for(var k in this.dialogData){
                     this.dialogData[k] = "";
+                }
+                if (this.$refs.dialogForm) {
+                    this.$refs.dialogForm.clearValidate();
                 }
                 this.currentRouter = row;
                 for(var k in row){
@@ -433,51 +554,57 @@
             },
             //提交当前修改或新增
             subCurrent: function () {
-                var params = this.dialogData;
-                var optype = "";
-                if(this.dialogTitle == "新增"){
-                    optype = "merchacc_add";
-                }else {
-                    optype = "merchacc_chg";
-                }
-
-                this.$axios({
-                    url: "/cfm/adminProcess",
-                    method: "post",
-                    data: {
-                        optype: optype,
-                        params: params
-                    }
-                }).then((result) => {
-                    if (result.data.error_msg) {
-                        this.$message({
-                            type: "error",
-                            message: result.data.error_msg,
-                            duration: 2000
-                        })
-                    }else {
-                        var data = result.data.data;
+                this.$refs.dialogForm.validate((valid, object) => {
+                    if(valid){
+                        var params = this.dialogData;
+                        var optype = "";
                         if(this.dialogTitle == "新增"){
-                            if(this.tableList.length < this.routerMessage.params.page_size){
-                                this.tableList.push(data);
-                            }
-                            this.pagTotal++;
-                            var message = "新增成功"
-                        }else{
-                            for(var k in data){
-                                this.currentRouter[k] = data[k];
-                            }
-                            var message = "修改成功"
+                            optype = "merchacc_add";
+                        }else {
+                            optype = "merchacc_chg";
                         }
-                        this.dialogVisible = false;
-                        this.$message({
-                            type: 'success',
-                            message: message,
-                            duration: 2000
-                        });
+
+                        this.$axios({
+                            url: "/cfm/adminProcess",
+                            method: "post",
+                            data: {
+                                optype: optype,
+                                params: params
+                            }
+                        }).then((result) => {
+                            if (result.data.error_msg) {
+                                this.$message({
+                                    type: "error",
+                                    message: result.data.error_msg,
+                                    duration: 2000
+                                })
+                            }else {
+                                var data = result.data.data;
+                                if(this.dialogTitle == "新增"){
+                                    if(this.tableList.length < this.routerMessage.params.page_size){
+                                        this.tableList.push(data);
+                                    }
+                                    this.pagTotal++;
+                                    var message = "新增成功"
+                                }else{
+                                    for(var k in data){
+                                        this.currentRouter[k] = data[k];
+                                    }
+                                    var message = "修改成功"
+                                }
+                                this.dialogVisible = false;
+                                this.$message({
+                                    type: 'success',
+                                    message: message,
+                                    duration: 2000
+                                });
+                            }
+                        }).catch(function (error) {
+                            console.log(error);
+                        })
+                    }else{
+                        return false;
                     }
-                }).catch(function (error) {
-                    console.log(error);
                 })
 
             },

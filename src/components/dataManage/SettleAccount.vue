@@ -348,23 +348,22 @@
                             message: "请输入账户编码",
                             trigger: "blur",
                             transform: function (value) {
-                            if (value) {
-                                value = value.trim();
-                                return value.trim();
+                                if (value) {
+                                    return value.trim();
+                                }
                             }
-                        }
                         },
                         {
-                            validator:function(rule, value, callback, source, options) {
-                                callback();
-                                var reg = /\D\a-\z\A-\Z/;
-                                if(reg.test(value)){
+                            validator: function (rule, value, callback, source, options) {
+                                var reg = /^[\w`~!@#$%^&*_+<>{}\/'[\]]+$/;
+                                if (reg.test(value)) {
                                     callback();
-                                }else{
+                                } else {
                                     var errors = [];
                                     callback(new Error("只能输入字母、数字和符号"));
                                 }
-                            }
+                            },
+                            trigger: "blur"
                         }
                     ],
                     acc_name: {
@@ -402,26 +401,54 @@
                         message: "请选择时间",
                         trigger: "change"
                     },
-                    org_seg: {
-                        required: true,
-                        message: "请输入机构段",
-                        trigger: "blur",
-                        transform: function (value) {
-                            if (value) {
-                                return value.trim();
+                    org_seg: [
+                        {
+                            required: true,
+                            message: "请输入机构段",
+                            trigger: "blur",
+                            transform: function (value) {
+                                if (value) {
+                                    return value.trim();
+                                }
                             }
+                        },
+                        {
+                            validator: function (rule, value, callback, source, options) {
+                                var reg = /^[\w`~!@#$%^&*_+<>{}\/'[\]]+$/;
+                                if (reg.test(value)) {
+                                    callback();
+                                } else {
+                                    var errors = [];
+                                    callback(new Error("只能输入字母、数字和符号"));
+                                }
+                            },
+                            trigger: "blur"
                         }
-                    },
-                    detail_seg: {
-                        required: true,
-                        message: "请输入明细段",
-                        trigger: "blur",
-                        transform: function (value) {
-                            if (value) {
-                                return value.trim();
+                    ],
+                    detail_seg: [
+                        {
+                            required: true,
+                            message: "请输入明细段",
+                            trigger: "blur",
+                            transform: function (value) {
+                                if (value) {
+                                    return value.trim();
+                                }
                             }
+                        },
+                        {
+                            validator: function (rule, value, callback, source, options) {
+                                var reg = /^[\w`~!@#$%^&*_+<>{}\/'[\]]+$/;
+                                if (reg.test(value)) {
+                                    callback();
+                                } else {
+                                    var errors = [];
+                                    callback(new Error("只能输入字母、数字和符号"));
+                                }
+                            },
+                            trigger: "blur"
                         }
-                    }
+                    ]
                 },
             }
         },
