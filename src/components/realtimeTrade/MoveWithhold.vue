@@ -32,7 +32,7 @@
 
         /*数据展示区*/
         .table-content {
-            height: 340px;
+            height: 320px;
             transition: height 1s;
 
             /*汇总数据*/
@@ -56,7 +56,7 @@
             }
         }
         .is-small {
-            height: 50%;
+            height: 49%;
         }
 
         /*分页部分*/
