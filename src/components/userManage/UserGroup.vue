@@ -69,6 +69,7 @@
         <div class="botton-pag">
             <el-pagination
                     background :pager-count="5"
+                    :current-page="pagCurrent"
                     layout="sizes , prev, pager, next, jumper"
                     :page-size="pagSize" :total="pagTotal"
                     :page-sizes="[10, 50, 100, 500]"
@@ -162,6 +163,7 @@
                 },
                 pagSize: 1, //分页数据
                 pagTotal: 1,
+                pagCurrent: 1,
                 tableList:[],
                 dialogVisible: false,
                 dialogTitle: "新增",
@@ -240,11 +242,17 @@
                             })
                             return;
                         }
-                        if((this.pagTotal/this.pagSize) > 1){
+
+                        if(this.pagCurrent < (this.pagTotal/this.pagSize)){ //存在下一页
                             this.$emit('getTableData', this.routerMessage);
                         }else{
-                            rows.splice(index, 1);
-                            this.pagTotal--;
+                            if(rows.length == "1"){ //是当前页最后一条
+                                this.routerMessage.params.page_num--;
+                                this.$emit('getTableData', this.routerMessage);
+                            }else{
+                                rows.splice(index, 1);
+                                this.pagTotal--;
+                            }
                         }
 
                         this.$message({
@@ -344,6 +352,7 @@
             tableData: function (val, oldVal) {
                 this.pagSize = val.page_size;
                 this.pagTotal = val.total_line;
+                this.pagCurrent = val.page_num;
                 this.tableList = val.data;
             }
         }

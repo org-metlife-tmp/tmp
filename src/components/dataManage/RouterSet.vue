@@ -240,8 +240,7 @@
                 <el-table-column prop="memo" label="备注" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="is_activate" label="是否激活"
                                  :formatter="getStatus"
-                                 width="80"
-                                 :show-overflow-tooltip="true"></el-table-column>
+                                 width="80"></el-table-column>
                 <el-table-column
                         label="操作"
                         width="110">
@@ -517,6 +516,7 @@
                 },
                 pagSize: 1, //分页
                 pagTotal: 1,
+                pagCurrent: 1,
                 serachData: {}, //搜索区
                 tableList: [], //表格
                 currentRouter: "",
@@ -763,11 +763,17 @@
                             })
                             return;
                         }
-                        if ((this.pagTotal / this.pagSize) > 1) {
+
+                        if(this.pagCurrent < (this.pagTotal/this.pagSize)){ //存在下一页
                             this.$emit('getTableData', this.routerMessage);
-                        } else {
-                            rows.splice(index, 1);
-                            this.pagTotal--;
+                        }else{
+                            if(rows.length == "1"){ //是当前页最后一条
+                                this.routerMessage.params.page_num--;
+                                this.$emit('getTableData', this.routerMessage);
+                            }else{
+                                rows.splice(index, 1);
+                                this.pagTotal--;
+                            }
                         }
 
                         this.$message({
@@ -1135,6 +1141,7 @@
             tableData: function (val, oldVal) {
                 this.pagSize = val.page_size;
                 this.pagTotal = val.total_line;
+                this.pagCurrent = val.page_num;
                 this.tableList = val.data;
             }
         },

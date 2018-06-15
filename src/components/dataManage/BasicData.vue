@@ -191,18 +191,28 @@
                   border size="mini"
                   height="86.5%"
                   v-else>
-            <el-table-column prop="iso_code" label="币种编号" v-if="btActive.currency"></el-table-column>
-            <el-table-column prop="name" label="部门名称" v-else-if="btActive.department"></el-table-column>
-            <el-table-column prop="name" label="职位名称" v-else-if="btActive.post"></el-table-column>
-
-            <el-table-column prop="name" label="币种名称" v-if="btActive.currency"></el-table-column>
-            <el-table-column prop="desc" label="职位描述" v-else-if="btActive.post"></el-table-column>
-            <el-table-column prop="status" :formatter="transition" label="状态"
+            <el-table-column prop="iso_code" label="币种编号"
+                             :show-overflow-tooltip="true"
+                             v-if="btActive.currency"></el-table-column>
+            <el-table-column prop="name" label="部门名称"
+                             :show-overflow-tooltip="true"
                              v-else-if="btActive.department"></el-table-column>
-
-            <el-table-column prop="symbol" label="币种符号" v-if="btActive.currency"></el-table-column>
-            <el-table-column prop="status" :formatter="transition" label="职位状态"
+            <el-table-column prop="name" label="职位名称"
+                             :show-overflow-tooltip="true"
                              v-else-if="btActive.post"></el-table-column>
+
+            <el-table-column prop="name" label="币种名称"
+                             :show-overflow-tooltip="true"
+                             v-if="btActive.currency"></el-table-column>
+            <el-table-column prop="desc" label="职位描述"
+                             :show-overflow-tooltip="true"
+                             v-else-if="btActive.post"></el-table-column>
+            <el-table-column prop="status" :formatter="transition" label="状态" v-else-if="btActive.department"></el-table-column>
+
+            <el-table-column prop="symbol" label="币种符号"
+                             :show-overflow-tooltip="true"
+                             v-if="btActive.currency"></el-table-column>
+            <el-table-column prop="status" :formatter="transition" label="职位状态" v-else-if="btActive.post"></el-table-column>
             <el-table-column
                     label="操作"
                     width="100">
@@ -372,6 +382,7 @@
         },
         destroyed: function () {
             window.sessionStorage.setItem("orgTreeList", JSON.stringify(this.treeList[0]));
+
         },
         data: function () {
             return {
@@ -418,7 +429,7 @@
                         message: "请输入公司名称",
                         trigger: "blur",
                         transform: function (value) {
-                            if(value){
+                            if (value) {
                                 return value.trim();
                             }
                         }
@@ -428,7 +439,7 @@
                         message: "请输入公司编号",
                         trigger: "blur",
                         transform: function (value) {
-                            if(value){
+                            if (value) {
                                 return value.trim();
                             }
                         }
@@ -440,7 +451,7 @@
                         message: "请输入部门名称",
                         trigger: "blur",
                         transform: function (value) {
-                            if(value){
+                            if (value) {
                                 return value.trim();
                             }
                         }
@@ -452,7 +463,7 @@
                         message: "请输入职位名称",
                         trigger: "blur",
                         transform: function (value) {
-                            if(value){
+                            if (value) {
                                 return value.trim();
                             }
                         }
@@ -579,6 +590,12 @@
                             const children = parent.data.children || parent.data;
                             const index = children.findIndex(d => d.org_id === data.org_id);
                             children.splice(index, 1);
+
+                            //更新本地存储信息
+                            var currentOrgList = JSON.parse(window.sessionStorage.getItem("orgList"));
+                            var orgIndex = currentOrgList.findIndex(d => d.org_id == data.org_id);
+                            currentOrgList.splice(orgIndex,1);
+                            window.sessionStorage.setItem("orgList",JSON.stringify(currentOrgList));
                             this.$message({
                                 type: 'success',
                                 message: '删除成功!',
@@ -591,7 +608,7 @@
                 }).catch(() => {
                 });
             },
-            //新增/修改公司弹出框-确定
+            //提交当前修改或新增
             setCompany: function () {
                 this.$refs.orgForm.validate((valid, object) => { //校验
                     if (valid) {
@@ -619,6 +636,13 @@
                                 } else {
                                     result.data.data.children = [];
                                     currentTree.children.push(result.data.data);
+                                    //更新本地数据信息
+                                    var currentOrgList = JSON.parse(window.sessionStorage.getItem("orgList"));
+                                    currentOrgList.push({
+                                        org_id:result.data.data.org_id,
+                                        name:result.data.data.name
+                                    });
+                                    window.sessionStorage.setItem("orgList",JSON.stringify(currentOrgList));
                                     this.$message({
                                         type: "success",
                                         message: '新增成功',
@@ -650,6 +674,16 @@
                                     for (var k in data) {
                                         currentTree[k] = data[k];
                                     }
+                                    //更新本地存储信息
+                                    var currentOrgList = JSON.parse(window.sessionStorage.getItem("orgList"));
+                                    for(var i = 0; i < currentOrgList.length; i++){
+                                        if(currentOrgList[i].org_id == data.org_id){
+                                            currentOrgList[i].name = data.name;
+                                            break;
+                                        }
+                                    }
+                                    window.sessionStorage.setItem("orgList",JSON.stringify(currentOrgList));
+
                                     this.$message({
                                         type: "success",
                                         message: '修改成功',
@@ -913,11 +947,16 @@
                                 return;
                             }
 
-                            if ((this.pagTotal / this.pagSize) > 1) {
+                            if(this.pagCurrent < (this.pagTotal/this.pagSize)){ //存在下一页
                                 this.$emit('getTableData', this.routerMessage);
-                            } else {
-                                rows.splice(index, 1);
-                                this.pagTotal--;
+                            }else{
+                                if(rows.length == "1"){ //是当前页最后一条
+                                    this.routerMessage.params.page_num--;
+                                    this.$emit('getTableData', this.routerMessage);
+                                }else{
+                                    rows.splice(index, 1);
+                                    this.pagTotal--;
+                                }
                             }
 
                             this.$message({
@@ -957,11 +996,16 @@
                                 return;
                             }
 
-                            if ((this.pagTotal / this.pagSize) > 1) {
+                            if(this.pagCurrent < (this.pagTotal/this.pagSize)){ //存在下一页
                                 this.$emit('getTableData', this.routerMessage);
-                            } else {
-                                rows.splice(index, 1);
-                                this.pagTotal--;
+                            }else{
+                                if(rows.length == "1"){ //是当前页最后一条
+                                    this.routerMessage.params.page_num--;
+                                    this.$emit('getTableData', this.routerMessage);
+                                }else{
+                                    rows.splice(index, 1);
+                                    this.pagTotal--;
+                                }
                             }
 
                             this.$message({
@@ -979,7 +1023,7 @@
             //职位弹框-确定
             setPost: function () {
                 this.$refs.postForm.validate((valid, object) => {
-                    if(valid){
+                    if (valid) {
                         var optype = "";
                         var params = this.postForm;
                         if (this.postDialogTitle == "新增") {
@@ -1025,7 +1069,7 @@
                         }).catch(function (error) {
                             console.log(error);
                         })
-                    }else{
+                    } else {
                         return false;
                     }
                 })
@@ -1140,8 +1184,7 @@
                     this.pagTotal = val.total_line * 1;
                     this.pagCurrent = val.page_num * 1;
                     this.tableList = data;
-                } else { //公司
-
+                } else { //公
                     var treeData = this.setTreeData(data);
                     this.treeList.push(treeData);
                     this.treeList = JSON.parse(JSON.stringify(this.treeList));

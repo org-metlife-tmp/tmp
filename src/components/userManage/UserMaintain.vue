@@ -81,8 +81,7 @@
                 <el-table-column prop="email" label="邮箱" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="register_date" label="注册日期" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="status" label="状态" width="80"
-                                 :formatter="transitionStatus"
-                                 :show-overflow-tooltip="true"></el-table-column>
+                                 :formatter="transitionStatus"></el-table-column>
                 <el-table-column
                         label="操作"
                         width="110">
@@ -109,6 +108,7 @@
         <div class="botton-pag">
             <el-pagination
                     background :pager-count="5"
+                    :current-page="pagCurrent"
                     layout="sizes , prev, pager, next, jumper"
                     :page-size="pagSize" :total="pagTotal"
                     :page-sizes="[10, 50, 100, 500]"
@@ -320,6 +320,7 @@
                 },
                 pagSize: 1, //分页数据
                 pagTotal: 1,
+                pagCurrent: 1,
                 tableList: [], //表格数据
                 dialogVisible: false, //新增/修改弹框
                 dialogTitle: "新增",
@@ -459,7 +460,6 @@
                         })
                     } else {
                         row.status = result.data.data;
-                        console.log(row.status);
                         this.$message({
                             type: 'success',
                             message: '修改成功!',
@@ -495,11 +495,17 @@
                             })
                             return;
                         }
-                        if ((this.pagTotal / this.pagSize) > 1) {
+
+                        if(this.pagCurrent < (this.pagTotal/this.pagSize)){ //存在下一页
                             this.$emit('getTableData', this.routerMessage);
-                        } else {
-                            rows.splice(index, 1);
-                            this.pagTotal--;
+                        }else{
+                            if(rows.length == "1"){ //是当前页最后一条
+                                this.routerMessage.params.page_num--;
+                                this.$emit('getTableData', this.routerMessage);
+                            }else{
+                                rows.splice(index, 1);
+                                this.pagTotal--;
+                            }
                         }
 
                         this.$message({
@@ -615,7 +621,6 @@
             subCurrent: function () {
                 this.$refs.dialogForm.validate((valid, object) => {
                     if(valid){
-                        console.log(this.udopsList);
                         var udopsList = this.udopsList;
                         if(!udopsList.length){
                             this.$message({
@@ -706,9 +711,9 @@
         },
         watch: {
             tableData: function (val, oldVal) {
-                console.log(val);
                 this.pagSize = val.page_size;
                 this.pagTotal = val.total_line;
+                this.pagCurrent = val.page_num;
                 this.tableList = val.data;
             }
         }

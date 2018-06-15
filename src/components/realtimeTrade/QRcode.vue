@@ -34,6 +34,26 @@
         .table-content {
             height: 326px;
             transition: height 1s;
+
+            /*汇总数据*/
+            .gather-data {
+                height: 30px;
+                width: 100%;
+                background-color: #F9F8F7;
+                text-align: left;
+                font-size: 14px;
+                color: #606266;
+
+                .red-text {
+                    color: red;
+                }
+                .blue-text {
+                    color: blue;
+                }
+                .action-text {
+                    margin-left: 16px;
+                }
+            }
         }
         .is-small {
             height: 50%;
@@ -167,6 +187,15 @@
         <div class="split-bar"></div>
         <!--数据展示区-->
         <section :class="['table-content',{'is-small':showMore}]">
+            <!--汇总数据-->
+            <div class="gather-data">
+                <template v-for="item in gatherDataList">
+                    <span class="action-text">{{ item.title }}</span>
+                    <span :class="item.thisColor">{{ item.data }}</span>
+                    <span class="end-text">{{ item.endText }}</span>
+                </template>
+            </div>
+            <!--详情列表-->
             <el-table :data="tableList"
                       border
                       size="mini"
@@ -244,6 +273,7 @@
         created:function(){
             this.$emit("transmitTitle", "移动展业二维码");
             this.$emit("getCommTable", this.routerMessage);
+            this.$emit("getGatherData", this.getAllMessage);
         },
         mounted:function(){
             /*获取下拉框数据*/
@@ -258,7 +288,7 @@
                 this.payStatList = constants.PayStatus;
             }
         },
-        props: ["tableData"],
+        props: ["tableData","gatherData"],
         data: function () {
             return {
                 routerMessage: { //本页数据获取参数
@@ -267,6 +297,10 @@
                         page_size: 8,
                         page_num: 1
                     }
+                },
+                getAllMessage: { //汇总数据参数
+                    optype: "ydsmsk_summary",
+                    params: {}
                 },
                 searchData: {}, //搜索数据
                 showMore: false,
@@ -283,7 +317,16 @@
                 formLabelWidth: "140px",
 
                 businessMessage: [],
-                payMessage: []
+                payMessage: [],
+                //汇总数据
+                gatherDataList: [
+                    {key: "total_count", title: "总笔数:", data: 0, endText: "笔;", thisColor: "blue-text"},
+                    {key: "total_amount", title: "总金额:", data: 0, endText: "元;", thisColor: "blue-text"},
+                    {key: "success_count", title: "成功笔数:", data: 0, endText: "笔;", thisColor: "blue-text"},
+                    {key: "success_amount", title: "成功金额:", data: 0, endText: "元;", thisColor: "blue-text"},
+                    {key: "fail_count", title: "失败笔数:", data: 0, endText: "笔;", thisColor: "red-text"},
+                    {key: "fail_amouunt", title: "失败金额:", data: 0, endText: "元;", thisColor: "red-text"}
+                ]
             }
         },
         methods: {
@@ -308,8 +351,10 @@
                 var searchData = this.searchData;
                 for (var key in searchData) {
                     this.routerMessage.params[key] = searchData[key];
+                    this.getAllMessage.params[key] = searchData[key];
                 }
                 this.$emit("getCommTable", this.routerMessage);
+                this.$emit("getGatherData", this.getAllMessage);
             },
             //清空查询条件
             clearSearData:function(){
@@ -483,6 +528,12 @@
                 this.pagSize = val.page_size;
                 this.pagTotal = val.total_line;
                 this.tableList = val.data;
+            },
+            //汇总数据
+            gatherData: function (val, oldValue) {
+                this.gatherDataList.forEach((item) => {
+                    item.data = val.data[item.key];
+                })
             }
         }
     }

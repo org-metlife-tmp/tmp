@@ -55,7 +55,9 @@
             <router-view @transmitTitle="currentTitle= $event"
                          @getTableData="getRouterData"
                          @getCommTable="commRouterData"
-                         :tableData="childData"></router-view>
+                         @getGatherData="getGatherData"
+                         :tableData="childData"
+                         :gatherData="childGatherData"></router-view>
         </section>
     </div>
 </template>
@@ -67,6 +69,7 @@
             return {
                 currentTitle: "",
                 childData: {},
+                childGatherData: {},
                 loading: false
             }
         },
@@ -105,6 +108,23 @@
                     var currentData = result.data;
                     temporaryThis.childData = currentData;
                     temporaryThis.loading = false;
+                }).catch(function (error) {
+                    console.log(error);
+                })
+            },
+            getGatherData: function(routerData){
+                var currParams = {};
+                for (var k in routerData) {
+                    currParams[k] = routerData[k];
+                }
+                this.$axios({
+                    url: "/cfm/normalProcess",
+                    method: "post",
+                    data: currParams
+                }).then((result) => {
+                    var currentData = result.data;
+                    this.childGatherData = currentData;
+
                 }).catch(function (error) {
                     console.log(error);
                 })

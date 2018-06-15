@@ -100,11 +100,9 @@
                 <el-table-column prop="bank_name" label="开户行" :show-overflow-tooltip="true"
                                  width="200"></el-table-column>
                 <el-table-column prop="pay_recv_attr" label="收付属性"
-                                 :formatter="setPayRecv"
-                                 width="100"
+                                 :formatter="setPayRecv" width="100"
                                  :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="curr_name" label="币种" :show-overflow-tooltip="true"
-                                 width="120"></el-table-column>
+                <el-table-column prop="curr_name" label="币种" width="120"></el-table-column>
                 <el-table-column
                         label="操作"
                         width="70">
@@ -125,6 +123,7 @@
         <div class="botton-pag">
             <el-pagination
                     background :pager-count="5"
+                    :current-page="pagCurrent"
                     layout="sizes , prev, pager, next, jumper"
                     :page-size="pagSize" :total="pagTotal"
                     :page-sizes="[8, 50, 100, 500]"
@@ -310,6 +309,7 @@
                 },
                 pagSize: 1, //分页数据
                 pagTotal: 1,
+                pagCurrent: 1,
                 serachData: {}, //搜索区数据
                 tableList: [], //表格数据
                 dialogVisible: false, //弹框相关数据
@@ -355,12 +355,12 @@
                         },
                         {
                             validator: function (rule, value, callback, source, options) {
-                                var reg = /^[\w`~!@#$%^&*_+<>{}\/'[\]]+$/;
+                                var reg = /^[\w-]+$/;
                                 if (reg.test(value)) {
                                     callback();
                                 } else {
                                     var errors = [];
-                                    callback(new Error("只能输入字母、数字和符号"));
+                                    callback(new Error("只能输入字母、数字和符号-"));
                                 }
                             },
                             trigger: "blur"
@@ -414,12 +414,12 @@
                         },
                         {
                             validator: function (rule, value, callback, source, options) {
-                                var reg = /^[\w`~!@#$%^&*_+<>{}\/'[\]]+$/;
+                                var reg = /^[\w-]+$/;
                                 if (reg.test(value)) {
                                     callback();
                                 } else {
                                     var errors = [];
-                                    callback(new Error("只能输入字母、数字和符号"));
+                                    callback(new Error("只能输入字母、数字和符号-"));
                                 }
                             },
                             trigger: "blur"
@@ -438,12 +438,12 @@
                         },
                         {
                             validator: function (rule, value, callback, source, options) {
-                                var reg = /^[\w`~!@#$%^&*_+<>{}\/'[\]]+$/;
+                                var reg = /^[\w-]+$/;
                                 if (reg.test(value)) {
                                     callback();
                                 } else {
                                     var errors = [];
-                                    callback(new Error("只能输入字母、数字和符号"));
+                                    callback(new Error("只能输入字母、数字和符号-"));
                                 }
                             },
                             trigger: "blur"
@@ -585,11 +585,16 @@
                             return;
                         }
 
-                        if ((this.pagTotal / this.pagSize) > 1) {
+                        if(this.pagCurrent < (this.pagTotal/this.pagSize)){ //存在下一页
                             this.$emit('getTableData', this.routerMessage);
-                        } else {
-                            rows.splice(index, 1);
-                            this.pagTotal--;
+                        }else{
+                            if(rows.length == "1"){ //是当前页最后一条
+                                this.routerMessage.params.page_num--;
+                                this.$emit('getTableData', this.routerMessage);
+                            }else{
+                                rows.splice(index, 1);
+                                this.pagTotal--;
+                            }
                         }
 
                         this.$message({
@@ -722,6 +727,7 @@
             tableData: function (val, oldVal) {
                 this.pagSize = val.page_size;
                 this.pagTotal = val.total_line;
+                this.pagCurrent = val.page_num;
                 this.tableList = val.data;
             }
         }

@@ -128,7 +128,7 @@
                     <el-col :span="12">
                         <el-form-item label="渠道名称" prop="name">
                             <el-select v-model="dialogData.name"
-                                       placeholder="请选择渠道代码"
+                                       placeholder="请选择渠道名称"
                                        clearable filterable
                                        @change="setChiannelName">
                                 <el-option v-for="chiannel in channelList"

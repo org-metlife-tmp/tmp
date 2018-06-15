@@ -124,7 +124,6 @@
                 <el-table-column prop="pos_name" label="职位" :show-overflow-tooltip="true"
                                  v-if="btActive"></el-table-column>
                 <el-table-column prop="is_default" label="是否默认"
-                                 :show-overflow-tooltip="true"
                                  :formatter="transitDefault"
                                  width="100" v-if="btActive">
                 </el-table-column>

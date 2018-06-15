@@ -101,11 +101,12 @@
                       border
                       height="100%"
                       size="mini">
-                <el-table-column prop="acc_no" label="商户号" width="180px"></el-table-column>
-                <el-table-column prop="acc_name" label="商户名称"></el-table-column>
-                <el-table-column prop="channel_name" label="支付渠道"></el-table-column>
-                <el-table-column prop="org_name" label="所属机构"></el-table-column>
-                <el-table-column prop="pay_recv_attr" :formatter="setAccPay" label="账户属性"></el-table-column>
+                <el-table-column prop="acc_no" label="商户号" width="180px" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="acc_name" label="商户名称" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="channel_name" label="支付渠道" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="org_name" label="所属机构" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="pay_recv_attr" :formatter="setAccPay" label="账户属性"
+                                 :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="status" :formatter="setShowStatus" label="状态" width="80"></el-table-column>
                 <el-table-column
                         label="操作"
@@ -132,6 +133,7 @@
         <div class="botton-pag">
             <el-pagination
                     background :pager-count="5"
+                    :current-page="pagCurrent"
                     layout="sizes , prev, pager, next, jumper"
                     :page-size="pagSize" :total="pagTotal"
                     :page-sizes="[8, 50, 100, 500]"
@@ -225,7 +227,7 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="结算账号">
+                        <el-form-item label="结算账号" prop="settle_acc_id">
                             <el-select v-model="dialogData.settle_acc_id" placeholder="请选择支付渠道"
                                        clearable>
                                 <el-option v-for="settacc in settaccList"
@@ -318,6 +320,7 @@
                 },
                 pagSize: 1, //分页数据
                 pagTotal: 1,
+                pagCurrent: 1,
                 serachData: {}, //搜索域数据
                 tableList: [], //表格数据
                 dialogVisible: false, //弹框数据
@@ -351,13 +354,12 @@
                         },
                         {
                             validator: function (rule, value, callback, source, options) {
-                                console.log(2);
-                                var reg = /^[\w`~!@#$%^&*_+<>{}\/'[\]]+$/;
+                                var reg = /^[\w-]+$/;
                                 if (reg.test(value)) {
                                     callback();
                                 } else {
                                     var errors = [];
-                                    callback(new Error("只能输入字母、数字和符号"));
+                                    callback(new Error("只能输入字母、数字和符号-"));
                                 }
                             },
                             trigger: "blur"
@@ -411,12 +413,12 @@
                         },
                         {
                             validator: function (rule, value, callback, source, options) {
-                                var reg = /^[\w`~!@#$%^&*_+<>{}\/'[\]]+$/;
+                                var reg = /^[\w-]+$/;
                                 if (reg.test(value)) {
                                     callback();
                                 } else {
                                     var errors = [];
-                                    callback(new Error("只能输入字母、数字和符号"));
+                                    callback(new Error("只能输入字母、数字和符号-"));
                                 }
                             },
                             trigger: "blur"
@@ -435,17 +437,22 @@
                         },
                         {
                             validator: function (rule, value, callback, source, options) {
-                                var reg = /^[\w`~!@#$%^&*_+<>{}\/'[\]]+$/;
+                                var reg = /^[\w-]+$/;
                                 if (reg.test(value)) {
                                     callback();
                                 } else {
                                     var errors = [];
-                                    callback(new Error("只能输入字母、数字和符号"));
+                                    callback(new Error("只能输入字母、数字和符号-"));
                                 }
                             },
                             trigger: "blur"
                         }
-                    ]
+                    ],
+                    settle_acc_id:[{
+                        required: true,
+                        message: "请选择结算账号",
+                        trigger: "change"
+                    }],
                 },
             }
         },
@@ -521,11 +528,16 @@
                             return;
                         }
 
-                        if((this.pagTotal/this.pagSize) > 1){
+                        if(this.pagCurrent < (this.pagTotal/this.pagSize)){ //存在下一页
                             this.$emit('getTableData', this.routerMessage);
                         }else{
-                            rows.splice(index, 1);
-                            this.pagTotal--;
+                            if(rows.length == "1"){ //是当前页最后一条
+                                this.routerMessage.params.page_num--;
+                                this.$emit('getTableData', this.routerMessage);
+                            }else{
+                                rows.splice(index, 1);
+                                this.pagTotal--;
+                            }
                         }
 
                         this.$message({
@@ -649,6 +661,7 @@
             tableData: function (val, oldVal) {
                 this.pagSize = val.page_size;
                 this.pagTotal = val.total_line;
+                this.pagCurrent = val.page_num;
                 this.tableList = val.data;
             }
         }
