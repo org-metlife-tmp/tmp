@@ -44,6 +44,13 @@
             padding: 0;
             vertical-align: middle;
         }
+
+        /*当屏幕过小时整体样式调整*/
+        @media screen and (max-width: 1340px){
+            .split-bar{
+                margin-bottom: 10px;
+            }
+        }
     }
 </style>
 

@@ -18,11 +18,6 @@
             overflow: hidden;
             transition: height 1s;
         }
-        @media (max-width: 1340px) {
-            .search-setion {
-                text-align: left;
-            }
-        }
         .search-setion.show-more {
             height: 92px;
         }
@@ -118,6 +113,20 @@
             padding: 0;
             vertical-align: middle;
         }
+
+        /*当屏幕过小时整体样式调整*/
+        @media screen and (max-width: 1340px) {
+            .search-setion {
+                text-align: left;
+                height: 64px;
+            }
+            .search-setion.show-more {
+                height: 150px;
+            }
+            .is-small {
+                height: 54%;
+            }
+        }
     }
 </style>
 <style lang="less" type="text/less">
@@ -139,7 +148,7 @@
         </div>
         <!--搜索区-->
         <div :class="['search-setion',{'show-more':showMore}]">
-            <el-form :inline="true" :model="serachData" size="mini" :label-position="'left'">
+            <el-form :inline="true" :model="serachData" size="mini" :label-position="'left'" ref="lala">
                 <el-row>
                     <el-col :span="7">
                         <el-form-item label="来源系统">
@@ -228,7 +237,8 @@
         <section :class="['table-content',{'is-small':showMore}]">
             <el-table :data="tableList"
                       border height=100%
-                      size="mini">
+                      size="mini"
+            ref="lala">
                 <el-table-column prop="source_code" label="来源系统" :show-overflow-tooltip="true"
                                  :formatter="transiSource"></el-table-column>
                 <el-table-column prop="pay_recv_mode" label="支付方式"

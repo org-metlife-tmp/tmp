@@ -12,11 +12,6 @@
             overflow: hidden;
             transition: height 1s;
         }
-        @media (max-width: 1340px) {
-            .search-setion {
-                text-align: left;
-            }
-        }
         .search-setion.show-more {
             height: 140px;
         }
@@ -84,6 +79,23 @@
                 background-color: orange;
                 margin-right: 6px;
                 vertical-align: middle;
+            }
+        }
+
+        /*页面宽度变小后样式调整*/
+        @media (max-width: 1280px) {
+            .search-setion {
+                text-align: left;
+                height: 64px;
+            }
+            .search-setion.show-more {
+                height: 220px;
+            }
+            .table-content{
+                height: 300px;
+            }
+            .is-small {
+                height: 32%;
             }
         }
     }

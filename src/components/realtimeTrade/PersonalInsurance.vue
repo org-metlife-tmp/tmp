@@ -5,17 +5,19 @@
         box-sizing: border-box;
         position: relative;
 
+        /*顶部按钮*/
+        .button-list-right {
+            position: absolute;
+            top: -60px;
+            right: -18px;
+        }
+
         /*搜索区*/
         .search-setion {
             text-align: right;
             height: 42px;
             overflow: hidden;
             transition: height 1s;
-        }
-        @media (max-width: 1340px) {
-            .search-setion {
-                text-align: left;
-            }
         }
         .search-setion.show-more {
             height: 184px;
@@ -86,6 +88,30 @@
                 vertical-align: middle;
             }
         }
+
+        /*页面宽度变小后的搜索按钮*/
+        .show-standby{
+            display:none;
+        }
+        /*页面宽度变小后样式调整*/
+        @media (max-width: 1280px) {
+            .search-setion {
+                text-align: left;
+                height: 64px;
+            }
+            .search-setion.show-more {
+                height: 220px;
+            }
+            .table-content{
+                height: 300px;
+            }
+            .is-small {
+                height: 32%;
+            }
+            .show-standby{
+                display:block;
+            }
+        }
     }
 </style>
 <style lang="less" type="text/less">
@@ -108,6 +134,10 @@
 
 <template>
     <div id="personalInsurance">
+        <!-- 顶部按钮-->
+        <div class="button-list-right">
+            <el-button type="warning" size="mini" @click="download">下载</el-button>
+        </div>
         <!--搜索区-->
         <div :class="['search-setion',{'show-more':showMore}]">
             <el-form :inline="true" :model="searchData" size="mini">
@@ -143,7 +173,6 @@
                             <el-input v-model="searchData.settle_or_merchant_acc_name" clearable></el-input>
                         </el-form-item>
                     </el-col>
-                    <!--<el-col :span="1" style="height:10px"></el-col>-->
                     <el-col :span="7">
                         <el-form-item label="开户银行">
                             <el-select v-model="searchData.customer_bank" placeholder="请选择银行"
@@ -156,6 +185,11 @@
                                            :value="bankType.code">
                                 </el-option>
                             </el-select>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="3" class="show-standby">
+                        <el-form-item>
+                            <el-button type="primary" plain @click="queryData">搜索</el-button>
                         </el-form-item>
                     </el-col>
                     <el-col :span="7">
@@ -184,6 +218,11 @@
                                             style="width: 100%;"
                                             format="yyyy 年 MM 月 dd 日"
                                             value-format="yyyy-MM-dd"></el-date-picker>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="3" class="show-standby">
+                        <el-form-item>
+                            <el-button type="primary" plain @click="clearSearData">清空</el-button>
                         </el-form-item>
                     </el-col>
                     <el-col :span="7">
@@ -449,6 +488,10 @@
                 if (this.bankTypeList != this.bankAllList) {
                     this.bankTypeList = this.bankAllList;
                 }
+            },
+            //下载
+            download:function(){
+
             },
             /*弹框相关*/
             //查看详细信息
