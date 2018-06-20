@@ -286,6 +286,22 @@
                     <el-menu-item index="/realtime-trade/move-withhold" v-if="menuList.RTYDRecvMgt">移动展业实时代扣</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
+            <el-submenu index="4">
+                <template slot="title" height="200px">
+                    <i class="icon-zht"></i>
+                    <p>账户通</p>
+                </template>
+                <el-menu-item-group>
+                    <el-menu-item index="/account/open-ccount-matter">开户事项补录</el-menu-item>
+                    <el-menu-item index="/tab-content">开户信息补录申请</el-menu-item>
+                    <el-menu-item index="4-3">账户变更申请</el-menu-item>
+                    <el-menu-item index="4-4">账户信息维护</el-menu-item>
+                    <el-menu-item index="4-5">账户解冻申请</el-menu-item>
+                    <el-menu-item index="4-6">账户冻结申请</el-menu-item>
+                    <el-menu-item index="4-7">销户事项申请</el-menu-item>
+                    <el-menu-item index="4-8">销户信息补录申请</el-menu-item>
+                </el-menu-item-group>
+            </el-submenu>
 
 
             <!--<el-submenu index="3">
@@ -364,18 +380,7 @@
                     <el-menu-item index="1-3">选项3</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="9">
-                <template slot="title" height="200px">
-                    <i class="icon-zht"></i>
 
-                    <p>账户通</p>
-                </template>
-                <el-menu-item-group>
-                    <el-menu-item index="1-1">选项1</el-menu-item>
-                    <el-menu-item index="1-2">选项2</el-menu-item>
-                    <el-menu-item index="1-3">选项3</el-menu-item>
-                </el-menu-item-group>
-            </el-submenu>
             <el-submenu index="10">
                 <template slot="title" height="200px">
                     <i class="icon-zjys"></i>

@@ -8,6 +8,7 @@ import Home from '@/components/Home'
 //样式结构页面
 import WhiteContent from '@/components/publicModule/WhiteContent'
 import EmptyContent from '@/components/publicModule/EmptyContent'
+import TabContent from '@/components/publicModule/TabContent'
 //数据管理
 import BasicData from '@/components/dataManage/BasicData'
 import SettleAccount from '@/components/dataManage/SettleAccount'
@@ -23,6 +24,8 @@ import PersonalInsurance from '@/components/realtimeTrade/PersonalInsurance'
 import GroupInsurance from '@/components/realtimeTrade/GroupInsurance'
 import QRcode from '@/components/realtimeTrade/QRcode'
 import MoveWithhold from '@/components/realtimeTrade/MoveWithhold'
+//账户通
+import OpenAccountMatter from '@/components/account/OpenAccountMatter'
 //余额通
 import TodayDetail from '@/components/balance/TodayDetail'
 import TodayAll from '@/components/balance/TodayAll'
@@ -76,6 +79,14 @@ const router = new Router({
                         {path: '/realtime-trade/group-insurance', name: 'GroupInsurance', component: GroupInsurance, meta: {requireAuth: true}},
                         {path: '/realtime-trade/QRcode', name: 'QRcode', component: QRcode, meta: {requireAuth: true}},
                         {path: '/realtime-trade/move-withhold', name: 'MoveWithhold', component: MoveWithhold, meta: {requireAuth: true}},
+                    ]
+                },
+                //基础样式三（tab页）
+                {
+                    path:'/tab-content',name:'TabContent',component:TabContent,
+                    children:[
+                        //账户管理
+                        {path: '/account/open-ccount-matter', name: 'OpenAccountMatter', component: OpenAccountMatter, meta: {requireAuth: true}},
                     ]
                 },
                 //调拨通
