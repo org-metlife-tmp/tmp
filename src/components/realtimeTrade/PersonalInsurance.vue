@@ -90,8 +90,8 @@
         }
 
         /*页面宽度变小后的搜索按钮*/
-        .show-standby{
-            display:none;
+        .show-standby {
+            display: none;
         }
         /*页面宽度变小后样式调整*/
         @media (max-width: 1280px) {
@@ -99,17 +99,21 @@
                 text-align: left;
                 height: 64px;
             }
+
             .search-setion.show-more {
                 height: 220px;
             }
-            .table-content{
+
+            .table-content {
                 height: 300px;
             }
+
             .is-small {
                 height: 32%;
             }
-            .show-standby{
-                display:block;
+
+            .show-standby {
+                display: block;
             }
         }
     }
@@ -399,9 +403,9 @@
                 dialogData: {},
                 formLabelWidth: "140px",
                 businessMessage: [], //弹框数据控制
-                businessLength:[12,12,12,12,12,12,24,12,12,12,12,24],
+                businessLength: [12, 12, 12, 12, 12, 12, 24, 12, 12, 12, 12, 24],
                 payMessage: [],
-                payLength: [12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,24,12,12,12],
+                payLength: [12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 24, 12, 12, 12],
                 //汇总数据
                 gatherDataList: [
                     {key: "total_count", title: "总笔数:", data: 0, endText: "笔;", thisColor: "blue-text"},
@@ -490,8 +494,37 @@
                 }
             },
             //下载
-            download:function(){
+            download: function () {
+                let link = document.createElement('a');
+                let url = "http://172.100.1.85:8080/cfm/download";
+                link.style.display = 'none';
+                link.href = url;
+                // link.setAttribute('download', 'excel.xls');
+                document.body.appendChild(link);
+                link.click();
+                /*this.$axios({
+                    url: "/cfm/download",
+                    method: "get"
+                }).then((result) => {
+                    console.log(result.data);
+                }).catch(function (error) {
+                    console.log(error);
+                })*/
+                return;
 
+                if(this.pagTotal == 0){
+                    this.$message({
+                        type:"warning",
+                        message:"数据为空",
+                        duration: 2000
+                    });
+                    return;
+                }
+                var params = {
+                    optype: "gxssdf_export",
+                    params: this.routerMessage.params
+                }
+                this.$emit("downLoadData", params);
             },
             /*弹框相关*/
             //查看详细信息

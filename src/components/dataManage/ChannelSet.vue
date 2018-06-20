@@ -151,7 +151,7 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="是否银企直联">
+                        <el-form-item label="是否第三方">
                             <el-switch
                                     v-model="dialogData.third_party_flag"
                                     active-value="1"

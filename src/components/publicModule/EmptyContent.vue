@@ -7,7 +7,6 @@
         .content {
             width: 100%;
             height: 90%;
-            background-color: #fff;
             min-height: 500px;
             box-sizing: border-box;
             position: relative;
@@ -56,6 +55,7 @@
                          @getTableData="getRouterData"
                          @getCommTable="commRouterData"
                          @getGatherData="getGatherData"
+                         @downLoadData="downLoad"
                          :tableData="childData"
                          :gatherData="childGatherData"></router-view>
         </section>
@@ -126,6 +126,36 @@
                     this.childGatherData = currentData;
 
                 }).catch(function (error) {
+                    console.log(error);
+                })
+            },
+            downLoad:function(loadData){
+                var currParams = {};
+                for (var k in loadData) {
+                    currParams[k] = loadData[k];
+                }
+                this.$axios({
+                    url:"/cfm/download",
+                    method: "post",
+                    data: currParams,
+                    responseType: 'blob'
+                }).then((result) => {
+                    if(result.error_msg){
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                    }else{
+                        let url = window.URL.createObjectURL(new Blob([result.data]));
+                        let link = document.createElement('a');
+                        link.style.display = 'none';
+                        link.href = url;
+                        link.setAttribute('download', 'excel.xls');
+                        document.body.appendChild(link);
+                        link.click();
+                    }
+                }).catch(function(error){
                     console.log(error);
                 })
             }

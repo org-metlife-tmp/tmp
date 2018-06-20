@@ -5,6 +5,13 @@
         box-sizing: border-box;
         position: relative;
 
+        /*顶部按钮*/
+        .button-list-right {
+            position: absolute;
+            top: -60px;
+            right: -18px;
+        }
+
         /*搜索区*/
         .search-setion {
             text-align: right;
@@ -120,6 +127,10 @@
 
 <template>
     <div id="QRcode">
+        <!-- 顶部按钮-->
+        <div class="button-list-right">
+            <el-button type="warning" size="mini" @click="download">下载</el-button>
+        </div>
         <!--搜索区-->
         <div :class="['search-setion',{'show-more':showMore}]">
             <el-form :inline="true" :model="searchData" size="mini">
@@ -387,6 +398,22 @@
                     page_num: 1
                 };
                 this.$emit("getCommTable", this.routerMessage);
+            },
+            //下载
+            download: function () {
+                if(this.pagTotal == 0){
+                    this.$message({
+                        type:"warning",
+                        message:"数据为空",
+                        duration: 2000
+                    });
+                    return;
+                }
+                var params = {
+                    optype: "ydsmsk_export",
+                    params: this.routerMessage.params
+                }
+                this.$emit("downLoadData", params);
             },
             /*下拉框相关设置*/
             //银行大类搜索筛选
