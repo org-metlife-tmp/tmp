@@ -64,7 +64,7 @@
 
 <script>
     export default {
-        name: "",
+        name: "EmptyContent",
         data: function () {
             return {
                 currentTitle: "",
@@ -147,13 +147,19 @@
                             duration: 2000
                         })
                     }else{
-                        let url = window.URL.createObjectURL(new Blob([result.data]));
-                        let link = document.createElement('a');
-                        link.style.display = 'none';
-                        link.href = url;
-                        link.setAttribute('download', 'excel.xls');
-                        document.body.appendChild(link);
-                        link.click();
+                        var fileName = decodeURI(result.headers["content-disposition"]).split("=")[1];
+                        //ie兼容
+                        if (window.navigator && window.navigator.msSaveOrOpenBlob) {
+                            window.navigator.msSaveOrOpenBlob(new Blob([result.data]), fileName);
+                        } else {
+                            let url = window.URL.createObjectURL(new Blob([result.data]));
+                            let link = document.createElement('a');
+                            link.style.display = 'none';
+                            link.href = url;
+                            link.setAttribute('download', fileName);
+                            document.body.appendChild(link);
+                            link.click();
+                        }
                     }
                 }).catch(function(error){
                     console.log(error);

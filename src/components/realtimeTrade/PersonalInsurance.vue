@@ -495,23 +495,6 @@
             },
             //下载
             download: function () {
-                let link = document.createElement('a');
-                let url = "http://172.100.1.85:8080/cfm/download";
-                link.style.display = 'none';
-                link.href = url;
-                // link.setAttribute('download', 'excel.xls');
-                document.body.appendChild(link);
-                link.click();
-                /*this.$axios({
-                    url: "/cfm/download",
-                    method: "get"
-                }).then((result) => {
-                    console.log(result.data);
-                }).catch(function (error) {
-                    console.log(error);
-                })*/
-                return;
-
                 if(this.pagTotal == 0){
                     this.$message({
                         type:"warning",
