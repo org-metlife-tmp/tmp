@@ -1,9 +1,9 @@
 <style scoped lang="less" type="text/less">
     #tabContent {
-        width: 80%;
+        width: 90%;
         height: 100%;
         margin: 0 auto;
-        min-width: 800px;
+        min-width: 920px;
         position: relative;
 
         //标签页按钮

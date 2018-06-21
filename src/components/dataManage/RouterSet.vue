@@ -115,7 +115,7 @@
         }
 
         /*当屏幕过小时整体样式调整*/
-        @media screen and (max-width: 1340px) {
+        @media screen and (max-width: 1200px) {
             .search-setion {
                 text-align: left;
                 height: 64px;
