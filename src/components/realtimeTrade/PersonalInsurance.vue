@@ -94,7 +94,7 @@
             display: none;
         }
         /*页面宽度变小后样式调整*/
-        @media (max-width: 1280px) {
+        @media (max-width: 1136px) {
             .search-setion {
                 text-align: left;
                 height: 64px;
