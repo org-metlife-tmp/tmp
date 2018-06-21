@@ -1,23 +1,22 @@
 <style scoped lang="less" type="text/less">
-    #openAccountMatter{
+    #accountFreeze{
         width: 100%;
         height: 100%;
         box-sizing: border-box;
         position: relative;
     }
-
 </style>
 
 <template>
-    <div id="openAccountMatter">
+    <div id="accountFreeze">
     </div>
 </template>
 
 <script>
     export default {
-        name: "OpenAccountMatter",
+        name: "AccountFreeze",
         created: function () {
-            this.$emit("transmitTitle", "开户事项申请");
+            this.$emit("transmitTitle", "账户冻结申请");
         },
         data: function () {
             return {}

@@ -292,14 +292,14 @@
                     <p>账户通</p>
                 </template>
                 <el-menu-item-group>
-                    <el-menu-item index="/account/open-ccount-matter">开户事项补录</el-menu-item>
-                    <el-menu-item index="/tab-content">开户信息补录申请</el-menu-item>
-                    <el-menu-item index="4-3">账户变更申请</el-menu-item>
-                    <el-menu-item index="4-4">账户信息维护</el-menu-item>
-                    <el-menu-item index="4-5">账户解冻申请</el-menu-item>
-                    <el-menu-item index="4-6">账户冻结申请</el-menu-item>
-                    <el-menu-item index="4-7">销户事项申请</el-menu-item>
-                    <el-menu-item index="4-8">销户信息补录申请</el-menu-item>
+                    <el-menu-item index="/account/open-account-matter">开户事项补录</el-menu-item>
+                    <el-menu-item index="/account/open-account-message">开户信息补录申请</el-menu-item>
+                    <el-menu-item index="/account/account-alteration">账户变更申请</el-menu-item>
+                    <el-menu-item index="/account/account-message">账户信息维护</el-menu-item>
+                    <el-menu-item index="/account/account-unfreeze">账户解冻申请</el-menu-item>
+                    <el-menu-item index="/account/account-freeze">账户冻结申请</el-menu-item>
+                    <el-menu-item index="/account/close-account-matter">销户事项申请</el-menu-item>
+                    <el-menu-item index="/account/close-account-message">销户信息补录申请</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
 

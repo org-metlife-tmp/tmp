@@ -26,6 +26,13 @@ import QRcode from '@/components/realtimeTrade/QRcode'
 import MoveWithhold from '@/components/realtimeTrade/MoveWithhold'
 //账户通
 import OpenAccountMatter from '@/components/account/OpenAccountMatter'
+import OpenAccountMessage from '@/components/account/OpenAccountMessage'
+import AccountAlteration from '@/components/account/AccountAlteration'
+import AccountMessage from '@/components/account/AccountMessage'
+import AccountUnfreeze from '@/components/account/AccountUnfreeze'
+import AccountFreeze from '@/components/account/AccountFreeze'
+import CloseAccountMatter from '@/components/account/CloseAccountMatter'
+import closeAccountMessage from '@/components/account/closeAccountMessage'
 //余额通
 import TodayDetail from '@/components/balance/TodayDetail'
 import TodayAll from '@/components/balance/TodayAll'
@@ -79,6 +86,8 @@ const router = new Router({
                         {path: '/realtime-trade/group-insurance', name: 'GroupInsurance', component: GroupInsurance, meta: {requireAuth: true}},
                         {path: '/realtime-trade/QRcode', name: 'QRcode', component: QRcode, meta: {requireAuth: true}},
                         {path: '/realtime-trade/move-withhold', name: 'MoveWithhold', component: MoveWithhold, meta: {requireAuth: true}},
+                        //账户管理
+                        {path: '/account/account-message', name: 'AccountMessage', component: AccountMessage, meta: {requireAuth: true}},
                     ]
                 },
                 //基础样式三（tab页）
@@ -86,7 +95,13 @@ const router = new Router({
                     path:'/tab-content',name:'TabContent',component:TabContent,
                     children:[
                         //账户管理
-                        {path: '/account/open-ccount-matter', name: 'OpenAccountMatter', component: OpenAccountMatter, meta: {requireAuth: true}},
+                        {path: '/account/open-account-matter', name: 'OpenAccountMatter', component: OpenAccountMatter, meta: {requireAuth: true}},
+                        {path: '/account/open-account-message', name: 'OpenAccountMessage', component: OpenAccountMessage, meta: {requireAuth: true}},
+                        {path: '/account/account-alteration', name: 'AccountAlteration', component: AccountAlteration, meta: {requireAuth: true}},
+                        {path: '/account/account-unfreeze', name: 'AccountUnfreeze', component: AccountUnfreeze, meta: {requireAuth: true}},
+                        {path: '/account/account-freeze', name: 'AccountFreeze', component: AccountFreeze, meta: {requireAuth: true}},
+                        {path: '/account/close-account-matter', name: 'CloseAccountMatter', component: CloseAccountMatter, meta: {requireAuth: true}},
+                        {path: '/account/close-account-message', name: 'closeAccountMessage', component: closeAccountMessage, meta: {requireAuth: true}},
                     ]
                 },
                 //调拨通

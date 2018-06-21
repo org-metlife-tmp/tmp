@@ -9,8 +9,9 @@
         //标签页按钮
         .tab-left {
             position: absolute;
-            top: 8px;
+            top: 12px;
             height: 30px;
+            color: #b1b1b1;
 
             ul{
                 li{
@@ -18,7 +19,7 @@
                     height: 100%;
                     line-height: 30px;
                     width: 100px;
-                    background-color: #fff;
+                    background-color: #f2f2f2;
                     border-radius: 3px 3px 0 0;
                     cursor: pointer;
 
@@ -29,6 +30,10 @@
                 }
                 li:nth-child(1){
                     margin-right: 4px;
+                }
+                .tab-active{
+                    color: #00b3ed;
+                    background-color: #fff;
                 }
             }
         }
@@ -53,18 +58,19 @@
         <!--标签页按钮-->
         <div class="tab-left">
             <ul>
-                <li>
+                <li :class="{'tab-active':isActive}" @click="activeCurrentTab(true)">
                     <i class="el-icon-time"></i>
                     待处理
                 </li>
-                <li>
+                <li :class="{'tab-active':!isActive}" @click="activeCurrentTab(false)">
                     <i class="el-icon-circle-check-outline"></i>
                     已处理
                 </li>
             </ul>
         </div>
-        <section class="content">
-
+        <section class="content" v-loading="loading">
+            <router-view @transmitTitle="currentTitle= $event"
+                         ></router-view>
         </section>
     </div>
 </template>
@@ -74,9 +80,19 @@
         name: "TabContent",
         data: function () {
             return {
-                currentTitle: "啦啦啦"
+                currentTitle: "标题错误",
+                isActive: true,
+                loading: false
             }
         },
-        methods: {}
+        methods: {
+            activeCurrentTab:function(currentStatus){
+                if(currentStatus){
+                    this.isActive = true;
+                }else{
+                    this.isActive = false;
+                }
+            }
+        }
     }
 </script>
