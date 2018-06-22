@@ -70,6 +70,7 @@
         </div>
         <section class="content" v-loading="loading">
             <router-view @transmitTitle="currentTitle= $event"
+                         :isPending="isPending"
                          ></router-view>
         </section>
     </div>
@@ -82,15 +83,18 @@
             return {
                 currentTitle: "标题错误",
                 isActive: true,
-                loading: false
+                loading: false,
+                isPending: true
             }
         },
         methods: {
             activeCurrentTab:function(currentStatus){
                 if(currentStatus){
                     this.isActive = true;
+                    this.isPending = true;
                 }else{
                     this.isActive = false;
+                    this.isPending = false;
                 }
             }
         }

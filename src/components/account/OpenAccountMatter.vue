@@ -38,29 +38,29 @@
                             </el-col>
                         </el-form-item>
                     </el-col>
-                    <el-col :span="8" style="text-align:center">
+                    <el-col :span="4">
                         <el-form-item>
-                            <el-checkbox-group v-model="searchData.type" v-if="isPending">
-                                <el-checkbox-button label="已保存" name="type"></el-checkbox-button>
-                                <el-checkbox-button label="审批拒绝" name="type"></el-checkbox-button>
-                            </el-checkbox-group>
-                            <el-checkbox-group v-model="searchData.type" v-else>
-                                <el-checkbox-button label="已提交" name="type"></el-checkbox-button>
-                                <el-checkbox-button label="审批中" name="type"></el-checkbox-button>
-                                <el-checkbox-button label="审批通过" name="type"></el-checkbox-button>
-                                <el-checkbox-button label="已完结" name="type"></el-checkbox-button>
-                            </el-checkbox-group>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="7">
-                        <el-form-item label="事由摘要">
-                            <el-input v-model="searchData.name" placeholder="请输入关键字"></el-input>
+                            <el-input v-model="searchData.name" placeholder="请输入事由摘要关键字"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="2">
                         <el-form-item>
                             <!--<el-button type="primary" plain @click="" size="mini">清空</el-button>-->
                             <el-button type="primary" plain @click="" size="mini">搜索</el-button>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="24">
+                        <el-form-item style="margin-bottom:0px">
+                            <el-checkbox-group v-model="searchData.type" v-if="isPending">
+                                <el-checkbox-button label="已保存" name="type"></el-checkbox-button>
+                                <el-checkbox-button label="审批拒绝" name="type"></el-checkbox-button>
+                            </el-checkbox-group>
+                            <el-checkbox-group v-model="searchData.type" v-else>
+                                <el-checkbox label="已提交" name="type"></el-checkbox>
+                                <el-checkbox label="审批中" name="type"></el-checkbox>
+                                <el-checkbox label="审批通过" name="type"></el-checkbox>
+                                <el-checkbox label="已完结" name="type"></el-checkbox>
+                            </el-checkbox-group>
                         </el-form-item>
                     </el-col>
                 </el-row>
@@ -77,14 +77,23 @@
         created: function () {
             this.$emit("transmitTitle", "开户事项申请");
         },
+        props:["isPending"],
         data: function () {
             return {
                 searchData:{
                     type:[]
-                },
-                isPending: false
+                }
             }
         },
-        methods: {}
+        methods: {},
+        computed:{
+            getCurrentSearch:function(){
+                if(this.isPending){
+                    return 5;
+                }else{
+                    return 8;
+                }
+            }
+        }
     }
 </script>
