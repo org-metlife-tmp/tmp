@@ -174,7 +174,7 @@
                     <el-col :span="7">
                         <el-form-item label="支付方式">
                             <el-select v-model="serachData.pay_recv_mode" placeholder="请选择支付方式"
-                                       clearable>
+                                       clearable  @change="searchPayChange">
                                 <el-option v-for="(name,k) in PayOrRecvMode"
                                            :key="k"
                                            :label="name"
@@ -193,7 +193,8 @@
                 <el-row>
                     <el-col :span="7">
                         <el-form-item label="支付子项">
-                            <el-select v-model="serachData.pay_item" placeholder="请选择支付子项" clearable>
+                            <el-select v-model="serachData.pay_item" placeholder="请选择支付子项" clearable
+                                       :disabled="hasSearchPay">
                                 <el-option label="微信" value="WX"></el-option>
                                 <el-option label="支付宝" value="ZFB"></el-option>
                             </el-select>
@@ -527,9 +528,12 @@
                 pagSize: 1, //分页
                 pagTotal: 1,
                 pagCurrent: 1,
-                serachData: {}, //搜索区
+                serachData: {
+                    pay_item: ""
+                }, //搜索区
                 tableList: [], //表格
                 currentRouter: "",
+                hasSearchPay: true, //搜索区支付子项只读
                 PayOrRecvMode: {}, //展示数据格式
                 orgList: [], //下拉框数据
                 bizTypeList: {},
@@ -1083,6 +1087,15 @@
                 } else {
                     this.hasPayRecv = true;
                     this.dialogData.pay_item = "";
+                }
+            },
+            //搜索区选择支付方式
+            searchPayChange:function(value){
+                if(value == "3"){
+                    this.hasSearchPay = false;
+                }else{
+                    this.hasSearchPay = true;
+                    this.serachData.pay_item = "";
                 }
             },
             //展示格式转换-来源系统

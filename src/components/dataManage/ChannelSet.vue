@@ -96,6 +96,9 @@
                 <el-table-column prop="code" label="渠道代码" :show-overflow-tooltip="true" width="160"></el-table-column>
                 <el-table-column prop="name" label="渠道名称" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="memo" label="备注" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="third_party_flag" label="是否第三方"
+                                 :formatter="transition"
+                                 width="100"></el-table-column>
                 <el-table-column prop="is_activate" label="是否激活"
                                  :formatter="getStatus"
                                  width="100"
@@ -219,13 +222,21 @@
             }
         },
         methods: {
-            //状态展示格式转换
+            //展示格式转换-是否激活
             getStatus: function (row, column, cellValue, index) {
                 var constants = JSON.parse(window.sessionStorage.getItem("constants"));
                 if (constants.YesOrNo) {
                     return constants.YesOrNo[cellValue];
                 } else {
                     return "";
+                }
+            },
+            //展示格式转换-是否第三方
+            transition:function (row, column, cellValue, index) {
+                if(cellValue){
+                    return "是";
+                }else{
+                    return "否"
                 }
             },
             //设置状态
@@ -352,6 +363,7 @@
         },
         watch: {
             tableData: function (val, oldVal) {
+                console.log(val);
                 this.pagSize = val.page_size;
                 this.pagTotal = val.total_line;
                 this.tableList = val.data;

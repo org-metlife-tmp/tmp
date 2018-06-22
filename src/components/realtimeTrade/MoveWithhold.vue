@@ -241,9 +241,9 @@
                 <el-table-column prop="serial_no" label="流水号" :show-overflow-tooltip="true" width="190"></el-table-column>
                 <el-table-column prop="biz_type" :formatter="transitionType"
                                  label="业务类型" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="settle_or_merchant_acc_no" label="对方账号" width="100"
+                <el-table-column prop="customer_acc" label="对方账号" width="100"
                                  :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="settle_or_merchant_acc_name" label="对方户名" width="100"
+                <el-table-column prop="customer_name" label="对方户名" width="100"
                                  :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="bank_type_name" label="开户银行"
                                  :show-overflow-tooltip="true"></el-table-column>
@@ -251,12 +251,12 @@
                                  :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="insure_bill_no" label="保单号" width="190"
                                  :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="channel_name" label="支付渠道"
+                <el-table-column prop="channel_code_name" label="支付渠道"
                                  :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="trade_status" label="交易状态"
                                  :formatter="transitionStatus"
                                  :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="date_time" label="创建日期" width="120"
+                <el-table-column prop="create_date_time" label="创建日期" width="120"
                                  :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="real_date_time" label="支付日期" width="120"
                                  :show-overflow-tooltip="true"></el-table-column>
