@@ -254,7 +254,6 @@
                 <el-table-column prop="channel_code_name" label="支付渠道"
                                  :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="trade_status" label="交易状态"
-                                 :formatter="transitionStatus"
                                  :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="create_date_time" label="创建日期" width="120"
                                  :show-overflow-tooltip="true"></el-table-column>
@@ -398,12 +397,12 @@
                 }
             },
             //展示格式转换-状态
-            transitionStatus: function (row, column, cellValue, index) {
+            /*transitionStatus: function (row, column, cellValue, index) {
                 var constants = JSON.parse(window.sessionStorage.getItem("constants"));
                 if (constants.PayStatus) {
                     return constants.PayStatus[cellValue];
                 }
-            },
+            },*/
             //根据条件查询数据
             queryData: function () {
                 var searchData = this.searchData;
