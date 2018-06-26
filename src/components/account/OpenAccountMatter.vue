@@ -18,6 +18,14 @@
             background-color: #E7E7E7;
             margin-bottom: 20px;
         }
+
+        /*分页部分*/
+        .botton-pag {
+            position: absolute;
+            width: 100%;
+            height: 8%;
+            bottom: -6px;
+        }
     }
 </style>
 
@@ -27,7 +35,7 @@
         <div class="search-setion">
             <el-form :inline="true" :model="searchData" size="mini">
                 <el-row>
-                    <el-col :span="7">
+                    <el-col :span="7" v-if="!isPending">
                         <el-form-item>
                             <el-col :span="11">
                                 <el-date-picker type="date" placeholder="起始日期" v-model="searchData.date1" style="width: 100%;"></el-date-picker>
@@ -52,8 +60,8 @@
                     <el-col :span="24">
                         <el-form-item style="margin-bottom:0px">
                             <el-checkbox-group v-model="searchData.type" v-if="isPending">
-                                <el-checkbox-button label="已保存" name="type"></el-checkbox-button>
-                                <el-checkbox-button label="审批拒绝" name="type"></el-checkbox-button>
+                                <el-checkbox label="已保存" name="type"></el-checkbox>
+                                <el-checkbox label="审批拒绝" name="type"></el-checkbox>
                             </el-checkbox-group>
                             <el-checkbox-group v-model="searchData.type" v-else>
                                 <el-checkbox label="已提交" name="type"></el-checkbox>
@@ -68,6 +76,18 @@
         </div>
         <!--分隔栏-->
         <div class="split-bar"></div>
+        <!--分页部分-->
+        <div class="botton-pag">
+            <el-pagination
+                    background
+                    layout="sizes, prev, pager, next, jumper"
+                    :page-size="pagSize"
+                    :total="pagTotal"
+                    :page-sizes="[10, 50, 100, 500]"
+                    :pager-count="5"
+                    :current-page="pagCurrent">
+            </el-pagination>
+        </div>
     </div>
 </template>
 
@@ -82,10 +102,14 @@
             return {
                 searchData:{
                     type:[]
-                }
+                },
+                pagSize: 8,
+                pagTotal: 1,
+                pagCurrent: 1
             }
         },
-        methods: {},
+        methods: {
+        },
         computed:{
             getCurrentSearch:function(){
                 if(this.isPending){
@@ -93,6 +117,11 @@
                 }else{
                     return 8;
                 }
+            }
+        },
+        watch:{
+            isPending:function(val,oldVal){
+                this.searchData.type=[];
             }
         }
     }
