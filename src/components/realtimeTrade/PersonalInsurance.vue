@@ -431,7 +431,7 @@
             transitionStatus: function (row, column, cellValue, index) {
                 var constants = JSON.parse(window.sessionStorage.getItem("constants"));
                 if (constants.PayStatus) {
-                    return constants.PayStatus[cellValue];
+                    return constants.PayStatus[cellValue];      
                 }
             },
             //根据条件查询数据
