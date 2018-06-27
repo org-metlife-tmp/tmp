@@ -86,9 +86,17 @@
                     method: "post",
                     data: currParams
                 }).then(function (result) {
-                    var currentData = result.data;
-                    temporaryThis.childData = currentData;
-                    temporaryThis.loading = false;
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                    }else{
+                        var currentData = result.data;
+                        temporaryThis.childData = currentData;
+                        temporaryThis.loading = false;
+                    }
                 }).catch(function (error) {
                     console.log(error);
                 })
@@ -105,9 +113,17 @@
                     method: "post",
                     data: currParams
                 }).then(function (result) {
-                    var currentData = result.data;
-                    temporaryThis.childData = currentData;
-                    temporaryThis.loading = false;
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                    } else{
+                        var currentData = result.data;
+                        temporaryThis.childData = currentData;
+                        temporaryThis.loading = false;
+                    }
                 }).catch(function (error) {
                     console.log(error);
                 })
@@ -122,9 +138,16 @@
                     method: "post",
                     data: currParams
                 }).then((result) => {
-                    var currentData = result.data;
-                    this.childGatherData = currentData;
-
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                    } else {
+                        var currentData = result.data;
+                        this.childGatherData = currentData;
+                    }
                 }).catch(function (error) {
                     console.log(error);
                 })

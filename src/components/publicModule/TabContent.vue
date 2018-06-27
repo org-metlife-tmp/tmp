@@ -1,10 +1,29 @@
-<style scoped lang="less" type="text/less">
+<style lang="less" type="text/less">
     #tabContent {
         width: 90%;
         height: 100%;
         margin: 0 auto;
         min-width: 920px;
         position: relative;
+
+        .content {
+            width: 100%;
+            height: 90%;
+            min-height: 500px;
+            box-sizing: border-box;
+            position: relative;
+            padding: 20px;
+            background-color: #fff;
+        }
+
+        //表格内部操作按钮
+        .el-table .el-button {
+            padding: 3px 3px;
+        }
+
+        .el-button + .el-button {
+            margin-left: 4px;
+        }
 
         //标签页按钮
         .tab-left {
@@ -37,16 +56,6 @@
                 }
             }
         }
-
-        .content {
-            width: 100%;
-            height: 90%;
-            min-height: 500px;
-            box-sizing: border-box;
-            position: relative;
-            padding: 20px;
-            background-color: #fff;
-        }
     }
 </style>
 
@@ -70,6 +79,8 @@
         </div>
         <section class="content" v-loading="loading">
             <router-view @transmitTitle="currentTitle= $event"
+                         @getTableData="setRouterMessage"
+                         :tableData="childData"
                          :isPending="isPending"
                          ></router-view>
         </section>
@@ -82,19 +93,73 @@
         data: function () {
             return {
                 currentTitle: "标题错误",
-                isActive: true,
                 loading: false,
-                isPending: true
+                childData:{},
+                isActive: true, //tab标签激活状态
+                isPending: true, //tab激活状态
+                todoMessage:{ //待处理数据请求信息
+                },
+                doneMessage:{ //已处理数据请求信息
+                }
             }
         },
         methods: {
+            setRouterMessage:function(routerData){
+                this.todoMessage = routerData.todo;
+                this.doneMessage = routerData.done;
+                if(this.isActive){
+                    this.getRouterData(routerData.todo);
+                }else{
+                    this.getRouterData(routerData.done);
+                }
+            },
+            getRouterData:function(params){
+                this.loading = true;
+                this.$axios({
+                    url: "/cfm/normalProcess",
+                    method: "post",
+                    data: params
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                    }else{
+                        var currentData = result.data;
+                        this.childData = currentData;
+                        this.loading = false;
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                })
+            },
             activeCurrentTab:function(currentStatus){
                 if(currentStatus){
-                    this.isActive = true;
-                    this.isPending = true;
+                    if(!this.isActive){
+                        this.isActive = true;
+                        this.isPending = true;
+                        this.getRouterData(this.todoMessage);
+                        var params = this.doneMessage.params;
+                        for(var k in params){
+                            if(k != "page_size" && k != "page_num"){
+                                delete params[k];
+                            }
+                        }
+                    }
                 }else{
-                    this.isActive = false;
-                    this.isPending = false;
+                    if(this.isActive){
+                        this.isActive = false;
+                        this.isPending = false;
+                        this.getRouterData(this.doneMessage);
+                        var params = this.todoMessage.params;
+                        for(var k in params){
+                            if(k != "page_size" && k != "page_num"){
+                                delete params[k];
+                            }
+                        }
+                    }
                 }
             }
         }

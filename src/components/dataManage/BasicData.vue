@@ -1184,7 +1184,7 @@
                     this.pagTotal = val.total_line * 1;
                     this.pagCurrent = val.page_num * 1;
                     this.tableList = data;
-                } else { //公
+                } else { //公司
                     var treeData = this.setTreeData(data);
                     this.treeList.push(treeData);
                     this.treeList = JSON.parse(JSON.stringify(this.treeList));

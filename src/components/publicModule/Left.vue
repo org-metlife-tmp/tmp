@@ -292,7 +292,7 @@
                     <p>账户通</p>
                 </template>
                 <el-menu-item-group>
-                    <el-menu-item index="/account/open-account-matter">开户事项补录</el-menu-item>
+                    <el-menu-item index="/account/open-account-matter">开户事项申请</el-menu-item>
                     <el-menu-item index="/account/open-account-message">开户信息补录申请</el-menu-item>
                     <el-menu-item index="/account/account-alteration">账户变更申请</el-menu-item>
                     <el-menu-item index="/account/account-message">账户信息维护</el-menu-item>
