@@ -226,17 +226,17 @@
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="申请人">
-                            <el-input v-model="lookDialogData.create_by" :readonly="true"></el-input>
+                            <el-input v-model="lookDialogData.user_name" :readonly="true"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="申请部门">
-                            <el-input v-model="lookDialogData.dept_id" :readonly="true"></el-input>
+                            <el-input v-model="lookDialogData.dept_name" :readonly="true"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="所属公司">
-                            <el-input v-model="lookDialogData.org_id" :readonly="true"></el-input>
+                            <el-input v-model="lookDialogData.org_name" :readonly="true"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="24">
