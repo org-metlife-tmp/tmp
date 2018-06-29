@@ -49,6 +49,28 @@
             padding: 0;
             vertical-align: middle;
         }
+
+        /*已处理查看分发人样式*/
+        .dist-border{
+            border: 1px solid #ccc;
+            border-radius: 22%;
+            margin-right: 10px;
+            padding: 0px 6px;
+            float: left;
+            line-height: 26px;
+        }
+
+        /*分割线*/
+        .split-form {
+            width: 100%;
+            height: 26px;
+            border-bottom: 1px solid #ccc;
+            margin-bottom: 10px;
+            h4 {
+                margin: 0;
+                float: left;
+            }
+        }
     }
 </style>
 
@@ -146,12 +168,12 @@
                         </el-tooltip>
                         <el-tooltip content="分发" placement="bottom" effect="light"
                                     :enterable="false" :open-delay="500" v-show="!isPending">
-                            <el-button size="mini" @click="" class="distribute"></el-button>
+                            <el-button size="mini" @click="distMatter(scope.row)" class="distribute"></el-button>
                         </el-tooltip>
                         <el-tooltip content="办结" placement="bottom" effect="light"
-                                    :enterable="false" :open-delay="500" v-show="!isPending">
+                                    :enterable="false" :open-delay="500" v-show="!isPending && !scope.row.finally_memo">
                             <el-button type="success" icon="el-icon-check" size="mini"
-                                       @click="lookParticular(scope.row)"></el-button>
+                                       @click="concludeMatter(scope.row)"></el-button>
                         </el-tooltip>
                     </template>
                 </el-table-column>
@@ -251,6 +273,19 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="24">
+                        <el-form-item label="分发人">
+                            <ul>
+                                <li v-for="item in issueList" class="dist-border">{{ item }}</li>
+                            </ul>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="24">
+                        <el-form-item label="办结摘要">
+                            <el-input v-model="lookDialogData.finally_memo"
+                                      :readonly="true"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="24">
                         <el-form-item label="事由摘要">
                             <el-input v-model="lookDialogData.memo"
                                       placeholder="请输入事由摘要(15字以内)"
@@ -268,6 +303,90 @@
                 </el-row>
             </el-form>
         </el-dialog>
+        <!--已处理分发弹框-->
+        <el-dialog :visible.sync="distDialog"
+                   width="600px" title="新增"
+                   :close-on-click-modal="false"
+                   top="56px">
+            <h1 slot="title" class="dialog-title">开户申请分发</h1>
+            <el-form :model="distDialogData" size="small"
+                     :label-width="formLabelWidth">
+                <el-row>
+                    <el-col :span="24">
+                        <el-form-item label="编号">
+                            <el-input v-model="distDialogData.service_serial_number" :readonly="true"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="24">
+                        <el-form-item label="申请日期">
+                            <el-input v-model="distDialogData.apply_on" :readonly="true"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="24">
+                        <el-form-item label="事由摘要">
+                            <el-input v-model="distDialogData.memo" :readonly="true"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="24">
+                        <el-form-item label="分发人">
+                            <el-select v-model="distDialogData.user_ids" multiple filterable placeholder="请选择">
+                                <el-option
+                                        v-for="item in distList"
+                                        :key="item.id"
+                                        :label="item.name"
+                                        :value="item.id">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button type="warning" size="mini" plain @click="distDialog = false">取 消</el-button>
+                <el-button type="warning" size="mini" @click="subDist">确 定</el-button>
+            </span>
+        </el-dialog>
+        <!--已处理分发弹框-->
+        <el-dialog :visible.sync="concludeDialog"
+                   width="600px" title="新增"
+                   :close-on-click-modal="false"
+                   top="56px">
+            <h1 slot="title" class="dialog-title">开户申请办结</h1>
+            <el-form :model="concludeDialogData" size="small"
+                     :label-width="formLabelWidth">
+                <el-row>
+                    <el-col :span="24">
+                        <el-form-item label="编号">
+                            <el-input v-model="concludeDialogData.service_serial_number" :readonly="true"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="24">
+                        <el-form-item label="申请日期">
+                            <el-input v-model="concludeDialogData.apply_on" :readonly="true"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="24">
+                        <el-form-item label="事由摘要">
+                            <el-input v-model="concludeDialogData.memo" :readonly="true"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="24">
+                        <div class="split-form">
+                            <h4>办结确认</h4>
+                        </div>
+                    </el-col>
+                    <el-col :span="24">
+                        <el-form-item label="备注信息">
+                            <el-input v-model="concludeDialogData.finally_memo"></el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button type="warning" size="mini" plain @click="concludeDialog = false">取 消</el-button>
+                <el-button type="warning" size="mini" @click="subConclude">确 定</el-button>
+            </span>
+        </el-dialog>
     </div>
 </template>
 
@@ -277,6 +396,26 @@
         created: function () {
             this.$emit("transmitTitle", "开户事项申请");
             this.$emit("getTableData", this.routerMessage);
+
+            //查询分发人
+            this.$axios({
+                url:"/cfm/commProcess",
+                method:"post",
+                data:{
+                    optype:"user_list"
+                }
+            }).then((result) =>{
+                if (result.data.error_msg) {
+                    this.$message({
+                        type: "error",
+                        message: result.data.error_msg,
+                        duration: 2000
+                    })
+                }else{
+                    var data = result.data.data;
+                    this.distList = data;
+                }
+            })
         },
         props: ["isPending", "tableData"],
         data: function () {
@@ -310,7 +449,17 @@
                 formLabelWidth: "120px",
                 dialogTitle: "新增",
                 lookDialog: false, //已处理查看弹出框
-                lookDialogData: {}
+                lookDialogData: {},
+                distDialog: false, //已处理分发弹出框
+                distDialogData: {
+                    user_ids:[]
+                },
+                distList: [], //分发人数据
+                currentDoneMatter: {},
+                issueList: [],
+                concludeDialog: false, //已处理办结弹出框
+                concludeDialogData: {},
+                currentConclude: {}
             }
         },
         methods: {
@@ -497,7 +646,6 @@
             },
             //已处理事项查看
             lookMatter:function(row){
-                console.log(row);
                 this.lookDialog = true;
                 for(var k in this.lookDialogData){
                     this.lookDialogData[k] = "";
@@ -505,6 +653,94 @@
                 for(var key in row){
                     this.lookDialogData[key] = row[key];
                 }
+                if(row.issue){
+                    this.issueList = row.issue.split(",");
+                }else{
+                    this.issueList = [];
+                }
+            },
+            //已处理事项分发
+            distMatter:function(row){
+                this.currentDoneMatter = row;
+                this.distDialog = true;
+                this.distDialogData.user_ids = [];
+                for(var key in row){
+                    this.distDialogData[key] = row[key];
+                }
+            },
+            //已处理事项分发确定
+            subDist:function(){
+                var distData = this.distDialogData;
+                this.$axios({
+                    url:"/cfm/normalProcess",
+                    method:"post",
+                    data:{
+                        optype:"openintent_issue",
+                        params:{
+                            bill_id: distData.id,
+                            iss_users: distData.user_ids
+                        }
+                    }
+                }).then((result) =>{
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                    }else{
+                        var data = result.data.data;
+                        this.distDialog = false;
+                        this.currentDoneMatter.issue = data.issue;
+                        this.$message({
+                            type: "success",
+                            message: "分发成功",
+                            duration: 2000
+                        })
+                    }
+                })
+            },
+            //已处理事项办结
+            concludeMatter:function(row){
+                this.concludeDialog = true;
+                this.currentConclude = row;
+                for(var k in row){
+                    this.concludeDialogData[k] = row[k];
+                }
+            },
+            //已处理事项办结确定
+            subConclude:function(){
+                var concludeData = this.concludeDialogData;
+                this.$axios({
+                    url:"/cfm/normalProcess",
+                    method:"post",
+                    data:{
+                        optype:"openintent_finish",
+                        params:{
+                            id: concludeData.id,
+                            persist_version: concludeData.persist_version,
+                            finally_memo: concludeData.finally_memo
+                        }
+                    }
+                }).then((result) =>{
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                    }else{
+                        var data = result.data.data;
+                        this.concludeDialog = false;
+                        this.currentConclude.finally_memo = data.finally_memo;
+                        this.currentConclude.service_status = data.service_status;
+                        this.$message({
+                            type: "success",
+                            message: "办结成功",
+                            duration: 2000
+                        })
+                    }
+                })
             }
         },
         computed: {
