@@ -167,7 +167,7 @@
                                        @click="lookMatter(scope.row)"></el-button>
                         </el-tooltip>
                         <el-tooltip content="分发" placement="bottom" effect="light"
-                                    :enterable="false" :open-delay="500" v-show="!isPending">
+                                    :enterable="false" :open-delay="500" v-show="!isPending && !scope.row.finally_memo">
                             <el-button size="mini" @click="distMatter(scope.row)" class="distribute"></el-button>
                         </el-tooltip>
                         <el-tooltip content="办结" placement="bottom" effect="light"
