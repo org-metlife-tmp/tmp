@@ -42,6 +42,14 @@
             padding: 0;
             vertical-align: middle;
         }
+        /*办结确认线*/
+        .confirmLine{
+            background: rgb(204,204,204);
+            width: 100%;
+            height: 1px;
+            margin-bottom: 5px;
+            display: inline-block;
+        }
     }
 </style>
 
@@ -123,14 +131,14 @@
                         <el-tooltip content="查看" placement="bottom" effect="light"
                                     :enterable="false" :open-delay="500" v-show="!isPending">
                             <el-button type="primary" icon="el-icon-search" size="mini"
-                                       @click="lookParticular(scope.row)"></el-button>
+                                       @click="lookMatter(scope.row)"></el-button>
                         </el-tooltip>
                         <el-tooltip content="分发" placement="bottom" effect="light"
-                                    :enterable="false" :open-delay="500" v-show="!isPending">
+                                    :enterable="false" :open-delay="500" v-show="!isPending && scope.row.service_status!=11">
                             <el-button size="mini" @click="distribute(scope.row)" class="distribute"></el-button>
                         </el-tooltip>
                         <el-tooltip content="办结" placement="bottom" effect="light"
-                                    :enterable="false" :open-delay="500" v-show="!isPending">
+                                    :enterable="false" :open-delay="500" v-show="!isPending && scope.row.service_status!=11">
                             <el-button type="success" icon="el-icon-check" size="mini"
                                        @click="lookParticular(scope.row)"></el-button>
                         </el-tooltip>
@@ -152,7 +160,7 @@
                     @size-change="sizeChange">
             </el-pagination>
         </div>
-        <!--弹出框-->
+        <!--待处理新增弹出框-->
         <el-dialog :visible.sync="dialogVisible"
                    width="810px" title="新增"
                    :close-on-click-modal="false"
@@ -196,31 +204,144 @@
                 <el-button type="warning" size="mini" @click="subCurrent">确 定</el-button>
             </span>
         </el-dialog>
+        <!--已处理查看弹出框-->
+        <el-dialog :visible.sync="lookDialog"
+                   width="810px" title="查看"
+                   :close-on-click-modal="false"
+                   top="56px">
+            <h1 slot="title" class="dialog-title">销户申请查看</h1>
+            <el-form :model="lookDialogData" size="small"
+                     :label-width="formLabelWidth">
+                <el-row>
+                    <el-col :span="12">
+                        <el-form-item label="编号">
+                            <el-input v-model="lookDialogData.service_serial_number" :readonly="true"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span=12 style="height:51px"></el-col>
+                    <el-col :span="12">
+                        <el-form-item label="申请日期">
+                            <el-input v-model="lookDialogData.apply_on" :readonly="true"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="申请人">
+                            <el-input v-model="lookDialogData.create_by" :readonly="true"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="申请部门">
+                            <el-input v-model="lookDialogData.dept_id" :readonly="true"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="所属公司">
+                            <el-input v-model="lookDialogData.org_id" :readonly="true"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="24">
+                        <el-form-item label="事由摘要">
+                            <el-input v-model="lookDialogData.memo"
+                                      placeholder="请输入事由摘要(15字以内)"
+                                      :readonly="true"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="24">
+                        <el-form-item label="事由说明">
+                            <el-input v-model="lookDialogData.detail"
+                                      type="textarea" :rows="3"
+                                      :readonly="true"
+                                      placeholder="请输入事由说明(100字以内)"></el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+            </el-form>
+        </el-dialog>
         <!--分发弹出框-->
         <el-dialog :visible.sync="distributeDialogVisible"
                    width="600px" title="通用事项"
                    :close-on-click-modal="false"
-                   top="56px">
+                   top="156px">
             <h1 slot="title" class="dialog-title">通用事项</h1>
-            <el-form :model="dialogData" size="small"
+            <el-form :model="distributeData" size="small"
                      :label-width="formLabelWidth">
                 <el-row>
                     <el-col :span="12">
                         <el-form-item label="申请日期">
-                            <el-input v-model="dialogData.apply_on" :disabled="true"></el-input>
+                            <el-date-picker
+                                :disabled="true"
+                                v-model="distributeData.apply_on"
+                                format="yyyy-MM-dd"
+                                type="date">
+                            </el-date-picker>
+                            <!-- <el-input v-model="distributeData.apply_on" :disabled="true"></el-input> -->
                         </el-form-item>
                     </el-col>
                     <el-col :span=12 style="height:51px"></el-col>
                     <el-col :span="24">
                         <el-form-item label="事由摘要">
-                            <el-input v-model="dialogData.memo" placeholder="请输入事由摘要(15字以内)"></el-input>
+                            <el-input v-model="distributeData.memo" placeholder="请输入事由摘要(15字以内)"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="24">
+                        <el-form-item label="分发人">
+                            <el-select v-model="distributeData.user_ids" multiple filterable placeholder="请选择">
+                                <el-option
+                                    v-for="item in user_options"
+                                    :key="item.id"
+                                    :label="item.name"
+                                    :value="item.id">
+                                </el-option>
+                            </el-select>
                         </el-form-item>
                     </el-col>
                 </el-row>
             </el-form>
             <span slot="footer" class="dialog-footer">
-                <el-button type="warning" size="mini" plain @click="dialogVisible = false">取 消</el-button>
-                <el-button type="warning" size="mini" @click="subCurrent">确 定</el-button>
+                <el-button type="warning" size="mini" plain @click="distributeDialogVisible = false">取 消</el-button>
+                <el-button type="warning" size="mini" @click="distriConfirm">确 定</el-button>
+            </span>
+        </el-dialog>
+        <!--办结弹出框-->
+        <el-dialog :visible.sync="handleDialogVisible"
+                   width="600px" title="通用事项办结"
+                   :close-on-click-modal="false"
+                   top="156px">
+            <h1 slot="title" class="dialog-title">通用事项办结</h1>
+            <el-form :model="handleData" size="small"
+                     :label-width="formLabelWidth">
+                <el-row>
+                    <el-col :span="12">
+                        <el-form-item label="申请日期">
+                            <el-date-picker
+                                :disabled="true"
+                                v-model="handleData.apply_on"
+                                format="yyyy-MM-dd"
+                                type="date">
+                            </el-date-picker>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span=12 style="height:51px"></el-col>
+                    <el-col :span="24">
+                        <el-form-item label="事由摘要">
+                            <el-input v-model="handleData.memo" placeholder="请输入事由摘要(15字以内)"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="24">
+                        <el-form-item label="办结确认">
+                            <span class="confirmLine"></span>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="24">
+                        <el-form-item label="备注信息">
+                            <el-input v-model="handleData.finally_memo"></el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button type="warning" size="mini" plain @click="handleDialogVisible = false">取 消</el-button>
+                <el-button type="warning" size="mini" @click="handleConfirm">确 定</el-button>
             </span>
         </el-dialog>
     </div>
@@ -255,16 +376,22 @@
                 searchData:{
                     service_status:[]
                 },
+                user_options: [],
                 tableList:[],
                 pagSize: 8,//一页多少条数据
                 pagTotal: 1,//共多少条数据
                 pagCurrent: 1,//当前页码
-                currentMatter:{},
+                currentMatter: {},
                 dialogVisible: false, //弹框数据
-                distributeDialogVisible:false,//分发弹框
+                distributeDialogVisible: false,//分发弹框
+                handleDialogVisible: false,//办结弹框
+                lookDialog: false,//已处理查看弹框
                 dialogData: {},
                 formLabelWidth: "120px",
-                dialogTitle: "新增"
+                dialogTitle: "新增",
+                distributeData: {},
+                handleData: {},
+                lookDialogData: {}
             }
         },
         methods: {
@@ -277,7 +404,6 @@
             },
             //根据条件查询数据
             queryData:function(){
-                debugger;
                 var searchData = this.searchData;
                 for(var k in searchData){
                     if(this.isPending){
@@ -290,7 +416,8 @@
             },
             //获取当前用户公司和部门
             getDeptOrg:function(){
-                var userUodp = JSON.parse(window.sessionStorage.getItem("user")).uodp;
+                // var userUodp = JSON.parse(window.sessionStorage.getItem("user")).uodp;
+                var userUodp = this.$store.state.user.uodp;
                 for (var i = 0; i < userUodp.length; i++) {
                     var item = userUodp[i];
                     if (item.is_default == "1") {
@@ -335,7 +462,6 @@
             subCurrent:function(){
                 var params = this.dialogData;
                 var optype = "";
-                debugger
                 optype = this.dialogTitle == "新增" ? "closeacc_todoadd" : "closeacc_todochg";
                 this.$axios({
                     url:"/cfm/normalProcess",
@@ -376,7 +502,6 @@
             },
             //删除当前事项申请
             removeMatter:function(row,index,rows){
-                debugger;
                 this.$confirm('确认删除当前事项申请吗?','提示',{
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
@@ -447,7 +572,101 @@
             },
             //分发
             distribute:function(row){
+                //查询分发人
+                this.$axios({
+                    url:"/cfm/commProcess",
+                    method:"post",
+                    data:{
+                        optype:"user_list"
+                    }
+                }).then((result) =>{
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                        return;
+                    }
+                    if(result.data.data.length>0){
+                        this.user_options = result.data.data;
+                    }
+                })
                 this.distributeDialogVisible = true;
+                //设置当前分发内容
+                this.distributeData.apply_on = row.apply_on;
+                this.distributeData.memo = row.memo;
+                this.distributeData.id = row.id;
+            },
+            //确认分发
+            distriConfirm:function(){
+                this.$axios({
+                    url:"/cfm/normalProcess",
+                    method:"post",
+                    data:{
+                        optype:"closeacc_doneissue",
+                        params:{
+                            id:this.distributeData.id,
+                            user_ids:this.distributeData.user_ids
+                        }
+                    }
+                }).then((result) => {
+                    if(result.data.state == "ok"){
+                        this.distributeDialogVisible = false;
+                        this.distributeData.user_ids = [];
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                })
+            },
+            //办结
+            lookParticular:function(row){
+                this.currentMatter = row;
+                this.handleDialogVisible = true;
+                //设置当前办结内容
+                this.handleData.apply_on = row.apply_on;
+                this.handleData.memo = row.memo;
+                this.handleData.id = row.id;
+            },
+            //办结确认
+            handleConfirm:function(){
+                this.$axios({
+                    url:"/cfm/normalProcess",
+                    method:"post",
+                    data:{
+                        optype:"closeacc_doneend",
+                        params:{
+                            id:this.handleData.id,
+                            finally_memo:this.handleData.finally_memo
+                        }
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                        return;
+                    }
+                    if(result.data.state == "ok"){
+                       this.currentMatter.service_status = result.data.data;
+                       this.handleDialogVisible = false;
+                       this.handleDialogVisible.finally_memo = "";
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                })
+            },
+            //已处理事项查看
+            lookMatter:function(row){
+                this.lookDialog = true;
+                for(var k in this.lookDialogData){
+                    this.lookDialogData[k] = "";
+                }
+                for(var key in row){
+                    this.lookDialogData[key] = row[key];
+                }
             }
         },
         watch:{
