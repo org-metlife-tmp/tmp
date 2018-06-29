@@ -142,7 +142,7 @@
                         <el-tooltip content="查看" placement="bottom" effect="light"
                                     :enterable="false" :open-delay="500" v-show="!isPending">
                             <el-button type="primary" icon="el-icon-search" size="mini"
-                                       @click="lookParticular(scope.row)"></el-button>
+                                       @click="lookMatter(scope.row)"></el-button>
                         </el-tooltip>
                         <el-tooltip content="分发" placement="bottom" effect="light"
                                     :enterable="false" :open-delay="500" v-show="!isPending">
@@ -171,7 +171,7 @@
                     @size-change="sizeChange">
             </el-pagination>
         </div>
-        <!--弹出框-->
+        <!--待处理新增弹出框-->
         <el-dialog :visible.sync="dialogVisible"
                    width="810px" title="新增"
                    :close-on-click-modal="false"
@@ -215,6 +215,59 @@
                 <el-button type="warning" size="mini" @click="subCurrent">确 定</el-button>
             </span>
         </el-dialog>
+        <!--已处理查看弹出框-->
+        <el-dialog :visible.sync="lookDialog"
+                   width="810px" title="新增"
+                   :close-on-click-modal="false"
+                   top="56px">
+            <h1 slot="title" class="dialog-title">开户申请查看</h1>
+            <el-form :model="lookDialogData" size="small"
+                     :label-width="formLabelWidth">
+                <el-row>
+                    <el-col :span="12">
+                        <el-form-item label="编号">
+                            <el-input v-model="lookDialogData.service_serial_number" :readonly="true"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span=12 style="height:51px"></el-col>
+                    <el-col :span="12">
+                        <el-form-item label="申请日期">
+                            <el-input v-model="lookDialogData.apply_on" :readonly="true"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="申请人">
+                            <el-input v-model="lookDialogData.user_name" :readonly="true"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="申请部门">
+                            <el-input v-model="lookDialogData.dept_name" :readonly="true"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="所属公司">
+                            <el-input v-model="lookDialogData.org_name" :readonly="true"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="24">
+                        <el-form-item label="事由摘要">
+                            <el-input v-model="lookDialogData.memo"
+                                      placeholder="请输入事由摘要(15字以内)"
+                                      :readonly="true"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="24">
+                        <el-form-item label="事由说明">
+                            <el-input v-model="lookDialogData.detail"
+                                      type="textarea" :rows="3"
+                                      :readonly="true"
+                                      placeholder="请输入事由说明(100字以内)"></el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+            </el-form>
+        </el-dialog>
     </div>
 </template>
 
@@ -252,10 +305,12 @@
                 pagTotal: 1,
                 pagCurrent: 1,
                 currentMatter: {},
-                dialogVisible: false, //弹框数据
+                dialogVisible: false, //待处理新增弹框数据
                 dialogData: {},
                 formLabelWidth: "120px",
-                dialogTitle: "新增"
+                dialogTitle: "新增",
+                lookDialog: false, //已处理查看弹出框
+                lookDialogData: {}
             }
         },
         methods: {
@@ -280,7 +335,7 @@
             },
             //获取当前用户部门和公司
             getDeptOrg:function(){
-                var userUodp = JSON.parse(window.sessionStorage.getItem("user")).uodp;
+                var userUodp = this.$store.state.user.uodp;
                 for (var i = 0; i < userUodp.length; i++) {
                     var item = userUodp[i];
                     if (item.is_default == "1") {
@@ -440,6 +495,17 @@
                 };
                 this.$emit("getTableData", this.routerMessage);
             },
+            //已处理事项查看
+            lookMatter:function(row){
+                console.log(row);
+                this.lookDialog = true;
+                for(var k in this.lookDialogData){
+                    this.lookDialogData[k] = "";
+                }
+                for(var key in row){
+                    this.lookDialogData[key] = row[key];
+                }
+            }
         },
         computed: {
             getCurrentSearch: function () {
