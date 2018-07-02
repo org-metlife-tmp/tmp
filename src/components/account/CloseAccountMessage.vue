@@ -54,6 +54,11 @@
                 overflow-y: scroll;
             }
         }
+        .el-form-item--small .el-form-item__content span {
+            display: inline-block;
+            height: 33px;
+            line-height: 32px;
+        }
     }
 </style>
 
@@ -217,15 +222,12 @@
                     </el-col>
                     <el-col :span="24">
                         <el-form-item label="事由摘要">
-                            <el-input v-model="dialogData.memo" :disabled="true" placeholder="请输入事由摘要(15字以内)"></el-input>
+                            <span>{{dialogData.memo}}</span>
                         </el-form-item>
                     </el-col>
                     <el-col :span="24">
                         <el-form-item label="事由说明">
-                            <el-input v-model="dialogData.detail"
-                                      :disabled="true"
-                                      type="textarea" :rows="3"
-                                      placeholder="请输入事由说明(100字以内)"></el-input>
+                            <span>{{dialogData.detail}}</span>
                         </el-form-item>
                     </el-col>
                     <el-col :span="24" class="form-small-title">
@@ -233,74 +235,50 @@
                         <span>信息补录</span>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="账户名">
-                            <el-input v-model="dialogData.dept_name" placeholder="请输入账户号(必输)"></el-input>
+                        <el-form-item label="账户号">
+                            <el-select v-model="dialogData.acc_no" @change="changeAccount" clearable>
+                                <el-option
+                                v-for="item in accOptions"
+                                :key="item.acc_no"
+                                :label="item.acc_name"
+                                :value="item.acc_no">
+                                </el-option>
+                            </el-select>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="账户名称">
-                            <el-input v-model="dialogData.dept_name" placeholder="请输入账户名称(必输)"></el-input>
+                            <div>{{dialogData.acc_name}}</div>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="所属机构">
-                            <el-input v-model="dialogData.org_name" :disabled="true"></el-input>
+                            <div>{{dialogData.org_name}}</div>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="账户法人">
-                            <el-input v-model="dialogData.dept_name" placeholder="请输入账户法人(必输)"></el-input>
+                            <div>{{dialogData.lawfull_man}}</div>
                         </el-form-item>
                     </el-col>
                     <el-col :span="24">
                         <el-form-item label="开户行">
-                            <el-input v-model="dialogData.dept_name"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="开户行地址">
-                            <el-input v-model="dialogData.dept_name" placeholder="请输入开户行地址(必输)"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span=12 style="height:51px"></el-col>
-                    <el-col :span="12">
-                        <el-form-item label="开户行联系人">
-                            <el-input v-model="dialogData.dept_name" placeholder="请输入联系人(必输)"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="联系地址">
-                            <el-input v-model="dialogData.dept_name" placeholder="请输入联系地址(必输)"></el-input>
+                            <div>{{dialogData.bank_name}}</div>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="币种">
-                            <el-input v-model="dialogData.dept_name"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="开户日期">
-                            <el-date-picker
-                                :disabled="true"
-                                v-model="dialogData.apply_on"
-                                format="yyyy-MM-dd"
-                                type="date">
-                            </el-date-picker>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="账户属性">
-                            <el-input v-model="dialogData.dept_name"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="账户用途">
-                            <el-input v-model="dialogData.dept_name"></el-input>
+                            <div>{{dialogData.curr_name}}</div>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="账户模式">
-                            <el-input v-model="dialogData.dept_name"></el-input>
+                            <div>{{getInactiveMode}}</div>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="账户用途">
+                            <div>{{dialogData.acc_purpose}}</div>
                         </el-form-item>
                     </el-col>
                     <el-col :span="24" class="form-small-title">
@@ -329,6 +307,19 @@
         created: function () {
             this.$emit("transmitTitle", "销户信息补录");
             this.$emit("getTableData", this.routerMessage);
+
+            this.$axios({
+                url:"/cfm/normalProcess",
+                method:"post",
+                data:{
+                    optype:"account_accs",
+                    params:{
+                        status:1
+                    }
+                }
+            }).then((result) =>{
+               this.accOptions = result.data.data;
+            })
         },
         props:["isPending","tableData"],
         data: function () {
@@ -358,7 +349,8 @@
                 pagCurrent: 1,
                 formLabelWidth: "120px",
                 dialogVisible:false,
-                dialogData:{}
+                dialogData:{},
+                accOptions:[]//账户号下拉数据
             }
         },
         methods: {
@@ -375,6 +367,22 @@
                 row.apply_on=row.apply_on?row.apply_on.split(" ")[0]:"";
                 this.dialogVisible = true;
                 this.dialogData = row;
+            },
+            //切换账户号
+            changeAccount:function(cur){
+                var temp = this.dialogData;
+                this.accOptions.forEach(function(item,index){
+                    if(item.acc_no === cur){
+                        temp.acc_name = item.acc_name;
+                        temp.org_name = item.org_name;
+                        temp.lawfull_man = item.lawfull_man;
+                        temp.bank_name = item.bank_name;
+                        temp.curr_name = item.curr_name;
+                        temp.interactive_mode = item.interactive_mode;
+                        temp.acc_purpose = item.acc_purpose;
+                    }
+                })
+                
             }
         },
         computed:{
@@ -383,6 +391,14 @@
                     return 5;
                 }else{
                     return 8;
+                }
+            },
+            getInactiveMode:function(){
+                var constants = JSON.parse(window.sessionStorage.getItem("constants"));
+                if(constants.InactiveMode && this.dialogData.interactive_mode){
+                    return constants.InactiveMode[this.dialogData.interactive_mode];
+                }else{
+                    return "";
                 }
             }
         },
