@@ -28,7 +28,7 @@
 
         /*数据展示区*/
         .table-content {
-            transition: height 1s;
+            height: 289px;
         }
 
         /*分页部分*/
@@ -141,6 +141,7 @@
         <section :class="['table-content']">
             <el-table :data="tableList"
                       border
+                      height="100%"
                       size="mini">
                 <el-table-column prop="apply_on" label="申请日期" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="memo" label="事由摘要" :show-overflow-tooltip="true"></el-table-column>
@@ -167,11 +168,11 @@
                                        @click="lookMatter(scope.row)"></el-button>
                         </el-tooltip>
                         <el-tooltip content="分发" placement="bottom" effect="light"
-                                    :enterable="false" :open-delay="500" v-show="!isPending && !scope.row.finally_memo">
+                                    :enterable="false" :open-delay="500" v-show="!isPending && !(scope.row.service_status =='11')">
                             <el-button size="mini" @click="distMatter(scope.row)" class="distribute"></el-button>
                         </el-tooltip>
                         <el-tooltip content="办结" placement="bottom" effect="light"
-                                    :enterable="false" :open-delay="500" v-show="!isPending && !scope.row.finally_memo">
+                                    :enterable="false" :open-delay="500" v-show="!isPending && !(scope.row.service_status =='11')">
                             <el-button type="success" icon="el-icon-check" size="mini"
                                        @click="concludeMatter(scope.row)"></el-button>
                         </el-tooltip>
@@ -476,8 +477,10 @@
                 for (var k in searchData) {
                     if (this.isPending) {
                         this.routerMessage.todo.params[k] = searchData[k];
+                        this.routerMessage.todo.params.page_num = 1;
                     } else {
                         this.routerMessage.done.params[k] = searchData[k];
+                        this.routerMessage.done.params.page_num = 1;
                     }
                 }
                 this.$emit("getTableData", this.routerMessage);

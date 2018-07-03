@@ -286,20 +286,20 @@
                     <el-menu-item index="/realtime-trade/move-withhold" v-if="menuList.RTYDRecvMgt">移动展业实时代扣</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="4">
+            <el-submenu index="4" v-if="menuList.ACCMGT">
                 <template slot="title" height="200px">
                     <i class="icon-zht"></i>
                     <p>账户通</p>
                 </template>
                 <el-menu-item-group>
-                    <el-menu-item index="/account/open-account-matter">开户事项申请</el-menu-item>
-                    <el-menu-item index="/account/open-account-message">开户信息补录申请</el-menu-item>
-                    <el-menu-item index="/account/account-alteration">账户变更申请</el-menu-item>
-                    <el-menu-item index="/account/account-message">账户信息维护</el-menu-item>
-                    <el-menu-item index="/account/account-unfreeze">账户解冻申请</el-menu-item>
-                    <el-menu-item index="/account/account-freeze">账户冻结申请</el-menu-item>
-                    <el-menu-item index="/account/close-account-matter">销户事项申请</el-menu-item>
-                    <el-menu-item index="/account/close-account-message">销户信息补录申请</el-menu-item>
+                    <el-menu-item index="/account/open-account-matter" v-if="menuList.AccOpenIntAppl">开户事项申请</el-menu-item>
+                    <el-menu-item index="/account/open-account-message" v-if="menuList.AccOpenComAppl">开户信息补录申请</el-menu-item>
+                    <el-menu-item index="/account/account-alteration" v-if="menuList.AccChgAppl">账户变更申请</el-menu-item>
+                    <el-menu-item index="/account/account-message" v-if="menuList.AccMtc">账户信息维护</el-menu-item>
+                    <el-menu-item index="/account/account-unfreeze" v-if="menuList.AccFreezeAppl">账户解冻申请</el-menu-item>
+                    <el-menu-item index="/account/account-freeze" v-if="menuList.AccDefreezeAppl">账户冻结申请</el-menu-item>
+                    <el-menu-item index="/account/close-account-matter" v-if="menuList.AccCloseIntAppl">销户事项申请</el-menu-item>
+                    <el-menu-item index="/account/close-account-message" v-if="menuList.AccCloseComAppl">销户信息补录申请</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
 
@@ -470,15 +470,27 @@
                     MerchMgt: false, //商户号设置
                     ChannelMgt: false, //渠道设置
                     RouteMgt: false, //路由设置
+
                     UMMGT: false, //用户管理
                     UsrMgt: false, //用户维护
                     UsrGpMgt: false, //用户组设置
                     UsrMenuMgt: false, //用户菜单设置
+
                     RTPRMGT: false, //实时交易
                     RTGXPayMgt: false, //个险核心实时代付
                     RTTXPayMgt: false, //团险核心实时代付
                     RTYDQrCodeMgt: false, //移动展业二维码
                     RTYDRecvMgt: false, //移动展业实时代扣
+
+                    ACCMGT: false, //账户通
+                    AccOpenIntAppl: false, //开户事项申请
+                    AccOpenComAppl: false, //开户信息补录申请
+                    AccChgAppl: false, //账户变更申请
+                    AccMtc: false, //账户信息维护
+                    AccFreezeAppl: false, //账户解冻申请
+                    AccDefreezeAppl: false, //账户冻结申请
+                    AccCloseIntAppl: false, //销户事项申请
+                    AccCloseComAppl: false, //销户信息补录申请
                 }
             }
         },
