@@ -42,13 +42,26 @@
             padding: 0;
             vertical-align: middle;
         }
-        /*办结确认线*/
-        .confirmLine{
-            background: rgb(204,204,204);
+        /*已处理查看分发人样式*/
+        .dist-border{
+            border: 1px solid #ccc;
+            border-radius: 22%;
+            margin-right: 10px;
+            padding: 0px 6px;
+            float: left;
+            line-height: 26px;
+        }
+
+        /*分割线*/
+        .split-form {
             width: 100%;
-            height: 1px;
-            margin-bottom: 5px;
-            display: inline-block;
+            height: 26px;
+            border-bottom: 1px solid #ccc;
+            margin-bottom: 10px;
+            h4 {
+                margin: 0;
+                float: left;
+            }
         }
     }
 </style>
@@ -140,7 +153,7 @@
                         <el-tooltip content="办结" placement="bottom" effect="light"
                                     :enterable="false" :open-delay="500" v-show="!isPending && scope.row.service_status!=11">
                             <el-button type="success" icon="el-icon-check" size="mini"
-                                       @click="lookParticular(scope.row)"></el-button>
+                                       @click="concludeMatter(scope.row)"></el-button>
                         </el-tooltip>
                     </template>
                 </el-table-column>
@@ -234,6 +247,19 @@
                             <el-input v-model="lookDialogData.dept_name" :readonly="true"></el-input>
                         </el-form-item>
                     </el-col>
+                    <el-col :span="24">
+                        <el-form-item label="分发人">
+                            <ul>
+                                <li v-for="item in issueList" class="dist-border">{{ item }}</li>
+                            </ul>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="24">
+                        <el-form-item label="办结摘要">
+                            <el-input v-model="lookDialogData.finally_memo"
+                                      :readonly="true"></el-input>
+                        </el-form-item>
+                    </el-col>
                     <el-col :span="12">
                         <el-form-item label="所属公司">
                             <el-input v-model="lookDialogData.org_name" :readonly="true"></el-input>
@@ -261,14 +287,20 @@
         <el-dialog :visible.sync="distributeDialogVisible"
                    width="600px" title="通用事项"
                    :close-on-click-modal="false"
-                   top="156px">
+                   top="56px">
             <h1 slot="title" class="dialog-title">通用事项</h1>
             <el-form :model="distributeData" size="small"
                      :label-width="formLabelWidth">
                 <el-row>
-                    <el-col :span="12">
+                    <el-col :span="24">
+                        <el-form-item label="编号">
+                            <el-input v-model="distributeData.service_serial_number" :readonly="true"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="24">
                         <el-form-item label="申请日期">
                             <el-date-picker
+                                style="width:100%"
                                 :disabled="true"
                                 v-model="distributeData.apply_on"
                                 format="yyyy-MM-dd"
@@ -277,10 +309,9 @@
                             <!-- <el-input v-model="distributeData.apply_on" :disabled="true"></el-input> -->
                         </el-form-item>
                     </el-col>
-                    <el-col :span=12 style="height:51px"></el-col>
                     <el-col :span="24">
                         <el-form-item label="事由摘要">
-                            <el-input v-model="distributeData.memo" placeholder="请输入事由摘要(15字以内)"></el-input>
+                            <el-input v-model="distributeData.memo" :disabled="true" placeholder="请输入事由摘要(15字以内)"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="24">
@@ -306,11 +337,16 @@
         <el-dialog :visible.sync="handleDialogVisible"
                    width="600px" title="通用事项办结"
                    :close-on-click-modal="false"
-                   top="156px">
+                   top="56px">
             <h1 slot="title" class="dialog-title">通用事项办结</h1>
             <el-form :model="handleData" size="small"
                      :label-width="formLabelWidth">
                 <el-row>
+                    <el-col :span="24">
+                        <el-form-item label="编号">
+                            <el-input v-model="handleData.service_serial_number" :readonly="true"></el-input>
+                        </el-form-item>
+                    </el-col>
                     <el-col :span="12">
                         <el-form-item label="申请日期">
                             <el-date-picker
@@ -328,9 +364,9 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="24">
-                        <el-form-item label="办结确认">
-                            <span class="confirmLine"></span>
-                        </el-form-item>
+                        <div class="split-form">
+                            <h4>办结确认</h4>
+                        </div>
                     </el-col>
                     <el-col :span="24">
                         <el-form-item label="备注信息">
@@ -353,6 +389,27 @@
         created: function () {
             this.$emit("transmitTitle", "销户事项申请");
             this.$emit("getTableData", this.routerMessage);
+
+            //查询分发人
+            this.$axios({
+                url:"/cfm/commProcess",
+                method:"post",
+                data:{
+                    optype:"user_list"
+                }
+            }).then((result) =>{
+                if (result.data.error_msg) {
+                    this.$message({
+                        type: "error",
+                        message: result.data.error_msg,
+                        duration: 2000
+                    })
+                    return;
+                }
+                if(result.data.data.length>0){
+                    this.user_options = result.data.data;
+                }
+            })
         },
         props:["isPending","tableData"],
         data: function () {
@@ -391,7 +448,9 @@
                 dialogTitle: "新增",
                 distributeData: {},
                 handleData: {},
-                lookDialogData: {}
+                lookDialogData: {},
+                issueList:[],
+                currentDoneMatter:{}
             }
         },
         methods: {
@@ -572,31 +631,13 @@
             },
             //分发
             distribute:function(row){
-                //查询分发人
-                this.$axios({
-                    url:"/cfm/commProcess",
-                    method:"post",
-                    data:{
-                        optype:"user_list"
-                    }
-                }).then((result) =>{
-                    if (result.data.error_msg) {
-                        this.$message({
-                            type: "error",
-                            message: result.data.error_msg,
-                            duration: 2000
-                        })
-                        return;
-                    }
-                    if(result.data.data.length>0){
-                        this.user_options = result.data.data;
-                    }
-                })
                 this.distributeDialogVisible = true;
                 //设置当前分发内容
                 this.distributeData.apply_on = row.apply_on;
                 this.distributeData.memo = row.memo;
+                this.distributeData.service_serial_number = row.service_serial_number;
                 this.distributeData.id = row.id;
+                this.currentDoneMatter = row;
             },
             //确认分发
             distriConfirm:function(){
@@ -611,22 +652,36 @@
                         }
                     }
                 }).then((result) => {
-                    if(result.data.state == "ok"){
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                    }else{
+                        var data = result.data.data;
                         this.distributeDialogVisible = false;
                         this.distributeData.user_ids = [];
+                        this.currentDoneMatter.issues = data;
+                        this.$message({
+                            type: "success",
+                            message: "分发成功",
+                            duration: 2000
+                        })
                     }
                 }).catch(function (error) {
                     console.log(error);
                 })
             },
             //办结
-            lookParticular:function(row){
+            concludeMatter:function(row){
                 this.currentMatter = row;
                 this.handleDialogVisible = true;
                 //设置当前办结内容
                 this.handleData.apply_on = row.apply_on;
                 this.handleData.memo = row.memo;
-                this.handleData.id = row.id;
+                this.handleData.service_serial_number = row.service_serial_number;
+                this.handleData.id = row.id;              
             },
             //办结确认
             handleConfirm:function(){
@@ -666,6 +721,11 @@
                 }
                 for(var key in row){
                     this.lookDialogData[key] = row[key];
+                }
+                if(row.issues){
+                    this.issueList = row.issues.split(",");
+                }else{
+                    this.issueList = [];
                 }
             }
         },
