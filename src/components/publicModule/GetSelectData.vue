@@ -281,6 +281,37 @@
                     console.log(error);
                 })
             }
+            //币种下拉数据
+            if (!window.sessionStorage.getItem("selectCurrencyList")) {
+                this.$axios({
+                    url: "/cfm/commProcess",
+                    method: "post",
+                    data: {
+                        optype: "currency_list",
+                        params: {
+                            page_size: 200,
+                            page_num: 1
+                        }
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        return;
+                    } else {
+                        var data = result.data.data;
+                        var currencyList = [];
+                        data.forEach(function (item) {
+                            var itemNeed = {};
+                            for (var k in item) {
+                                itemNeed[k] = item[k];
+                            }
+                            currencyList.push(itemNeed);
+                        });
+                        window.sessionStorage.setItem("selectCurrencyList", JSON.stringify(currencyList));
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                })
+            }
         },
         data: function () {
             return {}

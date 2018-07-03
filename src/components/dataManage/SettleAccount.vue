@@ -224,7 +224,7 @@
                         <el-form-item label="收付属性" :label-width="formLabelWidth" prop="pay_recv_attr">
                             <el-select v-model="dialogData.pay_recv_attr" placeholder="请选择收付属性"
                                        filterable clearable>
-                                <el-option v-for="(name,k) in accOrRecvList"
+                                    <el-option v-for="(name,k) in accOrRecvList"
                                            :key="k"
                                            :label="name"
                                            :value="k">
@@ -500,6 +500,7 @@
                         name: row.bank_name
                     })
                 }
+                console.log(row);
                 for (var k in row) {
                     this.dialogData[k] = row[k];
                 }

@@ -109,7 +109,7 @@
                     </el-col>
                     <el-col :span="4">
                         <el-form-item>
-                            <el-input v-model="searchData.query_key" placeholder="请输入事由摘要关键字"></el-input>
+                            <el-input v-model="searchData.query_key" clearable placeholder="请输入事由摘要关键字"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="2">
@@ -754,8 +754,13 @@
         },
         watch: {
             isPending: function (val, oldVal) {
-                this.searchData.query_key = "";
-                this.searchData.service_status = [];
+                for(var k in this.searchData){
+                    if(k == "service_status"){
+                        this.searchData[k] = [];
+                    }else{
+                        this.searchData[k] = "";
+                    }
+                }
             },
             tableData: function (val, oldVal) {
                 this.pagSize = val.page_size;

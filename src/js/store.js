@@ -25,8 +25,7 @@ export default new Vuex.Store({
         del_token:function(state){
             state.token = '';
             state.user = '';
-            window.sessionStorage.removeItem("token");
-            window.sessionStorage.removeItem("uer");
+            window.sessionStorage.clear();
         }
     }
 })
