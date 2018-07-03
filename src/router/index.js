@@ -32,7 +32,7 @@ import AccountMessage from '@/components/account/AccountMessage'
 import AccountUnfreeze from '@/components/account/AccountUnfreeze'
 import AccountFreeze from '@/components/account/AccountFreeze'
 import CloseAccountMatter from '@/components/account/CloseAccountMatter'
-import closeAccountMessage from '@/components/account/closeAccountMessage'
+import CloseAccountMessage from '@/components/account/CloseAccountMessage'
 //余额通
 import TodayDetail from '@/components/balance/TodayDetail'
 import TodayAll from '@/components/balance/TodayAll'
@@ -101,7 +101,7 @@ const router = new Router({
                         {path: '/account/account-unfreeze', name: 'AccountUnfreeze', component: AccountUnfreeze, meta: {requireAuth: true}},
                         {path: '/account/account-freeze', name: 'AccountFreeze', component: AccountFreeze, meta: {requireAuth: true}},
                         {path: '/account/close-account-matter', name: 'CloseAccountMatter', component: CloseAccountMatter, meta: {requireAuth: true}},
-                        {path: '/account/close-account-message', name: 'closeAccountMessage', component: closeAccountMessage, meta: {requireAuth: true}},
+                        {path: '/account/close-account-message', name: 'CloseAccountMessage', component: CloseAccountMessage, meta: {requireAuth: true}},
                     ]
                 },
                 //调拨通
