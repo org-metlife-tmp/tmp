@@ -25,6 +25,11 @@
             margin-bottom: 20px;
         }
 
+        /*数据展示区*/
+        .table-content {
+            height: 289px;
+        }
+
         /*分页部分*/
         .botton-pag {
             position: absolute;
@@ -121,6 +126,7 @@
         <section :class="['table-content']">
             <el-table :data="tableList"
                       border
+                      height="100%"
                       size="mini">
                 <el-table-column prop="apply_on" label="申请日期" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="memo" label="事由摘要" :show-overflow-tooltip="true"></el-table-column>
@@ -587,8 +593,8 @@
                         if(this.pagCurrent < (this.pagTotal/this.pagSize)){ //存在下一页
                             this.$emit('getTableData', this.routerMessage);
                         }else{
-                            if(rows.length == "1"){ //是当前页最后一条
-                                this.routerMessage.params.page_num--;
+                            if(rows.length == "1" && this.routerMessage.todo.params.page_num!=1){ //是当前页最后一条
+                                this.routerMessage.todo.params.page_num--;
                                 this.$emit('getTableData', this.routerMessage);
                             }else{
                                 rows.splice(index, 1);

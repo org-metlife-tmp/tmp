@@ -27,6 +27,11 @@
             bottom: -6px;
         }
 
+        /*数据展示区*/
+        .table-content {
+            height: 289px;
+        }
+
         /*详情弹出框区域分割样式*/
         .form-small-title {
             // font-weight: bold;
@@ -165,6 +170,7 @@
         <section :class="['table-content']">
             <el-table :data="tableList"
                       border
+                      height="100%"
                       size="mini">
                 <el-table-column prop="apply_on" label="申请日期" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="aci_memo" label="事由摘要" :show-overflow-tooltip="true"></el-table-column>
@@ -189,7 +195,6 @@
                                     :enterable="false" :open-delay="500" v-show="!isPending">
                             <el-button type="primary" icon="el-icon-search" size="mini"
                                        @click="editMessage(scope.row,'look')"></el-button>
-                        </el-tooltip>
                         </el-tooltip>
                     </template>
                 </el-table-column>
@@ -223,6 +228,12 @@
                         <span>申请日期:</span>
                         <span>{{dialogData.apply_on}}</span>
                     </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="编号">
+                            <span>{{dialogData.service_serial_number}}</span>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12" style="height:51px"></el-col>
                     <el-col :span="24">
                         <el-form-item label="事由摘要">
                             <span>{{dialogData.aci_memo}}</span>
@@ -319,8 +330,8 @@
                 </el-row>
             </el-form>
             <span slot="footer" class="dialog-footer">
-                <el-button type="warning" size="mini" @click="saveAppliation" :disabled="lookDisabled">保 存</el-button>
-                <el-button type="warning" size="mini" @click="saveAppliation" :disabled="lookDisabled">提 交</el-button>
+                <el-button type="warning" size="mini" @click="dialogVisible = false" :disabled="lookDisabled">取 消</el-button>
+                <el-button type="warning" size="mini" @click="saveAppliation" :disabled="lookDisabled">确定</el-button>
             </span>
         </el-dialog>
     </div>
@@ -555,8 +566,8 @@
                         if(this.pagCurrent < (this.pagTotal/this.pagSize)){ //存在下一页
                             this.$emit('getTableData', this.routerMessage);
                         }else{
-                            if(rows.length == "1"){ //是当前页最后一条
-                                this.routerMessage.params.page_num--;
+                            if(rows.length == "1" && this.routerMessage.todo.params.page_num!=1){ //是当前页最后一条
+                                this.routerMessage.todo.params.page_num--;
                                 this.$emit('getTableData', this.routerMessage);
                             }else{
                                 rows.splice(index, 1);
