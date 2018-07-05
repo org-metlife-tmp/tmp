@@ -312,6 +312,37 @@
                     console.log(error);
                 })
             }
+            //所属机构下拉数据
+            if (!window.sessionStorage.getItem("selectOrgList")) {
+                this.$axios({
+                    url: "/cfm/commProcess",
+                    method: "post",
+                    data: {
+                        optype: "org_list",
+                        params: {
+                            page_size: 2000,
+                            page_num: 1
+                        }
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        return;
+                    } else {
+                        var data = result.data.data;
+                        var orgList = [];
+                        data.forEach(function (item) {
+                            var itemNeed = {};
+                            for (var k in item) {
+                                itemNeed[k] = item[k];
+                            }
+                            orgList.push(itemNeed);
+                        });
+                        window.sessionStorage.setItem("selectOrgList", JSON.stringify(orgList));
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                })
+            }
         },
         data: function () {
             return {}

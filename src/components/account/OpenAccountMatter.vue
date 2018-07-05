@@ -51,7 +51,7 @@
         }
 
         /*已处理查看分发人样式*/
-        .dist-border{
+        .dist-border {
             border: 1px solid #ccc;
             border-radius: 22%;
             margin-right: 10px;
@@ -168,11 +168,13 @@
                                        @click="lookMatter(scope.row)"></el-button>
                         </el-tooltip>
                         <el-tooltip content="分发" placement="bottom" effect="light"
-                                    :enterable="false" :open-delay="500" v-show="!isPending && !(scope.row.service_status =='11')">
+                                    :enterable="false" :open-delay="500"
+                                    v-show="!isPending && !(scope.row.service_status =='11')">
                             <el-button size="mini" @click="distMatter(scope.row)" class="distribute"></el-button>
                         </el-tooltip>
                         <el-tooltip content="办结" placement="bottom" effect="light"
-                                    :enterable="false" :open-delay="500" v-show="!isPending && !(scope.row.service_status =='11')">
+                                    :enterable="false" :open-delay="500"
+                                    v-show="!isPending && !(scope.row.service_status =='11')">
                             <el-button type="success" icon="el-icon-check" size="mini"
                                        @click="concludeMatter(scope.row)"></el-button>
                         </el-tooltip>
@@ -400,19 +402,19 @@
 
             //查询分发人
             this.$axios({
-                url:"/cfm/commProcess",
-                method:"post",
-                data:{
-                    optype:"user_list"
+                url: "/cfm/commProcess",
+                method: "post",
+                data: {
+                    optype: "user_list"
                 }
-            }).then((result) =>{
+            }).then((result) => {
                 if (result.data.error_msg) {
                     this.$message({
                         type: "error",
                         message: result.data.error_msg,
                         duration: 2000
                     })
-                }else{
+                } else {
                     var data = result.data.data;
                     this.distList = data;
                 }
@@ -453,7 +455,7 @@
                 lookDialogData: {},
                 distDialog: false, //已处理分发弹出框
                 distDialogData: {
-                    user_ids:[]
+                    user_ids: []
                 },
                 distList: [], //分发人数据
                 currentDoneMatter: {},
@@ -486,7 +488,7 @@
                 this.$emit("getTableData", this.routerMessage);
             },
             //获取当前用户部门和公司
-            getDeptOrg:function(){
+            getDeptOrg: function () {
                 var userUodp = this.$store.state.user.uodp;
                 for (var i = 0; i < userUodp.length; i++) {
                     var item = userUodp[i];
@@ -511,18 +513,18 @@
                 this.getDeptOrg();
             },
             //编辑当前事项申请
-            editMerch:function (row) {
+            editMerch: function (row) {
                 this.dialogTitle = "编辑";
                 this.dialogVisible = true;
                 //清空数据和校验信息
-                for(var k in this.dialogData){
+                for (var k in this.dialogData) {
                     this.dialogData[k] = "";
                 }
                 this.currentMatter = row; //保存当前数据
                 //设置当前用户的部门和公司
                 this.getDeptOrg();
                 //设置弹框数据
-                for(var k in row){
+                for (var k in row) {
                     this.dialogData[k] = row[k];
                 }
             },
@@ -577,7 +579,7 @@
 
             },
             //删除当前事项申请
-            removeMatter:function (row, index, rows) {
+            removeMatter: function (row, index, rows) {
                 this.$confirm('确认删除当前事项申请吗?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
@@ -603,13 +605,13 @@
                             return;
                         }
 
-                        if(this.pagCurrent < (this.pagTotal/this.pagSize)){ //存在下一页
+                        if (this.pagCurrent < (this.pagTotal / this.pagSize)) { //存在下一页
                             this.$emit('getTableData', this.routerMessage);
-                        }else{
-                            if(rows.length == "1"){ //是当前页最后一条
-                                this.routerMessage.params.page_num--;
+                        } else {
+                            if (rows.length == "1" && (this.routerMessage.todo.params.page_num != 1)) { //是当前页最后一条
+                                this.routerMessage.todo.params.page_num--;
                                 this.$emit('getTableData', this.routerMessage);
-                            }else{
+                            } else {
                                 rows.splice(index, 1);
                                 this.pagTotal--;
                             }
@@ -628,15 +630,15 @@
             },
             //点击页数 获取当前页数据
             getCurrentPage: function (currPage) {
-                if(this.isPending){
+                if (this.isPending) {
                     this.routerMessage.todo.params.page_num = currPage;
-                }else{
+                } else {
                     this.routerMessage.done.params.page_num = currPage;
                 }
                 this.$emit("getTableData", this.routerMessage);
             },
             //当前页数据条数发生变化
-            sizeChange:function(val){
+            sizeChange: function (val) {
                 this.routerMessage.todo.params = {
                     page_size: val,
                     page_num: 1
@@ -648,50 +650,50 @@
                 this.$emit("getTableData", this.routerMessage);
             },
             //已处理事项查看
-            lookMatter:function(row){
+            lookMatter: function (row) {
                 this.lookDialog = true;
-                for(var k in this.lookDialogData){
+                for (var k in this.lookDialogData) {
                     this.lookDialogData[k] = "";
                 }
-                for(var key in row){
+                for (var key in row) {
                     this.lookDialogData[key] = row[key];
                 }
-                if(row.issue){
+                if (row.issue) {
                     this.issueList = row.issue.split(",");
-                }else{
+                } else {
                     this.issueList = [];
                 }
             },
             //已处理事项分发
-            distMatter:function(row){
+            distMatter: function (row) {
                 this.currentDoneMatter = row;
                 this.distDialog = true;
                 this.distDialogData.user_ids = [];
-                for(var key in row){
+                for (var key in row) {
                     this.distDialogData[key] = row[key];
                 }
             },
             //已处理事项分发确定
-            subDist:function(){
+            subDist: function () {
                 var distData = this.distDialogData;
                 this.$axios({
-                    url:"/cfm/normalProcess",
-                    method:"post",
-                    data:{
-                        optype:"openintent_issue",
-                        params:{
+                    url: "/cfm/normalProcess",
+                    method: "post",
+                    data: {
+                        optype: "openintent_issue",
+                        params: {
                             bill_id: distData.id,
                             iss_users: distData.user_ids
                         }
                     }
-                }).then((result) =>{
+                }).then((result) => {
                     if (result.data.error_msg) {
                         this.$message({
                             type: "error",
                             message: result.data.error_msg,
                             duration: 2000
                         })
-                    }else{
+                    } else {
                         var data = result.data.data;
                         this.distDialog = false;
                         this.currentDoneMatter.issue = data.issue;
@@ -704,35 +706,35 @@
                 })
             },
             //已处理事项办结
-            concludeMatter:function(row){
+            concludeMatter: function (row) {
                 this.concludeDialog = true;
                 this.currentConclude = row;
-                for(var k in row){
+                for (var k in row) {
                     this.concludeDialogData[k] = row[k];
                 }
             },
             //已处理事项办结确定
-            subConclude:function(){
+            subConclude: function () {
                 var concludeData = this.concludeDialogData;
                 this.$axios({
-                    url:"/cfm/normalProcess",
-                    method:"post",
-                    data:{
-                        optype:"openintent_finish",
-                        params:{
+                    url: "/cfm/normalProcess",
+                    method: "post",
+                    data: {
+                        optype: "openintent_finish",
+                        params: {
                             id: concludeData.id,
                             persist_version: concludeData.persist_version,
                             finally_memo: concludeData.finally_memo
                         }
                     }
-                }).then((result) =>{
+                }).then((result) => {
                     if (result.data.error_msg) {
                         this.$message({
                             type: "error",
                             message: result.data.error_msg,
                             duration: 2000
                         })
-                    }else{
+                    } else {
                         var data = result.data.data;
                         this.concludeDialog = false;
                         this.currentConclude.finally_memo = data.finally_memo;
@@ -757,10 +759,10 @@
         },
         watch: {
             isPending: function (val, oldVal) {
-                for(var k in this.searchData){
-                    if(k == "service_status"){
+                for (var k in this.searchData) {
+                    if (k == "service_status") {
                         this.searchData[k] = [];
-                    }else{
+                    } else {
                         this.searchData[k] = "";
                     }
                 }

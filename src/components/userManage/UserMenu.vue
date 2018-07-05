@@ -129,6 +129,7 @@
                 </el-table-column>
                 <!--用户组信息-->
                 <el-table-column prop="is_builtin" label="是否内置" :show-overflow-tooltip="true"
+                                 :formatter="transitDefault"
                                  v-if="!btActive"></el-table-column>
                 <el-table-column prop="memo" label="用户组描述" :show-overflow-tooltip="true"
                                  v-if="!btActive"></el-table-column>
@@ -479,11 +480,8 @@
             },
             //展示格式转换-是否默认
             transitDefault: function (row, column, cellValue, index) {
-                if (cellValue) {
-                    return "是";
-                } else {
-                    return "否";
-                }
+                var yesOrNo = JSON.parse(window.sessionStorage.getItem("constants")).YesOrNo;
+                return yesOrNo[cellValue];
             },
             //提交当前修改
             subCurrent: function () {
