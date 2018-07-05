@@ -446,6 +446,7 @@
                 this.dialogData.apply_on = row.apply_on;
                 this.dialogData.aci_memo = row.aci_memo;
                 this.dialogData.relation_id = row.relation_id;
+                this.dialogData.service_serial_number = row.service_serial_number;
                 
                 if(row.service_status != "12" && row.id){//修改
                     this.dialogTitle = type == 'look' ? '销户信息补录查看': '销户信息补录修改'

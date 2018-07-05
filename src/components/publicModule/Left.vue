@@ -24,12 +24,14 @@
                 height: 20px;
                 line-height: 20px;
                 margin-top: 4px;
-                margin-left: -6px;
+                // margin-left: -6px;
+                width: 100%;
+                text-align: center;
                 font: 14px "Microsoft YaHei";
             }
 
             .el-submenu__title .mg-four {
-                margin-left: -14px;
+                // margin-left: -14px;
             }
 
             .el-submenu__title:hover {
@@ -77,7 +79,9 @@
             .icon-zht {
                 background-position: -249px -193px;
             }
-
+            .icon-splgl{
+                background-position: -322px -222px;
+            }
             .icon-zjys {
                 background-position: -32px 0px;
             }
@@ -128,6 +132,9 @@
             }
             .icon-zht {
                 background-position: -213px -193px;
+            }
+            .icon-splgl{
+                background-position: -287px -222px;
             }
             .icon-zjys {
                 background-position: 0px 0px;
@@ -184,6 +191,10 @@
                 background-position: -249px -193px;
             }
 
+            .el-submenu__title:hover .icon-splgl {
+                background-position: -322px -222px;
+            }
+
             .el-submenu__title:hover .icon-zjys {
                 background-position: -32px 0px;
             }
@@ -217,7 +228,10 @@
 
         .el-submenu__title {
             height: 70px;
+            padding-left: 0px!important;
+            padding-right: 0px;
             padding-top: 12px;
+            
         }
     }
 
@@ -300,6 +314,17 @@
                     <el-menu-item index="/account/account-freeze" v-if="menuList.AccDefreezeAppl">账户冻结申请</el-menu-item>
                     <el-menu-item index="/account/close-account-matter" v-if="menuList.AccCloseIntAppl">销户事项申请</el-menu-item>
                     <el-menu-item index="/account/close-account-message" v-if="menuList.AccCloseComAppl">销户信息补录申请</el-menu-item>
+                </el-menu-item-group>
+            </el-submenu>
+            <el-submenu index="5">
+                <template slot="title" height="200px">
+                    <i class="icon-splgl"></i>
+                    <p>审批流管理</p>
+                </template>
+                <el-menu-item-group>
+                    <el-menu-item index="/workflow/workflow-definition">审批流程定义</el-menu-item>
+                    <el-menu-item index="/workflow/workflow-trace">业务跟踪管理</el-menu-item>
+                    <el-menu-item index="/workflow/workflow-configure">业务配置审批流程</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
 

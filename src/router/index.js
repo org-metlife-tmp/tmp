@@ -43,6 +43,11 @@ import HistoryFluctuate from '@/components/balance/HistoryFluctuate'
 //调拨通
 import MakeBill from '@/components/allot/MakeBill'
 import BankAccount from '@/components/allot/BankAccount'
+//审批流管理
+import WorkflowDefinition from '@/components/workflow/WorkflowDefinition'
+import WorkflowTrace from '@/components/workflow/WorkflowTrace'
+import WorkflowConfigure from '@/components/workflow/WorkflowConfigure'
+
 
 Vue.use(Router)
 
@@ -88,6 +93,10 @@ const router = new Router({
                         {path: '/realtime-trade/move-withhold', name: 'MoveWithhold', component: MoveWithhold, meta: {requireAuth: true}},
                         //账户管理
                         {path: '/account/account-message', name: 'AccountMessage', component: AccountMessage, meta: {requireAuth: true}},
+                        //审批流管理
+                        {path: '/workflow/workflow-definition', name: 'WorkflowDefinition', component: WorkflowDefinition, meta: {requireAuth: true}},
+                        {path: '/workflow/workflow-trace', name: 'WorkflowTrace', component: WorkflowTrace, meta: {requireAuth: true}},
+                        {path: '/workflow/workflow-configure', name: 'WorkflowConfigure', component: WorkflowConfigure, meta: {requireAuth: true}}
                     ]
                 },
                 //基础样式三（tab页）
