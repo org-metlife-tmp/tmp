@@ -46,6 +46,16 @@
         }
     }
 </style>
+<style lang="less" type="text/less">
+    #accountMessage {
+        .el-dialog__wrapper {
+            .el-dialog__body {
+                height: 400px;
+                overflow-y: auto;
+            }
+        }
+    }
+</style>
 
 <template>
     <div id="accountMessage">
@@ -248,6 +258,18 @@
                     </el-col>
 
                     <el-col :span="24" class="form-small-title"><span></span>账户变更</el-col>
+                    <template v-for="item in this.dialogData.change">
+                        <el-col :span="12">
+                            <el-form-item :label="getName(item.type)">
+                                <el-input v-model="item.old_value" :readonly="true"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="变更为">
+                                <el-input v-model="item.new_value" :readonly="true"></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </template>
 
                     <el-col :span="24" class="form-small-title"><span></span>销户申请</el-col>
                     <el-col :span="12">
@@ -434,6 +456,7 @@
                         memeo: "",
                         detail: ""
                     },
+                    change: []
                 },
                 formLabelWidth: "120px",
                 editDialogVisible: false,
@@ -511,7 +534,6 @@
             },
             //编辑确定
             subEdit:function(){
-                console.log(this.editDialogData);
                 var editDialogData = this.editDialogData;
                 this.$axios({
                     url:"/cfm/normalProcess",
@@ -600,6 +622,11 @@
                 }).catch(function (error) {
                     console.log(error);
                 })
+            },
+            //将type装换为name
+            getName:function(type){
+                var accountChangeField = JSON.parse(window.sessionStorage.getItem("constants")).AccountChangeField
+                return accountChangeField[type];
             }
         },
         computed:{

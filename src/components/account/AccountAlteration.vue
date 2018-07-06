@@ -104,37 +104,37 @@
                     <el-col :span="7" v-if="!isPending">
                         <el-form-item>
                             <el-col :span="11">
-                                <el-date-picker type="date" placeholder="起始日期" v-model="searchData.date1"
+                                <el-date-picker type="date" placeholder="起始日期" v-model="searchData.start_date"
                                                 style="width: 100%;"></el-date-picker>
                             </el-col>
                             <el-col class="line" :span="1" style="text-align:center">-</el-col>
                             <el-col :span="11">
-                                <el-date-picker type="date" placeholder="结束日期" v-model="searchData.date2"
+                                <el-date-picker type="date" placeholder="结束日期" v-model="searchData.end_date"
                                                 style="width: 100%;"></el-date-picker>
                             </el-col>
                         </el-form-item>
                     </el-col>
                     <el-col :span="4">
                         <el-form-item>
-                            <el-input v-model="searchData.name" placeholder="请输入事由摘要关键字"></el-input>
+                            <el-input v-model="searchData.query_key" placeholder="请输入事由摘要关键字" clearable></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="2">
                         <el-form-item>
                             <!--<el-button type="primary" plain @click="" size="mini">清空</el-button>-->
-                            <el-button type="primary" plain @click="" size="mini">搜索</el-button>
+                            <el-button type="primary" plain @click="queryData" size="mini">搜索</el-button>
                         </el-form-item>
                     </el-col>
                     <el-col :span="24">
                         <el-form-item style="margin-bottom:0px">
-                            <el-checkbox-group v-model="searchData.type" v-if="isPending">
-                                <el-checkbox label="已保存" name="type"></el-checkbox>
-                                <el-checkbox label="审批拒绝" name="type"></el-checkbox>
+                            <el-checkbox-group v-model="searchData.service_status" v-if="isPending">
+                                <el-checkbox label="1" name="type">已保存</el-checkbox>
+                                <el-checkbox label="5" name="type">审批拒绝</el-checkbox>
                             </el-checkbox-group>
-                            <el-checkbox-group v-model="searchData.type" v-else>
-                                <el-checkbox label="已提交" name="type"></el-checkbox>
-                                <el-checkbox label="审批中" name="type"></el-checkbox>
-                                <el-checkbox label="审批通过" name="type"></el-checkbox>
+                            <el-checkbox-group v-model="searchData.service_status" v-else>
+                                <el-checkbox label="2" name="type">已提交</el-checkbox>
+                                <el-checkbox label="3" name="type">审批中</el-checkbox>
+                                <el-checkbox label="4" name="type">审批通过</el-checkbox>
                             </el-checkbox-group>
                         </el-form-item>
                     </el-col>
@@ -167,12 +167,12 @@
                         <el-tooltip content="删除" placement="bottom" effect="light"
                                     :enterable="false" :open-delay="500" v-show="isPending">
                             <el-button type="danger" icon="el-icon-delete" size="mini"
-                                       @click="removeMatter(scope.row,scope.$index,tableList)"></el-button>
+                                       @click="removeAlterat(scope.row,scope.$index,tableList)"></el-button>
                         </el-tooltip>
                         <el-tooltip content="查看" placement="bottom" effect="light"
                                     :enterable="false" :open-delay="500" v-show="!isPending">
                             <el-button type="primary" icon="el-icon-search" size="mini"
-                                       @click="lookMatter(scope.row)"></el-button>
+                                       @click="lookAlterat(scope.row)"></el-button>
                         </el-tooltip>
                     </template>
                 </el-table-column>
@@ -192,7 +192,7 @@
                     @size-change="sizeChange">
             </el-pagination>
         </div>
-        <!--待处理新增弹出框-->
+        <!--待处理新增&修改弹出框-->
         <el-dialog :visible.sync="dialogVisible"
                    width="860px" title="新增"
                    :close-on-click-modal="false"
@@ -379,6 +379,150 @@
                 <el-button type="warning" size="mini" @click="subCurrent">确 定</el-button>
             </span>
         </el-dialog>
+        <!--已处理查看弹出框-->
+        <el-dialog :visible.sync="lookDialogVisible"
+                   width="860px" title="新增"
+                   :close-on-click-modal="false"
+                   top="56px">
+            <h1 slot="title" class="dialog-title">详情</h1>
+            <el-form :model="lookDialogData" size="small"
+                     :label-width="formLabelWidth">
+                <el-row>
+                    <el-col :span="24" class="form-small-title"><span></span>申请日期</el-col>
+                    <el-col :span="12">
+                        <el-form-item label="账户号">
+                            <el-input v-model="lookDialogData.acc_no" :disabled="true"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="开户时间">
+                            <el-input v-model="lookDialogData.open_date" :disabled="true"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="24" class="form-two-title">
+                        <span><i></i>变更前信息</span>
+                        <span><i></i>变更后信息</span>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="账户名称">
+                            <el-input v-model="lookDialogData.acc_name" :disabled="true"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="账户名称">
+                            <el-input v-model="lookDialogData.$1" :disabled="true"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="所属机构">
+                            <el-input v-model="lookDialogData.org_name" :disabled="true"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="所属机构">
+                            <el-select v-model="lookDialogData.$2" placeholder="请选择所属机构"
+                                       filterable :disabled="true">
+                                <el-option v-for="org in orgList"
+                                           :key="org.org_id"
+                                           :label="org.name"
+                                           :value="org.org_id">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="开户行">
+                            <el-input v-model="lookDialogData.bank_name" :disabled="true"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="开户行">
+                            <el-select v-model="lookDialogData.$3" placeholder="请选择银行"
+                                       clearable filterable
+                                       @visible-change="getBankList"
+                                       :disabled="true">
+                                <el-option v-for="bankType in bankList"
+                                           :key="bankType.cnaps_code"
+                                           :label="bankType.name"
+                                           :value="bankType.cnaps_code">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="账户法人">
+                            <el-input v-model="lookDialogData.lawfull_man" :disabled="true"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="账户法人">
+                            <el-input v-model="lookDialogData.$4" :disabled="true"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="币种">
+                            <el-input v-model="lookDialogData.curr_name" :disabled="true"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="币种">
+                            <el-select v-model="lookDialogData.$5" placeholder="请选择币种"
+                                       filterable :disabled="true">
+                                <el-option v-for="currency in currencyList"
+                                           :key="currency.id"
+                                           :label="currency.name"
+                                           :value="currency.id">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="账户属性">
+                            <el-input v-model="lookDialogData.acc_attr_name" :disabled="true"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="账户属性">
+                            <el-select v-model="lookDialogData.$6" placeholder="请选择账户属性"
+                                       :disabled="true">
+                                <el-option v-for="(name,k) in attrList"
+                                           :key="k"
+                                           :label="name"
+                                           :value="k">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="账户模式">
+                            <el-input v-model="getLookInteract" :disabled="true"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="账户模式">
+                            <el-select v-model="lookDialogData.$7" placeholder="请选择账户模式"
+                                       :disabled="true">
+                                <el-option v-for="(name,k) in interList"
+                                           :key="k"
+                                           :label="name"
+                                           :value="k">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="24" class="form-small-title"><span></span>备注与附件</el-col>
+                    <el-col :span="24">
+                        <el-form-item label="备注">
+                            <el-input v-model="lookDialogData.memo"
+                                      type="textarea" :rows="3" :disabled="true"></el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button type="warning" size="mini" @click="lookDialogVisible = false">确 定</el-button>
+            </span>
+        </el-dialog>
     </div>
 </template>
 
@@ -440,7 +584,7 @@
                     }
                 },
                 searchData: { //搜索区数据
-                    type: []
+                    service_status: []
                 },
                 tableList: [], //列表数据
                 pagSize: 8, //分页数据
@@ -469,6 +613,27 @@
                 },
                 formLabelWidth: "120px",
                 dialogTitle: "新增",
+                lookDialogVisible: false,
+                lookDialogData: {
+                    acc_no: "",
+                    open_date: "",
+                    acc_name: "",
+                    org_name: "",
+                    bank_name: "",
+                    lawfull_man: "",
+                    curr_name: "",
+                    acc_attr_name: "",
+                    interactive_mode: "",
+                    $1: "",
+                    $2: "",
+                    $3: "",
+                    $4: "",
+                    $5: "",
+                    $6: "",
+                    $7: "",
+                    bankTypeName: "",
+                    area: ""
+                },
                 currentAltera: {}, //当前数据
                 /*下拉框数据*/
                 accList: [], //账户号
@@ -482,6 +647,7 @@
                 loading: false, //地区加载状态
                 bankList: [], //银行
                 bankSelect: true, //银行可选控制
+
             }
         },
         methods: {
@@ -654,6 +820,129 @@
                     console.log(error);
                 })
             },
+            //删除当前变更
+            removeAlterat: function (row, index, rows) {
+                this.$confirm('确认删除当前变更申请吗?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.$axios({
+                        url: "/cfm/normalProcess",
+                        method: "post",
+                        data: {
+                            optype: "openchg_del",
+                            params: {
+                                id: row.id,
+                                persist_version: row.persist_version
+                            }
+                        }
+                    }).then((result) => {
+                        if (result.data.error_msg) {
+                            this.$message({
+                                type: "error",
+                                message: result.data.error_msg,
+                                duration: 2000
+                            })
+                            return;
+                        }
+
+                        if (this.pagCurrent < (this.pagTotal / this.pagSize)) { //存在下一页
+                            this.$emit('getTableData', this.routerMessage);
+                        } else {
+                            if (rows.length == "1" && (this.routerMessage.todo.params.page_num != 1)) { //是当前页最后一条
+                                this.routerMessage.todo.params.page_num--;
+                                this.$emit('getTableData', this.routerMessage);
+                            } else {
+                                rows.splice(index, 1);
+                                this.pagTotal--;
+                            }
+                        }
+
+                        this.$message({
+                            type: "success",
+                            message: "删除成功",
+                            duration: 2000
+                        })
+                    }).catch(function (error) {
+                        console.log(error);
+                    })
+                }).catch(() => {
+                });
+            },
+            //查看
+            lookAlterat: function(row){
+                this.lookDialogVisible = true;
+                var dialogData = this.lookDialogData;
+                for(var k in dialogData){
+                    dialogData[k] = "";
+                }
+
+                this.$axios({
+                    url: "/cfm/normalProcess",
+                    method: "post",
+                    data: {
+                        optype: "openchg_detail",
+                        params: {
+                            id: row.id
+                        }
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                    } else {
+                        var data = result.data.data;
+                        for (var key in data) {
+                            //转换变更后数据
+                            if(key == "change_content"){
+                                var item = data[key];
+                                for(var i = 0; i < item.length; i++){
+                                    var current = item[i];
+                                    //添加开户行下拉数据
+                                    if(current.type == "3"){
+                                        this.$set(this.bankList, 0, {
+                                            cnaps_code: current.new_id,
+                                            name: current.new_value
+                                        })
+                                    }
+                                    //存在id时为下拉框数据 赋值为id
+                                    if(current.new_id){
+                                        if(current.type == 2 || current.type == 5){ //后台此处id返回为字符串 下拉框为数字 转换格式
+                                            dialogData["$"+current.type] = current.new_id * 1;
+                                        }else{
+                                            dialogData["$"+current.type] = current.new_id;
+                                        }
+                                    }else{
+                                        dialogData["$"+current.type] = current.new_value;
+                                    }
+                                }
+                            }else{
+                                dialogData[key] = data[key];
+                            }
+                        }
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                })
+            },
+            //根据条件查询数据
+            queryData: function () {
+                var searchData = this.searchData;
+                for (var k in searchData) {
+                    if (this.isPending) {
+                        this.routerMessage.todo.params[k] = searchData[k];
+                        this.routerMessage.todo.params.page_num = 1;
+                    } else {
+                        this.routerMessage.done.params[k] = searchData[k];
+                        this.routerMessage.done.params.page_num = 1;
+                    }
+                }
+                this.$emit("getTableData", this.routerMessage);
+            },
             /*下拉框相关设置*/
             //设置账户号下拉数据
             setAccsList:function(row){
@@ -788,11 +1077,22 @@
             getInteract: function () {
                 var inactiveMode = JSON.parse(window.sessionStorage.getItem("constants")).InactiveMode;
                 return inactiveMode[this.dialogData.interactive_mode];
+            },
+            getLookInteract: function () {
+                var inactiveMode = JSON.parse(window.sessionStorage.getItem("constants")).InactiveMode;
+                return inactiveMode[this.lookDialogData.interactive_mode];
             }
         },
         watch: {
             isPending: function (val, oldVal) {
-                this.searchData.type = [];
+                var searchData = this.searchData;
+                for(var k in searchData){
+                    if(k == "service_status"){
+                        searchData[k] = [];
+                    }else{
+                        searchData[k] = "";
+                    }
+                }
             },
             tableData: function (val, oldVal) {
                 this.pagSize = val.page_size;
