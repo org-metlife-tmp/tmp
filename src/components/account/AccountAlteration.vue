@@ -372,6 +372,15 @@
                                       placeholder="请输入事由说明(100字以内)"></el-input>
                         </el-form-item>
                     </el-col>
+                    <el-col :span="24">
+                        <el-form-item label="附件">
+                            <Upload @currentFielList="setFileList"
+                                    :emptyFileList="emptyFileList"
+                                    :fileMessage="fileMessage"
+                                    :triggerFile="triggerFile"
+                                    :isPending="isPending"></Upload>
+                        </el-form-item>
+                    </el-col>
                 </el-row>
             </el-form>
             <span slot="footer" class="dialog-footer">
@@ -517,6 +526,15 @@
                                       type="textarea" :rows="3" :disabled="true"></el-input>
                         </el-form-item>
                     </el-col>
+                    <el-col :span="24">
+                        <el-form-item label="附件">
+                            <Upload @currentFielList="setFileList"
+                                    :emptyFileList="emptyFileList"
+                                    :fileMessage="fileMessage"
+                                    :triggerFile="triggerFile"
+                                    :isPending="isPending"></Upload>
+                        </el-form-item>
+                    </el-col>
                 </el-row>
             </el-form>
             <span slot="footer" class="dialog-footer">
@@ -527,6 +545,8 @@
 </template>
 
 <script>
+    import Upload from "../publicModule/Upload.vue";
+
     export default {
         name: "AccountAlteration",
         created: function () {
@@ -563,6 +583,9 @@
             if (constants.InactiveMode) {
                 this.interList = constants.InactiveMode;
             }
+        },
+        components: {
+            Upload: Upload
         },
         props: ["isPending", "tableData"],
         data: function () {
@@ -609,7 +632,8 @@
                     $6: "",
                     $7: "",
                     bankTypeName: "",
-                    area: ""
+                    area: "",
+                    files: []
                 },
                 formLabelWidth: "120px",
                 dialogTitle: "新增",
@@ -647,7 +671,12 @@
                 loading: false, //地区加载状态
                 bankList: [], //银行
                 bankSelect: true, //银行可选控制
-
+                emptyFileList: [], //附件
+                fileMessage: {
+                    bill_id: "",
+                    biz_type: 3
+                },
+                triggerFile: false
             }
         },
         methods: {
@@ -685,22 +714,35 @@
                 this.dialogVisible = true;
                 var dialogData = this.dialogData;
                 for (var k in dialogData) {
-                    dialogData[k] = "";
+                    if(k == "files"){
+                        dialogData[k] = [];
+                    }else{
+                        dialogData[k] = "";
+                    }
                 }
+                this.fileMessage.bill_id = "";
+                this.emptyFileList = [];
                 this.setAccsList({acc_id:""});
             },
             //编辑
             editAlteration: function (row) {
                 this.dialogTitle = "编辑";
-                this.currentAltera = row;
                 this.dialogVisible = true;
                 var dialogData = this.dialogData;
                 for (var k in dialogData) {
-                    dialogData[k] = "";
+                    if(k == "files"){
+                        dialogData[k] = [];
+                    }else{
+                        dialogData[k] = "";
+                    }
                 }
 
+                this.currentAltera = row;
                 this.setAccsList(row);
-
+                //获取附件列表
+                this.fileMessage.bill_id = row.id;
+                this.triggerFile = !this.triggerFile;
+                //获取当前项详细数据
                 this.$axios({
                     url: "/cfm/normalProcess",
                     method: "post",
@@ -771,6 +813,7 @@
                 var params = {
                     acc_id: dialogData.acc_id,
                     memo: dialogData.memo,
+                    files: dialogData.files,
                     change_content: paramsData
                 };
                 if (this.dialogTitle == "新增") {
@@ -878,6 +921,12 @@
                     dialogData[k] = "";
                 }
 
+                //附件数据
+                this.emptyFileList = [];
+                this.fileMessage.bill_id = row.id;
+                this.triggerFile = !this.triggerFile;
+
+                //当前项详细数据
                 this.$axios({
                     url: "/cfm/normalProcess",
                     method: "post",
@@ -1071,7 +1120,20 @@
                         }
                     }
                 }
-            }
+            },
+            //设置当前项上传附件
+            setFileList: function ($event) {
+                if (this.isPending) {
+                    this.dialogData.files = [];
+                    if ($event.length > 0) {
+                        $event.forEach((item) => {
+                            this.dialogData.files.push(item.id);
+                        })
+                    }
+                } else {
+
+                }
+            },
         },
         computed: {
             getInteract: function () {

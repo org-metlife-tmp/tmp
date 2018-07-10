@@ -71,7 +71,11 @@
                 float: left;
             }
         }
+
     }
+</style>
+<style lang="less" type="text/less">
+
 </style>
 
 <template>
@@ -196,7 +200,7 @@
                     @size-change="sizeChange">
             </el-pagination>
         </div>
-        <!--待处理新增弹出框-->
+        <!--待处理新增&修改弹出框-->
         <el-dialog :visible.sync="dialogVisible"
                    width="810px" title="新增"
                    :close-on-click-modal="false"
@@ -231,6 +235,15 @@
                             <el-input v-model="dialogData.detail"
                                       type="textarea" :rows="3"
                                       placeholder="请输入事由说明(100字以内)"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="24">
+                        <el-form-item label="附件">
+                            <Upload @currentFielList="setFileList"
+                                    :emptyFileList="emptyFileList"
+                                    :isPending="isPending"
+                                    :fileMessage="fileMessage"
+                                    :triggerFile="triggerFile"></Upload>
                         </el-form-item>
                     </el-col>
                 </el-row>
@@ -303,6 +316,15 @@
                                       placeholder="请输入事由说明(100字以内)"></el-input>
                         </el-form-item>
                     </el-col>
+                    <el-col :span="24">
+                        <el-form-item label="附件">
+                            <Upload @currentFielList="setFileList"
+                                    :emptyFileList="emptyFileList"
+                                    :fileMessage="fileMessage"
+                                    :triggerFile="triggerFile"
+                                    :isPending="isPending"></Upload>
+                        </el-form-item>
+                    </el-col>
                 </el-row>
             </el-form>
         </el-dialog>
@@ -349,7 +371,7 @@
                 <el-button type="warning" size="mini" @click="subDist">确 定</el-button>
             </span>
         </el-dialog>
-        <!--已处理分发弹框-->
+        <!--已处理办结弹框-->
         <el-dialog :visible.sync="concludeDialog"
                    width="600px" title="新增"
                    :close-on-click-modal="false"
@@ -394,6 +416,8 @@
 </template>
 
 <script>
+    import Upload from "../publicModule/Upload.vue";
+
     export default {
         name: "OpenAccountMatter",
         created: function () {
@@ -421,6 +445,9 @@
             })
         },
         props: ["isPending", "tableData"],
+        components: {
+            Upload: Upload
+        },
         data: function () {
             return {
                 routerMessage: {
@@ -448,7 +475,9 @@
                 pagCurrent: 1,
                 currentMatter: {},
                 dialogVisible: false, //待处理新增弹框数据
-                dialogData: {},
+                dialogData: {
+                    files: []
+                },
                 formLabelWidth: "120px",
                 dialogTitle: "新增",
                 lookDialog: false, //已处理查看弹出框
@@ -462,7 +491,13 @@
                 issueList: [],
                 concludeDialog: false, //已处理办结弹出框
                 concludeDialogData: {},
-                currentConclude: {}
+                currentConclude: {},
+                emptyFileList: [], //附件
+                fileMessage: {
+                    bill_id: "",
+                    biz_type: 1
+                },
+                triggerFile: false
             }
         },
         methods: {
@@ -507,26 +542,31 @@
                 this.dialogVisible = true;
                 //清空数据
                 for (var k in this.dialogData) {
-                    this.dialogData[k] = "";
+                    if (k == "files") {
+                        this.dialogData[k] = [];
+                    } else {
+                        this.dialogData[k] = "";
+                    }
                 }
+                this.fileMessage.bill_id = "";
+                this.emptyFileList = [];
                 //设置当前用户的部门和公司
                 this.getDeptOrg();
             },
             //编辑当前事项申请
             editMerch: function (row) {
-                this.dialogTitle = "编辑";
-                this.dialogVisible = true;
-                //清空数据和校验信息
-                for (var k in this.dialogData) {
-                    this.dialogData[k] = "";
-                }
-                this.currentMatter = row; //保存当前数据
-                //设置当前用户的部门和公司
-                this.getDeptOrg();
+                //清空数据
+                this.addAccountMatter();
+
                 //设置弹框数据
+                this.dialogTitle = "编辑";
+                this.currentMatter = row; //保存当前数据
                 for (var k in row) {
                     this.dialogData[k] = row[k];
                 }
+                //获取附件列表
+                this.fileMessage.bill_id = row.id;
+                this.triggerFile = !this.triggerFile;
             },
             //提交当前修改或新增
             subCurrent: function () {
@@ -663,6 +703,10 @@
                 } else {
                     this.issueList = [];
                 }
+                //附件数据
+                this.emptyFileList = [];
+                this.fileMessage.bill_id = row.id;
+                this.triggerFile = !this.triggerFile;
             },
             //已处理事项分发
             distMatter: function (row) {
@@ -746,7 +790,20 @@
                         })
                     }
                 })
-            }
+            },
+            //设置当前项上传附件
+            setFileList: function ($event) {
+                if (this.isPending) {
+                    this.dialogData.files = [];
+                    if ($event.length > 0) {
+                        $event.forEach((item) => {
+                            this.dialogData.files.push(item.id);
+                        })
+                    }
+                } else {
+
+                }
+            },
         },
         computed: {
             getCurrentSearch: function () {

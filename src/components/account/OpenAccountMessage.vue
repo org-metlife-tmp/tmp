@@ -348,6 +348,15 @@
                             <el-input type="textarea" v-model="dialogData.memo"></el-input>
                         </el-form-item>
                     </el-col>
+                    <el-col :span="24">
+                        <el-form-item label="附件">
+                            <Upload @currentFielList="setFileList"
+                                    :emptyFileList="emptyFileList"
+                                    :fileMessage="fileMessage"
+                                    :triggerFile="triggerFile"
+                                    :isPending="isPending"></Upload>
+                        </el-form-item>
+                    </el-col>
                 </el-row>
             </el-form>
             <span slot="footer" class="dialog-footer">
@@ -542,6 +551,15 @@
                             <el-input type="textarea" v-model="lookDialogData.memo" :readonly="true"></el-input>
                         </el-form-item>
                     </el-col>
+                    <el-col :span="24">
+                        <el-form-item label="附件">
+                            <Upload @currentFielList="setFileList"
+                                    :emptyFileList="emptyFileList"
+                                    :fileMessage="fileMessage"
+                                    :triggerFile="triggerFile"
+                                    :isPending="isPending"></Upload>
+                        </el-form-item>
+                    </el-col>
                 </el-row>
             </el-form>
             <span slot="footer" class="dialog-footer">
@@ -552,6 +570,8 @@
 </template>
 
 <script>
+    import Upload from "../publicModule/Upload.vue";
+
     export default {
         name: "OpenAccountMessage",
         created: function () {
@@ -627,6 +647,9 @@
             }
         },
         props: ["isPending", "tableData"],
+        components: {
+            Upload: Upload
+        },
         data: function () {
             return {
                 routerMessage: {
@@ -660,7 +683,8 @@
                     open_date: "",
                     acc_attr: "",
                     acc_purpose: "",
-                    interactive_mode: ""
+                    interactive_mode: "",
+                    files: []
                 },
                 formLabelWidth: "120px",
                 bankCorrelation: {},
@@ -677,7 +701,12 @@
                 currentTodo: {},
                 lookDialog: false,
                 lookDialogData: {},
-
+                emptyFileList: [], //附件
+                fileMessage: {
+                    bill_id: "",
+                    biz_type: 2
+                },
+                triggerFile: false
             }
         },
         methods: {
@@ -718,7 +747,11 @@
 
                 //清空弹框数据
                 for (var k in this.dialogData) {
-                    this.dialogData[k] = '';
+                    if(k == "files"){
+                        this.dialogData[k] = [];
+                    }else{
+                        this.dialogData[k] = '';
+                    }
                 }
                 for(var k in this.bankCorrelation){
                     this.bankCorrelation[k] = "";
@@ -731,6 +764,7 @@
                         this.dialogData[k] = row[k];
                     }
                 } else {
+                    //获取当前项详细信息
                     this.$axios({
                         url: "/cfm/normalProcess",
                         method: "post",
@@ -764,11 +798,14 @@
                                 }
                                 this.dialogData[key] = data[key];
                             }
-                            console.log(this.dialogData);
                         }
                     }).catch(function (error) {
                         console.log(error);
                     })
+                    //获取附件列表
+                    this.emptyFileList = [];
+                    this.fileMessage.bill_id = row.id;
+                    this.triggerFile = !this.triggerFile;
                 }
             },
             //银行大类搜索筛选
@@ -949,6 +986,7 @@
                 }
                 this.bankSelect = true;
 
+                //当前项详细信息
                 this.$axios({
                     url: "/cfm/normalProcess",
                     method: "post",
@@ -986,6 +1024,10 @@
                 }).catch(function (error) {
                     console.log(error);
                 })
+                //附件数据
+                this.emptyFileList = [];
+                this.fileMessage.bill_id = row.id;
+                this.triggerFile = !this.triggerFile;
             },
             //点击页数 获取当前页数据
             getCurrentPage: function (currPage) {
@@ -1007,6 +1049,17 @@
                     page_num: 1
                 };
                 this.$emit("getTableData", this.routerMessage);
+            },
+            //设置当前项上传附件
+            setFileList: function($event){
+                if(this.isPending){
+                    this.dialogData.files = [];
+                    $event.forEach((item) => {
+                        this.dialogData.files.push(item.id);
+                    })
+                }else{
+
+                }
             },
         },
         watch: {

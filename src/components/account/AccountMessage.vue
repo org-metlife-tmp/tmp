@@ -50,7 +50,7 @@
     #accountMessage {
         .el-dialog__wrapper {
             .el-dialog__body {
-                height: 400px;
+                max-height: 400px;
                 overflow-y: auto;
             }
         }
