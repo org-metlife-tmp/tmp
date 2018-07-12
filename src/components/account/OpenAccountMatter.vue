@@ -202,7 +202,7 @@
         </div>
         <!--待处理新增&修改弹出框-->
         <el-dialog :visible.sync="dialogVisible"
-                   width="810px" title="新增"
+                   width="860px" title="新增"
                    :close-on-click-modal="false"
                    top="56px">
             <h1 slot="title" v-text="dialogTitle" class="dialog-title"></h1>

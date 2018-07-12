@@ -47,6 +47,22 @@
                 vertical-align: middle;
             }
         }
+
+        //弹框附件联系按钮
+        .upload-icon{
+            display: inline-block;
+            padding: 6px 0 0 6px;
+            color: #ccc;
+            cursor: pointer;
+
+            i{
+                display: inline-block;
+                width: 24px;
+                height: 24px;
+                background: url(../../assets/icon_common.png) no-repeat -52px -477px;
+                vertical-align: middle;
+            }
+        }
     }
 </style>
 <style lang="less" type="text/less">
@@ -179,11 +195,16 @@
                         <span>申请日期:</span>
                         <span>{{dialogData.apply_on}}</span>
                     </el-col>
-                    <el-col :span="24">
+                    <el-col :span="22">
                         <el-form-item label="事由摘要">
                             <el-input v-model="dialogData.up_memo" :disabled="true"
                                       placeholder="请输入事由摘要(15字以内)"></el-input>
                         </el-form-item>
+                    </el-col>
+                    <el-col :span="2" style="height:52px">
+                        <span class="upload-icon" @click="showRelationFile = !showRelationFile">
+                            <i></i>{{ fileLength }}
+                        </span>
                     </el-col>
                     <el-col :span="24">
                         <el-form-item label="事由说明">
@@ -191,6 +212,15 @@
                                       :disabled="true"
                                       type="textarea" :rows="3"
                                       placeholder="请输入事由说明(100字以内)"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="24" v-show="showRelationFile">
+                        <el-form-item label="附件">
+                            <Upload @currentFielList="setFileList"
+                                    :fileMessage="relationFile"
+                                    :triggerFile="relationTrigger"
+                                    :emptyFileList="emptyFileList"
+                                    :isPending="false"></Upload>
                         </el-form-item>
                     </el-col>
                     <el-col :span="24" class="form-small-title">
@@ -378,11 +408,16 @@
                         <span>申请日期:</span>
                         <span>{{lookDialogData.apply_on}}</span>
                     </el-col>
-                    <el-col :span="24">
+                    <el-col :span="22">
                         <el-form-item label="事由摘要">
                             <el-input v-model="lookDialogData.up_memo" :readonly="true"
                                       placeholder="请输入事由摘要(15字以内)"></el-input>
                         </el-form-item>
+                    </el-col>
+                    <el-col :span="2" style="height:52px">
+                        <span class="upload-icon" @click="showRelationFile = !showRelationFile">
+                            <i></i>{{ fileLength }}
+                        </span>
                     </el-col>
                     <el-col :span="24">
                         <el-form-item label="事由说明">
@@ -390,6 +425,15 @@
                                       :readonly="true"
                                       type="textarea" :rows="3"
                                       placeholder="请输入事由说明(100字以内)"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="24" v-show="showRelationFile">
+                        <el-form-item label="附件">
+                            <Upload @currentFielList="setFileList"
+                                    :fileMessage="relationFile"
+                                    :triggerFile="relationTrigger"
+                                    :emptyFileList="emptyFileList"
+                                    :isPending="false"></Upload>
                         </el-form-item>
                     </el-col>
                     <el-col :span="24" class="form-small-title">
@@ -706,7 +750,14 @@
                     bill_id: "",
                     biz_type: 2
                 },
-                triggerFile: false
+                triggerFile: false,
+                relationFile:{
+                    bill_id: "",
+                    biz_type: 1
+                },
+                relationTrigger: false,
+                fileLength: 0,
+                showRelationFile: false
             }
         },
         methods: {
@@ -757,6 +808,13 @@
                     this.bankCorrelation[k] = "";
                 }
                 this.bankSelect = true;
+                this.emptyFileList = [];
+                this.fileLength = 0;
+                this.showRelationFile = false;
+
+                //获取其事项申请的附件
+                this.relationFile.bill_id = row.relation_id;
+                this.relationTrigger = !this.relationTrigger;
 
                 //设置显示数据
                 if (!row.id) {
@@ -803,7 +861,6 @@
                         console.log(error);
                     })
                     //获取附件列表
-                    this.emptyFileList = [];
                     this.fileMessage.bill_id = row.id;
                     this.triggerFile = !this.triggerFile;
                 }
@@ -984,6 +1041,8 @@
                 for (var k in this.lookDialogData) {
                     this.lookDialogData[k] = '';
                 }
+                this.fileLength = 0;
+                this.showRelationFile = false;
                 this.bankSelect = true;
 
                 //当前项详细信息
@@ -1026,6 +1085,9 @@
                 })
                 //附件数据
                 this.emptyFileList = [];
+                //获取其事项申请的附件
+                this.relationFile.bill_id = row.relation_id;
+                this.relationTrigger = !this.relationTrigger;
                 this.fileMessage.bill_id = row.id;
                 this.triggerFile = !this.triggerFile;
             },
@@ -1052,6 +1114,9 @@
             },
             //设置当前项上传附件
             setFileList: function($event){
+                if($event.length > 0 && $event[0].biz_type == 1){
+                    this.fileLength = $event.length;
+                }
                 if(this.isPending){
                     this.dialogData.files = [];
                     $event.forEach((item) => {
