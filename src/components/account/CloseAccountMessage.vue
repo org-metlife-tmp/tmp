@@ -344,18 +344,6 @@
             this.$emit("transmitTitle", "销户信息补录");
             this.$emit("getTableData", this.routerMessage);
 
-            this.$axios({
-                url:"/cfm/normalProcess",
-                method:"post",
-                data:{
-                    optype:"account_accs",
-                    params:{
-                        status:1
-                    }
-                }
-            }).then((result) =>{
-               this.accOptions = result.data.data;
-            });
         },
         props:["isPending","tableData"],
         data: function () {
@@ -438,8 +426,9 @@
             editMessage:function(row,type){
                 //清空数据
                 this.lookDisabled = false;
-                this.dialogData = {close_date:"",interactive_mode:""};
+                this.dialogData = {close_date:"",interactive_mode:"",acc_no:""};
                 this.salesList = [{comments:"",amount:""}];
+                this.accOptions = [];
                 //带出原有值
                 row.apply_on = row.apply_on?row.apply_on.split(" ")[0]:"";
                 this.currentMessage = row;
@@ -448,6 +437,24 @@
                 this.dialogData.relation_id = row.relation_id;
                 this.dialogData.service_serial_number = row.service_serial_number;
                 
+                if(!type){
+                   row.acc_id = row.acc_id ? row.acc_id : "";
+                    this.$axios({
+                        url:"/cfm/normalProcess",
+                        method:"post",
+                        data:{
+                            optype:"account_accs",
+                            params:{
+                                status:1,
+                                acc_id:row.acc_id
+                            }
+                        }
+                    }).then((result) =>{
+                        this.accOptions = result.data.data;
+                    }); 
+                }
+                
+
                 if(row.service_status != "12" && row.id){//修改
                     this.dialogTitle = type == 'look' ? '销户信息补录查看': '销户信息补录修改'
                     this.lookDisabled = type == 'look' ? true : false;
@@ -480,19 +487,20 @@
             //切换账户号
             changeAccount:function(cur){
                 var temp = this.dialogData;
-                this.accOptions.forEach(function(item,index){
-                    if(item.acc_no === cur){
-                        temp.acc_name = item.acc_name;
-                        temp.org_name = item.org_name;
-                        temp.lawfull_man = item.lawfull_man;
-                        temp.bank_name = item.bank_name;
-                        temp.curr_name = item.curr_name;
-                        temp.interactive_mode = item.interactive_mode;
-                        temp.acc_purpose = item.acc_purpose;
-                        temp.acc_id = item.acc_id;
+                var item = this.accOptions;
+                for(let i=0;i<item.length;i++){
+                    if(item[i].acc_no === cur){
+                        temp.acc_name = item[i].acc_name;
+                        temp.org_name = item[i].org_name;
+                        temp.lawfull_man = item[i].lawfull_man;
+                        temp.bank_name = item[i].bank_name;
+                        temp.curr_name = item[i].curr_name;
+                        temp.interactive_mode = item[i].interactive_mode;
+                        temp.acc_purpose = item[i].acc_purpose;
+                        temp.acc_id = item[i].acc_id;
+                        break;
                     }
-                })
-                
+                }
             },
             //添加销户交易
             addSales:function(){

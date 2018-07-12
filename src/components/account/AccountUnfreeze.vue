@@ -251,18 +251,6 @@
             this.$emit("transmitTitle", "账户解冻申请");
             this.$emit("getTableData",this.routerMessage);
 
-            this.$axios({
-                url:"/cfm/normalProcess",
-                method:"post",
-                data:{
-                    optype:"account_accs",
-                    params:{
-                        status:2
-                    }
-                }
-            }).then((result) =>{
-               this.accOptions = result.data.data;
-            });
         },
         props:["isPending","tableData"],
         data: function () {
@@ -343,37 +331,67 @@
             //新增冻结申请
             addAccountUnfreeze:function(){
                 this.dialogData = {};
+                this.accOptions = [];
                 this.currentUnfreeze = {};
                 this.lookDisabled = false;
+                this.accOptions = [];
                 this.dialogVisible = true;
+                this.$axios({
+                    url:"/cfm/normalProcess",
+                    method:"post",
+                    data:{
+                        optype:"account_accs",
+                        params:{
+                            status:2,
+                            acc_id:""
+                        }
+                    }
+                }).then((result) =>{
+                    this.accOptions = result.data.data;
+                });
             },
             //编辑
             editUnfreeze:function(row){
                 //清空数据
                 this.dialogData = {};
+                this.accOptions = [];
                 this.dialogTitle = "账户解冻查看";
                 this.dialogData = row;
                 this.lookDisabled = false;
                 this.dialogVisible = true;
                 this.currentUnfreeze = row;
+                this.$axios({
+                    url:"/cfm/normalProcess",
+                    method:"post",
+                    data:{
+                        optype:"account_accs",
+                        params:{
+                            status:2,
+                            acc_id:row.acc_id
+                        }
+                    }
+                }).then((result) =>{
+                    this.accOptions = result.data.data;
+                });
 
             },
             //切换账户号
             changeAccount:function(cur){
                 var temp = this.dialogData;
-                this.accOptions.forEach(function(item,index){
-                    if(item.acc_no === cur){
-                        temp.acc_name = item.acc_name;
-                        temp.org_name = item.org_name;
-                        temp.lawfull_man = item.lawfull_man;
-                        temp.bank_name = item.bank_name;
-                        temp.curr_name = item.curr_name;
-                        temp.interactive_mode = item.interactive_mode;
-                        temp.acc_purpose = item.acc_purpose;
-                        temp.acc_id = item.acc_id;
+                var item = this.accOptions;
+                for(let i=0;i<item.length;i++){
+                    if(item[i].acc_no === cur){
+                        temp.acc_name = item[i].acc_name;
+                        temp.org_name = item[i].org_name;
+                        temp.lawfull_man = item[i].lawfull_man;
+                        temp.bank_name = item[i].bank_name;
+                        temp.curr_name = item[i].curr_name;
+                        temp.interactive_mode = item[i].interactive_mode;
+                        temp.acc_purpose = item[i].acc_purpose;
+                        temp.acc_id = item[i].acc_id;
+                        break;
                     }
-                })
-                
+                }
             },
             //删除冻结
             removeUnfreeze:function(row,index,rows){
