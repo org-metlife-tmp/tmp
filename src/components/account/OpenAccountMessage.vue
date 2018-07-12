@@ -47,6 +47,22 @@
                 vertical-align: middle;
             }
         }
+
+        //弹框附件联系按钮
+        .upload-icon{
+            display: inline-block;
+            padding: 6px 0 0 6px;
+            color: #ccc;
+            cursor: pointer;
+
+            i{
+                display: inline-block;
+                width: 24px;
+                height: 24px;
+                background: url(../../assets/icon_common.png) no-repeat -52px -477px;
+                vertical-align: middle;
+            }
+        }
     }
 </style>
 <style lang="less" type="text/less">
@@ -179,11 +195,16 @@
                         <span>申请日期:</span>
                         <span>{{dialogData.apply_on}}</span>
                     </el-col>
-                    <el-col :span="24">
+                    <el-col :span="22">
                         <el-form-item label="事由摘要">
                             <el-input v-model="dialogData.up_memo" :disabled="true"
                                       placeholder="请输入事由摘要(15字以内)"></el-input>
                         </el-form-item>
+                    </el-col>
+                    <el-col :span="2" style="height:52px">
+                        <span class="upload-icon" @click="showRelationFile = !showRelationFile">
+                            <i></i>{{ fileLength }}
+                        </span>
                     </el-col>
                     <el-col :span="24">
                         <el-form-item label="事由说明">
@@ -191,6 +212,15 @@
                                       :disabled="true"
                                       type="textarea" :rows="3"
                                       placeholder="请输入事由说明(100字以内)"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="24" v-show="showRelationFile">
+                        <el-form-item label="附件">
+                            <Upload @currentFielList="setFileList"
+                                    :fileMessage="relationFile"
+                                    :triggerFile="relationTrigger"
+                                    :emptyFileList="emptyFileList"
+                                    :isPending="false"></Upload>
                         </el-form-item>
                     </el-col>
                     <el-col :span="24" class="form-small-title">
@@ -348,6 +378,15 @@
                             <el-input type="textarea" v-model="dialogData.memo"></el-input>
                         </el-form-item>
                     </el-col>
+                    <el-col :span="24">
+                        <el-form-item label="附件">
+                            <Upload @currentFielList="setFileList"
+                                    :emptyFileList="emptyFileList"
+                                    :fileMessage="fileMessage"
+                                    :triggerFile="triggerFile"
+                                    :isPending="isPending"></Upload>
+                        </el-form-item>
+                    </el-col>
                 </el-row>
             </el-form>
             <span slot="footer" class="dialog-footer">
@@ -369,11 +408,16 @@
                         <span>申请日期:</span>
                         <span>{{lookDialogData.apply_on}}</span>
                     </el-col>
-                    <el-col :span="24">
+                    <el-col :span="22">
                         <el-form-item label="事由摘要">
                             <el-input v-model="lookDialogData.up_memo" :readonly="true"
                                       placeholder="请输入事由摘要(15字以内)"></el-input>
                         </el-form-item>
+                    </el-col>
+                    <el-col :span="2" style="height:52px">
+                        <span class="upload-icon" @click="showRelationFile = !showRelationFile">
+                            <i></i>{{ fileLength }}
+                        </span>
                     </el-col>
                     <el-col :span="24">
                         <el-form-item label="事由说明">
@@ -381,6 +425,15 @@
                                       :readonly="true"
                                       type="textarea" :rows="3"
                                       placeholder="请输入事由说明(100字以内)"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="24" v-show="showRelationFile">
+                        <el-form-item label="附件">
+                            <Upload @currentFielList="setFileList"
+                                    :fileMessage="relationFile"
+                                    :triggerFile="relationTrigger"
+                                    :emptyFileList="emptyFileList"
+                                    :isPending="false"></Upload>
                         </el-form-item>
                     </el-col>
                     <el-col :span="24" class="form-small-title">
@@ -542,6 +595,15 @@
                             <el-input type="textarea" v-model="lookDialogData.memo" :readonly="true"></el-input>
                         </el-form-item>
                     </el-col>
+                    <el-col :span="24">
+                        <el-form-item label="附件">
+                            <Upload @currentFielList="setFileList"
+                                    :emptyFileList="emptyFileList"
+                                    :fileMessage="fileMessage"
+                                    :triggerFile="triggerFile"
+                                    :isPending="isPending"></Upload>
+                        </el-form-item>
+                    </el-col>
                 </el-row>
             </el-form>
             <span slot="footer" class="dialog-footer">
@@ -552,6 +614,8 @@
 </template>
 
 <script>
+    import Upload from "../publicModule/Upload.vue";
+
     export default {
         name: "OpenAccountMessage",
         created: function () {
@@ -627,6 +691,9 @@
             }
         },
         props: ["isPending", "tableData"],
+        components: {
+            Upload: Upload
+        },
         data: function () {
             return {
                 routerMessage: {
@@ -660,7 +727,8 @@
                     open_date: "",
                     acc_attr: "",
                     acc_purpose: "",
-                    interactive_mode: ""
+                    interactive_mode: "",
+                    files: []
                 },
                 formLabelWidth: "120px",
                 bankCorrelation: {},
@@ -677,7 +745,19 @@
                 currentTodo: {},
                 lookDialog: false,
                 lookDialogData: {},
-
+                emptyFileList: [], //附件
+                fileMessage: {
+                    bill_id: "",
+                    biz_type: 2
+                },
+                triggerFile: false,
+                relationFile:{
+                    bill_id: "",
+                    biz_type: 1
+                },
+                relationTrigger: false,
+                fileLength: 0,
+                showRelationFile: false
             }
         },
         methods: {
@@ -718,12 +798,23 @@
 
                 //清空弹框数据
                 for (var k in this.dialogData) {
-                    this.dialogData[k] = '';
+                    if(k == "files"){
+                        this.dialogData[k] = [];
+                    }else{
+                        this.dialogData[k] = '';
+                    }
                 }
                 for(var k in this.bankCorrelation){
                     this.bankCorrelation[k] = "";
                 }
                 this.bankSelect = true;
+                this.emptyFileList = [];
+                this.fileLength = 0;
+                this.showRelationFile = false;
+
+                //获取其事项申请的附件
+                this.relationFile.bill_id = row.relation_id;
+                this.relationTrigger = !this.relationTrigger;
 
                 //设置显示数据
                 if (!row.id) {
@@ -731,6 +822,7 @@
                         this.dialogData[k] = row[k];
                     }
                 } else {
+                    //获取当前项详细信息
                     this.$axios({
                         url: "/cfm/normalProcess",
                         method: "post",
@@ -764,11 +856,13 @@
                                 }
                                 this.dialogData[key] = data[key];
                             }
-                            console.log(this.dialogData);
                         }
                     }).catch(function (error) {
                         console.log(error);
                     })
+                    //获取附件列表
+                    this.fileMessage.bill_id = row.id;
+                    this.triggerFile = !this.triggerFile;
                 }
             },
             //银行大类搜索筛选
@@ -947,8 +1041,11 @@
                 for (var k in this.lookDialogData) {
                     this.lookDialogData[k] = '';
                 }
+                this.fileLength = 0;
+                this.showRelationFile = false;
                 this.bankSelect = true;
 
+                //当前项详细信息
                 this.$axios({
                     url: "/cfm/normalProcess",
                     method: "post",
@@ -986,6 +1083,13 @@
                 }).catch(function (error) {
                     console.log(error);
                 })
+                //附件数据
+                this.emptyFileList = [];
+                //获取其事项申请的附件
+                this.relationFile.bill_id = row.relation_id;
+                this.relationTrigger = !this.relationTrigger;
+                this.fileMessage.bill_id = row.id;
+                this.triggerFile = !this.triggerFile;
             },
             //点击页数 获取当前页数据
             getCurrentPage: function (currPage) {
@@ -1007,6 +1111,20 @@
                     page_num: 1
                 };
                 this.$emit("getTableData", this.routerMessage);
+            },
+            //设置当前项上传附件
+            setFileList: function($event){
+                if($event.length > 0 && $event[0].biz_type == 1){
+                    this.fileLength = $event.length;
+                }
+                if(this.isPending){
+                    this.dialogData.files = [];
+                    $event.forEach((item) => {
+                        this.dialogData.files.push(item.id);
+                    })
+                }else{
+
+                }
             },
         },
         watch: {
