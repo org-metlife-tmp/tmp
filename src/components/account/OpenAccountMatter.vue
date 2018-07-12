@@ -251,7 +251,17 @@
             <span slot="footer" class="dialog-footer">
                 <el-button type="warning" size="mini" plain @click="dialogVisible = false">取 消</el-button>
                 <el-button type="warning" size="mini" @click="subCurrent">确 定</el-button>
+                <el-button type="warning" size="mini" @click="innerVisible = true">提 交</el-button>
             </span>
+            <el-dialog :visible.sync="innerVisible"
+                       width="50%" title="提交审批流程"
+                       append-to-body top="76px"
+                       :close-on-click-modal="false">
+                <span slot="footer" class="dialog-footer" style="text-align:center">
+                    <el-button type="warning" size="mini" plain @click="innerVisible = false">取 消</el-button>
+                    <el-button type="warning" size="mini" @click="">确 定</el-button>
+                </span>
+            </el-dialog>
         </el-dialog>
         <!--已处理查看弹出框-->
         <el-dialog :visible.sync="lookDialog"
@@ -480,6 +490,7 @@
                 },
                 formLabelWidth: "120px",
                 dialogTitle: "新增",
+                innerVisible: false, //提交弹出框
                 lookDialog: false, //已处理查看弹出框
                 lookDialogData: {},
                 distDialog: false, //已处理分发弹出框
