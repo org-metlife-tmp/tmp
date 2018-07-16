@@ -226,6 +226,8 @@
                 <el-table-column prop="serial_no" label="流水号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="biz_type" :formatter="transitionType"
                                  label="业务类型" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="amount" label="金额" width="80"
+                                 :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="settle_or_merchant_acc_no" label="对方账号"
                                  :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="trade_status" label="状态"
