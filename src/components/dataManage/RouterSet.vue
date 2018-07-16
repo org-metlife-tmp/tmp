@@ -278,6 +278,7 @@
         <div class="botton-pag">
             <el-pagination
                     background :pager-count="5"
+                    :current-page="pagCurrent"
                     layout="sizes , prev, pager, next, jumper"
                     :page-size="pagSize" :total="pagTotal"
                     :page-sizes="[8, 50, 100, 500]"
@@ -807,6 +808,7 @@
                 for (var key in serachData) {
                     this.routerMessage.params[key] = serachData[key];
                 }
+                this.routerMessage.params.page_num = 1;
                 this.$emit("getTableData", this.routerMessage);
             },
             /*弹出框相关*/

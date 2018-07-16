@@ -119,6 +119,7 @@
         <div class="botton-pag">
             <el-pagination
                     background :pager-count="5"
+                    :current-page="pagCurrent"
                     layout="sizes , prev, pager, next, jumper"
                     :page-size="pagSize" :total="pagTotal"
                     :page-sizes="[8, 50, 100, 500]"
@@ -203,6 +204,7 @@
                 },
                 pagSize: 1,
                 pagTotal: 1,
+                pagCurrent: 1,
                 tableList: [],
                 serachData: {},
                 dialogVisible: false,
@@ -299,6 +301,7 @@
                 for (var key in serachData) {
                     this.routerMessage.params[key] = serachData[key];
                 }
+                this.routerMessage.params.page_num = 1;
                 this.$emit("getTableData", this.routerMessage);
             },
 
@@ -363,9 +366,9 @@
         },
         watch: {
             tableData: function (val, oldVal) {
-                console.log(val);
                 this.pagSize = val.page_size;
                 this.pagTotal = val.total_line;
+                this.pagCurrent = val.page_num;
                 this.tableList = val.data;
             }
         }
