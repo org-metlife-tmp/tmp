@@ -627,7 +627,7 @@
                 for (var key in serachData) {
                     this.routerMessage.params[key] = serachData[key];
                 }
-
+                this.routerMessage.params.page_num = 1;
                 this.$emit("getTableData", this.routerMessage);
             },
 

@@ -435,6 +435,7 @@
                     this.routerMessage.params[key] = searchData[key];
                     this.getAllMessage.params[key] = searchData[key];
                 }
+                this.routerMessage.params.page_num = 1;
                 this.$emit("getCommTable", this.routerMessage);
                 this.$emit("getGatherData", this.getAllMessage);
             },
