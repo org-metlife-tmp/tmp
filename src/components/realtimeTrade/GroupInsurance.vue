@@ -267,6 +267,8 @@
                                  width="190"></el-table-column>
                 <el-table-column prop="biz_type" :formatter="transitionType"
                                  label="业务类型" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="amount" label="金额" width="80"
+                                 :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="customer_acc" label="对方账号" width="100"
                                  :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="customer_name" label="对方户名" width="100"
