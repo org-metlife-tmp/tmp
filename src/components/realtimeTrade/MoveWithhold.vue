@@ -400,14 +400,19 @@
             },
             //展示格式转换-金额
             transitionAmount:function (row, column, cellValue, index) {
-                var value = (cellValue + "").split(".");
+                return this.transitionNumber(cellValue);
+            },
+            //数字格式转换
+            transitionNumber:function(oldValue){
+                var stringValue = oldValue.toLocaleString();
+                var value = stringValue.split(".");
                 if(value.length == 1){
                     return value[0] + ".00";
                 }else{
                     if(value[1].length == 1){
-                        return cellValue + "0";
+                        return stringValue + "0";
                     }else{
-                        return cellValue;
+                        return stringValue;
                     }
                 }
             },
@@ -550,16 +555,7 @@
                             } else if (item.key == "haha") {
                                 current.content = "实时代付";
                             } else if(item.key == "amount"){
-                                var amountData = (data[item.key] + "").split(".");
-                                if(amountData.length == 1){
-                                    current.content = amountData[0] + ".00";
-                                }else{
-                                    if(amountData[1].length == 1){
-                                        current.content = data[item.key] + "0";
-                                    }else{
-                                        current.content = data[item.key];
-                                    }
-                                }
+                                current.content = this.transitionNumber(data[item.key]);
                             } else {
                                 current.content = data[item.key];
                             }
