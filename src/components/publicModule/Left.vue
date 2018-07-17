@@ -231,7 +231,7 @@
             padding-left: 0px!important;
             padding-right: 0px;
             padding-top: 12px;
-            
+
         }
     }
 
@@ -327,9 +327,7 @@
                     <el-menu-item index="/workflow/workflow-configure">业务配置审批流程</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
-
-
-            <!--<el-submenu index="3">
+            <el-submenu index="6">
                 <template slot="title" height="200px">
                     <i class="icon-yet"></i>
                     <p>余额通</p>
@@ -343,11 +341,10 @@
                     <el-menu-item index="/whiteContent/history-fluctuate">历史余额波动</el-menu-item>
                     <el-menu-item index="1-8">余额数据导入</el-menu-item>
                 </el-menu-item-group>
-                &lt;!&ndash;<el-submenu index="1-4">
-                    <span slot="title">选项4</span>
-                    <el-menu-item index="1-4-1">选项1</el-menu-item>
-                </el-submenu>&ndash;&gt;
             </el-submenu>
+
+
+            <!--
             <el-submenu index="4">
                 <template slot="title" height="200px">
                     <i class="icon-jyt"></i>
