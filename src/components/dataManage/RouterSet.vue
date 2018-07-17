@@ -115,7 +115,7 @@
         }
 
         /*当屏幕过小时整体样式调整*/
-        @media screen and (max-width: 1200px) {
+        @media screen and (max-width: 1188px) {
             .search-setion {
                 text-align: left;
                 height: 64px;
@@ -174,7 +174,7 @@
                     <el-col :span="7">
                         <el-form-item label="支付方式">
                             <el-select v-model="serachData.pay_recv_mode" placeholder="请选择支付方式"
-                                       clearable>
+                                       clearable  @change="searchPayChange">
                                 <el-option v-for="(name,k) in PayOrRecvMode"
                                            :key="k"
                                            :label="name"
@@ -193,7 +193,8 @@
                 <el-row>
                     <el-col :span="7">
                         <el-form-item label="支付子项">
-                            <el-select v-model="serachData.pay_item" placeholder="请选择支付子项" clearable>
+                            <el-select v-model="serachData.pay_item" placeholder="请选择支付子项" clearable
+                                       :disabled="hasSearchPay">
                                 <el-option label="微信" value="WX"></el-option>
                                 <el-option label="支付宝" value="ZFB"></el-option>
                             </el-select>
@@ -277,6 +278,7 @@
         <div class="botton-pag">
             <el-pagination
                     background :pager-count="5"
+                    :current-page="pagCurrent"
                     layout="sizes , prev, pager, next, jumper"
                     :page-size="pagSize" :total="pagTotal"
                     :page-sizes="[8, 50, 100, 500]"
@@ -527,9 +529,12 @@
                 pagSize: 1, //分页
                 pagTotal: 1,
                 pagCurrent: 1,
-                serachData: {}, //搜索区
+                serachData: {
+                    pay_item: ""
+                }, //搜索区
                 tableList: [], //表格
                 currentRouter: "",
+                hasSearchPay: true, //搜索区支付子项只读
                 PayOrRecvMode: {}, //展示数据格式
                 orgList: [], //下拉框数据
                 bizTypeList: {},
@@ -803,6 +808,7 @@
                 for (var key in serachData) {
                     this.routerMessage.params[key] = serachData[key];
                 }
+                this.routerMessage.params.page_num = 1;
                 this.$emit("getTableData", this.routerMessage);
             },
             /*弹出框相关*/
@@ -1083,6 +1089,15 @@
                 } else {
                     this.hasPayRecv = true;
                     this.dialogData.pay_item = "";
+                }
+            },
+            //搜索区选择支付方式
+            searchPayChange:function(value){
+                if(value == "3"){
+                    this.hasSearchPay = false;
+                }else{
+                    this.hasSearchPay = true;
+                    this.serachData.pay_item = "";
                 }
             },
             //展示格式转换-来源系统
