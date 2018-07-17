@@ -241,7 +241,7 @@
                 <el-table-column prop="serial_no" label="流水号" :show-overflow-tooltip="true" width="190"></el-table-column>
                 <el-table-column prop="biz_type" :formatter="transitionType"
                                  label="业务类型" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="amount" label="金额" width="80"
+                <el-table-column prop="amount" label="金额" width="80" :formatter="transitionAmount"
                                  :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="customer_acc" label="对方账号" width="100"
                                  :show-overflow-tooltip="true"></el-table-column>
@@ -398,6 +398,19 @@
                     }
                 }
             },
+            //展示格式转换-金额
+            transitionAmount:function (row, column, cellValue, index) {
+                var value = (cellValue + "").split(".");
+                if(value.length == 1){
+                    return value[0] + ".00";
+                }else{
+                    if(value[1].length == 1){
+                        return cellValue + "0";
+                    }else{
+                        return cellValue;
+                    }
+                }
+            },
             //展示格式转换-状态
             /*transitionStatus: function (row, column, cellValue, index) {
                 var constants = JSON.parse(window.sessionStorage.getItem("constants"));
@@ -536,6 +549,17 @@
                                 current.content = data.channel_interface_name;
                             } else if (item.key == "haha") {
                                 current.content = "实时代付";
+                            } else if(item.key == "amount"){
+                                var amountData = (data[item.key] + "").split(".");
+                                if(amountData.length == 1){
+                                    current.content = amountData[0] + ".00";
+                                }else{
+                                    if(amountData[1].length == 1){
+                                        current.content = data[item.key] + "0";
+                                    }else{
+                                        current.content = data[item.key];
+                                    }
+                                }
                             } else {
                                 current.content = data[item.key];
                             }
