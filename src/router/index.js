@@ -44,9 +44,9 @@ import HistoryFluctuate from '@/components/balance/HistoryFluctuate'
 import MakeBill from '@/components/allot/MakeBill'
 import BankAccount from '@/components/allot/BankAccount'
 //审批流管理
-import WorkflowDefinition from '@/components/workflow/WorkflowDefinition'
-import WorkflowTrace from '@/components/workflow/WorkflowTrace'
-import WorkflowConfigure from '@/components/workflow/WorkflowConfigure'
+import WorkflowDefinition from '@/components/workFlow/WorkflowDefinition'
+import WorkflowTrace from '@/components/workFlow/WorkflowTrace'
+import WorkflowConfigure from '@/components/workFlow/WorkflowConfigure'
 
 
 Vue.use(Router)

@@ -85,7 +85,7 @@
                     url: "/cfm/adminProcess",
                     method: "post",
                     data: currParams
-                }).then(function (result) {
+                }).then( (result) => {
                     if (result.data.error_msg) {
                         this.$message({
                             type: "error",
@@ -112,7 +112,7 @@
                     url: "/cfm/normalProcess",
                     method: "post",
                     data: currParams
-                }).then(function (result) {
+                }).then((result) => {
                     if (result.data.error_msg) {
                         this.$message({
                             type: "error",
