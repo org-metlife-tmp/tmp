@@ -13,9 +13,9 @@ module.exports = {
         proxyTable: {
             '/cfm':{
                 //域名，代码中路径中的cfm会替换成此路径
-                //  target: 'http://10.1.1.152:9001/cfm/',
-                // target: 'http://172.100.1.84:8080/cfm/', //世强
-                target: 'http://172.100.1.85:8080/cfm/', //圆圆
+                 target: 'http://10.1.1.152:8081/cfm/',
+                // target: 'http://10.1.1.199:8080/cfm/', //世强
+                // target: 'http://172.100.1.85:8080/cfm/', //圆圆
                 //设置为true 解决跨域问题
                 changeOrigin: true,
                 //请求路径中会用后面的替换前面的
