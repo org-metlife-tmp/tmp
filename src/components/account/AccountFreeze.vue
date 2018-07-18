@@ -231,8 +231,17 @@
                         <span>备注与附件</span>
                     </el-col>
                     <el-col :span="24">
-                        <el-form-item label="备注"> 
+                        <el-form-item label="备注">
                             <el-input type="textarea" v-model="dialogData.memo" :disabled="lookDisabled"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="24">
+                        <el-form-item label="附件">
+                            <Upload @currentFielList="setFileList"
+                                    :emptyFileList="emptyFileList"
+                                    :fileMessage="fileMessage"
+                                    :triggerFile="triggerFile"
+                                    :isPending="isPending"></Upload>
                         </el-form-item>
                     </el-col>
                 </el-row>
@@ -246,6 +255,8 @@
 </template>
 
 <script>
+    import Upload from "../publicModule/Upload.vue";
+
     export default {
         name: "AccountFreeze",
         created: function () {
@@ -254,6 +265,9 @@
 
         },
         props:["isPending","tableData"],
+        components: {
+            Upload: Upload
+        },
         data: function () {
             return {
                 routerMessage:{
@@ -282,10 +296,18 @@
                 formLabelWidth: "120px",
                 tableList:[],
                 dialogVisible:false,
-                dialogData:{},
+                dialogData:{
+                    files: []
+                },
                 dialogTitle:"账户冻结申请",
                 accOptions:[],//账户号下拉数据,
-                currentFreeze:{}
+                currentFreeze:{},
+                emptyFileList: [], //附件
+                fileMessage: {
+                    bill_id: "",
+                    biz_type: 4
+                },
+                triggerFile: false
             }
         },
         methods: {
@@ -336,6 +358,8 @@
                 this.lookDisabled = false;
                 this.dialogVisible = true;
                 this.accOptions = [];
+                this.fileMessage.bill_id = "";
+                this.emptyFileList = [];
 
                 this.$axios({
                     url:"/cfm/normalProcess",
@@ -357,10 +381,15 @@
                 this.dialogData = {};
                 this.accOptions = [];
                 this.dialogTitle = "账户冻结查看";
-                this.dialogData = row;
+                for(var k in row){
+                    this.dialogData[k] = row[k];
+                }
                 this.lookDisabled = false;
                 this.dialogVisible = true;
                 this.currentFreeze = row;
+                //获取附件列表
+                this.fileMessage.bill_id = row.id;
+                this.triggerFile = !this.triggerFile;
                 this.$axios({
                     url:"/cfm/normalProcess",
                     method:"post",
@@ -448,7 +477,8 @@
                 var optype;
                 var data = {
                     acc_id:this.dialogData.acc_id,
-                    memo:this.dialogData.memo
+                    memo:this.dialogData.memo,
+                    files: this.dialogData.files,
                 };
                 if(this.currentFreeze.id == null || this.currentFreeze.id == "" || this.currentFreeze.id == undefined){
                     optype = "accfreeze_todoadd";
@@ -481,9 +511,9 @@
                             this.pagTotal++;
                             var message = "新增成功";
                         }else{
-                            var message = "修改成功"; 
+                            var message = "修改成功";
                         }
-            
+
                         this.dialogVisible = false;
                         this.$message({
                             type: 'success',
@@ -491,7 +521,7 @@
                             duration: 2000
                         });
                     }
-                    
+
                 })
             },
             //查看已处理列表详情
@@ -501,7 +531,24 @@
                 this.dialogData = row;
                 this.lookDisabled = true;
                 this.dialogVisible = true;
-            }
+                //附件数据
+                this.emptyFileList = [];
+                this.fileMessage.bill_id = row.id;
+                this.triggerFile = !this.triggerFile;
+            },
+            //设置当前项上传附件
+            setFileList: function ($event) {
+                if (this.isPending) {
+                    this.dialogData.files = [];
+                    if ($event.length > 0) {
+                        $event.forEach((item) => {
+                            this.dialogData.files.push(item.id);
+                        })
+                    }
+                } else {
+
+                }
+            },
         },
         computed:{
             getInactiveMode:function(){

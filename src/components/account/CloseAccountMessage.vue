@@ -48,7 +48,7 @@
             }
         }
 
-        
+
         .height30 {
             height: 33px;
         }
@@ -78,49 +78,6 @@
 
 <template>
     <div id="closeAccountMessage">
-        <!--搜索区-->
-        <!--<div class="search-setion">
-            <el-form :inline="true" :model="searchData" size="mini">
-                <el-row>
-                    <el-col :span="7">
-                        <el-form-item>
-                            <el-col :span="11">
-                                <el-date-picker type="date" placeholder="起始日期" v-model="searchData.date1" style="width: 100%;"></el-date-picker>
-                            </el-col>
-                            <el-col class="line" :span="1" style="text-align:center">-</el-col>
-                            <el-col :span="11">
-                                <el-date-picker type="date" placeholder="结束日期" v-model="searchData.date2" style="width: 100%;"></el-date-picker>
-                            </el-col>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="getCurrentSearch" style="text-align:center">
-                        <el-form-item>
-                            <el-checkbox-group v-model="searchData.type" v-if="isPending">
-                                <el-checkbox-button label="已保存" name="type"></el-checkbox-button>
-                                <el-checkbox-button label="审批拒绝" name="type"></el-checkbox-button>
-                            </el-checkbox-group>
-                            <el-checkbox-group v-model="searchData.type" v-else>
-                                <el-checkbox-button label="已提交" name="type"></el-checkbox-button>
-                                <el-checkbox-button label="审批中" name="type"></el-checkbox-button>
-                                <el-checkbox-button label="审批通过" name="type"></el-checkbox-button>
-                                <el-checkbox-button label="已完结" name="type"></el-checkbox-button>
-                            </el-checkbox-group>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="7">
-                        <el-form-item label="事由摘要">
-                            <el-input v-model="searchData.name" placeholder="请输入关键字"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="2">
-                        <el-form-item>
-                            &lt;!&ndash;<el-button type="primary" plain @click="" size="mini">清空</el-button>&ndash;&gt;
-                            <el-button type="primary" plain @click="" size="mini">搜索</el-button>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-            </el-form>
-        </div>-->
         <!--搜索区-->
         <div class="search-setion">
             <el-form :inline="true" :model="searchData" size="mini">
@@ -307,7 +264,7 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="销户时间"> 
+                        <el-form-item label="销户时间">
                             <el-date-picker
                                 :disabled="lookDisabled"
                                 style="width:100%"
@@ -323,8 +280,17 @@
                         <span>备注与附件</span>
                     </el-col>
                     <el-col :span="24">
-                        <el-form-item label="备注"> 
+                        <el-form-item label="备注">
                             <el-input type="textarea" v-model="dialogData.memo" :disabled="lookDisabled"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="24">
+                        <el-form-item label="附件">
+                            <Upload @currentFielList="setFileList"
+                                    :emptyFileList="emptyFileList"
+                                    :fileMessage="fileMessage"
+                                    :triggerFile="triggerFile"
+                                    :isPending="isPending"></Upload>
                         </el-form-item>
                     </el-col>
                 </el-row>
@@ -338,6 +304,8 @@
 </template>
 
 <script>
+    import Upload from "../publicModule/Upload.vue";
+
     export default {
         name: "CloseAccountMessage",
         created: function () {
@@ -346,6 +314,9 @@
 
         },
         props:["isPending","tableData"],
+        components: {
+            Upload: Upload
+        },
         data: function () {
             return {
                 routerMessage: {
@@ -374,11 +345,19 @@
                 pagCurrent: 1,
                 formLabelWidth: "120px",
                 dialogVisible:false,
-                dialogData:{},
+                dialogData:{
+                    files: []
+                },
                 dialogTitle:"销户信息补录申请",
                 currentMessage:{},
                 accOptions:[],//账户号下拉数据,
-                salesList:[{comments:"",amount:""}]//销户交易,
+                salesList:[{comments:"",amount:""}], //销户交易,
+                emptyFileList: [], //附件
+                fileMessage: {
+                    bill_id: "",
+                    biz_type: 7
+                },
+                triggerFile: false
             }
         },
         methods: {
@@ -429,6 +408,7 @@
                 this.dialogData = {close_date:"",interactive_mode:"",acc_no:""};
                 this.salesList = [{comments:"",amount:""}];
                 this.accOptions = [];
+                this.emptyFileList = [];
                 //带出原有值
                 row.apply_on = row.apply_on?row.apply_on.split(" ")[0]:"";
                 this.currentMessage = row;
@@ -436,7 +416,7 @@
                 this.dialogData.aci_memo = row.aci_memo;
                 this.dialogData.relation_id = row.relation_id;
                 this.dialogData.service_serial_number = row.service_serial_number;
-                
+
                 if(!type){
                    row.acc_id = row.acc_id ? row.acc_id : "";
                     this.$axios({
@@ -450,15 +430,23 @@
                             }
                         }
                     }).then((result) =>{
-                        this.accOptions = result.data.data;
-                    }); 
+                        if (result.data.error_msg) {
+                            this.$message({
+                                type: "error",
+                                message: result.data.error_msg,
+                                duration: 2000
+                            })
+                        } else{
+                            this.accOptions = result.data.data;
+                        }
+                    });
                 }
-                
+
 
                 if(row.service_status != "12" && row.id){//修改
                     this.dialogTitle = type == 'look' ? '销户信息补录查看': '销户信息补录修改'
                     this.lookDisabled = type == 'look' ? true : false;
-                    
+
                     this.dialogData.close_date = row.close_date;
                     this.dialogData.memo = row.memo;
                     this.$axios({
@@ -471,18 +459,29 @@
                             }
                         }
                     }).then((result) =>{
-                        var data = result.data.data;
-                        Object.assign(this.dialogData,data);
-                        //未刷新表格数据时，手动给当前数据赋值
-                        this.salesList = data.additionals;
-                        this.dialogVisible = true;
+                        if (result.data.error_msg) {
+                            this.$message({
+                                type: "error",
+                                message: result.data.error_msg,
+                                duration: 2000
+                            })
+                        } else {
+                            var data = result.data.data;
+                            Object.assign(this.dialogData,data);
+                            //未刷新表格数据时，手动给当前数据赋值
+                            this.salesList = data.additionals;
+                            this.dialogVisible = true;
+                        }
                     })
-                    
+                    //获取附件列表
+                    this.fileMessage.bill_id = row.id;
+                    this.triggerFile = !this.triggerFile;
+
                 }else{//待处理状态下为新增功能
                     this.dialogVisible = true;
                 }
-                
-                
+
+
             },
             //切换账户号
             changeAccount:function(cur){
@@ -513,6 +512,7 @@
                 if(this.currentMessage.id){//修改
                     data.id = this.currentMessage.id;
                     optype = "closeacccomple_todochg";
+                    data.files = this.dialogData.files;
                 }else{
                     optype = "closeacccomple_todoadd";
                 }
@@ -538,9 +538,9 @@
                         })
                         return;
                     }else{
-                       this.currentMessage.service_status = result.data.data.service_status; 
+                       this.currentMessage.service_status = result.data.data.service_status;
                        this.currentMessage.id = result.data.data.id;
-                       this.currentMessage.close_date = result.data.data.close_date;  
+                       this.currentMessage.close_date = result.data.data.close_date;
                        this.currentMessage.memo = result.data.data.memo;
                        this.dialogVisible = false;
                        this.dialogData = {};
@@ -595,7 +595,21 @@
                 }).catch(() => {
 
                 });
-            }
+            },
+            //设置当前项上传附件
+            setFileList: function($event){
+                if($event.length > 0 && $event[0].biz_type == 1){
+                    this.fileLength = $event.length;
+                }
+                if(this.isPending){
+                    this.dialogData.files = [];
+                    $event.forEach((item) => {
+                        this.dialogData.files.push(item.id);
+                    })
+                }else{
+
+                }
+            },
         },
         computed:{
             getCurrentSearch:function(){

@@ -216,6 +216,15 @@
                                       placeholder="请输入事由说明(100字以内)"></el-input>
                         </el-form-item>
                     </el-col>
+                    <el-col :span="24">
+                        <el-form-item label="附件">
+                            <Upload @currentFielList="setFileList"
+                                    :emptyFileList="emptyFileList"
+                                    :fileMessage="fileMessage"
+                                    :triggerFile="triggerFile"
+                                    :isPending="isPending"></Upload>
+                        </el-form-item>
+                    </el-col>
                 </el-row>
             </el-form>
             <span slot="footer" class="dialog-footer">
@@ -286,6 +295,13 @@
                                       placeholder="请输入事由说明(100字以内)"></el-input>
                         </el-form-item>
                     </el-col>
+                    <el-form-item label="附件">
+                        <Upload @currentFielList="setFileList"
+                                :emptyFileList="emptyFileList"
+                                :fileMessage="fileMessage"
+                                :triggerFile="triggerFile"
+                                :isPending="isPending"></Upload>
+                    </el-form-item>
                 </el-row>
             </el-form>
         </el-dialog>
@@ -390,6 +406,8 @@
 </template>
 
 <script>
+    import Upload from "../publicModule/Upload.vue";
+
     export default {
         name: "CloseAccountMatter",
         created: function () {
@@ -418,6 +436,9 @@
             })
         },
         props:["isPending","tableData"],
+        components: {
+            Upload: Upload
+        },
         data: function () {
             return {
                 routerMessage: {
@@ -449,14 +470,22 @@
                 distributeDialogVisible: false,//分发弹框
                 handleDialogVisible: false,//办结弹框
                 lookDialog: false,//已处理查看弹框
-                dialogData: {},
+                dialogData: {
+                    files: []
+                },
                 formLabelWidth: "120px",
                 dialogTitle: "新增",
                 distributeData: {},
                 handleData: {},
                 lookDialogData: {},
                 issueList:[],
-                currentDoneMatter:{}
+                currentDoneMatter:{},
+                emptyFileList: [], //附件
+                fileMessage: {
+                    bill_id: "",
+                    biz_type: 6
+                },
+                triggerFile: false
             }
         },
         methods: {
@@ -504,6 +533,8 @@
                 for(var k in this.dialogData){
                     this.dialogData[k]="";
                 }
+                this.fileMessage.bill_id = ""; //清空附件
+                this.emptyFileList = [];
                 //设置当前用户的公司和部门
                 this.getDeptOrg();
             },
@@ -522,6 +553,9 @@
                 for(var k in row){
                     this.dialogData[k] = row[k];
                 }
+                //获取附件列表
+                this.fileMessage.bill_id = row.id;
+                this.triggerFile = !this.triggerFile;
             },
             //提交当前修改或新增
             subCurrent:function(){
@@ -687,7 +721,7 @@
                 this.handleData.apply_on = row.apply_on;
                 this.handleData.memo = row.memo;
                 this.handleData.service_serial_number = row.service_serial_number;
-                this.handleData.id = row.id;              
+                this.handleData.id = row.id;
             },
             //办结确认
             handleConfirm:function(){
@@ -733,7 +767,24 @@
                 }else{
                     this.issueList = [];
                 }
-            }
+                //附件数据
+                this.emptyFileList = [];
+                this.fileMessage.bill_id = row.id;
+                this.triggerFile = !this.triggerFile;
+            },
+            //设置当前项上传附件
+            setFileList: function ($event) {
+                if (this.isPending) {
+                    this.dialogData.files = [];
+                    if ($event.length > 0) {
+                        $event.forEach((item) => {
+                            this.dialogData.files.push(item.id);
+                        })
+                    }
+                } else {
+
+                }
+            },
         },
         watch:{
             isPending:function(val,oldVal){
