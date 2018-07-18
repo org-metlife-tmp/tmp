@@ -171,7 +171,7 @@
                     <router-view></router-view>
                 </el-main>
                 <div id="plugin" v-show="!showBgc">
-                    <div class="phone-version">手机版</div>
+                    <div class="phone-version" style="visibility: hidden">手机版</div>
                     <div :class="['show-header',{'icon-position':!headerShow}]" @click="setHeader"
                          v-text="topSet"></div>
                 </div>
