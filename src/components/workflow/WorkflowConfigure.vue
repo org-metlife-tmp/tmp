@@ -298,11 +298,11 @@
             <div>
                 <div class="formflot" style="margin-bottom:15px">
                     <span>流程名称</span>
-                    <el-input v-model="createDialogData.workflow_name" disabled></el-input>
+                    <el-input v-model="createDialogData.workflow_name" disabled size="mini"></el-input>
                 </div>
                 <div class="formflot">
                     <span>审批退回</span>
-                    <el-input v-model="createDialogData.reject_strategy" disabled></el-input>
+                    <el-input v-model="createDialogData.reject_strategy" disabled size="mini"></el-input>
                 </div>
             </div>
             <WorkFlow
@@ -750,7 +750,7 @@ import WorkFlow from "../publicModule/WorkFlow.vue";
                             this.flowList = define;
                             this.isEmptyFlow = false;
                         }
-                    }) 
+                    })
                 }
             },
             //关闭查看工作流弹框

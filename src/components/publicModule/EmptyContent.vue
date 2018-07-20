@@ -158,7 +158,7 @@
                     currParams[k] = loadData[k];
                 }
                 this.$axios({
-                    url:"/cfm/download",
+                    url:"/cfm/normalProcess",
                     method: "post",
                     data: currParams,
                     responseType: 'blob'
