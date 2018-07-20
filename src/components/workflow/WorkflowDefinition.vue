@@ -582,11 +582,11 @@
             <div>
                 <div class="formflot" style="margin-bottom:15px">
                     <span>流程名称</span>
-                    <el-input v-model="createDialogData.workflow_name" disabled></el-input>
+                    <el-input size="mini" v-model="createDialogData.workflow_name" disabled></el-input>
                 </div>
                 <div class="formflot">
                     <span>审批退回</span>
-                    <el-input v-model="createDialogData.reject_strategy" disabled></el-input>
+                    <el-input size="mini" v-model="createDialogData.reject_strategy" disabled></el-input>
                 </div>
             </div>
             <WorkFlow
@@ -716,6 +716,7 @@ export default {
             selectFlowDialogVisible:false,//选择后续流程走向
             selectFlowData:{},
             select_flow:[],//可以选择的流程走向
+            selectLineId:"",//当前连线的id，因为弹框只有一个拿不到线的数字框的id
             flowBase:{},//代表是新增工作流还是修改工作流
             lookFlowDialogVisible:false,
             flowList:{},//查看详情的工作流数据
@@ -839,11 +840,12 @@ export default {
                                 }]
                             ]
                         })
-                        document.getElementById("addRule_"+(j+1)).onclick=function(){
+                        document.getElementById("addRule_"+(j+1)).onclick=function(event){
                             //清空弹出框数据
                             _this.addRuleCurData = {};
                             _this.addRuleDialogVisible = true;
                             _this.addRuleCurData.item_id = _this.design_data[j].item_id;
+                            _this.selectLineId = event.target.id;
                         }
                         // document.getElementById(curId).onmouseup = function(event) {
                         //     // 存储拖拽数据和拖拽效果...
@@ -876,15 +878,15 @@ export default {
             
             var list = this.design_data;
             var len = list.length - 2;
-            len = len == 0 ? 0 : list[len-1].item_id*1;
-            var newId = "item_" + (len+1); //取最后一个元素的item_id
-            this.matrixArr[1].push(len+1);
+            var item_id = (len == 0) ? 1 : list[len-1].item_id*1 + 1;
+            var newId = "item_" + item_id; //取最后一个元素的item_id
+            this.matrixArr[1].push(item_id);
             //组织点数据,因为多了两条首尾数据，所以要在指定位置增加点数据
             list.splice(len, 0, {axis_x: 200,			
                 axis_y: top,				
                 n_column: "1",			
                 n_row: this.matrixArr[1].length,			
-                item_id: len + 1 + "",
+                item_id: item_id + "",
                 isOrg:false,
                 curUser:"",
                 push_org:""
@@ -892,8 +894,8 @@ export default {
             //组织线数据
             this.line_data.push(
                 {
-                    d_source_id:"-1",	
-                    d_target_id:len + 1+"",		
+                    d_source_id: "-1",	
+                    d_target_id: item_id+"",		
                     rule:""
                 }
             )
@@ -934,11 +936,12 @@ export default {
                             }]
                     ]
                 })
-                document.getElementById("addRule_"+newLength).onclick=function(){
+                document.getElementById("addRule_"+newLength).onclick=function(event){
                     //清空弹出框数据
                     _this.addRuleCurData = {};
                     _this.addRuleDialogVisible = true;
-                    _this.addRuleCurData.item_id = len + 1 + "";
+                    _this.addRuleCurData.item_id = item_id + "";
+                    _this.selectLineId = event.target.id;
                 }
                 _this.jsplumb.draggable(newId);
                 
@@ -954,20 +957,20 @@ export default {
             var left = x + 300;
             var list = this.design_data;
             var len = list.length - 2;//因为多了首尾两条数据
-            len = len == 0 ? 0 : list[len-1].item_id*1;
+            var item_id = list[len-1].item_id*1 + 1;
             var curId = "item_" + id;
-            var newId = "item_" + (len+1); 
+            var newId = "item_" + item_id; 
             this.matrixArr[column+1] = this.matrixArr[column+1] ? this.matrixArr[column+1] : [];
             if(this.matrixArr[column+1] && this.matrixArr[column+1].length>0){//如果新增列有数据(不可能为0)
                 top = this.matrixArr[column+1].length * 180;
             }
-            this.matrixArr[column+1].push(len+1);
+            this.matrixArr[column+1].push(item_id);
             //组织点数据,因为多了两条首尾数据，所以要在指定位置增加点数据
             list.splice(len, 0, {axis_x: left,			
                 axis_y: top,				
                 n_column: column + 1,			
                 n_row: this.matrixArr[column+1].length,			
-                item_id: len + 1 + "",
+                item_id: item_id + "",
                 isOrg:false,
                 curUser:"",
                 push_org:""
@@ -975,8 +978,8 @@ export default {
             //组织线数据
             this.line_data.push(
                 {
-                    d_source_id:id,	
-                    d_target_id:len + 1+"",		
+                    d_source_id: id,	
+                    d_target_id: item_id+"",		
                     rule:""
                 }
             )
@@ -1019,12 +1022,13 @@ export default {
                 })
                 
                 
-                document.getElementById("addRule_"+newLength).onclick=function(){
+                document.getElementById("addRule_"+newLength).onclick=function(event){
                     //清空弹出框数据
                     _this.addRuleCurData = {};
 
                     _this.addRuleDialogVisible = true;
-                    _this.addRuleCurData.item_id = len + 1 + "" ;
+                    _this.addRuleCurData.item_id = item_id + "" ;
+                    _this.selectLineId = event.target.id;
                 }
                 _this.jsplumb.draggable(newId);
             })
@@ -1044,18 +1048,19 @@ export default {
                     }
                 }
                 this.addRuleDialogVisible = false;
-
-                var curShowEle = document.getElementById("ruleChange_"+curData.item_id);
+                let id = this.selectLineId.split("_")[1];
+                var curShowEle = document.getElementById("ruleChange_" + id);
                 curShowEle.innerText = str;
                 if(!curData.isEdit){//新建工作流时，添加新规则时，要隐藏加号，显示规则，修改的时候如果原来有规则则不需要
                     var _this = this;
                     curShowEle.style.display = "inline-block";
                     curShowEle.previousElementSibling.className = "";
-                    curShowEle.onclick=function(){
+                    curShowEle.onclick=function(event){
                         _this.addRuleDialogVisible = true;
                         _this.addRuleCurData.item_id =  curData.item_id;
                         _this.addRuleCurData.min =  curData.min;
                         _this.addRuleCurData.max =  curData.max;
+                        _this.selectLineId = event.target.id;
                     }
                 }
             }
@@ -1168,11 +1173,22 @@ export default {
         },
         //删除节点
         deleteNode:function(list,item,index){
+            //删除后重组点数据
             list.splice(index,1);
-            var column = item.n_column * 1;
+            //删除后重组点数据
+            let itemId = item.item_id;
+            let lines = this.line_data;
+            let i = lines.length;
+            while(i--){
+                if(itemId === lines[i].d_source_id || itemId === lines[i].d_target_id){
+                    lines.splice(i,1);
+                }
+            }
+
+            let column = item.n_column * 1;
             this.matrixArr[column].splice(this.matrixArr[column].indexOf(item.item_id), 1);
             //当前删除元素id
-            var id = event.currentTarget.parentNode.getAttribute("id");
+            let id = event.currentTarget.parentNode.getAttribute("id");
             this.jsplumb.remove(id);
         },
         //选择后续流程
@@ -1181,7 +1197,6 @@ export default {
             this.select_flow = [];
             column = Number(column);
             this.selectFlowData.item_id = id;
-            debugger;
             if(this.matrixArr[column+1]){
                 for (let i in this.matrixArr){
                     if(Number(i) > column){
@@ -1244,12 +1259,13 @@ export default {
                     }]
                 ]
             })
-            document.getElementById("addRule_"+newLength).onclick=function(){
+            document.getElementById("addRule_"+newLength).onclick=function(event){
                 //清空弹出框数据
                 _this.addRuleCurData = {};
 
                 _this.addRuleDialogVisible = true;
                 _this.addRuleCurData.item_id = _this.selectFlowData.target_id+"";
+                _this.selectLineId = event.target.id;
             }
             // jsPlumb.draggable(newId);
             this.selectFlowDialogVisible = false;
@@ -1494,7 +1510,7 @@ export default {
                                             }]
                                         ]
                                     })
-                                    document.getElementById(clickObjId).onclick=function(){
+                                    document.getElementById(clickObjId).onclick=function(event){
                                         //清空弹出框数据
                                         _this.addRuleCurData = {};
                                         _this.addRuleCurData.item_id = _this.line_data[q].d_target_id;
@@ -1504,6 +1520,7 @@ export default {
                                             _this.addRuleCurData.max = rules[1];
                                             _this.addRuleCurData.isEdit = true;
                                         }
+                                        _this.selectLineId = event.target.id;
                                         _this.addRuleDialogVisible = true;
                                     }
                                     _this.jsplumb.draggable(targetId);
