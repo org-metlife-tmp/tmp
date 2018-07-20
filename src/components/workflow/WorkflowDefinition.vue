@@ -121,6 +121,12 @@
             top: 0px;
             left: 200px;
         }
+        .child_item:hover{
+            border: 1px solid #7bb9f2;
+            .child_add{
+                display: inline-block;
+            }
+        }
         .child_item{
             width: 200px;
             height: 150px;
@@ -195,6 +201,7 @@
                 right: -24px;
                 background-position: -95px -158px;
                 cursor: pointer;
+                display: none;
             }
             .check_redirect{
                 width: 22px;
@@ -264,9 +271,6 @@
                 }
             }
         }
-        .borderHover {
-            border: 1px solid #7bb9f2!important;
-        }
         .displaynone{
             visibility: hidden!important;
         }
@@ -287,6 +291,9 @@
         }
         .rule-div{
             display: none;
+            margin-left: -18px;
+        }
+        .rule-hasValue{
             margin-left: -18px;
         }
     }
@@ -347,22 +354,22 @@
                         <el-tooltip content="查看" placement="bottom" effect="light"
                                     :enterable="false" :open-delay="500">
                             <el-button type="primary" icon="el-icon-search" size="mini"
-                                       @click="lookMatter(scope.row)"></el-button>
+                                       @click="lookFlow(scope.row)"></el-button>
                         </el-tooltip>
                         <el-tooltip content="复制" placement="bottom" effect="light"
                                     :enterable="false" :open-delay="500">
                             <el-button class="on-copy" size="mini"
-                                       @click="lookMatter(scope.row)"></el-button>
+                                       @click="editFlow(scope.row,'copy')"></el-button>
                         </el-tooltip>
                         <el-tooltip content="编辑" placement="bottom" effect="light"
                                     :enterable="false" :open-delay="500">
                             <el-button type="primary" icon="el-icon-edit" size="mini"
-                                       @click="editMerch(scope.row)"></el-button>
+                                       @click="editFlow(scope.row,'edit')"></el-button>
                         </el-tooltip>
                         <el-tooltip content="删除" placement="bottom" effect="light"
                                     :enterable="false" :open-delay="500">
                             <el-button type="danger" icon="el-icon-delete" size="mini"
-                                       @click="removeMatter(scope.row,scope.$index,tableList)"></el-button>
+                                       @click="delFlow(scope.row,scope.$index,tableList)"></el-button>
                         </el-tooltip>
                     </template>
                 </el-table-column>
@@ -375,7 +382,7 @@
                     layout="sizes, prev, pager, next, jumper"
                     :page-size="pagSize"
                     :total="pagTotal"
-                    :page-sizes="[7, 50, 100, 500]"
+                    :page-sizes="[10, 50, 100, 500]"
                     :pager-count="5"
                     :current-page="pagCurrent"
                     @current-change="getCurrentPage"
@@ -410,7 +417,7 @@
                     </el-col>
                     <el-col :span="24">
                         <el-form-item label="初始级次">
-                            <el-select v-model="createDialogData.initalGradation">
+                            <el-select v-model="createDialogData.lanes">
                                 <el-option
                                     v-for="item in gradation_options"
                                     :key="item.id"
@@ -431,6 +438,7 @@
         <el-dialog :visible.sync="nextStepDialogVisible"
                    width="800px" title="新建流程"
                    :close-on-click-modal="false"
+                   :before-close="handleClose"
                    top="56px">
             <div slot="title" class="dialog-title">
                 <div class="formflot">
@@ -450,12 +458,14 @@
                 </div>
             </div>
             <div id="diagramContainer">
-                <div id="root_box" class="firstEnd" @click="creatFirst"><span class="iconBg"></span></div>
-                <template  v-for="(item,index) in design_data" >
-                    <div :id="'item_'+item.item_id" class="child_item" :key="item.item_id" :class="{borderHover:item.isHover}"  @mouseover="item.isHover=true" @mouseout="item.isHover=false">
+                <template  v-for="(item,index) in design_data">
+                    <div v-if="isFirstEnd(item)" :id="firstEndId(item)" :key="item.item_id" class="firstEnd" @click="creatFirst">
+                        <span class="iconBg"></span>
+                    </div>
+                    <div v-if="!isFirstEnd(item)" :id="'item_'+item.item_id" draggable="true" class="child_item" :key="item.item_id">
                         <span class="child_no"><i class="child_num">{{item.item_id}}</i></span>
                         <div class="child_org" v-show="item.isOrg">
-                            <el-select v-model="org">
+                            <el-select v-model="item.push_org">
                                 <el-option
                                     v-for="org in org_options"
                                     :key="org.id"
@@ -466,13 +476,20 @@
                         </div>
                         <span class="child_delete iconBg" @click="deleteNode(design_data,item,index)"></span>
                         <div class="child_user">
-                            <el-select v-model="item.curUser" @change="selectUsers(item)">
+                            <el-select v-model="item['curUser']" @change="selectUsers(item,'user')" v-show="!item.isOrg">
                                 <el-option
-                                    v-for="user in item.options"
-                                    :key="user.id"
+                                    v-for="user in user_list"
+                                    :key="user.usr_id"
                                     :label="user.name"
-                                    :value="user.id"
-                                    :disabled="user.disabled">
+                                    :value="user.usr_id">
+                                </el-option>
+                            </el-select>
+                            <el-select v-model="item['curUser']" @change="selectUsers(item,'pos')" v-show="item.isOrg">
+                                <el-option
+                                    v-for="pos in position_list"
+                                    :key="pos.pos_id"
+                                    :label="pos.name"
+                                    :value="pos.pos_id">
                                 </el-option>
                             </el-select>
                             <span class="userCheck iconBg" @click="changeOrgUser(item)"></span>
@@ -487,7 +504,7 @@
                                         v-for="tag in item.addUsers"
                                         closable
                                         :disable-transitions="false"
-                                        @close="handleClose(tag.id,item)">
+                                        @close="deleteUser(tag.id,item)">
                                         {{tag.name}}
                                     </el-tag>
                                 </div>
@@ -495,14 +512,14 @@
                             <button class="iconBg left-icon" @click="leftMove($event)"></button>     
                             <button class="iconBg right-icon" @click="rightMove($event)"></button> 
                         </div>
-                        <div class="child_add iconBg" v-show="item.isHover" @click="addChild(item.n_column,item.axis_x,item.item_id)"></div>
+                        <div class="child_add iconBg" @click="addChild(item.n_column,item.axis_x,item.item_id)"></div>
                         <div class="check_redirect iconBg" @click="selectFlow(item.n_column,item.item_id)"></div>
                     </div>
+                    <!-- <div id="end_box" class="firstEnd"><span class="iconBg"></span></div> -->
                 </template>
-                <div id="end_box" class="firstEnd"><span class="iconBg"></span></div>
             </div>
             <span slot="footer" class="dialog-footer">
-                <el-button type="warning" size="mini" plain @click="nextStepDialogVisible = false">取 消</el-button>
+                <el-button type="warning" size="mini" plain @click="cancelWorkflow">取 消</el-button>
                 <el-button type="warning" size="mini" @click="saveWorkflow">下 一 步</el-button>
             </span>
         </el-dialog>
@@ -555,10 +572,38 @@
                 <el-button type="warning" size="mini" @click="connectFlow">确 定</el-button>
             </span>
         </el-dialog>
+        <!--查看工作流弹出框-->
+        <el-dialog :visible.sync="lookFlowDialogVisible"
+                   width="800px" title="新建流程"
+                   :close-on-click-modal="false"
+                   :before-close="cancelLookFlow"
+                   top="56px">
+            <h1 slot="title" class="dialog-title">查看流程</h1>
+            <div>
+                <div class="formflot" style="margin-bottom:15px">
+                    <span>流程名称</span>
+                    <el-input v-model="createDialogData.workflow_name"></el-input>
+                    <!-- <span>{{createDialogData.workflow_name}}</span> -->
+                </div>
+                <div class="formflot">
+                    <span>审批退回</span>
+                    <el-input v-model="createDialogData.reject_strategy"></el-input>
+                    <!-- <span>{{createDialogData.reject_strategy}}</span> -->
+                </div>
+            </div>
+            <WorkFlow
+                :flowList="flowList"
+                :isEmptyFlow="isEmptyFlow"
+            ></WorkFlow>
+            <span slot="footer" class="dialog-footer">
+                <el-button type="warning" size="mini" plain @click="cancelLookFlow">取 消</el-button>
+            </span>
+        </el-dialog>
     </div>
 </template>
 <script>
 import "../../js/jsPlumb-2.2.6.js"
+import WorkFlow from "../publicModule/WorkFlow.vue";
 
 export default {
     name:"WorkflowDefinition",
@@ -566,47 +611,38 @@ export default {
         this.$emit("transmitTitle","流程定义");
         this.$emit("getTableData", this.routerMessage);
 
-        this.design_data = [{
-                axis_x:200,			
-                axis_y:0,				
-                n_column:"1",			
-                n_row:"1",			
-                item_id:"1",
-                isHover:false, 
-                isOrg:false,
-                options:[
-                    {id:'3',name:'用户1'},
-                    {id:'2',name:'用户2'},
-                    {id:'1',name:'用户3'},
-                    {id:'0',name:'用户4'},
-                    {id:'-1',name:'用户5'},
-                    {id:'-2',name:'用户6'},
-                    {id:'-3',name:'用户7'}
-                ]
+        this.$axios({
+            url:"/cfm/adminProcess",
+            method:"post",
+            data:{
+                optype:"usr_list",
+                params:{
+                    page_size:10000,
+                    page_num:1
+                }
             }
-        ];
-        this.line_data = [
-            {
-                d_source_id:"-1",	
-                d_target_id:"1",		
-                rule:""
+        }).then((result) =>{
+            this.user_list = result.data.data;
+        });
+        this.$axios({
+            url:"/cfm/adminProcess",
+            method:"post",
+            data:{
+                optype:"position_list",
+                params:{
+                    page_size:10000,
+                    page_num:1
+                }
             }
-        ]
-        this.matrixArr = {
-            1:[1]
-        }
-
-        this.work_options = [
-            {id:'3',name:'职业1'},
-            {id:'2',name:'职业2'},
-            {id:'1',name:'职业3'},
-            {id:'0',name:'职业4'},
-            {id:'-1',name:'职业5'},
-            {id:'-2',name:'职业6'},
-            {id:'-3',name:'职业7'}
-        ];
+        }).then((result) =>{
+           this.position_list = result.data.data;
+        })
+        
     },
     props:["tableData"],
+    components: {
+        WorkFlow: WorkFlow
+    },
     data:function(){
         return {
             routerMessage: {
@@ -619,28 +655,26 @@ export default {
             formLabelWidth: "120px",
             searchData: {},
             tableList: [],
-            pagSize: 7,
+            pagSize: 10,
             pagTotal: 1,
             pagCurrent: 1,
             createDialogVisible: false,
             createDialogData: {},
             back_options:[
-                {id:'1',name:'初始提交人'},
-                {id:'2',name:'上级审批人'},
-                {id:'3',name:'自定义'}
+                {id:1,name:'初始提交人'},
+                {id:2,name:'上级审批人'},
+                {id:3,name:'自定义'}
             ],
             gradation_options:[
-                {id:'1',name:'1'},
-                {id:'2',name:'2'},
-                {id:'3',name:'3'},
-                {id:'4',name:'4'},
-                {id:'5',name:'5'}
+                {id:1,name:'1'},
+                {id:2,name:'2'},
+                {id:3,name:'3'},
+                {id:4,name:'4'},
+                {id:5,name:'5'}
             ],
             nextStepDialogVisible:false,
-            workflowData:{},
-            design_data:[{}],
+            design_data:[],
             line_data:[],
-            input23:"123",
             lineStyle:{
                 Anchor: ["Right", "Left"],
                 PaintStyle: {
@@ -674,15 +708,8 @@ export default {
                 {id:'-2',name:'下二级'},
                 {id:'-3',name:'下三级'}
             ],
-            user_options:[
-                {id:'3',name:'用户1'},
-                {id:'2',name:'用户2'},
-                {id:'1',name:'用户3'},
-                {id:'0',name:'用户4'},
-                {id:'-1',name:'用户5'},
-                {id:'-2',name:'用户6'},
-                {id:'-3',name:'用户7'}
-            ],
+            position_list:[],
+            user_list:[],
             // addUsers:[],//已选择用户
             org:"1",
             addRuleDialogVisible:false,
@@ -690,26 +717,26 @@ export default {
             matrixArr:{}, //存放每列的数据
             selectFlowDialogVisible:false,//选择后续流程走向
             selectFlowData:{},
-            select_flow:[]//可以选择的流程走向
+            select_flow:[],//可以选择的流程走向
+            flowBase:{},//代表是新增工作流还是修改工作流
+            lookFlowDialogVisible:false,
+            flowList:{},//查看详情的工作流数据
+            isEmptyFlow:false//是否清空子组件的数据
         }
     },
     methods:{
         //点击页数获取当前页数据
         getCurrentPage:function(currPage){
             if(this.isPending){
-                this.routerMessage.todo.params.page_num = currPage;
+                this.routerMessage.params.page_num = currPage;
             }else{
-                this.routerMessage.done.params.page_num = currPage;
+                this.routerMessage.params.page_num = currPage;
             }
             this.$emit("getTableData", this.routerMessage);
         },
         //当前页数据条数发生变化
         sizeChange:function(val){
-            this.routerMessage.todo.params = {
-                page_size: val,
-                page_num: 1
-            };
-            this.routerMessage.done.params = {
+            this.routerMessage.params = {
                 page_size: val,
                 page_num: 1
             };
@@ -722,73 +749,88 @@ export default {
         },
         //新建流程
         createProcess:function(){
-            this.createDialog = {};
+            //清空流程名
+            this.createDialogData.workflow_name = "";
+            //设置默认值
+            this.createDialogData.reject_strategy = 1;
+            this.createDialogData.lanes = 1;
             this.createDialogVisible = true;
         },
         //打开下一步
         showNext:function(curdata){
+            
             if(curdata.workflow_name){
-                // var flag = false;
-                // this.$axios({
-                //     url:"/cfm/adminProcess",
-                //     method:"post",
-                //     data:{
-                //         optype:"wfdefine_add",
-                //         params:{
-                //             workflow_name:workflow_name
-                //         }
-                //     }
-                // }).then((result) =>{
-                //     debugger
-                //     if (result.data.error_msg) {
-                //         this.$message({
-                //             type: "error",
-                //             message: result.data.error_msg,
-                //             duration: 2000
-                //         })
-                //         return;
-                //     }else{
-                //         flag = true;
-                //     }
-                // })
-            }else{
-                return ;
-            }
+                //关闭新建弹框
+                this.createDialogVisible = false;
 
-            var initalNum = curdata.initalGradation;
+                var initalNum = curdata.lanes * 1;      
+                for(let i =0;i<initalNum;i++){
+                    let obj_design ={		
+                        axis_y:0,				
+                        n_row:"1", 
+                        isOrg:false,
+                        curUser:"",
+                        push_org:""
+                    }
+                    let obj_line ={
+                        rule:""
+                    }
+                    obj_design["axis_x"] = 200 + i*300;
+                    obj_design["n_column"] = i + 1 + "";
+                    obj_design["item_id"] = i + 1 + "";
+                    obj_line["d_source_id"] = i + "";
+                    if(i===0){
+                        obj_line["d_source_id"] = "-1" ;
+                    }
+                    this.matrixArr[i+1] = [];
+                    this.matrixArr[i+1].push(i+1);
+                    obj_line["d_target_id"] = i + 1 + "";
+                    this.design_data.push(obj_design);
+                    this.line_data.push(obj_line);
+                }
+                //初始化开始节点和结束节点,追加到数据结尾，减少影响
+                this.design_data.push({item_id: "-1"});
+                this.design_data.push({item_id: "-2"});
 
-            // if(flag){
                 this.nextStepDialogVisible = true;
                 var _this=this;
-                var newLength = 0 ;
+                
                 setTimeout(function(){
+                    _this.jsplumb = jsPlumb.getInstance(_this.lineStyle);
                     //初始化显示默认节点的位置
-                    // var firseChild = document.getElementById("item_1");
-                    // firseChild.style.top="0px";
-                    // firseChild.style.left="200px";
-
-                    jsPlumb.ready(function(){
-                        _this.jsplumb = jsPlumb.getInstance(_this.lineStyle);
-                        jsPlumb.connect({
-                            source: 'root_box',
-                            target: 'item_1',
+                    for (let j = 0;j<initalNum;j++){
+                        // var newLength = 0 ;   
+                        var curId = "item_"+_this.design_data[j].item_id;
+                        var firstChild = document.getElementById(curId);
+                        firstChild.style.top = _this.design_data[j].axis_y+ "px";
+                        firstChild.style.left = _this.design_data[j].axis_x + "px";
+                        if(j === 0){
+                            var sourceId = "root_box";
+                        }else{
+                            var sourceId = "item_" + j ;
+                        } 
+                        var targetId = "item_" + (j+1);
+                        _this.jsplumb.connect({
+                            source: sourceId,
+                            target: targetId,
                             overlays: [
                                 ["Custom", {
                                     create: function (component) {
                                         var element = document.createElement("div");
                                         var elementChild = document.createElement("span");
                                         var elementChildSe = document.createElement("div");
-                                        var svg = document.getElementById("diagramContainer").getElementsByTagName("svg");
-                                        var length = svg.length;
-                                        for(var n = 0 ;n < length ;n ++){
-                                            if( svg[n].parentNode.id === "diagramContainer"){
-                                                newLength ++;
-                                            }
-                                        }
+                                        //首次初始化线的id值为循环变量j+1
+                                        // var svg = document.getElementById("diagramContainer").getElementsByTagName("svg");
+                                        // var length = svg.length;
+                                        // for(var n = 0 ;n < length ;n ++){
+                                        //     if( svg[n].parentNode.id === "diagramContainer"){
+                                        //         newLength ++;
+                                        //     }
+                                        // }
                                         elementChild.className = "iconBg rule-icon";
-                                        elementChild.setAttribute("nodeId","item_1");
-                                        elementChild.setAttribute("id",'addRule_'+newLength);
-                                        elementChildSe.setAttribute("id",'ruleChange_'+newLength);
+                                        // elementChild.setAttribute("nodeId","item_1");
+                                        elementChild.setAttribute("id",'addRule_'+ (j+1));
+                                        elementChildSe.setAttribute("id",'ruleChange_'+ (j+1));
                                         elementChildSe.className = "rule-div";
                                         element.appendChild(elementChild);
                                         element.appendChild(elementChildSe);
@@ -799,46 +841,55 @@ export default {
                                 }]
                             ]
                         })
-                        document.getElementById("addRule_"+newLength).onclick=function(){
+                        document.getElementById("addRule_"+(j+1)).onclick=function(){
                             //清空弹出框数据
                             _this.addRuleCurData = {};
                             _this.addRuleDialogVisible = true;
-                            _this.addRuleCurData.item_id = "1";
+                            _this.addRuleCurData.item_id = _this.design_data[j].item_id;
                         }
-                        jsPlumb.draggable('item_1');
-                    })
-                },0)   
-            // }         
+                        // document.getElementById(curId).onmouseup = function(event) {
+                        //     // 存储拖拽数据和拖拽效果...
+                        //     // event.dataTransfer.setData("Text",ev.target.id);
+                        //     console.log("111")
+                        // }
+                        // document.getElementById(curId).onmousedown = function(event) {
+                        //     // 存储拖拽数据和拖拽效果...
+                        //     // event.dataTransfer.setData("Text",ev.target.id);
+                        //     console.log(event.target.offsetLeft,event.target.offsetTop);
+                        // }
+                        _this.jsplumb.draggable(targetId);
+                    }
+                },0) 
+            }else{
+                this.$message({
+                    type: "warning",
+                    message: "请输入流程名称",
+                    duration: 2000
+                })
+                return ;
+            }         
         },
         //点击创建第一列的节点
         creatFirst:function(){
-            debugger
+            
             var _this=this;
             //每点击一次该列数据增加一条
             var top = this.matrixArr[1].length * 180;
             
             var list = this.design_data;
-            var len = list.length;
+            var len = list.length - 2;
             len = len == 0 ? 0 : list[len-1].item_id*1;
             var newId = "item_" + (len+1); //取最后一个元素的item_id
             this.matrixArr[1].push(len+1);
-            //组织点数据
-            list.push({axis_x: 200,			
+            //组织点数据,因为多了两条首尾数据，所以要在指定位置增加点数据
+            list.splice(len, 0, {axis_x: 200,			
                 axis_y: top,				
                 n_column: "1",			
                 n_row: this.matrixArr[1].length,			
-                item_id: len + 1 + "",	
-                isHover:false,
+                item_id: len + 1 + "",
                 isOrg:false,
-                options:[
-                    {id:'3',name:'用户1'},
-                    {id:'2',name:'用户2'},
-                    {id:'1',name:'用户3'},
-                    {id:'0',name:'用户4'},
-                    {id:'-1',name:'用户5'},
-                    {id:'-2',name:'用户6'},
-                    {id:'-3',name:'用户7'}
-                ]
+                curUser:"",
+                push_org:""
             });
             //组织线数据
             this.line_data.push(
@@ -848,7 +899,6 @@ export default {
                     rule:""
                 }
             )
-
             setTimeout(function(){
                 //初始化显示默认节点的位置
                 var newChild = document.getElementById(newId);
@@ -856,8 +906,7 @@ export default {
                 newChild.style.left = "200px" ;
 
                 var newLength = 0 ;
-                this.jsplumb = jsPlumb.getInstance(this.lineStyle);
-                jsPlumb.connect({
+                _this.jsplumb.connect({
                     source: 'root_box',
                     target: newId,
                     overlays: [
@@ -874,7 +923,7 @@ export default {
                                         }
                                     }
                                     elementChild.className = "iconBg rule-icon";
-                                    elementChild.setAttribute("nodeId","item_1");
+                                    // elementChild.setAttribute("nodeId","item_1");
                                     elementChild.setAttribute("id",'addRule_'+newLength);
                                     elementChildSe.setAttribute("id",'ruleChange_'+newLength);
                                     elementChildSe.className = "rule-div";
@@ -887,24 +936,15 @@ export default {
                             }]
                     ]
                 })
-                jsPlumb.connect({
-                    source: 'root_box',
-                    target: newId
-                })
-                
-                
                 document.getElementById("addRule_"+newLength).onclick=function(){
                     //清空弹出框数据
                     _this.addRuleCurData = {};
                     _this.addRuleDialogVisible = true;
                     _this.addRuleCurData.item_id = len + 1 + "";
                 }
-                jsPlumb.draggable(newId);
+                _this.jsplumb.draggable(newId);
                 
             },0)
-            
-            
-
         },
         //添加其他列的节点
         addChild:function(column,x,id){
@@ -915,7 +955,7 @@ export default {
             var top = 0;
             var left = x + 300;
             var list = this.design_data;
-            var len = list.length;
+            var len = list.length - 2;//因为多了首尾两条数据
             len = len == 0 ? 0 : list[len-1].item_id*1;
             var curId = "item_" + id;
             var newId = "item_" + (len+1); 
@@ -924,23 +964,15 @@ export default {
                 top = this.matrixArr[column+1].length * 180;
             }
             this.matrixArr[column+1].push(len+1);
-            //组织点数据
-            list.push({axis_x: left,			
+            //组织点数据,因为多了两条首尾数据，所以要在指定位置增加点数据
+            list.splice(len, 0, {axis_x: left,			
                 axis_y: top,				
                 n_column: column + 1,			
                 n_row: this.matrixArr[column+1].length,			
-                item_id: len + 1 + "",	
-                isHover:false,
+                item_id: len + 1 + "",
                 isOrg:false,
-                options:[
-                    {id:'3',name:'用户1'},
-                    {id:'2',name:'用户2'},
-                    {id:'1',name:'用户3'},
-                    {id:'0',name:'用户4'},
-                    {id:'-1',name:'用户5'},
-                    {id:'-2',name:'用户6'},
-                    {id:'-3',name:'用户7'}
-                ]	
+                curUser:"",
+                push_org:""
             });
             //组织线数据
             this.line_data.push(
@@ -955,10 +987,9 @@ export default {
                 var newChild = document.getElementById(newId);
                 newChild.style.top = top + "px";
                 newChild.style.left = left + "px" ;
-                this.jsplumb = jsPlumb.getInstance(this.lineStyle);
 
                 var newLength = 0 ;
-                jsPlumb.connect({
+                _this.jsplumb.connect({
                     source: curId,
                     target: newId,
                     overlays: [
@@ -975,7 +1006,7 @@ export default {
                                     }
                                 }
                                 elementChild.className = "iconBg rule-icon";
-                                elementChild.setAttribute("nodeId","item_1");
+                                // elementChild.setAttribute("nodeId","item_1");
                                 elementChild.setAttribute("id",'addRule_'+newLength);
                                 elementChildSe.setAttribute("id",'ruleChange_'+newLength);
                                 elementChildSe.className = "rule-div";
@@ -997,11 +1028,12 @@ export default {
                     _this.addRuleDialogVisible = true;
                     _this.addRuleCurData.item_id = len + 1 + "" ;
                 }
-                jsPlumb.draggable(newId);
+                _this.jsplumb.draggable(newId);
             })
         },
         //保存规则
         saveRules:function(curData){
+            
             if(curData.min && curData.max){
                 var arrList = this.line_data;
                 var len = arrList.length;
@@ -1014,16 +1046,19 @@ export default {
                     }
                 }
                 this.addRuleDialogVisible = false;
-                var _this = this;
+
                 var curShowEle = document.getElementById("ruleChange_"+curData.item_id);
                 curShowEle.innerText = str;
-                curShowEle.style.display = "inline-block";
-                curShowEle.previousElementSibling.className = "";
-                curShowEle.onclick=function(){
-                    _this.addRuleDialogVisible = true;
-                    _this.addRuleCurData.item_id =  curData.item_id;
-                    _this.addRuleCurData.min =  curData.min;
-                    _this.addRuleCurData.max =  curData.max;
+                if(!curData.isEdit){//新建工作流时，添加新规则时，要隐藏加号，显示规则，修改的时候如果原来有规则则不需要
+                    var _this = this;
+                    curShowEle.style.display = "inline-block";
+                    curShowEle.previousElementSibling.className = "";
+                    curShowEle.onclick=function(){
+                        _this.addRuleDialogVisible = true;
+                        _this.addRuleCurData.item_id =  curData.item_id;
+                        _this.addRuleCurData.min =  curData.min;
+                        _this.addRuleCurData.max =  curData.max;
+                    }
                 }
             }
         },
@@ -1069,39 +1104,47 @@ export default {
                 return ;
             }
         },
-        //选择用户
-        selectUsers:function(item){
-
-            debugger
+        //选择用户or机构
+        selectUsers:function(item,type){
+            
             let id = item.curUser;
             let obj = {};
-            let arrList = item.options;
+            let arrList,key,index;
+            if(type === 'user'){
+                arrList = this.user_list;
+                key = "usr_id";
+            }else{
+                arrList = this.position_list;
+                key = "pos_id";
+            }
+            
             let len = arrList.length;
             for(let i=0;i<len;i++){
-                if(arrList[i].id === id){
-                    obj = arrList[i];
-                    arrList[i].disabled = true;
+                if(arrList[i][key] === id){
+                    obj.name = arrList[i].name;
+                    obj.id = arrList[i][key];
                     break;
                 }
             }
             item.addUsers = item.addUsers ? item.addUsers :[];
+            index = item.addUsers.length;
+            // this.$set(item.addUsers,0,obj);
             item.addUsers.push(obj);
+
             item.data = item.data ? item.data : {};
-            item.data.user_type = item.isOrg ? "1" : "0";
-            item.isOrg ? item.data.push_org = "0" : "";
-            item.data.users= item.data.users ? item.data.users : [];
-            item.data.users.push(id);
+            if(item.isOrg){
+                item.data.user_type = "1";
+                item.data.push_org = item.push_org;
+                item.data.position= item.data.position ? item.data.position : [];
+                item.data.position.push(id);
+            }else{
+                item.data.user_type = "0";
+                item.data.users= item.data.users ? item.data.users : [];
+                item.data.users.push(id);
+            }
         },
         //删除用户
-        handleClose:function(tag,item) {
-            let arrList = item.options;
-            let len1 = arrList.length;
-            for(let i=0;i<len1;i++){
-                if(arrList[i].id === tag){
-                    arrList[i].disabled = false;
-                    break;
-                }
-            }
+        deleteUser:function(tag,item) {
             var list = item.addUsers;
             var len = list.length;
             for(let j=0;j<len;j++){
@@ -1115,43 +1158,24 @@ export default {
         //切换机构或用户
         changeOrgUser:function(item){
             item.isOrg = !item.isOrg;
+            item.addUsers = [];
+            item.data = {};
+            
+            //组织点数据的时候得声明这两个变量，否则会造成选不上的诡异现象
+            //这段代码造成选值有延迟，待解决
+            item.curUser = "";
             if(item.isOrg){//切换为机构了
-                item.options = [
-                    {id:'3',name:'职业1'},
-                    {id:'2',name:'职业2'},
-                    {id:'1',name:'职业3'},
-                    {id:'0',name:'职业4'},
-                    {id:'-1',name:'职业5'},
-                    {id:'-2',name:'职业6'},
-                    {id:'-3',name:'职业7'}
-                ];
-                item.addUsers = [];
-                item.data = {};
-                item.curUser = "";
-            }else{
-                item.options = [
-                    {id:'3',name:'用户1'},
-                    {id:'2',name:'用户2'},
-                    {id:'1',name:'用户3'},
-                    {id:'0',name:'用户4'},
-                    {id:'-1',name:'用户5'},
-                    {id:'-2',name:'用户6'},
-                    {id:'-3',name:'用户7'}
-                ];
-                item.addUsers = [];
-                item.data = {};
-                item.curUser = "";
-            }
+                item.push_org = "0";
+            }  
         },
         //删除节点
         deleteNode:function(list,item,index){
-            debugger;
             list.splice(index,1);
             var column = item.n_column * 1;
             this.matrixArr[column].splice(this.matrixArr[column].indexOf(item.item_id), 1);
             //当前删除元素id
             var id = event.currentTarget.parentNode.getAttribute("id");
-            jsPlumb.remove(id);
+            this.jsplumb.remove(id);
         },
         //选择后续流程
         selectFlow:function(column,id){
@@ -1159,10 +1183,10 @@ export default {
             this.select_flow = [];
             column = Number(column);
             this.selectFlowData.item_id = id;
-            
+            debugger;
             if(this.matrixArr[column+1]){
                 for (let i in this.matrixArr){
-                    if(i !== id){
+                    if(Number(i) > column){
                         this.select_flow = this.select_flow.concat(this.matrixArr[i]); 
                     }
                 }
@@ -1170,17 +1194,29 @@ export default {
             this.select_flow.push("-2");
             this.selectFlowDialogVisible = true;
         },
-        //连线后续流程走向
+        //连线后续流程走向(添加连线，)
         connectFlow:function(){
             var curId = "item_" + this.selectFlowData.item_id;
+            var targetId ;
             if(this.selectFlowData.target_id === "-2"){
                 var newId = "end_box";
+                targetId = "-2";
             }else{
                 var newId = "item_" + this.selectFlowData.target_id;
+                targetId = this.selectFlowData.target_id;
             }
+            //组织线数据
+            this.line_data.push(
+                {
+                    d_source_id: this.selectFlowData.item_id,	
+                    d_target_id: targetId,		
+                    rule:""
+                }
+            )
+
             var newLength = 0;
             var _this = this;
-            jsPlumb.connect({
+            this.jsplumb.connect({
                 source: curId,
                 target: newId,
                 overlays: [
@@ -1197,7 +1233,7 @@ export default {
                                 }
                             }
                             elementChild.className = "iconBg rule-icon";
-                            elementChild.setAttribute("nodeId","item_1");
+                            // elementChild.setAttribute("nodeId","item_1");
                             elementChild.setAttribute("id",'addRule_'+newLength);
                             elementChildSe.setAttribute("id",'ruleChange_'+newLength);
                             elementChildSe.className = "rule-div";
@@ -1220,12 +1256,396 @@ export default {
             // jsPlumb.draggable(newId);
             this.selectFlowDialogVisible = false;
         },
+        //保存或修改工作流的定义
         saveWorkflow:function(){
-           let commitObj = {}
-           commitObj.design_data = {};
-           commitObj.design_data.lines = this.line_data;
-           commitObj.design_data.nodes = this.design_data; 
+            let commitObj = {};
+            var message ="";
+            var type = this.flowBase.type;
+            if(!type){
+                commitObj.lanes = this.createDialogData.lanes;
+                message = "保存成功";
+            }else if(type === 'edit'){//代表修改
+                commitObj.lanes = this.flowBase.lanes;
+                commitObj.base_id = this.flowBase.base_id;
+                message = "修改成功";
+            }else if(type === 'copy'){
+                commitObj.lanes = this.flowBase.lanes;
+                message = "复制成功";
+            }
+            commitObj.workflow_name = this.createDialogData.workflow_name;
+            commitObj.reject_strategy = this.createDialogData.reject_strategy;
+           
+            commitObj.design_data = {};
+            commitObj.design_data.lines = this.line_data;
+            commitObj.design_data.nodes = this.design_data.slice(0,this.design_data.length-2); //去除最后两个元素
+
+            let nodes = commitObj.design_data.nodes;
+            let len = nodes.length;
+            for(let i = 0; i<len ;i++){
+                let id = "item_" + nodes[i].item_id;
+                let dom = document.getElementById(id);
+                nodes[i].axis_x = dom.offsetLeft;
+                nodes[i].axis_y = dom.offsetTop;
+            }
+
+            this.$axios({
+               url:"/cfm/adminProcess",
+                method:"post",
+                data:{
+                    optype:"wfchart_add",
+                    params:commitObj
+                }
+            }).then((result) =>{
+                if (result.data.error_msg) {
+                    this.$message({
+                        type: "error",
+                        message: result.data.error_msg,
+                        duration: 2000
+                    });
+                    
+                    return;
+                }else{
+                    var data = result.data.data;
+                    if (this.tableList.length < this.routerMessage.params.page_size) {
+                        this.tableList.push(data);
+                    }
+                    this.pagTotal++;
+
+                    //清空工作流相关数据
+                    this.jsplumb.empty("diagramContainer");
+                    this.matrixArr = [];
+                    this.line_data = [];
+                    this.design_data = [];
+                    this.flowBase = {};
+                    this.nextStepDialogVisible = false;
+                    this.createDialogData.reject_strategy = "";
+                    this.createDialogData.lanes = "";
+
+                    this.$message({
+                        type: "success",
+                        message: message,
+                        duration: 2000
+                    })
+
+                }
+           })
+        },
+        //修改工作流(修改，复制)
+        editFlow:function(row,type){
+            if(row.id){
+                var useObj = {};
+                this.user_list.forEach(function(item, index){
+                    useObj[item.usr_id] = item.name;
+                })
+                var posObj = {};
+                this.position_list.forEach(function(item, index){
+                    posObj[item.pos_id] = item.name;
+                })
+                var _this=this;
+                this.$axios({
+                    url:"/cfm/adminProcess",
+                    method:"post",
+                    data:{
+                        optype:"wfdefine_detail",
+                        params:{
+                            id:row.id
+                        }
+                    }
+                }).then((result) =>{
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                        return;
+                    }else{
+                        var getData = result.data.data;
+                        if(getData){
+                            var define = getData.define;
+                            if(type ==='copy'){
+                                this.flowBase.type = 'copy'; 
+                            }else if(type ==='edit'){
+                                this.flowBase.type = 'edit'; 
+                            }
+                            //修改工作流需要的参数
+                            this.flowBase.base_id = define.base_id;
+                            this.flowBase.lanes = define.lanes;
+                            this.flowBase.laster_version = getData.laster_version;
+                            this.flowBase.persist_version = getData.persist_version;
+
+                            this.line_data = define.lines;//线数据
+                            /**
+                             * 声明nodes这个变量的原因是因为
+                               this.design_data = nodes;在这里赋值的话，
+                               页面就已经在渲染了，之后在添加的值会被认为没有初始化
+                               即将在for循环中初始化的变量不会被渲染到页面上，curUser、push_org
+                               会造成数据无法及时相应的情况
+                             */
+                            
+                            var nodes = define.nodes;
+                            
+                            this.createDialogData.workflow_name = getData.workflow_name;
+                            this.createDialogData.reject_strategy = define.reject_strategy;
+
+                            var len = nodes.length;
+                            for(let i =0;i<len;i++){
+                                //还需要补充数据
+                                let column = nodes[i].n_column * 1;
+                                this.matrixArr[column] = this.matrixArr[column] ? this.matrixArr[column] : [];
+                                this.matrixArr[column].push(nodes[i].item_id);
+
+                                let selOptions = JSON.parse(nodes[i].data);
+                                nodes[i].data = {};
+                                nodes[i].addUsers = [];
+                                nodes[i].curUser = "";
+                                nodes[i].push_org = "";
+                                if(selOptions["users"]){//选的是用户
+                                    nodes[i].data.user_type = "0";
+                                    nodes[i].isOrg = false;
+                                    nodes[i].data["users"]= selOptions["users"];
+                                    let l = selOptions["users"].length;
+                                    let arr = selOptions["users"];
+                                    for(let k = 0; k < l; k++){
+                                        let key = arr[k];
+                                        if(useObj[key]){
+                                            nodes[i].addUsers.push({id:key,name:useObj[key]});
+                                        }
+                                    } 
+                                }else{
+                                    nodes[i].isOrg = true;
+                                    nodes[i].data.user_type = "1";
+                                    nodes[i].push_org = selOptions["push_org"];
+                                    nodes[i].data.push_org = selOptions["push_org"];
+                                    nodes[i].data["position"]= selOptions["position"];
+                                    let l = selOptions["position"].length;
+                                    let arr = selOptions["position"];
+                                    for(let k = 0; k < l; k++){
+                                        let key = arr[k];
+                                        if(posObj[key]){
+                                            nodes[i].addUsers.push({id:key,name:posObj[key]});
+                                        }
+                                    } 
+                                }
+                            }
+                            this.design_data = nodes;//点数据
+                            //初始化开始节点和结束节点,追加到数据结尾，减少影响
+                            this.design_data.push({item_id: "-1"});
+                            this.design_data.push({item_id: "-2"});
+
+                            this.nextStepDialogVisible = true;
+                            setTimeout(function(){
+                                _this.jsplumb = jsPlumb.getInstance(_this.lineStyle);
+                                //初始化显示默认节点的位置
+                                for (let j=0;j<len;j++){
+                                    var curId = "item_"+_this.design_data[j].item_id;
+                                    var firstChild = document.getElementById(curId);
+                                    firstChild.style.top = _this.design_data[j].axis_y+ "px";
+                                    firstChild.style.left = _this.design_data[j].axis_x + "px";
+                                }
+                                //初始化线的位置，因为线可能比点多，所以不能共用循环
+                                let lineLen = _this.line_data.length;
+                                for (let q = 0; q< lineLen; q++){ 
+                                    var newLength = 0;//记录这是第几根线
+                                    var clickObjId = "";//点击对象的id，是加号还是规则框
+                                    var sourceId ,targetId;
+                                    var oldSId =_this.line_data[q]["d_source_id"];
+                                    var oldTId =_this.line_data[q]["d_target_id"];
+                                    if(oldSId === "-1"){
+                                        sourceId = "root_box";
+                                    }else{
+                                        sourceId = "item_" + oldSId;
+                                    }
+                                    if(oldTId === "-2"){
+                                        targetId = "end_box";
+                                    }else{
+                                        targetId = "item_" + oldTId;
+                                    }
+                                    _this.jsplumb.connect({
+                                        source: sourceId,
+                                        target: targetId,
+                                        overlays: [
+                                            ["Custom", {
+                                                create: function (component) {
+                                                    var element = document.createElement("div");
+                                                    var elementChild = document.createElement("span");//加号
+                                                    var elementChildSe = document.createElement("div");
+                                                    var svg = document.getElementById("diagramContainer").getElementsByTagName("svg");
+                                                    var length = svg.length;
+                                                    for(var n = 0 ;n < length ;n ++){
+                                                        if( svg[n].parentNode.id === "diagramContainer"){
+                                                            newLength ++;
+                                                        }
+                                                    }
+                                                    if(!_this.line_data[q].rule){//没有规则时要创建加号
+                                                        elementChild.className = "iconBg rule-icon";
+                                                        elementChild.setAttribute("id",'addRule_' + newLength);
+                                                        element.appendChild(elementChild);
+                                                        clickObjId = 'addRule_' + newLength;
+                                                    }else{
+                                                        elementChildSe.className = "rule-hasValue";
+                                                        elementChildSe.innerText = _this.line_data[q].rule;
+                                                        clickObjId = 'ruleChange_' + newLength;
+                                                    }
+                                                    elementChildSe.setAttribute("id",'ruleChange_' + newLength);
+                                                    element.appendChild(elementChildSe);
+                                                    return element;
+                                                },
+                                                location: 0.5,
+                                                cssClass: "item-label"
+                                            }]
+                                        ]
+                                    })
+                                    document.getElementById(clickObjId).onclick=function(){
+                                        //清空弹出框数据
+                                        _this.addRuleCurData = {};
+                                        _this.addRuleCurData.item_id = _this.line_data[q].d_target_id;
+                                        if(_this.line_data[q].rule){//非加号时
+                                            let rules = _this.line_data[q].rule.split("~");
+                                            _this.addRuleCurData.min = rules[0];
+                                            _this.addRuleCurData.max = rules[1];
+                                            _this.addRuleCurData.isEdit = true;
+                                        }
+                                        _this.addRuleDialogVisible = true;
+                                    }
+                                    _this.jsplumb.draggable(targetId);
+                                }
+                            },0) 
+                        }
+                        
+                    }
+                })
+            }
+            
+        },
+        //删除工作流
+        delFlow:function(row,index,rows){
+            this.$confirm("确认删除当前工作流吗","提示",{
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() =>{
+                this.$axios({
+                    url:"/cfm/adminProcess",
+                    method:"post",
+                    data:{
+                        optype:"wfdefine_del",
+                        params:{
+                            id:row.id
+                        }
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                        return;
+                    }
+                    if(this.pagCurrent < (this.pagTotal/this.pagSize)){ //存在下一页
+                        this.$emit('getTableData', this.routerMessage);
+                    }else{
+                        if(rows.length == "1" && this.routerMessage.todo.params.page_num!=1){ //是当前页最后一条
+                            this.routerMessage.todo.params.page_num--;
+                            this.$emit('getTableData', this.routerMessage);
+                        }else{
+                            rows.splice(index, 1);
+                            this.pagTotal--;
+                        }
+                    }
+                    this.$message({
+                        type: "success",
+                        message: "删除成功",
+                        duration: 2000
+                    })
+                }).catch(function(error){
+                    console.log(error)
+                })
+            }).catch(() => {
+            });
+        },
+        //关闭流程图弹框
+        handleClose:function(){
+            //清空工作流相关数据
+            this.jsplumb.empty("diagramContainer");
+            this.matrixArr = [];
+            this.line_data = [];
+            this.design_data = [];
+            this.flowBase = {};
+            this.nextStepDialogVisible = false;
+            this.createDialogData.reject_strategy = "";
+            this.createDialogData.lanes = "";
+        },
+        //清空工作流相关数据，由于不能再打开弹出框的时候删除，所以在关闭的时候删除
+        cancelWorkflow:function(){
+            this.jsplumb.empty("diagramContainer");
+            this.matrixArr = [];
+            this.line_data = [];
+            this.design_data = [];
+            this.flowBase = {};
+            this.nextStepDialogVisible = false;
+            this.createDialogData.reject_strategy = "";
+            this.createDialogData.lanes = "";
+        },
+        firstEndId: function(item){
+            if(item.item_id == "-1"){
+                return "root_box";
+            }else if(item.item_id == "-2"){
+                return "end_box";
+            }else{
+                return;
+            }
+        },
+        isFirstEnd:function(item){
+            if(item.item_id == "-1" || item.item_id == "-2"){
+                return true;
+            }else{
+                return false;
+            }
+        },
+        //查看工作流
+        lookFlow:function(row){
+            if(row.id){
+               this.$axios({
+                    url:"/cfm/adminProcess",
+                    method:"post",
+                    data:{
+                        optype:"wfdefine_detail",
+                        params:{
+                            id:row.id
+                        }
+                    }
+                }).then((result) =>{
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                        return;
+                    }else{
+                        let getData = result.data.data;
+                        let define = getData.define;
+                        this.createDialogData.workflow_name = getData.workflow_name;
+                        this.createDialogData.reject_strategy = define.reject_strategy;
+                        this.lookFlowDialogVisible = true;
+                        //将数据传递给子组件
+                        this.flowList = define;
+                        this.isEmptyFlow = false;
+                    }
+                }) 
+            }
+        },
+        //关闭查看工作流弹框
+        cancelLookFlow:function(){
+            this.isEmptyFlow = true;
+            this.lookFlowDialogVisible = false;
+            this.flowList = {};
         }
+    },
+    computed: {
+        
     },
     watch: {
         tableData: function (val, oldVal) {
