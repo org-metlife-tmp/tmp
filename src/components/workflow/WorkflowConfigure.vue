@@ -96,6 +96,17 @@
         font-size: 18px;
         font-weight: 400;
     }
+    /**/
+    .formflot{
+        display: inline-block;
+        .el-input{
+            width:60%;
+        }
+        .el-input__inner {
+            height: 30px;
+            line-height: 30px;
+        }
+    }
 </style>
 <style lang="less" type="text/less">
     #workflowConfigure {
@@ -138,7 +149,7 @@
                         </el-tooltip>
                         <el-tooltip content="查看" placement="bottom" effect="light" :enterable="false" :open-delay="500">
                             <el-button size="mini"
-                                       @click=""
+                                       @click="lookFlow(scope.row)"
                                        class="look-work-flow"></el-button>
                         </el-tooltip>
                         <el-tooltip content="配置" placement="bottom" effect="light" :enterable="false" :open-delay="500">
@@ -277,10 +288,36 @@
                 </span>
             </el-dialog>
         </el-dialog>
+        <!--查看工作流弹出框-->
+        <el-dialog :visible.sync="lookFlowDialogVisible"
+                   width="800px" title="新建流程"
+                   :close-on-click-modal="false"
+                   :before-close="cancelLookFlow"
+                   top="56px">
+            <h1 slot="title" class="dialog-title">查看流程</h1>
+            <div>
+                <div class="formflot" style="margin-bottom:15px">
+                    <span>流程名称</span>
+                    <el-input v-model="createDialogData.workflow_name" disabled></el-input>
+                </div>
+                <div class="formflot">
+                    <span>审批退回</span>
+                    <el-input v-model="createDialogData.reject_strategy" disabled></el-input>
+                </div>
+            </div>
+            <WorkFlow
+                :flowList="flowList"
+                :isEmptyFlow="isEmptyFlow"
+            ></WorkFlow>
+            <span slot="footer" class="dialog-footer">
+                <el-button type="warning" size="mini" plain @click="cancelLookFlow">取 消</el-button>
+            </span>
+        </el-dialog>
     </div>
 </template>
 
 <script>
+import WorkFlow from "../publicModule/WorkFlow.vue";
     export default {
         name: "WorkflowConfigure",
         created: function () {
@@ -305,6 +342,9 @@
             }
         },
         props: ["tableData"],
+        components:{
+            WorkFlow:WorkFlow
+        },
         data: function () {
             return {
                 routerMessage: { //本页数据获取参数
@@ -343,6 +383,10 @@
                 majorSelect: [],
                 majorIndeter: false,
                 majorAll: false,
+                lookFlowDialogVisible:false,
+                createDialogData:{},
+                flowList:{},
+                isEmptyFlow:false
             }
         },
         methods: {
@@ -676,6 +720,45 @@
                 this.majorAll = checkedCount === allLength;
                 this.majorIndeter = checkedCount > 0 && checkedCount < allLength;
             },
+            //查看工作流
+            lookFlow:function(row){
+                if(row.id){
+                this.$axios({
+                        url:"/cfm/adminProcess",
+                        method:"post",
+                        data:{
+                            optype:"wfdefine_detail",
+                            params:{
+                                id:row.id
+                            }
+                        }
+                    }).then((result) =>{
+                        if (result.data.error_msg) {
+                            this.$message({
+                                type: "error",
+                                message: result.data.error_msg,
+                                duration: 2000
+                            })
+                            return;
+                        }else{
+                            let getData = result.data.data;
+                            let define = getData.define;
+                            this.createDialogData.workflow_name = getData.workflow_name;
+                            this.createDialogData.reject_strategy = define.reject_strategy;
+                            this.lookFlowDialogVisible = true;
+                            //将数据传递给子组件
+                            this.flowList = define;
+                            this.isEmptyFlow = false;
+                        }
+                    }) 
+                }
+            },
+            //关闭查看工作流弹框
+            cancelLookFlow:function(){
+                this.isEmptyFlow = true;
+                this.lookFlowDialogVisible = false;
+                this.flowList = {};
+            }
         },
         watch: {
             tableData: function (val, oldVal) {

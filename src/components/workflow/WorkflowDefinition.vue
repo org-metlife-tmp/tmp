@@ -582,13 +582,11 @@
             <div>
                 <div class="formflot" style="margin-bottom:15px">
                     <span>流程名称</span>
-                    <el-input v-model="createDialogData.workflow_name"></el-input>
-                    <!-- <span>{{createDialogData.workflow_name}}</span> -->
+                    <el-input v-model="createDialogData.workflow_name" disabled></el-input>
                 </div>
                 <div class="formflot">
                     <span>审批退回</span>
-                    <el-input v-model="createDialogData.reject_strategy"></el-input>
-                    <!-- <span>{{createDialogData.reject_strategy}}</span> -->
+                    <el-input v-model="createDialogData.reject_strategy" disabled></el-input>
                 </div>
             </div>
             <WorkFlow
