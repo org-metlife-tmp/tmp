@@ -65,6 +65,13 @@
         .ruler-input.el-input {
             width: 34%;
         }
+
+        .showBtn{
+            display: inline-block;
+        }
+        .scrBtn{
+            display: none
+        }
     }
 </style>
 <style lang="less">
@@ -97,7 +104,7 @@
         }
         #end_box{
             top: 100px;
-            left: 700px;
+            right: 0;
             border: 1px solid orange;
             span{
                 background-position: -36px -369px;
@@ -239,6 +246,10 @@
                     z-index: 1;
                     width: 100%;
                     .child-users-source{
+                        transition: all 1s;
+                        -moz-transition: all 1s; /* Firefox 4 */
+                        -webkit-transition: all 1s; /* Safari and Chrome */
+                        -o-transition: all 1s; /* Opera */
                         display: inline-block;
                         .el-tag{
                             border-radius: 13px;
@@ -252,6 +263,12 @@
                         }
                     } 
                 }
+                .showBtn{
+                    display: inline-block!important;
+                }
+                .scrBtn{
+                    display: none;
+                }
                 .left-icon, .right-icon {
                     width: 10px;
                     height: 15px;
@@ -259,7 +276,8 @@
                     border: 0;
                     position: absolute;
                     top: 4px;
-                    display: inline-block;
+                    outline: none;
+                    // display: inline-block;
                 }
                 .left-icon {
                     left: 4px;
@@ -436,7 +454,7 @@
         </el-dialog>
         <!--下一步弹出框-->
         <el-dialog :visible.sync="nextStepDialogVisible"
-                   width="800px" title="新建流程"
+                   width="960px" title="新建流程"
                    :close-on-click-modal="false"
                    :before-close="handleClose"
                    top="56px">
@@ -459,10 +477,13 @@
             </div>
             <div id="diagramContainer">
                 <template  v-for="(item,index) in design_data">
-                    <div v-if="isFirstEnd(item)" :id="firstEndId(item)" :key="item.item_id" class="firstEnd" @click="creatFirst">
+                    <div v-if="item.item_id=='-1'" id="root_box" :key="item.item_id" class="firstEnd" @click="creatFirst">
                         <span class="iconBg"></span>
                     </div>
-                    <div v-if="!isFirstEnd(item)" :id="'item_'+item.item_id" draggable="true" class="child_item" :key="item.item_id">
+                    <div v-if="item.item_id=='-2'" id="end_box" :key="item.item_id" class="firstEnd">
+                        <span class="iconBg"></span>
+                    </div>
+                    <div v-if="isFirstEnd(item)" :id="'item_'+item.item_id" draggable="true" class="child_item" :key="item.item_id">
                         <span class="child_no"><i class="child_num">{{item.item_id}}</i></span>
                         <div class="child_org" v-show="item.isOrg">
                             <el-select v-model="item.push_org">
@@ -509,8 +530,8 @@
                                     </el-tag>
                                 </div>
                             </div> 
-                            <button class="iconBg left-icon" @click="leftMove($event)"></button>     
-                            <button class="iconBg right-icon" @click="rightMove($event)"></button> 
+                            <button class="iconBg left-icon scrBtn" @click="leftMove($event)"></button>     
+                            <button class="iconBg right-icon scrBtn" @click="rightMove($event)"></button> 
                         </div>
                         <div class="child_add iconBg" @click="addChild(item.n_column,item.axis_x,item.item_id)"></div>
                         <div class="check_redirect iconBg" @click="selectFlow(item.n_column,item.item_id)"></div>
@@ -844,6 +865,10 @@ export default {
                             //清空弹出框数据
                             _this.addRuleCurData = {};
                             _this.addRuleDialogVisible = true;
+                            if(j===0){
+                                _this.addRuleCurData.source_id = "-1";
+                            }
+                             _this.addRuleCurData.source_id = j + "";
                             _this.addRuleCurData.item_id = _this.design_data[j].item_id;
                             _this.selectLineId = event.target.id;
                         }
@@ -940,6 +965,7 @@ export default {
                     //清空弹出框数据
                     _this.addRuleCurData = {};
                     _this.addRuleDialogVisible = true;
+                    _this.addRuleCurData.source_id = "-1";
                     _this.addRuleCurData.item_id = item_id + "";
                     _this.selectLineId = event.target.id;
                 }
@@ -1027,6 +1053,7 @@ export default {
                     _this.addRuleCurData = {};
 
                     _this.addRuleDialogVisible = true;
+                    _this.addRuleCurData.source_id = id + "";
                     _this.addRuleCurData.item_id = item_id + "" ;
                     _this.selectLineId = event.target.id;
                 }
@@ -1041,7 +1068,7 @@ export default {
                 var len = arrList.length;
                 var str = "";
                 for(var i = 0; i<len;i++){
-                    if(arrList[i].d_target_id === curData.item_id){
+                    if(arrList[i].d_target_id === curData.item_id && arrList[i].d_source_id === curData.source_id){
                         str = curData.min + "~" + curData.max;
                         arrList[i].rule = str;
                         break;
@@ -1058,6 +1085,7 @@ export default {
                     curShowEle.onclick=function(event){
                         _this.addRuleDialogVisible = true;
                         _this.addRuleCurData.item_id =  curData.item_id;
+                        _this.addRuleCurData.source_id = curData.d_source_id;
                         _this.addRuleCurData.min =  curData.min;
                         _this.addRuleCurData.max =  curData.max;
                         _this.selectLineId = event.target.id;
@@ -1113,10 +1141,29 @@ export default {
             let id = item.curUser;
             let obj = {};
             let arrList,key,index;
+            let flag = false;
+            //重复选择的判断
+            if(item.data){
+                if(item.data.users && item.data.users.indexOf(id) > -1){
+                    flag = true; 
+                }else if(item.data.position && item.data.position.indexOf(id) > -1){
+                    flag = true; 
+                }
+            }
+
+            if(flag){
+                this.$message({
+                    message: '不能重复选择！',
+                    type: 'warning'
+                });
+                item.curUser = "";
+                return ;
+            }
+
             if(type === 'user'){
                 arrList = this.user_list;
                 key = "usr_id";
-            }else{
+            }else{ 
                 arrList = this.position_list;
                 key = "pos_id";
             }
@@ -1134,6 +1181,17 @@ export default {
             // this.$set(item.addUsers,0,obj);
             item.addUsers.push(obj);
 
+            setTimeout(() =>{
+               //是否显示左右按钮(这里的时候，新添加的dom还没有追加上，所以写在settimeout中)
+                let curDom = document.getElementById("item_"+item.item_id);
+                let conDomW = curDom.getElementsByClassName("child-users-container")[0].offsetWidth;
+                let scrDomW = curDom.getElementsByClassName("child-users-source")[0].offsetWidth;
+                if(scrDomW > conDomW){
+                    let btn = curDom.getElementsByClassName("scrBtn");
+                    btn[0].classList.add("showBtn");
+                    btn[1].classList.add("showBtn");
+                } 
+            },0)
             item.data = item.data ? item.data : {};
             if(item.isOrg){
                 item.data.user_type = "1";
@@ -1145,18 +1203,38 @@ export default {
                 item.data.users= item.data.users ? item.data.users : [];
                 item.data.users.push(id);
             }
+            item.curUser = "";
         },
         //删除用户
         deleteUser:function(tag,item) {
-            var list = item.addUsers;
-            var len = list.length;
+            let list = item.addUsers;
+            let len = list.length;
             for(let j=0;j<len;j++){
                 if(list[j].id === tag){
                    list.splice(j,1);
                    break;
                 }
             }
-            item.data.users.splice(item.data.users.indexOf(tag), 1);
+            if(item.isOrg){
+                item.data.position.splice(item.data.position.indexOf(tag), 1);
+            }else{
+                item.data.users.splice(item.data.users.indexOf(tag), 1);
+            }
+
+            let curWidth = event.currentTarget.parentNode.offsetWidth;
+            let curDom = document.getElementById("item_"+item.item_id);
+            let conDomW = curDom.getElementsByClassName("child-users-container")[0].offsetWidth;
+            let scrDomW = curDom.getElementsByClassName("child-users-source")[0].offsetWidth;
+            if(scrDomW - curWidth < conDomW){
+                let btn = curDom.getElementsByClassName("scrBtn");
+                btn[0].classList.remove("showBtn");
+                btn[1].classList.remove("showBtn");
+            } 
+            if(conDomW - scrDomW + curWidth > 0){
+                curDom.getElementsByClassName("child-users-source")[0].style.marginLeft = 0 +"px";
+            }else{
+                curDom.getElementsByClassName("child-users-source")[0].style.marginLeft = conDomW - scrDomW + curWidth +"px";
+            }
         },
         //切换机构或用户
         changeOrgUser:function(item){
@@ -1186,7 +1264,19 @@ export default {
             }
 
             let column = item.n_column * 1;
-            this.matrixArr[column].splice(this.matrixArr[column].indexOf(item.item_id), 1);
+            let curColNode = this.matrixArr[column];
+            curColNode.splice(curColNode.indexOf(item.item_id), 1);
+            if( curColNode.length === 0){//删除后该列没有节点，移除该列，后面列的列数往前瞬移一位
+                delete this.matrixArr[column];
+                let newArr = {};
+                let num =1;
+                for(let i in this.matrixArr){
+                    newArr[num] = this.matrixArr[i];
+                    num ++;
+                }
+                this.matrixArr = newArr;
+            }
+            debugger
             //当前删除元素id
             let id = event.currentTarget.parentNode.getAttribute("id");
             this.jsplumb.remove(id);
@@ -1264,6 +1354,7 @@ export default {
                 _this.addRuleCurData = {};
 
                 _this.addRuleDialogVisible = true;
+                _this.addRuleCurData.source_id = this.selectFlowData.item_id;
                 _this.addRuleCurData.item_id = _this.selectFlowData.target_id+"";
                 _this.selectLineId = event.target.id;
             }
@@ -1347,14 +1438,6 @@ export default {
         //修改工作流(修改，复制)
         editFlow:function(row,type){
             if(row.id){
-                var useObj = {};
-                this.user_list.forEach(function(item, index){
-                    useObj[item.usr_id] = item.name;
-                })
-                var posObj = {};
-                this.position_list.forEach(function(item, index){
-                    posObj[item.pos_id] = item.name;
-                })
                 var _this=this;
                 this.$axios({
                     url:"/cfm/adminProcess",
@@ -1411,35 +1494,18 @@ export default {
 
                                 let selOptions = JSON.parse(nodes[i].data);
                                 nodes[i].data = {};
-                                nodes[i].addUsers = [];
                                 nodes[i].curUser = "";
                                 nodes[i].push_org = "";
                                 if(selOptions["users"]){//选的是用户
                                     nodes[i].data.user_type = "0";
                                     nodes[i].isOrg = false;
                                     nodes[i].data["users"]= selOptions["users"];
-                                    let l = selOptions["users"].length;
-                                    let arr = selOptions["users"];
-                                    for(let k = 0; k < l; k++){
-                                        let key = arr[k];
-                                        if(useObj[key]){
-                                            nodes[i].addUsers.push({id:key,name:useObj[key]});
-                                        }
-                                    } 
                                 }else{
                                     nodes[i].isOrg = true;
                                     nodes[i].data.user_type = "1";
                                     nodes[i].push_org = selOptions["push_org"];
                                     nodes[i].data.push_org = selOptions["push_org"];
                                     nodes[i].data["position"]= selOptions["position"];
-                                    let l = selOptions["position"].length;
-                                    let arr = selOptions["position"];
-                                    for(let k = 0; k < l; k++){
-                                        let key = arr[k];
-                                        if(posObj[key]){
-                                            nodes[i].addUsers.push({id:key,name:posObj[key]});
-                                        }
-                                    } 
                                 }
                             }
                             this.design_data = nodes;//点数据
@@ -1452,10 +1518,17 @@ export default {
                                 _this.jsplumb = jsPlumb.getInstance(_this.lineStyle);
                                 //初始化显示默认节点的位置
                                 for (let j=0;j<len;j++){
-                                    var curId = "item_"+_this.design_data[j].item_id;
-                                    var firstChild = document.getElementById(curId);
+                                    let curId = "item_"+_this.design_data[j].item_id;
+                                    let firstChild = document.getElementById(curId);
                                     firstChild.style.top = _this.design_data[j].axis_y+ "px";
                                     firstChild.style.left = _this.design_data[j].axis_x + "px";
+                                    let conDomW = firstChild.getElementsByClassName("child-users-container")[0].offsetWidth;
+                                    let scrDomW = firstChild.getElementsByClassName("child-users-source")[0].offsetWidth;
+                                    if(scrDomW > conDomW){
+                                        let btn = firstChild.getElementsByClassName("scrBtn");
+                                        btn[0].classList.add("showBtn");
+                                        btn[1].classList.add("showBtn");
+                                    }
                                 }
                                 //初始化线的位置，因为线可能比点多，所以不能共用循环
                                 let lineLen = _this.line_data.length;
@@ -1513,6 +1586,7 @@ export default {
                                     document.getElementById(clickObjId).onclick=function(event){
                                         //清空弹出框数据
                                         _this.addRuleCurData = {};
+                                        _this.addRuleCurData.source_id = _this.line_data[q].d_source_id;
                                         _this.addRuleCurData.item_id = _this.line_data[q].d_target_id;
                                         if(_this.line_data[q].rule){//非加号时
                                             let rules = _this.line_data[q].rule.split("~");
@@ -1614,9 +1688,9 @@ export default {
         },
         isFirstEnd:function(item){
             if(item.item_id == "-1" || item.item_id == "-2"){
-                return true;
-            }else{
                 return false;
+            }else{
+                return true;
             }
         },
         //查看工作流
