@@ -558,9 +558,9 @@
                         <path d="M50 5 L 42 0 L 42 10 L 50 5 z" fill="#ccc"></path>
                     </svg>
                     <span class="rule-source">{{addRuleCurData.item_id}}</span>
-                    <el-input class="ruler-input" v-model="addRuleCurData.min" placeholder="大于等于"></el-input>
+                    <el-input class="ruler-input" v-model="addRuleCurData.min" placeholder="大于等于" oninput="javascript:this.value=this.value.replace(/[^\d]/g,'')"></el-input>
                     -
-                    <el-input class="ruler-input" v-model="addRuleCurData.max" placeholder="小于"></el-input>
+                    <el-input class="ruler-input" v-model="addRuleCurData.max" placeholder="小于" oninput="javascript:this.value=this.value.replace(/[^\d]/g,'')"></el-input>
             </el-form>
             <span slot="footer" class="dialog-footer">
                 <el-button type="warning" size="mini" @click="saveRules(addRuleCurData)">确 定</el-button>
@@ -678,7 +678,11 @@ export default {
             pagTotal: 1,
             pagCurrent: 1,
             createDialogVisible: false,
-            createDialogData: {},
+            createDialogData: {
+                reject_strategy:"",
+                lanes:"",
+                workflow_name:""
+            },
             back_options:[
                 {id:1,name:'初始提交人'},
                 {id:2,name:'上级审批人'},
@@ -813,29 +817,28 @@ export default {
                 this.design_data.push({item_id: "-2"});
 
                 this.nextStepDialogVisible = true;
-                var _this=this;
                 
-                setTimeout(function(){
-                    _this.jsplumb = jsPlumb.getInstance(_this.lineStyle);
+                setTimeout(() =>{
+                    this.jsplumb = jsPlumb.getInstance(this.lineStyle);
                     //初始化显示默认节点的位置
                     for (let j = 0;j<initalNum;j++){
                         // var newLength = 0 ;   
-                        var curId = "item_"+_this.design_data[j].item_id;
+                        var curId = "item_" + this.design_data[j].item_id;
                         var firstChild = document.getElementById(curId);
-                        firstChild.style.top = _this.design_data[j].axis_y+ "px";
-                        firstChild.style.left = _this.design_data[j].axis_x + "px";
+                        firstChild.style.top = this.design_data[j].axis_y+ "px";
+                        firstChild.style.left = this.design_data[j].axis_x + "px";
                         if(j === 0){
                             var sourceId = "root_box";
                         }else{
                             var sourceId = "item_" + j ;
                         } 
                         var targetId = "item_" + (j+1);
-                        _this.jsplumb.connect({
+                        this.jsplumb.connect({
                             source: sourceId,
                             target: targetId,
                             overlays: [
                                 ["Custom", {
-                                    create: function (component) {
+                                    create:  (component)=> {
                                         var element = document.createElement("div");
                                         var elementChild = document.createElement("span");
                                         var elementChildSe = document.createElement("div");
@@ -861,16 +864,18 @@ export default {
                                 }]
                             ]
                         })
-                        document.getElementById("addRule_"+(j+1)).onclick=function(event){
+                        document.getElementById("addRule_"+(j+1)).onclick=(event)=>{
                             //清空弹出框数据
-                            _this.addRuleCurData = {};
-                            _this.addRuleDialogVisible = true;
+                            this.addRuleCurData = {};
+                            this.addRuleDialogVisible = true;
                             if(j===0){
-                                _this.addRuleCurData.source_id = "-1";
+                                this.addRuleCurData.source_id = "-1";
+                            }else{
+                                this.addRuleCurData.source_id = j + ""; 
                             }
-                             _this.addRuleCurData.source_id = j + "";
-                            _this.addRuleCurData.item_id = _this.design_data[j].item_id;
-                            _this.selectLineId = event.target.id;
+                            
+                            this.addRuleCurData.item_id = this.design_data[j].item_id;
+                            this.selectLineId = event.target.id;
                         }
                         // document.getElementById(curId).onmouseup = function(event) {
                         //     // 存储拖拽数据和拖拽效果...
@@ -882,7 +887,7 @@ export default {
                         //     // event.dataTransfer.setData("Text",ev.target.id);
                         //     console.log(event.target.offsetLeft,event.target.offsetTop);
                         // }
-                        _this.jsplumb.draggable(targetId);
+                        this.jsplumb.draggable(targetId);
                     }
                 },0) 
             }else{
@@ -897,7 +902,6 @@ export default {
         //点击创建第一列的节点
         creatFirst:function(){
             
-            var _this=this;
             //每点击一次该列数据增加一条
             var top = this.matrixArr[1].length * 180;
             
@@ -924,19 +928,19 @@ export default {
                     rule:""
                 }
             )
-            setTimeout(function(){
+            setTimeout(() =>{
                 //初始化显示默认节点的位置
                 var newChild = document.getElementById(newId);
                 newChild.style.top = top + "px";
                 newChild.style.left = "200px" ;
 
                 var newLength = 0 ;
-                _this.jsplumb.connect({
+                this.jsplumb.connect({
                     source: 'root_box',
                     target: newId,
                     overlays: [
                             ["Custom", {
-                                create: function (component) {
+                                create:  (component)=> {
                                     var element = document.createElement("div");
                                     var elementChild = document.createElement("span");
                                     var elementChildSe = document.createElement("div");
@@ -961,21 +965,20 @@ export default {
                             }]
                     ]
                 })
-                document.getElementById("addRule_"+newLength).onclick=function(event){
+                document.getElementById("addRule_"+newLength).onclick=(event)=>{
                     //清空弹出框数据
-                    _this.addRuleCurData = {};
-                    _this.addRuleDialogVisible = true;
-                    _this.addRuleCurData.source_id = "-1";
-                    _this.addRuleCurData.item_id = item_id + "";
-                    _this.selectLineId = event.target.id;
+                    this.addRuleCurData = {};
+                    this.addRuleDialogVisible = true;
+                    this.addRuleCurData.source_id = "-1";
+                    this.addRuleCurData.item_id = item_id + "";
+                    this.selectLineId = event.target.id;
                 }
-                _this.jsplumb.draggable(newId);
+                this.jsplumb.draggable(newId);
                 
             },0)
         },
         //添加其他列的节点
         addChild:function(column,x,id){
-            var _this=this;
             //如果该列有数据，增加该列数据的个数
             //如果该列没有数据，增加this.matrixArr新push一列
             column = Number(column);
@@ -1009,19 +1012,19 @@ export default {
                     rule:""
                 }
             )
-            setTimeout(function(){
+            setTimeout(() =>{
                 //初始化显示默认节点的位置
                 var newChild = document.getElementById(newId);
                 newChild.style.top = top + "px";
                 newChild.style.left = left + "px" ;
 
                 var newLength = 0 ;
-                _this.jsplumb.connect({
+                this.jsplumb.connect({
                     source: curId,
                     target: newId,
                     overlays: [
                         ["Custom", {
-                            create: function (component) {
+                            create:  (component)=> {
                                 var element = document.createElement("div");
                                 var elementChild = document.createElement("span");
                                 var elementChildSe = document.createElement("div");
@@ -1048,28 +1051,29 @@ export default {
                 })
                 
                 
-                document.getElementById("addRule_"+newLength).onclick=function(event){
+                document.getElementById("addRule_"+newLength).onclick=(event)=>{
                     //清空弹出框数据
-                    _this.addRuleCurData = {};
+                    this.addRuleCurData = {};
 
-                    _this.addRuleDialogVisible = true;
-                    _this.addRuleCurData.source_id = id + "";
-                    _this.addRuleCurData.item_id = item_id + "" ;
-                    _this.selectLineId = event.target.id;
+                    this.addRuleDialogVisible = true;
+                    this.addRuleCurData.source_id = id + "";
+                    this.addRuleCurData.item_id = item_id + "" ;
+                    this.selectLineId = event.target.id;
                 }
-                _this.jsplumb.draggable(newId);
+                this.jsplumb.draggable(newId);
             })
         },
         //保存规则
         saveRules:function(curData){
-            
-            if(curData.min && curData.max){
+            let min = curData.min;
+            let max = curData.max;
+            if(min && max && min < max){
                 var arrList = this.line_data;
                 var len = arrList.length;
                 var str = "";
                 for(var i = 0; i<len;i++){
                     if(arrList[i].d_target_id === curData.item_id && arrList[i].d_source_id === curData.source_id){
-                        str = curData.min + "~" + curData.max;
+                        str = min + "~" + max;
                         arrList[i].rule = str;
                         break;
                     }
@@ -1079,18 +1083,23 @@ export default {
                 var curShowEle = document.getElementById("ruleChange_" + id);
                 curShowEle.innerText = str;
                 if(!curData.isEdit){//新建工作流时，添加新规则时，要隐藏加号，显示规则，修改的时候如果原来有规则则不需要
-                    var _this = this;
                     curShowEle.style.display = "inline-block";
                     curShowEle.previousElementSibling.className = "";
-                    curShowEle.onclick=function(event){
-                        _this.addRuleDialogVisible = true;
-                        _this.addRuleCurData.item_id =  curData.item_id;
-                        _this.addRuleCurData.source_id = curData.d_source_id;
-                        _this.addRuleCurData.min =  curData.min;
-                        _this.addRuleCurData.max =  curData.max;
-                        _this.selectLineId = event.target.id;
+                    curShowEle.onclick = ()=>{
+                        this.addRuleDialogVisible = true;
+                        this.addRuleCurData.item_id =  curData.item_id;
+                        this.addRuleCurData.source_id = curData.d_source_id;
+                        this.addRuleCurData.min =  min;
+                        this.addRuleCurData.max =  max;
+                        this.selectLineId = event.target.id;
                     }
                 }
+            }else{
+                this.$message({
+                    message: '请输入正确的数字！',
+                    type: 'warning'
+                });
+                return;
             }
         },
         //左移
@@ -1264,19 +1273,7 @@ export default {
             }
 
             let column = item.n_column * 1;
-            let curColNode = this.matrixArr[column];
-            curColNode.splice(curColNode.indexOf(item.item_id), 1);
-            if( curColNode.length === 0){//删除后该列没有节点，移除该列，后面列的列数往前瞬移一位
-                delete this.matrixArr[column];
-                let newArr = {};
-                let num =1;
-                for(let i in this.matrixArr){
-                    newArr[num] = this.matrixArr[i];
-                    num ++;
-                }
-                this.matrixArr = newArr;
-            }
-            debugger
+            this.matrixArr[column].splice(this.matrixArr[column].indexOf(item.item_id), 1);
             //当前删除元素id
             let id = event.currentTarget.parentNode.getAttribute("id");
             this.jsplumb.remove(id);
@@ -1318,13 +1315,12 @@ export default {
             )
 
             var newLength = 0;
-            var _this = this;
             this.jsplumb.connect({
                 source: curId,
                 target: newId,
                 overlays: [
                     ["Custom", {
-                        create: function (component) {
+                        create: (component) => {
                             var element = document.createElement("div");
                             var elementChild = document.createElement("span");
                             var elementChildSe = document.createElement("div");
@@ -1336,7 +1332,6 @@ export default {
                                 }
                             }
                             elementChild.className = "iconBg rule-icon";
-                            // elementChild.setAttribute("nodeId","item_1");
                             elementChild.setAttribute("id",'addRule_'+newLength);
                             elementChildSe.setAttribute("id",'ruleChange_'+newLength);
                             elementChildSe.className = "rule-div";
@@ -1349,14 +1344,14 @@ export default {
                     }]
                 ]
             })
-            document.getElementById("addRule_"+newLength).onclick=function(event){
+            document.getElementById("addRule_"+newLength).onclick=(event) =>{
                 //清空弹出框数据
-                _this.addRuleCurData = {};
+                this.addRuleCurData = {};
 
-                _this.addRuleDialogVisible = true;
-                _this.addRuleCurData.source_id = this.selectFlowData.item_id;
-                _this.addRuleCurData.item_id = _this.selectFlowData.target_id+"";
-                _this.selectLineId = event.target.id;
+                this.addRuleDialogVisible = true;
+                this.addRuleCurData.source_id = this.selectFlowData.item_id;
+                this.addRuleCurData.item_id = this.selectFlowData.target_id+"";
+                this.selectLineId = event.target.id;
             }
             // jsPlumb.draggable(newId);
             this.selectFlowDialogVisible = false;
@@ -1438,7 +1433,6 @@ export default {
         //修改工作流(修改，复制)
         editFlow:function(row,type){
             if(row.id){
-                var _this=this;
                 this.$axios({
                     url:"/cfm/adminProcess",
                     method:"post",
@@ -1514,14 +1508,14 @@ export default {
                             this.design_data.push({item_id: "-2"});
 
                             this.nextStepDialogVisible = true;
-                            setTimeout(function(){
-                                _this.jsplumb = jsPlumb.getInstance(_this.lineStyle);
+                            setTimeout(() =>{
+                                this.jsplumb = jsPlumb.getInstance(this.lineStyle);
                                 //初始化显示默认节点的位置
                                 for (let j=0;j<len;j++){
-                                    let curId = "item_"+_this.design_data[j].item_id;
+                                    let curId = "item_"+this.design_data[j].item_id;
                                     let firstChild = document.getElementById(curId);
-                                    firstChild.style.top = _this.design_data[j].axis_y+ "px";
-                                    firstChild.style.left = _this.design_data[j].axis_x + "px";
+                                    firstChild.style.top = this.design_data[j].axis_y+ "px";
+                                    firstChild.style.left = this.design_data[j].axis_x + "px";
                                     let conDomW = firstChild.getElementsByClassName("child-users-container")[0].offsetWidth;
                                     let scrDomW = firstChild.getElementsByClassName("child-users-source")[0].offsetWidth;
                                     if(scrDomW > conDomW){
@@ -1531,13 +1525,13 @@ export default {
                                     }
                                 }
                                 //初始化线的位置，因为线可能比点多，所以不能共用循环
-                                let lineLen = _this.line_data.length;
+                                let lineLen = this.line_data.length;
                                 for (let q = 0; q< lineLen; q++){ 
                                     var newLength = 0;//记录这是第几根线
                                     var clickObjId = "";//点击对象的id，是加号还是规则框
                                     var sourceId ,targetId;
-                                    var oldSId =_this.line_data[q]["d_source_id"];
-                                    var oldTId =_this.line_data[q]["d_target_id"];
+                                    var oldSId =this.line_data[q]["d_source_id"];
+                                    var oldTId =this.line_data[q]["d_target_id"];
                                     if(oldSId === "-1"){
                                         sourceId = "root_box";
                                     }else{
@@ -1548,12 +1542,12 @@ export default {
                                     }else{
                                         targetId = "item_" + oldTId;
                                     }
-                                    _this.jsplumb.connect({
+                                    this.jsplumb.connect({
                                         source: sourceId,
                                         target: targetId,
                                         overlays: [
                                             ["Custom", {
-                                                create: function (component) {
+                                                create:  (component)=> {
                                                     var element = document.createElement("div");
                                                     var elementChild = document.createElement("span");//加号
                                                     var elementChildSe = document.createElement("div");
@@ -1564,14 +1558,14 @@ export default {
                                                             newLength ++;
                                                         }
                                                     }
-                                                    if(!_this.line_data[q].rule){//没有规则时要创建加号
+                                                    if(!this.line_data[q].rule){//没有规则时要创建加号
                                                         elementChild.className = "iconBg rule-icon";
                                                         elementChild.setAttribute("id",'addRule_' + newLength);
                                                         element.appendChild(elementChild);
                                                         clickObjId = 'addRule_' + newLength;
                                                     }else{
                                                         elementChildSe.className = "rule-hasValue";
-                                                        elementChildSe.innerText = _this.line_data[q].rule;
+                                                        elementChildSe.innerText = this.line_data[q].rule;
                                                         clickObjId = 'ruleChange_' + newLength;
                                                     }
                                                     elementChildSe.setAttribute("id",'ruleChange_' + newLength);
@@ -1583,21 +1577,21 @@ export default {
                                             }]
                                         ]
                                     })
-                                    document.getElementById(clickObjId).onclick=function(event){
+                                    document.getElementById(clickObjId).onclick=(event)=>{
                                         //清空弹出框数据
-                                        _this.addRuleCurData = {};
-                                        _this.addRuleCurData.source_id = _this.line_data[q].d_source_id;
-                                        _this.addRuleCurData.item_id = _this.line_data[q].d_target_id;
-                                        if(_this.line_data[q].rule){//非加号时
-                                            let rules = _this.line_data[q].rule.split("~");
-                                            _this.addRuleCurData.min = rules[0];
-                                            _this.addRuleCurData.max = rules[1];
-                                            _this.addRuleCurData.isEdit = true;
+                                        this.addRuleCurData = {};
+                                        this.addRuleCurData.source_id = this.line_data[q].d_source_id;
+                                        this.addRuleCurData.item_id = this.line_data[q].d_target_id;
+                                        if(this.line_data[q].rule){//非加号时
+                                            let rules = this.line_data[q].rule.split("~");
+                                            this.addRuleCurData.min = rules[0];
+                                            this.addRuleCurData.max = rules[1];
+                                            this.addRuleCurData.isEdit = true;
                                         }
-                                        _this.selectLineId = event.target.id;
-                                        _this.addRuleDialogVisible = true;
+                                        this.selectLineId = event.target.id;
+                                        this.addRuleDialogVisible = true;
                                     }
-                                    _this.jsplumb.draggable(targetId);
+                                    this.jsplumb.draggable(targetId);
                                 }
                             },0) 
                         }
