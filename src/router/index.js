@@ -47,6 +47,8 @@ import BankAccount from '@/components/allot/BankAccount'
 import WorkflowDefinition from '@/components/workflow/WorkflowDefinition'
 import WorkflowTrace from '@/components/workflow/WorkflowTrace'
 import WorkflowConfigure from '@/components/workflow/WorkflowConfigure'
+//审批平台
+import MyExamineApprove from '@/components/examineApprove/MyExamineApprove'
 
 
 Vue.use(Router)
@@ -111,6 +113,8 @@ const router = new Router({
                         {path: '/account/account-freeze', name: 'AccountFreeze', component: AccountFreeze, meta: {requireAuth: true}},
                         {path: '/account/close-account-matter', name: 'CloseAccountMatter', component: CloseAccountMatter, meta: {requireAuth: true}},
                         {path: '/account/close-account-message', name: 'CloseAccountMessage', component: CloseAccountMessage, meta: {requireAuth: true}},
+                        //审批平台
+                        {path: '/examine-approve/my-examine-approve', name: 'MyExamineApprove', component: MyExamineApprove, meta: {requireAuth: true}},
                     ]
                 },
                 //调拨通

@@ -231,7 +231,7 @@
             padding-left: 0px!important;
             padding-right: 0px;
             padding-top: 12px;
-            
+
         }
     }
 
@@ -327,6 +327,15 @@
                     <el-menu-item index="/workflow/workflow-configure">业务配置审批流程</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
+            <el-submenu index="6">
+                <template slot="title" height="200px">
+                    <i class="icon-sppt"></i>
+                    <p class="mg-four">审批平台</p>
+                </template>
+                <el-menu-item-group>
+                    <el-menu-item index="/examine-approve/my-examine-approve">我的审批平台</el-menu-item>
+                </el-menu-item-group>
+            </el-submenu>
 
 
             <!--<el-submenu index="3">
@@ -418,18 +427,7 @@
                     <el-menu-item index="1-3">选项3</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="11">
-                <template slot="title" height="200px">
-                    <i class="icon-sppt"></i>
 
-                    <p class="mg-four">审批平台</p>
-                </template>
-                <el-menu-item-group>
-                    <el-menu-item index="1-1">选项1</el-menu-item>
-                    <el-menu-item index="1-2">选项2</el-menu-item>
-                    <el-menu-item index="1-3">选项3</el-menu-item>
-                </el-menu-item-group>
-            </el-submenu>
             <el-submenu index="12">
                 <template slot="title" height="200px">
                     <i class="icon-bb"></i>

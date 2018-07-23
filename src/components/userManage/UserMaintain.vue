@@ -168,7 +168,6 @@
                                   empty-text="请点击新增添加数据"
                                   highlight-current-row
                                   @current-change="udopsCurrentChange">
-                            </el-table-column>
                             <el-table-column label="默认" width="60">
                                 <template slot-scope="scope">
                                     <el-radio v-model="scope.row.is_default" label="1">{{emptyData}}</el-radio>

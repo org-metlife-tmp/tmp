@@ -39,15 +39,22 @@
             bottom: -6px;
         }
 
-        /*按钮-设置状态*/
-        .distribute {
+        /*按钮样式*/
+        .distribute,.withdraw{
             width: 20px;
             height: 20px;
             background-image: url(../../assets/icon_common.png);
-            background-position: -440px -62px;
             border: none;
             padding: 0;
             vertical-align: middle;
+        }
+        /*按钮-设置状态*/
+        .distribute {
+            background-position: -440px -62px;
+        }
+        /*按钮-撤回*/
+        .withdraw{
+            background-position: -48px 0;
         }
 
         /*已处理查看分发人样式*/
@@ -72,6 +79,15 @@
             }
         }
 
+    }
+
+    .el-radio-group {
+        margin-top: -16px;
+        .el-radio {
+            display: block;
+            margin-left: 30px;
+            margin-bottom: 10px;
+        }
     }
 </style>
 <style lang="less" type="text/less">
@@ -173,14 +189,19 @@
                         </el-tooltip>
                         <el-tooltip content="分发" placement="bottom" effect="light"
                                     :enterable="false" :open-delay="500"
-                                    v-show="!isPending && !(scope.row.service_status =='11')">
+                                    v-show="!isPending && (scope.row.service_status =='4')">
                             <el-button size="mini" @click="distMatter(scope.row)" class="distribute"></el-button>
                         </el-tooltip>
                         <el-tooltip content="办结" placement="bottom" effect="light"
                                     :enterable="false" :open-delay="500"
-                                    v-show="!isPending && !(scope.row.service_status =='11')">
+                                    v-show="!isPending && (scope.row.service_status =='4')">
                             <el-button type="success" icon="el-icon-check" size="mini"
                                        @click="concludeMatter(scope.row)"></el-button>
+                        </el-tooltip>
+                        <el-tooltip content="撤回" placement="bottom" effect="light"
+                                    :enterable="false" :open-delay="500"
+                                    v-show="!isPending && (scope.row.service_status =='2')">
+                            <el-button size="mini" class="withdraw" @click="withdrawMatter(scope.row)"></el-button>
                         </el-tooltip>
                     </template>
                 </el-table-column>
@@ -202,7 +223,7 @@
         </div>
         <!--待处理新增&修改弹出框-->
         <el-dialog :visible.sync="dialogVisible"
-                   width="860px" title="新增"
+                   width="860px"
                    :close-on-click-modal="false"
                    top="56px">
             <h1 slot="title" v-text="dialogTitle" class="dialog-title"></h1>
@@ -251,15 +272,22 @@
             <span slot="footer" class="dialog-footer">
                 <el-button type="warning" size="mini" plain @click="dialogVisible = false">取 消</el-button>
                 <el-button type="warning" size="mini" @click="subCurrent">确 定</el-button>
-                <el-button type="warning" size="mini" @click="innerVisible = true">提 交</el-button>
+                <el-button type="warning" size="mini" @click="subFlow">提 交</el-button>
             </span>
             <el-dialog :visible.sync="innerVisible"
                        width="50%" title="提交审批流程"
                        append-to-body top="76px"
                        :close-on-click-modal="false">
+                <el-radio-group v-model="selectWorkflow">
+                    <el-radio v-for="workflow in workflows"
+                              :key="workflow.define_id"
+                              :label="workflow.define_id"
+                    >{{ workflow.workflow_name }}
+                    </el-radio>
+                </el-radio-group>
                 <span slot="footer" class="dialog-footer" style="text-align:center">
                     <el-button type="warning" size="mini" plain @click="innerVisible = false">取 消</el-button>
-                    <el-button type="warning" size="mini" @click="">确 定</el-button>
+                    <el-button type="warning" size="mini" @click="confirmWorkflow">确 定</el-button>
                 </span>
             </el-dialog>
         </el-dialog>
@@ -508,7 +536,10 @@
                     bill_id: "",
                     biz_type: 1
                 },
-                triggerFile: false
+                triggerFile: false,
+                selectWorkflow: "", //流程选择
+                workflows: [],
+                workflowData: {}
             }
         },
         methods: {
@@ -728,6 +759,59 @@
                     this.distDialogData[key] = row[key];
                 }
             },
+            //已处理事项撤回
+            withdrawMatter: function(row){
+                this.$confirm('确认撤回当前事项申请吗?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.$axios({
+                        url: "/cfm/normalProcess",
+                        method: "post",
+                        data: {
+                            optype: "openintent_revoke",
+                            params: {
+                                id: row.id,
+                                persist_version: row.persist_version,
+                                service_status: row.service_status
+                            }
+                        }
+                    }).then((result) => {
+                        if (result.data.error_msg) {
+                            this.$message({
+                                type: "error",
+                                message: result.data.error_msg,
+                                duration: 2000
+                            })
+                            return;
+                        }
+
+                        var rows = this.tableList;
+                        var index = rows.indexOf(row);
+                        if (this.pagCurrent < (this.pagTotal / this.pagSize)) { //存在下一页
+                            this.$emit('getTableData', this.routerMessage);
+                        } else {
+                            if (rows.length == "1" && (this.routerMessage.todo.params.page_num != 1)) { //是当前页最后一条
+                                this.routerMessage.todo.params.page_num--;
+                                this.$emit('getTableData', this.routerMessage);
+                            } else {
+                                rows.splice(index, 1);
+                                this.pagTotal--;
+                            }
+                        }
+
+                        this.$message({
+                            type: "success",
+                            message: "撤回成功",
+                            duration: 2000
+                        })
+                    }).catch(function (error) {
+                        console.log(error);
+                    })
+                }).catch(() => {
+                });
+            },
             //已处理事项分发确定
             subDist: function () {
                 var distData = this.distDialogData;
@@ -814,6 +898,89 @@
                 } else {
 
                 }
+            },
+            //提交审批流程
+            subFlow: function () {
+                this.$axios({
+                    url: "/cfm/normalProcess",
+                    method: "post",
+                    data: {
+                        optype: "openintent_presubmit",
+                        params: this.dialogData
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                    } else {
+                        var data = result.data.data;
+                        this.selectWorkflow = "";
+                        this.workflowData = data;
+                        this.workflows = data.workflows;
+                        this.innerVisible = true;
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                })
+            },
+            //审批流程弹框-确定
+            confirmWorkflow: function(){
+                var workflowData = this.workflowData;
+                var params = {
+                    define_id: this.selectWorkflow,
+                    id: workflowData.id,
+                    service_serial_number: workflowData.service_serial_number,
+                    service_status: workflowData.service_status,
+                    persist_version: workflowData.persist_version
+                };
+
+                this.$axios({
+                    url: "/cfm/normalProcess",
+                    method: "post",
+                    data: {
+                        optype: "openintent_submit",
+                        params: params
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                    } else {
+                        var data = result.data.data;
+                        this.innerVisible = false;
+                        this.dialogVisible = false;
+
+                        if(this.dialogTitle == "编辑"){
+                            var rows = this.tableList;
+                            var index = this.tableList.indexOf(this.currentMatter);
+                            if (this.pagCurrent < (this.pagTotal / this.pagSize)) { //存在下一页
+                                this.$emit('getTableData', this.routerMessage);
+                            } else {
+                                if (rows.length == "1" && (this.routerMessage.todo.params.page_num != 1)) { //是当前页最后一条
+                                    this.routerMessage.todo.params.page_num--;
+                                    this.$emit('getTableData', this.routerMessage);
+                                } else {
+                                    rows.splice(index, 1);
+                                    this.pagTotal--;
+                                }
+                            }
+                        }
+
+                        this.$message({
+                            type: "success",
+                            message: "操作成功",
+                            duration: 2000
+                        })
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                })
             },
         },
         computed: {
