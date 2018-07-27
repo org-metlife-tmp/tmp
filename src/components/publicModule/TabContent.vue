@@ -162,9 +162,17 @@
                         this.isPending = true;
                         this.getRouterData(this.todoMessage);
                         var params = this.doneMessage.params;
-                        for(var k in params){
-                            if(k != "page_size" && k != "page_num"){
-                                delete params[k];
+                        if(this.doneMessage.optype =='wfquery_processtasksall'){
+                            for(var k in params){
+                                if(k != "page_size" && k != "page_num" && k != "assignee_id"){
+                                    delete params[k];
+                                }
+                            }
+                        }else{
+                            for(var k in params){
+                                if(k != "page_size" && k != "page_num"){
+                                    delete params[k];
+                                }
                             }
                         }
                     }
