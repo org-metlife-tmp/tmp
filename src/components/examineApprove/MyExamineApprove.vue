@@ -326,6 +326,15 @@
                                 :show-overflow-tooltip="true"
                             >
                             </el-table-column>
+                            <!-- 上级处理人取history最后一条 assignee -->
+                            <el-table-column v-else-if="head.prop=='history'"
+                                :key="head.id"
+                                :prop="head.prop"
+                                :label="head.name"
+                                :formatter="getAssignee"
+                                :show-overflow-tooltip="true"
+                            >
+                            </el-table-column>
                             <!-- 公用列 -->
                             <el-table-column
                                 v-else
@@ -576,7 +585,7 @@
                         {id:'3',prop:"start_time",name:'申请日期'},
                         {id:'4',prop:"init_user_name",name:'发起人'},
                         {id:'5',prop:"init_dept_name",name:'部门'},
-                        {id:'6',prop:"submitter_name",name:'上级处理人'},
+                        {id:'6',prop:"history",name:'上级处理人'},
                         {id:'7',prop:"nextUserList[0].name",name:'下级审批人'}
                     ],
                     "1":[
@@ -694,6 +703,14 @@
                     if (constants.BillStatus) {
                         return constants.BillStatus[cellValue];
                     }
+                }
+            },
+            getAssignee: function (row, column, cellValue, index) {
+                let len = cellValue.length;
+                if(len>0){
+                    return cellValue[len-1].assignee;
+                }else{
+                    return "";
                 }
             },
             //点击页数 获取当前页数据
