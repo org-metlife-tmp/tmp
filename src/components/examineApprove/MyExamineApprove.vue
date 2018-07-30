@@ -137,25 +137,7 @@
             }
         }
 
-        /*业务追踪*/
-        .busTrackContainer{
-            margin-top: 20px;
-            /*详情弹出框区域分割样式*/
-            .form-small-title {
-                // font-weight: bold;
-                border-bottom: 1px solid #e3e3e3;
-                padding-bottom: 8px;
-                margin-bottom: 15px;
-                span:first-child {
-                    display: inline-block;
-                    width: 4px;
-                    height: 16px;
-                    background-color: orange;
-                    margin-right: 6px;
-                    vertical-align: middle;
-                }
-            }
-        }
+        
         .blue{
             color: #409EFF;
         }
@@ -435,14 +417,9 @@
                     </el-col>
                 </el-row>
             </div>
-            <div class="busTrackContainer">
-                <el-row>
-                    <el-col :span="24" class="form-small-title">
-                        <span></span>
-                        <span>业务状态跟踪</span>
-                    </el-col>
-                </el-row>
-            </div>
+            <BusinessTracking 
+                :businessParams="businessParams"
+            ></BusinessTracking>
             <span slot="footer" class="dialog-footer" v-if="isPending">
                 <el-button type="primary" 
                     size="mini" 
@@ -532,6 +509,7 @@
 
 <script>
     import Upload from "../publicModule/Upload.vue";
+    import BusinessTracking from "../publicModule/BusinessTracking.vue"
     export default {
         name: "MyExamineApprove",
         created: function () {
@@ -563,7 +541,8 @@
         },
         props: ["isPending", "tableData"],
         components:{
-            Upload:Upload
+            Upload:Upload,
+            BusinessTracking:BusinessTracking
         },
         data:function(){
             return {
@@ -598,7 +577,7 @@
                         {id:'4',prop:"init_user_name",name:'发起人'},
                         {id:'5',prop:"init_dept_name",name:'部门'},
                         {id:'6',prop:"submitter_name",name:'上级处理人'},
-                        {id:'7',prop:"nextUserList[0].login_name",name:'下级审批人'}
+                        {id:'7',prop:"nextUserList[0].name",name:'下级审批人'}
                     ],
                     "1":[
                         {id:'1',prop:"apply_on",name:'申请日期'},
@@ -662,7 +641,8 @@
                     {id:"2",name:"上级审批人"}
                 ],
                 searchData:{},
-                businessType:[]
+                businessType:[],
+                businessParams:{},//业务状态追踪参数
             }
         },
         methods:{
@@ -742,6 +722,7 @@
                 this.activeName = "0";
                 document.getElementsByClassName("el-tabs__active-bar")[0].style.display="none";
                 //请求全部数据
+                this.routerMessage.todo.params.page_num = 1;
                 this.routerMessage.todo.optype = "wfquery_pendingtasksall";
                 this.$emit("getTableData", this.routerMessage);
             },
@@ -755,9 +736,9 @@
                 }
                 if(rowBar.style.display === "none")
                     rowBar.style.display="inline-block";
-
                 //在这里tab.name就是biztype的值
                 this.routerMessage.todo.optype = "openintent_pendingtasks";
+                this.routerMessage.todo.params.page_num = 1;
                 this.routerMessage.todo.params.biz_type = tab.name;
                 this.$emit("getTableData", this.routerMessage);
             },
@@ -775,12 +756,15 @@
                 this.thirdFunVisible = true;
             },
             viewDetail:function(row,index){
+                this.businessParams = {};//清空数据
                 let id = this.activeName == '0'? row.bill_id : row.aoi_id;
                 //组装开户同意接口的参数
                 this.currentData.index = index;
                 this.currentData.id = id;
                 this.currentData.define_id = row.define_id;
-
+                
+                this.businessParams.biz_type = row.biz_type;
+                this.businessParams.id = id;
                 if(this.activeName == '0'){
                     this.currentData.wf_inst_id = row.id;
                     this.$axios({
@@ -832,28 +816,6 @@
                     this.triggerFile = !this.triggerFile;
                     this.dialogVisible = true;
                 }
-                // //加载业务跟踪状态数据
-                // this.$axios({
-                //     url:"/cfm/normalProcess",
-                //     method:"post",
-                //     data:{
-                //         optype:"wfquery_approvedetail",
-                //         params:{
-                //             id:id,
-                //             biz_type:row.biz_type
-                //         }
-                //     }
-                // }).then((result) =>{
-                //     if (result.data.error_msg) {
-                //         this.$message({
-                //             type: "error",
-                //             message: result.data.error_msg,
-                //             duration: 2000
-                //         })
-                //     }else{
-                //         debugger;
-                //     }
-                // })
             },
             //设置当前附件个数
             setFileList: function ($event) {
