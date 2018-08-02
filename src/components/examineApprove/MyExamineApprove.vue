@@ -366,7 +366,7 @@
             </el-tabs>
         </div>
         <!--加签同意功能-->
-        <div class="button-list" v-if="isPending" v-show="activeName!='0'">
+        <!-- <div class="button-list" v-if="isPending" v-show="activeName!='0'">
             <el-button type="primary" 
                 plain 
                 size="small" 
@@ -377,7 +377,7 @@
                 size="small"
                 @click=""
                 icon="el-icon-circle-check-outline">同意</el-button>
-        </div>
+        </div> -->
         <!--分页部分-->
         <div class="botton-pag">
             <el-pagination
@@ -866,7 +866,7 @@
                         {id:'5',prop:"nextUserList[0].name",name:'下级审批人'}
                     ],
                     "6":[
-                        {id:'1',prop:"apply_on",name:'申请部门'},
+                        {id:'1',prop:"apply_on",name:'申请日期'},
                         {id:'2',prop:"init_org_name",name:'公司'},
                         {id:'4',prop:"memo",name:'事由摘要'},
                         {id:'5',prop:"nextUserList[0].name",name:'下级审批人'}

@@ -797,7 +797,7 @@
                 triggerFile: false,
                 relationFile:{
                     bill_id: "",
-                    biz_type: 1
+                    biz_type: 2
                 },
                 relationTrigger: false,
                 fileLength: 0,
@@ -1162,7 +1162,7 @@
             },
             //设置当前项上传附件
             setFileList: function($event){
-                if($event.length > 0 && $event[0].biz_type == 1){
+                if($event.length > 0 && $event[0].biz_type == 2){
                     this.fileLength = $event.length;
                 }
                 if(this.isPending){
@@ -1184,7 +1184,6 @@
                         params: this.dialogData
                     }
                 }).then((result) => {
-                    debugger
                     if (result.data.error_msg) {
                         this.$message({
                             type: "error",

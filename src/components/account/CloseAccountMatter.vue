@@ -522,7 +522,6 @@
                     biz_type: 6
                 },
                 triggerFile: false,
-                
                 innerVisible: false, //提交弹出框
                 selectWorkflow: "", //流程选择
                 workflows: [],
@@ -571,8 +570,13 @@
                 this.dialogTitle = "新增";
                 this.dialogVisible = true;
                 //清空数据
-                for(var k in this.dialogData){
-                    this.dialogData[k]="";
+                var dialogData = this.dialogData;
+                for (var k in dialogData) {
+                    if(k == "files"){
+                        dialogData[k] = [];
+                    }else{
+                        dialogData[k] = "";
+                    }
                 }
                 this.fileMessage.bill_id = ""; //清空附件
                 this.emptyFileList = [];
@@ -584,8 +588,13 @@
                 this.dialogTitle = "编辑";
                 this.dialogVisible = true;
                 //清空数据和校验信息
-                for(var k in this.dialogData){
-                    this.dialogData[k] = "";
+                var dialogData = this.dialogData;
+                for(var k in dialogData){
+                    if(k == "files"){
+                        dialogData[k] = [];
+                    }else{
+                        dialogData[k] = "";
+                    }
                 }
                 this.currentMatter = row;//保存当前数据
                 //设置当前用户的部门和公司
@@ -836,7 +845,6 @@
                         params: this.dialogData
                     }
                 }).then((result) => {
-                    debugger
                     if (result.data.error_msg) {
                         this.$message({
                             type: "error",

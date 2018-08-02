@@ -384,7 +384,6 @@
                         })
                     }else{
                         let i = 4;
-                        debugger;
                         let data = result.data.data;
                         this.submiter = data.submiter[0];
                         this.submiter.show = this.submiter ? true : false;

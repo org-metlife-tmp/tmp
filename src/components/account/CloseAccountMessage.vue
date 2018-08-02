@@ -403,7 +403,6 @@
                     biz_type: 7
                 },
                 triggerFile: false,
-                
                 innerVisible: false, //提交弹出框
                 selectWorkflow: "", //流程选择
                 workflows: [],
@@ -622,23 +621,12 @@
                             })
                             return;
                         }
-                        if(this.pagCurrent < (this.pagTotal/this.pagSize)){ //存在下一页
-                            this.$emit('getTableData', this.routerMessage);
-                        }else{
-                            if(rows.length == "1" && this.routerMessage.todo.params.page_num!=1){ //是当前页最后一条
-                                this.routerMessage.todo.params.page_num--;
-                                this.$emit('getTableData', this.routerMessage);
-                            }else{
-                                rows.splice(index, 1);
-                                this.pagTotal--;
-                            }
-                        }
-
                         this.$message({
                             type: "success",
                             message: "删除成功",
                             duration: 2000
                         })
+                        this.$emit("getTableData", this.routerMessage);
                     }).catch(function(error){
                         console.log(error)
                     })
@@ -648,7 +636,7 @@
             },
             //设置当前项上传附件
             setFileList: function($event){
-                if($event.length > 0 && $event[0].biz_type == 1){
+                if($event.length > 0 && $event[0].biz_type == 7){
                     this.fileLength = $event.length;
                 }
                 if(this.isPending){
@@ -671,7 +659,6 @@
                         params: this.dialogData
                     }
                 }).then((result) => {
-                    debugger
                     if (result.data.error_msg) {
                         this.$message({
                             type: "error",

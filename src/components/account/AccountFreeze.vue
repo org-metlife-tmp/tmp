@@ -232,16 +232,15 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="开户行">
-                            <div class="height30">{{dialogData.bank_name}}</div>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
                         <el-form-item label="币种">
                             <div class="height30">{{dialogData.curr_name}}</div>
                         </el-form-item>
                     </el-col>
-                    <el-col :span=12 style="height:51px"></el-col>
+                    <el-col :span="24">
+                        <el-form-item label="开户行">
+                            <div class="height30">{{dialogData.bank_name}}</div>
+                        </el-form-item>
+                    </el-col>
                     <el-col :span="12">
                         <el-form-item label="账户模式">
                             <div class="height30" v-text="getInactiveMode"></div>
@@ -621,7 +620,6 @@
                         params: this.dialogData
                     }
                 }).then((result) => {
-                    debugger
                     if (result.data.error_msg) {
                         this.$message({
                             type: "error",
