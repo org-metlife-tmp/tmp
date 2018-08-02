@@ -87,6 +87,7 @@
                     :headers="{Authorization:currToken}"
                     multiple
                     :on-success="uploadSuccess"
+                    :before-upload="beforeUpload"
                     v-show="isPending">
                 <i class="el-icon-plus upload-icon"></i>
             </el-upload>
@@ -111,6 +112,14 @@
             }
         },
         methods:{
+            //上传限制
+            beforeUpload:function(file){
+                const isLt10M = file.size / 1024 / 1024 < 10;
+                if (!isLt10M) {
+                    this.$message.error('上传文件大小不能超过 10MB!');
+                }
+                return isLt10M;
+            },
             //上传成功
             uploadSuccess: function(response, file, fileList){
                 this.fileList.push(response.files[0]);
