@@ -2,6 +2,7 @@
     /*业务追踪*/
     .busTrackContainer{
         margin-top: 20px;
+        padding-bottom: 20px; 
         /*详情弹出框区域分割样式*/
         .form-small-title {
             // font-weight: bold;
@@ -383,11 +384,13 @@
                         })
                     }else{
                         let i = 4;
+                        debugger;
                         let data = result.data.data;
                         this.submiter = data.submiter[0];
                         this.submiter.show = this.submiter ? true : false;
-                        this.current = data.current[0];
-                        this.current.show = this.current ? true : false;
+                        let cL = data.current.length;
+                        this.current = cL > 0 ? data.current[0] : {};
+                        this.current.show = cL > 0 ? true : false;
                         //history,future取记录最后一条
                         let future = data.future;
                         let fL = future.length;
@@ -422,9 +425,12 @@
                         //组装右侧数据
                         this.historyList = history;
                         this.futureList = future;
-                        let cL = this.current.show ? 1 : 0;
+                        cL = this.current.show ? 1 : 0;
                         this.rightLinesHeight = (1 + cL + hL + fL -1) * 120;
-                        this.rightFillsHeight = hL * 120 + 60;
+                        if(cL === 0 && fL === 0)
+                            this.rightFillsHeight = hL * 120;
+                        else
+                            this.rightFillsHeight = hL * 120 + 60;
 
                     }
                 })

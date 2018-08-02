@@ -76,6 +76,7 @@
         .dialogTable{
             border: 1px solid #e2e2e2;
             box-sizing: border-box;
+            border-right: 0;
             .el-row{
                 >div{
                     border-right: 1px solid #e2e2e2;
@@ -87,9 +88,6 @@
                     overflow: hidden;
                     min-height: 32px;
                 }
-                >div:last-child{
-                    border-right: 0;
-                }
             }
             .el-row:last-child{
                 >div{
@@ -97,7 +95,7 @@
                 }
                 
             }
-            .el-row:hover{
+            .el-col:hover{
                 background-color: #EEF7FE;
             }
             .height80{
@@ -106,6 +104,9 @@
             .left{
                 text-align: right;
                 padding-right: 20px;
+            }
+            .center{
+                text-align: center;
             }
             .left.height80{
                 line-height: 80px;
@@ -123,8 +124,11 @@
                     right: 0;
                     bottom: 0;
                 }
-                .right{
+                .mw25{
                     margin-left: 25%;
+                }
+                .mw167{
+                    margin-left: 16.66667%;
                 }
                 .file-list li{
                     margin-bottom: 0;
@@ -224,7 +228,7 @@
                             <el-form-item>
                                 <el-col :span="11">
                                     <el-date-picker
-                                            v-model="searchData.start_date"
+                                            v-model="searchData.start_time"
                                             type="date"
                                             placeholder="起始日期"
                                             value-format="yyyy-MM-dd"
@@ -234,7 +238,7 @@
                                 <el-col class="line" :span="1" style="text-align:center">-</el-col>
                                 <el-col :span="11">
                                     <el-date-picker
-                                            v-model="searchData.end_date"
+                                            v-model="searchData.end_time"
                                             type="date"
                                             placeholder="结束日期"
                                             value-format="yyyy-MM-dd"
@@ -318,7 +322,7 @@
                         <template v-for="head in item.tableHead">
                             <!-- 业务种类列，需要格式化数据-->
                             <el-table-column
-                                v-if="head.prop=='biz_type' || head.prop=='service_status'"
+                                v-if="head.prop=='biz_type' || head.prop=='service_status' || head.prop=='interactive_mode'"
                                 :key="head.id"
                                 :prop="head.prop"
                                 :label="head.name"
@@ -396,27 +400,35 @@
             <h1 slot="title" v-text="dialogTitle" class="dialog-title"></h1>
             <div class="dialogTable">
                 <el-row>
-                    <el-col :span="6" class="left">编号</el-col>
-                    <el-col :span="18">{{dialogData.bill_code}}</el-col>
+                    <template v-for="detail in currentDetailDialog" >
+                        <el-col v-if="detail.type" 
+                                :key="detail.id"
+                                :span="detail.lspan" class="left center">{{detail.label}}</el-col> 
+                        <el-col v-else-if="detail.label"
+                                :key="detail.id"
+                                :span="detail.lspan" class="left">{{detail.label}}</el-col>
+                        <el-col v-else-if="detail.prop=='interactive_mode'" 
+                                :key="detail.id"
+                                :span="detail.pspan">{{interList[dialogData.interactive_mode]}}</el-col>
+                        <el-col  v-else 
+                                :key="detail.id" 
+                                :span="detail.pspan">{{dialogData[detail.prop]}}</el-col>
+                    </template>
                 </el-row>
-                <el-row>
-                    <el-col :span="6" class="left">事由摘要</el-col>
-                    <el-col :span="18">{{dialogData.memo}}</el-col>
-                </el-row>
-                <el-row class="enclosureUp">
+                <el-row class="enclosureUp" v-if="dialogData.biz_type=='1' || dialogData.biz_type=='6'">
                     <el-col :span="6" class="left textName"><span>申请事由说明</span></el-col>
-                    <el-col :span="18" class="right" :title="dialogData.detail">
+                    <el-col :span="18" class="mw25" :title="dialogData.detail">
                         <el-input v-model="dialogData.detail" readonly
-                                      type="textarea" :rows="2"></el-input>
+                                    type="textarea" :rows="2"></el-input>
                     </el-col>
                 </el-row>
                 <el-row>
-                    <el-col :span="6" class="left">附件</el-col>
-                    <el-col :span="18"><span class="enclosure">{{dialogData.encNumber}}</span>个</el-col>
+                    <el-col :span="enclosureLWidth" class="left">附件</el-col>
+                    <el-col :span="enclosurePWidth"><span class="enclosure">{{dialogData.encNumber}}</span>个</el-col>
                 </el-row>
                 <el-row class="enclosureUp">
-                    <el-col :span="6" class="left"></el-col>
-                    <el-col :span="18" class="right">
+                    <el-col :span="enclosureLWidth" class="left"></el-col>
+                    <el-col :span="enclosurePWidth" :class="[enclosureLWidth==6 ? 'mw25' : 'mw167']">
                         <Upload 
                             @currentFielList="setFileList"
                             :emptyFileList="emptyFileList"
@@ -481,7 +493,7 @@
                 </el-row>
                 <el-row v-else-if="thirdFunData.type=='reject'">
                     <el-col :span="24">
-                        <el-form-item label="退回">
+                        <!-- <el-form-item label="退回">
                             <el-select value-key="id" v-model="thirdFunData.back">
                                 <el-option
                                     v-for="item in back_options"
@@ -489,7 +501,7 @@
                                     :label="item.name"
                                     :value="item">
                                 </el-option>
-                            </el-select>
+                            </el-select> -->
                         </el-form-item>
                     </el-col>
                     <el-col :span="24">
@@ -546,7 +558,233 @@
                 }
                 
             })
-            
+            this.classParams = [
+                {//全部的开户详情
+                    text:"开户事项",
+                    detail:"openintent_detail",
+                    list:"wfquery_pendingtasksall"
+                },
+                {//开户列表的开户详情不调接口
+                    text:"开户事项",
+                    detail:"openintent_detail",
+                    list:"openintent_pendingtasks",
+                    addLots:"openintent_append",
+                    agree:"openintent_agree",
+                    reject:"openintent_reject"
+                },
+                {
+                    text:"开户信息补录",
+                    detail:"opencom_detail",
+                    list:"opencom_pendingtasks",
+                    addLots:"opencom_append",
+                    agree:"opencom_agree",
+                    reject:"opencom_reject"
+                },
+                {
+                    text:"账户变更",
+                    detail:"openchg_detail",
+                    list:"openchg_pendingtasks",
+                    addLots:"openchg_append",
+                    agree:"openchg_agree",
+                    reject:"openchg_reject"
+                },
+                {
+                    text:"账户冻结",
+                    detail:"accfreeze_detail",
+                    list:"accfreeze_pendingtasks",
+                    addLots:"accfreeze_append",
+                    agree:"accfreeze_agree",
+                    reject:"accfreeze_reject"
+                },
+                {
+                    text:"账户解冻",
+                    detail:"accdefreeze_detail",
+                    list:"accdefreeze_pendingtasks",
+                    addLots:"accdefreeze_append",
+                    agree:"accdefreeze_agree",
+                    reject:"accdefreeze_reject"
+                },
+                {
+                    text:"销户事项",
+                    detail:"closeacc_detail",
+                    list:"closeacc_pendingtasks",
+                    addLots:"closeacc_append",
+                    agree:"closeacc_agree",
+                    reject:"closeacc_reject"
+                },
+                {
+                    text:"销户信息补录",
+                    detail:"closeacccomple_detail",
+                    list:"closeacccomple_pendingtasks",
+                    addLots:"closeacccomple_append",
+                    agree:"closeacccomple_agree",
+                    reject:"closeacccomple_reject"
+                }
+            ]
+
+            this.detailDialog ={
+                "1":[
+                    {id:"1", lspan:6, label:"编号"},
+                    {id:"2", pspan:18, prop:"service_serial_number"},
+                    {id:"3", lspan:6, label:"事由摘要"},
+                    {id:"4", pspan:18, prop:"memo"}//事由说明字段显示特殊，未写在这里
+                ],
+                "2":[
+                    {id:"1", lspan:4, label:"编号"},
+                    {id:"2",pspan:20, prop:"service_serial_number"},
+                    {id:"3", lspan:4, label:"账户号"},
+                    {id:"4", pspan:8, prop:"acc_no"},
+                    {id:"5", lspan:4, label:"账户名称"},
+                    {id:"6", pspan:8, prop:"acc_name"},
+                    {id:"7", lspan:4, label:"所属机构"},
+                    {id:"8", pspan:8, prop:"org_name"},
+                    {id:"9", lspan:4, label:"账户法人"},
+                    {id:"10", pspan:8, prop:"lawfull_man"},
+                    {id:"11", lspan:4, label:"开户行"},
+                    {id:"12", pspan:8, prop:"bank_name"},
+                    {id:"13", lspan:4, label:"开户行地址"},
+                    {id:"14", pspan:8, prop:"bank_address"},
+                    {id:"15", lspan:4, label:"开户行联系人"},
+                    {id:"16", pspan:8, prop:"bank_contact"},
+                    {id:"17", lspan:4, label:"联系电话"},
+                    {id:"18", pspan:8, prop:"bank_contact_phone"},
+                    {id:"19", lspan:4, label:"币种"},
+                    {id:"20", pspan:8, prop:"curr_name"},
+                    {id:"21", lspan:4, label:"开户日期"},
+                    {id:"22", pspan:8, prop:"apply_on"},
+                    {id:"23", lspan:4, label:"账户属性"},
+                    {id:"24", pspan:8, prop:"acc_attr_name"},
+                    {id:"25", lspan:4, label:"账户用途"},
+                    {id:"26", pspan:8, prop:"acc_purpose_name"},
+                    {id:"27", lspan:4, label:"账户模式"},
+                    {id:"28", pspan:20, prop:"interactive_mode"},
+                    {id:"29", lspan:4, label:"备注"},
+                    {id:"30", pspan:20, prop:"memo"}
+                ],
+                "3":[
+                    {id:"1", lspan:4, label:"编号"},
+                    {id:"2",pspan:20, prop:"service_serial_number"},
+                    {id:"3", lspan:4, label:"账户号"},
+                    {id:"4", pspan:8, prop:"acc_no"},
+                    {id:"5", lspan:4, label:"开户时间"},
+                    {id:"6", pspan:8, prop:"apply_on"},
+                    {id:"7", lspan:12, label:"变更前信息", type:'1'},
+                    {id:"8", lspan:12, label:"变更后信息", type:'1'},
+                    {id:"9", lspan:4, label:"账户名称"},
+                    {id:"10", pspan:8, prop:"old_acc_name"},
+                    {id:"11", lspan:4, label:"账户名称"},
+                    {id:"12", pspan:8, prop:"new_acc_name"},
+                    {id:"13", lspan:4, label:"所属机构"},
+                    {id:"14", pspan:8, prop:"old_org_name"},
+                    {id:"15", lspan:4, label:"所属机构"},
+                    {id:"16", pspan:8, prop:"new_org_name"},
+                    {id:"17", lspan:4, label:"开户行"},
+                    {id:"18", pspan:8, prop:"old_bank_name"},
+                    {id:"19", lspan:4, label:"开户行"},
+                    {id:"20", pspan:8, prop:"new_bank_name"},
+                    {id:"21", lspan:4, label:"账户法人"},
+                    {id:"22", pspan:8, prop:"old_lawfull_man"},
+                    {id:"23", lspan:4, label:"账户法人"},
+                    {id:"24", pspan:8, prop:"new_lawfull_man"},
+                    {id:"25", lspan:4, label:"币种"},
+                    {id:"26", pspan:8, prop:"old_curr_name"},
+                    {id:"27", lspan:4, label:"币种"},
+                    {id:"28", pspan:8, prop:"new_curr_name"},
+                    {id:"29", lspan:4, label:"账户属性"},
+                    {id:"30", pspan:8, prop:"old_acc_attr_name"},
+                    {id:"31", lspan:4, label:"账户属性"},
+                    {id:"32", pspan:8, prop:"new_acc_attr_name"},
+                    {id:"33", lspan:4, label:"账户模式"},
+                    {id:"34", pspan:8, prop:"old_interactive_mode"},
+                    {id:"35", lspan:4, label:"账户模式"},
+                    {id:"36", pspan:8, prop:"new_interactive_mode"},
+                    {id:"37", lspan:4, label:"备注"},
+                    {id:"38", pspan:20, prop:"memo"}
+                ],
+                "4":[
+                    {id:"1", lspan:4, label:"编号"},
+                    {id:"2",pspan:20, prop:"service_serial_number"},
+                    {id:"3", lspan:4, label:"账户号"},
+                    {id:"4", pspan:8, prop:"acc_no"},
+                    {id:"5", lspan:4, label:"账户名称"},
+                    {id:"6", pspan:8, prop:"acc_name"},
+                    {id:"7", lspan:4, label:"所属机构"},
+                    {id:"8", pspan:8, prop:"org_name"},
+                    {id:"9", lspan:4, label:"账户法人"},
+                    {id:"10", pspan:8, prop:"lawfull_man"},
+                    {id:"11", lspan:4, label:"开户行"},
+                    {id:"12", pspan:20, prop:"bank_name"},
+                    {id:"13", lspan:4, label:"币种"},
+                    {id:"14", pspan:20, prop:"curr_name"},
+                    {id:"15", lspan:4, label:"账户用途"},
+                    {id:"16", pspan:8, prop:"acc_purpose_name"},
+                    {id:"17", lspan:4, label:"账户模式"},
+                    {id:"18", pspan:8, prop:"interactive_mode"},
+                    {id:"19", lspan:4, label:"备注"},
+                    {id:"20", pspan:20, prop:"memo"}
+                ],
+                "5":[
+                    {id:"1", lspan:4, label:"编号"},
+                    {id:"2",pspan:20, prop:"service_serial_number"},
+                    {id:"3", lspan:4, label:"账户号"},
+                    {id:"4", pspan:8, prop:"acc_no"},
+                    {id:"5", lspan:4, label:"账户名称"},
+                    {id:"6", pspan:8, prop:"acc_name"},
+                    {id:"7", lspan:4, label:"所属机构"},
+                    {id:"8", pspan:8, prop:"org_name"},
+                    {id:"9", lspan:4, label:"账户法人"},
+                    {id:"10", pspan:8, prop:"lawfull_man"},
+                    {id:"11", lspan:4, label:"开户行"},
+                    {id:"12", pspan:20, prop:"bank_name"},
+                    {id:"13", lspan:4, label:"币种"},
+                    {id:"14", pspan:20, prop:"curr_name"},
+                    {id:"15", lspan:4, label:"账户用途"},
+                    {id:"16", pspan:8, prop:"acc_purpose_name"},
+                    {id:"17", lspan:4, label:"账户模式"},
+                    {id:"18", pspan:8, prop:"interactive_mode"},
+                    {id:"19", lspan:4, label:"备注"},
+                    {id:"20", pspan:20, prop:"memo"}
+                ],
+                "6":[
+                    {id:"1", lspan:6, label:"编号"},
+                    {id:"2", pspan:18, prop:"service_serial_number"},
+                    {id:"3", lspan:6, label:"事由摘要"},
+                    {id:"4", pspan:18, prop:"memo"}
+                ],
+                "7":[
+                    {id:"1", lspan:4, label:"编号"},
+                    {id:"2",pspan:20, prop:"service_serial_number"},
+                    {id:"3", lspan:4, label:"账户号"},
+                    {id:"4", pspan:8, prop:"acc_no"},
+                    {id:"5", lspan:4, label:"账户名称"},
+                    {id:"6", pspan:8, prop:"acc_name"},
+                    {id:"7", lspan:4, label:"所属机构"},
+                    {id:"8", pspan:8, prop:"org_name"},
+                    {id:"9", lspan:4, label:"账户法人"},
+                    {id:"10", pspan:8, prop:"lawfull_man"},
+                    {id:"11", lspan:4, label:"开户行"},
+                    {id:"12", pspan:8, prop:"bank_name"},
+                    {id:"13", lspan:4, label:"开户行地址"},
+                    {id:"14", pspan:8, prop:"bank_address"},
+                    {id:"15", lspan:4, label:"币种"},
+                    {id:"16", pspan:20, prop:"curr_name"},
+                    {id:"17", lspan:4, label:"账户用途"},
+                    {id:"18", pspan:8, prop:"acc_purpose_name"},
+                    {id:"19", lspan:4, label:"账户模式"},
+                    {id:"20", pspan:8, prop:"interactive_mode"},
+                    {id:"21", lspan:4, label:"销户交易"},
+                    {id:"22", pspan:20, prop:"salesTransaction"},
+                    {id:"23", lspan:4, label:"备注"},
+                    {id:"24", pspan:20, prop:"memo"}
+                ],
+            }   
+        },
+        mounted:function(){
+            //账户模式
+            var constants = JSON.parse(window.sessionStorage.getItem("constants"));
+            if (constants.InactiveMode) {
+                this.interList = constants.InactiveMode;
+            }
         },
         props: ["isPending", "tableData"],
         components:{
@@ -590,41 +828,57 @@
                     ],
                     "1":[
                         {id:'1',prop:"apply_on",name:'申请日期'},
-                        {id:'2',prop:"memo",name:'事由摘要'},
-                        {id:'3',prop:"service_status",name:'业务状态'}
+                        {id:'2',prop:"init_dept_name",name:'申请部门'},
+                        {id:'3',prop:"init_org_name",name:'公司'},
+                        {id:'4',prop:"memo",name:'事由摘要'},
+                        {id:'5',prop:"nextUserList[0].name",name:'下级审批人'}
                     ],
                     "2":[
                         {id:'1',prop:"apply_on",name:'申请日期'},
-                        {id:'2',prop:"memo",name:'事由摘要'},
-                        {id:'3',prop:"service_status",name:'业务状态'}
+                        {id:'2',prop:"acc_no",name:'账户号'},
+                        {id:'3',prop:"acc_name",name:'账户名称'},
+                        {id:'4',prop:"curr_name",name:'币种'},
+                        {id:'5',prop:"acc_attr",name:'账户属性'},
+                        {id:'6',prop:"interactive_mode",name:'账户模式'},
+                        {id:'7',prop:"nextUserList[0].name",name:'下级审批人'}
                     ],
                     "3":[
                         {id:'1',prop:"apply_on",name:'申请日期'},
-                        {id:'2',prop:"memo",name:'账户号'},
-                        {id:'3',prop:"memo",name:'账户名称'},
-                        {id:'4',prop:"service_status",name:'业务状态'}
+                        {id:'2',prop:"acc_no",name:'账户号'},
+                        {id:'3',prop:"acc_name",name:'账户名称'},
+                        {id:'4',prop:"curr_name",name:'币种'},
+                        {id:'5',prop:"acc_attr",name:'账户属性'},
+                        {id:'6',prop:"interactive_mode",name:'账户模式'},
+                        {id:'7',prop:"nextUserList[0].name",name:'下级审批人'}
                     ],
                     "4":[
                         {id:'1',prop:"apply_on",name:'申请日期'},
-                        {id:'2',prop:"memo",name:'账户号'},
-                        {id:'3',prop:"memo",name:'账户名称'},
-                        {id:'4',prop:"service_status",name:'业务状态'}
+                        {id:'2',prop:"acc_no",name:'账户号'},
+                        {id:'3',prop:"acc_name",name:'账户名称'},
+                        {id:'4',prop:"curr_name",name:'币种'},
+                        {id:'5',prop:"nextUserList[0].name",name:'下级审批人'}
                     ],
                     "5":[
                         {id:'1',prop:"apply_on",name:'申请日期'},
-                        {id:'2',prop:"memo",name:'账户号'},
-                        {id:'3',prop:"memo",name:'账户名称'},
-                        {id:'4',prop:"service_status",name:'业务状态'}
+                        {id:'2',prop:"acc_no",name:'账户号'},
+                        {id:'3',prop:"acc_name",name:'账户名称'},
+                        {id:'4',prop:"curr_name",name:'币种'},
+                        {id:'5',prop:"nextUserList[0].name",name:'下级审批人'}
                     ],
                     "6":[
-                        {id:'1',prop:"apply_on",name:'申请日期'},
-                        {id:'2',prop:"memo",name:'事由摘要'},
-                        {id:'4',prop:"service_status",name:'业务状态'}
+                        {id:'1',prop:"apply_on",name:'申请部门'},
+                        {id:'2',prop:"init_org_name",name:'公司'},
+                        {id:'4',prop:"memo",name:'事由摘要'},
+                        {id:'5',prop:"nextUserList[0].name",name:'下级审批人'}
                     ],
-                    "6":[
+                    "7":[
                         {id:'1',prop:"apply_on",name:'申请日期'},
-                        {id:'2',prop:"memo",name:'事由摘要'},
-                        {id:'4',prop:"service_status",name:'业务状态'}
+                        {id:'2',prop:"acc_no",name:'账户号'},
+                        {id:'3',prop:"acc_name",name:'账户名称'},
+                        {id:'4',prop:"curr_name",name:'币种'},
+                        {id:'5',prop:"acc_attr",name:'账户属性'},
+                        {id:'6',prop:"interactive_mode",name:'账户模式'},
+                        {id:'7',prop:"nextUserList[0].name",name:'下级审批人'}
                     ]
                 },
                 editableTabsList: [],
@@ -652,6 +906,12 @@
                 searchData:{},
                 businessType:[],
                 businessParams:{},//业务状态追踪参数
+                detailDialog:{},//详情弹出框
+                currentDetailDialog:[],//当前详情弹出框
+                classParams:[],// 待办列表optype
+                interList:{},
+                enclosureLWidth:6,
+                enclosurePWidth:18
             }
         },
         methods:{
@@ -704,6 +964,9 @@
                         return constants.BillStatus[cellValue];
                     }
                 }
+                if (column.property === "interactive_mode") {
+                    return this.interList[cellValue];
+                }
             },
             getAssignee: function (row, column, cellValue, index) {
                 let len = cellValue.length;
@@ -740,13 +1003,14 @@
                 document.getElementsByClassName("el-tabs__active-bar")[0].style.display="none";
                 //请求全部数据
                 this.routerMessage.todo.params.page_num = 1;
-                this.routerMessage.todo.optype = "wfquery_pendingtasksall";
+                this.routerMessage.todo.optype = this.classParams[0].list;
                 this.$emit("getTableData", this.routerMessage);
             },
             handleClick:function(tab,event){
                 //由于将我的待办写入了tab里，却又要隐藏掉，所以处理一下横线样式
+                let id = tab.name;
                 let rowBar = document.getElementsByClassName("el-tabs__active-bar")[0];
-                if(tab.name == "1"){
+                if(id == "1"){
                     rowBar.style.left = "20px";
                 }else if(rowBar.style.left != "0px"){
                     rowBar.style.left="0px";
@@ -754,9 +1018,10 @@
                 if(rowBar.style.display === "none")
                     rowBar.style.display="inline-block";
                 //在这里tab.name就是biztype的值
-                this.routerMessage.todo.optype = "openintent_pendingtasks";
+                //待办列表的optype参数
+                this.routerMessage.todo.optype = this.classParams[id].list;
                 this.routerMessage.todo.params.page_num = 1;
-                this.routerMessage.todo.params.biz_type = tab.name;
+                this.routerMessage.todo.params.biz_type = id;
                 this.$emit("getTableData", this.routerMessage);
             },
             //加签
@@ -774,65 +1039,109 @@
             },
             viewDetail:function(row,index){
                 this.businessParams = {};//清空数据
-                let id = this.activeName == '0'? row.bill_id : row.aoi_id;
+                let bizType = row.biz_type;
+                this.dialogTitle = this.classParams[bizType].text;
+                this.currentDetailDialog = this.detailDialog[bizType];
+                let id = row.bill_id;
+                let _index = this.activeName;
                 //组装开户同意接口的参数
                 this.currentData.index = index;
                 this.currentData.id = id;
                 this.currentData.define_id = row.define_id;
                 
-                this.businessParams.biz_type = row.biz_type;
+                this.businessParams.biz_type = bizType;
                 this.businessParams.id = id;
-                if(this.activeName == '0'){
-                    this.currentData.wf_inst_id = row.id;
-                    this.$axios({
-                        url:"/cfm/normalProcess",
-                        method:"post",
-                        data:{
-                            optype:"openintent_detail",
-                            params:{
-                                id:id
+                
+                //附件所占宽度
+                if( bizType === 1 || bizType === 6){
+                    this.enclosureLWidth = 6;
+                    this.enclosurePWidth = 18;
+                }else{
+                    this.enclosureLWidth = 4;
+                    this.enclosurePWidth = 20;
+                }
+                this.currentData.wf_inst_id = _index == '0' ? row.id : row.inst_id;
+                // let optype = this.classParams[bizType].detail;
+                this.$axios({
+                    url:"/cfm/normalProcess",
+                    method:"post",
+                    data:{
+                        optype:this.classParams[bizType].detail,
+                        params:{
+                            id:id
+                        }
+                    }
+                }).then((result) =>{
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                    }else{
+                        let data = result.data.data;
+                        //组装开户同意接口的参数
+                        this.currentData.service_status = data.service_status;
+                        this.currentData.persist_version = data.persist_version;
+                        
+                        if(bizType === 3){//账户变更的时候打平数据
+                            let content = data.change_content;
+                            let len = content.length;
+                            for(let i = 0;i<len; i++){
+                                if(!content[i]){
+                                    continue;
+                                }
+                                else if(content[i].type == 1){
+                                    data.old_acc_name = content[i].old_value;
+                                    data.new_acc_name = content[i].new_value;
+                                }else if(content[i].type == 2){
+                                    data.old_org_name = content[i].old_value;
+                                    data.new_org_name = content[i].new_value;
+                                }else if(content[i].type == 3){
+                                    data.old_bank_name = content[i].old_value;
+                                    data.new_bank_name = content[i].new_value;
+                                }else if(content[i].type == 4){
+                                    data.old_lawfull_man = content[i].old_value;
+                                    data.new_lawfull_man = content[i].new_value;
+                                }else if(content[i].type == 5){
+                                    data.old_curr_name = content[i].old_value;
+                                    data.new_curr_name = content[i].new_value;
+                                }else if(content[i].type == 6){
+                                    data.old_acc_attr_name = content[i].old_value;
+                                    data.new_acc_attr_name = content[i].new_value;
+                                }else if(content[i].type == 7){
+                                    data.old_interactive_mode = content[i].old_value;
+                                    data.new_interactive_mode = content[i].new_value;
+                                }
                             }
                         }
-                    }).then((result) =>{
-                        if (result.data.error_msg) {
-                            this.$message({
-                                type: "error",
-                                message: result.data.error_msg,
-                                duration: 2000
-                            })
-                        }else{
-                            let data = result.data.data;
-                            //组装开户同意接口的参数
-                            this.currentData.service_status = data.service_status;
-                            this.currentData.persist_version = data.persist_version;
-
-                            //组装查看弹出框数据
-                            this.dialogData.detail = data.detail;
-                            this.dialogData.memo = data.memo;
-                            this.dialogData.bill_code = data.service_serial_number;
-                            //拿附件数据
-                            this.fileMessage.bill_id = id;
-                            this.fileMessage.biz_type = row.biz_type;
-                            this.triggerFile = !this.triggerFile;
-                            this.dialogVisible = true;
+                        if(bizType === 7){//销户补录的时候处理销户交易数据
+                            let content = data.additionals;
+                            let len = content.length;
+                            let str = "";
+                            data.salesTransaction = "";
+                            content.forEach((element,index) => {
+                                str = str + element.comments + ":" + element.amount;
+                                if(index!=len-1){
+                                    str = str + ";";
+                                }
+                            });
+                            data.salesTransaction = str;
                         }
-                    })
-                }else{
-                    //组装开户同意接口的参数
-                    this.currentData.service_status = row.service_status;
-                    this.currentData.persist_version = row.persist_version;
-                    this.currentData.wf_inst_id = row.inst_id;
-
-                    //组装查看弹出框数据
-                    this.dialogData.detail = row.detail;
-                    this.dialogData.memo = row.memo;
-                    this.dialogData.bill_code = row.service_serial_number;
-                    //拿附件数据
-                    this.fileMessage.bill_id = id;
-                    this.fileMessage.biz_type = row.biz_type;
-                    this.triggerFile = !this.triggerFile;
-                    this.dialogVisible = true;
-                }
+                        //组装查看弹出框数据
+                        Object.assign(this.dialogData,data)
+                        // this.dialogData = data;
+                        this.dialogData.biz_type = bizType;
+                        // this.dialogData.detail = data.detail;
+                        // this.dialogData.memo = data.memo;
+                        // this.dialogData.bill_code = data.service_serial_number;
+                        //拿附件数据
+                        this.fileMessage.bill_id = id;
+                        this.fileMessage.biz_type = bizType;
+                        this.triggerFile = !this.triggerFile;
+                        this.dialogVisible = true;
+                    }
+                })
             },
             //设置当前附件个数
             setFileList: function ($event) {
@@ -842,6 +1151,7 @@
             //确认加签或同意或拒绝
             confirmThirdFun:function(){
                 let type = this.thirdFunData.type;
+                let _index = this.dialogData.biz_type;
                 let message = "";
                 let optype = "";
                 if(type == "addLots"){
@@ -849,13 +1159,13 @@
                     //组装加签参数
                     this.currentData.shadow_user_id = user.id;
                     this.currentData.shadow_user_name = user.name;
-                    optype = "openintent_append";
+                    optype = this.classParams[_index].addLots;
                     message = "加签成功";
                 }else if(type == "reject"){
-                    optype = "openintent_reject";
+                    optype = this.classParams[_index].reject;
                     message = "拒绝成功";
                 }else{
-                    optype = "openintent_agree";
+                     optype = this.classParams[_index].agree;
                     message = "同意成功";
                 }
                 
@@ -881,19 +1191,10 @@
                             message: message,
                             duration: 2000
                         });
-                        let rows = this.editableTabsList[this.activeName].tableList;
-                        let index = paramsObj.index;
-                        if (this.pagCurrent < (this.pagTotal / this.pagSize)) { //存在下一页
-                            this.$emit('getTableData', this.routerMessage);
-                        } else {
-                            if (rows.length == "1" && (this.routerMessage.todo.params.page_num != 1)) { //是当前页最后一条
-                                this.routerMessage.todo.params.page_num--;
-                                this.$emit('getTableData', this.routerMessage);
-                            } else {
-                                rows.splice(index, 1);
-                                this.pagTotal--;
-                            }
-                        }
+
+                        //同意，加签，拒绝后刷新列表
+                        this.$emit("getTableData", this.routerMessage);
+
                         this.dialogVisible = false;
                         this.thirdFunVisible = false;
                     }
