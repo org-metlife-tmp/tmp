@@ -316,24 +316,24 @@
                     <el-menu-item index="/account/close-account-message" v-if="menuList.AccCloseComAppl">销户信息补录申请</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="5">
+            <el-submenu index="5" v-if="menuList.WFMGT">
                 <template slot="title" height="200px">
                     <i class="icon-splgl"></i>
                     <p>审批流管理</p>
                 </template>
                 <el-menu-item-group>
-                    <el-menu-item index="/workflow/workflow-definition">审批流程定义</el-menu-item>
-                    <el-menu-item index="/workflow/workflow-trace">业务跟踪管理</el-menu-item>
-                    <el-menu-item index="/workflow/workflow-configure">业务配置审批流程</el-menu-item>
+                    <el-menu-item index="/workflow/workflow-definition" v-if="menuList.WFDefine">审批流程定义</el-menu-item>
+                    <el-menu-item index="/workflow/workflow-trace" v-if="menuList.WFTrace">业务跟踪管理</el-menu-item>
+                    <el-menu-item index="/workflow/workflow-configure" v-if="menuList.WFLinK">业务配置审批流程</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="6">
+            <el-submenu index="6" v-if="menuList.WFPLAT">
                 <template slot="title" height="200px">
                     <i class="icon-sppt"></i>
                     <p class="mg-four">审批平台</p>
                 </template>
                 <el-menu-item-group>
-                    <el-menu-item index="/examine-approve/my-examine-approve">我的审批平台</el-menu-item>
+                    <el-menu-item index="/examine-approve/my-examine-approve" v-if="menuList.MyWFPLAT">我的审批平台</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
 
@@ -514,6 +514,15 @@
                     AccDefreezeAppl: false, //账户冻结申请
                     AccCloseIntAppl: false, //销户事项申请
                     AccCloseComAppl: false, //销户信息补录申请
+
+                    WFMGT:false, //审批流管理
+                    WFDefine:false, //审批流程定义
+                    WFTrace:false, //业务流程追踪
+                    WFLinK:false, //业务配置审批流程
+
+
+                    WFPLAT:false, //审批平台
+                    MyWFPLAT:false, //我的审批平台
                 }
             }
         },
