@@ -134,7 +134,7 @@
                 <el-table-column prop="acc_name" label="账户名称" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="curr_id" label="币种" :show-overflow-tooltip="true"
                                  :formatter="transitCurrency"></el-table-column>
-                <el-table-column prop="acc_attr" label="账户属性" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="acc_attr_name" label="账户属性" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="interactive_mode" label="账户模式" :show-overflow-tooltip="true"
                                  :formatter="transitInteract"></el-table-column>
                 <el-table-column prop="status" label="账户状态" :show-overflow-tooltip="true"

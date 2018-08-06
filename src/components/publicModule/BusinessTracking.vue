@@ -3,6 +3,7 @@
     .busTrackContainer{
         margin-top: 20px;
         padding-bottom: 20px; 
+        min-height: 160px;
         /*详情弹出框区域分割样式*/
         .form-small-title {
             // font-weight: bold;
@@ -64,7 +65,6 @@
             width: 420px;
             height: 604px;
             position: fixed;
-            right: -500px;
             height: 100%;
             background-color: #fff;
             top: 52px;
@@ -79,6 +79,10 @@
             .flowlinesVTitle {
                 border-bottom: 1px solid #e3e3e3;
                 height: 30px;
+                >.title{
+                    float: left;
+                    line-height: 30px;
+                }
                 .titleText {
                     color: #ccc;
                 }
@@ -160,6 +164,8 @@
                             height: 22px;
                             line-height: 22px;
                             display: inline-block;
+                            width: 100%;
+                            text-align: left;
                         }
                         .node-name{
                             display: inline-block;
@@ -175,6 +181,9 @@
                         }
                         .message{
                             color: #888;
+                            width: 100%;
+                            display: block;
+                            text-align: left;
                         }
                     }
                 }
@@ -197,6 +206,12 @@
                 }
             }
         }
+        .right500{
+            right: -500px;
+        }
+        .right0{
+            right:0px;
+        }
     }
 </style>
 <style lang="less" type="text/less">
@@ -212,45 +227,47 @@
 </style>
 <template >
     <div class="busTrackContainer">
-        <el-row>
-            <el-col :span="24"  class="form-small-title">
-                <span></span>
-                <span>业务状态跟踪</span>
-                <el-button class="seeMore" size="mini" round plain @click="showRight">查看更多<i class="el-icon-arrow-right"></i></el-button>
-            </el-col>
-        </el-row>
-        <div class="slidersContainer">
-            <el-progress :style="{width: generalLength + '%', left: leftDistance + '%'}" :percentage="percentage" :show-text="false" :stroke-width="2"></el-progress>
+        <div v-if="showRowline">
+            <el-row>
+                <el-col :span="24"  class="form-small-title">
+                    <span></span>
+                    <span>业务状态跟踪</span>
+                    <el-button class="seeMore" size="mini" round plain @click="showRight">查看更多<i class="el-icon-arrow-right"></i></el-button>
+                </el-col>
+            </el-row>
+            <div class="slidersContainer">
+                <el-progress :style="{width: generalLength + '%', left: leftDistance + '%'}" :percentage="percentage" :show-text="false" :stroke-width="2"></el-progress>
+            </div>
+            <el-row class="nodeBox">
+                <el-col :span="divideCol" class="node-item" v-show="submiter.show">
+                    <span class="name">{{submiter.submitter_name}}</span>
+                    <span class="pointCon"><em class="pointer parse"></em></span>
+                    <span class="node-name"><el-tag type="info" size="mini">提交</el-tag></span>
+                    <span class="time">{{submiter.start_time}}</span>
+                </el-col>
+                <el-col :span="divideCol" class="node-item" v-show="history.show">
+                    <span class="name">{{history.assignee}}</span>
+                    <span class="pointCon"><em class="pointer parse"></em></span>
+                    <span class="node-name"><el-tag type="info" size="mini">自定义节点</el-tag></span>
+                    <span class="time">{{history.start_time}}</span>
+                </el-col>
+                <el-col :span="divideCol" class="node-item" v-show="current.show">
+                    <span class="name">{{current.name}}</span>
+                    <span class="pointCon"><em class="pointer"></em></span>
+                    <!-- <span class="node-name"><el-tag type="info" size="mini">当前节点</el-tag></span> -->
+                    <!-- <span class="time">{{current.start_time}}</span> -->
+                </el-col>
+                <el-col :span="divideCol" class="node-item" v-show="future.show">
+                    <span class="name">{{future.name}}</span>
+                    <span class="pointCon"><em class="pointer"></em></span>
+                    <!-- <span class="node-name"><el-tag type="info" size="mini">未来节点</el-tag></span> -->
+                    <!-- <span class="time">{{future.start_time}}</span> -->
+                </el-col>
+            </el-row>
         </div>
-        <el-row class="nodeBox">
-            <el-col :span="divideCol" class="node-item" v-show="submiter.show">
-                <span class="name">{{submiter.submitter_name}}</span>
-                <span class="pointCon"><em class="pointer parse"></em></span>
-                <span class="node-name"><el-tag type="info" size="mini">提交</el-tag></span>
-                <span class="time">{{submiter.start_time}}</span>
-            </el-col>
-            <el-col :span="divideCol" class="node-item" v-show="history.show">
-                <span class="name">{{history.assignee}}</span>
-                <span class="pointCon"><em class="pointer parse"></em></span>
-                <span class="node-name"><el-tag type="info" size="mini">自定义节点</el-tag></span>
-                <span class="time">{{history.start_time}}</span>
-            </el-col>
-            <el-col :span="divideCol" class="node-item" v-show="current.show">
-                <span class="name">{{current.name}}</span>
-                <span class="pointCon"><em class="pointer"></em></span>
-                <!-- <span class="node-name"><el-tag type="info" size="mini">当前节点</el-tag></span> -->
-                <!-- <span class="time">{{current.start_time}}</span> -->
-            </el-col>
-            <el-col :span="divideCol" class="node-item" v-show="future.show">
-                <span class="name">{{future.name}}</span>
-                <span class="pointCon"><em class="pointer"></em></span>
-                <!-- <span class="node-name"><el-tag type="info" size="mini">未来节点</el-tag></span> -->
-                <!-- <span class="time">{{future.start_time}}</span> -->
-            </el-col>
-        </el-row>
-        <div class="rightContainer">
+        <div :class="[businessParams.type?'right0':'right500','rightContainer']">
             <div class="flowlinesVTitle">
-                <span>审批记录</span>
+                <span class="title">审批记录</span>
                 <!-- <span class="titleText">[ ITP201801230000001 ]</span> -->
                 <i class="el-icon-close" @click="closeRight"></i>
             </div>
@@ -289,7 +306,7 @@
                                 <div class="main">
                                     <span class="name">{{history.assignee}}</span>
                                     <div v-show="history.assignee_type"> 
-                                        <span class="node-name"><el-tag size="small">{{transitionType(history.assignee_type)}}</el-tag></span>
+                                        <span class="node-name"><el-tag size="small">{{history.assignee_name}}</el-tag></span>
                                         <span>自定义节点</span>  
                                     </div>
                                     <span class="message">{{history.assignee_memo}}</span>
@@ -304,7 +321,9 @@
                                     <em class="flowlinesV-img img1"></em>
                                 </span>
                             </div>
-                            <span class="name">{{current.name}}</span>
+                            <div class="main">
+                                <span class="name">{{current.name}}</span>
+                            </div>
                         </el-col>
                         <template v-for="future in futureList">
                             <el-col :span="24" class="node-item" :key="future.id">
@@ -315,7 +334,9 @@
                                         <em class="flowlinesV-img img1"></em>
                                     </span>
                                 </div>
-                                <span class="name">{{future.name}}</span>
+                                <div class="main">
+                                    <span class="name">{{future.name}}</span>
+                                </div>
                             </el-col>
                         </template>
                     </el-row>
@@ -329,8 +350,13 @@
     export default {
         name: "BusinessTracking",
         created:function(){
-            this.getBusinessData(this.businessParams);
-            this.assignee_type ={
+            if(this.businessParams.id){
+                if(this.businessParams.type){
+                    this.showRowline = false;
+                }
+                this.getBusinessData(this.businessParams);
+            }
+            this.assigneeTypeList ={
                 1:"同意",
                 2:"拒绝",
                 3:"加签"
@@ -347,13 +373,14 @@
                 current:{},
                 future:{},
                 futureList:[],
-                divideCol:6 ,
-                generalLength:100,
-                leftDistance:12.5,
-                percentage:50,
-                rightLinesHeight:300,
-                rightFillsHeight:50,
-                assignee_type:{}
+                divideCol:0 ,//横线每个节点所占宽度
+                generalLength:0,//横线灰线的长度
+                leftDistance:0,//横线的marginLeft
+                percentage:0,//横线的蓝线长度
+                rightLinesHeight:0,//竖线的灰线长度
+                rightFillsHeight:0,//竖线的蓝线长度
+                assigneeTypeList:{},
+                showRowline:true
             }
         },
         methods:{
@@ -366,7 +393,7 @@
                 this.future = {};
                 //加载业务跟踪状态数据
                 this.$axios({
-                    url:"/cfm/normalProcess",
+                    url:"/cfm/commProcess",
                     method:"post",
                     data:{
                         optype:"wfquery_approvedetail",
@@ -395,32 +422,41 @@
                         let fL = future.length;
                         this.future = fL > 0 ? data.future[fL-1] : {} ;
                         this.future.show = fL > 0 ? true : false;
+                        let hL = data.history.length;
+                        if(hL){
+                            data.history.forEach(element => {
+                                element.assignee_name =  this.transitionType(element.assignee_type);
+                            });
+                        }
                         let history = data.history;
-                        let hL = history.length;
                         this.history = hL > 0 ? data.history[hL-1] : {} ;
                         this.history.show = hL > 0 ? true : false;
                         
-                        if(!this.current.show) i --;
-                        if(!this.future.show ) i --;
-                        if(!this.history.show){
-                            i --;
-                            // 100/2(i-1)
-                            this.percentage = 50 / (i - 1);
-                        } else{
-                            if(i === 4)
-                                this.percentage = 50;
-                            if(i === 3)
-                                this.percentage = 75;
-                            if(i === 2)
-                                this.percentage = 100;
-                        }
-                        //处理线条样式
-                        this.divideCol = 24 / i;
-                        this.generalLength = 100 / i * (i - 1); 
-                        this.leftDistance = 100 / (i * 2);
-                        //本想打算让这个请求结束在让弹框显示，但是如果该弹框不显示，子组件都不会调用
-                        // this.$emit("showDialog");
+                        
+                        if(!this.businessParams.type){
+                            if(!this.current.show) i --;
+                            if(!this.future.show ) i --;
+                            if(!this.history.show){
+                                i --;
+                                // 100/2(i-1)
+                                this.percentage = 50 / (i - 1);
+                            } else{
+                                if(i === 4)
+                                    this.percentage = 50;
+                                if(i === 3)
+                                    this.percentage = 75;
+                                if(i === 2)
+                                    this.percentage = 100;
+                            }
 
+                            //处理线条样式
+                            this.divideCol = 24 / i;
+                            this.generalLength = 100 / i * (i - 1); 
+                            this.leftDistance = 100 / (i * 2);
+                            //本想打算让这个请求结束在让弹框显示，但是如果该弹框不显示，子组件都不会调用
+                            // this.$emit("showDialog");
+                        }
+                        
                         //组装右侧数据
                         this.historyList = history;
                         this.futureList = future;
@@ -438,15 +474,24 @@
                 document.getElementsByClassName("rightContainer")[0].style.right = "0"; 
             },
             closeRight:function(){
-                event.currentTarget.parentNode.parentNode.style.right = "-500px"; 
+                if(this.businessParams.type){
+                    this.$emit("closeRightDialog"); 
+                }else{
+                    event.currentTarget.parentNode.parentNode.style.right = "-500px";
+                }
             },
             transitionType:function(id){
-                return this.assignee_type[id];
+                return this.assigneeTypeList[id];
             }
         },
         watch:{
             businessParams:function(val, oldVal){
-                this.getBusinessData(val);
+                if(val.id){
+                    this.getBusinessData(val);
+                }
+                if(val.type){
+                    this.showRowline = false;
+                }
             }
         }
     }
