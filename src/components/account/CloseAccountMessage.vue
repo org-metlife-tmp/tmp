@@ -322,6 +322,10 @@
                     </el-col>
                 </el-row>
             </el-form>
+            <BusinessTracking 
+                v-show="businessTrack"
+                :businessParams="businessParams"
+            ></BusinessTracking>
             <span slot="footer" class="dialog-footer">
                 <el-button type="warning" size="mini" @click="dialogVisible = false" :disabled="lookDisabled">取 消</el-button>
                 <el-button type="warning" size="mini" @click="saveAppliation" :disabled="lookDisabled">确定</el-button>
@@ -344,13 +348,12 @@
                 </span>
             </el-dialog>
         </el-dialog>
-        </el-dialog>
     </div>
 </template>
 
 <script>
     import Upload from "../publicModule/Upload.vue";
-
+    import BusinessTracking from "../publicModule/BusinessTracking.vue"
     export default {
         name: "CloseAccountMessage",
         created: function () {
@@ -360,7 +363,8 @@
         },
         props:["isPending","tableData"],
         components: {
-            Upload: Upload
+            Upload: Upload,
+            BusinessTracking:BusinessTracking
         },
         data: function () {
             return {
@@ -406,7 +410,9 @@
                 innerVisible: false, //提交弹出框
                 selectWorkflow: "", //流程选择
                 workflows: [],
-                workflowData: {}
+                workflowData: {},
+                businessParams:{},//业务状态追踪参数
+                businessTrack:false
             }
         },
         methods: {
@@ -452,6 +458,7 @@
             },
             //编辑
             editMessage:function(row,type){
+                this.businessTrack = false;
                 //清空数据
                 this.lookDisabled = false;
                 this.dialogData = {close_date:"",interactive_mode:"",acc_no:""};
@@ -489,6 +496,11 @@
                             this.accOptions = result.data.data;
                         }
                     });
+                }else{
+                    this.businessTrack = true;
+                    this.businessParams = {};//清空数据
+                    this.businessParams.biz_type = 7;
+                    this.businessParams.id = row.id;
                 }
 
 
@@ -529,8 +541,6 @@
                 }else{//待处理状态下为新增功能
                     this.dialogVisible = true;
                 }
-
-
             },
             //切换账户号
             changeAccount:function(cur){

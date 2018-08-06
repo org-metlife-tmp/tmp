@@ -581,6 +581,9 @@
                     </el-col>
                 </el-row>
             </el-form>
+            <BusinessTracking 
+                :businessParams="businessParams"
+            ></BusinessTracking>
             <span slot="footer" class="dialog-footer">
                 <el-button type="warning" size="mini" @click="lookDialogVisible = false">确 定</el-button>
             </span>
@@ -590,7 +593,7 @@
 
 <script>
     import Upload from "../publicModule/Upload.vue";
-
+    import BusinessTracking from "../publicModule/BusinessTracking.vue"
     export default {
         name: "AccountAlteration",
         created: function () {
@@ -629,7 +632,8 @@
             }
         },
         components: {
-            Upload: Upload
+            Upload: Upload,
+            BusinessTracking:BusinessTracking
         },
         props: ["isPending", "tableData"],
         data: function () {
@@ -724,7 +728,8 @@
                 innerVisible: false, //提交弹出框
                 selectWorkflow: "", //流程选择
                 workflows: [],
-                workflowData: {}
+                workflowData: {},
+                businessParams:{},//业务状态追踪参数
             }
         },
         methods: {
@@ -963,6 +968,9 @@
             },
             //查看
             lookAlterat: function(row){
+                this.businessParams = {};//清空数据
+                this.businessParams.biz_type = 3;
+                this.businessParams.id = row.id;
                 this.lookDialogVisible = true;
                 var dialogData = this.lookDialogData;
                 for(var k in dialogData){

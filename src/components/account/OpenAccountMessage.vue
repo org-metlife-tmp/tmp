@@ -650,6 +650,9 @@
                     </el-col>
                 </el-row>
             </el-form>
+            <BusinessTracking 
+                :businessParams="businessParams"
+            ></BusinessTracking>
             <span slot="footer" class="dialog-footer">
                 <el-button type="warning" size="mini" @click="lookDialog=false">确 定</el-button>
             </span>
@@ -659,7 +662,7 @@
 
 <script>
     import Upload from "../publicModule/Upload.vue";
-
+    import BusinessTracking from "../publicModule/BusinessTracking.vue"
     export default {
         name: "OpenAccountMessage",
         created: function () {
@@ -736,7 +739,8 @@
         },
         props: ["isPending", "tableData"],
         components: {
-            Upload: Upload
+            Upload: Upload,
+            BusinessTracking:BusinessTracking
         },
         data: function () {
             return {
@@ -805,7 +809,8 @@
                 innerVisible: false, //提交弹出框
                 selectWorkflow: "", //流程选择
                 workflows: [],
-                workflowData: {}
+                workflowData: {},
+                businessParams:{},//业务状态追踪参数
             }
         },
         methods: {
@@ -1082,6 +1087,9 @@
             },
             //已处理事项查看
             lookMessage:function(row){
+                this.businessParams = {};//清空数据
+                this.businessParams.biz_type = 2;
+                this.businessParams.id = row.id;
                 this.lookDialog = true;
                 for(var k in this.bankCorrelation){
                     this.bankCorrelation[k] = "";

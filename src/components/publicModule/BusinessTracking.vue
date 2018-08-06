@@ -350,6 +350,7 @@
     export default {
         name: "BusinessTracking",
         created:function(){
+            debugger;
             if(this.businessParams.id){
                 if(this.businessParams.type){
                     this.showRowline = false;
@@ -486,6 +487,7 @@
         },
         watch:{
             businessParams:function(val, oldVal){
+                debugger;
                 if(val.id){
                     this.getBusinessData(val);
                 }

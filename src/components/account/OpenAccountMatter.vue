@@ -365,6 +365,9 @@
                     </el-col>
                 </el-row>
             </el-form>
+            <BusinessTracking 
+                :businessParams="businessParams"
+            ></BusinessTracking>
         </el-dialog>
         <!--已处理分发弹框-->
         <el-dialog :visible.sync="distDialog"
@@ -455,7 +458,7 @@
 
 <script>
     import Upload from "../publicModule/Upload.vue";
-
+    import BusinessTracking from "../publicModule/BusinessTracking.vue"
     export default {
         name: "OpenAccountMatter",
         created: function () {
@@ -484,7 +487,8 @@
         },
         props: ["isPending", "tableData"],
         components: {
-            Upload: Upload
+            Upload: Upload,
+            BusinessTracking:BusinessTracking
         },
         data: function () {
             return {
@@ -539,7 +543,8 @@
                 triggerFile: false,
                 selectWorkflow: "", //流程选择
                 workflows: [],
-                workflowData: {}
+                workflowData: {},
+                businessParams:{},//业务状态追踪参数
             }
         },
         methods: {
@@ -733,6 +738,9 @@
             },
             //已处理事项查看
             lookMatter: function (row) {
+                this.businessParams = {};//清空数据
+                this.businessParams.biz_type = 1;
+                this.businessParams.id = row.id;
                 this.lookDialog = true;
                 for (var k in this.lookDialogData) {
                     this.lookDialogData[k] = "";

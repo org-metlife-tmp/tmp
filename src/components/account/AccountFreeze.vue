@@ -158,7 +158,7 @@
                         <el-tooltip content="查看" placement="bottom" effect="light"
                                     :enterable="false" :open-delay="500" v-show="!isPending">
                             <el-button type="primary" icon="el-icon-search" size="mini"
-                                       @click="lookFreeze(scope.row)"></el-button>
+                                       @click="lookFreeze(scope.row,'businessTrack')"></el-button>
                         </el-tooltip>
                         <el-tooltip content="撤回" placement="bottom" effect="light"
                                     :enterable="false" :open-delay="500"
@@ -271,6 +271,10 @@
                     </el-col>
                 </el-row>
             </el-form>
+            <BusinessTracking 
+                v-show="businessTrack"
+                :businessParams="businessParams"
+            ></BusinessTracking>
             <span slot="footer" class="dialog-footer">
                 <el-button type="warning" size="mini" @click="dialogVisible = false" :disabled="lookDisabled">取 消</el-button>
                 <el-button type="warning" size="mini" @click="saveFreeze" :disabled="lookDisabled">确 定</el-button>
@@ -298,7 +302,7 @@
 
 <script>
     import Upload from "../publicModule/Upload.vue";
-
+    import BusinessTracking from "../publicModule/BusinessTracking.vue"
     export default {
         name: "AccountFreeze",
         created: function () {
@@ -308,7 +312,8 @@
         },
         props:["isPending","tableData"],
         components: {
-            Upload: Upload
+            Upload: Upload,
+            BusinessTracking:BusinessTracking
         },
         data: function () {
             return {
@@ -353,7 +358,9 @@
                 innerVisible: false, //提交弹出框
                 selectWorkflow: "", //流程选择
                 workflows: [],
-                workflowData: {}
+                workflowData: {},
+                businessParams:{},//业务状态追踪参数,
+                businessTrack:false
             }
         },
         methods: {
@@ -399,6 +406,7 @@
             },
             //新增冻结申请
             addAccountFreeze:function(){
+                this.businessTrack = false;
                 this.dialogTitle = "账户冻结申请";
                 this.dialogData = {};
                 this.currentFreeze = {};
@@ -424,6 +432,7 @@
             },
             //编辑
             editFreeze:function(row){
+                this.businessTrack = false;
                 //清空数据
                 this.dialogData = {};
                 this.accOptions = [];
@@ -587,6 +596,10 @@
             },
             //查看已处理列表详情
             lookFreeze:function(row){
+                this.businessTrack = true;
+                this.businessParams = {};//清空数据
+                this.businessParams.biz_type = 4;
+                this.businessParams.id = row.id;
                 this.dialogData = {};
                 this.dialogTitle = "账户冻结";
                 this.dialogData = row;

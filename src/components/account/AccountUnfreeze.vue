@@ -271,6 +271,10 @@
                     </el-col>
                 </el-row>
             </el-form>
+            <BusinessTracking 
+                v-show="businessTrack"
+                :businessParams="businessParams"
+            ></BusinessTracking>
             <span slot="footer" class="dialog-footer">
                 <el-button type="warning" size="mini" @click="dialogVisible = false" :disabled="lookDisabled">取 消</el-button>
                 <el-button type="warning" size="mini" @click="saveUnfreeze" :disabled="lookDisabled">确 定</el-button>
@@ -298,7 +302,7 @@
 
 <script>
     import Upload from "../publicModule/Upload.vue";
-
+    import BusinessTracking from "../publicModule/BusinessTracking.vue"
     export default {
         name: "AccountUnfreeze",
         created: function () {
@@ -308,7 +312,8 @@
         },
         props:["isPending","tableData"],
         components: {
-            Upload: Upload
+            Upload: Upload,
+            BusinessTracking:BusinessTracking
         },
         data: function () {
             return {
@@ -353,7 +358,9 @@
                 innerVisible: false, //提交弹出框
                 selectWorkflow: "", //流程选择
                 workflows: [],
-                workflowData: {}
+                workflowData: {},
+                businessParams:{},//业务状态追踪参数,
+                businessTrack:false
             }
         },
         methods: {
@@ -399,6 +406,7 @@
             },
             //新增冻结申请
             addAccountUnfreeze:function(){
+                this.businessTrack = false;
                 this.dialogTitle = "账户解冻申请";
                 this.dialogData = {};
                 this.accOptions = [];
@@ -424,6 +432,7 @@
             },
             //编辑
             editUnfreeze:function(row){
+                this.businessTrack = false;
                 //***遍历为弹框每个字段添加值 取消双向绑定
                 //清空数据
                 this.dialogData = {};
@@ -589,6 +598,10 @@
             },
             //查看已处理列表详情
             lookUnfreeze:function(row){
+                this.businessTrack = true;
+                this.businessParams = {};//清空数据
+                this.businessParams.biz_type = 5;
+                this.businessParams.id = row.id;
                 this.dialogData = {};
                 this.dialogTitle = "账户解冻";
                 this.dialogData = row;
