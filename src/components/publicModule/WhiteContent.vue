@@ -122,7 +122,7 @@
             </span>
         </el-dialog>
         <!--账户属性弹出框-->
-        <el-dialog :visible.sync="accDialogVisible"
+        <!-- <el-dialog :visible.sync="accDialogVisible"
                    width="810px" title="请选择账户属性"
                    :close-on-click-modal="false"
                    top="56px">
@@ -136,9 +136,9 @@
                 <el-button type="warning" size="mini" plain @click="accDialogVisible=false">取 消</el-button>
                 <el-button type="warning" size="mini" @click="queryByOrg">确 定</el-button>
             </span>
-        </el-dialog>
+        </el-dialog> -->
         <!--账户模式弹出框-->
-        <el-dialog :visible.sync="inactiveDialogVisible"
+        <!-- <el-dialog :visible.sync="inactiveDialogVisible"
                    width="810px" title="请选择账户模式"
                    :close-on-click-modal="false"
                    top="56px">
@@ -152,7 +152,7 @@
                 <el-button type="warning" size="mini" plain @click="inactiveDialogVisible=false">取 消</el-button>
                 <el-button type="warning" size="mini" @click="queryByOrg">确 定</el-button>
             </span>
-        </el-dialog>
+        </el-dialog> -->
     </div>
 </template>
 
