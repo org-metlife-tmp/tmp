@@ -351,19 +351,21 @@
                     <el-menu-item index="1-8">余额数据导入</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
-            <!--
-            <el-submenu index="4">
+            <el-submenu index="8">
                 <template slot="title" height="200px">
                     <i class="icon-jyt"></i>
                     <p>交易通</p>
                 </template>
                 <el-menu-item-group>
-                    <el-menu-item index="/data-manage/bank-account">银行账户管理</el-menu-item>
-                    <el-menu-item index="1-1">选项1</el-menu-item>
-                    <el-menu-item index="1-2">选项2</el-menu-item>
-                    <el-menu-item index="1-3">选项3</el-menu-item>
+                    <el-menu-item index="/trade-links/today-detail">当日交易明细</el-menu-item>
+                    <el-menu-item index="/trade-links/today-all">当日交易汇总</el-menu-item>
+                    <el-menu-item index="/trade-links/history-detail">历史交易明细</el-menu-item>
+                    <el-menu-item index="/trade-links/history-all">历史交易汇总</el-menu-item>
+                    <el-menu-item index="/trade-links/history-fluctuate">历史交易波动</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
+            <!--
+
             <el-submenu index="5">
                 <template slot="title" height="200px">
                     <i class="icon-dbt"></i>

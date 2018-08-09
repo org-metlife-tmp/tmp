@@ -40,6 +40,12 @@ import TodayFluctuate from '@/components/balance/TodayFluctuate'
 import HistoryDetail from '@/components/balance/HistoryDetail'
 import HistoryAll from '@/components/balance/HistoryAll'
 import HistoryFluctuate from '@/components/balance/HistoryFluctuate'
+//交易通
+import TodayDealDetail from '@/components/tradeLinks/TodayDetail'
+import TodayDealAll from '@/components/tradeLinks/TodayAll'
+import HistoryDealDetail from '@/components/tradeLinks/HistoryDetail'
+import HistoryDealAll from '@/components/tradeLinks/HistoryAll'
+import HistoryDealFluctuate from '@/components/tradeLinks/HistoryFluctuate'
 //调拨通
 import MakeBill from '@/components/allot/MakeBill'
 import BankAccount from '@/components/allot/BankAccount'
@@ -71,7 +77,13 @@ const router = new Router({
                         {path: 'today-fluctuate', name: 'TodayFluctuate', component: TodayFluctuate},
                         {path: 'history-detail', name: 'HistoryDetail', component: HistoryDetail},
                         {path: 'history-all', name: 'HistoryAll', component: HistoryAll},
-                        {path: 'history-fluctuate', name: 'HistoryFluctuate', component: HistoryFluctuate}
+                        {path: 'history-fluctuate', name: 'HistoryFluctuate', component: HistoryFluctuate},
+                        //交易通
+                        {path: '/trade-links/today-detail', name: 'ToDayDealDetail', component: TodayDealDetail},
+                        {path: '/trade-links/today-all', name: 'ToDayDealAll', component: TodayDealAll},
+                        {path: '/trade-links/history-detail', name: 'HistoryDealDetail', component: HistoryDealDetail},
+                        {path: '/trade-links/history-all', name: 'HistoryDealAll', component: HistoryDealAll},
+                        {path: '/trade-links/history-fluctuate', name: 'HistoryDealFluctuate', component: HistoryDealFluctuate},
                     ]
                 },
                 //基础样式二（中心内容-无按钮）

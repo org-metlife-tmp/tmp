@@ -76,7 +76,7 @@
             }
         }
     }
-    
+
 </style>
 
 <template>
