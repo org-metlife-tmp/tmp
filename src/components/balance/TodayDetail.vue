@@ -40,11 +40,14 @@
         <div class="botton-pag">
             <el-pagination
                     background
-                    layout="prev, pager, next, jumper"
+                    layout="sizes, prev, pager, next, jumper"
                     :page-size="pagSize"
                     :total="pagTotal"
-                    @current-change="pageChange"
-                    :pager-count="5">
+                    :page-sizes="[10, 50, 100, 500]"
+                    :pager-count="5"
+                    :current-page="pagCurrent"
+                    @current-change="getCurrentPage"
+                    @size-change="sizeChange">
             </el-pagination>
         </div>
     </div>
@@ -95,9 +98,17 @@
             }
         },
         methods: {
-            //换页
-            pageChange: function (page) {
-                this.routerMessage.pageno = page;
+            //点击页数 获取当前页数据
+            getCurrentPage: function (currPage) {
+                this.routerMessage.params.page_num = currPage;
+                this.$emit("getTableData", this.routerMessage);
+            },
+            //当前页数据条数发生变化
+            sizeChange:function(val){
+                this.routerMessage.params = {
+                    page_size: val,
+                    page_num: 1
+                };
                 this.$emit("getTableData", this.routerMessage);
             },
             //获取饼图数据

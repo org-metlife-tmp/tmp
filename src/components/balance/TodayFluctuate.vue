@@ -28,21 +28,23 @@
                       size="mini"
                       height="86%"
                       max-height="362px">
-                <el-table-column prop="code" label="账户号"></el-table-column>
-                <el-table-column prop="name" label="账户名称"></el-table-column>
-                <el-table-column prop="bankName" label="公司" width="300px"></el-table-column>
-                <el-table-column prop="type" label="账户属性"></el-table-column>
-                <el-table-column prop="balance" label="当前余额"></el-table-column>
+                <el-table-column prop="acc_no" label="账户号"></el-table-column>
+                <el-table-column prop="acc_name" label="账户名称"></el-table-column>
+                <el-table-column prop="acc_attr_name" label="账户属性"></el-table-column>
+                <el-table-column prop="bal" label="当前余额"></el-table-column>
+                <el-table-column prop="import_time" label="同步时间"></el-table-column>
             </el-table>
         </div>
+        <!--分页-->
         <div class="botton-pag">
             <el-pagination
                     background
                     layout="prev, pager, next, jumper"
                     :page-size="pagSize"
                     :total="pagTotal"
-                    @current-change="pageChange"
-                    :pager-count="5">
+                    :pager-count="5"
+                    :current-page="pagCurrent"
+                    @current-change="getCurrentPage">
             </el-pagination>
         </div>
     </div>
@@ -60,27 +62,36 @@
             return {
                 tableSite: true,
                 routerMessage: {
-                    optype: "qcb_detail_list",
-                    pageno: 1,
-                    pagesize: 8
+                    optype: "yet_curdetaillist",
+                    params:{
+                        page_num: 1,
+                        page_size: 8,
+                        org_ids: "",
+                        cnaps_codes: "",
+                        acc_attrs: "",
+                        interactive_modes: ""
+                    }
                 },
                 tableList: [],
-                pagTotal: 0,
-                pagSize: 0
+                //分页数据
+                pagSize: 8,
+                pagTotal: 1,
+                pagCurrent: 1,
             }
         },
         methods: {
-            pageChange: function (page) {
-                this.routerMessage.pageno = page;
+            //点击页数 获取当前页数据
+            getCurrentPage: function (currPage) {
+                this.routerMessage.params.page_num = currPage;
                 this.$emit("getTableData", this.routerMessage);
-            }
+            },
         },
         watch: {
             tableData: function (val, oldValue) {
-                var data = val.data;
-                this.tableList = data.list;
-                this.pagSize = data.pagesize * 1;
-                this.pagTotal = data.total * 1;
+                this.pagSize = val.page_size;
+                this.pagTotal = val.total_line;
+                this.pagCurrent = val.page_num;
+                this.tableList = val.data; 
             }
         }
     }

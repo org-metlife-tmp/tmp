@@ -329,21 +329,21 @@
                 setTree(data, 2);
                 return treeData;
             },
-            queryByOrg:function () {
+            queryByOrg:function () { 
                 this.curRouterParam.params.org_ids = this.$refs.tree.getCheckedKeys()
-                this.curRouterParam.params.page_size = 8;
+                this.curRouterParam.params.page_size = 10;
                 this.curRouterParam.params.page_num = 1;
                 this.getRouterData(this.curRouterParam,'dialogVisible');
             },
             queryByMode:function () {
                 this.curRouterParam.params.interactive_modes = this.checkModeList;
-                this.curRouterParam.params.page_size = 8;
+                this.curRouterParam.params.page_size = 10;
                 this.curRouterParam.params.page_num = 1;
                 this.getRouterData(this.curRouterParam,'inactiveDialogVisible');
             },
             queryByAcc:function () {
                 this.curRouterParam.params.acc_attrs = this.checkAccAttrList;
-                this.curRouterParam.params.page_size = 8;
+                this.curRouterParam.params.page_size = 10;
                 this.curRouterParam.params.page_num = 1;
                 this.getRouterData(this.curRouterParam,'accDialogVisible');
             }

@@ -73,7 +73,7 @@
 <template>
     <div id="todayAll">
         <!--饼图-->
-        <!-- <CakePicture :pieData="pieData"></CakePicture> -->
+        <CakePicture :pieData="pieData"></CakePicture>
         <!-- 表格数据-->
         <div :class="['table-setion',{'table-up':!tableSite},{'table-down':tableSite}]">
             <img src="../../assets/icon_arrow_up.jpg" alt="" v-show="tableSite" @click="tableSite=!tableSite"/>
@@ -86,18 +86,21 @@
                       max-height="362px">
                 <el-table-column prop="name" label="公司名称" v-if="btActive"></el-table-column>
                 <el-table-column prop="name" label="银行名称" v-else></el-table-column>
-                <el-table-column prop="balance" label="余额"></el-table-column>
+                <el-table-column prop="bal" label="余额"></el-table-column>
             </el-table>
         </div>
         <!-- 分页-->
         <div class="botton-pag">
             <el-pagination
                     background
-                    layout="prev, pager, next, jumper"
+                    layout="sizes, prev, pager, next, jumper"
                     :page-size="pagSize"
                     :total="pagTotal"
-                    @current-change="pageChange"
-                    :pager-count="5">
+                    :page-sizes="[10, 50, 100, 500]"
+                    :pager-count="5"
+                    :current-page="pagCurrent"
+                    @current-change="getCurrentPage"
+                    @size-change="sizeChange">
             </el-pagination>
         </div>
         <!-- 公司/银行 选择-->
@@ -115,7 +118,7 @@
 </template>
 
 <script>
-    // import CakePicture from "./CakePicture.vue";
+    import CakePicture from "./CakePicture.vue";
 
     export default {
         name: "TodayAll",
@@ -125,28 +128,32 @@
             this.$emit('getTableData', this.routerMessage);
 
             //获取饼图数据
-            this.getPieData("qcb_org_topchart");
+            this.getPieData();
         },
         props: ["tableData"],
         data: function () {
             return {
                 //获取数据的信息
                 routerMessage: {
-                    optype: "yet_curdetaillist",
-                    page_num: 1,
-                    page_size: 8,
-                    org_ids: "",
-                    cnaps_codes: "",
-                    acc_attrs: "",
-                    interactive_modes: ""
+                    optype: "yet_curcollectlist",
+                    params:{
+                        page_num: 1,
+                        page_size: 10,
+                        org_ids: "",
+                        cnaps_codes: "",
+                        acc_attrs: "",
+                        interactive_modes: "",
+                        type:1
+                    }
                 },
                 //滑动面板的控制
                 tableSite: true,
                 //表格数据
                 tableList: [],
                 //分页数据
-                pagTotal: 0,
-                pagSize: 0,
+                pagSize: 10,
+                pagTotal: 1,
+                pagCurrent: 1,
                 //饼图数据
                 pieData: [],
                 //公司/银行激活状态
@@ -154,12 +161,18 @@
             }
         },
         components: {
-            // CakePicture: CakePicture
+            CakePicture: CakePicture
         },
         methods: {
-            //换页
-            pageChange: function (page) {
-                this.routerMessage.pageno = page;
+            //点击页数 获取当前页数据
+            getCurrentPage: function (currPage) {
+                this.routerMessage.params.page_num = currPage;
+                this.$emit("getTableData", this.routerMessage);
+            },
+            //当前页数据条数发生变化
+            sizeChange:function(val){
+                this.routerMessage.params.page_size = val;
+                this.routerMessage.params.page_num = 1;
                 this.$emit("getTableData", this.routerMessage);
             },
             //点击公司
@@ -169,11 +182,11 @@
                 } else {
                     this.btActive = true;
                     //获取表格数据
-                    this.routerMessage.pageno = 1;
-                    this.routerMessage.optype = "qcb_org_list";
+                    this.routerMessage.params.page_num = 1;
+                    this.routerMessage.params.type = 1;
                     this.$emit("getTableData", this.routerMessage);
                     //获取饼图数据
-                    this.getPieData("qcb_org_topchart");
+                    this.getPieData();
                 }
             },
             //点击银行
@@ -182,45 +195,34 @@
                     return;
                 } else {
                     this.btActive = false;
-                    this.routerMessage.pageno = 1;
-                    this.routerMessage.optype = "qcb_bank_list";
+                    this.routerMessage.params.page_num = 1;
+                    this.routerMessage.params.type = 2;
                     //获取表格数据
                     this.$emit("getTableData", this.routerMessage);
                     //获取饼图数据
-                    this.getPieData("qcb_bank_topchart");
+                    this.getPieData();
                 }
             },
             //获取饼图数据
             getPieData: function (optype) {
-                var routeThis = this;
-                this.$axios({
-                    url: "/cfm/process",
-                    method: "post",
-                    params: {
-                        optype: optype,
-                        pageno: 1,
-                        pagesize: 100
-                    }
-                }).then(function (result) {
-                    var currentData = result.data.data.list;
-                    var pieData = [];
-                    for (var i = 0; i < currentData.length; i++) {
-                        var item = currentData[i];
-                        pieData.push({value: item.balance, name: item.name, code: item.code});
-                    }
-                    routeThis.pieData = pieData;
-                }).catch(function (error) {
-                    console.log(error);
-                })
+                var currentData = this.tableList;
+                var pieData = [];
+                for (var i = 0; i < currentData.length; i++) {
+                    var item = currentData[i];
+                    pieData.push({value: item.bal, name: item.name});
+                }
+                this.pieData = pieData;
             }
         },
         watch: {
             //根据父组件返回的信息进行设置
             tableData: function (val, oldValue) {
-                var data = val.data;
-                this.tableList = data.list;
-                this.pagSize = data.pagesize * 1;
-                this.pagTotal = data.total * 1;
+                this.pagSize = val.page_size;
+                this.pagTotal = val.total_line;
+                this.pagCurrent = val.page_num;
+                this.tableList = val.data; 
+                //获取饼图数据
+                this.getPieData();
             }
         }
     }

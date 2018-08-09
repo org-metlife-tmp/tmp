@@ -48,14 +48,16 @@
                 <el-table-column prop="balance" label="当前余额"></el-table-column>
             </el-table>
         </div>
+        <!--分页-->
         <div class="botton-pag">
             <el-pagination
                     background
                     layout="prev, pager, next, jumper"
                     :page-size="pagSize"
                     :total="pagTotal"
-                    @current-change="pageChange"
-                    :pager-count="5">
+                    :pager-count="5"
+                    :current-page="pagCurrent"
+                    @current-change="getCurrentPage">
             </el-pagination>
         </div>
     </div>
@@ -73,28 +75,37 @@
             return {
                 tableSite: true,
                 routerMessage: {
-                    optype: "qhb_acct_average",
-                    pageno: 1,
-                    pagesize: 8
+                    optype: "yet_curwavetopchart",
+                    params:{
+                        page_num: 1,
+                        page_size: 8,
+                        org_ids: "",
+                        cnaps_codes: "",
+                        acc_attrs: "",
+                        interactive_modes: ""
+                    }
                 },
                 tableList: [],
-                pagTotal: 0,
-                pagSize: 0,
+                //分页数据
+                pagSize: 8,
+                pagTotal: 1,
+                pagCurrent: 1,
                 value6: ""
             }
         },
         methods: {
-            pageChange: function (page) {
-                this.routerMessage.pageno = page;
+            //点击页数 获取当前页数据
+            getCurrentPage: function (currPage) {
+                this.routerMessage.params.page_num = currPage;
                 this.$emit("getTableData", this.routerMessage);
-            }
+            },
         },
         watch: {
             tableData: function (val, oldValue) {
-                var data = val.data;
-                this.tableList = data.list;
-                this.pagSize = data.pagesize * 1;
-                this.pagTotal = data.total * 1;
+                this.pagSize = val.page_size;
+                this.pagTotal = val.total_line;
+                this.pagCurrent = val.page_num;
+                this.tableList = val.data; 
             }
         }
     }
