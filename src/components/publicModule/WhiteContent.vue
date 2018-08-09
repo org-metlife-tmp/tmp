@@ -75,6 +75,18 @@
                 }
             }
         }
+        .el-checkbox{
+            display: block;
+            margin-left: 50px;
+            line-height: 35px;
+
+        }
+        .comDialog.el-dialog__wrapper {
+            .el-dialog__body {
+                height: 400px;
+                overflow-y: scroll;
+            }
+        }
     }
 
 </style>
@@ -86,10 +98,10 @@
         </header>
         <section class="content" v-loading="loading">
             <div class="button-list-left">
-                <el-button type="primary" plain size="mini" @click="showCompany">全部公司</el-button>
+                <el-button type="primary" plain size="mini" @click="showDialog('dialogVisible')">全部公司</el-button>
                 <!-- <el-button type="primary" plain size="mini">全部银行</el-button> -->
-                <el-button type="primary" plain size="mini">账户属性</el-button>
-                <el-button type="primary" plain size="mini">账户模式</el-button>
+                <el-button type="primary" plain size="mini" @click="showDialog('accDialogVisible')">账户属性</el-button>
+                <el-button type="primary" plain size="mini" @click="showDialog('inactiveDialogVisible')">账户模式</el-button>
             </div>
             <div class="button-list-right">
                 <el-button type="warning" size="mini">打印</el-button>
@@ -101,6 +113,7 @@
         </section>
         <!--请选择公司弹出框-->
         <el-dialog :visible.sync="dialogVisible"
+                    class="comDialog"
                    width="810px" title="请选择公司"
                    :close-on-click-modal="false"
                    top="56px">
@@ -122,37 +135,33 @@
             </span>
         </el-dialog>
         <!--账户属性弹出框-->
-        <!-- <el-dialog :visible.sync="accDialogVisible"
-                   width="810px" title="请选择账户属性"
+        <el-dialog :visible.sync="accDialogVisible"
+                   width="600px" title="请选择账户属性"
                    :close-on-click-modal="false"
                    top="56px">
             <h1 slot="title" class="dialog-title">请选择账户属性</h1>
-            <el-checkbox-group v-model="checkList">
-                <template v-for="">
-                    <el-checkbox label="复选框 A"></el-checkbox>
-                </template>
+            <el-checkbox-group v-model="checkAccAttrList">
+                <el-checkbox v-for="acc in accAttrList" :key="acc.id" :label="acc.id">{{acc.name}}</el-checkbox>
             </el-checkbox-group>
             <span slot="footer" class="dialog-footer">
                 <el-button type="warning" size="mini" plain @click="accDialogVisible=false">取 消</el-button>
-                <el-button type="warning" size="mini" @click="queryByOrg">确 定</el-button>
+                <el-button type="warning" size="mini" @click="queryByAcc">确 定</el-button>
             </span>
-        </el-dialog> -->
+        </el-dialog>
         <!--账户模式弹出框-->
-        <!-- <el-dialog :visible.sync="inactiveDialogVisible"
-                   width="810px" title="请选择账户模式"
+        <el-dialog :visible.sync="inactiveDialogVisible"
+                   width="600px" title="请选择账户模式"
                    :close-on-click-modal="false"
                    top="56px">
             <h1 slot="title" class="dialog-title">请选择账户模式</h1>
-            <el-checkbox-group v-model="checkList">
-                <template v-for="">
-                    <el-checkbox label="复选框 A"></el-checkbox>
-                </template>
+            <el-checkbox-group v-model="checkModeList">
+                <el-checkbox v-for="mode in modeList" :key="mode.id" :label="mode.id">{{mode.name}}</el-checkbox>
             </el-checkbox-group>
             <span slot="footer" class="dialog-footer">
                 <el-button type="warning" size="mini" plain @click="inactiveDialogVisible=false">取 消</el-button>
-                <el-button type="warning" size="mini" @click="queryByOrg">确 定</el-button>
+                <el-button type="warning" size="mini" @click="queryByMode">确 定</el-button>
             </span>
-        </el-dialog> -->
+        </el-dialog>
     </div>
 </template>
 
@@ -182,22 +191,41 @@
                 console.log(error);
             })
 
-            // let constants = JSON.parse(window.sessionStorage.getItem("constants"));
-            // let mode = constants.InactiveMode;
-            // let len = Object.keys(mode).length;
-            // for(let i = 0; i<len ;i++;)
+            let constants = JSON.parse(window.sessionStorage.getItem("constants"));
+            let mode = constants.InactiveMode;
+            let modeArr = [];
+            for(let i in mode){
+                modeArr.push({
+                    id:i,
+                    name:mode[i]
+                })
+            }
+            this.modeList = modeArr;
+
+            let accAttrObj = JSON.parse(window.sessionStorage.getItem("catgList"))[0].items;
+            let accAttrArr = [];
+            for(let i in accAttrObj){
+                accAttrArr.push({
+                    id:i,
+                    name:accAttrObj[i]
+                })
+            }
+            this.accAttrList = accAttrArr;
         },
         data: function () {
             return {
                 currentTitle: "",
                 childData: {},
-                loading: true,
+                loading: false,
                 dialogVisible: false,
                 treeList:[],
                 curRouterParam:{},
                 accDialogVisible:false,
                 inactiveDialogVisible:false,
                 modeList: [],
+                checkModeList: [],
+                accAttrList: [],
+                checkAccAttrList: []
             }
         },
         methods: {
@@ -223,7 +251,7 @@
                         this.loading = false;
                         //机构查询后关闭弹框
                         if(type){
-                            this.dialogVisible = false;
+                            this[type] = false;
                         }
                     }
                 }).catch(function (error) {
@@ -231,8 +259,8 @@
                 })
             },
             //显示公司弹出框
-            showCompany:function () {
-                this.dialogVisible = true;
+            showDialog:function (type) {
+                this[type] = true;
             },
             //设置树数据的转换
             setTreeData: function (data) {
@@ -306,7 +334,19 @@
                 this.curRouterParam.params.org_ids = this.$refs.tree.getCheckedKeys()
                 this.curRouterParam.params.page_size = 8;
                 this.curRouterParam.params.page_num = 1;
-                this.getRouterData(this.curRouterParam,'org');
+                this.getRouterData(this.curRouterParam,'dialogVisible');
+            },
+            queryByMode:function () {
+                this.curRouterParam.params.interactive_modes = this.checkModeList;
+                this.curRouterParam.params.page_size = 8;
+                this.curRouterParam.params.page_num = 1;
+                this.getRouterData(this.curRouterParam,'inactiveDialogVisible');
+            },
+            queryByAcc:function () {
+                this.curRouterParam.params.acc_attrs = this.checkAccAttrList;
+                this.curRouterParam.params.page_size = 8;
+                this.curRouterParam.params.page_num = 1;
+                this.getRouterData(this.curRouterParam,'accDialogVisible');
             }
         },
         computed: {}
