@@ -43,12 +43,12 @@
         }
         .table-up {
             top: 0;
-            height: 92%;
+            height: 442px;
         }
 
         .table-down {
             top: 48%;
-            height: 44%;
+            height: 38%;
         }
 
         .table-setion img {
@@ -88,7 +88,6 @@
             }
         }
     }
-
 </style>
 
 <template>
