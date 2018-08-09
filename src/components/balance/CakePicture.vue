@@ -16,9 +16,9 @@
         name: "CakePicture",
         mounted: function () {
             //创建饼图
-            var myChart = this.$echarts.init(document.getElementById("cake-picture"));
-            myChart.showLoading();
-            myChart.setOption({
+            this.myChart = this.$echarts.init(document.getElementById("cake-picture"));
+            this.myChart.showLoading();
+            this.myChart.setOption({
                 //提示框组件
                 tooltip: {
                     //触发类型
@@ -93,7 +93,14 @@
                     itemStyle: {
                         emphasis: {
                             borderColor: '#dbdee4'
-                        }
+                        },
+                        normal:{ 
+                            label:{ 
+                                show: true, 
+                                formatter: '{b} : {c} ({d}%)' 
+                            }, 
+                            labelLine :{show:true}
+                        } 
                     },
                     center: ['36%', '50%'], //饼图的中心坐标
                     radius: ['60%', '90%'], //饼图的半径  内/外
@@ -101,17 +108,20 @@
                 }],
                 color: ['#62AAFF', '#40B9FE', '#61CBF2', '#8CD7FF', '#6CDF39', '#8BE851', '#C0E74E', '#FED45B', '#F4BB47', '#EBEBED']
             })
+            var myChartDom = this.myChart
             window.onresize = function(){
-                var setSize = setTimeout(function () {
+                var setSize = setTimeout(() => {
                     window.clearTimeout(setSize);
-                    myChart.resize();
+                    myChartDom.resize();
                 },200)
             }
-            this.$myChart = myChart;
+            this.$myChart = this.myChart;
         },
         props:["pieData"],
         data: function () {
-            return {}
+            return {
+                myChart:""
+            }
         },
         methods: {},
         watch:{
@@ -141,6 +151,7 @@
                     }],
                 })
                 this.$myChart.hideLoading();
+                this.myChart.dispatchAction({type: 'highlight',seriesIndex: 0,dataIndex: 0});
             }
         }
     }

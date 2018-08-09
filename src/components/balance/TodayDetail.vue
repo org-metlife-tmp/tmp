@@ -29,11 +29,11 @@
                       size="mini"
                       height="86%"
                       max-height="362px">
-                <el-table-column prop="code" label="账户号"></el-table-column>
-                <el-table-column prop="name" label="账户名称"></el-table-column>
-                <el-table-column prop="type" label="账户属性"></el-table-column>
-                <el-table-column prop="balance" label="当前余额"></el-table-column>
-                <el-table-column prop="time" label="同步时间"></el-table-column>
+                <el-table-column prop="acc_no" label="账户号"></el-table-column>
+                <el-table-column prop="acc_name" label="账户名称"></el-table-column>
+                <el-table-column prop="acc_attr_name" label="账户属性"></el-table-column>
+                <el-table-column prop="bal" label="当前余额"></el-table-column>
+                <el-table-column prop="import_time" label="同步时间"></el-table-column>
             </el-table>
         </div>
         <!--分页-->
@@ -52,34 +52,17 @@
 
 <script>
     import CakePicture from "./CakePicture.vue";
+    // import func from './vue-temp/vue-editor-bridge';
 
     export default {
         name: "TodayDetail",
         created: function () {
+            
             this.$emit('transmitTitle', '当日余额明细');
             this.$emit('getTableData', this.routerMessage);
 
             //获取饼图数据
-            var routeThis = this;
-            this.$axios({
-                url: "/cfm/process",
-                method: "post",
-                params: {
-                    optype: "qcb_detail_topchart",
-                    pageno: 1,
-                    pagesize: 100
-                }
-            }).then(function (result) {
-                var currentData = result.data.data.list;
-                var pieData = [];
-                for (var i = 0; i < currentData.length; i++) {
-                    var item = currentData[i];
-                    pieData.push({value: item.balance, name: item.name, code: item.code});
-                }
-                routeThis.pieData = pieData
-            }).catch(function (error) {
-                console.log(error);
-            })
+            this.getPieData();
         },
         props: ["tableData"],
         components: {
@@ -89,17 +72,24 @@
             return {
                 //获取自身数据信息
                 routerMessage: {
-                    optype: "qcb_detail_list",
-                    pageno: 1,
-                    pagesize: 8
+                    optype: "yet_curdetaillist",
+                    params:{
+                        page_num: 1,
+                        page_size: 8,
+                        org_ids: "",
+                        cnaps_codes: "",
+                        acc_attrs: "",
+                        interactive_modes: ""
+                    }
                 },
                 //滑动面板控制
                 tableSite: true,
                 //表格数据
                 tableList: [],
                 //分页数据
-                pagTotal: 0,
-                pagSize: 0,
+                pagSize: 8,
+                pagTotal: 1,
+                pagCurrent: 1,
                 //饼图数据
                 pieData: []
             }
@@ -109,19 +99,27 @@
             pageChange: function (page) {
                 this.routerMessage.pageno = page;
                 this.$emit("getTableData", this.routerMessage);
+            },
+            //获取饼图数据
+            getPieData:function(){
+                var currentData = this.tableList;
+                var pieData = [];
+                for (var i = 0; i < currentData.length; i++) {
+                    var item = currentData[i];
+                    pieData.push({value: item.bal, name: item.acc_name, code: item.acc_no});
+                }
+                this.pieData = pieData;
             }
         },
         watch: {
             //设置数据
             tableData: function (val, oldValue) {
-                if (val.data) {
-                    var data = val.data;
-                    this.tableList = data.list;
-                    this.pagSize = data.pagesize * 1;
-                    this.pagTotal = data.total * 1;
-                } else {
-                    return;
-                }
+                this.pagSize = val.page_size;
+                this.pagTotal = val.total_line;
+                this.pagCurrent = val.page_num;
+                this.tableList = val.data; 
+                //获取饼图数据
+                this.getPieData();
             }
         }
     }

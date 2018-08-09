@@ -487,7 +487,6 @@
         },
         watch:{
             businessParams:function(val, oldVal){
-                debugger;
                 if(val.id){
                     this.getBusinessData(val);
                 }

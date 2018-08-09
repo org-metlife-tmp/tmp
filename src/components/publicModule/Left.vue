@@ -336,15 +336,13 @@
                     <el-menu-item index="/examine-approve/my-examine-approve" v-if="menuList.MyWFPLAT">我的审批平台</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
-
-
-            <!--<el-submenu index="3">
+            <el-submenu index="7">
                 <template slot="title" height="200px">
                     <i class="icon-yet"></i>
                     <p>余额通</p>
                 </template>
                 <el-menu-item-group>
-                    <el-menu-item index="/whiteContent/today-detail">当日余额明细</router-link></el-menu-item>
+                    <el-menu-item index="/whiteContent/today-detail">当日余额明细</el-menu-item>
                     <el-menu-item index="/whiteContent/today-all">当日余额汇总</el-menu-item>
                     <el-menu-item index="/whiteContent/today-fluctuate">当日余额波动</el-menu-item>
                     <el-menu-item index="/whiteContent/history-detail">历史余额明细</el-menu-item>
@@ -352,11 +350,8 @@
                     <el-menu-item index="/whiteContent/history-fluctuate">历史余额波动</el-menu-item>
                     <el-menu-item index="1-8">余额数据导入</el-menu-item>
                 </el-menu-item-group>
-                &lt;!&ndash;<el-submenu index="1-4">
-                    <span slot="title">选项4</span>
-                    <el-menu-item index="1-4-1">选项1</el-menu-item>
-                </el-submenu>&ndash;&gt;
             </el-submenu>
+            <!--
             <el-submenu index="4">
                 <template slot="title" height="200px">
                     <i class="icon-jyt"></i>

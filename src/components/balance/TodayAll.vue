@@ -73,7 +73,7 @@
 <template>
     <div id="todayAll">
         <!--饼图-->
-        <CakePicture :pieData="pieData"></CakePicture>
+        <!-- <CakePicture :pieData="pieData"></CakePicture> -->
         <!-- 表格数据-->
         <div :class="['table-setion',{'table-up':!tableSite},{'table-down':tableSite}]">
             <img src="../../assets/icon_arrow_up.jpg" alt="" v-show="tableSite" @click="tableSite=!tableSite"/>
@@ -115,7 +115,7 @@
 </template>
 
 <script>
-    import CakePicture from "./CakePicture.vue";
+    // import CakePicture from "./CakePicture.vue";
 
     export default {
         name: "TodayAll",
@@ -132,13 +132,13 @@
             return {
                 //获取数据的信息
                 routerMessage: {
-                    optype: "qcb_org_list",
-                    pageno: 1,
-                    pagesize: 8,
-                    mode: "",
-                    bank: "",
-                    org: "",
-                    acctType: ""
+                    optype: "yet_curdetaillist",
+                    page_num: 1,
+                    page_size: 8,
+                    org_ids: "",
+                    cnaps_codes: "",
+                    acc_attrs: "",
+                    interactive_modes: ""
                 },
                 //滑动面板的控制
                 tableSite: true,
@@ -154,7 +154,7 @@
             }
         },
         components: {
-            CakePicture: CakePicture
+            // CakePicture: CakePicture
         },
         methods: {
             //换页
