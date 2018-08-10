@@ -229,8 +229,14 @@
         },
         methods: {
             getRouterData: function (routerData,type) {
-                if(!type)
-                   this.curRouterParam = routerData;
+                if(!type){
+                    this.curRouterParam = routerData;
+                    if(this.$refs.tree)
+                        this.$refs.tree.setCheckedKeys([]);
+                    this.checkAccAttrList = [];
+                    this.checkModeList = [];
+                }
+                   
 
                 this.loading = true;
                 this.$axios({
@@ -330,7 +336,7 @@
                 return treeData;
             },
             queryByOrg:function () {
-                this.curRouterParam.params.org_ids = this.$refs.tree.getCheckedKeys()
+                this.curRouterParam.params.org_ids = this.$refs.tree.getCheckedKeys();
                 this.curRouterParam.params.page_num = 1;
                 this.getRouterData(this.curRouterParam,'dialogVisible');
             },
