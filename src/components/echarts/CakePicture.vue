@@ -17,7 +17,6 @@
         mounted: function () {
             //创建饼图
             this.myChart = this.$echarts.init(document.getElementById("cake-picture"));
-            this.myChart.showLoading();
             this.myChart.setOption({
                 //提示框组件
                 tooltip: {
@@ -107,15 +106,16 @@
                     data: []
                 }],
                 color: ['#62AAFF', '#40B9FE', '#61CBF2', '#8CD7FF', '#6CDF39', '#8BE851', '#C0E74E', '#FED45B', '#F4BB47', '#EBEBED']
-            })
-            var myChartDom = this.myChart
+            });
+
+            //设置图标能根据页面大小变化
+            var myChartDom = this.myChart;
             window.onresize = function(){
                 var setSize = setTimeout(() => {
                     window.clearTimeout(setSize);
                     myChartDom.resize();
                 },200)
-            }
-            this.$myChart = this.myChart;
+            };
         },
         props:["pieData"],
         data: function () {
@@ -127,7 +127,7 @@
         watch:{
             //为饼图设置数据
             pieData: function (val,oldValue) {
-                this.$myChart.setOption({
+                this.myChart.setOption({
                     legend: {
                         formatter: function (name) {
                             if (name == "其它") {
@@ -150,7 +150,6 @@
                         data: val
                     }],
                 })
-                this.$myChart.hideLoading();
                 this.myChart.dispatchAction({type: 'highlight',seriesIndex: 0,dataIndex: 0});
             }
         }

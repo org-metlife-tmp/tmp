@@ -24,6 +24,8 @@
 
 <template>
     <div id="todayDetail">
+        <!--柱状图-->
+        <Histogram :barData=barData></Histogram>
         <!--表格-->
         <div :class="['table-setion',{'table-up':!tableSite},{'table-down':tableSite}]">
             <img src="../../assets/icon_arrow_up.jpg" alt="" v-show="tableSite" @click="tableSite=!tableSite"/>
@@ -63,6 +65,8 @@
 </template>
 
 <script>
+    import Histogram from "../echarts/Histogram.vue";
+
     export default {
         name: "TodayDetail",
         created: function () {
@@ -70,6 +74,9 @@
             this.$emit('getTableData', this.routerMessage);
         },
         props: ["tableData"],
+        components: {
+            Histogram: Histogram
+        },
         data: function () {
             return {
                 routerMessage: { //获取自身数据信息
@@ -84,6 +91,7 @@
                 pagSize: 10, //分页数据
                 pagTotal: 1,
                 pagCurrent: 1,
+                barData: [], //柱状图数据
             }
         },
         methods: {
@@ -100,6 +108,27 @@
                 };
                 this.$emit("getTableData", this.routerMessage);
             },
+            //获取柱状图数据
+            getBarData: function(){
+                var currentData = this.tableList;
+                var barData = [];
+                for(var i = 0; i < currentData.length; i++){
+                    var item = currentData[i];
+                    var barColor = item.direction == 1? "#A1D331" : "#33B2F2";
+                    var currentValue = item.direction == 1? item.amount * 1 : item.amount * -1;
+
+                    barData.push({
+                        direction : item.direction,
+                        value : parseFloat(currentValue).toFixed(2),
+                        itemStyle : {
+                            normal : {
+                                color : barColor
+                            }
+                        }
+                    })
+                }
+                this.barData = barData;
+            }
         },
         watch: {
             //设置数据
@@ -108,6 +137,9 @@
                 this.pagTotal = val.total_line;
                 this.pagCurrent = val.page_num;
                 this.tableList = val.data;
+
+                //获取柱状图数据
+                this.getBarData();
             }
         }
     }
