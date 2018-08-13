@@ -13,12 +13,19 @@
             bottom: -6px;
         }
     }
-
+    .table-up {
+        height: 487px!important;
+    }
+    .table-down {
+        height: 48%!important;
+    }
 </style>
 
 <template>
     <div id="todayFluctuate">
-        <div class="cake-picture"></div>
+        <!--折线图-->
+        <LineChart :lineData="lineData"></LineChart>
+        <!-- 表格数据 -->
         <div :class="['table-setion',{'table-up':!tableSite},{'table-down':tableSite}]">
             <img src="../../assets/icon_arrow_up.jpg" alt="" v-show="tableSite" @click="tableSite=!tableSite"/>
             <img src="../../assets/icon_arrow_down.jpg" alt="" v-show="!tableSite" @click="tableSite=!tableSite"/>
@@ -26,36 +33,44 @@
                       border show-summary
                       :sum-text="''"
                       size="mini"
-                      height="86%"
+                      height="81%"
+                      highlight-current-row
+                      @row-click="getCurLineData"
                       max-height="362px">
-                <el-table-column prop="acc_no" label="账户号"></el-table-column>
-                <el-table-column prop="acc_name" label="账户名称"></el-table-column>
-                <el-table-column prop="acc_attr_name" label="账户属性"></el-table-column>
-                <el-table-column prop="bal" label="当前余额"></el-table-column>
-                <el-table-column prop="import_time" label="同步时间"></el-table-column>
+                <el-table-column prop="acc_no" label="账户号" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="acc_name" label="账户名称" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="acc_attr_name" label="账户属性" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="bal" label="当前余额" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="import_time" label="同步时间" :show-overflow-tooltip="true"></el-table-column>
             </el-table>
         </div>
         <!--分页-->
         <div class="botton-pag">
             <el-pagination
-                    background
-                    layout="prev, pager, next, jumper"
-                    :page-size="pagSize"
-                    :total="pagTotal"
-                    :pager-count="5"
-                    :current-page="pagCurrent"
-                    @current-change="getCurrentPage">
+                background
+                layout="sizes, prev, pager, next, jumper"
+                :page-size="pagSize"
+                :total="pagTotal"
+                :page-sizes="[10, 50, 100, 500]"
+                :pager-count="5"
+                :current-page="pagCurrent"
+                @current-change="getCurrentPage"
+                @size-change="sizeChange">
             </el-pagination>
         </div>
     </div>
 </template>
 
 <script>
+    import LineChart from "../echarts/LineChart.vue";
     export default {
         name: "TodayFluctuate",
         created: function () {
             this.$emit('transmitTitle', '当日余额波动');
             this.$emit('getTableData', this.routerMessage);
+        },
+        components:{
+            LineChart:LineChart
         },
         props: ["tableData"],
         data: function () {
@@ -65,7 +80,7 @@
                     optype: "yet_curdetaillist",
                     params:{
                         page_num: 1,
-                        page_size: 8,
+                        page_size: 10,
                         org_ids: "",
                         cnaps_codes: "",
                         acc_attrs: "",
@@ -74,9 +89,11 @@
                 },
                 tableList: [],
                 //分页数据
-                pagSize: 8,
+                pagSize: 10,
                 pagTotal: 1,
                 pagCurrent: 1,
+                //折线图数据
+                lineData: [],
             }
         },
         methods: {
@@ -85,6 +102,55 @@
                 this.routerMessage.params.page_num = currPage;
                 this.$emit("getTableData", this.routerMessage);
             },
+             //当前页数据条数发生变化
+            sizeChange:function(val){
+                this.routerMessage.params.page_size = val;
+                this.routerMessage.params.page_num = 1;
+                this.$emit("getTableData", this.routerMessage);
+            },
+            getCurLineData: function (row, event, column) {
+                let acc_id;
+                if( row === 'all'){
+                    acc_id = this.tableList[0].acc_id;
+                }else{
+                    acc_id = row.acc_id;
+                }
+                this.$axios({
+                    url: "/cfm/normalProcess",
+                    method: "post",
+                    data: {
+                        optype: "yet_curwavetopchart",
+                        params: {
+                            acc_id:acc_id
+                        }
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                    } else {
+                        let data = result.data.data;
+                        let obj ={
+                            x:[],
+                            y:[]
+                        }
+                        data.forEach(element => {
+                            let time = element.import_time.split(" ")[1];
+                            obj.x.push(time);
+                            obj.y.push(element.bal)
+                        });
+                        //写两个子组件监听事件不管用
+                        // this.lineData.xData = arrXList;
+                        // this.lineData.yData = arrYList;
+                        this.lineData = obj;
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                })
+            }
         },
         watch: {
             tableData: function (val, oldValue) {
@@ -92,6 +158,7 @@
                 this.pagTotal = val.total_line;
                 this.pagCurrent = val.page_num;
                 this.tableList = val.data; 
+                this.getCurLineData('all');
             }
         }
     }

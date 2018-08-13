@@ -13,6 +13,12 @@
             bottom: -6px;
         }
     }
+    .table-up {
+        height: 487px!important;
+    }
+    .table-down {
+        height: 48%!important;
+    }
 </style>
 
 <template>
@@ -27,13 +33,13 @@
                       border show-summary
                       :sum-text="''"
                       size="mini"
-                      height="86%"
+                      height="81%"
                       max-height="362px">
-                <el-table-column prop="acc_no" label="账户号"></el-table-column>
-                <el-table-column prop="acc_name" label="账户名称"></el-table-column>
-                <el-table-column prop="acc_attr_name" label="账户属性"></el-table-column>
-                <el-table-column prop="bal" label="当前余额"></el-table-column>
-                <el-table-column prop="import_time" label="同步时间"></el-table-column>
+                <el-table-column prop="acc_no" label="账户号" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="acc_name" label="账户名称" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="acc_attr_name" label="账户属性" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="bal" label="当前余额" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="import_time" label="同步时间" :show-overflow-tooltip="true"></el-table-column>
             </el-table>
         </div>
         <!--分页-->
@@ -78,7 +84,7 @@
                     optype: "yet_curdetaillist",
                     params:{
                         page_num: 1,
-                        page_size: 8,
+                        page_size: 10,
                         org_ids: "",
                         cnaps_codes: "",
                         acc_attrs: "",

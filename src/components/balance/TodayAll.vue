@@ -68,6 +68,12 @@
             }
         }
     }
+    .table-up {
+        height: 487px!important;
+    }
+    .table-down {
+        height: 48%!important;
+    }
 </style>
 
 <template>
@@ -82,11 +88,11 @@
                       border show-summary
                       :sum-text="''"
                       size="mini"
-                      height="86%"
+                      height="81%"
                       max-height="362px">
-                <el-table-column prop="name" label="公司名称" v-if="btActive"></el-table-column>
-                <el-table-column prop="name" label="银行名称" v-else></el-table-column>
-                <el-table-column prop="bal" label="余额"></el-table-column>
+                <el-table-column prop="name" label="公司名称" v-if="btActive" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="name" label="银行名称" v-else :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="bal" label="余额" :show-overflow-tooltip="true"></el-table-column>
             </el-table>
         </div>
         <!-- 分页-->
