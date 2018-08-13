@@ -94,13 +94,13 @@
                         emphasis: {
                             borderColor: '#dbdee4'
                         },
-                        normal:{ 
-                            label:{ 
-                                show: true, 
-                                formatter: '{b} : {c} ({d}%)' 
-                            }, 
+                        normal:{
+                            label:{
+                                show: true,
+                                formatter: '{b} : {c} ({d}%)'
+                            },
                             labelLine :{show:true}
-                        } 
+                        }
                     },
                     center: ['36%', '50%'], //饼图的中心坐标
                     radius: ['60%', '90%'], //饼图的半径  内/外

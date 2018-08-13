@@ -54,13 +54,13 @@
 </template>
 
 <script>
-    import CakePicture from "./CakePicture.vue";
+    import CakePicture from "../echarts/CakePicture.vue";
     // import func from './vue-temp/vue-editor-bridge';
 
     export default {
         name: "TodayDetail",
         created: function () {
-            
+
             this.$emit('transmitTitle', '当日余额明细');
             this.$emit('getTableData', this.routerMessage);
 
@@ -128,7 +128,7 @@
                 this.pagSize = val.page_size;
                 this.pagTotal = val.total_line;
                 this.pagCurrent = val.page_num;
-                this.tableList = val.data; 
+                this.tableList = val.data;
                 //获取饼图数据
                 this.getPieData();
             }

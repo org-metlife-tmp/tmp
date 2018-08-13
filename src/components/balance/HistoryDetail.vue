@@ -66,7 +66,7 @@
 </template>
 
 <script>
-    import CakePicture from "./CakePicture.vue";
+    import CakePicture from "../echarts/CakePicture.vue";
 
     export default {
         name: "HistoryDetail",

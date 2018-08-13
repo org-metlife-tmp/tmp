@@ -118,7 +118,7 @@
 </template>
 
 <script>
-    import CakePicture from "./CakePicture.vue";
+    import CakePicture from "../echarts/CakePicture.vue";
 
     export default {
         name: "TodayAll",
@@ -220,7 +220,7 @@
                 this.pagSize = val.page_size;
                 this.pagTotal = val.total_line;
                 this.pagCurrent = val.page_num;
-                this.tableList = val.data; 
+                this.tableList = val.data;
                 //获取饼图数据
                 this.getPieData();
             }
