@@ -25,7 +25,7 @@
 <template>
     <div id="todayDetail">
         <!--柱状图-->
-        <Histogram :barData=barData></Histogram>
+        <Histogram :barData="barData" ></Histogram>
         <!--表格-->
         <div :class="['table-setion',{'table-up':!tableSite},{'table-down':tableSite}]">
             <img src="../../assets/icon_arrow_up.jpg" alt="" v-show="tableSite" @click="tableSite=!tableSite"/>

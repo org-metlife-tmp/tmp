@@ -20,6 +20,15 @@
             background-color: #cccccc;
         }
 
+        /*时间控件*/
+        .el-date-editor {
+            position: absolute;
+            top: -18px;
+            right: -18px;
+            width: 210px;
+            z-index: 1;
+        }
+
         /*公司-银行切换*/
         .company-bank {
             position: absolute;
@@ -79,6 +88,16 @@
 
 <template>
     <div id="historyAll">
+        <el-date-picker
+                v-model="dateValue"
+                type="daterange"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+                size="mini">
+        </el-date-picker>
+        <!--柱状图-->
+        <Histogram :barData="barData" :showLegend="showLegend"></Histogram>
         <!--表格-->
         <div :class="['table-setion',{'table-up':!tableSite},{'table-down':tableSite}]">
             <img src="../../assets/icon_arrow_up.jpg" alt="" v-show="tableSite" @click="tableSite=!tableSite"/>
@@ -134,6 +153,8 @@
 </template>
 
 <script>
+    import Histogram from "../echarts/Histogram.vue";
+
     export default {
         name: "HistoryAll",
         created: function () {
@@ -142,6 +163,9 @@
             this.$emit('getTableData', this.routerMessage);
         },
         props: ["tableData"],
+        components: {
+            Histogram: Histogram
+        },
         data:function(){
             return {
                 routerMessage: { //获取自身数据信息
@@ -157,11 +181,14 @@
                 pagSize: 10, //分页数据
                 pagTotal: 1,
                 pagCurrent: 1,
+                dateValue: "", //时间选择
                 btActive:{ //账户/公司/银行激活状态
                     accActive: true,
                     comActive: false,
                     bankActive: false,
-                }
+                },
+                barData: [], //柱状图数据
+                showLegend: true
             }
         },
         methods: {
@@ -207,6 +234,21 @@
                 this.routerMessage.params.type = type;
                 this.$emit("getTableData", this.routerMessage);
             },
+            //获取柱状图数据
+            getBarData: function(){
+                var currentData = this.tableList;
+                var barData = [];
+                for(var i = 0; i < currentData.length; i++){
+                    var item = currentData[i];
+                    barData.push({
+                        name: item.acc_name ? item.acc_name : item.name,
+                        totalrecv: parseFloat(item.totalrecv).toFixed(2),
+                        totalpay: parseFloat(item.totalpay).toFixed(2),
+                        totalnetrecv: parseFloat(item.totalnetrecv).toFixed(2)
+                    })
+                };
+                this.barData = barData;
+            }
         },
         watch: {
             //设置数据
@@ -215,6 +257,9 @@
                 this.pagTotal = val.total_line;
                 this.pagCurrent = val.page_num;
                 this.tableList = val.data;
+
+                //获取柱状图数据
+                this.getBarData();
             }
         }
     }
