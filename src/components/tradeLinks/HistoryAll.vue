@@ -1,5 +1,5 @@
 <style scoped lang="less" type="text/less">
-    #historyAll{
+    #historyAll {
         width: 100%;
         height: 100%;
         box-sizing: border-box;
@@ -14,10 +14,20 @@
         }
 
         /*汇总数据*/
-        .allData{
+        .allData {
             height: 28px;
+            line-height: 28px;
             width: 100%;
-            background-color: #cccccc;
+            background-color: #F8F8F8;
+            border: 1px solid #ebeef5;
+            border-top: none;
+            box-sizing: border-box;
+            text-align: right;
+
+            .numText {
+                color: #FF5800;
+                margin-right: 10px;
+            }
         }
 
         /*时间控件*/
@@ -94,7 +104,11 @@
                 range-separator="至"
                 start-placeholder="开始日期"
                 end-placeholder="结束日期"
-                size="mini">
+                value-format="yyyy-MM-dd"
+                size="mini" clearable
+                unlink-panels
+                :picker-options="pickerOptions"
+                @change="getDateData">
         </el-date-picker>
         <!--柱状图-->
         <Histogram :barData="barData" :showLegend="showLegend"></Histogram>
@@ -108,19 +122,26 @@
                       height="90%"
                       max-height="397px">
                 <el-table-column prop="acc_no" label="账户号" :show-overflow-tooltip="true"
-                                 v-if="btActive.accActive" ></el-table-column>
+                                 v-if="btActive.accActive"></el-table-column>
                 <el-table-column prop="acc_name" label="账户名称" :show-overflow-tooltip="true"
-                                 v-if="btActive.accActive" ></el-table-column>
+                                 v-if="btActive.accActive"></el-table-column>
                 <el-table-column prop="name" label="公司名称" :show-overflow-tooltip="true"
-                                 v-if="btActive.comActive" ></el-table-column>
+                                 v-if="btActive.comActive"></el-table-column>
                 <el-table-column prop="name" label="银行名称" :show-overflow-tooltip="true"
-                                 v-if="btActive.bankActive" ></el-table-column>
+                                 v-if="btActive.bankActive"></el-table-column>
 
                 <el-table-column prop="totalrecv" label="收入" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="totalpay" label="支出" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="totalnetrecv" label="净收支" :show-overflow-tooltip="true"></el-table-column>
             </el-table>
-            <div class="allData"></div>
+            <div class="allData">
+                <span>收入合计：</span>
+                <span v-text="recvAll" class="numText"></span>
+                <span>支出合计：</span>
+                <span v-text="payAll" class="numText"></span>
+                <span>净收支合计：</span>
+                <span v-text="netrecvAll" class="numText"></span>
+            </div>
         </div>
         <!--分页部分-->
         <div class="botton-pag">
@@ -166,11 +187,11 @@
         components: {
             Histogram: Histogram
         },
-        data:function(){
+        data: function () {
             return {
                 routerMessage: { //获取自身数据信息
                     optype: "jyt_hiscollectlist",
-                    params:{
+                    params: {
                         page_num: 1,
                         page_size: 10,
                         type: "3"
@@ -178,11 +199,19 @@
                 },
                 tableSite: true, //滑动面板控制
                 tableList: [], //表格数据
+                recvAll: "", //汇总数据
+                payAll: "",
+                netrecvAll: "",
                 pagSize: 10, //分页数据
                 pagTotal: 1,
                 pagCurrent: 1,
                 dateValue: "", //时间选择
-                btActive:{ //账户/公司/银行激活状态
+                pickerOptions: {
+                    disabledDate(time) {
+                        return time.getTime() > Date.now();
+                    }
+                },
+                btActive: { //账户/公司/银行激活状态
                     accActive: true,
                     comActive: false,
                     bankActive: false,
@@ -198,47 +227,49 @@
                 this.$emit("getTableData", this.routerMessage);
             },
             //当前页数据条数发生变化
-            sizeChange:function(val){
+            sizeChange: function (val) {
                 this.routerMessage.params.page_size = val;
                 this.routerMessage.params.page_num = 1;
                 this.$emit("getTableData", this.routerMessage);
             },
-            currActive:function(type){
-                if(type == "3"){ //账户
-                    if(this.btActive.accActive){
+            //公司-账户-银行 切换
+            currActive: function (type) {
+                if (type == "3") { //账户
+                    if (this.btActive.accActive) {
                         return;
-                    }else{
+                    } else {
                         this.btActive.comActive = false;
                         this.btActive.bankActive = false;
                         this.btActive.accActive = true;
                     }
-                }else if(type == "1"){ //公司
-                    if(this.btActive.comActive){
+                } else if (type == "1") { //公司
+                    if (this.btActive.comActive) {
                         return;
-                    }else{
+                    } else {
                         this.btActive.comActive = true;
                         this.btActive.bankActive = false;
                         this.btActive.accActive = false;
                     }
-                }else if(type == "2"){ //银行
-                    if(this.btActive.bankActive){
+                } else if (type == "2") { //银行
+                    if (this.btActive.bankActive) {
                         return;
-                    }else{
+                    } else {
                         this.btActive.comActive = false;
                         this.btActive.bankActive = true;
                         this.btActive.accActive = false;
                     }
-                };
+                }
+                ;
                 //获取表格数据
                 this.routerMessage.params.page_num = 1;
                 this.routerMessage.params.type = type;
                 this.$emit("getTableData", this.routerMessage);
             },
             //获取柱状图数据
-            getBarData: function(){
+            getBarData: function () {
                 var currentData = this.tableList;
                 var barData = [];
-                for(var i = 0; i < currentData.length; i++){
+                for (var i = 0; i < currentData.length; i++) {
                     var item = currentData[i];
                     barData.push({
                         name: item.acc_name ? item.acc_name : item.name,
@@ -246,8 +277,15 @@
                         totalpay: parseFloat(item.totalpay).toFixed(2),
                         totalnetrecv: parseFloat(item.totalnetrecv).toFixed(2)
                     })
-                };
+                }
+                ;
                 this.barData = barData;
+            },
+            //选择时间后设置数据
+            getDateData: function (val) {
+                this.routerMessage.params.start_date = val[0];
+                this.routerMessage.params.end_date = val[1];
+                this.$emit('getTableData', this.routerMessage);
             }
         },
         watch: {
@@ -257,6 +295,12 @@
                 this.pagTotal = val.total_line;
                 this.pagCurrent = val.page_num;
                 this.tableList = val.data;
+
+                //设置汇总数据
+                this.recvAll = val.ext ? val.ext.totalrecv : "";
+                this.payAll = val.ext ? val.ext.totalpay : "";
+                this.netrecvAll = val.ext ? val.ext.totalnetrecv : "";
+
 
                 //获取柱状图数据
                 this.getBarData();

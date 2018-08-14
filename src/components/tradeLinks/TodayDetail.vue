@@ -16,9 +16,20 @@
         /*汇总数据*/
         .allData{
             height: 28px;
+            line-height: 28px;
             width: 100%;
-            background-color: #cccccc;
+            background-color: #F8F8F8;
+            border: 1px solid #ebeef5;
+            border-top: none;
+            box-sizing: border-box;
+            text-align: right;
+
+            .numText{
+                color: #FF5800;
+                margin-right: 10px;
+            }
         }
+
     }
 </style>
 
@@ -45,7 +56,14 @@
                 <el-table-column prop="summary" label="摘要" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="trans_date" label="交易时间" :show-overflow-tooltip="true"></el-table-column>
             </el-table>
-            <div class="allData"></div>
+            <div class="allData">
+                <span>收入合计：</span>
+                <span v-text="recvAll" class="numText"></span>
+                <span>支出合计：</span>
+                <span v-text="payAll" class="numText"></span>
+                <span>净收支合计：</span>
+                <span v-text="netrecvAll" class="numText"></span>
+            </div>
         </div>
         <!--分页部分-->
         <div class="botton-pag">
@@ -88,6 +106,9 @@
                 },
                 tableSite: true, //滑动面板控制
                 tableList: [], //表格数据
+                recvAll: "", //汇总数据
+                payAll: "",
+                netrecvAll: "",
                 pagSize: 10, //分页数据
                 pagTotal: 1,
                 pagCurrent: 1,
@@ -137,6 +158,11 @@
                 this.pagTotal = val.total_line;
                 this.pagCurrent = val.page_num;
                 this.tableList = val.data;
+
+                //设置汇总数据
+                this.recvAll = val.ext.totalrecv;
+                this.payAll = val.ext.totalpay;
+                this.netrecvAll = val.ext.totalnetrecv;
 
                 //获取柱状图数据
                 this.getBarData();

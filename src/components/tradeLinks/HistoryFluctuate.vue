@@ -21,13 +21,6 @@
             width: 210px;
             z-index: 1;
         }
-
-        /*汇总数据*/
-        .allData{
-            height: 28px;
-            width: 100%;
-            background-color: #cccccc;
-        }
     }
 </style>
 
@@ -39,7 +32,11 @@
                 range-separator="至"
                 start-placeholder="开始日期"
                 end-placeholder="结束日期"
-                size="mini">
+                value-format="yyyy-MM-dd"
+                size="mini" clearable
+                unlink-panels
+                :picker-options="pickerOptions"
+                @change="getDateData">
         </el-date-picker>
         <!--表格-->
         <div :class="['table-setion',{'table-up':!tableSite},{'table-down':tableSite}]">
@@ -56,7 +53,6 @@
                 <el-table-column prop="totalpay" label="支出" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="totalnetrecv" label="净收支" :show-overflow-tooltip="true"></el-table-column>
             </el-table>
-            <div class="allData"></div>
         </div>
         <!--分页部分-->
         <div class="botton-pag">
@@ -98,7 +94,12 @@
                 pagSize: 10, //分页数据
                 pagTotal: 1,
                 pagCurrent: 1,
-                dateValue: "" //时间选择
+                dateValue: "", //时间选择
+                pickerOptions: {
+                    disabledDate(time) {
+                        return time.getTime() > Date.now();
+                    }
+                }
             }
         },
         methods: {
@@ -108,18 +109,23 @@
                 this.$emit("getTableData", this.routerMessage);
             },
             //当前页数据条数发生变化
-            sizeChange:function(val){
+            sizeChange: function(val){
                 this.routerMessage.params = {
                     page_size: val,
                     page_num: 1
                 };
                 this.$emit("getTableData", this.routerMessage);
             },
+            //选择时间后设置数据
+            getDateData: function(val){
+                this.routerMessage.params.start_date = val[0];
+                this.routerMessage.params.end_date = val[1];
+                this.$emit('getTableData', this.routerMessage);
+            }
         },
         watch: {
             //设置数据
             tableData: function (val, oldValue) {
-                console.log(val);
                 this.pagSize = val.page_size;
                 this.pagTotal = val.total_line;
                 this.pagCurrent = val.page_num;

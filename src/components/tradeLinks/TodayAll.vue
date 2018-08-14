@@ -16,8 +16,18 @@
         /*汇总数据*/
         .allData{
             height: 28px;
+            line-height: 28px;
             width: 100%;
-            background-color: #cccccc;
+            background-color: #F8F8F8;
+            border: 1px solid #ebeef5;
+            border-top: none;
+            box-sizing: border-box;
+            text-align: right;
+
+            .numText{
+                color: #FF5800;
+                margin-right: 10px;
+            }
         }
 
         /*公司-银行切换*/
@@ -79,6 +89,8 @@
 
 <template>
     <div id="todayAll">
+        <!--柱状图-->
+        <Histogram :barData="barData" :showLegend="showLegend"></Histogram>
         <!--表格-->
         <div :class="['table-setion',{'table-up':!tableSite},{'table-down':tableSite}]">
             <img src="../../assets/icon_arrow_up.jpg" alt="" v-show="tableSite" @click="tableSite=!tableSite"/>
@@ -101,7 +113,14 @@
                 <el-table-column prop="totalpay" label="支出" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="totalnetrecv" label="净收支" :show-overflow-tooltip="true"></el-table-column>
             </el-table>
-            <div class="allData"></div>
+            <div class="allData">
+                <span>收入合计：</span>
+                <span v-text="recvAll" class="numText"></span>
+                <span>支出合计：</span>
+                <span v-text="payAll" class="numText"></span>
+                <span>净收支合计：</span>
+                <span v-text="netrecvAll" class="numText"></span>
+            </div>
         </div>
         <!--分页部分-->
         <div class="botton-pag">
@@ -134,6 +153,8 @@
 </template>
 
 <script>
+    import Histogram from "../echarts/Histogram.vue";
+
     export default {
         name: "TodayAll",
         created: function () {
@@ -142,6 +163,9 @@
             this.$emit('getTableData', this.routerMessage);
         },
         props: ["tableData"],
+        components: {
+            Histogram: Histogram
+        },
         data: function () {
             return {
                 routerMessage: { //获取自身数据信息
@@ -154,6 +178,9 @@
                 },
                 tableSite: true, //滑动面板控制
                 tableList: [], //表格数据
+                recvAll: "", //汇总数据
+                payAll: "",
+                netrecvAll: "",
                 pagSize: 10, //分页数据
                 pagTotal: 1,
                 pagCurrent: 1,
@@ -161,7 +188,9 @@
                     accActive: true,
                     comActive: false,
                     bankActive: false,
-                }
+                },
+                barData: [], //柱状图数据
+                showLegend: true
             }
         },
         methods: {
@@ -176,6 +205,7 @@
                 this.routerMessage.params.page_num = 1;
                 this.$emit("getTableData", this.routerMessage);
             },
+            //公司-账户-银行 切换
             currActive:function(type){
                 if(type == "3"){ //账户
                     if(this.btActive.accActive){
@@ -207,6 +237,21 @@
                 this.routerMessage.params.type = type;
                 this.$emit("getTableData", this.routerMessage);
             },
+            //获取柱状图数据
+            getBarData: function(){
+                var currentData = this.tableList;
+                var barData = [];
+                for(var i = 0; i < currentData.length; i++){
+                    var item = currentData[i];
+                    barData.push({
+                        name: item.acc_name ? item.acc_name : item.name,
+                        totalrecv: parseFloat(item.totalrecv).toFixed(2),
+                        totalpay: parseFloat(item.totalpay).toFixed(2),
+                        totalnetrecv: parseFloat(item.totalnetrecv).toFixed(2)
+                    })
+                };
+                this.barData = barData;
+            }
         },
         watch: {
             //设置数据
@@ -215,6 +260,14 @@
                 this.pagTotal = val.total_line;
                 this.pagCurrent = val.page_num;
                 this.tableList = val.data;
+
+                //设置汇总数据
+                this.recvAll = val.ext.totalrecv;
+                this.payAll = val.ext.totalpay;
+                this.netrecvAll = val.ext.totalnetrecv;
+
+                //获取柱状图数据
+                this.getBarData();
             }
         }
     }
