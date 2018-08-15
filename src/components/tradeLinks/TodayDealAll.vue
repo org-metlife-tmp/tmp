@@ -156,7 +156,7 @@
     import Histogram from "../echarts/Histogram.vue";
 
     export default {
-        name: "TodayAll",
+        name: "TodayDealAll",
         created: function () {
             //向父组件发送自己的信息
             this.$emit('transmitTitle', '当日交易汇总');

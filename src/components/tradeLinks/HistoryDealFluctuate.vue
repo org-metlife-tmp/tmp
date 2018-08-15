@@ -73,7 +73,7 @@
 
 <script>
     export default {
-        name: "HistoryFluctuate",
+        name: "HistoryDealFluctuate",
         created: function () {
             //向父组件发送自己的信息
             this.$emit('transmitTitle', '历史交易波动');

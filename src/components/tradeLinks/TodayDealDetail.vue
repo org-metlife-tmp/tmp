@@ -1,5 +1,5 @@
 <style scoped lang="less" type="text/less">
-    #historyDetail{
+    #todayDetail{
         width: 100%;
         height: 100%;
         box-sizing: border-box;
@@ -10,16 +10,7 @@
             position: absolute;
             width: 100%;
             height: 8%;
-            bottom: -6px;
-        }
-
-        /*时间控件*/
-        .el-date-editor {
-            position: absolute;
-            top: -18px;
-            right: -18px;
-            width: 210px;
-            z-index: 1;
+            bottom: -12px;
         }
 
         /*汇总数据*/
@@ -38,25 +29,14 @@
                 margin-right: 10px;
             }
         }
+
     }
 </style>
 
 <template>
-    <div id="historyDetail">
-        <el-date-picker
-                v-model="dateValue"
-                type="daterange"
-                range-separator="至"
-                start-placeholder="开始日期"
-                end-placeholder="结束日期"
-                value-format="yyyy-MM-dd"
-                size="mini" clearable
-                unlink-panels
-                :picker-options="pickerOptions"
-                @change="getDateData">
-        </el-date-picker>
+    <div id="todayDetail">
         <!--柱状图-->
-        <Histogram :barData="barData"></Histogram>
+        <Histogram :barData="barData" ></Histogram>
         <!--表格-->
         <div :class="['table-setion',{'table-up':!tableSite},{'table-down':tableSite}]">
             <img src="../../assets/icon_arrow_up.jpg" alt="" v-show="tableSite" @click="tableSite=!tableSite"/>
@@ -106,20 +86,19 @@
     import Histogram from "../echarts/Histogram.vue";
 
     export default {
-        name: "HistoryDetail",
+        name: "TodayDealDetail",
         created: function () {
-            //向父组件发送自己的信息
-            this.$emit('transmitTitle', '历史交易明细');
+            this.$emit('transmitTitle', '当日交易明细');
             this.$emit('getTableData', this.routerMessage);
         },
         props: ["tableData"],
         components: {
             Histogram: Histogram
         },
-        data: function(){
+        data: function () {
             return {
                 routerMessage: { //获取自身数据信息
-                    optype: "jyt_hisdetaillist",
+                    optype: "jyt_curdetaillist",
                     params:{
                         page_num: 1,
                         page_size: 10
@@ -133,12 +112,6 @@
                 pagSize: 10, //分页数据
                 pagTotal: 1,
                 pagCurrent: 1,
-                dateValue: "", //时间选择
-                pickerOptions: {
-                    disabledDate(time) {
-                        return time.getTime() > Date.now();
-                    }
-                },
                 barData: [], //柱状图数据
             }
         },
@@ -174,15 +147,8 @@
                             }
                         }
                     })
-                };
+                }
                 this.barData = barData;
-            },
-            //选择时间后设置数据
-            getDateData: function (val) {
-                debugger
-                this.routerMessage.params.start_date = val[0];
-                this.routerMessage.params.end_date = val[1];
-                this.$emit('getTableData', this.routerMessage);
             }
         },
         watch: {
@@ -194,9 +160,9 @@
                 this.tableList = val.data;
 
                 //设置汇总数据
-                this.recvAll = val.ext ? val.ext.totalrecv : "";
-                this.payAll = val.ext ? val.ext.totalpay : "";
-                this.netrecvAll = val.ext ? val.ext.totalnetrecv : "";
+                this.recvAll = val.ext.totalrecv;
+                this.payAll = val.ext.totalpay;
+                this.netrecvAll = val.ext.totalnetrecv;
 
                 //获取柱状图数据
                 this.getBarData();
@@ -204,4 +170,3 @@
         }
     }
 </script>
-
