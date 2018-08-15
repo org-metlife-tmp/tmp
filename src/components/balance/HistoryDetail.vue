@@ -97,10 +97,19 @@
     export default {    
         name: "HistoryDetail",
         created: function () {
+            
+            let curDate = new Date();
+            let oldDate = new Date();
+            oldDate.setFullYear(curDate.getFullYear());
+            oldDate.setMonth(curDate.getMonth());
+            oldDate.setDate(curDate.getDate()-7);
+            
+            this.dateValue = [oldDate,curDate];
+
+            this.routerMessage.params.start_date = this.dateValue[0];
+            this.routerMessage.params.end_date = this.dateValue[1];
             this.$emit('transmitTitle', '历史余额明细');
             this.$emit('getTableData', this.routerMessage);
-            debugger;
-            console.log(1);
             //获取饼图数据
             this.getPieData();
         },
@@ -116,7 +125,9 @@
                         org_ids: "",
                         cnaps_codes: "",
                         acc_attrs: "",
-                        interactive_modes: ""
+                        interactive_modes: "",
+                        start_date:"",
+                        end_date:""
                     }
                 },
                 //滑动面板控制
@@ -165,7 +176,6 @@
             },
             //选择时间后设置数据
             getDateData: function (val) {
-                debugger
                 this.routerMessage.params.start_date = val[0];
                 this.routerMessage.params.end_date = val[1];
                 this.$emit('getTableData', this.routerMessage);

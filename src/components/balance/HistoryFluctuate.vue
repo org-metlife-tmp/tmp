@@ -94,6 +94,17 @@
     export default {
         name: "HistoryFluctuate",
         created: function () {
+            let curDate = new Date();
+            let oldDate = new Date();
+            oldDate.setFullYear(curDate.getFullYear());
+            oldDate.setMonth(curDate.getMonth());
+            oldDate.setDate(curDate.getDate()-7);
+            
+            this.dateValue = [oldDate,curDate];
+
+            this.routerMessage.params.start_date = this.dateValue[0];
+            this.routerMessage.params.end_date = this.dateValue[1];
+
             this.$emit('transmitTitle', '历史余额波动');
             this.$emit('getTableData', this.routerMessage);
         },
@@ -156,7 +167,9 @@
                     data: {
                         optype: "yet_hiswavetopchart",
                         params: {
-                            acc_id:acc_id
+                            acc_id:acc_id,
+                            start_date:this.dateValue[0],
+                            end_date:this.dateValue[1]
                         }
                     }
                 }).then((result) => {
@@ -173,7 +186,7 @@
                             y:[]
                         }
                         data.forEach(element => {
-                            let time = element.import_time.split(" ")[1];
+                            let time = element.import_time.split(" ")[0];
                             obj.x.push(time);
                             obj.y.push(element.bal)
                         });

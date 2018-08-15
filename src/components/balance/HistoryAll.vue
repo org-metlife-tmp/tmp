@@ -162,6 +162,18 @@
     export default {
         name: "HistoryAll",
         created: function () {
+
+            let curDate = new Date();
+            let oldDate = new Date();
+            oldDate.setFullYear(curDate.getFullYear());
+            oldDate.setMonth(curDate.getMonth());
+            oldDate.setDate(curDate.getDate()-7);
+            
+            this.dateValue = [oldDate,curDate];
+
+            this.routerMessage.params.start_date = this.dateValue[0];
+            this.routerMessage.params.end_date = this.dateValue[1];
+            
             this.$emit('transmitTitle', '历史余额汇总');
             this.$emit('getTableData', this.routerMessage);
 
