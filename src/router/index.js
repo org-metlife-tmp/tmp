@@ -48,7 +48,8 @@ import HistoryDealAll from '@/components/tradeLinks/HistoryAll'
 import HistoryDealFluctuate from '@/components/tradeLinks/HistoryFluctuate'
 //调拨通
 import MakeBill from '@/components/allot/MakeBill'
-import BankAccount from '@/components/allot/BankAccount'
+import Payment from '@/components/allot/Payment'
+import LookOver from '@/components/allot/LookOver'
 //审批流管理
 import WorkflowDefinition from '@/components/workflow/WorkflowDefinition'
 import WorkflowTrace from '@/components/workflow/WorkflowTrace'
@@ -91,7 +92,6 @@ const router = new Router({
                     children: [
                         //数据管理
                         {path: '/data-manage/basic-data', name: 'BasicData', component: BasicData, meta: {requireAuth: true}},
-                        {path: '/data-manage/bank-account', name: 'BankAccount', component: BankAccount, meta: {requireAuth: true}},
                         {path: '/data-manage/settle-account', name: 'SettleAccount', component: SettleAccount, meta: {requireAuth: true}},
                         {path: '/data-manage/channel-set', name: 'ChannelSet', component: ChannelSet, meta: {requireAuth: true}},
                         {path: '/data-manage/router-set', name: 'RouterSet', component: RouterSet, meta: {requireAuth: true}},
@@ -105,19 +105,22 @@ const router = new Router({
                         {path: '/realtime-trade/group-insurance', name: 'GroupInsurance', component: GroupInsurance, meta: {requireAuth: true}},
                         {path: '/realtime-trade/QRcode', name: 'QRcode', component: QRcode, meta: {requireAuth: true}},
                         {path: '/realtime-trade/move-withhold', name: 'MoveWithhold', component: MoveWithhold, meta: {requireAuth: true}},
-                        //账户管理
+                        //账户通
                         {path: '/account/account-message', name: 'AccountMessage', component: AccountMessage, meta: {requireAuth: true}},
                         //审批流管理
                         {path: '/workflow/workflow-definition', name: 'WorkflowDefinition', component: WorkflowDefinition, meta: {requireAuth: true}},
                         {path: '/workflow/workflow-trace', name: 'WorkflowTrace', component: WorkflowTrace, meta: {requireAuth: true}},
-                        {path: '/workflow/workflow-configure', name: 'WorkflowConfigure', component: WorkflowConfigure, meta: {requireAuth: true}}
+                        {path: '/workflow/workflow-configure', name: 'WorkflowConfigure', component: WorkflowConfigure, meta: {requireAuth: true}},
+                        //调拨通
+                        {path: '/allot/payment', name: 'Payment', component: Payment, meta: {requireAuth: true}},
+                        {path: '/allot/Look-over', name: 'LookOver', component: LookOver, meta: {requireAuth: true}},
                     ]
                 },
                 //基础样式三（tab页）
                 {
                     path:'/tab-content',name:'TabContent',component:TabContent,
                     children:[
-                        //账户管理
+                        //账户通
                         {path: '/account/open-account-matter', name: 'OpenAccountMatter', component: OpenAccountMatter, meta: {requireAuth: true}},
                         {path: '/account/open-account-message', name: 'OpenAccountMessage', component: OpenAccountMessage, meta: {requireAuth: true}},
                         {path: '/account/account-alteration', name: 'AccountAlteration', component: AccountAlteration, meta: {requireAuth: true}},
@@ -130,7 +133,7 @@ const router = new Router({
                     ]
                 },
                 //调拨通
-                {path: '/makeBill', name: 'MakeBill', component: MakeBill}
+                {path: '/allot/make-bill', name: 'MakeBill', component: MakeBill,meta: {requireAuth: true}}
             ]
         }
     ]

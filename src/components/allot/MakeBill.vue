@@ -1,4 +1,4 @@
-<style lang="less" type="text/less" scoped>
+<style lang="less" type="text/less">
     #makeBill {
         min-width: 800px;
         width: 70%;
@@ -21,6 +21,7 @@
             margin-bottom: 10px;
         }
 
+        /*表格顶部内容*/
         .title-date {
             color: #ccc;
             height: 40px;
@@ -43,76 +44,89 @@
             box-sizing: border-box;
             border: 3px solid #dde0e0;
             background: url(../../assets/slice_bg.png) repeat;
-        }
 
-        .bill-content table {
-            width: 100%;
-            height: 100%;
-            border-collapse: collapse;
-        }
+            table {
+                width: 100%;
+                height: 100%;
+                border-collapse: collapse;
+            }
 
-        .bill-content td {
-            border: 1px solid #dde0e0;
-        }
+            td {
+                border: 1px solid #dde0e0;
+            }
 
-        .bill-content .title-erect {
-            width: 60px;
-            text-align: center;
-            padding: 0 16px;
-            box-sizing: border-box;
-            line-height: 20px;
-        }
+            .title-erect {
+                width: 60px;
+                text-align: center;
+                padding: 0 16px;
+                box-sizing: border-box;
+                line-height: 20px;
+            }
 
-        .bill-content .title-small {
-            width: 82px;
-            text-align: center;
-            letter-spacing: 1em;
-            text-indent: 1em;
-            text-align: center;
-        }
+            .title-small {
+                width: 82px;
+                text-align: center;
+                letter-spacing: 1em;
+                text-indent: 1em;
+                text-align: center;
+            }
 
-        .bill-content .title-space {
-            height: 2px;
-        }
+            .title-space {
+                height: 2px;
+            }
 
-        .bill-content .set-space {
-            letter-spacing: 2em;
-            text-indent: 2em;
-        }
+            .set-space {
+                letter-spacing: 2em;
+                text-indent: 2em;
+            }
 
-        .bill-content .select-height {
-            height: 56px;
-        }
+            .select-height {
+                height: 56px;
+                padding: 0;
 
-        .bill-content .el-select {
-            width: 100%;
-        }
+                .el-select{
+                    height: 100%;
 
-        .bill-content .el-select input {
-            height: 56px;
-            border: none;
-        }
+                    .el-input{
+                        height: 100%;
 
-        .bill-content .text-left {
-            text-align: left;
-            text-indent: 1em;
+                        input{
+                            height: 100%;
+                        }
+                    }
+                }
+            }
+
+            .el-select {
+                width: 100%;
+            }
+
+            .el-select input {
+                height: 56px;
+                border: none;
+            }
+
+            .text-left {
+                text-align: left;
+                text-indent: 1em;
+            }
         }
 
         /*底部按钮组*/
         .bill-operation {
             text-align: left;
             margin-top: 12px;
-        }
 
-        .bill-operation .arrows {
-            font-size: 20px;
-            vertical-align: middle;
-            font-family: initial;
-            margin-left: 10px;
-        }
+            .arrows {
+                font-size: 20px;
+                vertical-align: middle;
+                font-family: initial;
+                margin-left: 10px;
+            }
 
-        .bill-operation .btnGroup {
-            float: right;
+            .btnGroup {
+                float: right;
+            }
         }
     }
 
@@ -154,12 +168,13 @@
                         <td class="title-small">账号</td>
                         <td class="select-height">
                             <el-select v-model="paymentAccountNumber"
-                                       clearable filterable
+                                       clearable filterable remote
                                        placeholder="请选择账号"
+                                       :remote-method="getPayList"
                                        @change="selectPayNumber($event,'payNumber')"
                                        @clear="clearPayNumber('payNumber')">
                                 <el-option
-                                        v-for="item in options"
+                                        v-for="item in payList"
                                         :key="item.value"
                                         :label="item.value"
                                         :value="item.value">
@@ -228,19 +243,8 @@
             return {
                 dateValue: "",
                 serial: "(1232132332)",
-                options: [{
-                    value: '666666',
-                    name: '建设银行',
-                    address: "北京支行"
-                }, {
-                    value: '888888',
-                    name: '民生银行',
-                    address: "上海总行"
-                }, {
-                    value: '333333',
-                    name: '招商银行',
-                    address: "中国分行"
-                }],
+                payList: [],
+                options: [],
                 paymentAccountNumber: "",
                 gatherAccountNumber: "",
                 paymentName: "",

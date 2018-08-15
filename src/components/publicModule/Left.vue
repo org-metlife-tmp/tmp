@@ -364,19 +364,18 @@
                     <el-menu-item index="/trade-links/history-fluctuate">历史交易波动</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
-            <!--
-
-            <el-submenu index="5">
+            <el-submenu index="9">
                 <template slot="title" height="200px">
                     <i class="icon-dbt"></i>
                     <p>调拨通</p>
                 </template>
                 <el-menu-item-group>
-                    <el-menu-item index="/makeBill">内部调拨-制单</el-menu-item>
-                    <el-menu-item index="1-2">内部调拨-支付</el-menu-item>
-                    <el-menu-item index="1-3">内部调拨-查看</el-menu-item>
+                    <el-menu-item index="/allot/make-bill">内部调拨-制单</el-menu-item>
+                    <el-menu-item index="/allot/payment">内部调拨-支付</el-menu-item>
+                    <el-menu-item index="/allot/Look-over">内部调拨-查看</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
+            <!--
             <el-submenu index="6">
                 <template slot="title" height="200px">
                     <i class="icon-zft"></i>
