@@ -342,12 +342,12 @@
                     <p>余额通</p>
                 </template>
                 <el-menu-item-group>
-                    <el-menu-item index="/whiteContent/today-detail">当日余额明细</el-menu-item>
-                    <el-menu-item index="/whiteContent/today-all">当日余额汇总</el-menu-item>
-                    <el-menu-item index="/whiteContent/today-fluctuate">当日余额波动</el-menu-item>
-                    <el-menu-item index="/whiteContent/history-detail">历史余额明细</el-menu-item>
-                    <el-menu-item index="/whiteContent/history-all">历史余额汇总</el-menu-item>
-                    <el-menu-item index="/whiteContent/history-fluctuate">历史余额波动</el-menu-item>
+                    <el-menu-item index="/balance/today-detail">当日余额明细</el-menu-item>
+                    <el-menu-item index="/balance/today-all">当日余额汇总</el-menu-item>
+                    <el-menu-item index="/balance/today-fluctuate">当日余额波动</el-menu-item>
+                    <el-menu-item index="/balance/history-detail">历史余额明细</el-menu-item>
+                    <el-menu-item index="/balance/history-all">历史余额汇总</el-menu-item>
+                    <el-menu-item index="/balance/history-fluctuate">历史余额波动</el-menu-item>
                     <el-menu-item index="1-8">余额数据导入</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>

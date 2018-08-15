@@ -179,6 +179,7 @@
             },
             //选择时间后设置数据
             getDateData: function (val) {
+                debugger
                 this.routerMessage.params.start_date = val[0];
                 this.routerMessage.params.end_date = val[1];
                 this.$emit('getTableData', this.routerMessage);

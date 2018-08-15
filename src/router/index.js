@@ -72,12 +72,12 @@ const router = new Router({
                 {path: '/whiteContent', name: 'WhiteContent', component: WhiteContent,
                     children: [
                         //余额通
-                        {path: 'today-detail', name: 'TodayDetail', component: TodayDetail},
-                        {path: 'today-all', name: 'TodayAll', component: TodayAll},
-                        {path: 'today-fluctuate', name: 'TodayFluctuate', component: TodayFluctuate},
-                        {path: 'history-detail', name: 'HistoryDetail', component: HistoryDetail},
-                        {path: 'history-all', name: 'HistoryAll', component: HistoryAll},
-                        {path: 'history-fluctuate', name: 'HistoryFluctuate', component: HistoryFluctuate},
+                        {path: '/balance/today-detail', name: 'TodayDetail', component: TodayDetail},
+                        {path: '/balance/today-all', name: 'TodayAll', component: TodayAll},
+                        {path: '/balance/today-fluctuate', name: 'TodayFluctuate', component: TodayFluctuate},
+                        {path: '/balance/history-detail', name: 'HistoryDetail', component: HistoryDetail},
+                        {path: '/balance/history-all', name: 'HistoryAll', component: HistoryAll},
+                        {path: '/balance/history-fluctuate', name: 'HistoryFluctuate', component: HistoryFluctuate},
                         //交易通
                         {path: '/trade-links/today-detail', name: 'ToDayDealDetail', component: TodayDealDetail},
                         {path: '/trade-links/today-all', name: 'ToDayDealAll', component: TodayDealAll},
