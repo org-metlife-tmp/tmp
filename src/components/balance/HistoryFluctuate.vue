@@ -35,6 +35,26 @@
                 margin-right: 10px;
             }
         }
+        /* nodata展示样式*/
+        .nodatapage{
+            position: relative;
+            height: 100%;
+            .nodata-img{
+                background-image: url(../../assets/no_value.png);
+                background-repeat: no-repeat;
+                width: 202px;
+                height: 126px;
+                position: absolute;
+                left: 0; right: 0;
+                top: 30%;
+                margin: auto; 
+            }
+            .nodatalabel {
+                position: absolute;
+                top: 60%;
+                width: 100%;
+            }
+        }
     }
 </style>
 
@@ -53,9 +73,9 @@
             @change="getDateData">
         </el-date-picker>
         <!--折线图-->
-        <LineChart :lineData="lineData"></LineChart>
+        <LineChart :lineData="lineData" v-if="tableList.length"></LineChart>
         <!-- 表格数据 -->
-        <div :class="['table-setion',{'table-up':!tableSite},{'table-down':tableSite}]">
+        <div :class="['table-setion',{'table-up':!tableSite},{'table-down':tableSite}]" v-if="tableList.length">
             <img src="../../assets/icon_arrow_up.jpg" alt="" v-show="tableSite" @click="tableSite=!tableSite"/>
             <img src="../../assets/icon_arrow_down.jpg" alt="" v-show="!tableSite" @click="tableSite=!tableSite"/>
             <el-table :data="tableList"
@@ -73,7 +93,7 @@
             </el-table>
         </div>
         <!--分页-->
-        <div class="botton-pag">
+        <div class="botton-pag" v-if="tableList.length">
             <el-pagination
                 background
                 layout="sizes, prev, pager, next, jumper"
@@ -86,6 +106,10 @@
                 @size-change="sizeChange">
             </el-pagination>
         </div>
+        <section class="nodatapage" v-if="tableList.length===0">
+            <article class="nodata-img"></article>
+            <article class="nodatalabel">暂无数据</article>
+        </section>
     </div>
 </template>
 
@@ -155,6 +179,9 @@
             },
             getCurLineData: function (row, event, column) {
                 let acc_id;
+                if(this.tableList.length <= 0){
+                    return false;
+                }
                 if( row === 'all'){
                     acc_id = this.tableList[0].acc_id;
                 }else{
@@ -187,7 +214,7 @@
                         data.forEach(element => {
                             let time = element.bal_date.split(" ")[0];
                             obj.time.push(time);
-                            obj.y.push(element.bal)
+                            obj.y.push(parseFloat(element.bal).toFixed(2));
                         });
                         //写两个子组件监听事件不管用
                         // this.lineData.xData = arrXList;

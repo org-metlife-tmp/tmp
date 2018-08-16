@@ -15,9 +15,9 @@
     export default {
         name: "LineChart",
         mounted: function () {
-            //创建饼图
+            //创建折线图
             this.myChart = this.$echarts.init(document.getElementById("line-chart"));
-            // this.myChart.showLoading();
+            this.myChart.showLoading();
             var myChartDom = this.myChart;
             window.onresize = function(){
                 var setSize = setTimeout(() => {
@@ -38,7 +38,6 @@
             //为折线设置数据
             lineData: function (val,oldValue) {
                 this.myChart.clear();
-                debugger
                 if(val.type == 'jyt'){
                     this.myChart.setOption({
                         title: {
@@ -267,7 +266,7 @@
                         custom: "wave"
                     });
                 }
-                // this.$myChart.hideLoading();
+                this.$myChart.hideLoading();
             }
         }
     }

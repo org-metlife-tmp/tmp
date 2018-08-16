@@ -148,7 +148,7 @@
                             width: 51px;
                             height: 51px;
                             display: inline-block;
-                            background-image: url(../../assets//yz_ic_user.png);
+                            background-image: url(../../assets/yz_ic_user.png);
                             background-repeat: no-repeat;
                         }
                         .img1{
