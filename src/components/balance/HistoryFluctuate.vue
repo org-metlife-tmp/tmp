@@ -134,7 +134,6 @@
                 pagTotal: 1,
                 pagCurrent: 1,
                 dateValue: "",
-                recvAll: "",
                 pickerOptions: {
                     disabledDate(time) {
                         return time.getTime() > Date.now();
@@ -182,12 +181,12 @@
                     } else {
                         let data = result.data.data;
                         let obj ={
-                            x:[],
+                            time:[],
                             y:[]
                         }
                         data.forEach(element => {
-                            let time = element.import_time.split(" ")[0];
-                            obj.x.push(time);
+                            let time = element.bal_date.split(" ")[0];
+                            obj.time.push(time);
                             obj.y.push(element.bal)
                         });
                         //写两个子组件监听事件不管用
@@ -212,8 +211,6 @@
                 this.pagTotal = val.total_line;
                 this.pagCurrent = val.page_num;
                 this.tableList = val.data; 
-                //设置汇总数据
-                this.recvAll = val.ext ? val.ext.bal : "";
                 this.getCurLineData('all');
             }
         }

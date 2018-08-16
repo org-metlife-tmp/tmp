@@ -38,6 +38,8 @@
                 :picker-options="pickerOptions"
                 @change="getDateData">
         </el-date-picker>
+        <!--折线图-->
+        <LineChart :lineData="lineData"></LineChart>
         <!--表格-->
         <div :class="['table-setion',{'table-up':!tableSite},{'table-down':tableSite}]">
             <img src="../../assets/icon_arrow_up.jpg" alt="" v-show="tableSite" @click="tableSite=!tableSite"/>
@@ -45,13 +47,15 @@
             <el-table :data="tableList"
                       border
                       size="mini"
-                      height="90%"
+                      height="81%"
+                      highlight-current-row
+                      @row-click="getCurLineData"
                       max-height="397px">
                 <el-table-column prop="acc_no" label="账户号" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="" label="公司名称" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="totalrecv" label="收入" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="totalpay" label="支出" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="totalnetrecv" label="净收支" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="org_name" label="公司名称" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="pay" label="收入" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="recv" label="支出" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="netrecv" label="净收支" :show-overflow-tooltip="true"></el-table-column>
             </el-table>
         </div>
         <!--分页部分-->
@@ -72,12 +76,27 @@
 </template>
 
 <script>
+    import LineChart from "../echarts/LineChart.vue";
     export default {
         name: "HistoryDealFluctuate",
         created: function () {
+
+            let curDate = new Date();
+            let oldDate = new Date();
+            oldDate.setFullYear(curDate.getFullYear());
+            oldDate.setMonth(curDate.getMonth());
+            oldDate.setDate(curDate.getDate()-7);
+            
+            this.dateValue = [oldDate,curDate];
+
+            this.routerMessage.params.start_date = this.dateValue[0];
+            this.routerMessage.params.end_date = this.dateValue[1];
             //向父组件发送自己的信息
             this.$emit('transmitTitle', '历史交易波动');
             this.$emit('getTableData', this.routerMessage);
+        },
+        components:{
+            LineChart:LineChart
         },
         props: ["tableData"],
         data: function(){
@@ -99,7 +118,8 @@
                     disabledDate(time) {
                         return time.getTime() > Date.now();
                     }
-                }
+                },
+                lineData:[]
             }
         },
         methods: {
@@ -121,7 +141,58 @@
                 this.routerMessage.params.start_date = val[0];
                 this.routerMessage.params.end_date = val[1];
                 this.$emit('getTableData', this.routerMessage);
-            }
+            },
+            getCurLineData: function (row, event, column) {
+                let acc_id;
+                if(this.tableList.length <= 0){
+                    return false;
+                }
+                if( row === 'all'){
+                    acc_id = this.tableList[0].acc_id;
+                }else{
+                    acc_id = row.acc_id;
+                }
+                this.$axios({
+                    url: "/cfm/normalProcess",
+                    method: "post",
+                    data: {
+                        optype: "jyt_hiswavetopchart",
+                        params: {
+                            acc_id:acc_id,
+                            start_date:this.dateValue[0],
+                            end_date:this.dateValue[1]
+                        }
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                    } else {
+                        let data = result.data.data;
+                        let obj ={
+                            type:"jyt",
+                            time:[],
+                            recvData:[],
+                            payData:[]
+                        }
+                        data.forEach(element => {
+                            let time = element.statistics_date.split(" ")[0];
+                            obj.time.push(time);
+                            obj.recvData.push(parseFloat(element["recv_amount"]).toFixed(2));
+                            obj.payData.push(parseFloat(-element["pay_amount"]).toFixed(2));
+                        });
+                        //写两个子组件监听事件不管用
+                        // this.lineData.xData = arrXList;
+                        // this.lineData.yData = arrYList;
+                        this.lineData = obj;
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                })
+            },
         },
         watch: {
             //设置数据
@@ -130,6 +201,7 @@
                 this.pagTotal = val.total_line;
                 this.pagCurrent = val.page_num;
                 this.tableList = val.data;
+                this.getCurLineData('all');
             }
         }
     }

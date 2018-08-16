@@ -148,12 +148,12 @@
                     } else {
                         let data = result.data.data;
                         let obj ={
-                            x:[],
+                            time:[],
                             y:[]
                         }
                         data.forEach(element => {
                             let time = element.import_time.split(" ")[1];
-                            obj.x.push(time);
+                            obj.time.push(time);
                             obj.y.push(element.bal)
                         });
                         //写两个子组件监听事件不管用
