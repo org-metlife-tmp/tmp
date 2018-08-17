@@ -151,6 +151,9 @@
             margin-top: 12px;
 
             .arrows {
+                height: 16px;
+                display: inline-block;
+                line-height: 13px;
                 font-size: 20px;
                 vertical-align: middle;
                 font-family: initial;
@@ -295,7 +298,7 @@
                     <tr>
                         <td colspan="2" class="set-space">摘要</td>
                         <td class="empty-input">
-                            <input type="text" placeholder="请在此处填写摘要">
+                            <input type="text" placeholder="请在此处填写摘要" v-model="summary">
                         </td>
                         <td colspan="2">调拨类型</td>
                         <td v-text="allotType"></td>
@@ -307,6 +310,7 @@
                         <td colspan="4" class="upload-content">
                             <Upload @currentFielList="setFileList"
                                     :fileMessage="fileMessage"
+                                    :emptyFileList="emptyFileList"
                                     :isPending="true">
                             </Upload>
                         </td>
@@ -317,7 +321,7 @@
                 <el-button type="warning" plain size="medium">更多单据<span
                         class="arrows">></span></el-button>
                 <div class="btnGroup">
-                    <el-button type="warning" size="small">清空</el-button>
+                    <el-button type="warning" size="small" @click="clearBill">清空</el-button>
                     <el-button type="warning" size="small">保存</el-button>
                     <el-button type="warning" size="small">提交</el-button>
                 </div>
@@ -360,14 +364,16 @@
                 moneyNum: "", //金额
                 moneyText: "",
                 allotType: "", //调拨类型
-                fileMessage: {
+                fileMessage: { //附件
                     bill_id: "",
                     biz_type: 1
-                },//附件
+                },
+                emptyFileList: [],
                 fileList: [],
                 fileLength: "",
                 payMode: "", //付款方式
                 payModeList:{},
+                summary: "", //摘要
 
                 payStatList: [],
                 lala: ""
@@ -626,6 +632,17 @@
                     })
                 }
             },
+            //按钮-清空
+            clearBill: function(){
+                this.paymentNumber = "";
+                this.gatherNumber = "";
+                this.clearSelect("payNumber");
+                this.clearSelect("gatherNumber");
+                this.moneyNum = "";
+                this.moneyText = "";
+                this.summary = "";
+                this.emptyFileList = [];
+            }
         }
     }
 </script>
