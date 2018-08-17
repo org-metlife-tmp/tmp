@@ -88,6 +88,7 @@
     export default {
         name: "TodayDetail",
         created: function () {
+            debugger;
             this.$emit('transmitTitle', '当日交易明细');
             this.$emit('getTableData', this.routerMessage);
         },
