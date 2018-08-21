@@ -9,6 +9,7 @@ import Home from '@/components/Home'
 import WhiteContent from '@/components/publicModule/WhiteContent'
 import EmptyContent from '@/components/publicModule/EmptyContent'
 import TabContent from '@/components/publicModule/TabContent'
+import ImportTabContent from '@/components/publicModule/ImportTabContent'
 //数据管理
 import BasicData from '@/components/dataManage/BasicData'
 import SettleAccount from '@/components/dataManage/SettleAccount'
@@ -40,6 +41,7 @@ import TodayFluctuate from '@/components/balance/TodayFluctuate'
 import HistoryDetail from '@/components/balance/HistoryDetail'
 import HistoryAll from '@/components/balance/HistoryAll'
 import HistoryFluctuate from '@/components/balance/HistoryFluctuate'
+import HistoryData from '@/components/balance/HistoryData'
 //交易通
 import TodayDealDetail from '@/components/tradeLinks/TodayDealDetail'
 import TodayDealAll from '@/components/tradeLinks/TodayDealAll'
@@ -127,6 +129,14 @@ const router = new Router({
                         {path: '/account/close-account-message', name: 'CloseAccountMessage', component: CloseAccountMessage, meta: {requireAuth: true}},
                         //审批平台
                         {path: '/examine-approve/my-examine-approve', name: 'MyExamineApprove', component: MyExamineApprove, meta: {requireAuth: true}},
+                    ]
+                },
+                //基础样式四（导入的tab页）
+                {
+                    path:'/import-tab-content',name:'ImportTabContent',component:ImportTabContent,
+                    children:[
+                        //余额通
+                        {path: '/balance/history-data', name: 'HistoryData', component: HistoryData, meta: {requireAuth: true}}
                     ]
                 },
                 //调拨通

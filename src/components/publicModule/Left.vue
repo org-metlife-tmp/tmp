@@ -348,7 +348,7 @@
                     <el-menu-item index="/balance/history-detail">历史余额明细</el-menu-item>
                     <el-menu-item index="/balance/history-all">历史余额汇总</el-menu-item>
                     <el-menu-item index="/balance/history-fluctuate">历史余额波动</el-menu-item>
-                    <el-menu-item index="1-8">余额数据导入</el-menu-item>
+                    <el-menu-item index="/balance/history-data">余额数据导入</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
             <el-submenu index="8">
