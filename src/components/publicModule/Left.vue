@@ -372,7 +372,7 @@
                 <el-menu-item-group>
                     <el-menu-item index="/allot/make-bill">内部调拨-制单</el-menu-item>
                     <el-menu-item index="/allot/payment">内部调拨-支付</el-menu-item>
-                    <el-menu-item index="/allot/Look-over">内部调拨-查看</el-menu-item>
+                    <el-menu-item index="/allot/look-over">内部调拨-查看</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
             <!--

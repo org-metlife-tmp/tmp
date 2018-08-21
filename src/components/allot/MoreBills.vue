@@ -1,5 +1,5 @@
 <style scoped lang="less" type="text/less">
-    #payment {
+    #moreBills{
         width: 100%;
         height: 100%;
         box-sizing: border-box;
@@ -13,10 +13,10 @@
         }
 
         /*搜索区*/
-        .search-setion {
+        .search-setion{
             text-align: left;
 
-            .line {
+            .line{
                 text-align: center;
             }
 
@@ -89,7 +89,7 @@
 </style>
 
 <template>
-    <div id="payment">
+    <div id="moreBills">
         <!--顶部按钮-->
         <div class="button-list-left">
             <el-select v-model="searchData.payment_type" placeholder="请选择调拨类型"
@@ -128,8 +128,7 @@
                     </el-col>
                     <el-col :span="4">
                         <el-form-item>
-                            <el-input v-model="searchData.recv_query_key" clearable
-                                      placeholder="请输入收款方名称或账号"></el-input>
+                            <el-input v-model="searchData.recv_query_key" clearable placeholder="请输入收款方名称或账号"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="6">
@@ -148,12 +147,13 @@
                             <el-button type="primary" plain @click="queryData" size="mini">搜索</el-button>
                         </el-form-item>
                     </el-col>
-
                     <el-col :span="24">
                         <el-form-item style="margin-bottom:0px">
                             <el-checkbox-group v-model="searchData.service_status">
-                                <el-checkbox label="1" name="type">审批通过</el-checkbox>
-                                <el-checkbox label="3" name="type">已失败</el-checkbox>
+                                <el-checkbox v-for="(name,k) in statusList"
+                                             :label="k" name="type" :key="k">
+                                    {{ name }}
+                                </el-checkbox>
                             </el-checkbox-group>
                         </el-form-item>
                     </el-col>
@@ -193,13 +193,8 @@
             </el-table>
             <div class="allData">
                 <div class="btn-left">
-                    <el-button type="warning" plain size="mini" @click="goLookOver">
-                        更多单据<i class="el-icon-arrow-right el-icon--right"></i>
-                    </el-button>
-                    <el-button type="warning" plain size="mini" icon="el-icon-delete">支付作废</el-button>
-                    <el-button type="warning" size="mini">
-                        <span class="transmit-icon"><i></i></span>发送
-                    </el-button>
+                    <el-button type="warning" plain size="mini" @click="goMakeBill">制单</el-button>
+                    <el-button type="warning" plain size="mini" @click="goPayment">支付处理</el-button>
                 </div>
                 <span>总笔数：</span>
                 <span v-text="totalData.total_num" class="numText"></span>
@@ -226,9 +221,9 @@
 
 <script>
     export default {
-        name: "Payment",
+        name: "MoreBills",
         created: function () {
-            this.$emit("transmitTitle", "内部调拨-支付处理");
+            this.$emit("transmitTitle", "内部调拨-更多单据");
             this.$emit("getCommTable", this.routerMessage);
         },
         mounted: function () {
@@ -239,10 +234,10 @@
             }
         },
         props: ["tableData"],
-        data: function () {
+        data: function(){
             return {
                 routerMessage: {
-                    optype: "dbt_paylist",
+                    optype: "dbt_morelist",
                     params: {
                         page_size: 7,
                         page_num: 1
@@ -271,6 +266,17 @@
                     disabledDate(time) {
                         return time.getTime() > Date.now();
                     }
+                },
+                statusList: {
+                    1: "已保存",
+                    2: "已提交",
+                    3: "审批中",
+                    4: "审批通过",
+                    5: "审批拒绝",
+                    6: "处理中",
+                    7: "已成功",
+                    8: "已失败",
+                    9: "已作废"
                 },
                 paymentTypeList: {}, //下拉框数据
             }
@@ -304,9 +310,13 @@
                 };
                 this.$emit("getCommTable", this.routerMessage);
             },
-            //更多单据
-            goLookOver: function(){
-                this.$router.push("/allot/look-over");
+            //制单
+            goMakeBill: function(){
+                this.$router.push("/allot/make-bill");
+            },
+            //支付处理
+            goPayment: function(){
+                this.$router.push("/allot/payment");
             }
         },
         watch: {
@@ -320,3 +330,4 @@
         }
     }
 </script>
+

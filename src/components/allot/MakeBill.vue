@@ -318,8 +318,9 @@
                 </table>
             </div>
             <div class="bill-operation">
-                <el-button type="warning" plain size="medium">更多单据<span
-                        class="arrows">></span></el-button>
+                <el-button type="warning" plain size="medium" @click="goMoreBills">
+                    更多单据<span class="arrows">></span>
+                </el-button>
                 <div class="btnGroup">
                     <el-button type="warning" size="small" @click="clearBill">清空</el-button>
                     <el-button type="warning" size="small">保存</el-button>
@@ -642,6 +643,10 @@
                 this.moneyText = "";
                 this.summary = "";
                 this.emptyFileList = [];
+            },
+            //更多单据
+            goMoreBills: function(){
+                this.$router.push("/allot/more-bills");
             }
         }
     }

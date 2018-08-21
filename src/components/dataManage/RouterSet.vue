@@ -468,6 +468,7 @@
             this.$emit("getTableData", this.routerMessage);
         },
         mounted: function () {
+            debugger;
             /*获取下拉框数据*/
             //机构
             var orgList = JSON.parse(window.sessionStorage.getItem("orgList"));
@@ -511,6 +512,7 @@
                 this.orgTreeList.push(orgTreeList);
             }
             //支付渠道
+            debugger;
             var channelList = JSON.parse(window.sessionStorage.getItem("channelList"));
             if (channelList) {
                 this.channelList = channelList;

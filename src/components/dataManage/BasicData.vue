@@ -381,8 +381,9 @@
             }
         },
         destroyed: function () {
-            window.sessionStorage.setItem("orgTreeList", JSON.stringify(this.treeList[0]));
-
+            if(this.treeList[0]){
+                window.sessionStorage.setItem("orgTreeList", JSON.stringify(this.treeList[0]));
+            }
         },
         data: function () {
             return {
@@ -476,6 +477,9 @@
             isActive: function (active) {
                 //清空原先数据
                 this.tableList = [];
+                if(this.treeList[0]){
+                    window.sessionStorage.setItem("orgTreeList", JSON.stringify(this.treeList[0]));
+                }
                 this.treeList = [];
 
                 var btActive = this.btActive;

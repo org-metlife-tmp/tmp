@@ -50,6 +50,7 @@ import HistoryDealFluctuate from '@/components/tradeLinks/HistoryFluctuate'
 import MakeBill from '@/components/allot/MakeBill'
 import Payment from '@/components/allot/Payment'
 import LookOver from '@/components/allot/LookOver'
+import MoreBills from '@/components/allot/MoreBills'
 //审批流管理
 import WorkflowDefinition from '@/components/workflow/WorkflowDefinition'
 import WorkflowTrace from '@/components/workflow/WorkflowTrace'
@@ -113,7 +114,8 @@ const router = new Router({
                         {path: '/workflow/workflow-configure', name: 'WorkflowConfigure', component: WorkflowConfigure, meta: {requireAuth: true}},
                         //调拨通
                         {path: '/allot/payment', name: 'Payment', component: Payment, meta: {requireAuth: true}},
-                        {path: '/allot/Look-over', name: 'LookOver', component: LookOver, meta: {requireAuth: true}},
+                        {path: '/allot/look-over', name: 'LookOver', component: LookOver, meta: {requireAuth: true}},
+                        {path: '/allot/more-bills', name: 'MoreBills', component: MoreBills, meta: {requireAuth: true}},
                     ]
                 },
                 //基础样式三（tab页）
