@@ -118,6 +118,12 @@
                 border-left: none;
             }
         }
+
+        .serial-number{
+            color: #ccc;
+            margin-bottom: 2px;
+            margin-top: -15px;
+        }
     }
 </style>
 
@@ -200,16 +206,15 @@
         <!--数据展示区-->
         <section class="table-content">
             <el-table :data="tableList"
-                      border size="mini"
-                      @selection-change="selectChange">
-                <el-table-column type="selection" width="38"></el-table-column>
+                      border size="mini">
                 <el-table-column prop="pay_account_no" label="付款方账号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="pay_account_bank" label="付款银行" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="recv_account_no" label="收款方账号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="recv_account_name" label="收款方公司名称"
                                  :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="payment_amount" label="金额" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="service_status" label="处理状态" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="service_status" label="处理状态" :show-overflow-tooltip="true"
+                                 :formatter="transitStatus"></el-table-column>
                 <el-table-column
                         label="操作" width="50"
                         fixed="right">
@@ -251,6 +256,11 @@
                    :visible.sync="dialogVisible"
                    width="900px" top="76px"
                    :close-on-click-modal="false">
+            <div class="serial-number">
+                [编号:
+                <span v-text="dialogData.service_serial_number"></span>
+                ]
+            </div>
             <ul class="dialog-talbe">
                 <li class="table-li-title">付款单位</li>
                 <li class="table-li-content" v-text="dialogData.pay_account_name"></li>
@@ -268,9 +278,9 @@
                 <li class="table-li-content" v-text="dialogData.recv_account_bank"></li>
 
                 <li class="table-li-title">调拨金额</li>
-                <li class="table-li-content" v-text="dialogData.payment_amount"></li>
+                <li class="table-li-content" v-text="dialogData.payment_amount" style="color:#fd7d2f"></li>
                 <li class="table-li-title">大写</li>
-                <li class="table-li-content" v-text=""></li>
+                <li class="table-li-content" v-text="dialogData.numText"></li>
 
                 <li class="table-li-title">摘要</li>
                 <li class="table-li-content table-two-row" v-text="dialogData.payment_summary"></li>
@@ -288,6 +298,8 @@
         created: function () {
             this.$emit("transmitTitle", "内部调拨-查看");
             this.$emit("getCommTable", this.routerMessage);
+
+            this.$common.transitSeparator();
         },
         mounted: function () {
             //调拨类型
@@ -356,10 +368,6 @@
                 }
                 this.$emit("getCommTable", this.routerMessage);
             },
-            //列表选择框改变后
-            selectChange: function (val) {
-                console.log(val);
-            },
             //换页后获取数据
             getCurrentPage: function (currPage) {
                 this.routerMessage.params.page_num = currPage;
@@ -383,10 +391,21 @@
             },
             //查看单据详情
             lookBill: function (row) {
-                console.log(row);
                 this.dialogData = row;
+                if(!row.$isTransition){
+                    this.dialogData.numText = this.$common.transitText(row.payment_amount);
+                    this.dialogData.payment_amount = "￥" + this.$common.transitSeparator(row.payment_amount);
+                    row.$isTransition = true;
+                }
                 this.dialogVisible = true;
 
+            },
+            //展示格式转换-处理状态
+            transitStatus: function(row, column, cellValue, index){
+                var constants = JSON.parse(window.sessionStorage.getItem("constants"));
+                if (constants.BillStatus) {
+                    return constants.BillStatus[cellValue];
+                }
             }
         },
         watch: {

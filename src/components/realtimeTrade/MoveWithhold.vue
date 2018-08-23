@@ -404,17 +404,7 @@
             },
             //数字格式转换
             transitionNumber:function(oldValue){
-                var stringValue = oldValue.toLocaleString();
-                var value = stringValue.split(".");
-                if(value.length == 1){
-                    return value[0] + ".00";
-                }else{
-                    if(value[1].length == 1){
-                        return stringValue + "0";
-                    }else{
-                        return stringValue;
-                    }
-                }
+                return this.$common.transitSeparator(oldValue);
             },
             //展示格式转换-状态
             /*transitionStatus: function (row, column, cellValue, index) {

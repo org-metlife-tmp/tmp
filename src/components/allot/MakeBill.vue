@@ -573,91 +573,9 @@
                 }
 
                 //设置数字部分格式
-                var stringValue = (moneyNum * 1).toLocaleString();
-                var value = stringValue.split(".");
-                if (value.length == 1) {
-                    this.billData.moneyNum = value[0] + ".00";
-                } else {
-                    if (value[1].length == 1) {
-                        this.billData.moneyNum = stringValue + "0";
-                    } else {
-                        this.billData.moneyNum = stringValue;
-                    }
-                }
-
-                /*
-                * 1、将数字转换成汉字
-                * 2、根据其数位添加其计数单位
-                * 3、判断0在不同位置的读法
-                *   3.0 个位：不转汉字 加计数单位
-                *   3.1 十位 转汉字 不加计数单位
-                *   3.2 百位 转汉字 不加计数单位
-                *   3.3 千位 转汉字 不加计数单位
-                *   3.4 万位 不转汉字 加计数单位
-                *   3.5 十万位 转汉字 不加计数单位
-                *   3.6 百万位 转汉字 不加计数单位
-                *   3.7 千万位 转汉字 不加计数单位
-                *   3.8 亿位 不转汉字 加计数单位
-                *   3.9 十亿位 转汉字 不加计数单位
-                * 4、去掉多余的汉字
-                *   4.1 去掉重复的零
-                *   4.2 去掉后面是计数单位的零
-                *   4.3 去掉结尾的零
-                *   4.4 判断重复的计数单位：只有零在万位时会出现此情况
-                *
-                * */
-
-                /*设置中文大写*/
-                var numIndex = ['', '拾', '佰', '仟', '万', '拾', '佰', '仟', '亿', '拾'];
-                var numTextList = {0: "零", 1: "壹", 2: "贰", 3: "叁", 4: "肆", 5: "伍", 6: "陆", 7: "柒", 8: "捌", 9: "玖",};
-                var textValue = moneyNum.split("."); //整数和小数分开
-                var textArray = textValue[0].split(""); //整数部分
-                var numText = "";
-                /*遍历进行汉字转换和添加计数单位*/
-                for (var i = 0; i < textArray.length; i++) {
-                    var indexLength = textArray.length - 1 - i; //当前数字的数位
-
-                    if (textArray[i] == 0) { //判断为0的情况
-                        if (indexLength == 0 || indexLength == 4 || indexLength == 8) { //不转汉字 加计数单位
-                            numText += numIndex[indexLength];
-                        } else { //转汉字 不加计数单位
-                            numText += numTextList[textArray[i]];
-                        }
-                    } else {
-                        numText += numTextList[textArray[i]] + numIndex[indexLength];
-                    }
-                }
-                /*去掉多余的汉字*/
-                var resultTextArr = numText.split("");
-                for (var i = 0; i < resultTextArr.length; i++) {
-                    //去掉重复的零和后面是计数单位的零
-                    if (resultTextArr[i] == "零" && (resultTextArr[i + 1] == "零" || numIndex.indexOf(resultTextArr[i + 1]) != -1)) {
-                        resultTextArr.splice(i, 1);
-                        i--;
-                    }
-                    //判断计数单位是否重复
-                    if (numIndex.indexOf(resultTextArr[i]) == 4 && numIndex.indexOf(resultTextArr[i - 1]) >= 8) {
-                        resultTextArr.splice(i, 1);
-                        i--;
-                    }
-                }
-                numText = resultTextArr.join("");
-                //去掉末尾的零
-                if (numText[numText.length - 1] == "零") {
-                    numText = numText.slice(0, numText.length - 1);
-                }
-
-                //判断是否需要有小数位
-                if (value.length == 1) {
-                    this.moneyText = numText + "元整";
-                } else {
-                    numText += "点";
-                    var decimal = textValue[1].split("");
-                    for (var i = 0; i < decimal.length; i++) {
-                        numText += numTextList[decimal[i]];
-                    }
-                    this.moneyText = numText + "元";
-                }
+                this.billData.moneyNum = this.$common.transitSeparator(moneyNum);
+                //设置汉字
+                this.moneyText = this.$common.transitText(moneyNum);
             },
             //设置当前项上传附件
             setFileList: function ($event) {

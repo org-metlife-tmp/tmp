@@ -103,6 +103,45 @@
         .withdraw {
             background-position: -48px 0;
         }
+
+        /*查看弹框*/
+        .dialog-talbe {
+            width: 100%;
+            height: 230px;
+
+            li {
+                float: left;
+                box-sizing: border-box;
+                border: 1px solid #e2e2e2;
+                margin-left: -1px;
+                margin-top: -1px;
+                height: 30px;
+                line-height: 30px;
+            }
+
+            .table-li-title {
+                width: 12%;
+                text-align: right;
+                padding-right: 10px;
+                font-weight: bold;
+            }
+            .table-li-content {
+                width: 38%;
+                padding-left: 10px;
+            }
+
+            .table-two-row {
+                width: 88%;
+                margin-left: -3px;
+                border-left: none;
+            }
+        }
+
+        .serial-number{
+            color: #ccc;
+            margin-bottom: 2px;
+            margin-top: -15px;
+        }
     }
 </style>
 
@@ -186,14 +225,14 @@
             <el-table :data="tableList"
                       border size="mini"
                       @selection-change="selectChange">
-                <el-table-column type="selection" width="38"></el-table-column>
                 <el-table-column prop="pay_account_no" label="付款方账号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="pay_account_bank" label="付款银行" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="recv_account_no" label="收款方账号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="recv_account_name" label="收款方公司名称"
                                  :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="payment_amount" label="金额" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="service_status" label="处理状态" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="service_status" label="处理状态" :show-overflow-tooltip="true"
+                                 :formatter="transitStatus"></el-table-column>
                 <el-table-column
                         label="操作" width="110"
                         fixed="right">
@@ -201,7 +240,7 @@
                         <el-tooltip content="查看" placement="bottom" effect="light"
                                     :enterable="false" :open-delay="500">
                             <el-button type="primary" icon="el-icon-search" size="mini"
-                                       @click="lookMessage(scope.row)"></el-button>
+                                       @click="lookBill(scope.row)"></el-button>
                         </el-tooltip>
                         <el-tooltip content="复制" placement="bottom" effect="light"
                                     :enterable="false" :open-delay="500">
@@ -241,6 +280,44 @@
                     :current-page="pagCurrent">
             </el-pagination>
         </div>
+        <!--查看弹出框-->
+        <el-dialog title="调拨单信息"
+                   :visible.sync="dialogVisible"
+                   width="900px" top="76px"
+                   :close-on-click-modal="false">
+            <div class="serial-number">
+                [编号:
+                <span v-text="dialogData.service_serial_number"></span>
+                ]
+            </div>
+            <ul class="dialog-talbe">
+                <li class="table-li-title">付款单位</li>
+                <li class="table-li-content" v-text="dialogData.pay_account_name"></li>
+                <li class="table-li-title">收款单位</li>
+                <li class="table-li-content" v-text="dialogData.recv_account_name"></li>
+
+                <li class="table-li-title">账号</li>
+                <li class="table-li-content" v-text="dialogData.pay_account_no"></li>
+                <li class="table-li-title">账号</li>
+                <li class="table-li-content" v-text="dialogData.recv_account_no"></li>
+
+                <li class="table-li-title">开户行</li>
+                <li class="table-li-content" v-text="dialogData.pay_account_bank"></li>
+                <li class="table-li-title">开户行</li>
+                <li class="table-li-content" v-text="dialogData.recv_account_bank"></li>
+
+                <li class="table-li-title">调拨金额</li>
+                <li class="table-li-content" v-text="dialogData.payment_amount" style="color:#fd7d2f"></li>
+                <li class="table-li-title">大写</li>
+                <li class="table-li-content" v-text="dialogData.numText"></li>
+
+                <li class="table-li-title">摘要</li>
+                <li class="table-li-content table-two-row" v-text="dialogData.payment_summary"></li>
+
+                <li class="table-li-title" style="height:50px;line-height:50px">附件</li>
+                <li class="table-li-content table-two-row" style="height:50px"></li>
+            </ul>
+        </el-dialog>
     </div>
 </template>
 
@@ -304,6 +381,8 @@
                     9: "已作废"
                 },
                 paymentTypeList: {}, //下拉框数据
+                dialogVisible: false, //弹框数据
+                dialogData: {}
             }
         },
         methods: {
@@ -351,6 +430,23 @@
                         id: current.id
                     }
                 });
+            },
+            //查看单据详情
+            lookBill: function (row) {
+                this.dialogData = row;
+                if(!row.$isTransition){
+                    this.dialogData.numText = this.$common.transitText(row.payment_amount);
+                    this.dialogData.payment_amount = "￥" +  this.$common.transitSeparator(row.payment_amount);
+                    row.$isTransition = true;
+                }
+                this.dialogVisible = true;
+            },
+            //展示格式转换-处理状态
+            transitStatus: function(row, column, cellValue, index){
+                var constants = JSON.parse(window.sessionStorage.getItem("constants"));
+                if (constants.BillStatus) {
+                    return constants.BillStatus[cellValue];
+                }
             }
         },
         watch: {

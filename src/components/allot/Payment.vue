@@ -174,7 +174,8 @@
                 <el-table-column prop="recv_account_name" label="收款方公司名称"
                                  :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="payment_amount" label="金额" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="service_status" label="处理状态" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="service_status" label="处理状态" :show-overflow-tooltip="true"
+                                 :formatter="transitStatus"></el-table-column>
                 <el-table-column
                         label="操作" width="80"
                         fixed="right">
@@ -307,6 +308,13 @@
             //更多单据
             goLookOver: function(){
                 this.$router.push("/allot/look-over");
+            },
+            //展示格式转换-处理状态
+            transitStatus: function(row, column, cellValue, index){
+                var constants = JSON.parse(window.sessionStorage.getItem("constants"));
+                if (constants.BillStatus) {
+                    return constants.BillStatus[cellValue];
+                }
             }
         },
         watch: {

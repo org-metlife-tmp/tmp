@@ -4,13 +4,12 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 
-//引入elementUI库
+/*引入elementUI库*/
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
-
 Vue.use(ElementUI);
 
-//引入echarts
+/*引入echarts*/
 var echarts = require('echarts/lib/echarts');
 require("echarts/lib/chart/pie");
 require('echarts/lib/chart/bar');
@@ -19,15 +18,15 @@ require('echarts/lib/component/tooltip');
 require("echarts/lib/component/legendScroll");
 Vue.prototype.$echarts = echarts;
 
+/*ie兼容问题*/
 require("babel-polyfill");
 
 /*引入axios*/
 import axios from 'axios';
-
 axios.defaults.withCredentials = true;
-//设置axios请求头附带token
+//vuex状态管理文件
 import store from './js/store.js';
-
+//设置axios请求头附带token
 axios.defaults.headers.common['Authorization'] = store.state.token;
 axios.interceptors.request.use(config => {
         //判断是否存在token 如果存在将每个页面header都添加token
@@ -75,8 +74,12 @@ axios.interceptors.response.use(
 )
 Vue.prototype.$axios = axios;
 
+/*引入公共方法文件*/
+import common from "./js/common.js";
+Vue.prototype.$common = common;
 
-Vue.config.productionTip = false
+
+Vue.config.productionTip = false;
 /* eslint-disable no-new */
 
 new Vue({
