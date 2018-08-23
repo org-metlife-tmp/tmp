@@ -1,5 +1,5 @@
 <style scoped lang="less" type="text/less">
-    #lookOver{
+    #lookOver {
         width: 100%;
         height: 100%;
         box-sizing: border-box;
@@ -13,10 +13,10 @@
         }
 
         /*搜索区*/
-        .search-setion{
+        .search-setion {
             text-align: left;
 
-            .line{
+            .line {
                 text-align: center;
             }
 
@@ -44,7 +44,7 @@
         }
 
         /*汇总数据*/
-        .allData{
+        .allData {
             height: 36px;
             line-height: 36px;
             width: 100%;
@@ -55,11 +55,11 @@
             text-align: right;
 
             /*左侧按钮*/
-            .btn-left{
+            .btn-left {
                 float: left;
                 margin-left: 16px;
 
-                .transmit-icon{
+                .transmit-icon {
                     position: relative;
                     display: inline-block;
                     width: 16px;
@@ -67,7 +67,7 @@
                     vertical-align: middle;
                     margin-right: 4px;
 
-                    i{
+                    i {
                         position: absolute;
                         top: -5px;
                         left: -3px;
@@ -80,9 +80,42 @@
             }
 
             /*汇总数字*/
-            .numText{
+            .numText {
                 color: #FF5800;
                 margin-right: 10px;
+            }
+        }
+
+        /*查看弹框*/
+        .dialog-talbe {
+            width: 100%;
+            height: 230px;
+
+            li {
+                float: left;
+                box-sizing: border-box;
+                border: 1px solid #e2e2e2;
+                margin-left: -1px;
+                margin-top: -1px;
+                height: 30px;
+                line-height: 30px;
+            }
+
+            .table-li-title {
+                width: 12%;
+                text-align: right;
+                padding-right: 10px;
+                font-weight: bold;
+            }
+            .table-li-content {
+                width: 38%;
+                padding-left: 10px;
+            }
+
+            .table-two-row {
+                width: 88%;
+                margin-left: -3px;
+                border-left: none;
             }
         }
     }
@@ -93,7 +126,8 @@
         <!--顶部按钮-->
         <div class="button-list-left">
             <el-select v-model="searchData.payment_type" placeholder="请选择调拨类型"
-                       filterable clearable size="mini">
+                       filterable clearable size="mini"
+                       @change="queryData">
                 <el-option v-for="(name,k) in paymentTypeList"
                            :key="k"
                            :label="name"
@@ -128,7 +162,8 @@
                     </el-col>
                     <el-col :span="4">
                         <el-form-item>
-                            <el-input v-model="searchData.recv_query_key" clearable placeholder="请输入收款方名称或账号"></el-input>
+                            <el-input v-model="searchData.recv_query_key" clearable
+                                      placeholder="请输入收款方名称或账号"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="6">
@@ -176,17 +211,12 @@
                 <el-table-column prop="payment_amount" label="金额" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="service_status" label="处理状态" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column
-                        label="操作" width="80"
+                        label="操作" width="50"
                         fixed="right">
                     <template slot-scope="scope" class="operationBtn">
                         <el-tooltip content="查看" placement="bottom" effect="light" :enterable="false" :open-delay="500">
                             <el-button type="primary" icon="el-icon-search" size="mini"
-                                       @click="lookMessage(scope.row)"></el-button>
-                        </el-tooltip>
-                        <el-tooltip content="编辑" placement="bottom" effect="light"
-                                    :enterable="false" :open-delay="500">
-                            <el-button type="primary" icon="el-icon-edit" size="mini"
-                                       @click="editMessage(scope.row)"></el-button>
+                                       @click="lookBill(scope.row)"></el-button>
                         </el-tooltip>
                     </template>
                 </el-table-column>
@@ -216,6 +246,39 @@
                     :current-page="pagCurrent">
             </el-pagination>
         </div>
+        <!--查看弹出框-->
+        <el-dialog title="调拨单信息"
+                   :visible.sync="dialogVisible"
+                   width="900px" top="76px"
+                   :close-on-click-modal="false">
+            <ul class="dialog-talbe">
+                <li class="table-li-title">付款单位</li>
+                <li class="table-li-content" v-text="dialogData.pay_account_name"></li>
+                <li class="table-li-title">收款单位</li>
+                <li class="table-li-content" v-text="dialogData.recv_account_name"></li>
+
+                <li class="table-li-title">账号</li>
+                <li class="table-li-content" v-text="dialogData.pay_account_no"></li>
+                <li class="table-li-title">账号</li>
+                <li class="table-li-content" v-text="dialogData.recv_account_no"></li>
+
+                <li class="table-li-title">开户行</li>
+                <li class="table-li-content" v-text="dialogData.pay_account_bank"></li>
+                <li class="table-li-title">开户行</li>
+                <li class="table-li-content" v-text="dialogData.recv_account_bank"></li>
+
+                <li class="table-li-title">调拨金额</li>
+                <li class="table-li-content" v-text="dialogData.payment_amount"></li>
+                <li class="table-li-title">大写</li>
+                <li class="table-li-content" v-text=""></li>
+
+                <li class="table-li-title">摘要</li>
+                <li class="table-li-content table-two-row" v-text="dialogData.payment_summary"></li>
+
+                <li class="table-li-title" style="height:50px;line-height:50px">附件</li>
+                <li class="table-li-content table-two-row" style="height:50px"></li>
+            </ul>
+        </el-dialog>
     </div>
 </template>
 
@@ -234,7 +297,7 @@
             }
         },
         props: ["tableData"],
-        data: function(){
+        data: function () {
             return {
                 routerMessage: {
                     optype: "dbt_detaillist",
@@ -257,7 +320,7 @@
                 pagSize: 8, //分页数据
                 pagTotal: 1,
                 pagCurrent: 1,
-                totalData:{ //汇总数据
+                totalData: { //汇总数据
                     total_amount: "",
                     total_num: ""
                 },
@@ -277,6 +340,8 @@
                     9: "已作废"
                 },
                 paymentTypeList: {}, //下拉框数据
+                dialogVisible: false, //弹框数据
+                dialogData: {}
             }
         },
         methods: {
@@ -292,7 +357,7 @@
                 this.$emit("getCommTable", this.routerMessage);
             },
             //列表选择框改变后
-            selectChange: function(val){
+            selectChange: function (val) {
                 console.log(val);
             },
             //换页后获取数据
@@ -309,12 +374,19 @@
                 this.$emit("getCommTable", this.routerMessage);
             },
             //制单
-            goMakeBill: function(){
+            goMakeBill: function () {
                 this.$router.push("/allot/make-bill");
             },
             //支付处理
-            goPayment: function(){
+            goPayment: function () {
                 this.$router.push("/allot/payment");
+            },
+            //查看单据详情
+            lookBill: function (row) {
+                console.log(row);
+                this.dialogData = row;
+                this.dialogVisible = true;
+
             }
         },
         watch: {

@@ -195,6 +195,9 @@
                     this.$refs.dialogForm.clearValidate();
                 }
                 this.dialogVisible = true;
+                setTimeout(() => {
+                    this.$refs.jurisdTree.setCheckedKeys([]);
+                })
             },
             //编辑当前用户组
             editUserGroup: function (row) {

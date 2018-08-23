@@ -194,11 +194,13 @@
 
 <template>
     <div id="makeBill">
+        <!--顶部标题-按钮-->
         <header>
             <h1>内部调拨-制单</h1>
             <el-button type="warning" size="small">打印</el-button>
         </header>
         <section>
+            <!--表单顶部-->
             <div class="title-date">
                 <el-date-picker
                         v-model="dateValue"
@@ -207,7 +209,7 @@
                         value-format="yyyy-MM-dd"
                         size="mini">
                 </el-date-picker>
-                <el-select v-model="payMode" placeholder="请选择业务类型"
+                <el-select v-model="billData.payMode" placeholder="请选择业务类型"
                            filterable clearable size="mini">
                     <el-option v-for="(name,k) in payStatList"
                                :key="k"
@@ -215,7 +217,7 @@
                                :value="k">
                     </el-option>
                 </el-select>
-                <el-select v-model="lala" placeholder="请选择付款方式"
+                <el-select v-model="billData.payWay" placeholder="请选择付款方式"
                            filterable clearable size="mini">
                     <el-option v-for="(name,k) in payModeList"
                                :key="k"
@@ -225,23 +227,24 @@
                 </el-select>
                 <div class="serial-number">
                     <span>单据编号:</span>
-                    <span v-text="serial"></span>
+                    <span v-text="billData.serial"></span>
                 </div>
             </div>
+            <!--表单-->
             <div class="bill-content">
                 <table>
                     <tr>
                         <td rowspan="3" class="title-erect">付款方</td>
                         <td class="title-small">户名</td>
-                        <td class="text-left" v-text="paymentName"></td>
+                        <td class="text-left" v-text="billData.paymentName"></td>
                         <td rowspan="3" class="title-erect">收款方</td>
                         <td class="title-small">户名</td>
-                        <td class="text-left" v-text="gatherName"></td>
+                        <td class="text-left" v-text="billData.gatherName"></td>
                     </tr>
                     <tr>
                         <td class="title-small">账号</td>
                         <td class="select-height">
-                            <el-select v-model="paymentNumber"
+                            <el-select v-model="billData.paymentNumber"
                                        clearable filterable remote
                                        placeholder="请选择账号"
                                        :loading="payLoading"
@@ -259,7 +262,7 @@
                         </td>
                         <td class="title-small">账号</td>
                         <td>
-                            <el-select v-model="gatherNumber"
+                            <el-select v-model="billData.gatherNumber"
                                        clearable filterable remote
                                        placeholder="请选择账号"
                                        :loading="gatherLoading"
@@ -278,9 +281,9 @@
                     </tr>
                     <tr>
                         <td>开户行</td>
-                        <td v-text="paymentAddress" class="text-left"></td>
+                        <td v-text="billData.paymentAddress" class="text-left"></td>
                         <td>开户行</td>
-                        <td v-text="gatherAddress" class="text-left"></td>
+                        <td v-text="billData.gatherAddress" class="text-left"></td>
                     </tr>
                     <tr>
                         <td colspan="2" class="title-space"></td>
@@ -290,7 +293,7 @@
                         <td colspan="2">金额（元）</td>
                         <td colspan="4" class="money-input">
                             <span>￥</span>
-                            <input type="text" @blur="setMoney" v-model="moneyNum">
+                            <input type="text" @blur="setMoney" v-model="billData.moneyNum">
                             <span>(大写)</span>
                             <span v-text="moneyText"></span>
                         </td>
@@ -298,7 +301,7 @@
                     <tr>
                         <td colspan="2" class="set-space">摘要</td>
                         <td class="empty-input">
-                            <input type="text" placeholder="请在此处填写摘要" v-model="summary">
+                            <input type="text" placeholder="请在此处填写摘要" v-model="billData.summary">
                         </td>
                         <td colspan="2">调拨类型</td>
                         <td v-text="allotType"></td>
@@ -317,6 +320,7 @@
                     </tr>
                 </table>
             </div>
+            <!--表单底部按钮-->
             <div class="bill-operation">
                 <el-button type="warning" plain size="medium" @click="goMoreBills">
                     更多单据<span class="arrows">></span>
@@ -337,6 +341,31 @@
     export default {
         name: "MakeBill",
         created: function () {
+            //获取单据数据
+            var params = window.location.hash.split("?")[1];
+            if(params){
+                params = params.split("=");
+                this.$axios({
+                    url: "/cfm/normalProcess",
+                    method: "post",
+                    data: {
+                        optype: "dbt_detail",
+                        params: {
+                            id: params[1]
+                        }
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+
+                    } else {
+                        var data = result.data.data;
+                        console.log(data);
+                        this.billData = data;
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            }
             //付款方式 PayMode
             //业务类型
             var constants = JSON.parse(window.sessionStorage.getItem("constants"));
@@ -351,19 +380,24 @@
         data: function () {
             return {
                 dateValue: "", //申请时间
-                serial: "(1232132332)", //单据编号
-                paymentNumber: "", //付款方数据
-                payLoading: false,
+                billData: {
+                    payMode: "", //业务类型
+                    payWay: "", //付款方式
+                    serial: "", //单据编号
+                    paymentName: "", //付款方
+                    paymentNumber: "",
+                    paymentAddress: "",
+                    gatherName: "", //收款方
+                    gatherNumber: "",
+                    gatherAddress: "",
+                    moneyNum: "", //金额
+                    summary: "" //摘要
+                },
+                payLoading: false, //付款方数据
                 payList: [],
-                paymentName: "",
-                paymentAddress: "",
-                gatherNumber: "", //收款方数据
-                gatherLoading: false,
+                gatherLoading: false, //收款方数据
                 gatherList: [],
-                gatherName: "",
-                gatherAddress: "",
-                moneyNum: "", //金额
-                moneyText: "",
+                moneyText: "", //金额-大写
                 allotType: "", //调拨类型
                 fileMessage: { //附件
                     bill_id: "",
@@ -372,18 +406,17 @@
                 emptyFileList: [],
                 fileList: [],
                 fileLength: "",
-                payMode: "", //付款方式
                 payModeList:{},
-                summary: "", //摘要
 
                 payStatList: [],
-                lala: ""
             }
         },
         methods: {
             //获取付款方账号
             getPayList: function (value) {
                 this.payLoading = true;
+                var billData = this.billData;
+
                 this.$axios({
                     url: "/cfm/normalProcess",
                     method: "post",
@@ -391,7 +424,7 @@
                         optype: "dbt_payacclist",
                         params: {
                             query_key: value.trim(),
-                            exclude_ids: this.gatherNumber,
+                            exclude_ids: billData.gatherNumber,
                             page_size: 10000,
                             page_num: 1
                         }
@@ -410,6 +443,8 @@
             //获取收款方账号
             getGatherList: function (value) {
                 this.gatherLoading = true;
+                var billData = this.billData;
+
                 this.$axios({
                     url: "/cfm/normalProcess",
                     method: "post",
@@ -417,7 +452,7 @@
                         optype: "dbt_recvacclist",
                         params: {
                             query_key: value.trim(),
-                            exclude_ids: this.paymentNumber,
+                            exclude_ids: billData.paymentNumber,
                             page_size: 10000,
                             page_num: 1
                         }
@@ -437,16 +472,17 @@
             selectNumber: function (value, target) {
                 var payList = this.payList;
                 var gatherList = this.gatherList;
+                var billData = this.billData;
 
                 if (target == "payNumber") {
                     for (var i = 0; i < payList.length; i++) {
                         if (payList[i].acc_id == value) {
-                            this.paymentName = payList[i].acc_name;
-                            this.paymentAddress = payList[i].bank_name;
+                            billData.paymentName = payList[i].acc_name;
+                            billData.paymentAddress = payList[i].bank_name;
 
-                            if (this.gatherNumber) {
+                            if (billData.gatherNumber) {
                                 for (var j = 0; j < gatherList.length; j++) {
-                                    if (gatherList[j].acc_id == this.gatherNumber) {
+                                    if (gatherList[j].acc_id == billData.gatherNumber) {
                                         var payLevel = payList[j].level_num;
                                         var gatherLevel = gatherList[j].level_num;
                                     }
@@ -458,12 +494,12 @@
                 if (target == "gatherNumber") {
                     for (var i = 0; i < gatherList.length; i++) {
                         if (gatherList[i].acc_id == value) {
-                            this.gatherName = gatherList[i].acc_name;
-                            this.gatherAddress = gatherList[i].bank_name;
+                            billData.gatherName = gatherList[i].acc_name;
+                            billData.gatherAddress = gatherList[i].bank_name;
 
-                            if (this.paymentNumber) {
+                            if (billData.paymentNumber) {
                                 for (var j = 0; j < payList.length; j++) {
-                                    if (payList[j].acc_id == this.paymentNumber) {
+                                    if (payList[j].acc_id == billData.paymentNumber) {
                                         var payLevel = payList[j].level_num;
                                         var gatherLevel = gatherList[j].level_num;
                                     }
@@ -489,19 +525,20 @@
             },
             //清空账号时清空户名和开户行
             clearSelect: function (target) {
+                var billData = this.billData;
                 if (target == "payNumber") {
-                    this.paymentName = "";
-                    this.paymentAddress = "";
+                    billData.paymentName = "";
+                    billData.paymentAddress = "";
                 }
                 if (target == "gatherNumber") {
-                    this.gatherName = "";
-                    this.gatherAddress = "";
+                    billData.gatherName = "";
+                    billData.gatherAddress = "";
                 }
                 this.allotType = "";
             },
             //输入金额后进行格式化
             setMoney: function () {
-                var moneyNum = this.moneyNum.replace(/,/gi, "").trim();
+                var moneyNum = this.billData.moneyNum.replace(/,/gi, "").trim();
                 /*校验数据格式是否正确*/
                 if (moneyNum == "") {
                     return;
@@ -512,7 +549,7 @@
                         message: "请输入正确的金额",
                         duration: 2000
                     });
-                    this.moneyNum = "";
+                    this.billData.moneyNum = "";
                     return;
                 }
                 var verify = moneyNum.split(".");
@@ -539,12 +576,12 @@
                 var stringValue = (moneyNum * 1).toLocaleString();
                 var value = stringValue.split(".");
                 if (value.length == 1) {
-                    this.moneyNum = value[0] + ".00";
+                    this.billData.moneyNum = value[0] + ".00";
                 } else {
                     if (value[1].length == 1) {
-                        this.moneyNum = stringValue + "0";
+                        this.billData.moneyNum = stringValue + "0";
                     } else {
-                        this.moneyNum = stringValue;
+                        this.billData.moneyNum = stringValue;
                     }
                 }
 
@@ -635,13 +672,12 @@
             },
             //按钮-清空
             clearBill: function(){
-                this.paymentNumber = "";
-                this.gatherNumber = "";
-                this.clearSelect("payNumber");
-                this.clearSelect("gatherNumber");
-                this.moneyNum = "";
+                var billData = this.billData;
+                for(var k in billData){
+                    billData[k] = "";
+                }
                 this.moneyText = "";
-                this.summary = "";
+                this.allotType = "";
                 this.emptyFileList = [];
             },
             //更多单据

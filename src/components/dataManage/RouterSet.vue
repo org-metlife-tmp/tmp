@@ -468,7 +468,6 @@
             this.$emit("getTableData", this.routerMessage);
         },
         mounted: function () {
-            debugger;
             /*获取下拉框数据*/
             //机构
             var orgList = JSON.parse(window.sessionStorage.getItem("orgList"));
@@ -512,7 +511,6 @@
                 this.orgTreeList.push(orgTreeList);
             }
             //支付渠道
-            debugger;
             var channelList = JSON.parse(window.sessionStorage.getItem("channelList"));
             if (channelList) {
                 this.channelList = channelList;
@@ -1072,8 +1070,10 @@
                 }
                 this.biztypeSelect = [];
                 this.isIndeterminate = false;
+                this.biztypeAll = false;
                 this.insureSelect = [];
                 this.insureIndeter = false;
+                this.insureAll = false;
                 this.items.splice(1, this.items.length - 1);
                 var itemOne = this.items[0];
                 for (var key in itemOne) {

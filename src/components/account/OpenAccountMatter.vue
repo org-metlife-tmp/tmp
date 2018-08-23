@@ -365,7 +365,7 @@
                     </el-col>
                 </el-row>
             </el-form>
-            <BusinessTracking 
+            <BusinessTracking
                 :businessParams="businessParams"
             ></BusinessTracking>
         </el-dialog>

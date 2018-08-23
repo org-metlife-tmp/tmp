@@ -1,5 +1,5 @@
 <style scoped lang="less" type="text/less">
-    #moreBills{
+    #moreBills {
         width: 100%;
         height: 100%;
         box-sizing: border-box;
@@ -13,10 +13,10 @@
         }
 
         /*搜索区*/
-        .search-setion{
+        .search-setion {
             text-align: left;
 
-            .line{
+            .line {
                 text-align: center;
             }
 
@@ -44,7 +44,7 @@
         }
 
         /*汇总数据*/
-        .allData{
+        .allData {
             height: 36px;
             line-height: 36px;
             width: 100%;
@@ -55,11 +55,11 @@
             text-align: right;
 
             /*左侧按钮*/
-            .btn-left{
+            .btn-left {
                 float: left;
                 margin-left: 16px;
 
-                .transmit-icon{
+                .transmit-icon {
                     position: relative;
                     display: inline-block;
                     width: 16px;
@@ -67,7 +67,7 @@
                     vertical-align: middle;
                     margin-right: 4px;
 
-                    i{
+                    i {
                         position: absolute;
                         top: -5px;
                         left: -3px;
@@ -80,10 +80,28 @@
             }
 
             /*汇总数字*/
-            .numText{
+            .numText {
                 color: #FF5800;
                 margin-right: 10px;
             }
+        }
+
+        /*按钮样式*/
+        .on-copy, .withdraw {
+            width: 20px;
+            height: 20px;
+            background-image: url(../../assets/icon_common.png);
+            border: none;
+            padding: 0;
+            vertical-align: middle;
+        }
+        /*复制按钮*/
+        .on-copy {
+            background-position: -24px 1px;
+        }
+        /*撤回按钮*/
+        .withdraw {
+            background-position: -48px 0;
         }
     }
 </style>
@@ -128,7 +146,8 @@
                     </el-col>
                     <el-col :span="4">
                         <el-form-item>
-                            <el-input v-model="searchData.recv_query_key" clearable placeholder="请输入收款方名称或账号"></el-input>
+                            <el-input v-model="searchData.recv_query_key" clearable
+                                      placeholder="请输入收款方名称或账号"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="6">
@@ -176,17 +195,23 @@
                 <el-table-column prop="payment_amount" label="金额" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="service_status" label="处理状态" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column
-                        label="操作" width="80"
+                        label="操作" width="110"
                         fixed="right">
                     <template slot-scope="scope" class="operationBtn">
-                        <el-tooltip content="查看" placement="bottom" effect="light" :enterable="false" :open-delay="500">
+                        <el-tooltip content="查看" placement="bottom" effect="light"
+                                    :enterable="false" :open-delay="500">
                             <el-button type="primary" icon="el-icon-search" size="mini"
                                        @click="lookMessage(scope.row)"></el-button>
                         </el-tooltip>
-                        <el-tooltip content="编辑" placement="bottom" effect="light"
+                        <el-tooltip content="复制" placement="bottom" effect="light"
                                     :enterable="false" :open-delay="500">
-                            <el-button type="primary" icon="el-icon-edit" size="mini"
-                                       @click="editMessage(scope.row)"></el-button>
+                            <el-button class="on-copy" size="mini"
+                                       @click="copyMakeBill(scope.row)"></el-button>
+                        </el-tooltip>
+                        <el-tooltip content="撤回" placement="bottom" effect="light"
+                                    :enterable="false" :open-delay="500">
+                            <el-button size="mini" class="withdraw"
+                                       @click="withdrawMatter(scope.row)"></el-button>
                         </el-tooltip>
                     </template>
                 </el-table-column>
@@ -234,7 +259,7 @@
             }
         },
         props: ["tableData"],
-        data: function(){
+        data: function () {
             return {
                 routerMessage: {
                     optype: "dbt_morelist",
@@ -257,7 +282,7 @@
                 pagSize: 8, //分页数据
                 pagTotal: 1,
                 pagCurrent: 1,
-                totalData:{ //汇总数据
+                totalData: { //汇总数据
                     total_amount: "",
                     total_num: ""
                 },
@@ -294,7 +319,7 @@
                 this.$emit("getCommTable", this.routerMessage);
             },
             //列表选择框改变后
-            selectChange: function(val){
+            selectChange: function (val) {
                 console.log(val);
             },
             //换页后获取数据
@@ -311,12 +336,21 @@
                 this.$emit("getCommTable", this.routerMessage);
             },
             //制单
-            goMakeBill: function(){
+            goMakeBill: function () {
                 this.$router.push("/allot/make-bill");
             },
             //支付处理
-            goPayment: function(){
+            goPayment: function () {
                 this.$router.push("/allot/payment");
+            },
+            //复制
+            copyMakeBill: function(current){
+                this.$router.push({
+                    name: "MakeBill",
+                    query: {
+                        id: current.id
+                    }
+                });
             }
         },
         watch: {

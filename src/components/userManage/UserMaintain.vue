@@ -179,7 +179,7 @@
                             <el-table-column prop="dept_id" label="所属部门"
                                              :formatter="transitionDept"
                                              :show-overflow-tooltip="true"></el-table-column>
-                            <el-table-column prop="post_id" label="所属职位"
+                            <el-table-column prop="pos_id" label="所属职位"
                                              :formatter="transitionPos"
                                              :show-overflow-tooltip="true"></el-table-column>
                             <el-table-column
@@ -232,8 +232,8 @@
                             </el-form-item>
                         </el-col>
                         <el-col :span="24">
-                            <el-form-item label="所属职位" prop="post_id">
-                                <el-select v-model="posDialogData.post_id" placeholder="请选择职位" clearable>
+                            <el-form-item label="所属职位" prop="pos_id">
+                                <el-select v-model="posDialogData.pos_id" placeholder="请选择职位" clearable>
                                     <el-option v-for="position in positionList"
                                                :key="position.pos_id"
                                                :label="position.name"
@@ -389,7 +389,7 @@
                         message: "请选择所属部门",
                         trigger: "change"
                     },
-                    post_id: {
+                    pos_id: {
                         required: true,
                         message: "请选择所属职位",
                         trigger: "change"
