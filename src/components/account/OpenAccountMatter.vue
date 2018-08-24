@@ -837,7 +837,7 @@
                     data: {
                         optype: "openintent_issue",
                         params: {
-                            bill_id: distData.id,
+                            id: distData.id,
                             iss_users: distData.user_ids
                         }
                     }
