@@ -238,19 +238,34 @@
                         fixed="right">
                     <template slot-scope="scope" class="operationBtn">
                         <el-tooltip content="查看" placement="bottom" effect="light"
-                                    :enterable="false" :open-delay="500">
+                                    :enterable="false" :open-delay="500"
+                                    v-show="scope.row.service_status != 1 && scope.row.service_status != 5">
                             <el-button type="primary" icon="el-icon-search" size="mini"
                                        @click="lookBill(scope.row)"></el-button>
                         </el-tooltip>
+                        <el-tooltip content="编辑" placement="bottom" effect="light"
+                                    :enterable="false" :open-delay="500"
+                                    v-show="scope.row.service_status == 1 || scope.row.service_status == 5">
+                            <el-button type="primary" icon="el-icon-edit" size="mini"
+                                       @click="editBill(scope.row)"></el-button>
+                        </el-tooltip>
                         <el-tooltip content="复制" placement="bottom" effect="light"
-                                    :enterable="false" :open-delay="500">
+                                    :enterable="false" :open-delay="500"
+                                    v-show="scope.row.service_status == 1 || scope.row.service_status == 5 || scope.row.service_status == 2">
                             <el-button class="on-copy" size="mini"
                                        @click="copyMakeBill(scope.row)"></el-button>
                         </el-tooltip>
                         <el-tooltip content="撤回" placement="bottom" effect="light"
-                                    :enterable="false" :open-delay="500">
+                                    :enterable="false" :open-delay="500"
+                                    v-show="scope.row.service_status == 2">
                             <el-button size="mini" class="withdraw"
                                        @click="withdrawMatter(scope.row)"></el-button>
+                        </el-tooltip>
+                        <el-tooltip content="删除" placement="bottom" effect="light"
+                                    :enterable="false" :open-delay="500"
+                                    v-show="scope.row.service_status == 1">
+                            <el-button type="danger" icon="el-icon-delete" size="mini"
+                                       @click=""></el-button>
                         </el-tooltip>
                     </template>
                 </el-table-column>
@@ -447,6 +462,10 @@
                 if (constants.BillStatus) {
                     return constants.BillStatus[cellValue];
                 }
+            },
+            //编辑
+            editBill: function(){
+
             }
         },
         watch: {

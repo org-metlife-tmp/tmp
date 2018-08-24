@@ -231,7 +231,7 @@
                     <el-col :span="24" class="form-small-title"><span></span>申请日期</el-col>
                     <el-col :span="12">
                         <el-form-item label="账户号">
-                            <el-select v-model="dialogData.acc_id" @change="changeAccId" clearable>
+                            <el-select v-model="dialogData.acc_id" @change="changeAccId" clearable filterable>
                                 <el-option
                                         v-for="item in accList"
                                         :key="item.acc_id"
@@ -581,7 +581,7 @@
                     </el-col>
                 </el-row>
             </el-form>
-            <BusinessTracking 
+            <BusinessTracking
                 :businessParams="businessParams"
             ></BusinessTracking>
             <span slot="footer" class="dialog-footer">
@@ -1274,7 +1274,7 @@
                                 }
                             }
                         }
-                        
+
                         this.$message({
                             type: "success",
                             message: "操作成功",
