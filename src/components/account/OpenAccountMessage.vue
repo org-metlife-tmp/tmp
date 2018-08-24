@@ -424,6 +424,7 @@
             <el-dialog :visible.sync="innerVisible"
                        width="50%" title="提交审批流程"
                        append-to-body top="76px"
+                       @close="beforeCloseDialog"
                        :close-on-click-modal="false">
                 <el-radio-group v-model="selectWorkflow">
                     <el-radio v-for="workflow in workflows"
@@ -1203,6 +1204,7 @@
                         this.selectWorkflow = "";
                         this.workflowData = data;
                         this.workflows = data.workflows;
+                        this.dialogData.persist_version = data.persist_version;
                         this.innerVisible = true;
                     }
                 }).catch(function (error) {
@@ -1238,19 +1240,19 @@
                         this.innerVisible = false;
                         this.dialogVisible = false;
 
-                        var rows = this.tableList;
-                        var index = this.tableList.indexOf(this.currentTodo);
-                        if (this.pagCurrent < (this.pagTotal / this.pagSize)) { //存在下一页
-                            this.$emit('getTableData', this.routerMessage);
-                        } else {
-                            if (rows.length == "1" && (this.routerMessage.todo.params.page_num != 1)) { //是当前页最后一条
-                                this.routerMessage.todo.params.page_num--;
-                                this.$emit('getTableData', this.routerMessage);
-                            } else {
-                                rows.splice(index, 1);
-                                this.pagTotal--;
-                            }
-                        }
+                        // var rows = this.tableList;
+                        // var index = this.tableList.indexOf(this.currentTodo);
+                        // if (this.pagCurrent < (this.pagTotal / this.pagSize)) { //存在下一页
+                        //     this.$emit('getTableData', this.routerMessage);
+                        // } else {
+                        //     if (rows.length == "1" && (this.routerMessage.todo.params.page_num != 1)) { //是当前页最后一条
+                        //         this.routerMessage.todo.params.page_num--;
+                        //         this.$emit('getTableData', this.routerMessage);
+                        //     } else {
+                        //         rows.splice(index, 1);
+                        //         this.pagTotal--;
+                        //     }
+                        // }
                         
                         this.$message({
                             type: "success",
@@ -1314,6 +1316,10 @@
                     })
                 }).catch(() => {
                 });
+            },
+            //提交审批流的弹框关闭的时候刷新列表
+            beforeCloseDialog:function(){
+                this.$emit('getTableData', this.routerMessage);
             }
         },
         watch: {
