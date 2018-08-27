@@ -1205,6 +1205,7 @@
                         this.workflowData = data;
                         this.workflows = data.workflows;
                         this.dialogData.persist_version = data.persist_version;
+                        this.dialogData.id = data.id;
                         this.innerVisible = true;
                     }
                 }).catch(function (error) {

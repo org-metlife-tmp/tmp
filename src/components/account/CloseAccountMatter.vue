@@ -84,7 +84,16 @@
         }
     }
 </style>
-
+<style lang="less" type="text/less">
+    #closeAccountMatter {
+        .el-dialog__wrapper {
+            .el-dialog__body {
+                height: 400px;
+                overflow-y: scroll;
+            }
+        }
+    }
+</style>
 <template>
     <div id="closeAccountMatter">
         <!-- 顶部按钮-->
@@ -167,17 +176,17 @@
                                        @click="lookMatter(scope.row)"></el-button>
                         </el-tooltip>
                         <el-tooltip content="分发" placement="bottom" effect="light"
-                                    :enterable="false" :open-delay="500" v-show="!isPending && scope.row.service_status!=11">
+                                    :enterable="false" :open-delay="500" v-show="!isPending && scope.row.service_status ==4">
                             <el-button size="mini" @click="distribute(scope.row)" class="distribute"></el-button>
                         </el-tooltip>
                         <el-tooltip content="办结" placement="bottom" effect="light"
-                                    :enterable="false" :open-delay="500" v-show="!isPending && scope.row.service_status!=11">
+                                    :enterable="false" :open-delay="500" v-show="!isPending && scope.row.service_status ==4">
                             <el-button type="success" icon="el-icon-check" size="mini"
                                        @click="concludeMatter(scope.row)"></el-button>
                         </el-tooltip>
                         <el-tooltip content="撤回" placement="bottom" effect="light"
                                     :enterable="false" :open-delay="500"
-                                    v-show="!isPending && (scope.row.service_status =='2')">
+                                    v-show="!isPending && (scope.row.service_status ==2)">
                             <el-button size="mini" class="withdraw" @click="withdrawMatter(scope.row)"></el-button>
                         </el-tooltip>
                     </template>
@@ -254,6 +263,7 @@
             <el-dialog :visible.sync="innerVisible"
                        width="50%" title="提交审批流程"
                        append-to-body top="76px"
+                       @close="beforeCloseDialog"
                        :close-on-click-modal="false">
                 <el-radio-group v-model="selectWorkflow">
                     <el-radio v-for="workflow in workflows"
@@ -864,6 +874,8 @@
                         this.selectWorkflow = "";
                         this.workflowData = data;
                         this.workflows = data.workflows;
+                        this.dialogData.persist_version = data.persist_version;
+                        this.dialogData.id = data.id;
                         this.innerVisible = true;
                     }
                 }).catch(function (error) {
@@ -899,21 +911,21 @@
                         this.innerVisible = false;
                         this.dialogVisible = false;
 
-                        if(this.dialogTitle == "编辑"){
-                            var rows = this.tableList;
-                            var index = this.tableList.indexOf(this.currentMatter);
-                            if (this.pagCurrent < (this.pagTotal / this.pagSize)) { //存在下一页
-                                this.$emit('getTableData', this.routerMessage);
-                            } else {
-                                if (rows.length == "1" && (this.routerMessage.todo.params.page_num != 1)) { //是当前页最后一条
-                                    this.routerMessage.todo.params.page_num--;
-                                    this.$emit('getTableData', this.routerMessage);
-                                } else {
-                                    rows.splice(index, 1);
-                                    this.pagTotal--;
-                                }
-                            }
-                        }
+                        // if(this.dialogTitle == "编辑"){
+                        //     var rows = this.tableList;
+                        //     var index = this.tableList.indexOf(this.currentMatter);
+                        //     if (this.pagCurrent < (this.pagTotal / this.pagSize)) { //存在下一页
+                        //         this.$emit('getTableData', this.routerMessage);
+                        //     } else {
+                        //         if (rows.length == "1" && (this.routerMessage.todo.params.page_num != 1)) { //是当前页最后一条
+                        //             this.routerMessage.todo.params.page_num--;
+                        //             this.$emit('getTableData', this.routerMessage);
+                        //         } else {
+                        //             rows.splice(index, 1);
+                        //             this.pagTotal--;
+                        //         }
+                        //     }
+                        // }
                         
                         this.$message({
                             type: "success",
@@ -977,6 +989,10 @@
                     })
                 }).catch(() => {
                 });
+            },
+            //提交审批流的弹框关闭的时候刷新列表
+            beforeCloseDialog:function(){
+                this.$emit('getTableData', this.routerMessage);
             }
         },
         watch:{
