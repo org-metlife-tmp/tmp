@@ -230,7 +230,7 @@
                     </el-col>
                     <el-col :span="2" style="height:52px">
                         <span class="upload-icon" @click="showRelationFile = !showRelationFile">
-                            <i></i>{{ fileLength }}
+                            <i></i>{{ dialogData.up_attachment_count }}
                         </span>
                     </el-col>
                     <el-col :span="24">
@@ -243,8 +243,7 @@
                     </el-col>
                     <el-col :span="24" v-show="showRelationFile">
                         <el-form-item label="附件">
-                            <Upload @currentFielList="setFileList"
-                                    :fileMessage="relationFile"
+                            <Upload :fileMessage="relationFile"
                                     :triggerFile="relationTrigger"
                                     :emptyFileList="emptyFileList"
                                     :isPending="false"></Upload>
@@ -461,7 +460,7 @@
                     </el-col>
                     <el-col :span="2" style="height:52px">
                         <span class="upload-icon" @click="showRelationFile = !showRelationFile">
-                            <i></i>{{ fileLength }}
+                            <i></i>{{ lookDialogData.up_attachment_count }}
                         </span>
                     </el-col>
                     <el-col :span="24">
@@ -474,8 +473,7 @@
                     </el-col>
                     <el-col :span="24" v-show="showRelationFile">
                         <el-form-item label="附件">
-                            <Upload @currentFielList="setFileList"
-                                    :fileMessage="relationFile"
+                            <Upload :fileMessage="relationFile"
                                     :triggerFile="relationTrigger"
                                     :emptyFileList="emptyFileList"
                                     :isPending="false"></Upload>
@@ -802,7 +800,7 @@
                 triggerFile: false,
                 relationFile:{
                     bill_id: "",
-                    biz_type: 2
+                    biz_type: 1
                 },
                 relationTrigger: false,
                 fileLength: 0,
@@ -1101,7 +1099,6 @@
                 this.fileLength = 0;
                 this.showRelationFile = false;
                 this.bankSelect = true;
-
                 //当前项详细信息
                 this.$axios({
                     url: "/cfm/normalProcess",
