@@ -626,7 +626,7 @@
             subCurrent:function(){
                 var params = this.dialogData;
                 var optype = "";
-                optype = this.dialogTitle == "新增" ? "closeacc_todoadd" : "closeacc_todochg";
+                optype = params.id ? "closeacc_todochg" : "closeacc_todoadd";
                 this.$axios({
                     url:"/cfm/normalProcess",
                     method:"post",
@@ -643,18 +643,19 @@
                         })
                     }else{
                         var data = result.data.data;
-                        if(this.dialogTitle == "新增"){
-                            if (this.tableList.length < this.routerMessage.todo.params.page_size) {
-                                this.tableList.push(data);
-                            }
-                            this.pagTotal++;
+                        if(!params.id){
+                            // if (this.tableList.length < this.routerMessage.todo.params.page_size) {
+                            //     this.tableList.push(data);
+                            // }
+                            // this.pagTotal++;
                             var message = "新增成功";
                         }else{
-                            for (var k in data) {
-                                this.currentMatter[k] = data[k];
-                            }
+                            // for (var k in data) {
+                            //     this.currentMatter[k] = data[k];
+                            // }
                             var message = "修改成功";
                         }
+                        this.$emit('getTableData', this.routerMessage);
                         this.dialogVisible = false;
                         this.$message({
                             type: 'success',

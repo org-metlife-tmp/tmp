@@ -560,11 +560,11 @@
                     memo:this.dialogData.memo,
                     files: this.dialogData.files,
                 };
-                if(this.currentFreeze.id == null || this.currentFreeze.id == "" || this.currentFreeze.id == undefined){
+                if(!this.dialogData.id){
                     optype = "accfreeze_todoadd";
                 }else{
                     optype = "accfreeze_todochg";
-                    data.id = this.currentFreeze.id;
+                    data.id = this.dialogData.id;
                 }
                 this.$axios({
                     url:"/cfm/normalProcess",
@@ -584,16 +584,16 @@
                         var data = result.data.data;
                         Object.assign(data,this.dialogData);
                         data.apply_on = data.apply_on ? data.apply_on.split(" ")[0] : '';
-                        if(!this.currentFreeze.id){
-                            if (this.tableList.length < this.routerMessage.todo.params.page_size) {
-                                this.tableList.push(data);
-                            }
-                            this.pagTotal++;
+                        if(!this.dialogData.id){
+                            // if (this.tableList.length < this.routerMessage.todo.params.page_size) {
+                            //     this.tableList.push(data);
+                            // }
+                            // this.pagTotal++;
                             var message = "新增成功";
                         }else{
                             var message = "修改成功";
                         }
-
+                        this.$emit('getTableData', this.routerMessage);
                         this.dialogVisible = false;
                         this.$message({
                             type: 'success',

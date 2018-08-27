@@ -473,7 +473,7 @@
                 this.dialogData.aci_memo = row.aci_memo;
                 this.dialogData.relation_id = row.relation_id;
                 this.dialogData.service_serial_number = row.service_serial_number;
-
+                this.dialogData.id = row.id;
                 if(!type){
                    row.acc_id = row.acc_id ? row.acc_id : "";
                     this.$axios({
@@ -569,8 +569,8 @@
             saveAppliation:function(){
                 var data = {};
                 var optype = "";
-                if(this.currentMessage.id){//修改
-                    data.id = this.currentMessage.id;
+                if(this.dialogData.id){//修改
+                    data.id = this.dialogData.id;
                     optype = "closeacccomple_todochg";
                     data.files = this.dialogData.files;
                 }else{
@@ -598,12 +598,18 @@
                         })
                         return;
                     }else{
-                       this.currentMessage.service_status = result.data.data.service_status;
-                       this.currentMessage.id = result.data.data.id;
-                       this.currentMessage.close_date = result.data.data.close_date;
-                       this.currentMessage.memo = result.data.data.memo;
-                       this.dialogVisible = false;
-                       this.dialogData = {};
+                    //    this.currentMessage.service_status = result.data.data.service_status;
+                    //    this.currentMessage.id = result.data.data.id;
+                    //    this.currentMessage.close_date = result.data.data.close_date;
+                    //    this.currentMessage.memo = result.data.data.memo;
+                        this.$emit('getTableData', this.routerMessage);
+                        this.dialogVisible = false;
+                        this.dialogData = {};
+                        this.$message({
+                            type: 'success',
+                            message: '保存成功',
+                            duration: 2000
+                        });
                     }
                 })
             },

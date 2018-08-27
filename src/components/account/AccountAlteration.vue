@@ -870,7 +870,7 @@
                     files: dialogData.files,
                     change_content: paramsData
                 };
-                if (this.dialogTitle == "新增") {
+                if (!dialogData.id) {
                     optype = "openchg_add";
                 } else {
                     optype = "openchg_chg";
@@ -894,18 +894,19 @@
                         })
                     } else {
                         var data = result.data.data;
-                        if(this.dialogTitle == "新增"){
-                            if (this.tableList.length < this.routerMessage.todo.params.page_size) {
-                                this.tableList.push(data);
-                            }
-                            this.pagTotal++;
+                        if(!dialogData.id){
+                            // if (this.tableList.length < this.routerMessage.todo.params.page_size) {
+                            //     this.tableList.push(data);
+                            // }
+                            // this.pagTotal++;
                             var message = "新增成功"
                         }else{
-                            for (var k in data) {
-                                this.currentAltera[k] = data[k];
-                            }
+                            // for (var k in data) {
+                            //     this.currentAltera[k] = data[k];
+                            // }
                             var message = "修改成功"
                         }
+                        this.$emit('getTableData', this.routerMessage);
                         this.dialogVisible = false;
                         this.$message({
                             type: 'success',
