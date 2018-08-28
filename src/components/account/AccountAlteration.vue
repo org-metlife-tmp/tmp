@@ -459,7 +459,7 @@
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="账户名称">
-                            <el-input v-model="lookDialogData.acc_name" :disabled="true"></el-input>
+                            <el-input v-model="lookDialogData.old_1" :disabled="true"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
@@ -469,43 +469,27 @@
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="所属机构">
-                            <el-input v-model="lookDialogData.org_name" :disabled="true"></el-input>
+                            <el-input v-model="lookDialogData.old_2" :disabled="true"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="所属机构">
-                            <el-select v-model="lookDialogData.$2" placeholder="请选择所属机构"
-                                       filterable :disabled="true">
-                                <el-option v-for="org in orgList"
-                                           :key="org.org_id"
-                                           :label="org.name"
-                                           :value="org.org_id">
-                                </el-option>
-                            </el-select>
+                            <el-input v-model="lookDialogData.$2" :disabled="true"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="开户行">
-                            <el-input v-model="lookDialogData.bank_name" :disabled="true"></el-input>
+                            <el-input v-model="lookDialogData.old_3" :disabled="true"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="开户行">
-                            <el-select v-model="lookDialogData.$3" placeholder="请选择银行"
-                                       clearable filterable
-                                       @visible-change="getBankList"
-                                       :disabled="true">
-                                <el-option v-for="bankType in bankList"
-                                           :key="bankType.cnaps_code"
-                                           :label="bankType.name"
-                                           :value="bankType.cnaps_code">
-                                </el-option>
-                            </el-select>
+                            <el-input v-model="lookDialogData.$3" :disabled="true"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="账户法人">
-                            <el-input v-model="lookDialogData.lawfull_man" :disabled="true"></el-input>
+                            <el-input v-model="lookDialogData.old_4" :disabled="true"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
@@ -515,53 +499,32 @@
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="币种">
-                            <el-input v-model="lookDialogData.curr_name" :disabled="true"></el-input>
+                            <el-input v-model="lookDialogData.old_5" :disabled="true"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="币种">
-                            <el-select v-model="lookDialogData.$5" placeholder="请选择币种"
-                                       filterable :disabled="true">
-                                <el-option v-for="currency in currencyList"
-                                           :key="currency.id"
-                                           :label="currency.name"
-                                           :value="currency.id">
-                                </el-option>
-                            </el-select>
+                            <el-input v-model="lookDialogData.$5" :disabled="true"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="账户属性">
-                            <el-input v-model="lookDialogData.acc_attr_name" :disabled="true"></el-input>
+                            <el-input v-model="lookDialogData.old_6" :disabled="true"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="账户属性">
-                            <el-select v-model="lookDialogData.$6" placeholder="请选择账户属性"
-                                       :disabled="true">
-                                <el-option v-for="(name,k) in attrList"
-                                           :key="k"
-                                           :label="name"
-                                           :value="k">
-                                </el-option>
-                            </el-select>
+                            <el-input v-model="lookDialogData.$6" :disabled="true"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="账户模式">
-                            <el-input v-model="getLookInteract" :disabled="true"></el-input>
+                            <el-input v-model="lookDialogData.old_7" :disabled="true"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="账户模式">
-                            <el-select v-model="lookDialogData.$7" placeholder="请选择账户模式"
-                                       :disabled="true">
-                                <el-option v-for="(name,k) in interList"
-                                           :key="k"
-                                           :label="name"
-                                           :value="k">
-                                </el-option>
-                            </el-select>
+                            <el-input v-model="lookDialogData.$7" :disabled="true"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="24" class="form-small-title"><span></span>备注与附件</el-col>
@@ -1003,34 +966,48 @@
                         })
                     } else {
                         var data = result.data.data;
-                        for (var key in data) {
-                            //转换变更后数据
-                            if(key == "change_content"){
-                                var item = data[key];
-                                for(var i = 0; i < item.length; i++){
-                                    var current = item[i];
-                                    //添加开户行下拉数据
-                                    if(current.type == "3"){
-                                        this.$set(this.bankList, 0, {
-                                            cnaps_code: current.new_id,
-                                            name: current.new_value
-                                        })
-                                    }
-                                    //存在id时为下拉框数据 赋值为id
-                                    if(current.new_id){
-                                        if(current.type == 2 || current.type == 5){ //后台此处id返回为字符串 下拉框为数字 转换格式
-                                            dialogData["$"+current.type] = current.new_id * 1;
-                                        }else{
-                                            dialogData["$"+current.type] = current.new_id;
-                                        }
-                                    }else{
-                                        dialogData["$"+current.type] = current.new_value;
-                                    }
-                                }
-                            }else{
-                                dialogData[key] = data[key];
-                            }
+                        var content = data.change_content;
+                        var reflect = {
+                            1:"acc_name",
+                            2:"org_name",
+                            3:"bank_name",
+                            4:"lawfull_man",
+                            5:"curr_name",
+                            6:"acc_attr_name",
+                            7:"interactive_mode"
                         }
+                        for(var i = 0; i < content.length; i++){
+                            var current = content[i];
+                            var type = current.type;
+                            data["$" + type] = current.new_value;
+                            data["old_" + type] = current.old_value;
+                            delete reflect[type];
+                        }
+                        var inactiveMode = JSON.parse(window.sessionStorage.getItem("constants")).InactiveMode;
+                        //没变更的值
+                        for (var key in reflect){
+                            var field = reflect[key];//字段
+                            var value = data[field];
+                            if(field == 'interactive_mode'){//从外面取需要转值
+                                value = inactiveMode[value];
+                            }
+                            data["$" + key] = "";
+                            data["old_" + key] = value;
+                        }
+                        this.lookDialogData = data;
+                        // for (var key in data) {
+                        //     //转换变更后数据
+                        //     if(key == "change_content"){
+                        //         var item = data[key];
+                        //         for(var i = 0; i < item.length; i++){
+                        //             var current = item[i];
+                        //             dialogData["$"+current.type] = current.new_value;
+                        //             dialogData["old_"+current.type] = current.old_value;
+                        //         }
+                        //     }else{
+                        //         dialogData[key] = data[key];
+                        //     }
+                        // }
                     }
                 }).catch(function (error) {
                     console.log(error);
