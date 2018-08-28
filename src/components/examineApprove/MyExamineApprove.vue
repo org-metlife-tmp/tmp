@@ -154,6 +154,12 @@
         .agreeAdvice{
             margin: 10px 0 20px 6%;
         }
+        .aomuntColor{
+            color: #fc6e21;
+        }
+        .grey{
+            color: #aaa;
+        }
     }
 </style>
 
@@ -339,6 +345,15 @@
                                 :show-overflow-tooltip="true"
                             >
                             </el-table-column>
+                            <!-- 调拨通金额处理千分位 -->
+                            <el-table-column v-else-if="head.prop=='payment_amount'"
+                                :key="head.id"
+                                :prop="head.prop"
+                                :label="head.name"
+                                :formatter="changeThousandth"
+                                :show-overflow-tooltip="true"
+                            >
+                            </el-table-column>
                             <!-- 公用列 -->
                             <el-table-column
                                 v-else
@@ -410,6 +425,15 @@
                         <el-col v-else-if="detail.prop=='interactive_mode'" 
                                 :key="detail.id"
                                 :span="detail.pspan">{{interList[dialogData.interactive_mode]}}</el-col>
+                        <el-col v-else-if="detail.prop=='payment_type'" 
+                                :key="detail.id"
+                                :span="detail.pspan">{{dbtTypeList[dialogData.payment_type]}}</el-col>
+                        <el-col v-else-if="detail.prop=='payment_amount'" 
+                                :key="detail.id"
+                                :span="detail.pspan">
+                                <span>￥</span>
+                                <span class="aomuntColor">{{tansss(dialogData.payment_amount)}}</span>
+                                <span class="grey">(大写){{payAmountUp}}</span></el-col>
                         <el-col  v-else 
                                 :key="detail.id" 
                                 :span="detail.pspan">{{dialogData[detail.prop]}}</el-col>
@@ -619,6 +643,14 @@
                     addLots:"closeacccomple_append",
                     agree:"closeacccomple_agree",
                     reject:"closeacccomple_reject"
+                },
+                {
+                    text:"内部调拨",
+                    detail:"dbt_detail",
+                    list:"dbt_pendingtasks",
+                    addLots:"dbt_append",
+                    agree:"dbt_agree",
+                    reject:"dbt_reject"
                 }
             ]
 
@@ -777,6 +809,28 @@
                     {id:"23", lspan:4, label:"备注"},
                     {id:"24", pspan:20, prop:"memo"}
                 ],
+                "8":[//调拨通
+                    {id:"1", lspan:4, label:"编号"},
+                    {id:"2",pspan:20, prop:"service_serial_number"},
+                    {id:"3", lspan:4, label:"转出公司"},
+                    {id:"4", pspan:8, prop:"pay_account_name"},
+                    {id:"5", lspan:4, label:"转入公司"},
+                    {id:"6", pspan:8, prop:"recv_account_name"},
+                    {id:"7", lspan:4, label:"付款账号"},
+                    {id:"8", pspan:8, prop:"pay_account_no"},
+                    {id:"9", lspan:4, label:"收款账号"},
+                    {id:"10", pspan:8, prop:"recv_account_no"},
+                    {id:"11", lspan:4, label:"开户行"},
+                    {id:"12", pspan:8, prop:"pay_account_bank"},
+                    {id:"13", lspan:4, label:"开户行"},
+                    {id:"14", pspan:8, prop:"recv_account_bank"},
+                    {id:"15", lspan:4, label:"金额"},
+                    {id:"16", pspan:20, prop:"payment_amount"},
+                    {id:"17", lspan:4, label:"摘要"},
+                    {id:"18", pspan:8, prop:"payment_summary"},
+                    {id:"19", lspan:4, label:"调拨类型"},
+                    {id:"20", pspan:8, prop:"payment_type"}
+                ]
             }   
         },
         mounted:function(){
@@ -784,6 +838,10 @@
             var constants = JSON.parse(window.sessionStorage.getItem("constants"));
             if (constants.InactiveMode) {
                 this.interList = constants.InactiveMode;
+            }
+            //调拨类型
+            if (constants.ZjdbType) {
+                this.dbtTypeList = constants.ZjdbType;
             }
         },
         props: ["isPending", "tableData"],
@@ -879,6 +937,14 @@
                         {id:'5',prop:"acc_attr",name:'账户属性'},
                         {id:'6',prop:"interactive_mode",name:'账户模式'},
                         {id:'7',prop:"nextUserList[0].name",name:'下级审批人'}
+                    ],
+                    "8":[
+                        {id:'1',prop:"create_on",name:'申请日期'},
+                        {id:'2',prop:"pay_account_no",name:'转出账户'},
+                        {id:'3',prop:"recv_account_name",name:'收款公司'},
+                        {id:'4',prop:"recv_account_no",name:'收款账号'},
+                        {id:'5',prop:"payment_amount",name:'金额'},
+                        {id:'6',prop:"nextUserList[0].name",name:'下级审批人'}
                     ]
                 },
                 editableTabsList: [],
@@ -911,7 +977,9 @@
                 classParams:[],// 待办列表optype
                 interList:{},
                 enclosureLWidth:6,
-                enclosurePWidth:18
+                enclosurePWidth:18,
+                dbtTypeList:{},//调拨类型
+                payAmountUp:""//查看详情金额大写
             }
         },
         methods:{
@@ -974,6 +1042,19 @@
                     return cellValue[len-1].assignee;
                 }else{
                     return "";
+                }
+            },
+            //处理表格千分位
+            changeThousandth: function (row, column, cellValue, index) {
+                if(cellValue){
+                    return this.$common.transitSeparator(cellValue);
+                }
+            },
+            //处理弹出表格的金额展示问题
+            tansss:function(value){
+                if(value){
+                    this.payAmountUp = this.$common.transitText(value);
+                    return this.$common.transitSeparator(value);
                 }
             },
             //点击页数 获取当前页数据
@@ -1208,7 +1289,7 @@
                     this.routerMessage.done.params.page_num = 1;
                 }
                 this.$emit("getTableData", this.routerMessage);
-            },
+            }
         },
         watch: {
             isPending: function (val, oldVal) {
