@@ -44,7 +44,7 @@
         }
 
         /*汇总数据*/
-        .allData{
+        .allData {
             height: 36px;
             line-height: 36px;
             width: 100%;
@@ -55,35 +55,101 @@
             text-align: right;
 
             /*左侧按钮*/
-            .btn-left{
+            .btn-left {
                 float: left;
                 margin-left: 16px;
-
-                .transmit-icon{
-                    position: relative;
-                    display: inline-block;
-                    width: 16px;
-                    height: 10px;
-                    vertical-align: middle;
-                    margin-right: 4px;
-
-                    i{
-                        position: absolute;
-                        top: -5px;
-                        left: -3px;
-                        width: 18px;
-                        height: 18px;
-                        background: url(../../assets/icon_common.png) no-repeat;
-                        background-position: -49px -80px;
-                    }
-                }
             }
 
             /*汇总数字*/
-            .numText{
+            .numText {
                 color: #FF5800;
                 margin-right: 10px;
             }
+        }
+
+        .transmit-icon {
+            position: relative;
+            display: inline-block;
+            width: 16px;
+            height: 10px;
+            vertical-align: middle;
+            margin-right: 4px;
+
+            i {
+                position: absolute;
+                top: -5px;
+                left: -3px;
+                width: 18px;
+                height: 18px;
+                background: url(../../assets/icon_common.png) no-repeat;
+                background-position: -49px -80px;
+            }
+        }
+
+        /*查看弹框*/
+        .bill-status {
+            height: 50px;
+            margin-bottom: 22px;
+            background: #fafafa;
+            line-height: 50px;
+
+            > i {
+                margin-left: 10px;
+                font-size: 30px;
+                vertical-align: middle;
+            }
+            > span:nth-child(2) {
+                font-size: 22px;
+                vertical-align: middle;
+            }
+            > span {
+                margin-right: 180px;
+            }
+
+            .success-color {
+                color: #44c62b;
+            }
+            .defeated-color {
+                color: red;
+            }
+        }
+
+        .dialog-talbe {
+            width: 100%;
+            height: 230px;
+
+            li {
+                float: left;
+                box-sizing: border-box;
+                border: 1px solid #e2e2e2;
+                margin-left: -1px;
+                margin-top: -1px;
+                height: 30px;
+                line-height: 30px;
+            }
+
+            .table-li-title {
+                width: 12%;
+                text-align: right;
+                padding-right: 10px;
+                font-weight: bold;
+            }
+            .table-li-content {
+                width: 38%;
+                padding-left: 10px;
+            }
+
+            .table-two-row {
+                width: 88%;
+                margin-left: -3px;
+                border-left: none;
+            }
+        }
+
+        .serial-number {
+            color: #ccc;
+            margin-bottom: 2px;
+            margin-top: -15px;
         }
     }
 </style>
@@ -173,21 +239,17 @@
                 <el-table-column prop="recv_account_no" label="收款方账号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="recv_account_name" label="收款方公司名称"
                                  :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="payment_amount" label="金额" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="payment_amount" label="金额" :show-overflow-tooltip="true"
+                                 :formatter="transitAmount"></el-table-column>
                 <el-table-column prop="service_status" label="处理状态" :show-overflow-tooltip="true"
                                  :formatter="transitStatus"></el-table-column>
                 <el-table-column
-                        label="操作" width="80"
+                        label="操作" width="50"
                         fixed="right">
                     <template slot-scope="scope" class="operationBtn">
                         <el-tooltip content="查看" placement="bottom" effect="light" :enterable="false" :open-delay="500">
                             <el-button type="primary" icon="el-icon-search" size="mini"
-                                       @click="lookMessage(scope.row)"></el-button>
-                        </el-tooltip>
-                        <el-tooltip content="编辑" placement="bottom" effect="light"
-                                    :enterable="false" :open-delay="500">
-                            <el-button type="primary" icon="el-icon-edit" size="mini"
-                                       @click="editMessage(scope.row)"></el-button>
+                                       @click="lookBill(scope.row)"></el-button>
                         </el-tooltip>
                     </template>
                 </el-table-column>
@@ -197,8 +259,10 @@
                     <el-button type="warning" plain size="mini" @click="goLookOver">
                         更多单据<i class="el-icon-arrow-right el-icon--right"></i>
                     </el-button>
-                    <el-button type="warning" plain size="mini" icon="el-icon-delete">支付作废</el-button>
-                    <el-button type="warning" size="mini">
+                    <el-button type="warning" plain size="mini" icon="el-icon-delete"
+                               @click="cancellation('more')">支付作废
+                    </el-button>
+                    <el-button type="warning" size="mini" @click="sendBill('more')">
                         <span class="transmit-icon"><i></i></span>发送
                     </el-button>
                 </div>
@@ -222,6 +286,77 @@
                     :current-page="pagCurrent">
             </el-pagination>
         </div>
+        <!--查看弹出框-->
+        <el-dialog title="调拨单信息"
+                   :visible.sync="dialogVisible"
+                   width="900px" top="76px"
+                   :close-on-click-modal="false">
+            <div class="bill-status">
+                <i :class="{'success-color':dialogData.service_status == 4,
+                            'defeated-color':dialogData.service_status != 4,
+                            'el-icon-circle-check-outline':dialogData.service_status == 4,
+                            'el-icon-circle-close-outline':dialogData.service_status != 4}">
+                </i>
+                <span v-text="currentStatus"
+                      :class="{'success-color':dialogData.service_status == 4,'defeated-color':dialogData.service_status != 4}"></span>
+                <span v-text="dialogData.create_on"></span>
+                <el-button type="warning" plain size="mini" icon="el-icon-delete"
+                           @click="cancellation">支付作废
+                </el-button>
+                <el-button type="warning" size="mini" @click="sendBill">
+                    <span class="transmit-icon"><i></i></span>发送
+                </el-button>
+            </div>
+            <div class="serial-number">
+                [编号:
+                <span v-text="dialogData.service_serial_number"></span>
+                ]
+            </div>
+            <ul class="dialog-talbe">
+                <li class="table-li-title">付款单位</li>
+                <li class="table-li-content" v-text="dialogData.pay_account_name"></li>
+                <li class="table-li-title">收款单位</li>
+                <li class="table-li-content" v-text="dialogData.recv_account_name"></li>
+
+                <li class="table-li-title">账号</li>
+                <li class="table-li-content" v-text="dialogData.pay_account_no"></li>
+                <li class="table-li-title">账号</li>
+                <li class="table-li-content" v-text="dialogData.recv_account_no"></li>
+
+                <li class="table-li-title">开户行</li>
+                <li class="table-li-content" v-text="dialogData.pay_account_bank"></li>
+                <li class="table-li-title">开户行</li>
+                <li class="table-li-content" v-text="dialogData.recv_account_bank"></li>
+
+                <li class="table-li-title">调拨金额</li>
+                <li class="table-li-content" v-text="dialogData.payment_amount" style="color:#fd7d2f"></li>
+                <li class="table-li-title">大写</li>
+                <li class="table-li-content" v-text="dialogData.numText"></li>
+
+                <li class="table-li-title">摘要</li>
+                <li class="table-li-content table-two-row" v-text="dialogData.payment_summary"></li>
+
+                <li class="table-li-title" style="height:50px;line-height:50px">附件</li>
+                <li class="table-li-content table-two-row" style="height:50px"></li>
+            </ul>
+        </el-dialog>
+        <!--支付作废弹出框-->
+        <el-dialog title="作废"
+                   :visible.sync="innerVisible"
+                   width="600px" top="76px"
+                   :close-on-click-modal="false">
+            <div style="margin-bottom:6px">请输入作废原因：</div>
+            <el-input
+                    type="textarea"
+                    :autosize="{ minRows: 3,maxRows: 16}"
+                    placeholder="请输入作废原因(必填)"
+                    v-model="paymentData.feed_back">
+            </el-input>
+            <span slot="footer" class="dialog-footer" style="text-align:center">
+                    <el-button type="warning" size="mini" plain @click="innerVisible = false">取 消</el-button>
+                    <el-button type="warning" size="mini" @click="confirmcancell">确 定</el-button>
+            </span>
+        </el-dialog>
     </div>
 </template>
 
@@ -263,7 +398,7 @@
                 pagSize: 8, //分页数据
                 pagTotal: 1,
                 pagCurrent: 1,
-                totalData:{ //汇总数据
+                totalData: { //汇总数据
                     total_amount: "",
                     total_num: ""
                 },
@@ -274,6 +409,15 @@
                     }
                 },
                 paymentTypeList: {}, //下拉框数据
+                dialogVisible: false, //弹框数据
+                dialogData: {},
+                currentStatus: "",
+                innerVisible: false,
+                selectData: [], //列表选中数据
+                paymentData: { //支付作废参数
+                    ids: [],
+                    feed_back: ""
+                }
             }
         },
         methods: {
@@ -289,8 +433,11 @@
                 this.$emit("getCommTable", this.routerMessage);
             },
             //列表选择框改变后
-            selectChange: function(val){
-                console.log(val);
+            selectChange: function (val) {
+                this.selectData = [];
+                for (var i = 0; i < val.length; i++) {
+                    this.selectData.push(val[i].id);
+                }
             },
             //换页后获取数据
             getCurrentPage: function (currPage) {
@@ -305,18 +452,114 @@
                 };
                 this.$emit("getCommTable", this.routerMessage);
             },
+            //展示格式转换-金额
+            transitAmount: function (row, column, cellValue, index) {
+                return this.$common.transitSeparator(cellValue);
+            },
             //更多单据
-            goLookOver: function(){
+            goLookOver: function () {
                 this.$router.push("/allot/look-over");
             },
             //展示格式转换-处理状态
-            transitStatus: function(row, column, cellValue, index){
+            transitStatus: function (row, column, cellValue, index) {
                 var constants = JSON.parse(window.sessionStorage.getItem("constants"));
                 if (constants.BillStatus) {
                     return constants.BillStatus[cellValue];
                 }
+            },
+            //查看单据详情
+            lookBill: function (row) {
+                for (var k in row) {
+                    this.dialogData[k] = row[k];
+                }
+                this.dialogData.numText = this.$common.transitText(row.payment_amount);
+                this.dialogData.payment_amount = "￥" + this.$common.transitSeparator(row.payment_amount);
+                this.currentStatus = JSON.parse(window.sessionStorage.getItem("constants")).BillStatus[row.service_status];
+                this.dialogVisible = true;
+            },
+            //发送
+            sendBill: function (number) {
+                var params = {
+                    ids: []
+                };
+                if (number == "more") { //发送多条
+                    params.ids = this.selectData;
+                } else { //发送一条
+                    params.ids.push(this.dialogData.id);
+                }
+
+                this.$axios({
+                    url: "/cfm/normalProcess",
+                    method: "post",
+                    data: {
+                        optype: "dbt_send",
+                        params: params
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                    } else {
+                        this.$message({
+                            type: "success",
+                            message: "发送成功",
+                            duration: 2000
+                        });
+                        if (number != "more") {
+                            this.dialogVisible = false;
+                        }
+                        this.$emit("getCommTable", this.routerMessage);
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            },
+            //支付作废
+            cancellation: function (number) {
+                this.innerVisible = true;
+                this.paymentData.ids = [];
+                this.paymentData.feed_back = "";
+                if (number == "more") {
+                    this.paymentData.ids = this.selectData;
+                } else {
+                    this.dialogVisible = false;
+                    this.paymentData.ids.push(this.dialogData.id);
+                }
+            },
+            //确定作废
+            confirmcancell: function () {
+                this.$axios({
+                    url: "/cfm/normalProcess",
+                    method: "post",
+                    data: {
+                        optype: "dbt_cancel",
+                        params: this.paymentData
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                    } else {
+                        this.$message({
+                            type: "success",
+                            message: "数据已作废",
+                            duration: 2000
+                        });
+                        this.innerVisible = false;
+                        this.$emit("getCommTable", this.routerMessage);
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                });
             }
         },
+        computed: {},
         watch: {
             tableData: function (val, oldVal) {
                 this.pagSize = val.page_size;

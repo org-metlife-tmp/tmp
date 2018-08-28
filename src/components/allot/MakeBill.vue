@@ -189,7 +189,6 @@
         }
     }
 
-    /*弹框样式*/
     /*设置弹出框公共样式*/
     .el-dialog {
         text-align: left;
