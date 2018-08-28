@@ -473,6 +473,7 @@
                 this.dialogData.aci_memo = row.aci_memo;
                 this.dialogData.relation_id = row.relation_id;
                 this.dialogData.service_serial_number = row.service_serial_number;
+                this.dialogData.detail = row.detail;
                 this.dialogData.id = row.id;
                 if(!type){
                    row.acc_id = row.acc_id ? row.acc_id : "";
