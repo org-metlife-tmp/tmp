@@ -376,6 +376,7 @@
                             :isPending="false"></Upload>
                 </li>
             </ul>
+            <BusinessTracking :businessParams="businessParams"></BusinessTracking>
         </el-dialog>
         <!--编辑弹出框-->
         <el-dialog title="编辑调拨单"
@@ -484,6 +485,7 @@
 
 <script>
     import Upload from "../publicModule/Upload.vue";
+    import BusinessTracking from "../publicModule/BusinessTracking.vue"
 
     export default {
         name: "MoreBills",
@@ -492,7 +494,8 @@
             this.$emit("getCommTable", this.routerMessage);
         },
         components: {
-            Upload: Upload
+            Upload: Upload,
+            BusinessTracking:BusinessTracking
         },
         mounted: function () {
             //调拨类型
@@ -579,7 +582,9 @@
                 triggerFile: false,
                 editEmptyFile: [],
                 eidttrigFile: false,
-                fileList: []
+                fileList: [],
+                businessParams:{ //业务状态追踪参数
+                },
             }
         },
         methods: {
@@ -649,6 +654,11 @@
                 this.emptyFileList = [];
                 this.fileMessage.bill_id = row.id;
                 this.triggerFile = !this.triggerFile;
+
+                //业务状态跟踪
+                this.businessParams = {};
+                this.businessParams.biz_type = 8;
+                this.businessParams.id = row.id;
             },
             //编辑
             editBill: function (row) {

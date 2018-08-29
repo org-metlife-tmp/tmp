@@ -344,6 +344,7 @@
                             :isPending="false"></Upload>
                 </li>
             </ul>
+            <BusinessTracking :businessParams="businessParams"></BusinessTracking>
         </el-dialog>
         <!--支付作废弹出框-->
         <el-dialog title="作废"
@@ -367,6 +368,7 @@
 
 <script>
     import Upload from "../publicModule/Upload.vue";
+    import BusinessTracking from "../publicModule/BusinessTracking.vue"
 
     export default {
         name: "Payment",
@@ -375,7 +377,8 @@
             this.$emit("getCommTable", this.routerMessage);
         },
         components: {
-            Upload: Upload
+            Upload: Upload,
+            BusinessTracking:BusinessTracking
         },
         mounted: function () {
             //调拨类型
@@ -434,6 +437,8 @@
                     biz_type: 8
                 },
                 triggerFile: false,
+                businessParams:{ //业务状态追踪参数
+                },
             }
         },
         methods: {
@@ -496,6 +501,11 @@
                 this.emptyFileList = [];
                 this.fileMessage.bill_id = row.id;
                 this.triggerFile = !this.triggerFile;
+
+                //业务状态跟踪
+                this.businessParams = {};
+                this.businessParams.biz_type = 8;
+                this.businessParams.id = row.id;
 
                 this.dialogVisible = true;
             },

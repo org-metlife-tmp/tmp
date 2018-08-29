@@ -2,7 +2,7 @@
     /*业务追踪*/
     .busTrackContainer{
         margin-top: 20px;
-        padding-bottom: 20px; 
+        padding-bottom: 20px;
         min-height: 160px;
         /*详情弹出框区域分割样式*/
         .form-small-title {
@@ -57,7 +57,7 @@
                     background-color: #6bbdf8;
                     border-color: #6bbdf8!important;
                 }
-                
+
             }
         }
 
@@ -305,9 +305,9 @@
                                 </div>
                                 <div class="main">
                                     <span class="name">{{history.assignee}}</span>
-                                    <div v-show="history.assignee_type"> 
+                                    <div v-show="history.assignee_type">
                                         <span class="node-name"><el-tag size="small">{{history.assignee_name}}</el-tag></span>
-                                        <span>自定义节点</span>  
+                                        <span>自定义节点</span>
                                     </div>
                                     <span class="message">{{history.assignee_memo}}</span>
                                 </div>
@@ -350,7 +350,6 @@
     export default {
         name: "BusinessTracking",
         created:function(){
-            debugger;
             if(this.businessParams.id){
                 if(this.businessParams.type){
                     this.showRowline = false;
@@ -432,8 +431,8 @@
                         let history = data.history;
                         this.history = hL > 0 ? data.history[hL-1] : {} ;
                         this.history.show = hL > 0 ? true : false;
-                        
-                        
+
+
                         if(!this.businessParams.type){
                             if(!this.current.show) i --;
                             if(!this.future.show ) i --;
@@ -452,12 +451,12 @@
 
                             //处理线条样式
                             this.divideCol = 24 / i;
-                            this.generalLength = 100 / i * (i - 1); 
+                            this.generalLength = 100 / i * (i - 1);
                             this.leftDistance = 100 / (i * 2);
                             //本想打算让这个请求结束在让弹框显示，但是如果该弹框不显示，子组件都不会调用
                             // this.$emit("showDialog");
                         }
-                        
+
                         //组装右侧数据
                         this.historyList = history;
                         this.futureList = future;
@@ -472,11 +471,11 @@
                 })
             },
             showRight:function(){
-                document.getElementsByClassName("rightContainer")[0].style.right = "0"; 
+                document.getElementsByClassName("rightContainer")[0].style.right = "0";
             },
             closeRight:function(){
                 if(this.businessParams.type){
-                    this.$emit("closeRightDialog"); 
+                    this.$emit("closeRightDialog");
                 }else{
                     event.currentTarget.parentNode.parentNode.style.right = "-500px";
                 }
