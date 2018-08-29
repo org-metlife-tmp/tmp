@@ -119,7 +119,7 @@
             }
         }
 
-        .serial-number{
+        .serial-number {
             color: #ccc;
             margin-bottom: 2px;
             margin-top: -15px;
@@ -212,7 +212,8 @@
                 <el-table-column prop="recv_account_no" label="收款方账号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="recv_account_name" label="收款方公司名称"
                                  :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="payment_amount" label="金额" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="payment_amount" label="金额" :show-overflow-tooltip="true"
+                                 :formatter="transitAmount"></el-table-column>
                 <el-table-column prop="service_status" label="处理状态" :show-overflow-tooltip="true"
                                  :formatter="transitStatus"></el-table-column>
                 <el-table-column
@@ -285,14 +286,21 @@
                 <li class="table-li-title">摘要</li>
                 <li class="table-li-content table-two-row" v-text="dialogData.payment_summary"></li>
 
-                <li class="table-li-title" style="height:50px;line-height:50px">附件</li>
-                <li class="table-li-content table-two-row" style="height:50px"></li>
+                <li class="table-li-title" style="height:60px;line-height:60px">附件</li>
+                <li class="table-li-content table-two-row" style="height:60px;padding-top:6px;overflow-y:auto">
+                    <Upload :emptyFileList="emptyFileList"
+                            :fileMessage="fileMessage"
+                            :triggerFile="triggerFile"
+                            :isPending="false"></Upload>
+                </li>
             </ul>
         </el-dialog>
     </div>
 </template>
 
 <script>
+    import Upload from "../publicModule/Upload.vue";
+
     export default {
         name: "LookOver",
         created: function () {
@@ -309,6 +317,9 @@
             }
         },
         props: ["tableData"],
+        components: {
+            Upload: Upload
+        },
         data: function () {
             return {
                 routerMessage: {
@@ -353,7 +364,13 @@
                 },
                 paymentTypeList: {}, //下拉框数据
                 dialogVisible: false, //弹框数据
-                dialogData: {}
+                dialogData: {},
+                emptyFileList: [], //附件
+                fileMessage: {
+                    bill_id: "",
+                    biz_type: 8
+                },
+                triggerFile: false,
             }
         },
         methods: {
@@ -381,6 +398,10 @@
                 };
                 this.$emit("getCommTable", this.routerMessage);
             },
+            //展示格式转换-金额
+            transitAmount: function (row, column, cellValue, index) {
+                return this.$common.transitSeparator(cellValue);
+            },
             //制单
             goMakeBill: function () {
                 this.$router.push("/allot/make-bill");
@@ -391,17 +412,23 @@
             },
             //查看单据详情
             lookBill: function (row) {
-                this.dialogData = row;
-                if(!row.$isTransition){
-                    this.dialogData.numText = this.$common.transitText(row.payment_amount);
-                    this.dialogData.payment_amount = "￥" + this.$common.transitSeparator(row.payment_amount);
-                    row.$isTransition = true;
+                for (var k in row) {
+                    this.dialogData[k] = row[k];
                 }
+                this.dialogData.numText = this.$common.transitText(row.payment_amount);
+                this.dialogData.payment_amount = "￥" + this.$common.transitSeparator(row.payment_amount);
+
+
+                //附件数据
+                this.emptyFileList = [];
+                this.fileMessage.bill_id = row.id;
+                this.triggerFile = !this.triggerFile;
+
                 this.dialogVisible = true;
 
             },
             //展示格式转换-处理状态
-            transitStatus: function(row, column, cellValue, index){
+            transitStatus: function (row, column, cellValue, index) {
                 var constants = JSON.parse(window.sessionStorage.getItem("constants"));
                 if (constants.BillStatus) {
                     return constants.BillStatus[cellValue];

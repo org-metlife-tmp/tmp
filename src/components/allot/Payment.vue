@@ -336,8 +336,13 @@
                 <li class="table-li-title">摘要</li>
                 <li class="table-li-content table-two-row" v-text="dialogData.payment_summary"></li>
 
-                <li class="table-li-title" style="height:50px;line-height:50px">附件</li>
-                <li class="table-li-content table-two-row" style="height:50px"></li>
+                <li class="table-li-title" style="height:60px;line-height:60px">附件</li>
+                <li class="table-li-content table-two-row" style="height:60px;padding-top:6px;overflow-y:auto">
+                    <Upload :emptyFileList="emptyFileList"
+                            :fileMessage="fileMessage"
+                            :triggerFile="triggerFile"
+                            :isPending="false"></Upload>
+                </li>
             </ul>
         </el-dialog>
         <!--支付作废弹出框-->
@@ -361,11 +366,16 @@
 </template>
 
 <script>
+    import Upload from "../publicModule/Upload.vue";
+
     export default {
         name: "Payment",
         created: function () {
             this.$emit("transmitTitle", "内部调拨-支付处理");
             this.$emit("getCommTable", this.routerMessage);
+        },
+        components: {
+            Upload: Upload
         },
         mounted: function () {
             //调拨类型
@@ -417,7 +427,13 @@
                 paymentData: { //支付作废参数
                     ids: [],
                     feed_back: ""
-                }
+                },
+                emptyFileList: [], //附件
+                fileMessage: {
+                    bill_id: "",
+                    biz_type: 8
+                },
+                triggerFile: false,
             }
         },
         methods: {
@@ -475,6 +491,12 @@
                 this.dialogData.numText = this.$common.transitText(row.payment_amount);
                 this.dialogData.payment_amount = "￥" + this.$common.transitSeparator(row.payment_amount);
                 this.currentStatus = JSON.parse(window.sessionStorage.getItem("constants")).BillStatus[row.service_status];
+
+                //附件数据
+                this.emptyFileList = [];
+                this.fileMessage.bill_id = row.id;
+                this.triggerFile = !this.triggerFile;
+
                 this.dialogVisible = true;
             },
             //发送
