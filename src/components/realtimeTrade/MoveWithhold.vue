@@ -237,7 +237,6 @@
                       border
                       size="mini"
                       height="100%">
-                <el-table-column prop="bill_no" label="单据号" :show-overflow-tooltip="true" width="190"></el-table-column>
                 <el-table-column prop="serial_no" label="流水号" :show-overflow-tooltip="true" width="190"></el-table-column>
                 <el-table-column prop="biz_type" :formatter="transitionType"
                                  label="业务类型" :show-overflow-tooltip="true"></el-table-column>
@@ -250,8 +249,6 @@
                 <el-table-column prop="bank_type_name" label="开户银行"
                                  :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="preinsure_bill_no" label="投保单号"
-                                 :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="insure_bill_no" label="保单号" width="190"
                                  :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="channel_code_name" label="支付渠道"
                                  :show-overflow-tooltip="true"></el-table-column>
@@ -568,10 +565,10 @@
                         var businessLabel = [
                             {key: "lala", value: "系统来源"},
                             {key: "biz_type", value: "业务类型"},
-                            {key: "bill_no", value: "单据号"},
+                            //{key: "bill_no", value: "单据号"},
                             {key: "serial_no", value: "流水号"},
-                            // {key: "preinsure_bill_no", value: "投保单号"},
-                            {key: "insure_bill_no", value: "保单号"},
+                            {key: "preinsure_bill_no", value: "投保单号"},
+                            //{key: "insure_bill_no", value: "保单号"},
                             {key: "business_no", value: "业务单号"},
                             {key: "bill_org_name", value: "保单所属机构"},
                             {key: "insure_type", value: "险种大类"},
@@ -607,7 +604,7 @@
                             } else if (item.key == "cert_type") {
                                 current.content = data.cert_type_name;
                             } else if (item.key == "lala") {
-                                current.content = "个险核心";
+                                current.content = "移动展业平台";
                             } else {
                                 current.content = data[item.key];
                             }
