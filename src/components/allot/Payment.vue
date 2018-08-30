@@ -313,6 +313,11 @@
                 ]
             </div>
             <ul class="dialog-talbe">
+                <li class="table-li-title">业务类型</li>
+                <li class="table-li-content" v-text="dialogData.biz_name"></li>
+                <li class="table-li-title">付款方式</li>
+                <li class="table-li-content" v-text="dialogData.pay_mode"></li>
+
                 <li class="table-li-title">付款单位</li>
                 <li class="table-li-content" v-text="dialogData.pay_account_name"></li>
                 <li class="table-li-title">收款单位</li>
@@ -496,6 +501,7 @@
                 this.dialogData.numText = this.$common.transitText(row.payment_amount);
                 this.dialogData.payment_amount = "￥" + this.$common.transitSeparator(row.payment_amount);
                 this.currentStatus = JSON.parse(window.sessionStorage.getItem("constants")).BillStatus[row.service_status];
+                this.dialogData.pay_mode = JSON.parse(window.sessionStorage.getItem("constants")).PayMode[row.pay_mode];
 
                 //附件数据
                 this.emptyFileList = [];

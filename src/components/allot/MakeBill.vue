@@ -464,7 +464,7 @@
             return {
                 dateValue: new Date(), //申请时间
                 billData: {
-                    payMode: "", //业务类型
+                    biz_id: "", //业务类型
                     pay_mode: "", //付款方式
                     service_serial_number: "", //单据编号
                     pay_account_name: "", //付款方

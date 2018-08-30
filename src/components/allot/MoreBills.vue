@@ -167,14 +167,14 @@
         .table-select {
 
             .el-select {
-                height: 96%;
+                height: 95%;
                 width: 100%;
 
                 .el-input {
                     height: 100%;
 
                     input {
-                        height: 100%;
+                        height: 94%;
                         padding-left: 0px;
                         border: none;
                     }
@@ -345,6 +345,11 @@
                 ]
             </div>
             <ul class="dialog-talbe">
+                <li class="table-li-title">业务类型</li>
+                <li class="table-li-content" v-text="dialogData.biz_name"></li>
+                <li class="table-li-title">付款方式</li>
+                <li class="table-li-content" v-text="dialogData.pay_mode"></li>
+
                 <li class="table-li-title">付款单位</li>
                 <li class="table-li-content" v-text="dialogData.pay_account_name"></li>
                 <li class="table-li-title">收款单位</li>
@@ -389,6 +394,29 @@
                 ]
             </div>
             <ul class="dialog-talbe">
+                <li class="table-li-title">业务类型</li>
+                <li class="table-li-content table-select">
+                    <el-select v-model="editDialogData.biz_id" placeholder="请选择业务类型"
+                               filterable clearable size="mini">
+                        <el-option v-for="payItem in payStatList"
+                                   :key="payItem.biz_id"
+                                   :label="payItem.biz_name"
+                                   :value="payItem.biz_id">
+                        </el-option>
+                    </el-select>
+                </li>
+                <li class="table-li-title">付款方式</li>
+                <li class="table-li-content table-select">
+                    <el-select v-model="editDialogData.pay_mode" placeholder="请选择付款方式"
+                               filterable clearable size="mini">
+                        <el-option v-for="(name,k) in payModeList"
+                                   :key="k"
+                                   :label="name"
+                                   :value="k">
+                        </el-option>
+                    </el-select>
+                </li>
+
                 <li class="table-li-title">付款单位</li>
                 <li class="table-li-content" v-text="editDialogData.pay_account_name"></li>
                 <li class="table-li-title">收款单位</li>
@@ -492,6 +520,37 @@
         created: function () {
             this.$emit("transmitTitle", "内部调拨-更多单据");
             this.$emit("getCommTable", this.routerMessage);
+
+            //付款方式
+            var constants = JSON.parse(window.sessionStorage.getItem("constants"));
+            if(constants.PayMode){
+                this.payModeList = constants.PayMode;
+            }
+
+            //业务类型
+            this.$axios({
+                url:"/cfm/commProcess",
+                method:"post",
+                data:{
+                    optype:"biztype_biztypes",
+                    params: {
+                        p_id: 8
+                    }
+                }
+            }).then((result) =>{
+                if (result.data.error_msg) {
+                    this.$message({
+                        type: "error",
+                        message: result.data.error_msg,
+                        duration: 2000
+                    })
+                } else {
+                    var data = result.data.data;
+                    this.payStatList = data;
+                }
+            }).catch(function (error) {
+                console.log(error);
+            })
         },
         components: {
             Upload: Upload,
@@ -566,7 +625,9 @@
                     recv_account_bank: "",
                     payment_amount: "",
                     numText: "",
-                    payment_summary: ""
+                    payment_summary: "",
+                    pay_mode: "",
+                    biz_id: ""
                 },
                 payLoading: false, //付款方数据
                 payList: [],
@@ -585,6 +646,8 @@
                 fileList: [],
                 businessParams:{ //业务状态追踪参数
                 },
+                payModeList:{}, //下拉框数据
+                payStatList: [],
             }
         },
         methods: {
@@ -648,6 +711,7 @@
 
                 this.dialogData.numText = this.$common.transitText(row.payment_amount);
                 this.dialogData.payment_amount = "￥" + this.$common.transitSeparator(row.payment_amount);
+                this.dialogData.pay_mode = JSON.parse(window.sessionStorage.getItem("constants")).PayMode[row.pay_mode];
                 this.dialogVisible = true;
 
                 //附件数据
@@ -679,6 +743,7 @@
                 });
                 this.editDialogData.numText = this.$common.transitText(row.payment_amount);
                 this.editDialogData.payment_amount = this.$common.transitSeparator(row.payment_amount);
+                this.editDialogData.pay_mode += "";
 
                 //附件数据
                 this.editEmptyFile = [];
@@ -1048,7 +1113,8 @@
                     payment_amount: "",
                     pay_mode: "",
                     payment_summary: "",
-                    files: []
+                    files: [],
+                    biz_id: ""
                 }
                 for (var k in params) {
                     if (k != "payment_summary" && k != "files" && !billData[k]) {
@@ -1063,6 +1129,14 @@
                         params[k] = billData[k].split(",").join("");
                     } else if (k == "files") {  //附件
                         params[k] = this.fileList;
+                    } else if(k == "biz_id"){
+                        params[k] = billData[k];
+                        var payStatList = this.payStatList;
+                        for(var i = 0; i < payStatList.length; i++){
+                            if(billData[k] == payStatList[i].biz_id){
+                                params.biz_name = payStatList[i].biz_name;
+                            }
+                        }
                     } else {
                         params[k] = billData[k];
                     }
