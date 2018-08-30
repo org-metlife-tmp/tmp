@@ -358,9 +358,9 @@ import WorkFlow from "../publicModule/WorkFlow.vue";
                         if(sec.length>0){
                             sec.forEach(secEle =>{//二级菜单有子项不让选
                                 secEle.secFlag = true;//增加是否二级属性
-                                if(secEle.children.length>0){
-                                    secEle.disabled = true;
-                                }
+                                // if(secEle.children.length>0){
+                                //     secEle.disabled = true;
+                                // }
                             })
                         }
                     });
