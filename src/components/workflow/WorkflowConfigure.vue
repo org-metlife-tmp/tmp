@@ -265,17 +265,18 @@
                                 </el-col>
                                 <el-col :span="7">
                                     <h4 class="set-required">绑定业务</h4>
-                                    <div class="major-list">
-                                        <el-checkbox :indeterminate="majorIndeter" v-model="majorAll"
-                                                     @change="majorAllChange">全选
-                                        </el-checkbox>
-                                        <el-checkbox-group v-model="majorSelect" @change="majorChange">
-                                            <el-checkbox v-for="(name,k) in majorList"
-                                                         :label="k"
-                                                         :key="k"
-                                                         style="display:block;margin-left:0">{{name}}
-                                            </el-checkbox>
-                                        </el-checkbox-group>
+                                    <div class="org-tree">
+                                        <el-tree :data="majorList"
+                                                 node-key="biz_id"
+                                                 highlight-current
+                                                 accordion show-checkbox
+                                                 :expand-on-click-node="false"
+                                                 :default-expanded-keys="expandBizData"
+                                                 ref="bizTree">
+                                        <span class="custom-tree-node" slot-scope="{ node, data }">
+                                            <span>{{ node.data.biz_name }}</span>
+                                        </span>
+                                        </el-tree>
                                     </div>
                                 </el-col>
                             </el-row>
@@ -335,11 +336,37 @@ import WorkFlow from "../publicModule/WorkFlow.vue";
             if (deptList) {
                 this.deptList = deptList;
             }
-            //业务
-            var constants = JSON.parse(window.sessionStorage.getItem("constants"));
-            if (constants.MajorBizType) {
-                this.majorList = constants.MajorBizType;
-            }
+            //业务  biztype_list
+            this.$axios({
+                url:"/cfm/adminProcess",
+                method:"post",
+                data:{
+                    optype:"biztype_list"
+                }
+            }).then((result) =>{
+                if (result.data.error_msg) {
+                    this.$message({
+                        type: "error",
+                        message: result.data.error_msg,
+                        duration: 2000
+                    })
+                } else {
+                    var data = result.data.data;
+                    data.forEach(element => {//一级菜单不能选
+                        element.disabled = true;
+                        let sec = element.children;
+                        if(sec.length>0){
+                            sec.forEach(secEle =>{//二级菜单有子项不让选
+                                secEle.secFlag = true;//增加是否二级属性
+                                if(secEle.children.length>0){
+                                    secEle.disabled = true;
+                                }
+                            })
+                        }
+                    });
+                    this.majorList = data;
+                }
+            })
         },
         props: ["tableData"],
         components:{
@@ -379,7 +406,8 @@ import WorkFlow from "../publicModule/WorkFlow.vue";
                 deptSelect: [],
                 isIndeterminate: false,
                 deptAll: false,
-                majorList: {}, //弹框-业务
+                majorList: [], //弹框-业务
+                expandBizData:[],
                 majorSelect: [],
                 majorIndeter: false,
                 majorAll: false,
@@ -497,6 +525,9 @@ import WorkFlow from "../publicModule/WorkFlow.vue";
                 if (this.$refs.orgTree) {
                     this.$refs.orgTree.setCheckedKeys([]);
                 }
+                if (this.$refs.bizTree) {
+                    this.$refs.bizTree.setCheckedKeys([]);
+                }
                 this.deptSelect = [];
                 this.isIndeterminate = false;
                 this.majorSelect = [];
@@ -551,12 +582,20 @@ import WorkFlow from "../publicModule/WorkFlow.vue";
                     this.deptSelect = deptExp;
                 }
                 //设置业务
-                var majorTypeExp = row.biz_exp;
+                var majorTypeExp = row.biz_exp + row.biz_setting_exp.substr(1);
                 if (majorTypeExp) {
                     majorTypeExp = majorTypeExp.split("@");
                     majorTypeExp.pop();
                     majorTypeExp.shift();
-                    this.majorSelect = majorTypeExp;
+                    if (this.$refs.bizTree) {
+                        this.$refs.bizTree.setCheckedKeys(majorTypeExp);
+                        this.expandBizData = majorTypeExp;
+                    } else {
+                        setTimeout(() => {
+                            this.$refs.bizTree.setCheckedKeys(majorTypeExp);
+                            this.expandBizData = majorTypeExp;
+                        }, 800)
+                    }
                 }
             },
             //提交业务配置流程
@@ -634,11 +673,19 @@ import WorkFlow from "../publicModule/WorkFlow.vue";
                     dept_exp = "@" + dept_exp + "@";
                     params.dept_exp = dept_exp;
                 }
-                var major_exp = this.majorSelect;
+                var major_exp = this.$refs.bizTree.getCheckedNodes();
                 if (major_exp.length) {
-                    major_exp = major_exp.join("@");
-                    major_exp = "@" + major_exp + "@";
-                    params.biz_exp = major_exp;
+                    let biz_exp = "@";//存二级
+                    let biz_setting_exp = "@";//存三级
+                    major_exp.forEach(element =>{
+                        if(element.secFlag){//如果是二级
+                            biz_exp = biz_exp + element.biz_id + "@";
+                        }else{
+                            biz_setting_exp = biz_setting_exp + element.biz_id + "@";
+                        }
+                    })
+                    params.biz_exp = biz_exp;
+                    params.biz_setting_exp = biz_setting_exp;
                 }
 
                 return params;
@@ -707,18 +754,6 @@ import WorkFlow from "../publicModule/WorkFlow.vue";
                 let checkedCount = value.length;
                 this.deptAll = checkedCount === allLength;
                 this.isIndeterminate = checkedCount > 0 && checkedCount < allLength;
-            },
-            //业务选择
-            majorAllChange: function (value) {
-                var majorList = Object.keys(this.majorList);
-                this.majorSelect = value ? majorList : [];
-                this.majorIndeter = false;
-            },
-            majorChange: function (value) {
-                var allLength = Object.keys(this.majorList).length;
-                let checkedCount = value.length;
-                this.majorAll = checkedCount === allLength;
-                this.majorIndeter = checkedCount > 0 && checkedCount < allLength;
             },
             //查看工作流
             lookFlow:function(row){
