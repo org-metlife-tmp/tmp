@@ -86,7 +86,7 @@
     import Histogram from "../echarts/Histogram.vue";
 
     export default {
-        name: "TodayDetail",
+        name: "TodayDealDetail",
         created: function () {
             this.$emit('transmitTitle', '当日交易明细');
             this.$emit('getTableData', this.routerMessage);

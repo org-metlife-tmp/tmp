@@ -72,6 +72,23 @@
             top: -18px;
             right: -18px;
             width: 210px;
+            z-index: 1;
+        }
+        /*汇总数据*/
+        .allData{
+            height: 28px;
+            line-height: 28px;
+            width: 100%;
+            background-color: #F8F8F8;
+            border: 1px solid #ebeef5;
+            border-top: none;
+            box-sizing: border-box;
+            text-align: right;
+
+            .numText{
+                color: #FF5800;
+                margin-right: 10px;
+            }
         }
     }
 
@@ -80,12 +97,16 @@
 <template>
     <div id="historyAll">
         <el-date-picker
-                v-model="value6"
-                type="daterange"
-                range-separator="至"
-                start-placeholder="开始日期"
-                end-placeholder="结束日期"
-                size="mini">
+            v-model="dateValue"
+            type="daterange"
+            range-separator="至"
+            start-placeholder="开始日期"
+            end-placeholder="结束日期"
+            value-format="yyyy-MM-dd"
+            size="mini" clearable
+            unlink-panels
+            :picker-options="pickerOptions"
+            @change="getDateData">
         </el-date-picker>
         <!--饼图-->
         <CakePicture :pieData="pieData"></CakePicture>
@@ -94,25 +115,31 @@
             <img src="../../assets/icon_arrow_up.jpg" alt="" v-show="tableSite" @click="tableSite=!tableSite"/>
             <img src="../../assets/icon_arrow_down.jpg" alt="" v-show="!tableSite" @click="tableSite=!tableSite"/>
             <el-table :data="tableList"
-                      border show-summary
-                      :sum-text="''"
+                      border 
                       size="mini"
-                      height="86%"
+                      height="81%"
                       max-height="362px">
-                <el-table-column prop="name" label="公司名称" v-if="btActive"></el-table-column>
-                <el-table-column prop="name" label="银行名称" v-else></el-table-column>
-                <el-table-column prop="balance" label="余额"></el-table-column>
+                <el-table-column prop="name" label="公司名称" v-if="btActive" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="name" label="银行名称" v-else :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="bal" label="余额" :show-overflow-tooltip="true"></el-table-column>
             </el-table>
+            <div class="allData">
+                <span>合计：</span>
+                <span v-text="recvAll" class="numText"></span>
+            </div>
         </div>
         <!-- 分页-->
         <div class="botton-pag">
             <el-pagination
                     background
-                    layout="prev, pager, next, jumper"
+                    layout="sizes, prev, pager, next, jumper"
                     :page-size="pagSize"
                     :total="pagTotal"
-                    @current-change="pageChange"
-                    :pager-count="5">
+                    :page-sizes="[10, 50, 100, 500]"
+                    :pager-count="5"
+                    :current-page="pagCurrent"
+                    @current-change="getCurrentPage"
+                    @size-change="sizeChange">
             </el-pagination>
         </div>
         <!-- 公司/银行 选择-->
@@ -135,46 +162,74 @@
     export default {
         name: "HistoryAll",
         created: function () {
+
+            let curDate = new Date();
+            let oldDate = new Date();
+            oldDate.setFullYear(curDate.getFullYear());
+            oldDate.setMonth(curDate.getMonth());
+            oldDate.setDate(curDate.getDate()-7);
+            
+            this.dateValue = [oldDate,curDate];
+
+            this.routerMessage.params.start_date = this.dateValue[0];
+            this.routerMessage.params.end_date = this.dateValue[1];
+            
             this.$emit('transmitTitle', '历史余额汇总');
             this.$emit('getTableData', this.routerMessage);
 
             //获取饼图数据
-            this.getPieData("qhb_org_topchart");
+            this.getPieData();
         },
         props: ["tableData"],
         data: function () {
             return {
                 //获取数据的信息
                 routerMessage: {
-                    optype: "qhb_org_list",
-                    pageno: 1,
-                    pagesize: 8,
-                    mode: "",
-                    bank: "",
-                    org: "",
-                    acctType: ""
+                    optype: "yet_hiscollectlist",
+                    params:{
+                        page_num: 1,
+                        page_size: 10,
+                        org_ids: "",
+                        cnaps_codes: "",
+                        acc_attrs: "",
+                        interactive_modes: "",
+                        type:1
+                    }
                 },
                 //滑动面板的控制
                 tableSite: true,
                 //表格数据
                 tableList: [],
                 //分页数据
-                pagTotal: 0,
-                pagSize: 0,
+                pagSize: 10,
+                pagTotal: 1,
+                pagCurrent: 1,
                 //饼图数据
                 pieData: [],
                 //公司/银行激活状态
                 btActive: true,
-                value6: ""
+                dateValue: "",
+                recvAll: "",
+                pickerOptions: {
+                    disabledDate(time) {
+                        return time.getTime() > Date.now();
+                    }
+                },
             }
         },
         components: {
             CakePicture: CakePicture
         },
         methods: {
-            //换页
-            pageChange: function (page) {
-                this.routerMessage.pageno = page;
+            //点击页数 获取当前页数据
+            getCurrentPage: function (currPage) {
+                this.routerMessage.params.page_num = currPage;
+                this.$emit("getTableData", this.routerMessage);
+            },
+            //当前页数据条数发生变化
+            sizeChange:function(val){
+                this.routerMessage.params.page_size = val;
+                this.routerMessage.params.page_num = 1;
                 this.$emit("getTableData", this.routerMessage);
             },
             //点击公司
@@ -184,11 +239,11 @@
                 } else {
                     this.btActive = true;
                     //获取表格数据
-                    this.routerMessage.pageno = 1;
-                    this.routerMessage.optype = "qhb_org_list";
+                    this.routerMessage.params.page_num = 1;
+                    this.routerMessage.params.type = 1;
                     this.$emit("getTableData", this.routerMessage);
                     //获取饼图数据
-                    this.getPieData("qhb_org_topchart");
+                    this.getPieData();
                 }
             },
             //点击银行
@@ -197,45 +252,42 @@
                     return;
                 } else {
                     this.btActive = false;
-                    this.routerMessage.pageno = 1;
-                    this.routerMessage.optype = "qhb_bank_list";
+                    this.routerMessage.params.page_num = 1;
+                    this.routerMessage.params.type = 2;
                     //获取表格数据
                     this.$emit("getTableData", this.routerMessage);
                     //获取饼图数据
-                    this.getPieData("qhb_bank_topchart");
+                    this.getPieData();
                 }
             },
             //获取饼图数据
             getPieData: function (optype) {
-                var routeThis = this;
-                this.$axios({
-                    url: "/cfm/process",
-                    method: "post",
-                    params: {
-                        optype: optype,
-                        pageno: 1,
-                        pagesize: 100
-                    }
-                }).then(function (result) {
-                    var currentData = result.data.data.list;
-                    var pieData = [];
-                    for (var i = 0; i < currentData.length; i++) {
-                        var item = currentData[i];
-                        pieData.push({value: item.balance, name: item.name, code: item.code});
-                    }
-                    routeThis.pieData = pieData;
-                }).catch(function (error) {
-                    console.log(error);
-                })
+                var currentData = this.tableList;
+                var pieData = [];
+                for (var i = 0; i < currentData.length; i++) {
+                    var item = currentData[i];
+                    pieData.push({value: item.bal, name: item.name});
+                }
+                this.pieData = pieData;
+            },
+            //选择时间后设置数据
+            getDateData: function (val) {
+                this.routerMessage.params.start_date = val[0];
+                this.routerMessage.params.end_date = val[1];
+                this.$emit('getTableData', this.routerMessage);
             }
         },
         watch: {
             //根据父组件返回的信息进行设置
             tableData: function (val, oldValue) {
-                var data = val.data;
-                this.tableList = data.list;
-                this.pagSize = data.pagesize * 1;
-                this.pagTotal = data.total * 1;
+                this.pagSize = val.page_size;
+                this.pagTotal = val.total_line;
+                this.pagCurrent = val.page_num;
+                this.tableList = val.data;
+                //设置汇总数据
+                this.recvAll = val.ext ? val.ext.bal : "";
+                //获取饼图数据
+                this.getPieData();
             }
         }
     }

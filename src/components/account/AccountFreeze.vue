@@ -78,7 +78,16 @@
         }
     }
 </style>
-
+<style lang="less" type="text/less">
+    #accountFreeze {
+        .el-dialog__wrapper {
+            .el-dialog__body {
+                height: 400px;
+                overflow-y: scroll;
+            }
+        }
+    }
+</style>
 <template>
     <div id="accountFreeze">
         <!-- 顶部按钮-->
@@ -278,11 +287,12 @@
             <span slot="footer" class="dialog-footer">
                 <el-button type="warning" size="mini" @click="dialogVisible = false" :disabled="lookDisabled">取 消</el-button>
                 <el-button type="warning" size="mini" @click="saveFreeze" :disabled="lookDisabled">确 定</el-button>
-                <el-button type="warning" size="mini" @click="subFlow">提 交</el-button>
+                <el-button type="warning" size="mini" @click="subFlow" :disabled="lookDisabled">提 交</el-button>
             </span>
             <el-dialog :visible.sync="innerVisible"
                        width="50%" title="提交审批流程"
                        append-to-body top="76px"
+                       @close="beforeCloseDialog"
                        :close-on-click-modal="false">
                 <el-radio-group v-model="selectWorkflow">
                     <el-radio v-for="workflow in workflows"
@@ -550,11 +560,11 @@
                     memo:this.dialogData.memo,
                     files: this.dialogData.files,
                 };
-                if(this.currentFreeze.id == null || this.currentFreeze.id == "" || this.currentFreeze.id == undefined){
+                if(!this.dialogData.id){
                     optype = "accfreeze_todoadd";
                 }else{
                     optype = "accfreeze_todochg";
-                    data.id = this.currentFreeze.id;
+                    data.id = this.dialogData.id;
                 }
                 this.$axios({
                     url:"/cfm/normalProcess",
@@ -574,16 +584,16 @@
                         var data = result.data.data;
                         Object.assign(data,this.dialogData);
                         data.apply_on = data.apply_on ? data.apply_on.split(" ")[0] : '';
-                        if(!this.currentFreeze.id){
-                            if (this.tableList.length < this.routerMessage.todo.params.page_size) {
-                                this.tableList.push(data);
-                            }
-                            this.pagTotal++;
+                        if(!this.dialogData.id){
+                            // if (this.tableList.length < this.routerMessage.todo.params.page_size) {
+                            //     this.tableList.push(data);
+                            // }
+                            // this.pagTotal++;
                             var message = "新增成功";
                         }else{
                             var message = "修改成功";
                         }
-
+                        this.$emit('getTableData', this.routerMessage);
                         this.dialogVisible = false;
                         this.$message({
                             type: 'success',
@@ -644,6 +654,8 @@
                         this.selectWorkflow = "";
                         this.workflowData = data;
                         this.workflows = data.workflows;
+                        this.dialogData.persist_version = data.persist_version;
+                        this.dialogData.id = data.id;
                         this.innerVisible = true;
                     }
                 }).catch(function (error) {
@@ -679,21 +691,21 @@
                         this.innerVisible = false;
                         this.dialogVisible = false;
 
-                        if(this.dialogTitle == "账户冻结查看"){
-                            var rows = this.tableList;
-                            var index = this.tableList.indexOf(this.currentFreeze);
-                            if (this.pagCurrent < (this.pagTotal / this.pagSize)) { //存在下一页
-                                this.$emit('getTableData', this.routerMessage);
-                            } else {
-                                if (rows.length == "1" && (this.routerMessage.todo.params.page_num != 1)) { //是当前页最后一条
-                                    this.routerMessage.todo.params.page_num--;
-                                    this.$emit('getTableData', this.routerMessage);
-                                } else {
-                                    rows.splice(index, 1);
-                                    this.pagTotal--;
-                                }
-                            }
-                        }
+                        // if(this.dialogTitle == "账户冻结查看"){
+                        //     var rows = this.tableList;
+                        //     var index = this.tableList.indexOf(this.currentFreeze);
+                        //     if (this.pagCurrent < (this.pagTotal / this.pagSize)) { //存在下一页
+                        //         this.$emit('getTableData', this.routerMessage);
+                        //     } else {
+                        //         if (rows.length == "1" && (this.routerMessage.todo.params.page_num != 1)) { //是当前页最后一条
+                        //             this.routerMessage.todo.params.page_num--;
+                        //             this.$emit('getTableData', this.routerMessage);
+                        //         } else {
+                        //             rows.splice(index, 1);
+                        //             this.pagTotal--;
+                        //         }
+                        //     }
+                        // }
                         
                         this.$message({
                             type: "success",
@@ -757,6 +769,10 @@
                     })
                 }).catch(() => {
                 });
+            },
+            //提交审批流的弹框关闭的时候刷新列表
+            beforeCloseDialog:function(){
+                this.$emit('getTableData', this.routerMessage);
             }
         },
         computed:{

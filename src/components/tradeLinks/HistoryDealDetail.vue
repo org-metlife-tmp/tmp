@@ -106,7 +106,7 @@
     import Histogram from "../echarts/Histogram.vue";
 
     export default {
-        name: "HistoryDetail",
+        name: "HistoryDealDetail",
         created: function () {
             //向父组件发送自己的信息
             this.$emit('transmitTitle', '历史交易明细');

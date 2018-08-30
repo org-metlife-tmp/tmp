@@ -9,13 +9,15 @@ import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 Vue.use(ElementUI);
 
-/*引入echarts*/
+//按需引入echarts
 var echarts = require('echarts/lib/echarts');
 require("echarts/lib/chart/pie");
 require('echarts/lib/chart/bar');
 require("echarts/lib/chart/line");
 require('echarts/lib/component/tooltip');
 require("echarts/lib/component/legendScroll");
+require("echarts/lib/component/markPoint");
+require("echarts/lib/component/markLine");
 Vue.prototype.$echarts = echarts;
 
 /*ie兼容问题*/

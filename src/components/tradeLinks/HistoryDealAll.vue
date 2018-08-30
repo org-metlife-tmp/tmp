@@ -177,7 +177,7 @@
     import Histogram from "../echarts/Histogram.vue";
 
     export default {
-        name: "HistoryAll",
+        name: "HistoryDealAll",
         created: function () {
             //向父组件发送自己的信息
             this.$emit('transmitTitle', '历史交易汇总');

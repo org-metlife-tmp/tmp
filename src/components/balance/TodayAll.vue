@@ -67,13 +67,25 @@
                 border-left: none;
             }
         }
+
+        /*汇总数据*/
+        .allData{
+            height: 28px;
+            line-height: 28px;
+            width: 100%;
+            background-color: #F8F8F8;
+            border: 1px solid #ebeef5;
+            border-top: none;
+            box-sizing: border-box;
+            text-align: right;
+
+            .numText{
+                color: #FF5800;
+                margin-right: 10px;
+            }
+        }
     }
-    .table-up {
-        height: 487px!important;
-    }
-    .table-down {
-        height: 48%!important;
-    }
+    
 </style>
 
 <template>
@@ -85,8 +97,7 @@
             <img src="../../assets/icon_arrow_up.jpg" alt="" v-show="tableSite" @click="tableSite=!tableSite"/>
             <img src="../../assets/icon_arrow_down.jpg" alt="" v-show="!tableSite" @click="tableSite=!tableSite"/>
             <el-table :data="tableList"
-                      border show-summary
-                      :sum-text="''"
+                      border 
                       size="mini"
                       height="81%"
                       max-height="362px">
@@ -94,6 +105,10 @@
                 <el-table-column prop="name" label="银行名称" v-else :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="bal" label="余额" :show-overflow-tooltip="true"></el-table-column>
             </el-table>
+            <div class="allData">
+                <span>合计：</span>
+                <span v-text="recvAll" class="numText"></span>
+            </div>
         </div>
         <!-- 分页-->
         <div class="botton-pag">
@@ -163,7 +178,8 @@
                 //饼图数据
                 pieData: [],
                 //公司/银行激活状态
-                btActive: true
+                btActive: true,
+                recvAll:""
             }
         },
         components: {
@@ -227,6 +243,8 @@
                 this.pagTotal = val.total_line;
                 this.pagCurrent = val.page_num;
                 this.tableList = val.data;
+                //设置汇总数据
+                this.recvAll = val.ext ? val.ext.bal : "";
                 //获取饼图数据
                 this.getPieData();
             }

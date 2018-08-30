@@ -91,7 +91,14 @@
     }
 </style>
 <style lang="less" type="text/less">
-
+    #openAccountMatter {
+        .el-dialog__wrapper {
+            .el-dialog__body {
+                height: 400px;
+                overflow-y: scroll;
+            }
+        }
+    }
 </style>
 
 <template>
@@ -277,6 +284,7 @@
             <el-dialog :visible.sync="innerVisible"
                        width="50%" title="提交审批流程"
                        append-to-body top="76px"
+                       @close="beforeCloseDialog"
                        :close-on-click-modal="false">
                 <el-radio-group v-model="selectWorkflow">
                     <el-radio v-for="workflow in workflows"
@@ -619,7 +627,7 @@
             subCurrent: function () {
                 var params = this.dialogData;
                 var optype = "";
-                if (this.dialogTitle == "新增") {
+                if (!params.id) {
                     optype = "openintent_add";
                 } else {
                     optype = "openintent_chg";
@@ -641,18 +649,19 @@
                         })
                     } else {
                         var data = result.data.data;
-                        if (this.dialogTitle == "新增") {
-                            if (this.tableList.length < this.routerMessage.todo.params.page_size) {
-                                this.tableList.push(data);
-                            }
-                            this.pagTotal++;
-                            var message = "新增成功"
+                        if (!params.id) {
+                            // if (this.tableList.length < this.routerMessage.todo.params.page_size) {
+                            //     this.tableList.push(data);
+                            // }
+                            // this.pagTotal++;
+                            var message = "新增成功";
                         } else {
-                            for (var k in data) {
-                                this.currentMatter[k] = data[k];
-                            }
-                            var message = "修改成功"
+                            // for (var k in data) {
+                            //     this.currentMatter[k] = data[k];
+                            // }
+                            var message = "修改成功";
                         }
+                        this.$emit('getTableData', this.routerMessage);
                         this.dialogVisible = false;
                         this.$message({
                             type: 'success',
@@ -829,7 +838,7 @@
                     data: {
                         optype: "openintent_issue",
                         params: {
-                            bill_id: distData.id,
+                            id: distData.id,
                             iss_users: distData.user_ids
                         }
                     }
@@ -928,6 +937,9 @@
                         this.selectWorkflow = "";
                         this.workflowData = data;
                         this.workflows = data.workflows;
+                        this.dialogData.persist_version = data.persist_version;
+                        this.dialogData.apply_on = data.apply_on;
+                        this.dialogData.id = data.id;
                         this.innerVisible = true;
                     }
                 }).catch(function (error) {
@@ -964,21 +976,21 @@
                         this.innerVisible = false;
                         this.dialogVisible = false;
 
-                        if(this.dialogTitle == "编辑"){
-                            var rows = this.tableList;
-                            var index = this.tableList.indexOf(this.currentMatter);
-                            if (this.pagCurrent < (this.pagTotal / this.pagSize)) { //存在下一页
-                                this.$emit('getTableData', this.routerMessage);
-                            } else {
-                                if (rows.length == "1" && (this.routerMessage.todo.params.page_num != 1)) { //是当前页最后一条
-                                    this.routerMessage.todo.params.page_num--;
-                                    this.$emit('getTableData', this.routerMessage);
-                                } else {
-                                    rows.splice(index, 1);
-                                    this.pagTotal--;
-                                }
-                            }
-                        }
+                        // if(this.dialogTitle == "编辑"){
+                        //     var rows = this.tableList;
+                        //     var index = this.tableList.indexOf(this.currentMatter);
+                        //     if (this.pagCurrent < (this.pagTotal / this.pagSize)) { //存在下一页
+                        //         this.$emit('getTableData', this.routerMessage);
+                        //     } else {
+                        //         if (rows.length == "1" && (this.routerMessage.todo.params.page_num != 1)) { //是当前页最后一条
+                        //             this.routerMessage.todo.params.page_num--;
+                        //             this.$emit('getTableData', this.routerMessage);
+                        //         } else {
+                        //             rows.splice(index, 1);
+                        //             this.pagTotal--;
+                        //         }
+                        //     }
+                        // }
 
                         this.$message({
                             type: "success",
@@ -990,6 +1002,10 @@
                     console.log(error);
                 })
             },
+            //提交审批流的弹框关闭的时候刷新列表
+            beforeCloseDialog:function(){
+                this.$emit('getTableData', this.routerMessage);
+            }
         },
         computed: {
             getCurrentSearch: function () {

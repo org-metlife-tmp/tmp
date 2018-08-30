@@ -622,7 +622,7 @@
                             } else if (item.key == "cert_type") {
                                 current.content = data.cert_type_name;
                             } else if (item.key == "lala") {
-                                current.content = "个险核心";
+                                current.content = "团险核心";
                             } else {
                                 current.content = data[item.key];
                             }
