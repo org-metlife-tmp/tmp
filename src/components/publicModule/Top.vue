@@ -16,7 +16,7 @@
 
         .company-name {
             right: 220px;
-            width: 200px;
+            width: 260px;
             text-align: center;
             border-right: 1px solid rgba(255, 255, 255, 0.1);
             cursor: default;
@@ -36,7 +36,7 @@
         .company-name:after {
             content: " ";
             position: absolute;
-            width: 80%;
+            width: 84%;
             margin: 0;
             height: 5px;
             top: 29px;
