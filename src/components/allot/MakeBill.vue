@@ -236,12 +236,12 @@
                         value-format="yyyy-MM-dd"
                         size="mini">
                 </el-date-picker>
-                <el-select v-model="billData.payMode" placeholder="请选择业务类型"
+                <el-select v-model="billData.biz_id" placeholder="请选择业务类型"
                            filterable clearable size="mini">
-                    <el-option v-for="(name,k) in payStatList"
-                               :key="k"
-                               :label="name"
-                               :value="k">
+                    <el-option v-for="payItem in payStatList"
+                               :key="payItem.biz_id"
+                               :label="payItem.biz_name"
+                               :value="payItem.biz_id">
                     </el-option>
                 </el-select>
                 <el-select v-model="billData.pay_mode" placeholder="请选择付款方式"
@@ -425,13 +425,37 @@
                     console.log(error);
                 });
             }
-            //付款方式 PayMode
-            //业务类型
-            var constants = JSON.parse(window.sessionStorage.getItem("constants"));
             //付款方式
+            var constants = JSON.parse(window.sessionStorage.getItem("constants"));
             if(constants.PayMode){
                 this.payModeList = constants.PayMode;
             }
+
+            //业务类型
+            this.$axios({
+                url:"/cfm/commProcess",
+                method:"post",
+                data:{
+                    optype:"biztype_biztypes",
+                    params: {
+                        p_id: 8
+                    }
+                }
+            }).then((result) =>{
+                if (result.data.error_msg) {
+                    this.$message({
+                        type: "error",
+                        message: result.data.error_msg,
+                        duration: 2000
+                    })
+                } else {
+                    var data = result.data.data;
+                    this.payStatList = data;
+                }
+            }).catch(function (error) {
+                console.log(error);
+            })
+
         },
         components: {
             Upload: Upload
@@ -749,7 +773,8 @@
                     payment_amount: "",
                     pay_mode: "",
                     payment_summary: "",
-                    files: []
+                    files: [],
+                    biz_id: ""
                 }
                 for(var k in params){
                     if(k != "payment_summary" && k != "files" && !billData[k]){
@@ -764,6 +789,14 @@
                         params[k] = billData[k].split(",").join("");
                     }else if(k == "files"){  //附件
                         params[k] = this.fileList;
+                    }else if(k == "biz_id"){
+                        params[k] = billData[k];
+                        var payStatList = this.payStatList;
+                        for(var i = 0; i < payStatList.length; i++){
+                            if(billData[k] == payStatList[i].biz_id){
+                                params.biz_name = payStatList[i].biz_name;
+                            }
+                        }
                     }else{
                         params[k] = billData[k];
                     }

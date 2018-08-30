@@ -336,43 +336,43 @@
                     <el-menu-item index="/examine-approve/my-examine-approve" v-if="menuList.MyWFPLAT">我的审批平台</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="7">
+            <el-submenu index="7" v-if="menuList.YET">
                 <template slot="title" height="200px">
                     <i class="icon-yet"></i>
                     <p>余额通</p>
                 </template>
                 <el-menu-item-group>
-                    <el-menu-item index="/whiteContent/today-detail">当日余额明细</el-menu-item>
-                    <el-menu-item index="/whiteContent/today-all">当日余额汇总</el-menu-item>
-                    <el-menu-item index="/whiteContent/today-fluctuate">当日余额波动</el-menu-item>
-                    <el-menu-item index="/whiteContent/history-detail">历史余额明细</el-menu-item>
-                    <el-menu-item index="/whiteContent/history-all">历史余额汇总</el-menu-item>
-                    <el-menu-item index="/whiteContent/history-fluctuate">历史余额波动</el-menu-item>
+                    <el-menu-item index="/whiteContent/today-detail" v-if="menuList.CurBal">当日余额明细</el-menu-item>
+                    <el-menu-item index="/whiteContent/today-all" v-if="menuList.CulBalSummary">当日余额汇总</el-menu-item>
+                    <el-menu-item index="/whiteContent/today-fluctuate" v-if="menuList.CulBalWave">当日余额波动</el-menu-item>
+                    <el-menu-item index="/whiteContent/history-detail" v-if="menuList.HisBal">历史余额明细</el-menu-item>
+                    <el-menu-item index="/whiteContent/history-all" v-if="menuList.HisBalSummary">历史余额汇总</el-menu-item>
+                    <el-menu-item index="/whiteContent/history-fluctuate" v-if="menuList.HisBalWave">历史余额波动</el-menu-item>
                     <el-menu-item index="1-8">余额数据导入</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="8">
+            <el-submenu index="8" v-if="menuList.JYT">
                 <template slot="title" height="200px">
                     <i class="icon-jyt"></i>
                     <p>交易通</p>
                 </template>
                 <el-menu-item-group>
-                    <el-menu-item index="/trade-links/today-detail">当日交易明细</el-menu-item>
-                    <el-menu-item index="/trade-links/today-all">当日交易汇总</el-menu-item>
-                    <el-menu-item index="/trade-links/history-detail">历史交易明细</el-menu-item>
-                    <el-menu-item index="/trade-links/history-all">历史交易汇总</el-menu-item>
-                    <el-menu-item index="/trade-links/history-fluctuate">历史交易波动</el-menu-item>
+                    <el-menu-item index="/trade-links/today-detail" v-if="menuList.CurTrans">当日交易明细</el-menu-item>
+                    <el-menu-item index="/trade-links/today-all" v-if="menuList.CurTransSummary">当日交易汇总</el-menu-item>
+                    <el-menu-item index="/trade-links/history-detail" v-if="menuList.HisTrans">历史交易明细</el-menu-item>
+                    <el-menu-item index="/trade-links/history-all" v-if="menuList.HisTransSummary">历史交易汇总</el-menu-item>
+                    <el-menu-item index="/trade-links/history-fluctuate" v-if="menuList.HisTransWave">历史交易波动</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="9">
+            <el-submenu index="9" v-if="menuList.DBT">
                 <template slot="title" height="200px">
                     <i class="icon-dbt"></i>
                     <p>调拨通</p>
                 </template>
                 <el-menu-item-group>
-                    <el-menu-item index="/allot/make-bill">内部调拨-制单</el-menu-item>
-                    <el-menu-item index="/allot/payment">内部调拨-支付</el-menu-item>
-                    <el-menu-item index="/allot/look-over">内部调拨-查看</el-menu-item>
+                    <el-menu-item index="/allot/make-bill" v-if="menuList.DbtMkBill">内部调拨-制单</el-menu-item>
+                    <el-menu-item index="/allot/payment" v-if="menuList.DbtPayBill">内部调拨-支付</el-menu-item>
+                    <el-menu-item index="/allot/look-over" v-if="menuList.DbtViewBill">内部调拨-查看</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
             <!--
@@ -516,9 +516,28 @@
                     WFTrace:false, //业务流程追踪
                     WFLinK:false, //业务配置审批流程
 
-
                     WFPLAT:false, //审批平台
                     MyWFPLAT:false, //我的审批平台
+
+                    YET: false, //余额通
+                    CurBal: false, //当日余额明细
+                    CulBalSummary: false, //当日余额汇总
+                    CulBalWave: false, //当日余额波动
+                    HisBal: false, //历史余额明细
+                    HisBalSummary: false, //历史余额汇总
+                    HisBalWave: false, //历史余额波动
+
+                    JYT: false, //交易通
+                    CurTrans: false, //当日交易明细
+                    CurTransSummary: false, //当日交易汇总
+                    HisTrans: false, //历史交易明细
+                    HisTransSummary: false, //历史交易汇总
+                    HisTransWave: false, //历史交易波动
+
+                    DBT: false, //交易通
+                    DbtMkBill: false, //内部调拨-制单
+                    DbtPayBill: false, //内部调拨-支付
+                    DbtViewBill: false, //内部调拨-查看
                 }
             }
         },
