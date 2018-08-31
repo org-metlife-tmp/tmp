@@ -83,7 +83,7 @@
             </li>
             <el-upload
                     class="upload-demo"
-                    action="cfm/comm/attachment/upload"
+                    action="/cfm/comm/attachment/upload"
                     :headers="{Authorization:currToken}"
                     multiple
                     :on-success="uploadSuccess"

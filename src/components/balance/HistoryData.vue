@@ -50,7 +50,7 @@
                 <template slot="append">
                     <el-upload
                             class="upload-demo"
-                            action="cfm/comm/attachment/upload"
+                            action="/cfm/comm/attachment/upload"
                             multiple
                             :on-success="uploadSuccess"
                             :before-upload="beforeUpload">
