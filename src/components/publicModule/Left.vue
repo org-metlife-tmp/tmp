@@ -79,7 +79,7 @@
             .icon-zht {
                 background-position: -249px -193px;
             }
-            .icon-splgl{
+            .icon-splgl {
                 background-position: -322px -222px;
             }
             .icon-zjys {
@@ -133,7 +133,7 @@
             .icon-zht {
                 background-position: -213px -193px;
             }
-            .icon-splgl{
+            .icon-splgl {
                 background-position: -287px -222px;
             }
             .icon-zjys {
@@ -228,7 +228,7 @@
 
         .el-submenu__title {
             height: 70px;
-            padding-left: 0px!important;
+            padding-left: 0px !important;
             padding-right: 0px;
             padding-top: 12px;
 
@@ -257,6 +257,7 @@
         background-color: rgba(23, 144, 201, 1);
         color: #fff;
     }
+
     /*框架样式修改结束*/
 </style>
 
@@ -294,10 +295,13 @@
                     <p class="mg-four">实时交易</p>
                 </template>
                 <el-menu-item-group>
-                    <el-menu-item index="/realtime-trade/personal-insurance" v-if="menuList.RTGXPayMgt">个险核心实时代付</el-menu-item>
-                    <el-menu-item index="/realtime-trade/group-insurance" v-if="menuList.RTTXPayMgt">团险核心实时代付</el-menu-item>
+                    <el-menu-item index="/realtime-trade/personal-insurance" v-if="menuList.RTGXPayMgt">个险核心实时代付
+                    </el-menu-item>
+                    <el-menu-item index="/realtime-trade/group-insurance" v-if="menuList.RTTXPayMgt">团险核心实时代付
+                    </el-menu-item>
                     <el-menu-item index="/realtime-trade/QRcode" v-if="menuList.RTYDQrCodeMgt">移动展业二维码</el-menu-item>
-                    <el-menu-item index="/realtime-trade/move-withhold" v-if="menuList.RTYDRecvMgt">移动展业实时代扣</el-menu-item>
+                    <el-menu-item index="/realtime-trade/move-withhold" v-if="menuList.RTYDRecvMgt">移动展业实时代扣
+                    </el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
             <el-submenu index="4" v-if="menuList.ACCMGT">
@@ -306,14 +310,18 @@
                     <p>账户通</p>
                 </template>
                 <el-menu-item-group>
-                    <el-menu-item index="/account/open-account-matter" v-if="menuList.AccOpenIntAppl">开户事项申请</el-menu-item>
-                    <el-menu-item index="/account/open-account-message" v-if="menuList.AccOpenComAppl">开户信息补录申请</el-menu-item>
+                    <el-menu-item index="/account/open-account-matter" v-if="menuList.AccOpenIntAppl">开户事项申请
+                    </el-menu-item>
+                    <el-menu-item index="/account/open-account-message" v-if="menuList.AccOpenComAppl">开户信息补录申请
+                    </el-menu-item>
                     <el-menu-item index="/account/account-alteration" v-if="menuList.AccChgAppl">账户变更申请</el-menu-item>
                     <el-menu-item index="/account/account-message" v-if="menuList.AccMtc">账户信息维护</el-menu-item>
                     <el-menu-item index="/account/account-unfreeze" v-if="menuList.AccFreezeAppl">账户解冻申请</el-menu-item>
                     <el-menu-item index="/account/account-freeze" v-if="menuList.AccDefreezeAppl">账户冻结申请</el-menu-item>
-                    <el-menu-item index="/account/close-account-matter" v-if="menuList.AccCloseIntAppl">销户事项申请</el-menu-item>
-                    <el-menu-item index="/account/close-account-message" v-if="menuList.AccCloseComAppl">销户信息补录申请</el-menu-item>
+                    <el-menu-item index="/account/close-account-matter" v-if="menuList.AccCloseIntAppl">销户事项申请
+                    </el-menu-item>
+                    <el-menu-item index="/account/close-account-message" v-if="menuList.AccCloseComAppl">销户信息补录申请
+                    </el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
             <el-submenu index="5" v-if="menuList.WFMGT">
@@ -333,7 +341,8 @@
                     <p class="mg-four">审批平台</p>
                 </template>
                 <el-menu-item-group>
-                    <el-menu-item index="/examine-approve/my-examine-approve" v-if="menuList.MyWFPLAT">我的审批平台</el-menu-item>
+                    <el-menu-item index="/examine-approve/my-examine-approve" v-if="menuList.MyWFPLAT">我的审批平台
+                    </el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
             <el-submenu index="7" v-if="menuList.YET">
@@ -342,13 +351,14 @@
                     <p>余额通</p>
                 </template>
                 <el-menu-item-group>
-                    <el-menu-item index="/whiteContent/today-detail" v-if="menuList.CurBal">当日余额明细</el-menu-item>
-                    <el-menu-item index="/whiteContent/today-all" v-if="menuList.CulBalSummary">当日余额汇总</el-menu-item>
-                    <el-menu-item index="/whiteContent/today-fluctuate" v-if="menuList.CulBalWave">当日余额波动</el-menu-item>
-                    <el-menu-item index="/whiteContent/history-detail" v-if="menuList.HisBal">历史余额明细</el-menu-item>
-                    <el-menu-item index="/whiteContent/history-all" v-if="menuList.HisBalSummary">历史余额汇总</el-menu-item>
-                    <el-menu-item index="/whiteContent/history-fluctuate" v-if="menuList.HisBalWave">历史余额波动</el-menu-item>
-                    <el-menu-item index="1-8">余额数据导入</el-menu-item>
+                    <el-menu-item index="/balance/today-detail" v-if="menuList.CurBal">当日余额明细</el-menu-item>
+                    <el-menu-item index="/balance/today-all" v-if="menuList.CulBalSummary">当日余额汇总</el-menu-item>
+                    <el-menu-item index="/balance/today-fluctuate" v-if="menuList.CulBalWave">当日余额波动</el-menu-item>
+                    <el-menu-item index="/balance/history-detail" v-if="menuList.HisBal">历史余额明细</el-menu-item>
+                    <el-menu-item index="/balance/history-all" v-if="menuList.HisBalSummary">历史余额汇总</el-menu-item>
+                    <el-menu-item index="/balance/history-fluctuate" v-if="menuList.HisBalWave">历史余额波动</el-menu-item>
+                    <el-menu-item index="/balance/history-data">余额数据导入</el-menu-item>
+
                 </el-menu-item-group>
             </el-submenu>
             <el-submenu index="8" v-if="menuList.JYT">
@@ -361,7 +371,8 @@
                     <el-menu-item index="/trade-links/today-all" v-if="menuList.CurTransSummary">当日交易汇总</el-menu-item>
                     <el-menu-item index="/trade-links/history-detail" v-if="menuList.HisTrans">历史交易明细</el-menu-item>
                     <el-menu-item index="/trade-links/history-all" v-if="menuList.HisTransSummary">历史交易汇总</el-menu-item>
-                    <el-menu-item index="/trade-links/history-fluctuate" v-if="menuList.HisTransWave">历史交易波动</el-menu-item>
+                    <el-menu-item index="/trade-links/history-fluctuate" v-if="menuList.HisTransWave">历史交易波动
+                    </el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
             <el-submenu index="9" v-if="menuList.DBT">
@@ -453,23 +464,23 @@
 <script>
     export default {
         name: "Left",
-        created:function(){
+        created: function () {
             var user = JSON.parse(window.sessionStorage.getItem("user"));
-            if(user){
+            if (user) {
                 var menuList = user.menu_info;
-                for(var i = 0; i < menuList.length; i++){
+                for (var i = 0; i < menuList.length; i++) {
                     var items = menuList[i].items;
-                    for(var j = 0; j < items.length; j++){
+                    for (var j = 0; j < items.length; j++) {
                         var item = items[j];
-                        for(var k in this.menuList){
-                            if(item.code == k){
+                        for (var k in this.menuList) {
+                            if (item.code == k) {
                                 this.menuList[k] = true;
                                 break;
                             }
                         }
                     }
-                    for(var key in this.menuList){
-                        if(menuList[i].code == key){
+                    for (var key in this.menuList) {
+                        if (menuList[i].code == key) {
                             this.menuList[key] = true;
                             break;
                         }
@@ -509,13 +520,13 @@
                     AccCloseIntAppl: false, //销户事项申请
                     AccCloseComAppl: false, //销户信息补录申请
 
-                    WFMGT:false, //审批流管理
-                    WFDefine:false, //审批流程定义
-                    WFTrace:false, //业务流程追踪
-                    WFLinK:false, //业务配置审批流程
+                    WFMGT: false, //审批流管理
+                    WFDefine: false, //审批流程定义
+                    WFTrace: false, //业务流程追踪
+                    WFLinK: false, //业务配置审批流程
 
-                    WFPLAT:false, //审批平台
-                    MyWFPLAT:false, //我的审批平台
+                    WFPLAT: false, //审批平台
+                    MyWFPLAT: false, //我的审批平台
 
                     YET: false, //余额通
                     CurBal: false, //当日余额明细
