@@ -134,9 +134,13 @@
                 }
             },
             getRouterData:function(params){
+		var url ="/cfm/normalProcess";
+		if(params.optype ==='wfquery_pendingtasksall'){
+			url ="/cfm/commonProcess";
+		}
                 this.loading = true;
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: url,
                     method: "post",
                     data: params
                 }).then((result) => {
