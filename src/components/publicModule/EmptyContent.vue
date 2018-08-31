@@ -3,7 +3,7 @@
         width: 90%;
         height: 100%;
         margin: 0 auto;
-        min-width: 800px;
+        min-width: 960px;
         .content {
             width: 100%;
             height: 90%;

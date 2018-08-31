@@ -375,18 +375,16 @@
                     <el-menu-item index="/allot/look-over" v-if="menuList.DbtViewBill">内部调拨-查看</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
-            <!--
-            <el-submenu index="6">
+            <el-submenu index="10">
                 <template slot="title" height="200px">
                     <i class="icon-zft"></i>
-                    <p>支付通</p>
+                    <p>工作日历</p>
                 </template>
                 <el-menu-item-group>
-                    <el-menu-item index="1-1">选项1</el-menu-item>
-                    <el-menu-item index="1-2">选项2</el-menu-item>
-                    <el-menu-item index="1-3">选项3</el-menu-item>
+                    <el-menu-item index="/calendar/set-workday">工作日设置</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
+            <!--
             <el-submenu index="7">
                 <template slot="title" height="200px">
                     <i class="icon-gjt"></i>

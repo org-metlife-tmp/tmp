@@ -59,6 +59,8 @@ import WorkflowTrace from '@/components/workflow/WorkflowTrace'
 import WorkflowConfigure from '@/components/workflow/WorkflowConfigure'
 //审批平台
 import MyExamineApprove from '@/components/examineApprove/MyExamineApprove'
+//日历
+import SetWorkday from '@/components/calendar/SetWorkday'
 
 
 Vue.use(Router)
@@ -118,6 +120,8 @@ const router = new Router({
                         {path: '/allot/payment', name: 'Payment', component: Payment, meta: {requireAuth: true}},
                         {path: '/allot/look-over', name: 'LookOver', component: LookOver, meta: {requireAuth: true}},
                         {path: '/allot/more-bills', name: 'MoreBills', component: MoreBills, meta: {requireAuth: true}},
+                        //日历
+                        {path: '/calendar/set-workday', name: 'SetWorkday', component: SetWorkday, meta: {requireAuth: true}},
                     ]
                 },
                 //基础样式三（tab页）
