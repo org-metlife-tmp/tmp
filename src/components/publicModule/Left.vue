@@ -97,6 +97,10 @@
             .icon-oa {
                 background-position: -506px -190px;
             }
+
+            .icon-gzrl{
+                background-position: -32px -252px;
+            }
             /*首页背景图定位结束*/
         }
 
@@ -111,7 +115,6 @@
             .icon-ssjy {
                 background-position: -470px -95px;
             }
-
             .icon-yet {
                 background-position: 0px 0;
             }
@@ -147,6 +150,9 @@
             }
             .icon-oa {
                 background-position: -506px -158px;
+            }
+            .icon-gzrl{
+                background-position: -1px -252px;
             }
             .el-submenu__title p {
                 color: rgba(0, 0, 0, 0.5);
@@ -209,6 +215,10 @@
 
             .el-submenu__title:hover .icon-oa {
                 background-position: -506px -190px;
+            }
+
+            .el-submenu__title:hover .icon-gzrl{
+                background-position: -32px -252px;
             }
 
             .el-submenu__title:hover p {
@@ -388,11 +398,13 @@
             </el-submenu>
             <el-submenu index="10">
                 <template slot="title" height="200px">
-                    <i class="icon-zft"></i>
+                    <i class="icon-gzrl"></i>
                     <p>工作日历</p>
                 </template>
                 <el-menu-item-group>
                     <el-menu-item index="/calendar/set-workday">工作日设置</el-menu-item>
+                    <el-menu-item index="/calendar/work-section">工作区间设置</el-menu-item>
+                    <el-menu-item index="/calendar/the-offer">报盘日设置</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
             <!--

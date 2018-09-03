@@ -61,6 +61,8 @@ import WorkflowConfigure from '@/components/workflow/WorkflowConfigure'
 import MyExamineApprove from '@/components/examineApprove/MyExamineApprove'
 //日历
 import SetWorkday from '@/components/calendar/SetWorkday'
+import WorkSection from '@/components/calendar/WorkSection'
+import TheOffer from '@/components/calendar/TheOffer'
 
 
 Vue.use(Router)
@@ -122,6 +124,8 @@ const router = new Router({
                         {path: '/allot/more-bills', name: 'MoreBills', component: MoreBills, meta: {requireAuth: true}},
                         //日历
                         {path: '/calendar/set-workday', name: 'SetWorkday', component: SetWorkday, meta: {requireAuth: true}},
+                        {path: '/calendar/work-section', name: 'WorkSection', component: WorkSection, meta: {requireAuth: true}},
+                        {path: '/calendar/the-offer', name: 'TheOffer', component: TheOffer, meta: {requireAuth: true}},
                     ]
                 },
                 //基础样式三（tab页）
