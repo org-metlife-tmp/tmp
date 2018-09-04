@@ -138,7 +138,7 @@
         <!--日历部分-->
         <div class="workday-content">
             <ul v-for="workday in workdayData" class="month"
-                :class="{noActive: workday.month * 1 < (new Date().getMonth() + 1)}">
+                :class="weekStatus(workday.month)">
                 <div class="month-title">{{ workday.month }}月</div>
                 <li class="month-week">一</li>
                 <li class="month-week">二</li>
@@ -181,7 +181,7 @@
             var newYear = new Date().getFullYear();
             this.yearList.push(newYear + "");
             this.yearList.push(newYear + 1 + "");
-            this.currentYear = newYear;
+            this.currentYear = newYear + "";
 
             //获取日历表
             this.getWorkday(newYear + "");
@@ -197,7 +197,6 @@
         methods: {
             //获取日历
             getWorkday: function(getYear){
-                console.log(1);
                 this.$axios({
                     url: "/cfm/normalProcess",
                     method: "post",
@@ -243,6 +242,14 @@
                         "isEdit": month.$isEdit,
                         "holiday": true
                     }
+                }
+            },
+            //设置周的颜色
+            weekStatus: function(month){
+                var workMonth = new Date(this.currentYear + "-" + month).valueOf();
+                var currentMonth = new Date(new Date().getFullYear() + "-" + (new Date().getMonth() + 1)).valueOf();
+                return {
+                    noActive: workMonth < currentMonth
                 }
             },
             //设置鼠标经过时的提示框
