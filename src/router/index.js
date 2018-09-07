@@ -63,6 +63,7 @@ import MyExamineApprove from '@/components/examineApprove/MyExamineApprove'
 import SetWorkday from '@/components/calendar/SetWorkday'
 import WorkSection from '@/components/calendar/WorkSection'
 import TheOffer from '@/components/calendar/TheOffer'
+import ClosingDay from '@/components/calendar/ClosingDay'
 
 
 Vue.use(Router)
@@ -126,6 +127,7 @@ const router = new Router({
                         {path: '/calendar/set-workday', name: 'SetWorkday', component: SetWorkday, meta: {requireAuth: true}},
                         {path: '/calendar/work-section', name: 'WorkSection', component: WorkSection, meta: {requireAuth: true}},
                         {path: '/calendar/the-offer', name: 'TheOffer', component: TheOffer, meta: {requireAuth: true}},
+                        {path: '/calendar/closing-day', name: 'ClosingDay', component: ClosingDay, meta: {requireAuth: true}},
                     ]
                 },
                 //基础样式三（tab页）

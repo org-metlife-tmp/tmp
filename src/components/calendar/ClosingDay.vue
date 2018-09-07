@@ -1,5 +1,5 @@
 <style scoped lang="less" type="text/less">
-    #workSection {
+    #closingDay{
         width: 100%;
         height: 100%;
         box-sizing: border-box;
@@ -21,15 +21,13 @@
             background: #fff;
             padding-top: 20px;
             padding-left: 20px;
-            min-width: 1100px;
+            min-width: 1076px;
 
             .month {
                 float: left;
-                width: 336px;
-                height: 200px;
-                box-sizing: border-box;
-                padding-left: 5px;
+                width: 30%;
                 margin: 0 20px 30px 10px;
+                height: 200px;
                 border: 1px solid #4FB1E2;
                 border-radius: 6px;
                 box-shadow: 0px 2px 12px 0 #ccc;
@@ -45,7 +43,6 @@
                     font-weight: bold;
                     margin-top: 6px;
                     margin-bottom: 2px;
-                    background-color: #fff;
                 }
 
                 /*日*/
@@ -55,12 +52,6 @@
                     box-sizing: border-box;
                     margin-top: 4px;
                     cursor: pointer;
-                    background-color: #DDEFF9;
-
-                    span {
-                        display: inline-block;
-                        width: 24px;
-                    }
                 }
 
                 /*判断不同日期*/
@@ -72,48 +63,18 @@
                     color: #FF3A03;
                 }
 
-                /*鼠标经过*/
                 .noHoliday:hover, .holiday:hover {
-                    .end-date;
+                    .isEdit;
                 }
 
-                /*起点*/
-                .start-date {
+                /*修改后的日期*/
+                .isEdit {
+                    background: #1BD2B4;
                     background-clip: content-box;
                     box-sizing: border-box;
-                    padding: 0 0 0 10px;
-                    border-radius: 50% 0 0 50%;
-                    color: #fff;
-                }
-
-                .start-date span {
-                    margin-right: 10px;
-                    background: #4FB1E0;
+                    padding: 0 10px;
                     border-radius: 50%;
-                }
-
-                .start-date:hover {
-                    .start-date;
-
-                    span {
-                        background: #4FB1E0;
-                        margin-left: 0;
-                    }
-                }
-
-                /*结束点*/
-                .end-date {
-                    background-clip: content-box;
-                    box-sizing: border-box;
-                    padding: 0 10px 0 0;
-                    border-radius: 0 50% 50% 0;
                     color: #fff;
-
-                    span {
-                        margin-left: 10px;
-                        background: #1BD2B4;
-                        border-radius: 50%;
-                    }
                 }
             }
 
@@ -134,7 +95,7 @@
 </style>
 
 <template>
-    <div id="workSection">
+    <div id="closingDay">
         <!--顶部按钮-->
         <div class="button-list-left">
             <el-select v-model="currentYear" placeholder="请选择年份"
@@ -167,8 +128,8 @@
                     <div slot="content">{{ tooltipText(month) }}</div>
                     <li :style="oneDayClass(month)"
                         :class="dayStatus(month)"
-                        @click="setEndDate(month,workday)">
-                        <span>{{ month.cdate }}</span>
+                        @click="setOfferday(month)">
+                        {{ month.cdate }}
                     </li>
                 </el-tooltip>
             </ul>
@@ -176,7 +137,7 @@
             <!--底部按钮-->
             <div class="botton-pag" v-if="!isActive">
                 <el-button type="warning" size="small" @click="startUsing">启用</el-button>
-                <el-button type="warning" size="small" @click="saveWorkWeek(false)">保存</el-button>
+                <el-button type="warning" size="small" @click="saveOfferday(false)">保存</el-button>
                 <el-button type="warning" size="small" @click="cancelSet">取消</el-button>
             </div>
         </div>
@@ -185,9 +146,9 @@
 
 <script>
     export default {
-        name: "WorkSection",
+        name: "ClosingDay",
         created: function () {
-            this.$emit("transmitTitle", "工作区间设置");
+            this.$emit("transmitTitle", "结账日设置");
 
             //设置年份列表
             var newYear = new Date().getFullYear();
@@ -198,18 +159,19 @@
             //获取日历表
             this.getWorkday(newYear + "");
         },
+        mounted: function(){
+        },
         data: function () {
             return {
                 workdayData: [], //日历数据
                 yearList: [],
                 currentYear: "",
-                weekList: [],
-                isActive: false
+                isActive: false //激活状态
             }
         },
         methods: {
             //获取日历
-            getWorkday: function (getYear) {
+            getWorkday: function(getYear){
                 this.$axios({
                     url: "/cfm/normalProcess",
                     method: "post",
@@ -230,8 +192,8 @@
                         var data = result.data.data;
                         this.workdayData = data.detail;
 
-                        //获取工作周数据
-                        this.getWorkWeek(this.currentYear);
+                        //获取结账日
+                        this.getClosingDay();
                     }
                 }).catch(function (error) {
                     console.log(error);
@@ -241,6 +203,8 @@
             oneDayClass: function (month) {
                 if (month.cdate == "01") {
                     return {'margin-left': ((month.day_of_week - 1) * 46) + "px"};
+                } else {
+
                 }
             },
             //设置每日的颜色
@@ -252,24 +216,24 @@
                 } else { //休息日
                     classList.holiday = true;
                 }
-                if (month.$start) {
-                    classList['start-date'] = true;
+                if (month.$closingDay) {
+                    classList.isEdit = true;
                 }
-                if (month.$end) {
-                    classList['end-date'] = true;
-                }
+
                 return classList;
             },
-            //获取起点和结束点
-            getWorkWeek: function (getYear) {
+            //获取结账日
+            getClosingDay: function () {
+                var params = {
+                    year: this.currentYear
+                }
+
                 this.$axios({
                     url: "/cfm/normalProcess",
                     method: "post",
                     data: {
-                        optype: "workweek_list",
-                        params: {
-                            year: getYear
-                        }
+                        optype: "workcal_checkoutlist",
+                        params: params
                     }
                 }).then((result) => {
                     if (result.data.error_msg) {
@@ -280,96 +244,25 @@
                         })
                     } else {
                         var data = result.data.data;
-                        this.weekList = data.weeks;
+                        //设置报盘日
+                        var workdayData = this.workdayData;
+                        workdayData.forEach((month) => {
+                            month.value.forEach((item) => {
+                                data.dates.forEach((offerItem) => {
+                                    var currentDate = new Date(this.currentYear + "-" + item.month + "-" + item.cdate).valueOf();
+                                    var offerDate = new Date(offerItem).valueOf();
+                                    if(currentDate == offerDate){
+                                        this.$set(item,"$closingDay",true);
+                                    }
+                                })
+                            })
+                        });
+                        //设置激活状态
                         this.isActive = data.is_active == 1 ? true : false;
-
-                        //将起始点数据放进日历
-                        this.setFullWork();
                     }
                 }).catch(function (error) {
                     console.log(error);
                 });
-            },
-            //将起始点数据和日历结合
-            setFullWork: function () {
-                var workdayData = this.workdayData;
-                var weekList = this.weekList;
-
-                workdayData.forEach((workDay) => {
-                    for (var i = 0; i < workDay.value.length; i++) {
-                        var workDayItem = workDay.value[i];
-                        var workDayValue = new Date(this.currentYear + "-" + workDayItem.month + "-" + workDayItem.cdate).valueOf();
-
-                        for (var j = 0; j < weekList.length; j++) {
-                            var weekItem = weekList[j];
-                            var startValue = new Date(weekItem.start_date).valueOf();
-                            var endValue = new Date(weekItem.end_date).valueOf();
-
-                            if (workDayValue == startValue) {
-                                this.$set(workDayItem, '$start', true);
-                                continue;
-                            }
-                            if (workDayValue == endValue) {
-                                this.$set(workDayItem, '$end', true);
-                                continue;
-                            }
-                        }
-                    }
-                });
-            },
-            //控制提示框是否显示
-            showTooltip: function (month) {
-                var $start = month.$start;
-                var $end = month.$end;
-                return this.isActive || $start;
-            },
-            //设置鼠标经过时的提示框
-            tooltipText: function (month) {
-                if (month.$start) { //开始点
-                    return "";
-                } else if (month.$end) { //结束点
-                    return "取消此结束点";
-                } else { //普通日期
-                    return "设置为结束点";
-                }
-            },
-            //设置结束点
-            setEndDate: function (month, workDay) {
-                var workdayData = this.workdayData;
-                var workList = workDay.value;
-                var $start = month.$start;
-                var $end = month.$end;
-
-                if (this.isActive || $start) {
-                    return;
-                }
-
-                var flag = $end ? false : true; //正常日期变为结束点 结束点变为正常日期
-                this.$set(month, '$end', flag); //设置当天
-
-                //设置后一天为起点
-                var index = workList.indexOf(month);
-                if (index == (workList.length - 1)) {
-                    var nextDay = workdayData[workdayData.indexOf(workDay) + 1].value[0];
-                } else {
-                    var nextDay = workList[workList.indexOf(month) + 1];
-                }
-                this.$set(nextDay, '$start', flag);
-
-                //判断后一天是否为结束点
-                if(nextDay.$end){
-                    //取消后一天的结束点标记
-                    this.$set(nextDay, '$end', false);
-
-                    //取消大后天的开始点标记
-                    if(index < (workList.length - 2)){ //大后天在本月
-                        var nextTwoDay = workList[workList.indexOf(month) + 2];
-                    }else{ //大后天在次月
-                        var nextTwoDay = workdayData[workdayData.indexOf(workDay) + 1].value[ 2 - (workList.length - index)];
-                    }
-
-                    this.$set(nextTwoDay, '$start', false);
-                }
             },
             //选择年份
             selectYear: function(currYear){
@@ -377,29 +270,60 @@
                     this.getWorkday(currYear);
                 }
             },
+            //设置结账日
+            setOfferday: function(month){
+                if(this.isActive){
+                    return;
+                }
+                this.$set(month, "$closingDay", !month.$closingDay);
+                this.$set(month, "$edit", !month.$edit);
+            },
+            //控制提示框是否显示
+            showTooltip: function (month) {
+                if(this.isActive){
+                    return true;
+                }else{
+                    return false;
+                }
+            },
+            //设置鼠标经过时的提示框
+            tooltipText: function (month) {
+                if (month.$closingDay) { //报盘日
+                    return "取消此结账日";
+                } else {
+                    return "设置为结账日";
+                }
+            },
             //取消
             cancelSet: function(){
-                this.getWorkday(this.currentYear);
+                var workdayData = this.workdayData;
+                workdayData.forEach((month) => {
+                    month.value.forEach((item) => {
+                        if(item.$edit){
+                            this.setOfferday(item);
+                        }
+                    })
+                })
             },
             //保存
-            saveWorkWeek: function(startUsing){
+            saveOfferday: function(startUsing){
                 var workdayData = this.workdayData;
                 var params = {
-                    endpoint: []
+                    year: this.currentYear,
+                    dates: []
                 }
                 workdayData.forEach((month) => {
-                    month.value.forEach((dayDate) => {
-                        if(dayDate.$end){
-                            params.endpoint.push(this.currentYear + "-" + dayDate.month + "-" + dayDate.cdate);
+                    month.value.forEach((item) => {
+                        if(item.$closingDay){
+                            params.dates.push(this.currentYear + "-" + item.month + "-" + item.cdate)
                         }
                     })
                 });
-
                 this.$axios({
                     url: "/cfm/normalProcess",
                     method: "post",
                     data: {
-                        optype: "workweek_set",
+                        optype: "workcal_checkoutset",
                         params: params
                     }
                 }).then((result) => {
@@ -417,38 +341,18 @@
                                 duration: 2000
                             });
                         }
+                        var workdayData = this.workdayData;
+                        workdayData.forEach((month) => {
+                            month.value.forEach((item) => {
+                                if(item.$edit){
+                                    this.$set(item, "$edit", false);
+                                }
+                            })
+                        });
 
                         //启用
                         if(startUsing){
-                            this.$axios({
-                                url: "/cfm/normalProcess",
-                                method: "post",
-                                data: {
-                                    optype: "workweek_acvivity",
-                                    params: {
-                                        year: this.currentYear
-                                    }
-                                }
-                            }).then((result) => {
-                                if (result.data.error_msg) {
-                                    this.$message({
-                                        type: "error",
-                                        message: result.data.error_msg,
-                                        duration: 2000
-                                    })
-                                } else {
-                                    var data = result.data.data;
-                                    console.log(data);
-                                    this.isActive = true;
-                                    this.$message({
-                                        message: '启用成功',
-                                        type: 'success',
-                                        duration: 2000
-                                    });
-                                }
-                            }).catch(function (error) {
-                                console.log(error);
-                            });
+                            this.startUsingAxios();
                         }
                     }
                 }).catch(function (error) {
@@ -457,15 +361,77 @@
             },
             //启用
             startUsing: function(){
-                this.$confirm('启用之后将不可再进行修改，确定启用吗？', '提示', {
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                    type: 'warning'
-                }).then(() => {
-                    this.saveWorkWeek(true);
-                }).catch(() => {
+                var workdayData = this.workdayData;
+                var flag = false;
+                workdayData.forEach((month) => {
+                    month.value.forEach((item) => {
+                        if(item.$edit){
+                            flag = true;
+                        }
+                    })
                 });
-            }
+
+                if(flag){
+                    this.$confirm('是否默认保存当前修改并启用?启用之后将不可修改', '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    }).then(() => {
+                        this.saveOfferday(true);
+                    }).catch(() => {
+                    });
+                }else{
+                    this.$confirm('启用之后将不可修改，是否启用？', '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    }).then(() => {
+                        this.startUsingAxios();
+                    }).catch(() => {
+                    });
+                }
+            },
+            //启用请求
+            startUsingAxios: function(){
+                this.$axios({
+                    url: "/cfm/normalProcess",
+                    method: "post",
+                    data: {
+                        optype: "workcal_checkoutactivity",
+                        params: {
+                            year: this.currentYear
+                        }
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                    } else {
+                        var data = result.data.data;
+                        this.$message({
+                            message: '启用成功',
+                            type: 'success',
+                            duration: 2000
+                        });
+                        this.isActive = true;
+
+                        var workdayData = this.workdayData;
+                        workdayData.forEach((month) => {
+                            month.value.forEach((item) => {
+                                if(item.$edit){
+                                    this.$set(item, "$edit", false);
+                                }
+                            })
+                        });
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            },
         }
     }
 </script>
+

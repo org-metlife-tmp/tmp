@@ -405,6 +405,7 @@
                     <el-menu-item index="/calendar/set-workday">工作日设置</el-menu-item>
                     <el-menu-item index="/calendar/work-section">工作区间设置</el-menu-item>
                     <el-menu-item index="/calendar/the-offer">报盘日设置</el-menu-item>
+                    <el-menu-item index="/calendar/closing-day">结账日设置</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
             <!--
