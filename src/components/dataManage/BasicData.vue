@@ -84,13 +84,13 @@
                 color: #848484;
                 li {
                     float: left;
-                    width: 30%;
+                    width: 22.5%;
                     text-align: left;
                     padding-left: 30px;
                     box-sizing: border-box;
                     border-left: 1px solid #e2e2e2;
                 }
-                li:nth-child(4) {
+                li:nth-child(5) {
                     width: 10%;
                     border-right: 1px solid #e2e2e2;
                     text-align: center;
@@ -107,12 +107,15 @@
             padding-right: 8px;
             /*position: relative;*/
         }
-        .custom-tree-city, .custom-tree-provice {
+        .custom-tree-city, .custom-tree-provice, .custom-tree-code {
             position: absolute;
-            left: 32%;
+            left: 46%;
+        }
+        .custom-tree-code{
+            left: 23%;
         }
         .custom-tree-provice {
-            left: 62%;
+            left: 68%;
         }
 
         .el-tree .el-button {
@@ -153,6 +156,7 @@
         <div class="tree-content" v-if="btActive.company">
             <ul class="tree-title">
                 <li>公司内容</li>
+                <li>公司编号</li>
                 <li>公司地址</li>
                 <li>地区（省）</li>
                 <li>操作</li>
@@ -165,6 +169,7 @@
                      :expand-on-click-node="false">
             <span class="custom-tree-node" slot-scope="{ node, data }">
                 <span>{{ node.data.name }}</span>
+                <span class="custom-tree-code">{{ node.data.code }}</span>
                 <span class="custom-tree-city">{{ node.data.city }}</span>
                 <span class="custom-tree-provice">{{ node.data.province }}</span>
                 <span>
@@ -1192,6 +1197,7 @@
                     var treeData = this.setTreeData(data);
                     this.treeList.push(treeData);
                     this.treeList = JSON.parse(JSON.stringify(this.treeList));
+                    console.log(this.treeList);
                 }
             }
         }
