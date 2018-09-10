@@ -28,12 +28,14 @@ import MoveWithhold from '@/components/realtimeTrade/MoveWithhold'
 //账户通
 import OpenAccountMatter from '@/components/account/OpenAccountMatter'
 import OpenAccountMessage from '@/components/account/OpenAccountMessage'
+import OpenAccountConfirm from '@/components/account/OpenAccountConfirm'
 import AccountAlteration from '@/components/account/AccountAlteration'
 import AccountMessage from '@/components/account/AccountMessage'
 import AccountUnfreeze from '@/components/account/AccountUnfreeze'
 import AccountFreeze from '@/components/account/AccountFreeze'
 import CloseAccountMatter from '@/components/account/CloseAccountMatter'
 import CloseAccountMessage from '@/components/account/CloseAccountMessage'
+import CloseAccountConfirm from '@/components/account/CloseAccountConfirm'
 //余额通
 import TodayDetail from '@/components/balance/TodayDetail'
 import TodayAll from '@/components/balance/TodayAll'
@@ -64,15 +66,6 @@ import SetWorkday from '@/components/calendar/SetWorkday'
 import WorkSection from '@/components/calendar/WorkSection'
 import TheOffer from '@/components/calendar/TheOffer'
 import ClosingDay from '@/components/calendar/ClosingDay'
-//支付通
-import PayMakeBill from '@/components/payment/PayMakeBill'
-import PayPayment from '@/components/payment/PayPayment'
-import PayLookOver from '@/components/payment/PayLookOver'
-import BatchMakeBill from '@/components/payment/BatchMakeBill'
-import BatchPayment from '@/components/payment/BatchPayment'
-import BatchLookOver from '@/components/payment/BatchLookOver'
-import PayeeMessage from '@/components/payment/PayeeMessage'
-import DealCheck from '@/components/payment/DealCheck'
 
 
 Vue.use(Router)
@@ -124,6 +117,8 @@ const router = new Router({
                         {path: '/realtime-trade/move-withhold', name: 'MoveWithhold', component: MoveWithhold, meta: {requireAuth: true}},
                         //账户通
                         {path: '/account/account-message', name: 'AccountMessage', component: AccountMessage, meta: {requireAuth: true}},
+                        {path: '/account/open-account-confirm', name: 'OpenAccountConfirm', component: OpenAccountConfirm, meta: {requireAuth: true}},
+                        {path: '/account/close-account-confirm', name: 'CloseAccountConfirm', component: CloseAccountConfirm, meta: {requireAuth: true}},
                         //审批流管理
                         {path: '/workflow/workflow-definition', name: 'WorkflowDefinition', component: WorkflowDefinition, meta: {requireAuth: true}},
                         {path: '/workflow/workflow-trace', name: 'WorkflowTrace', component: WorkflowTrace, meta: {requireAuth: true}},
@@ -132,15 +127,6 @@ const router = new Router({
                         {path: '/allot/payment', name: 'Payment', component: Payment, meta: {requireAuth: true}},
                         {path: '/allot/look-over', name: 'LookOver', component: LookOver, meta: {requireAuth: true}},
                         {path: '/allot/more-bills', name: 'MoreBills', component: MoreBills, meta: {requireAuth: true}},
-                        //支付通
-                        {path: '/payment/pay-make-bill', name: 'PayMakeBill', component: PayMakeBill, meta: {requireAuth: true}},
-                        {path: '/payment/pay-payment', name: 'PayPayment', component: PayPayment, meta: {requireAuth: true}},
-                        {path: '/payment/pay-look-over', name: 'PayLookOver', component: PayLookOver, meta: {requireAuth: true}},
-                        {path: '/payment/batch-make-bill', name: 'BatchMakeBill', component: BatchMakeBill, meta: {requireAuth: true}},
-                        {path: '/payment/batch-payment', name: 'BatchPayment', component: BatchPayment, meta: {requireAuth: true}},
-                        {path: '/payment/batch-look-over', name: 'BatchLookOver', component: BatchLookOver, meta: {requireAuth: true}},
-                        {path: '/payment/payee-message', name: 'PayeeMessage', component: PayeeMessage, meta: {requireAuth: true}},
-                        {path: '/payment/deal-check', name: 'DealCheck', component: DealCheck, meta: {requireAuth: true}},
                         //日历
                         {path: '/calendar/set-workday', name: 'SetWorkday', component: SetWorkday, meta: {requireAuth: true}},
                         {path: '/calendar/work-section', name: 'WorkSection', component: WorkSection, meta: {requireAuth: true}},
