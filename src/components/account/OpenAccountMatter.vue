@@ -843,14 +843,18 @@
             },
             //提交当前修改或新增
             subCurrent: function () {
+                debugger
                 var params = this.dialogData;
-                params.area_code = this.curBank.areaCode;
-                params.bank_type = this.curBank.bankType;
+                
                 var optype = "";
                 if (!params.id) {
                     optype = "openintent_add";
+                    params.area_code = this.dialogData.areaCode;
+                    params.bank_type = this.dialogData.bankType;
                 } else {
                     optype = "openintent_chg";
+                    params.area_code = this.curBank.areaCode;
+                    params.bank_type = this.curBank.bankType;
                 }
 
                 this.$axios({

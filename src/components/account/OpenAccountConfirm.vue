@@ -144,10 +144,6 @@
                         label="操作" width="80"
                         fixed="right">
                     <template slot-scope="scope" class="operationBtn">
-                        <el-tooltip content="查看" placement="bottom" effect="light" :enterable="false" :open-delay="500">
-                            <el-button type="primary" icon="el-icon-search" size="mini"
-                                       @click="lookMessage(scope.row)"></el-button>
-                        </el-tooltip>
                         <el-tooltip content="编辑" placement="bottom" effect="light"
                                     :enterable="false" :open-delay="500">
                             <el-button type="primary" icon="el-icon-edit" size="mini"
@@ -171,7 +167,7 @@
                     :current-page="pagCurrent">
             </el-pagination>
         </div>
-        <!--查看弹出框-->
+        <!--编辑弹出框-->
         <el-dialog title="详情"
                    :visible.sync="dialogVisible"
                    width="860px" top="76px"
@@ -180,221 +176,94 @@
                      :label-width="formLabelWidth">
                 <el-row>
                     <el-col :span="12">
-                        <el-form-item label="账户号">
-                            <el-input v-model="dialogData.acc_no" :readonly="true"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="账户名称">
-                            <el-input v-model="dialogData.acc_name" :readonly="true"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="所属机构">
-                            <el-input v-model="dialogData.org_name" :readonly="true"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="账户法人">
-                            <el-input v-model="dialogData.lawfull_man" :readonly="true"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="开户行">
-                            <el-input v-model="dialogData.bank_name" :readonly="true"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="开户行地址">
-                            <el-input v-model="dialogData.bank_address" :readonly="true"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="开户行联系人">
-                            <el-input v-model="dialogData.bank_contact" :readonly="true"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="联系电话">
-                            <el-input v-model="dialogData.bank_contact_phone" :readonly="true"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="币种">
-                            <el-input v-model="dialogData.currency_name" :readonly="true"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="开户时间">
-                            <el-input v-model="dialogData.open_date" :readonly="true"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="账户属性">
-                            <el-input v-model="dialogData.acc_attr_name" :readonly="true"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="账户用途">
-                            <el-input v-model="dialogData.acc_purpose_name" :readonly="true"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="账户模式">
-                            <el-input v-model="getInter" :readonly="true"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="存款类型">
-                            <el-input v-model="depositsList[dialogData.deposits_mode]" :readonly="true"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="预留印鉴">
-                            <el-input v-model="dialogData.reserved_seal" :readonly="true"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="24" class="form-small-title"><span></span>账户开户</el-col>
-                    <el-col :span="12">
-                        <el-form-item label="摘要">
-                            <el-input v-model="dialogData.intention.memo" :readonly="true"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="说明">
-                            <el-input v-model="dialogData.intention.detail" :readonly="true"></el-input>
-                        </el-form-item>
-                    </el-col>
-
-                    <el-col :span="24" class="form-small-title"><span></span>账户变更</el-col>
-                    <template v-for="item in this.dialogData.change">
-                        <el-col :span="12">
-                            <el-form-item :label="getName(item.type)">
-                                <el-input v-model="item.old_value" :readonly="true"></el-input>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="12">
-                            <el-form-item label="变更为">
-                                <el-input v-model="item.new_value" :readonly="true"></el-input>
-                            </el-form-item>
-                        </el-col>
-                    </template>
-
-                    <el-col :span="24" class="form-small-title"><span></span>销户申请</el-col>
-                    <el-col :span="12">
-                        <el-form-item label="摘要">
-                            <el-input v-model="dialogData.close.memo" :readonly="true"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="说明">
-                            <el-input v-model="dialogData.close.detail" :readonly="true"></el-input>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-            </el-form>
-            <span slot="footer" class="dialog-footer">
-                <el-button type="warning" size="mini"
-                           @click="dialogVisible = false">取 消</el-button>
-            </span>
-        </el-dialog>
-        <!--编辑弹出框-->
-        <el-dialog title="详情"
-                   :visible.sync="editDialogVisible"
-                   width="860px" top="76px"
-                   :close-on-click-modal="false">
-            <el-form :model="editDialogData" size="mini"
-                     :label-width="formLabelWidth">
-                <el-row>
-                    <el-col :span="12">
                         <el-form-item label="申请公司">
-                            <el-input v-model="editDialogData.acc_no" :disabled="true"></el-input>
+                            <el-input v-model="dialogData.org_name" :disabled="true"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="开户日期">
-                            <el-input v-model="editDialogData.open_date" :disabled="true"></el-input>
+                            <el-input v-model="dialogData.open_date" :disabled="true"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="银行账号">
-                            <el-input v-model="editDialogData.acc_no" :disabled="true"></el-input>
+                            <el-input v-model="dialogData.acc_no" :disabled="true"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="账户名称">
-                            <el-input v-model="editDialogData.acc_name" :disabled="true"></el-input>
+                            <el-input v-model="dialogData.acc_name" :disabled="true"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="开户行">
-                            <el-input v-model="editDialogData.bank_name" :disabled="true"></el-input>
+                            <el-input v-model="dialogData.bank_name" :disabled="true"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="账户性质">
-                            <el-input v-model="editDialogData.acc_attr_name" :disabled="true"></el-input>
+                            <el-input v-model="dialogData.acc_attr_name" :disabled="true"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="账户法人">
-                            <el-input v-model="editDialogData.lawfull_man" :disabled="true"></el-input>
+                            <el-input v-model="dialogData.lawfull_man" :disabled="true"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="账户用途">
-                            <el-input v-model="editDialogData.lawfull_man" :disabled="true"></el-input>
+                            <el-input v-model="dialogData.acc_purpose_name" :disabled="true"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="账户模式">
-                            <el-input v-model="editDialogData.lawfull_man" :disabled="true"></el-input>
+                            <el-input v-model="interList[dialogData.interactive_mode]" :disabled="true"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="币种">
-                            <el-input v-model="editDialogData.bank_name" :disabled="true"></el-input>
+                            <el-input v-model="dialogData.curr_name" :disabled="true"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="存款类型">
-                            <el-input v-model="depositsList[editDialogData.deposits_mode]" :disabled="true"></el-input>
+                            <el-input v-model="depositsList[dialogData.deposits_mode]" :disabled="true"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="24">
                         <el-form-item label="开户行地址">
-                            <el-input v-model="editDialogData.bank_address"></el-input>
+                            <el-input v-model="dialogData.bank_address" :disabled="true"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="开户行联系人">
-                            <el-input v-model="editDialogData.bank_contact"></el-input>
+                            <el-input v-model="dialogData.bank_contact" :disabled="true"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="联系人电话">
-                            <el-input v-model="editDialogData.bank_contact_phone"></el-input>
+                            <el-input v-model="dialogData.bank_contact_phone" :disabled="true"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="24">
                         <el-form-item label="预留印鉴">
-                            <el-input v-model="editDialogData.reserved_seal" :disabled="true"></el-input>
+                            <el-input v-model="dialogData.reserved_seal" :disabled="true"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="24">
                         <el-form-item label="备注">
-                            <el-input type="textarea" v-model="editDialogData.memo" :disabled="true"></el-input>
+                            <el-input type="textarea" v-model="dialogData.memo" :disabled="true"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="会计科目代码">
-                            <el-input v-model="editDialogData.reserved_seal" :readonly="true"></el-input>
+                            <el-input v-model="dialogData.subject_code"></el-input>
                         </el-form-item>
                     </el-col>
                 </el-row>
             </el-form>
             <span slot="footer" class="dialog-footer">
-                <el-button type="warning" size="mini" @click="editDialogVisible = false">取 消</el-button>
+                <el-button type="warning" size="mini" @click="dialogVisible = false">取 消</el-button>
                 <el-button type="warning" size="mini" @click="subEdit">确 定</el-button>
             </span>
         </el-dialog>
@@ -461,46 +330,8 @@
                 pagCurrent: 1,
                 dialogVisible: false, //弹框数据
                 dialogData: {
-                    acc_no: "",
-                    acc_name: "",
-                    org_name: "",
-                    lawfull_man: "",
-                    bank_name: "",
-                    bank_address: "",
-                    bank_contact: "",
-                    bank_contact_phone: "",
-                    currency_name: "",
-                    open_date: "",
-                    acc_attr_name: "",
-                    acc_purpose_name: "",
-                    interactive_mode: "",
-                    intention: {
-                        memeo: "",
-                        detail: ""
-                    },
-                    close: {
-                        memeo: "",
-                        detail: ""
-                    },
-                    change: []
                 },
                 formLabelWidth: "120px",
-                editDialogVisible: false,
-                editDialogData: {
-                    acc_no: "",
-                    acc_name: "",
-                    org_name: "",
-                    lawfull_man: "",
-                    bank_name: "",
-                    bank_address: "",
-                    bank_contact: "",
-                    bank_contact_phone: "",
-                    currency_name: "",
-                    open_date: "",
-                    acc_attr_name: "",
-                    acc_purpose: "",
-                    interactive_mode: ""
-                },
                 /*下拉框数据*/
                 interList: {}, //账户模式
                 attrList: {}, //账户属性
@@ -551,119 +382,77 @@
                 }
                 this.$emit("getCommTable", this.routerMessage);
             },
-            //查看
-            lookMessage: function(row){
-                this.getCurrentData("look",row);
-            },
             //编辑
             editMessage: function(row){
                 this.getCurrentData("edit",row);
             },
             //编辑确定
             subEdit:function(){
-                var editDialogData = this.editDialogData;
-                this.$axios({
-                    url:"/cfm/normalProcess",
-                    method: "post",
-                    data:{
-                        optype: "account_chg",
-                        params: editDialogData
-                    }
-                }).then((result) => {
-                    if (result.data.error_msg) {
-                        this.$message({
-                            type: "error",
-                            message: result.data.error_msg,
-                            duration: 2000
-                        })
-                    }else{
-                        var data = result.data.data;
-                        this.editDialogVisible = false;
-                        this.$message({
-                            type: "success",
-                            message: "修改成功",
-                            duration: 2000
-                        })
-                    }
-                }).catch(function (error) {
-                    console.log(error);
-                })
+                debugger
+                var row = this.dialogData;
+                if(row.acc_id && row.subject_code){
+                    this.$axios({
+                        url:"/cfm/normalProcess",
+                        method: "post",
+                        data:{
+                            optype: "accconfirm_setstatus",
+                            params: {
+                                acc_id:row.acc_id,
+                                subject_code:row.subject_code
+                            }
+                        }
+                    }).then((result) => {
+                        if (result.data.error_msg) {
+                            this.$message({
+                                type: "error",
+                                message: result.data.error_msg,
+                                duration: 2000
+                            })
+                        }else{
+                            var data = result.data.data;
+                            this.dialogVisible = false;
+                            var rows = this.tableList;
+                            var index = rows.indexOf(row);
+                            if (this.pagCurrent < (this.pagTotal / this.pagSize)) { //存在下一页
+                                this.$emit('getTableData', this.routerMessage);
+                            } else {
+                                if (rows.length == "1" && (this.routerMessage.params.page_num != 1)) { //是当前页最后一条
+                                    this.routerMessage.params.page_num--;
+                                    this.$emit('getTableData', this.routerMessage);
+                                } else {
+                                    rows.splice(index, 1);
+                                    this.pagTotal--;
+                                }
+                            }
+                            this.$message({
+                                type: "success",
+                                message: "确认成功",
+                                duration: 2000
+                            })
+                        }
+                    }).catch(function (error) {
+                        console.log(error);
+                    })
+                }else{
+                    this.$message({
+                        type: "warning",
+                        message: "会计科目代码不能为空！",
+                        duration: 2000
+                    })
+                }
+                
             },
             //获取当前项数据
             getCurrentData: function(setData,row){
-                if(setData == "look"){
-                    this.dialogVisible = true;
-                    var dialogData = this.dialogData;
-                    for(var k in dialogData){
-                        if(k == "intention"){
-                            var item = dialogData[k];
-                            for(var key in item){
-                                item[key] = "";
-                            }
-                        }else{
-                            dialogData[k] = "";
-                        }
-                    }
-                }else{
-                    this.editDialogVisible = true;
-                    var editDialogData = this.editDialogData;
-                    for(var k in editDialogData){
-                        editDialogData[k] = "";
-                    }
+                debugger
+                var dialogData = this.dialogData;
+                this.dialogVisible = true;
+                for(var k in dialogData){
+                    dialogData[k] = "";
                 }
-                this.$axios({
-                    url: "/cfm/normalProcess",
-                    method: "post",
-                    data: {
-                        optype: "account_detail",
-                        params: {
-                            acc_id: row.acc_id
-                        }
-                    }
-                }).then((result) => {
-                    if (result.data.error_msg) {
-                        this.$message({
-                            type: "error",
-                            message: result.data.error_msg,
-                            duration: 2000
-                        })
-                    } else {
-                        var data = result.data.data;
-                        if(setData == "look"){
-                            for (var key in data) {
-                                if(key == "intention" || key == "close"){
-                                    if(data[key]){
-                                        this.dialogData[key] = data[key];
-                                    }
-                                }else{
-                                    this.dialogData[key] = data[key];
-                                }
-                            }
-                            console.log(this.dialogData);
-                        }else{
-                            for(var k in data){
-                                this.editDialogData[k] = data[k];
-                            }
-                        }
-                    }
-                }).catch(function (error) {
-                    console.log(error);
-                })
-            },
-            //将type装换为name
-            getName:function(type){
-                var accountChangeField = JSON.parse(window.sessionStorage.getItem("constants")).AccountChangeField
-                return accountChangeField[type];
-            }
-        },
-        computed:{
-            getInter:function(){
-                var inactiveMode = JSON.parse(window.sessionStorage.getItem("constants")).InactiveMode;
-                return inactiveMode[this.dialogData.interactive_mode + ""];
-            },
-            getEidtInter:function(value){
-                var inactiveMode = JSON.parse(window.sessionStorage.getItem("constants")).InactiveMode;
-                return inactiveMode[this.editDialogData.interactive_mode + ""];
+                for(var i in row){
+                    dialogData[i] = row[i];
+                }
             },
         },
         watch: {
