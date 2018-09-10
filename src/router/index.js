@@ -10,6 +10,7 @@ import WhiteContent from '@/components/publicModule/WhiteContent'
 import EmptyContent from '@/components/publicModule/EmptyContent'
 import TabContent from '@/components/publicModule/TabContent'
 import ImportTabContent from '@/components/publicModule/ImportTabContent'
+import DynamicTab from '@/components/publicModule/DynamicTab'
 //数据管理
 import BasicData from '@/components/dataManage/BasicData'
 import SettleAccount from '@/components/dataManage/SettleAccount'
@@ -142,7 +143,6 @@ const router = new Router({
                         {path: '/payment/batch-payment', name: 'BatchPayment', component: BatchPayment, meta: {requireAuth: true}},
                         {path: '/payment/batch-look-over', name: 'BatchLookOver', component: BatchLookOver, meta: {requireAuth: true}},
                         {path: '/payment/payee-message', name: 'PayeeMessage', component: PayeeMessage, meta: {requireAuth: true}},
-                        {path: '/payment/deal-check', name: 'DealCheck', component: DealCheck, meta: {requireAuth: true}},
                         //日历
                         {path: '/calendar/set-workday', name: 'SetWorkday', component: SetWorkday, meta: {requireAuth: true}},
                         {path: '/calendar/work-section', name: 'WorkSection', component: WorkSection, meta: {requireAuth: true}},
@@ -172,6 +172,13 @@ const router = new Router({
                     children:[
                         //余额通
                         {path: '/balance/history-data', name: 'HistoryData', component: HistoryData, meta: {requireAuth: true}}
+                    ]
+                },
+                //基础样式五（可切换tab文字的tab页）
+                {
+                    path:'/dynamic-tab',name:'DynamicTab',component:DynamicTab,
+                    children:[
+                        {path: '/payment/deal-check', name: 'DealCheck', component: DealCheck, meta: {requireAuth: true}},
                     ]
                 },
                 //调拨通
