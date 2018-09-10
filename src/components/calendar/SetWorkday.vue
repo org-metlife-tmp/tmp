@@ -198,7 +198,7 @@
             //获取日历
             getWorkday: function(getYear){
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: "/cfm/adminProcess",
                     method: "post",
                     data: {
                         optype: "workcal_init",
@@ -321,7 +321,7 @@
                 }
 
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: "/cfm/adminProcess",
                     method: "post",
                     data: {
                         optype: "workcal_holiday",
@@ -389,7 +389,7 @@
             //启用请求
             startUsingAxios: function(){
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: "/cfm/adminProcess",
                     method: "post",
                     data: {
                         optype: "workcal_activity",
