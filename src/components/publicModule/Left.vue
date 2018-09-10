@@ -408,6 +408,22 @@
                     <el-menu-item index="/calendar/closing-day">结账日设置</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
+            <el-submenu index="11">
+                <template slot="title" height="200px">
+                    <i class="icon-zft"></i>
+                    <p class="mg-four">支付通</p>
+                </template>
+                <el-menu-item-group>
+                    <el-menu-item index="/payment/pay-make-bill">资金支付-制单</el-menu-item>
+                    <el-menu-item index="/payment/pay-payment">资金支付-支付</el-menu-item>
+                    <el-menu-item index="/payment/pay-look-over">资金支付-查看</el-menu-item>
+                    <el-menu-item index="/payment/batch-make-bill">批量支付-制单</el-menu-item>
+                    <el-menu-item index="/payment/batch-payment">批量支付-支付</el-menu-item>
+                    <el-menu-item index="/payment/batch-look-over">批量支付-查看</el-menu-item>
+                    <el-menu-item index="/payment/payee-message">收款方信息管理</el-menu-item>
+                    <el-menu-item index="/payment/deal-check">交易核对</el-menu-item>
+                </el-menu-item-group>
+            </el-submenu>
             <!--
             <el-submenu index="7">
                 <template slot="title" height="200px">
@@ -420,19 +436,6 @@
                     <el-menu-item index="1-3">选项3</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="8">
-                <template slot="title" height="200px">
-                    <i class="icon-ywfk"></i>
-
-                    <p class="mg-four">业务付款</p>
-                </template>
-                <el-menu-item-group>
-                    <el-menu-item index="1-1">选项1</el-menu-item>
-                    <el-menu-item index="1-2">选项2</el-menu-item>
-                    <el-menu-item index="1-3">选项3</el-menu-item>
-                </el-menu-item-group>
-            </el-submenu>
-
             <el-submenu index="10">
                 <template slot="title" height="200px">
                     <i class="icon-zjys"></i>

@@ -64,6 +64,15 @@ import SetWorkday from '@/components/calendar/SetWorkday'
 import WorkSection from '@/components/calendar/WorkSection'
 import TheOffer from '@/components/calendar/TheOffer'
 import ClosingDay from '@/components/calendar/ClosingDay'
+//支付通
+import PayMakeBill from '@/components/payment/PayMakeBill'
+import PayPayment from '@/components/payment/PayPayment'
+import PayLookOver from '@/components/payment/PayLookOver'
+import BatchMakeBill from '@/components/payment/BatchMakeBill'
+import BatchPayment from '@/components/payment/BatchPayment'
+import BatchLookOver from '@/components/payment/BatchLookOver'
+import PayeeMessage from '@/components/payment/PayeeMessage'
+import DealCheck from '@/components/payment/DealCheck'
 
 
 Vue.use(Router)
@@ -123,6 +132,15 @@ const router = new Router({
                         {path: '/allot/payment', name: 'Payment', component: Payment, meta: {requireAuth: true}},
                         {path: '/allot/look-over', name: 'LookOver', component: LookOver, meta: {requireAuth: true}},
                         {path: '/allot/more-bills', name: 'MoreBills', component: MoreBills, meta: {requireAuth: true}},
+                        //支付通
+                        {path: '/payment/pay-make-bill', name: 'PayMakeBill', component: PayMakeBill, meta: {requireAuth: true}},
+                        {path: '/payment/pay-payment', name: 'PayPayment', component: PayPayment, meta: {requireAuth: true}},
+                        {path: '/payment/pay-look-over', name: 'PayLookOver', component: PayLookOver, meta: {requireAuth: true}},
+                        {path: '/payment/batch-make-bill', name: 'BatchMakeBill', component: BatchMakeBill, meta: {requireAuth: true}},
+                        {path: '/payment/batch-payment', name: 'BatchPayment', component: BatchPayment, meta: {requireAuth: true}},
+                        {path: '/payment/batch-look-over', name: 'BatchLookOver', component: BatchLookOver, meta: {requireAuth: true}},
+                        {path: '/payment/payee-message', name: 'PayeeMessage', component: PayeeMessage, meta: {requireAuth: true}},
+                        {path: '/payment/deal-check', name: 'DealCheck', component: DealCheck, meta: {requireAuth: true}},
                         //日历
                         {path: '/calendar/set-workday', name: 'SetWorkday', component: SetWorkday, meta: {requireAuth: true}},
                         {path: '/calendar/work-section', name: 'WorkSection', component: WorkSection, meta: {requireAuth: true}},
