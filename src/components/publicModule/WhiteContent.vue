@@ -34,8 +34,16 @@
         .content .button-left-bottom {
             z-index: 1;
             width: 196px;
-            top: 6px;
-            left: 0px;
+            left: 266px;
+            width: 708px;
+
+            >div{
+                float: left;
+            }
+
+            >div:nth-child(2){
+                float: right;
+            }
         }
         .content .display-none{
             display: none;

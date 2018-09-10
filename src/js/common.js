@@ -95,12 +95,16 @@ export default {
         if (numArray.length == 1) {
             return numText + "元整";
         } else {
-            numText += "点";
             var decimal = numArray[1].split(""); //小数部分
-            for (var i = 0; i < decimal.length; i++) {
-                numText += textList[decimal[i]];
+            if(decimal[0] == 0 && decimal[1] == 0){
+                return numText + "元整";
+            }else{
+                numText += "点";
+                for (var i = 0; i < decimal.length; i++) {
+                    numText += textList[decimal[i]];
+                }
+                return numText + "元";
             }
-            return numText + "元";
         }
     }
 }

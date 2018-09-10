@@ -9,11 +9,6 @@
         .search-setion {
             width: 50%;
             margin: 0 auto 10px;
-            /*搜索区按钮*/
-            .el-button--primary {
-                /*color: #fff;*/
-                /*background-color: #409EFF;*/
-            }
         }
 
         /*数据展示区*/
