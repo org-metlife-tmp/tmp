@@ -59,14 +59,15 @@
             <img src="../../assets/icon_arrow_up.jpg" alt="" v-show="tableSite" @click="tableSite=!tableSite"/>
             <img src="../../assets/icon_arrow_down.jpg" alt="" v-show="!tableSite" @click="tableSite=!tableSite"/>
             <el-table :data="tableList"
-                      border 
+                      border
                       size="mini"
                       height="81%"
                       max-height="362px">
                 <el-table-column prop="acc_no" label="账户号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="acc_name" label="账户名称" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="acc_attr_name" label="账户属性" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="bal" label="当前余额" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="bank_name" label="所属银行" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="bal" label="当前余额" :show-overflow-tooltip="true" width="100px"></el-table-column>
                 <el-table-column prop="import_time" label="同步时间" :show-overflow-tooltip="true"></el-table-column>
             </el-table>
             <div class="allData">
@@ -94,16 +95,16 @@
 <script>
     import CakePicture from "../echarts/CakePicture.vue";
 
-    export default {    
+    export default {
         name: "HistoryDetail",
         created: function () {
-            
+
             let curDate = new Date();
             let oldDate = new Date();
             oldDate.setFullYear(curDate.getFullYear());
             oldDate.setMonth(curDate.getMonth());
             oldDate.setDate(curDate.getDate()-7);
-            
+
             this.dateValue = [oldDate,curDate];
 
             this.routerMessage.params.start_date = this.dateValue[0];

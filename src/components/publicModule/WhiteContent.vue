@@ -17,7 +17,8 @@
         }
         /*按钮样式*/
         .content .button-list-left,
-        .content .button-list-right {
+        .content .button-list-right,
+        .button-left-bottom {
             position: absolute;
             top: -40px;
         }
@@ -29,7 +30,18 @@
         .content .button-list-right {
             right: 0;
         }
-        .el-button+.el-button {
+
+        .content .button-left-bottom {
+            z-index: 1;
+            width: 196px;
+            top: 6px;
+            left: 0px;
+        }
+        .content .display-none{
+            display: none;
+        }
+
+        .el-button + .el-button {
             margin-left: 4px;
         }
 
@@ -75,7 +87,7 @@
                 }
             }
         }
-        .el-checkbox{
+        .el-checkbox {
             display: block;
             margin-left: 50px;
             line-height: 35px;
@@ -100,11 +112,28 @@
                 <el-button type="primary" plain size="mini" @click="showDialog('dialogVisible')">全部公司</el-button>
                 <!-- <el-button type="primary" plain size="mini">全部银行</el-button> -->
                 <el-button type="primary" plain size="mini" @click="showDialog('accDialogVisible')">账户属性</el-button>
-                <el-button type="primary" plain size="mini" @click="showDialog('inactiveDialogVisible')">账户模式</el-button>
+                <el-button type="primary" plain size="mini" @click="showDialog('inactiveDialogVisible')">账户模式
+                </el-button>
             </div>
             <div class="button-list-right">
                 <el-button type="warning" size="mini">打印</el-button>
                 <el-button type="warning" size="mini">下载</el-button>
+            </div>
+            <div class="button-left-bottom" :class="{'display-none':showAccBank()}">
+                <el-input v-model="accNo" placeholder="请输入账户号" size="mini"
+                          clearable style="width:193px;margin-bottom:4px"
+                          @blur="queryByNo"></el-input>
+                <el-select v-model="bankTypeName" placeholder="请选择银行大类"
+                           clearable filterable size="mini"
+                           :filter-method="filterBankType"
+                           @visible-change="clearSearch"
+                           @change="queryByBank">
+                    <el-option v-for="bankType in bankTypeList"
+                               :key="bankType.name"
+                               :label="bankType.name"
+                               :value="bankType.code">
+                    </el-option>
+                </el-select>
             </div>
             <router-view @transmitTitle="currentTitle= $event"
                          @getTableData="getRouterData"
@@ -112,18 +141,18 @@
         </section>
         <!--请选择公司弹出框-->
         <el-dialog :visible.sync="dialogVisible"
-                    class="comDialog"
+                   class="comDialog"
                    width="810px" title="请选择公司"
                    :close-on-click-modal="false"
                    top="56px">
             <h1 slot="title" class="dialog-title">请选择公司</h1>
             <el-tree
-                :data="treeList"
-                node-key="org_id"
-                show-checkbox
-                ref="tree"
-                default-expand-all
-                :expand-on-click-node="false">
+                    :data="treeList"
+                    node-key="org_id"
+                    show-checkbox
+                    ref="tree"
+                    default-expand-all
+                    :expand-on-click-node="false">
                 <span class="custom-tree-node" slot-scope="{ node, data }">
                     <span>{{ node.data.name }}</span>
                 </span>
@@ -168,14 +197,14 @@
 
     export default {
         name: "WhiteContent",
-        created:function(){
+        created: function () {
             this.$axios({
-                url:"/cfm/commProcess",
-                method:"post",
-                data:{
-                    optype:"org_curlist"
+                url: "/cfm/commProcess",
+                method: "post",
+                data: {
+                    optype: "org_curlist"
                 }
-            }).then((result) =>{
+            }).then((result) => {
                 if (result.data.error_msg) {
                     this.$message({
                         type: "error",
@@ -193,23 +222,30 @@
             let constants = JSON.parse(window.sessionStorage.getItem("constants"));
             let mode = constants.InactiveMode;
             let modeArr = [];
-            for(let i in mode){
+            for (let i in mode) {
                 modeArr.push({
-                    id:i,
-                    name:mode[i]
+                    id: i,
+                    name: mode[i]
                 })
             }
             this.modeList = modeArr;
 
             let accAttrObj = JSON.parse(window.sessionStorage.getItem("catgList"))[0].items;
             let accAttrArr = [];
-            for(let i in accAttrObj){
+            for (let i in accAttrObj) {
                 accAttrArr.push({
-                    id:i,
-                    name:accAttrObj[i]
+                    id: i,
+                    name: accAttrObj[i]
                 })
             }
             this.accAttrList = accAttrArr;
+
+            //银行大类
+            var bankTypeList = JSON.parse(window.sessionStorage.getItem("bankTypeList"));
+            if (bankTypeList) {
+                this.bankAllList = bankTypeList;
+                this.bankTypeList = bankTypeList;
+            }
         },
         data: function () {
             return {
@@ -217,21 +253,26 @@
                 childData: {},
                 loading: false,
                 dialogVisible: false,
-                treeList:[],
-                curRouterParam:{},
-                accDialogVisible:false,
-                inactiveDialogVisible:false,
+                treeList: [],
+                curRouterParam: {},
+                accDialogVisible: false,
+                inactiveDialogVisible: false,
                 modeList: [],
                 checkModeList: [],
                 accAttrList: [],
-                checkAccAttrList: []
+                checkAccAttrList: [],
+                bankTypeName: "", //银行大类
+                bankAllList: [],
+                bankTypeList: [],
+                accNo: "" //账户号
+
             }
         },
         methods: {
-            getRouterData: function (routerData,type) {
-                if(!type){
+            getRouterData: function (routerData, type) {
+                if (!type) {
                     this.curRouterParam = routerData;
-                    if(this.$refs.tree)
+                    if (this.$refs.tree)
                         this.$refs.tree.setCheckedKeys([]);
                     this.checkAccAttrList = [];
                     this.checkModeList = [];
@@ -250,12 +291,12 @@
                             message: result.data.error_msg,
                             duration: 2000
                         })
-                    }else{
+                    } else {
                         var currentData = result.data;
                         this.childData = currentData;
                         this.loading = false;
                         //机构查询后关闭弹框
-                        if(type){
+                        if (type) {
                             this[type] = false;
                         }
                     }
@@ -264,7 +305,7 @@
                 })
             },
             //显示公司弹出框
-            showDialog:function (type) {
+            showDialog: function (type) {
                 this[type] = true;
             },
             //设置树数据的转换
@@ -335,20 +376,70 @@
                 setTree(data, 2);
                 return treeData;
             },
-            queryByOrg:function () {
+            //账户号和银行大类的显示
+            showAccBank: function(){
+                var routerParams = this.curRouterParam;
+                if(routerParams.optype == "yet_curcollectlist"){ //当日余额汇总
+                    return true;
+                }
+                if(routerParams.optype == "yet_hiscollectlist"){ //历史余额汇总
+                    return true;
+                }
+                return false;
+            },
+            //查询
+            queryByOrg: function () {
                 this.curRouterParam.params.org_ids = this.$refs.tree.getCheckedKeys();
                 this.curRouterParam.params.page_num = 1;
-                this.getRouterData(this.curRouterParam,'dialogVisible');
+                this.getRouterData(this.curRouterParam, 'dialogVisible');
             },
-            queryByMode:function () {
+            queryByMode: function () {
                 this.curRouterParam.params.interactive_modes = this.checkModeList;
                 this.curRouterParam.params.page_num = 1;
-                this.getRouterData(this.curRouterParam,'inactiveDialogVisible');
+                this.getRouterData(this.curRouterParam, 'inactiveDialogVisible');
             },
-            queryByAcc:function () {
+            queryByAcc: function () {
                 this.curRouterParam.params.acc_attrs = this.checkAccAttrList;
                 this.curRouterParam.params.page_num = 1;
-                this.getRouterData(this.curRouterParam,'accDialogVisible');
+                this.getRouterData(this.curRouterParam, 'accDialogVisible');
+            },
+            queryByNo: function(){
+                this.curRouterParam.params.acc_no = this.accNo;
+                this.curRouterParam.params.page_num = 1;
+                this.getRouterData(this.curRouterParam, 'accDialogVisible');
+            },
+            queryByBank: function (value) {
+                this.curRouterParam.params.bank_type  = value.trim();
+                this.curRouterParam.params.page_num = 1;
+                this.getRouterData(this.curRouterParam, 'accDialogVisible');
+            },
+            //银行大类搜索筛选
+            filterBankType: function (value) {
+                if (value && value.trim()) {
+                    this.bankTypeList = this.bankAllList.filter(item => {
+                        var chineseReg = /^[\u0391-\uFFE5]+$/; //判断是否为中文
+                        var englishReg = /^[a-zA-Z]+$/; //判断是否为字母
+                        var quanpinReg = /(a[io]?|ou?|e[inr]?|ang?|ng|[bmp](a[io]?|[aei]ng?|ei|ie?|ia[no]|o|u)|pou|me|m[io]u|[fw](a|[ae]ng?|ei|o|u)|fou|wai|[dt](a[io]?|an|e|[aeio]ng|ie?|ia[no]|ou|u[ino]?|uan)|dei|diu|[nl][gh]ei|[jqx](i(ao?|ang?|e|ng?|ong|u)?|u[en]?|uan)|([csz]h?|r)([ae]ng?|ao|e|i|ou|u[ino]?|uan)|[csz](ai?|ong)|[csz]h(ai?|uai|uang)|zei|[sz]hua|([cz]h|r)ong|y(ao?|[ai]ng?|e|i|ong|ou|u[en]?|uan))/; //判断是否为全拼
+
+                        if (chineseReg.test(value)) {
+                            return item.name.toLowerCase().indexOf(value.toLowerCase()) > -1;
+                        } else if (englishReg.test(value)) {
+                            if (quanpinReg.test(value)) {
+                                return item.pinyin.toLowerCase().indexOf(value.toLowerCase()) > -1;
+                            } else {
+                                return item.jianpin.toLowerCase().indexOf(value.toLowerCase()) > -1;
+                            }
+                        }
+                    })
+                } else {
+                    this.bankTypeList = this.bankAllList;
+                }
+            },
+            //银行大类展开时重置数据
+            clearSearch: function () {
+                if (this.bankTypeList != this.bankAllList) {
+                    this.bankTypeList = this.bankAllList;
+                }
             }
         },
         computed: {}

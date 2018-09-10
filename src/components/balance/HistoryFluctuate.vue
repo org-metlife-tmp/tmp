@@ -47,7 +47,7 @@
                 position: absolute;
                 left: 0; right: 0;
                 top: 30%;
-                margin: auto; 
+                margin: auto;
             }
             .nodatalabel {
                 position: absolute;
@@ -73,13 +73,13 @@
             @change="getDateData">
         </el-date-picker>
         <!--折线图-->
-        <LineChart :lineData="lineData" v-if="tableList.length"></LineChart>
+        <LineChart :lineData="lineData"></LineChart>
         <!-- 表格数据 -->
-        <div :class="['table-setion',{'table-up':!tableSite},{'table-down':tableSite}]" v-if="tableList.length">
+        <div :class="['table-setion',{'table-up':!tableSite},{'table-down':tableSite}]">
             <img src="../../assets/icon_arrow_up.jpg" alt="" v-show="tableSite" @click="tableSite=!tableSite"/>
             <img src="../../assets/icon_arrow_down.jpg" alt="" v-show="!tableSite" @click="tableSite=!tableSite"/>
             <el-table :data="tableList"
-                      border 
+                      border
                       size="mini"
                       height="81%"
                       highlight-current-row
@@ -89,11 +89,12 @@
                 <el-table-column prop="acc_name" label="账户名称" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="org_name" label="公司" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="acc_attr_name" label="账户属性" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="bank_name" label="所属银行" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="bal" label="日均余额" :show-overflow-tooltip="true"></el-table-column>
             </el-table>
         </div>
         <!--分页-->
-        <div class="botton-pag" v-if="tableList.length">
+        <div class="botton-pag">
             <el-pagination
                 background
                 layout="sizes, prev, pager, next, jumper"
@@ -106,10 +107,6 @@
                 @size-change="sizeChange">
             </el-pagination>
         </div>
-        <section class="nodatapage" v-if="tableList.length===0">
-            <article class="nodata-img"></article>
-            <article class="nodatalabel">暂无数据</article>
-        </section>
     </div>
 </template>
 
@@ -123,7 +120,7 @@
             oldDate.setFullYear(curDate.getFullYear());
             oldDate.setMonth(curDate.getMonth());
             oldDate.setDate(curDate.getDate()-7);
-            
+
             this.dateValue = [oldDate,curDate];
 
             this.routerMessage.params.start_date = this.dateValue[0];
@@ -237,7 +234,7 @@
                 this.pagSize = val.page_size;
                 this.pagTotal = val.total_line;
                 this.pagCurrent = val.page_num;
-                this.tableList = val.data; 
+                this.tableList = val.data;
                 this.getCurLineData('all');
             }
         }

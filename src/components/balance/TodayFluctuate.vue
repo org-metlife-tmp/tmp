@@ -40,7 +40,7 @@
                 position: absolute;
                 left: 0; right: 0;
                 top: 30%;
-                margin: auto; 
+                margin: auto;
             }
             .nodatalabel {
                 position: absolute;
@@ -48,7 +48,7 @@
                 width: 100%;
             }
         }
-        
+
     }
 </style>
 
@@ -61,7 +61,7 @@
             <img src="../../assets/icon_arrow_up.jpg" alt="" v-show="tableSite" @click="tableSite=!tableSite"/>
             <img src="../../assets/icon_arrow_down.jpg" alt="" v-show="!tableSite" @click="tableSite=!tableSite"/>
             <el-table :data="tableList"
-                      border 
+                      border
                       size="mini"
                       height="81%"
                       highlight-current-row
@@ -70,7 +70,9 @@
                 <el-table-column prop="acc_no" label="账户号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="acc_name" label="账户名称" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="acc_attr_name" label="账户属性" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="bal" label="当前余额" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="bank_name" label="所属银行" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="bal" label="当前余额" :show-overflow-tooltip="true" width="100px"></el-table-column>
+                <el-table-column prop="hisbal" label="期初余额" :show-overflow-tooltip="true" width="100px"></el-table-column>
                 <el-table-column prop="import_time" label="同步时间" :show-overflow-tooltip="true"></el-table-column>
             </el-table>
             <div class="allData">
@@ -199,7 +201,7 @@
                 this.pagSize = val.page_size;
                 this.pagTotal = val.total_line;
                 this.pagCurrent = val.page_num;
-                this.tableList = val.data; 
+                this.tableList = val.data;
                 //设置汇总数据
                 this.recvAll = val.ext ? val.ext.bal : "";
                 this.getCurLineData('all');
