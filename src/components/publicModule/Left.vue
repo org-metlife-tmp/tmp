@@ -486,7 +486,6 @@
         name: "Left",
         created: function () {
             var user = JSON.parse(window.sessionStorage.getItem("user"));
-            debugger
             if (user) {
                 var menuList = user.menu_info;
                 for (var i = 0; i < menuList.length; i++) {

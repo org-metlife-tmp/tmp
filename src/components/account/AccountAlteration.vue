@@ -391,6 +391,23 @@
                             </el-select>
                         </el-form-item>
                     </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="账户用途">
+                            <el-input v-model="dialogData.acc_purpose_name" :disabled="true"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="账户用途">
+                            <el-select v-model="dialogData.$8" placeholder="请选择账户模式"
+                                       clearable>
+                                <el-option v-for="(name,k) in purposeList"
+                                           :key="k"
+                                           :label="name"
+                                           :value="k">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
                     <el-col :span="24" class="form-small-title"><span></span>备注与附件</el-col>
                     <el-col :span="24">
                         <el-form-item label="备注">
@@ -527,6 +544,16 @@
                             <el-input v-model="lookDialogData.$7" :disabled="true"></el-input>
                         </el-form-item>
                     </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="账户用途">
+                            <el-input v-model="lookDialogData.old_8" :disabled="true"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="账户用途">
+                            <el-input v-model="lookDialogData.$8" :disabled="true"></el-input>
+                        </el-form-item>
+                    </el-col>
                     <el-col :span="24" class="form-small-title"><span></span>备注与附件</el-col>
                     <el-col :span="24">
                         <el-form-item label="备注">
@@ -586,7 +613,8 @@
             for (var i = 0; i < catgList.length; i++) {
                 if (catgList[i].code == "acc_attr") {
                     this.attrList = catgList[i].items;
-                    break;
+                }else if(catgList[i].code == "acc_purpose"){
+                    this.purposeList = catgList[i].items;
                 }
             }
             //账户模式
@@ -635,6 +663,7 @@
                     lawfull_man: "",
                     curr_name: "",
                     acc_attr_name: "",
+                    acc_purpose_name:"",
                     interactive_mode: "",
                     $1: "",
                     $2: "",
@@ -643,6 +672,7 @@
                     $5: "",
                     $6: "",
                     $7: "",
+                    $8: "",
                     bankTypeName: "",
                     area: "",
                     files: []
@@ -659,6 +689,7 @@
                     lawfull_man: "",
                     curr_name: "",
                     acc_attr_name: "",
+                    acc_purpose_name:"",
                     interactive_mode: "",
                     $1: "",
                     $2: "",
@@ -667,6 +698,7 @@
                     $5: "",
                     $6: "",
                     $7: "",
+                    $8: "",
                     bankTypeName: "",
                     area: ""
                 },
@@ -694,6 +726,7 @@
                 workflows: [],
                 workflowData: {},
                 businessParams:{},//业务状态追踪参数
+                purposeList:[],//账户用途
             }
         },
         methods: {
@@ -974,7 +1007,8 @@
                             4:"lawfull_man",
                             5:"curr_name",
                             6:"acc_attr_name",
-                            7:"interactive_mode"
+                            7:"interactive_mode",
+                            8:"acc_attr_purpose"
                         }
                         for(var i = 0; i < content.length; i++){
                             var current = content[i];
@@ -995,19 +1029,6 @@
                             data["old_" + key] = value;
                         }
                         this.lookDialogData = data;
-                        // for (var key in data) {
-                        //     //转换变更后数据
-                        //     if(key == "change_content"){
-                        //         var item = data[key];
-                        //         for(var i = 0; i < item.length; i++){
-                        //             var current = item[i];
-                        //             dialogData["$"+current.type] = current.new_value;
-                        //             dialogData["old_"+current.type] = current.old_value;
-                        //         }
-                        //     }else{
-                        //         dialogData[key] = data[key];
-                        //     }
-                        // }
                     }
                 }).catch(function (error) {
                     console.log(error);

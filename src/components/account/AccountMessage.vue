@@ -139,6 +139,8 @@
                                  :formatter="transitInteract"></el-table-column>
                 <el-table-column prop="status" label="账户状态" :show-overflow-tooltip="true"
                                  :formatter="transitStatus"></el-table-column>
+                <el-table-column prop="is_close_confirm" label="销户确认" :show-overflow-tooltip="true"
+                                 :formatter="transitStatus"></el-table-column>
                 <!--SetAccAndMerchStatus-->
                 <el-table-column
                         label="操作" width="80"
@@ -244,7 +246,16 @@
                             <el-input v-model="getInter" :readonly="true"></el-input>
                         </el-form-item>
                     </el-col>
-
+                    <el-col :span="12">
+                        <el-form-item label="存款类型">
+                            <el-input v-model="depositsList[dialogData.deposits_mode]" :readonly="true"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="预留印鉴">
+                            <el-input v-model="dialogData.reserved_seal" :readonly="true"></el-input>
+                        </el-form-item>
+                    </el-col>
                     <el-col :span="24" class="form-small-title"><span></span>账户开户</el-col>
                     <el-col :span="12">
                         <el-form-item label="摘要">
@@ -354,19 +365,22 @@
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="账户用途">
-                            <el-select v-model="editDialogData.acc_purpose" placeholder="请选择账户用途"
-                                       clearable>
-                                <el-option v-for="(name,k) in purposeList"
-                                           :key="k"
-                                           :label="name"
-                                           :value="k">
-                                </el-option>
-                            </el-select>
+                            <el-input v-model="editDialogData.acc_purpose_name" :disabled="true"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="账户模式">
                             <el-input v-model="getEidtInter" :disabled="true"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="存款类型">
+                            <el-input v-model="depositsList[editDialogData.deposits_mode]" :disabled="true"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="预留印鉴">
+                            <el-input v-model="editDialogData.reserved_seal" :disabled="true"></el-input>
                         </el-form-item>
                     </el-col>
                 </el-row>
@@ -391,6 +405,10 @@
             var constants = JSON.parse(window.sessionStorage.getItem("constants"));
             if (constants.InactiveMode) {
                 this.interList = constants.InactiveMode;
+            }
+            //存款类型 
+            if (constants.DepositsMode) {
+                this.depositsList = constants.DepositsMode;
             }
             //账户属性&账户用途
             var catgList = JSON.parse(window.sessionStorage.getItem("catgList"));
@@ -480,6 +498,7 @@
                 attrList: {}, //账户属性
                 orgList: [], // 所属机构
                 purposeList: {}, //账户用途
+                depositsList:[],//存款类型
             }
         },
         methods: {
@@ -500,6 +519,10 @@
             },
             //展示格式转换-账户状态
             transitStatus: function (row, column, cellValue, index) {
+                if(column.property === 'is_close_confirm'){
+                    cellValue = cellValue ? '已确认': '未确认';
+                    return cellValue;
+                }
                 var accountStatus = JSON.parse(window.sessionStorage.getItem("constants")).AccountStatus;
                 return accountStatus[cellValue];
             },

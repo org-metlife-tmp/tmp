@@ -244,6 +244,64 @@
                                       placeholder="请输入事由说明(100字以内)"></el-input>
                         </el-form-item>
                     </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="账户号">
+                            <el-select v-model="dialogData.acc_id" @change="changeAccount" clearable>
+                                <el-option
+                                v-for="item in accOptions"
+                                :key="item.acc_no"
+                                :label="item.acc_no"
+                                :value="item.acc_id">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span=12 style="height:51px"></el-col>
+                    <el-col :span="12">
+                        <el-form-item label="账户名称">
+                            <div class="height30">{{dialogData.account_info.acc_name}}</div>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="所属机构">
+                            <div class="height30">{{dialogData.account_info.org_name}}</div>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="账户法人">
+                            <div class="height30">{{dialogData.account_info.lawfull_man}}</div>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="币种">
+                            <div class="height30">{{dialogData.account_info.curr_name}}</div>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="24">
+                        <el-form-item label="开户行">
+                            <div class="height30">{{dialogData.account_info.bank_name}}</div>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="账户模式">
+                            <div class="height30">{{interList[dialogData.account_info.interactive_mode]}}</div>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="账户用途">
+                            <div class="height30">{{dialogData.account_info.acc_purpose_name}}</div>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="账户属性">
+                            <div class="height30">{{dialogData.account_info.acc_attr_name}}</div>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="存款类型">
+                            <div class="height30">{{depositsList[dialogData.account_info.deposits_mode]}}</div>
+                        </el-form-item>
+                    </el-col>
                     <el-col :span="24">
                         <el-form-item label="附件">
                             <Upload @currentFielList="setFileList"
@@ -308,6 +366,11 @@
                             <el-input v-model="lookDialogData.dept_name" :readonly="true"></el-input>
                         </el-form-item>
                     </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="所属公司">
+                            <el-input v-model="lookDialogData.org_name" :readonly="true"></el-input>
+                        </el-form-item>
+                    </el-col>
                     <el-col :span="24">
                         <el-form-item label="分发人">
                             <ul>
@@ -319,11 +382,6 @@
                         <el-form-item label="办结摘要">
                             <el-input v-model="lookDialogData.finally_memo"
                                       :readonly="true"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="所属公司">
-                            <el-input v-model="lookDialogData.org_name" :readonly="true"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="24">
@@ -339,6 +397,57 @@
                                       type="textarea" :rows="3"
                                       :readonly="true"
                                       placeholder="请输入事由说明(100字以内)"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="账户号">
+                            <div class="height30">{{lookDialogData.account_info.acc_no}}</div>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span=12 style="height:51px"></el-col>
+                    <el-col :span="12">
+                        <el-form-item label="账户名称">
+                            <div class="height30">{{lookDialogData.account_info.acc_name}}</div>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="所属机构">
+                            <div class="height30">{{lookDialogData.account_info.org_name}}</div>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="账户法人">
+                            <div class="height30">{{lookDialogData.account_info.lawfull_man}}</div>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="币种">
+                            <div class="height30">{{lookDialogData.account_info.curr_name}}</div>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="24">
+                        <el-form-item label="开户行">
+                            <div class="height30">{{lookDialogData.account_info.bank_name}}</div>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="账户模式">
+                            <div class="height30">{{interList[lookDialogData.account_info.interactive_mode]}}</div>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="账户用途">
+                            <div class="height30">{{lookDialogData.account_info.acc_purpose_name}}</div>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="账户属性">
+                            <div class="height30">{{lookDialogData.account_info.acc_attr_name}}</div>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="存款类型">
+                            <div class="height30">{{depositsList[lookDialogData.account_info.deposits_mode]}}</div>
                         </el-form-item>
                     </el-col>
                     <el-form-item label="附件">
@@ -484,6 +593,17 @@
                 }
             })
         },
+        mounted: function () {
+            //账户模式
+            var constants = JSON.parse(window.sessionStorage.getItem("constants"));
+            if (constants.InactiveMode) {
+                this.interList = constants.InactiveMode;
+            }
+            //存款类型 
+            if (constants.DepositsMode) {
+                this.depositsList = constants.DepositsMode;
+            }
+        },
         props:["isPending","tableData"],
         components: {
             Upload: Upload,
@@ -521,13 +641,16 @@
                 handleDialogVisible: false,//办结弹框
                 lookDialog: false,//已处理查看弹框
                 dialogData: {
-                    files: []
+                    files: [],
+                    account_info:{}
                 },
                 formLabelWidth: "120px",
                 dialogTitle: "新增",
                 distributeData: {},
                 handleData: {},
-                lookDialogData: {},
+                lookDialogData: {
+                    account_info:{}
+                },
                 issueList:[],
                 currentDoneMatter:{},
                 emptyFileList: [], //附件
@@ -541,6 +664,9 @@
                 workflows: [],
                 workflowData: {},
                 businessParams:{},//业务状态追踪参数
+                accOptions:[],//账户号下拉数据,
+                interList:[],//账户模式
+                depositsList:[],//存款类型
             }
         },
         methods: {
@@ -597,11 +723,26 @@
                 this.emptyFileList = [];
                 //设置当前用户的公司和部门
                 this.getDeptOrg();
+                this.accOptions = [];
+                this.$axios({
+                    url:"/cfm/normalProcess",
+                    method:"post",
+                    data:{
+                        optype:"account_accs",
+                        params:{
+                            status:1,
+                            acc_id:""
+                        }
+                    }
+                }).then((result) =>{
+                    this.accOptions = result.data.data;
+                });
             },
             //编辑当前事项申请
             editMerch:function(row){
                 this.dialogTitle = "编辑";
-                this.dialogVisible = true;
+                this.accOptions = [];
+                
                 //清空数据和校验信息
                 var dialogData = this.dialogData;
                 for(var k in dialogData){
@@ -615,12 +756,47 @@
                 //设置当前用户的部门和公司
                 this.getDeptOrg();
                 //设置弹框数据
-                for(var k in row){
-                    this.dialogData[k] = row[k];
-                }
+                this.$axios({
+                    url: "/cfm/normalProcess",
+                    method: "post",
+                    data: {
+                        optype: "closeacc_detail",
+                        params:{
+                            id:row.id
+                        }
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                    } else {
+                        let data = result.data.data
+                        data.org_name = row.org_name;
+                        data.dept_name = row.dept_name;
+                        this.dialogData = data;
+                        this.dialogVisible = true;
+                    }
+                })
+                
                 //获取附件列表
                 this.fileMessage.bill_id = row.id;
                 this.triggerFile = !this.triggerFile;
+                this.$axios({
+                    url:"/cfm/normalProcess",
+                    method:"post",
+                    data:{
+                        optype:"account_accs",
+                        params:{
+                            status:1,
+                            acc_id:row.acc_id
+                        }
+                    }
+                }).then((result) =>{
+                    this.accOptions = result.data.data;
+                });
             },
             //提交当前修改或新增
             subCurrent:function(){
@@ -824,13 +1000,35 @@
                 this.businessParams = {};//清空数据
                 this.businessParams.biz_type = 6;
                 this.businessParams.id = row.id;
-                this.lookDialog = true;
+               
                 for(var k in this.lookDialogData){
                     this.lookDialogData[k] = "";
                 }
-                for(var key in row){
-                    this.lookDialogData[key] = row[key];
-                }
+                this.$axios({
+                    url: "/cfm/normalProcess",
+                    method: "post",
+                    data: {
+                        optype: "closeacc_detail",
+                        params:{
+                            id:row.id
+                        }
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                    } else {
+                        let data = result.data.data
+                        data.org_name = row.org_name;
+                        data.dept_name = row.dept_name;
+                        data.user_name = row.user_name;
+                        this.lookDialogData = data;
+                        this.lookDialog = true;
+                    }
+                })
                 if(row.issues){
                     this.issueList = row.issues.split(",");
                 }else{
@@ -994,7 +1192,22 @@
             //提交审批流的弹框关闭的时候刷新列表
             beforeCloseDialog:function(){
                 this.$emit('getTableData', this.routerMessage);
-            }
+            },
+            //切换账户号
+            changeAccount:function(cur){
+                this.dialogData.account_info = {};
+                var temp = this.dialogData.account_info;
+                var item = this.accOptions;
+                for(let i=0;i<item.length;i++){
+                    if(item[i].acc_id === cur){
+                        var obj = item[i];
+                        for(let j in obj){
+                            temp[j] = obj[j];
+                        }
+                        break;
+                    }
+                }
+            },
         },
         watch:{
             isPending:function(val,oldVal){
