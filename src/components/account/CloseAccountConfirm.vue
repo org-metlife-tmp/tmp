@@ -1,5 +1,5 @@
 <style scoped lang="less" type="text/less">
-    #accountMessage{
+    #closeAccountConfirm{
         width: 100%;
         height: 100%;
         box-sizing: border-box;
@@ -47,7 +47,7 @@
     }
 </style>
 <style lang="less" type="text/less">
-    #accountMessage {
+    #closeAccountConfirm {
         .el-dialog__wrapper {
             .el-dialog__body {
                 max-height: 400px;
@@ -58,7 +58,7 @@
 </style>
 
 <template>
-    <div id="accountMessage">
+    <div id="closeAccountConfirm">
         <!--搜索区-->
         <div class="search-setion">
             <el-form :inline="true" :model="searchData" size="mini">
@@ -138,8 +138,6 @@
                 <el-table-column prop="interactive_mode" label="账户模式" :show-overflow-tooltip="true"
                                  :formatter="transitInteract"></el-table-column>
                 <el-table-column prop="status" label="账户状态" :show-overflow-tooltip="true"
-                                 :formatter="transitStatus"></el-table-column>
-                <el-table-column prop="is_close_confirm" label="销户确认" :show-overflow-tooltip="true"
                                  :formatter="transitStatus"></el-table-column>
                 <!--SetAccAndMerchStatus-->
                 <el-table-column
@@ -395,9 +393,9 @@
 
 <script>
     export default {
-        name: "AccountMessage",
+        name: "CloseAccountConfirm",
         created: function () {
-            this.$emit("transmitTitle", "账户信息维护");
+            this.$emit("transmitTitle", "销户确认");
             this.$emit("getCommTable", this.routerMessage);
         },
         mounted:function(){
@@ -519,10 +517,6 @@
             },
             //展示格式转换-账户状态
             transitStatus: function (row, column, cellValue, index) {
-                if(column.property === 'is_close_confirm'){
-                    cellValue = cellValue ? '已确认': '未确认';
-                    return cellValue;
-                }
                 var accountStatus = JSON.parse(window.sessionStorage.getItem("constants")).AccountStatus;
                 return accountStatus[cellValue];
             },

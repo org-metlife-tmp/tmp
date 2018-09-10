@@ -324,6 +324,8 @@
                     </el-menu-item>
                     <el-menu-item index="/account/open-account-message" v-if="menuList.AccOpenComAppl">开户信息补录申请
                     </el-menu-item>
+                    <el-menu-item index="/account/open-account-confirm" v-if="menuList.AccOpenConfirm">开户确认
+                    </el-menu-item>
                     <el-menu-item index="/account/account-alteration" v-if="menuList.AccChgAppl">账户变更申请</el-menu-item>
                     <el-menu-item index="/account/account-message" v-if="menuList.AccMtc">账户信息维护</el-menu-item>
                     <el-menu-item index="/account/account-unfreeze" v-if="menuList.AccFreezeAppl">账户解冻申请</el-menu-item>
@@ -331,6 +333,8 @@
                     <el-menu-item index="/account/close-account-matter" v-if="menuList.AccCloseIntAppl">销户事项申请
                     </el-menu-item>
                     <el-menu-item index="/account/close-account-message" v-if="menuList.AccCloseComAppl">销户信息补录申请
+                    </el-menu-item>
+                    <el-menu-item index="/account/close-account-confirm" v-if="menuList.AccCloseConfirm">销户确认
                     </el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
@@ -529,12 +533,14 @@
                     ACCMGT: false, //账户通
                     AccOpenIntAppl: false, //开户事项申请
                     AccOpenComAppl: false, //开户信息补录申请
+                    AccOpenConfirm: false, //开户确认
                     AccChgAppl: false, //账户变更申请
                     AccMtc: false, //账户信息维护
                     AccFreezeAppl: false, //账户解冻申请
                     AccDefreezeAppl: false, //账户冻结申请
                     AccCloseIntAppl: false, //销户事项申请
                     AccCloseComAppl: false, //销户信息补录申请
+                    AccCloseConfirm: false, //销户确认
 
                     WFMGT: false, //审批流管理
                     WFDefine: false, //审批流程定义

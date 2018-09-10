@@ -265,6 +265,115 @@
                                       placeholder="请输入事由说明(100字以内)"></el-input>
                         </el-form-item>
                     </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="银行大类">
+                            <el-select v-model="dialogData.bankType" placeholder="请选择银行大类"
+                                       clearable filterable
+                                       :filter-method="filterBankType"
+                                       @visible-change="clearSearch"
+                                       @change="bankIsSelect">
+                                <el-option v-for="bankType in bankTypeList"
+                                           :key="bankType.name"
+                                           :label="bankType.name"
+                                           :value="bankType.code">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12" style="height:51px"></el-col>
+                    <el-col :span="12">
+                        <el-form-item label="开户地址">
+                            <el-select v-model="dialogData.areaCode"
+                                       filterable remote clearable
+                                       placeholder="请输入地区关键字"
+                                       :remote-method="getAreaList"
+                                       :loading="loading"
+                                       @change="bankIsSelect">
+                                <el-option
+                                        v-for="area in areaList"
+                                        :key="area.name"
+                                        :label="area.name"
+                                        :value="area.code">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="开户行">
+                            <el-select v-model="dialogData.bank_cnaps_code" placeholder="请选择银行"
+                                       clearable filterable
+                                       @visible-change="getBankList"
+                                       :disabled="bankSelect">
+                                <el-option v-for="bankType in bankList"
+                                           :key="bankType.cnaps_code"
+                                           :label="bankType.name"
+                                           :value="bankType.cnaps_code">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="账户基本性质">
+                            <el-select v-model="dialogData.acc_attr" placeholder="请选择账户属性"
+                                       clearable>
+                                <el-option v-for="(name,k) in attrList"
+                                           :key="k"
+                                           :label="name"
+                                           :value="k">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="账户法人">
+                            <el-input v-model="dialogData.lawfull_man"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="账户模式">
+                            <el-select v-model="dialogData.interactive_mode" placeholder="请选择账户模式">
+                                <el-option v-for="(name,k) in interList"
+                                           :key="k"
+                                           :label="name"
+                                           :value="k">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="账户用途">
+                            <el-select v-model="dialogData.acc_purpose" placeholder="请选择账户用途">
+                                <el-option v-for="(name,k) in purposeList"
+                                           :key="k"
+                                           :label="name"
+                                           :value="k">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="币种">
+                            <el-select v-model="dialogData.curr_id" placeholder="请选择币种"
+                                       filterable>
+                                <el-option v-for="currency in currencyList"
+                                           :key="currency.id"
+                                           :label="currency.name"
+                                           :value="currency.id">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="存款类型">
+                            <el-select v-model="dialogData.deposits_mode" filterable>
+                                <el-option v-for="(name,k) in depositsList"
+                                           :key="k"
+                                           :label="name"
+                                           :value="k">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
                     <el-col :span="24">
                         <el-form-item label="附件">
                             <Upload @currentFielList="setFileList"
@@ -360,6 +469,41 @@
                                       type="textarea" :rows="3"
                                       :readonly="true"
                                       placeholder="请输入事由说明(100字以内)"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="开户行">
+                            <el-input v-model="lookDialogData.bank_name" :readonly="true"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="账户基本性质">
+                            <el-input v-model="lookDialogData.acc_attr_name" :readonly="true"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="账户法人">
+                            <el-input v-model="lookDialogData.lawfull_man" :readonly="true"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="账户模式">
+                            <el-input v-model="interList[lookDialogData.interactive_mode]" :readonly="true"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="账户用途">
+                            <el-input v-model="lookDialogData.acc_attr_purpose" :readonly="true"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="币种">
+                            <el-input v-model="lookDialogData.curr_name" :readonly="true"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="存款类型">
+                            <el-input v-model="depositsList[lookDialogData.deposits_mode]" :readonly="true"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="24">
@@ -493,6 +637,37 @@
                 }
             })
         },
+        mounted:function(){
+            //银行大类
+            var bankTypeList = JSON.parse(window.sessionStorage.getItem("bankTypeList"));
+            if (bankTypeList) {
+                this.bankAllList = bankTypeList;
+                this.bankTypeList = bankTypeList;
+            }
+            //币种
+            var currencyList = JSON.parse(window.sessionStorage.getItem("selectCurrencyList"));
+            if (currencyList) {
+                this.currencyList = currencyList;
+            }
+            //账户属性&账户用途
+            var catgList = JSON.parse(window.sessionStorage.getItem("catgList"));
+            for (var i = 0; i < catgList.length; i++) {
+                if (catgList[i].code == "acc_attr") {
+                    this.attrList = catgList[i].items;
+                }else if(catgList[i].code == "acc_purpose"){
+                    this.purposeList = catgList[i].items;
+                }
+            }
+            //账户模式
+            var constants = JSON.parse(window.sessionStorage.getItem("constants"));
+            if (constants.InactiveMode) {
+                this.interList = constants.InactiveMode;
+            }
+            //存款类型 
+            if (constants.DepositsMode) {
+                this.depositsList = constants.DepositsMode;
+            }
+        },
         props: ["isPending", "tableData"],
         components: {
             Upload: Upload,
@@ -553,6 +728,18 @@
                 workflows: [],
                 workflowData: {},
                 businessParams:{},//业务状态追踪参数
+                currencyList:[],//币种
+                interList:[],//账户模式
+                attrList:[],//账户属性
+                depositsList:[],//存款类型
+                bankAllList: [], //银行大类全部
+                bankTypeList: [], //银行大类
+                areaList: [], //地区
+                loading: false, //地区加载状态
+                bankList: [], //银行
+                bankSelect: true, //银行可选控制
+                purposeList:[],//账户用途
+                curBank:{},
             }
         },
         methods: {
@@ -612,13 +799,44 @@
             editMerch: function (row) {
                 //清空数据
                 this.addAccountMatter();
-
                 //设置弹框数据
                 this.dialogTitle = "编辑";
-                this.currentMatter = row; //保存当前数据
-                for (var k in row) {
-                    this.dialogData[k] = row[k];
-                }
+                //查询详情
+                this.$axios({
+                    url: "/cfm/normalProcess",
+                    method: "post",
+                    data: {
+                        optype: "openintent_detail",
+                        params:{
+                            id:row.id
+                        }
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                    } else {
+                        let data = result.data.data
+                        this.dialogData = data;
+                        this.dialogData['deposits_mode'] = data['deposits_mode']+"";
+                        this.dialogData['interactive_mode'] = data['interactive_mode']+"";
+                        if (data.area_code && data.bank_type) {
+                            this.bankSelect = false;
+                        }
+                        this.curBank.areaCode = data.area_code;
+                        this.curBank.bankType = data.bank_type;
+                        //添加开户行下拉数据
+                        if(row.bank_cnaps_code){
+                            this.$set(this.bankList, 0, {
+                                cnaps_code: data.bank_cnaps_code,
+                                name: data.bank_name
+                            })
+                        }
+                    }
+                })
                 //获取附件列表
                 this.fileMessage.bill_id = row.id;
                 this.triggerFile = !this.triggerFile;
@@ -626,6 +844,8 @@
             //提交当前修改或新增
             subCurrent: function () {
                 var params = this.dialogData;
+                params.area_code = this.curBank.areaCode;
+                params.bank_type = this.curBank.bankType;
                 var optype = "";
                 if (!params.id) {
                     optype = "openintent_add";
@@ -754,9 +974,29 @@
                 for (var k in this.lookDialogData) {
                     this.lookDialogData[k] = "";
                 }
-                for (var key in row) {
-                    this.lookDialogData[key] = row[key];
-                }
+                //查询详情
+                this.$axios({
+                    url: "/cfm/normalProcess",
+                    method: "post",
+                    data: {
+                        optype: "openintent_detail",
+                        params:{
+                            id:row.id
+                        }
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                    } else {
+                        let data = result.data.data
+                        this.lookDialogData = data;
+                        this.lookDialogData.user_name = row.user_name;
+                    }
+                })
                 if (row.issue) {
                     this.issueList = row.issue.split(",");
                 } else {
@@ -1005,6 +1245,96 @@
             //提交审批流的弹框关闭的时候刷新列表
             beforeCloseDialog:function(){
                 this.$emit('getTableData', this.routerMessage);
+            },
+            //银行大类搜索筛选
+            filterBankType: function (value) {
+                if (value && value.trim()) {
+                    this.bankTypeList = this.bankAllList.filter(item => {
+                        var chineseReg = /^[\u0391-\uFFE5]+$/; //判断是否为中文
+                        var englishReg = /^[a-zA-Z]+$/; //判断是否为字母
+                        var quanpinReg = /(a[io]?|ou?|e[inr]?|ang?|ng|[bmp](a[io]?|[aei]ng?|ei|ie?|ia[no]|o|u)|pou|me|m[io]u|[fw](a|[ae]ng?|ei|o|u)|fou|wai|[dt](a[io]?|an|e|[aeio]ng|ie?|ia[no]|ou|u[ino]?|uan)|dei|diu|[nl][gh]ei|[jqx](i(ao?|ang?|e|ng?|ong|u)?|u[en]?|uan)|([csz]h?|r)([ae]ng?|ao|e|i|ou|u[ino]?|uan)|[csz](ai?|ong)|[csz]h(ai?|uai|uang)|zei|[sz]hua|([cz]h|r)ong|y(ao?|[ai]ng?|e|i|ong|ou|u[en]?|uan))/; //判断是否为全拼
+
+                        if (chineseReg.test(value)) {
+                            return item.name.toLowerCase().indexOf(value.toLowerCase()) > -1;
+                        } else if (englishReg.test(value)) {
+                            if (quanpinReg.test(value)) {
+                                return item.pinyin.toLowerCase().indexOf(value.toLowerCase()) > -1;
+                            } else {
+                                return item.jianpin.toLowerCase().indexOf(value.toLowerCase()) > -1;
+                            }
+                        }
+                    })
+                } else {
+                    this.bankTypeList = this.bankAllList;
+                }
+            },
+            //银行大类展开时重置数据
+            clearSearch: function () {
+                if (this.bankTypeList != this.bankAllList) {
+                    this.bankTypeList = this.bankAllList;
+                }
+            },
+            //银行大类/地址变化后判断银行是否可选
+            bankIsSelect: function (value) {
+                this.bankList = [];
+                if (this.dialogData.areaCode && this.dialogData.bankType) {
+                    this.bankSelect = false;
+                } else {
+                    this.bankSelect = true;
+                }
+            },
+            //地区数据
+            getAreaList: function (query) {
+                if (query && query.trim()) {
+                    this.loading = true;
+                    this.$axios({
+                        url: "/cfm/commProcess",
+                        method: "post",
+                        data: {
+                            optype: "area_list",
+                            params: {
+                                query_key: query.trim()
+                            }
+                        }
+                    }).then((result) => {
+                        if (result.data.error_msg) {
+
+                        } else {
+                            this.loading = false;
+                            this.areaList = result.data.data;
+                        }
+                    }).catch(function (error) {
+                        console.log(error);
+                    })
+                } else {
+                    this.areaList = [];
+                }
+            },
+            //获取银行列表
+            getBankList: function (status) {
+                if (status) {
+                    var area_code = this.dialogData.areaCode;
+                    var bank_type = this.dialogData.bankType;
+
+                    this.$axios({
+                        url: "/cfm/commProcess",
+                        method: "post",
+                        data: {
+                            optype: "bank_list",
+                            params: {
+                                area_code: area_code,
+                                bank_type: bank_type
+                            }
+                        }
+                    }).then((result) => {
+                        if (result.data.error_msg) {
+                        } else {
+                            this.bankList = result.data.data;
+                        }
+                    }).catch(function (error) {
+                        console.log(error);
+                    })
+                }
             }
         },
         computed: {

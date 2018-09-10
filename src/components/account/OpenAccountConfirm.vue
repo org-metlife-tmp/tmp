@@ -1,5 +1,5 @@
 <style scoped lang="less" type="text/less">
-    #accountMessage{
+    #openAccountConfirm{
         width: 100%;
         height: 100%;
         box-sizing: border-box;
@@ -47,7 +47,7 @@
     }
 </style>
 <style lang="less" type="text/less">
-    #accountMessage {
+    #openAccountConfirm {
         .el-dialog__wrapper {
             .el-dialog__body {
                 max-height: 400px;
@@ -58,7 +58,7 @@
 </style>
 
 <template>
-    <div id="accountMessage">
+    <div id="openAccountConfirm">
         <!--搜索区-->
         <div class="search-setion">
             <el-form :inline="true" :model="searchData" size="mini">
@@ -138,8 +138,6 @@
                 <el-table-column prop="interactive_mode" label="账户模式" :show-overflow-tooltip="true"
                                  :formatter="transitInteract"></el-table-column>
                 <el-table-column prop="status" label="账户状态" :show-overflow-tooltip="true"
-                                 :formatter="transitStatus"></el-table-column>
-                <el-table-column prop="is_close_confirm" label="销户确认" :show-overflow-tooltip="true"
                                  :formatter="transitStatus"></el-table-column>
                 <!--SetAccAndMerchStatus-->
                 <el-table-column
@@ -309,7 +307,17 @@
                      :label-width="formLabelWidth">
                 <el-row>
                     <el-col :span="12">
-                        <el-form-item label="账户号">
+                        <el-form-item label="申请公司">
+                            <el-input v-model="editDialogData.acc_no" :disabled="true"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="开户日期">
+                            <el-input v-model="editDialogData.open_date" :disabled="true"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="银行账号">
                             <el-input v-model="editDialogData.acc_no" :disabled="true"></el-input>
                         </el-form-item>
                     </el-col>
@@ -319,8 +327,13 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="所属机构">
-                            <el-input v-model="editDialogData.org_name" :disabled="true"></el-input>
+                        <el-form-item label="开户行">
+                            <el-input v-model="editDialogData.bank_name" :disabled="true"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="账户性质">
+                            <el-input v-model="editDialogData.acc_attr_name" :disabled="true"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
@@ -329,11 +342,26 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="开户行">
+                        <el-form-item label="账户用途">
+                            <el-input v-model="editDialogData.lawfull_man" :disabled="true"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="账户模式">
+                            <el-input v-model="editDialogData.lawfull_man" :disabled="true"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="币种">
                             <el-input v-model="editDialogData.bank_name" :disabled="true"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
+                        <el-form-item label="存款类型">
+                            <el-input v-model="depositsList[editDialogData.deposits_mode]" :disabled="true"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="24">
                         <el-form-item label="开户行地址">
                             <el-input v-model="editDialogData.bank_address"></el-input>
                         </el-form-item>
@@ -344,43 +372,23 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="联系电话">
+                        <el-form-item label="联系人电话">
                             <el-input v-model="editDialogData.bank_contact_phone"></el-input>
                         </el-form-item>
                     </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="币种">
-                            <el-input v-model="editDialogData.currency_name" :disabled="true"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="开户时间">
-                            <el-input v-model="editDialogData.open_date" :disabled="true"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="账户属性">
-                            <el-input v-model="editDialogData.acc_attr_name" :disabled="true"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="账户用途">
-                            <el-input v-model="editDialogData.acc_purpose_name" :disabled="true"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="账户模式">
-                            <el-input v-model="getEidtInter" :disabled="true"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="存款类型">
-                            <el-input v-model="depositsList[editDialogData.deposits_mode]" :disabled="true"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
+                    <el-col :span="24">
                         <el-form-item label="预留印鉴">
                             <el-input v-model="editDialogData.reserved_seal" :disabled="true"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="24">
+                        <el-form-item label="备注">
+                            <el-input type="textarea" v-model="editDialogData.memo" :disabled="true"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="会计科目代码">
+                            <el-input v-model="editDialogData.reserved_seal" :readonly="true"></el-input>
                         </el-form-item>
                     </el-col>
                 </el-row>
@@ -395,9 +403,9 @@
 
 <script>
     export default {
-        name: "AccountMessage",
+        name: "OpenAccountConfirm",
         created: function () {
-            this.$emit("transmitTitle", "账户信息维护");
+            this.$emit("transmitTitle", "开户确认");
             this.$emit("getCommTable", this.routerMessage);
         },
         mounted:function(){
@@ -438,7 +446,7 @@
         data: function () {
             return {
                 routerMessage: { //本页数据获取参数
-                    optype: "account_list",
+                    optype: "accconfirm_list",
                     params: {
                         page_size: 7,
                         page_num: 1
@@ -519,10 +527,6 @@
             },
             //展示格式转换-账户状态
             transitStatus: function (row, column, cellValue, index) {
-                if(column.property === 'is_close_confirm'){
-                    cellValue = cellValue ? '已确认': '未确认';
-                    return cellValue;
-                }
                 var accountStatus = JSON.parse(window.sessionStorage.getItem("constants")).AccountStatus;
                 return accountStatus[cellValue];
             },

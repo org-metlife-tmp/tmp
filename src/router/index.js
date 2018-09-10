@@ -28,12 +28,14 @@ import MoveWithhold from '@/components/realtimeTrade/MoveWithhold'
 //账户通
 import OpenAccountMatter from '@/components/account/OpenAccountMatter'
 import OpenAccountMessage from '@/components/account/OpenAccountMessage'
+import OpenAccountConfirm from '@/components/account/OpenAccountConfirm'
 import AccountAlteration from '@/components/account/AccountAlteration'
 import AccountMessage from '@/components/account/AccountMessage'
 import AccountUnfreeze from '@/components/account/AccountUnfreeze'
 import AccountFreeze from '@/components/account/AccountFreeze'
 import CloseAccountMatter from '@/components/account/CloseAccountMatter'
 import CloseAccountMessage from '@/components/account/CloseAccountMessage'
+import CloseAccountConfirm from '@/components/account/CloseAccountConfirm'
 //余额通
 import TodayDetail from '@/components/balance/TodayDetail'
 import TodayAll from '@/components/balance/TodayAll'
@@ -124,6 +126,8 @@ const router = new Router({
                         {path: '/realtime-trade/move-withhold', name: 'MoveWithhold', component: MoveWithhold, meta: {requireAuth: true}},
                         //账户通
                         {path: '/account/account-message', name: 'AccountMessage', component: AccountMessage, meta: {requireAuth: true}},
+                        {path: '/account/open-account-confirm', name: 'OpenAccountConfirm', component: OpenAccountConfirm, meta: {requireAuth: true}},
+                        {path: '/account/close-account-confirm', name: 'CloseAccountConfirm', component: CloseAccountConfirm, meta: {requireAuth: true}},
                         //审批流管理
                         {path: '/workflow/workflow-definition', name: 'WorkflowDefinition', component: WorkflowDefinition, meta: {requireAuth: true}},
                         {path: '/workflow/workflow-trace', name: 'WorkflowTrace', component: WorkflowTrace, meta: {requireAuth: true}},

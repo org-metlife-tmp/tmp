@@ -260,6 +260,16 @@
                             <div class="height30">{{dialogData.acc_purpose_name}}</div>
                         </el-form-item>
                     </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="账户属性">
+                            <div class="height30">{{dialogData.acc_attr_name}}</div>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="存款类型">
+                            <div class="height30">{{depositsList[dialogData.deposits_mode]}}</div>
+                        </el-form-item>
+                    </el-col>
                     <el-col :span="24" class="form-small-title">
                         <span></span>
                         <span>备注与附件</span>
@@ -320,6 +330,13 @@
             this.$emit("getTableData",this.routerMessage);
 
         },
+        mounted: function () {
+            var constants = JSON.parse(window.sessionStorage.getItem("constants"));
+            //存款类型 
+            if (constants.DepositsMode) {
+                this.depositsList = constants.DepositsMode;
+            }
+        },
         props:["isPending","tableData"],
         components: {
             Upload: Upload,
@@ -370,7 +387,8 @@
                 workflows: [],
                 workflowData: {},
                 businessParams:{},//业务状态追踪参数,
-                businessTrack:false
+                businessTrack:false,
+                depositsList:[],//存款类型
             }
         },
         methods: {
@@ -491,14 +509,10 @@
                 var item = this.accOptions;
                 for(let i=0;i<item.length;i++){
                     if(item[i].acc_no === cur){
-                        temp.acc_name = item[i].acc_name;
-                        temp.org_name = item[i].org_name;
-                        temp.lawfull_man = item[i].lawfull_man;
-                        temp.bank_name = item[i].bank_name;
-                        temp.curr_name = item[i].curr_name;
-                        temp.interactive_mode = item[i].interactive_mode;
-                        temp.acc_purpose_name = item[i].acc_purpose_name;
-                        temp.acc_id = item[i].acc_id;
+                        var obj = item[i];
+                        for(let j in obj){
+                            temp[j] = obj[j];
+                        }
                         break;
                     }
                 }

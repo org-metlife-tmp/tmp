@@ -270,7 +270,7 @@
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="账户法人">
-                            <el-input v-model="dialogData.lawfull_man"></el-input>
+                            <el-input v-model="dialogData.lawfull_man" :readonly="true"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="18">
@@ -337,14 +337,7 @@
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="币种">
-                            <el-select v-model="dialogData.curr_id" placeholder="请选择币种"
-                                       filterable clearable>
-                                <el-option v-for="currency in currencyList"
-                                           :key="currency.id"
-                                           :label="currency.name"
-                                           :value="currency.id">
-                                </el-option>
-                            </el-select>
+                            <el-input v-model="dialogData.curr_name" :readonly="true"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
@@ -361,38 +354,27 @@
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="账户属性">
-                            <el-select v-model="dialogData.acc_attr" placeholder="请选择账户属性"
-                                       filterable clearable>
-                                <el-option v-for="attr in attrList"
-                                           :key="attr.key"
-                                           :label="attr.value"
-                                           :value="attr.key">
-                                </el-option>
-                            </el-select>
+                            <el-input v-model="dialogData.acc_attr_name" :readonly="true"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="账户用途">
-                            <el-select v-model="dialogData.acc_purpose" placeholder="请选择账户用途"
-                                       filterable clearable>
-                                <el-option v-for="purpose in purposeList"
-                                           :key="purpose.key"
-                                           :label="purpose.value"
-                                           :value="purpose.key">
-                                </el-option>
-                            </el-select>
+                            <el-input v-model="dialogData.acc_purpose_name" :readonly="true"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="账户模式">
-                            <el-select v-model="dialogData.interactive_mode" placeholder="请选择账户模式"
-                                       filterable clearable>
-                                <el-option v-for="(name,k) in interList"
-                                           :key="k"
-                                           :label="name"
-                                           :value="k">
-                                </el-option>
-                            </el-select>
+                            <el-input v-model="interList[dialogData.interactive_mode]" :readonly="true"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="存款类型">
+                            <el-input v-model="depositsList[dialogData.deposits_mode]" :readonly="true"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="预留印鉴">
+                            <el-input v-model="dialogData.reserved_seal"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="24" class="form-small-title">
@@ -629,6 +611,16 @@
                             </el-select>
                         </el-form-item>
                     </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="存款类型">
+                            <el-input v-model="depositsList[lookDialogData.deposits_mode]" :readonly="true"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="预留印鉴">
+                            <el-input v-model="lookDialogData.reserved_seal" :readonly="true"></el-input>
+                        </el-form-item>
+                    </el-col>
                     <el-col :span="24" class="form-small-title">
                         <span></span>
                         <span>备注与附件</span>
@@ -735,6 +727,10 @@
             if (constants.InactiveMode) {
                 this.interList = constants.InactiveMode;
             }
+            //存款类型 
+            if (constants.DepositsMode) {
+                this.depositsList = constants.DepositsMode;
+            }
         },
         props: ["isPending", "tableData"],
         components: {
@@ -810,6 +806,7 @@
                 workflows: [],
                 workflowData: {},
                 businessParams:{},//业务状态追踪参数
+                depositsList:[],//存款类型
             }
         },
         methods: {

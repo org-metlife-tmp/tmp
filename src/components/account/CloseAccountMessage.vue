@@ -234,14 +234,7 @@
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="账户号">
-                            <el-select v-model="dialogData.acc_no" @change="changeAccount" clearable :disabled="lookDisabled">
-                                <el-option
-                                v-for="item in accOptions"
-                                :key="item.acc_no"
-                                :label="item.acc_no"
-                                :value="item.acc_no">
-                                </el-option>
-                            </el-select>
+                            <div class="height30">{{dialogData.acc_no}}</div>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
@@ -271,12 +264,22 @@
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="账户模式">
-                            <div class="height30" v-text="getInactiveMode"></div>
+                            <div class="height30">{{interList[dialogData.deposits_mode]}}</div>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="账户用途">
                             <div class="height30">{{dialogData.acc_purpose_name}}</div>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="账户属性">
+                            <div class="height30">{{dialogData.acc_attr_name}}</div>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="存款类型">
+                            <div class="height30">{{depositsList[dialogData.deposits_mode]}}</div>
                         </el-form-item>
                     </el-col>
                     <el-col :span="24">
@@ -362,6 +365,17 @@
             this.$emit("getTableData", this.routerMessage);
 
         },
+        mounted: function () {
+            //账户模式
+            var constants = JSON.parse(window.sessionStorage.getItem("constants"));
+            if (constants.InactiveMode) {
+                this.interList = constants.InactiveMode;
+            }
+            //存款类型 
+            if (constants.DepositsMode) {
+                this.depositsList = constants.DepositsMode;
+            }
+        },
         props:["isPending","tableData"],
         components: {
             Upload: Upload,
@@ -413,7 +427,9 @@
                 workflows: [],
                 workflowData: {},
                 businessParams:{},//业务状态追踪参数
-                businessTrack:false
+                businessTrack:false,
+                interList:[],//账户模式
+                depositsList:[],//存款类型
             }
         },
         methods: {
@@ -469,43 +485,21 @@
                 //带出原有值
                 row.apply_on = row.apply_on?row.apply_on.split(" ")[0]:"";
                 this.currentMessage = row;
-                this.dialogData.apply_on = row.apply_on;
-                this.dialogData.aci_memo = row.aci_memo;
-                this.dialogData.relation_id = row.relation_id;
-                this.dialogData.service_serial_number = row.service_serial_number;
-                this.dialogData.detail = row.detail;
-                this.dialogData.id = row.id;
-                if(!type){
-                   row.acc_id = row.acc_id ? row.acc_id : "";
-                    this.$axios({
-                        url:"/cfm/normalProcess",
-                        method:"post",
-                        data:{
-                            optype:"account_accs",
-                            params:{
-                                status:1,
-                                acc_id:row.acc_id
-                            }
-                        }
-                    }).then((result) =>{
-                        if (result.data.error_msg) {
-                            this.$message({
-                                type: "error",
-                                message: result.data.error_msg,
-                                duration: 2000
-                            })
-                        } else{
-                            this.accOptions = result.data.data;
-                        }
-                    });
-                }else{
+                for(var i in row){
+                    this.dialogData[i] = row[i];
+                }
+                // this.dialogData.apply_on = row.apply_on;
+                // this.dialogData.aci_memo = row.aci_memo;
+                // this.dialogData.relation_id = row.relation_id;
+                // this.dialogData.service_serial_number = row.service_serial_number;
+                // this.dialogData.detail = row.detail;
+                // this.dialogData.id = row.id;
+                if(type){
                     this.businessTrack = true;
                     this.businessParams = {};//清空数据
                     this.businessParams.biz_type = 7;
                     this.businessParams.id = row.id;
                 }
-
-
                 if(row.service_status != "12" && row.id){//修改
                     this.dialogTitle = type == 'look' ? '销户信息补录查看': '销户信息补录修改'
                     this.lookDisabled = type == 'look' ? true : false;
@@ -542,24 +536,6 @@
 
                 }else{//待处理状态下为新增功能
                     this.dialogVisible = true;
-                }
-            },
-            //切换账户号
-            changeAccount:function(cur){
-                var temp = this.dialogData;
-                var item = this.accOptions;
-                for(let i=0;i<item.length;i++){
-                    if(item[i].acc_no === cur){
-                        temp.acc_name = item[i].acc_name;
-                        temp.org_name = item[i].org_name;
-                        temp.lawfull_man = item[i].lawfull_man;
-                        temp.bank_name = item[i].bank_name;
-                        temp.curr_name = item[i].curr_name;
-                        temp.interactive_mode = item[i].interactive_mode;
-                        temp.acc_purpose_name = item[i].acc_purpose_name;
-                        temp.acc_id = item[i].acc_id;
-                        break;
-                    }
                 }
             },
             //添加销户交易
@@ -811,14 +787,6 @@
                     return 5;
                 }else{
                     return 8;
-                }
-            },
-            getInactiveMode:function(){
-                var constants = JSON.parse(window.sessionStorage.getItem("constants"));
-                if(constants.InactiveMode && this.dialogData.interactive_mode){
-                    return constants.InactiveMode[this.dialogData.interactive_mode];
-                }else{
-                    return "";
                 }
             }
         },
