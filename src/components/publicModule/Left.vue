@@ -398,6 +398,10 @@
                     <el-menu-item index="/allot/make-bill" v-if="menuList.DbtMkBill">内部调拨-制单</el-menu-item>
                     <el-menu-item index="/allot/payment" v-if="menuList.DbtPayBill">内部调拨-支付</el-menu-item>
                     <el-menu-item index="/allot/look-over" v-if="menuList.DbtViewBill">内部调拨-查看</el-menu-item>
+                    <el-menu-item index="/allot/lot-make-bill">批量调拨-制单</el-menu-item>
+                    <el-menu-item index="/allot/lot-payment">批量调拨-支付</el-menu-item>
+                    <el-menu-item index="/allot/lot-look-over">批量调拨-查看</el-menu-item>
+                    <el-menu-item index="/allot/allot-deal-check">交易核对</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
             <el-submenu index="10">
@@ -428,20 +432,18 @@
                     <el-menu-item index="/payment/deal-check">交易核对</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="12">
+            <!--
+            <el-submenu index="7">
                 <template slot="title" height="200px">
                     <i class="icon-gjt"></i>
                     <p>归集通</p>
                 </template>
                 <el-menu-item-group>
-                    <el-menu-item index="/collection/collection-set">自动归集设置</el-menu-item>
-                    <el-menu-item index="/collection/collection-manage">自动归集管理</el-menu-item>
-                    <el-menu-item index="/collection/collection-look">自动归集查看</el-menu-item>
-                    <el-menu-item index="/collection/collection-statement">自动归集报表</el-menu-item>
-                    <el-menu-item index="/collection/colle-deal-check">交易核对</el-menu-item>
+                    <el-menu-item index="1-1">选项1</el-menu-item>
+                    <el-menu-item index="1-2">选项2</el-menu-item>
+                    <el-menu-item index="1-3">选项3</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
-            <!--
             <el-submenu index="10">
                 <template slot="title" height="200px">
                     <i class="icon-zjys"></i>
