@@ -422,9 +422,15 @@
                         <el-col v-else-if="detail.label"
                                 :key="detail.id"
                                 :span="detail.lspan" class="left">{{detail.label}}</el-col>
+                        <el-col  v-else-if="detail.parent"
+                                :key="detail.id" 
+                                :span="detail.pspan">{{hasParent(detail.prop)}}</el-col>
                         <el-col v-else-if="detail.prop=='interactive_mode'" 
                                 :key="detail.id"
                                 :span="detail.pspan">{{interList[dialogData.interactive_mode]}}</el-col>
+                        <el-col v-else-if="detail.prop=='deposits_mode'" 
+                                :key="detail.id"
+                                :span="detail.pspan">{{depositsList[dialogData.deposits_mode]}}</el-col>
                         <el-col v-else-if="detail.prop=='payment_type'" 
                                 :key="detail.id"
                                 :span="detail.pspan">{{dbtTypeList[dialogData.payment_type]}}</el-col>
@@ -440,8 +446,8 @@
                     </template>
                 </el-row>
                 <el-row class="enclosureUp" v-if="dialogData.biz_type=='1' || dialogData.biz_type=='6'">
-                    <el-col :span="6" class="left textName"><span>申请事由说明</span></el-col>
-                    <el-col :span="18" class="mw25" :title="dialogData.detail">
+                    <el-col :span="4" class="left textName"><span>申请事由说明</span></el-col>
+                    <el-col :span="20" class="mw167" :title="dialogData.detail">
                         <el-input v-model="dialogData.detail" readonly
                                     type="textarea" :rows="2"></el-input>
                     </el-col>
@@ -656,10 +662,24 @@
 
             this.detailDialog ={
                 "1":[
-                    {id:"1", lspan:6, label:"编号"},
-                    {id:"2", pspan:18, prop:"service_serial_number"},
-                    {id:"3", lspan:6, label:"事由摘要"},
-                    {id:"4", pspan:18, prop:"memo"}//事由说明字段显示特殊，未写在这里
+                    {id:"1", lspan:4, label:"编号"},
+                    {id:"2", pspan:20, prop:"service_serial_number"},
+                    {id:"3", lspan:4, label:"事由摘要"},
+                    {id:"4", pspan:8, prop:"memo"},//事由说明字段显示特殊，未写在这里
+                    {id:"5", lspan:4, label:"开户行"},
+                    {id:"6", pspan:8, prop:"bank_name"},
+                    {id:"7", lspan:4, label:"账户基本性质"},
+                    {id:"8", pspan:8, prop:"acc_attr_name"},
+                    {id:"9", lspan:4, label:"账户法人"},
+                    {id:"10", pspan:8, prop:"lawfull_man"},
+                    {id:"11", lspan:4, label:"账户模式"},
+                    {id:"12", pspan:8, prop:"interactive_mode"},
+                    {id:"13", lspan:4, label:"账户用途"},
+                    {id:"14", pspan:8, prop:"acc_attr_purpose"},
+                    {id:"15", lspan:4, label:"币种"},
+                    {id:"16", pspan:8, prop:"curr_name"},
+                    {id:"17", lspan:4, label:"存款类型"},
+                    {id:"18", pspan:8, prop:"deposits_mode"}
                 ],
                 "2":[
                     {id:"1", lspan:4, label:"编号"},
@@ -689,9 +709,14 @@
                     {id:"25", lspan:4, label:"账户用途"},
                     {id:"26", pspan:8, prop:"acc_purpose_name"},
                     {id:"27", lspan:4, label:"账户模式"},
-                    {id:"28", pspan:20, prop:"interactive_mode"},
-                    {id:"29", lspan:4, label:"备注"},
-                    {id:"30", pspan:20, prop:"memo"}
+                    {id:"28", pspan:8, prop:"interactive_mode"},
+                    {id:"29", lspan:4, label:"存款类型"},
+                    {id:"30", pspan:8, prop:"deposits_mode"},
+                    {id:"31", lspan:4, label:"预留印鉴"},
+                    {id:"32", pspan:20, prop:"reserved_seal"},
+                    {id:"33", lspan:4, label:"备注"},
+                    {id:"34", pspan:20, prop:"memo"}
+                    
                 ],
                 "3":[
                     {id:"1", lspan:4, label:"编号"},
@@ -730,8 +755,12 @@
                     {id:"34", pspan:8, prop:"old_interactive_mode"},
                     {id:"35", lspan:4, label:"账户模式"},
                     {id:"36", pspan:8, prop:"new_interactive_mode"},
-                    {id:"37", lspan:4, label:"备注"},
-                    {id:"38", pspan:20, prop:"memo"}
+                    {id:"37", lspan:4, label:"账户用途"},
+                    {id:"38", pspan:8, prop:"old_acc_purpose_name"},
+                    {id:"39", lspan:4, label:"账户用途"},
+                    {id:"40", pspan:8, prop:"new_acc_purpose_name"},
+                    {id:"41", lspan:4, label:"备注"},
+                    {id:"42", pspan:20, prop:"memo"}
                 ],
                 "4":[
                     {id:"1", lspan:4, label:"编号"},
@@ -752,8 +781,12 @@
                     {id:"16", pspan:8, prop:"acc_purpose_name"},
                     {id:"17", lspan:4, label:"账户模式"},
                     {id:"18", pspan:8, prop:"interactive_mode"},
-                    {id:"19", lspan:4, label:"备注"},
-                    {id:"20", pspan:20, prop:"memo"}
+                    {id:"19", lspan:4, label:"账户属性"},
+                    {id:"20", pspan:8, prop:"acc_attr_name"},
+                    {id:"21", lspan:4, label:"存款类型"},
+                    {id:"22", pspan:8, prop:"deposits_mode"},
+                    {id:"23", lspan:4, label:"备注"},
+                    {id:"24", pspan:20, prop:"memo"}
                 ],
                 "5":[
                     {id:"1", lspan:4, label:"编号"},
@@ -774,14 +807,38 @@
                     {id:"16", pspan:8, prop:"acc_purpose_name"},
                     {id:"17", lspan:4, label:"账户模式"},
                     {id:"18", pspan:8, prop:"interactive_mode"},
-                    {id:"19", lspan:4, label:"备注"},
-                    {id:"20", pspan:20, prop:"memo"}
+                    {id:"19", lspan:4, label:"账户属性"},
+                    {id:"20", pspan:8, prop:"acc_attr_name"},
+                    {id:"21", lspan:4, label:"存款类型"},
+                    {id:"22", pspan:8, prop:"deposits_mode"},
+                    {id:"23", lspan:4, label:"备注"},
+                    {id:"24", pspan:20, prop:"memo"}
                 ],
                 "6":[
-                    {id:"1", lspan:6, label:"编号"},
-                    {id:"2", pspan:18, prop:"service_serial_number"},
-                    {id:"3", lspan:6, label:"事由摘要"},
-                    {id:"4", pspan:18, prop:"memo"}
+                    {id:"1", lspan:4, label:"编号"},
+                    {id:"2", pspan:20, prop:"service_serial_number"},
+                    {id:"3", lspan:4, label:"事由摘要"},
+                    {id:"4", pspan:20, prop:"memo"},
+                    {id:"5", lspan:4, label:"账户号"},
+                    {id:"6", pspan:8, prop:"acc_no", parent:'account_info'},
+                    {id:"7", lspan:4, label:"账户名称"},
+                    {id:"8", pspan:8, prop:"acc_name", parent:'account_info'},
+                    {id:"9", lspan:4, label:"所属机构"},
+                    {id:"10", pspan:8, prop:"org_name", parent:'account_info'},
+                    {id:"11", lspan:4, label:"账户法人"},
+                    {id:"12", pspan:8, prop:"lawfull_man", parent:'account_info'},
+                    {id:"13", lspan:4, label:"币种"},
+                    {id:"14", pspan:8, prop:"curr_name", parent:'account_info'},
+                    {id:"15", lspan:4, label:"开户行"},
+                    {id:"16", pspan:8, prop:"bank_name", parent:'account_info'},
+                    {id:"17", lspan:4, label:"账户模式"},
+                    {id:"18", pspan:8, prop:"interactive_mode", parent:'account_info'},
+                    {id:"19", lspan:4, label:"账户用途"},
+                    {id:"20", pspan:8, prop:"acc_purpose_name", parent:'account_info'},
+                    {id:"21", lspan:4, label:"账户属性"},
+                    {id:"22", pspan:8, prop:"acc_attr_name", parent:'account_info'},
+                    {id:"23", lspan:4, label:"存款类型"},
+                    {id:"24", pspan:8, prop:"deposits_mode", parent:'account_info'}
                 ],
                 "7":[
                     {id:"1", lspan:4, label:"编号"},
@@ -795,19 +852,21 @@
                     {id:"9", lspan:4, label:"账户法人"},
                     {id:"10", pspan:8, prop:"lawfull_man"},
                     {id:"11", lspan:4, label:"开户行"},
-                    {id:"12", pspan:8, prop:"bank_name"},
-                    {id:"13", lspan:4, label:"开户行地址"},
-                    {id:"14", pspan:8, prop:"bank_address"},
-                    {id:"15", lspan:4, label:"币种"},
-                    {id:"16", pspan:20, prop:"curr_name"},
-                    {id:"17", lspan:4, label:"账户用途"},
-                    {id:"18", pspan:8, prop:"acc_purpose_name"},
-                    {id:"19", lspan:4, label:"账户模式"},
-                    {id:"20", pspan:8, prop:"interactive_mode"},
-                    {id:"21", lspan:4, label:"销户交易"},
-                    {id:"22", pspan:20, prop:"salesTransaction"},
-                    {id:"23", lspan:4, label:"备注"},
-                    {id:"24", pspan:20, prop:"memo"}
+                    {id:"12", pspan:20, prop:"bank_name"},
+                    {id:"13", lspan:4, label:"币种"},
+                    {id:"14", pspan:20, prop:"curr_name"},
+                    {id:"15", lspan:4, label:"账户用途"},
+                    {id:"16", pspan:8, prop:"acc_purpose_name"},
+                    {id:"17", lspan:4, label:"账户模式"},
+                    {id:"18", pspan:8, prop:"interactive_mode"},
+                    {id:"19", lspan:4, label:"账户属性"},
+                    {id:"20", pspan:8, prop:"acc_attr_name"},
+                    {id:"21", lspan:4, label:"存款类型"},
+                    {id:"22", pspan:8, prop:"deposits_mode"},
+                    {id:"23", lspan:4, label:"销户交易"},
+                    {id:"24", pspan:20, prop:"salesTransaction"},
+                    {id:"25", lspan:4, label:"备注"},
+                    {id:"26", pspan:20, prop:"memo"}
                 ],
                 "8":[//调拨通
                     {id:"1", lspan:4, label:"编号"},
@@ -838,6 +897,10 @@
             var constants = JSON.parse(window.sessionStorage.getItem("constants"));
             if (constants.InactiveMode) {
                 this.interList = constants.InactiveMode;
+            }
+            //存款类型 
+            if (constants.DepositsMode) {
+                this.depositsList = constants.DepositsMode;
             }
             //调拨类型
             if (constants.ZjdbType) {
@@ -952,7 +1015,8 @@
                 dialogVisible:false,
                 dialogTitle:"开户事项申请",
                 dialogData:{
-                    encNumber:""
+                    encNumber:"",
+                    account_info:{}
                 },
                 emptyFileList: [], //附件
                 fileMessage: {
@@ -976,10 +1040,11 @@
                 currentDetailDialog:[],//当前详情弹出框
                 classParams:[],// 待办列表optype
                 interList:{},
-                enclosureLWidth:6,
-                enclosurePWidth:18,
+                enclosureLWidth:4,
+                enclosurePWidth:20,
                 dbtTypeList:{},//调拨类型
-                payAmountUp:""//查看详情金额大写
+                payAmountUp:"",//查看详情金额大写
+                depositsList:[],//存款类型
             }
         },
         methods:{
@@ -1134,13 +1199,14 @@
                 this.businessParams.id = id;
                 
                 //附件所占宽度
-                if( bizType === 1 || bizType === 6){
-                    this.enclosureLWidth = 6;
-                    this.enclosurePWidth = 18;
-                }else{
-                    this.enclosureLWidth = 4;
-                    this.enclosurePWidth = 20;
-                }
+                // if( bizType === 1 || bizType === 6){
+                // if(bizType === 6){
+                //     this.enclosureLWidth = 6;
+                //     this.enclosurePWidth = 18;
+                // }else{
+                //     this.enclosureLWidth = 4;
+                //     this.enclosurePWidth = 20;
+                // }
                 this.currentData.wf_inst_id = _index == '0' ? row.id : row.inst_id;
                 // let optype = this.classParams[bizType].detail;
                 this.$axios({
@@ -1193,6 +1259,9 @@
                                 }else if(content[i].type == 7){
                                     data.old_interactive_mode = content[i].old_value;
                                     data.new_interactive_mode = content[i].new_value;
+                                }else if(content[i].type == 8){
+                                    data.old_acc_purpose_name = content[i].old_value;
+                                    data.new_acc_purpose_name = content[i].new_value;
                                 }
                             }
                         }
@@ -1217,6 +1286,7 @@
                         // this.dialogData.memo = data.memo;
                         // this.dialogData.bill_code = data.service_serial_number;
                         //拿附件数据
+                        console.log(this.dialogData)
                         this.fileMessage.bill_id = id;
                         this.fileMessage.biz_type = bizType;
                         this.triggerFile = !this.triggerFile;
@@ -1289,6 +1359,23 @@
                     this.routerMessage.done.params.page_num = 1;
                 }
                 this.$emit("getTableData", this.routerMessage);
+            },
+            hasParent:function(attr){
+                var obj = this.dialogData.account_info;
+                var result = "";
+                if(obj){
+                    result = obj[attr];
+                    if(attr == 'deposits_mode'){
+                        return this.depositsList[result];
+                    }else if(attr == 'interactive_mode'){
+                        return this.interList[result];
+                    }else{
+                        return result;
+                    }
+                }else{
+                    return result;
+                }
+                
             }
         },
         watch: {
