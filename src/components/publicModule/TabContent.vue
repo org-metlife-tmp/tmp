@@ -134,10 +134,10 @@
                 }
             },
             getRouterData:function(params){
-		var url ="/cfm/normalProcess";
-		if(params.optype ==='wfquery_pendingtasksall'){
-			url ="/cfm/commonProcess";
-		}
+                var url ="/cfm/normalProcess";
+                if(params.optype ==='wfquery_pendingtasksall'||params.optype ==='wfquery_processtasksall'){
+                    url ="/cfm/commonProcess";
+                }
                 this.loading = true;
                 this.$axios({
                     url: url,

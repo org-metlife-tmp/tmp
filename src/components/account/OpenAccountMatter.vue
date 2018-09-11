@@ -843,9 +843,7 @@
             },
             //提交当前修改或新增
             subCurrent: function () {
-                debugger
                 var params = this.dialogData;
-                
                 var optype = "";
                 if (!params.id) {
                     optype = "openintent_add";
