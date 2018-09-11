@@ -56,6 +56,9 @@ import MakeBill from '@/components/allot/MakeBill'
 import Payment from '@/components/allot/Payment'
 import LookOver from '@/components/allot/LookOver'
 import MoreBills from '@/components/allot/MoreBills'
+import LotMakeBill from '@/components/allot/LotMakeBill'
+import LotPayment from '@/components/allot/LotPayment'
+import LotLookOver from '@/components/allot/LotLookOver'
 import AllotDealCheck from '@/components/allot/AllotDealCheck'
 //审批流管理
 import WorkflowDefinition from '@/components/workflow/WorkflowDefinition'
@@ -77,12 +80,6 @@ import BatchPayment from '@/components/payment/BatchPayment'
 import BatchLookOver from '@/components/payment/BatchLookOver'
 import PayeeMessage from '@/components/payment/PayeeMessage'
 import DealCheck from '@/components/payment/DealCheck'
-//归集通
-import CollectionSet from '@/components/collection/CollectionSet'
-import CollectionManage from '@/components/collection/CollectionManage'
-import CollectionLook from '@/components/collection/CollectionLook'
-import CollectionStatement from '@/components/collection/CollectionStatement'
-import ColleDealCheck from '@/components/collection/ColleDealCheck'
 
 
 Vue.use(Router)
@@ -144,6 +141,8 @@ const router = new Router({
                         {path: '/allot/payment', name: 'Payment', component: Payment, meta: {requireAuth: true}},
                         {path: '/allot/look-over', name: 'LookOver', component: LookOver, meta: {requireAuth: true}},
                         {path: '/allot/more-bills', name: 'MoreBills', component: MoreBills, meta: {requireAuth: true}},
+                        {path: '/allot/lot-payment', name: 'LotPayment', component: LotPayment, meta: {requireAuth: true}},
+                        {path: '/allot/lot-look-over', name: 'LotLookOver', component: LotLookOver, meta: {requireAuth: true}},
                         //支付通
                         {path: '/payment/pay-payment', name: 'PayPayment', component: PayPayment, meta: {requireAuth: true}},
                         {path: '/payment/pay-look-over', name: 'PayLookOver', component: PayLookOver, meta: {requireAuth: true}},
@@ -155,12 +154,6 @@ const router = new Router({
                         {path: '/calendar/work-section', name: 'WorkSection', component: WorkSection, meta: {requireAuth: true}},
                         {path: '/calendar/the-offer', name: 'TheOffer', component: TheOffer, meta: {requireAuth: true}},
                         {path: '/calendar/closing-day', name: 'ClosingDay', component: ClosingDay, meta: {requireAuth: true}},
-                        //归集通
-                        {path: '/collection/collection-set', name: 'CollectionSet', component: CollectionSet, meta: {requireAuth: true}},
-                        {path: '/collection/collection-manage', name: 'CollectionManage', component: CollectionManage, meta: {requireAuth: true}},
-                        {path: '/collection/collection-look', name: 'CollectionLook', component: CollectionLook, meta: {requireAuth: true}},
-                        {path: '/collection/collection-statement', name: 'CollectionStatement', component: CollectionStatement, meta: {requireAuth: true}},
-                        {path: '/collection/colle-deal-check', name: 'ColleDealCheck', component: ColleDealCheck, meta: {requireAuth: true}},
                     ]
                 },
                 //基础样式三（tab页）
@@ -200,6 +193,7 @@ const router = new Router({
                 //支付通
                 {path: '/payment/pay-make-bill', name: 'PayMakeBill', component: PayMakeBill, meta: {requireAuth: true}},
                 {path: '/payment/batch-make-bill', name: 'BatchMakeBill', component: BatchMakeBill, meta: {requireAuth: true}},
+                {path: '/allot/lot-make-bill', name: 'LotMakeBill', component: LotMakeBill, meta: {requireAuth: true}}
             ]
         }
     ]
