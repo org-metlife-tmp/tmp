@@ -398,6 +398,7 @@
                     <el-menu-item index="/allot/make-bill" v-if="menuList.DbtMkBill">内部调拨-制单</el-menu-item>
                     <el-menu-item index="/allot/payment" v-if="menuList.DbtPayBill">内部调拨-支付</el-menu-item>
                     <el-menu-item index="/allot/look-over" v-if="menuList.DbtViewBill">内部调拨-查看</el-menu-item>
+                    <el-menu-item index="/allot/allot-deal-check">交易核对</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
             <el-submenu index="10">

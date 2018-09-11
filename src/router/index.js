@@ -56,6 +56,7 @@ import MakeBill from '@/components/allot/MakeBill'
 import Payment from '@/components/allot/Payment'
 import LookOver from '@/components/allot/LookOver'
 import MoreBills from '@/components/allot/MoreBills'
+import AllotDealCheck from '@/components/allot/AllotDealCheck'
 //审批流管理
 import WorkflowDefinition from '@/components/workflow/WorkflowDefinition'
 import WorkflowTrace from '@/components/workflow/WorkflowTrace'
@@ -179,6 +180,7 @@ const router = new Router({
                     path:'/dynamic-tab',name:'DynamicTab',component:DynamicTab,
                     children:[
                         {path: '/payment/deal-check', name: 'DealCheck', component: DealCheck, meta: {requireAuth: true}},
+                        {path: '/allot/allot-deal-check', name: 'AllotDealCheck', component: AllotDealCheck, meta: {requireAuth: true}}
                     ]
                 },
                 //调拨通
