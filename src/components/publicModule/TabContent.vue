@@ -136,7 +136,7 @@
             getRouterData:function(params){
                 var url ="/cfm/normalProcess";
                 if(params.optype ==='wfquery_pendingtasksall'||params.optype ==='wfquery_processtasksall'){
-                    url ="/cfm/commonProcess";
+                    url ="/cfm/commProcess";
                 }
                 this.loading = true;
                 this.$axios({
