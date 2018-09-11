@@ -37,7 +37,7 @@
             }
         }
         .botton-pag-center{
-            bottom: 184px;
+            top: 258px;
         }
 
         /*分割线*/
