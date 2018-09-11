@@ -20,8 +20,11 @@
         }
 
         /*数据展示区*/
-        .table-content {
+        .table-content{
             height: 181px;
+        }
+        .table-content.height1 {
+            height: 325px;
         }
 
         /*分页部分*/
@@ -37,7 +40,7 @@
             }
         }
         .botton-pag-center{
-            bottom: 184px;
+            top: 258px;
         }
 
         /*分割线*/
@@ -53,6 +56,19 @@
         }
     }
 </style>
+<style lang="less">
+    #allotDealCheck {
+        .el-dialog__wrapper {
+            .el-dialog__body {
+                height: 400px;
+                overflow-y: scroll;
+            }
+        }
+        .el-table__expanded-cell[class*=cell] {
+            padding: 20px;
+        }
+    }
+</style>
 
 <template>
     <div id="allotDealCheck">
@@ -62,22 +78,22 @@
                 <el-row>
                     <el-col :span="4">
                         <el-form-item>
-                            <el-input v-model="searchData.query_key" placeholder="请输入付款方账号"></el-input>
+                            <el-input v-model="searchData.pay_query_key" placeholder="请输入付款方账号" clearable></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="4" v-if="isPending">
                         <el-form-item>
-                            <el-input v-model="searchData.query_key" placeholder="请输入收款方账号"></el-input>
+                            <el-input v-model="searchData.recv_query_key" placeholder="请输入收款方账号" clearable></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="7">
                         <el-form-item>
                             <el-col :span="11">
-                                <el-input v-model="searchData.query_key" placeholder="最小金额"></el-input>
+                                <el-input v-model="searchData.min" placeholder="最小金额" clearable></el-input>
                             </el-col>
                             <el-col class="line" :span="1" style="text-align:center">-</el-col>
                             <el-col :span="11">
-                                <el-input v-model="searchData.query_key" placeholder="最大金额"></el-input>
+                                <el-input v-model="searchData.max" placeholder="最大金额" clearable></el-input>
                             </el-col>
                         </el-form-item>
                     </el-col>
@@ -92,28 +108,36 @@
         <!--分隔栏-->
         <div class="split-bar"></div>
         <!--数据展示区-->
-        <section class="table-content" v-if="isPending">
+        <section class="table-content" :class="[isPending ? '' : 'height1']">
             <el-table :data="tableList"
                       border
                       height="100%"
+                      highlight-current-row
+                      @row-click="getCurRowData"
+                      @expand-change="getExpandData"
                       size="mini">
-                <el-table-column prop="apply_on" label="付款方账号" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="memo" label="付款银行" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="service_status" label="收款方账号" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="service_status" label="收款方公司名称" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="service_status" label="金额" :show-overflow-tooltip="true"></el-table-column>
-
-                <el-table-column
-                        label="操作" width="50"
-                        fixed="right">
-                    <template slot-scope="scope" class="operationBtn">
-                        <el-tooltip content="查看" placement="bottom" effect="light"
-                                    :enterable="false" :open-delay="500" v-show="!isPending">
-                            <el-button type="primary" icon="el-icon-search" size="mini"
-                                       @click="lookMatter(scope.row)"></el-button>
-                        </el-tooltip>
+                <el-table-column type="expand" v-if="!isPending"> 
+                    <template slot-scope="props" >
+                        <el-table :data="props.row.list"
+                                border
+                                height="100%"
+                                size="mini">
+                            <el-table-column prop="acc_no" label="账户号" :show-overflow-tooltip="true"></el-table-column>
+                            <el-table-column prop="acc_name" label="账户名称" :show-overflow-tooltip="true"></el-table-column>
+                            <el-table-column prop="direction" label="收付方向" :show-overflow-tooltip="true" width="80"></el-table-column>
+                            <el-table-column prop="opp_acc_no" label="对方账户号" :show-overflow-tooltip="true"></el-table-column>
+                            <el-table-column prop="opp_acc_name" label="对方账户号名称" :show-overflow-tooltip="true"></el-table-column>
+                            <el-table-column prop="amount" label="交易金额" :show-overflow-tooltip="true"></el-table-column>
+                            <el-table-column prop="summary" label="摘要" :show-overflow-tooltip="true" width="80"></el-table-column>
+                            <el-table-column prop="trans_date" label="交易时间" :show-overflow-tooltip="true"></el-table-column>
+                        </el-table>
                     </template>
                 </el-table-column>
+                <el-table-column prop="pay_account_no" label="付款方账号" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="pay_account_bank" label="付款银行" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="recv_account_no" label="收款方账号" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="recv_account_name" label="收款方公司名称" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="payment_amount" label="金额" :show-overflow-tooltip="true"></el-table-column>
             </el-table>
         </section>
         <!--分页部分-->
@@ -129,32 +153,24 @@
                     @current-change="getCurrentPage"
                     @size-change="sizeChange">
             </el-pagination>
-            <el-button type="warning" size="mini" @click="" v-show="isPending">确认</el-button>
+            <el-button type="warning" size="mini" @click="transactionConfirm" v-show="isPending">确认</el-button>
         </div>
         <!--主数据关联数据-->
         <section class="table-content" style="margin-top:40px" v-if="isPending">
             <el-table :data="childList"
                       border
                       height="100%"
+                      @selection-change="handleSelectionChange"
                       size="mini">
                 <el-table-column type="selection" width="38"></el-table-column>
-                <el-table-column prop="apply_on" label="付款方账号" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="memo" label="付款银行" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="service_status" label="收款方账号" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="service_status" label="收款方公司名称" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="service_status" label="金额" :show-overflow-tooltip="true"></el-table-column>
-
-                <el-table-column
-                        label="操作" width="50"
-                        fixed="right">
-                    <template slot-scope="scope" class="operationBtn">
-                        <el-tooltip content="查看" placement="bottom" effect="light"
-                                    :enterable="false" :open-delay="500" v-show="!isPending">
-                            <el-button type="primary" icon="el-icon-search" size="mini"
-                                       @click="lookMatter(scope.row)"></el-button>
-                        </el-tooltip>
-                    </template>
-                </el-table-column>
+                <el-table-column prop="acc_no" label="账户号" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="acc_name" label="账户名称" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="direction" label="收付方向" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="opp_acc_no" label="对方账户号" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="opp_acc_name" label="对方账户号名称" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="amount" label="交易金额" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="summary" label="摘要" :show-overflow-tooltip="true" width="80"></el-table-column>
+                <el-table-column prop="trans_date" label="交易时间" :show-overflow-tooltip="true"></el-table-column>
             </el-table>
         </section>
     </div>
@@ -178,28 +194,28 @@
             return {
                 routerMessage: {
                     todo:{
-                        optype: "closeacc_todolist",
+                        optype: "dbttrad_billList",
                         params: {
                             page_size: 7,
                             page_num: 1
                         }
                     },
                     done:{
-                        optype: "closeacc_donelist",
+                        optype: "dbttrad_confirmbillList",
                         params: {
                             page_size: 7,
                             page_num: 1
                         }
                     }
                 },
-                searchData:{
-                    service_status:[]
-                },
+                searchData:{},
                 tableList:[],
                 childList: [],
                 pagSize: 8, //分页数据
                 pagTotal: 1,
                 pagCurrent: 1,
+                selectionList: [],//选中的交易确认
+                currenrRow: {},//当前选中行
             }
         },
         methods: {
@@ -236,22 +252,16 @@
                 };
                 this.$emit("getTableData", this.routerMessage);
             },
-            //已处理事项查看
-            lookMatter:function(row){
-                this.businessParams = {};//清空数据
-                this.businessParams.biz_type = 6;
-                this.businessParams.id = row.id;
-
-                for(var k in this.lookDialogData){
-                    this.lookDialogData[k] = "";
-                }
+            getCurRowData: function (row, event, column) {
                 this.$axios({
-                    url: "/cfm/normalProcess",
-                    method: "post",
-                    data: {
-                        optype: "closeacc_detail",
+                    url:"/cfm/normalProcess",
+                    method:"post",
+                    data:{
+                        optype:"dbttrad_tradingList",
                         params:{
-                            id:row.id
+                            pay_account_no: row.pay_account_no,
+                            recv_account_no: row.recv_account_no,
+                            payment_amount: row.payment_amount
                         }
                     }
                 }).then((result) => {
@@ -262,29 +272,86 @@
                             duration: 2000
                         })
                     } else {
-                        let data = result.data.data
-                        data.org_name = row.org_name;
-                        data.dept_name = row.dept_name;
-                        data.user_name = row.user_name;
-                        this.lookDialogData = data;
-                        this.lookDialog = true;
+                        var data = result.data.data;
+                        this.childList = data;
+                        this.currenrRow = row;
                     }
+                }).catch(function (error) {
+                    console.log(error);
                 })
-                if(row.issues){
-                    this.issueList = row.issues.split(",");
-                }else{
-                    this.issueList = [];
-                }
-                //附件数据
-                this.emptyFileList = [];
-                this.fileMessage.bill_id = row.id;
-                this.triggerFile = !this.triggerFile;
             },
+            handleSelectionChange: function (val) {
+                this.selectionList = val;
+            },
+            transactionConfirm: function () {
+                let trading_no = [];
+                this.selectionList.forEach(element => {
+                    trading_no.push(element.id);
+                });
+                if(trading_no.length){
+                    this.$axios({
+                        url:"/cfm/normalProcess",
+                        method:"post",
+                        data:{
+                            optype:"dbttrad_confirm",
+                            params:{
+                                bill_no: this.currenrRow.id,
+                                trading_no: trading_no
+                            }
+                        }
+                    }).then((result) => {
+                        if (result.data.error_msg) {
+                            this.$message({
+                                type: "error",
+                                message: result.data.error_msg,
+                                duration: 2000
+                            })
+                        } else {
+                            this.$emit("getTableData", this.routerMessage);
+                            this.childList = [];
+                            this.$message({
+                                type: "success",
+                                message: "交易成功！",
+                                duration: 2000
+                            })
+                        }
+                    }).catch(function (error) {
+                        console.log(error);
+                    })
+                }
+            },
+            //点击获取当前展开表格数据
+            getExpandData: function (row, expandedRows) {
+                if(!row.list){
+                    this.$axios({
+                        url:"/cfm/normalProcess",
+                        method:"post",
+                        data:{
+                            optype:"dbttrad_confirmTradingList",
+                            params:{
+                                bill_no: row.id,
+                            }
+                        }
+                    }).then((result) => {
+                        if (result.data.error_msg) {
+                            this.$message({
+                                type: "error",
+                                message: result.data.error_msg,
+                                duration: 2000
+                            })
+                        } else {
+                            var data = result.data.data;
+                            this.$set(row,'list',data);
+                        }
+                    }).catch(function (error) {
+                        console.log(error);
+                    })
+                }
+            }  
         },
         watch:{
             isPending:function(val,oldVal){
-                this.searchData.query_key = "";
-                this.searchData.service_status = [];
+                
             },
             tableData: function (val, oldVal) {
                 this.pagSize = val.page_size;
