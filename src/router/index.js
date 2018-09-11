@@ -80,6 +80,12 @@ import BatchPayment from '@/components/payment/BatchPayment'
 import BatchLookOver from '@/components/payment/BatchLookOver'
 import PayeeMessage from '@/components/payment/PayeeMessage'
 import DealCheck from '@/components/payment/DealCheck'
+//归集通
+import CollectionSet from '@/components/collection/CollectionSet'
+import CollectionManage from '@/components/collection/CollectionManage'
+import CollectionLook from '@/components/collection/CollectionLook'
+import CollectionStatement from '@/components/collection/CollectionStatement'
+import ColleDealCheck from '@/components/collection/ColleDealCheck'
 
 
 Vue.use(Router)
@@ -154,6 +160,12 @@ const router = new Router({
                         {path: '/calendar/work-section', name: 'WorkSection', component: WorkSection, meta: {requireAuth: true}},
                         {path: '/calendar/the-offer', name: 'TheOffer', component: TheOffer, meta: {requireAuth: true}},
                         {path: '/calendar/closing-day', name: 'ClosingDay', component: ClosingDay, meta: {requireAuth: true}},
+                        //归集通
+                        {path: '/collection/collection-set', name: 'CollectionSet', component: CollectionSet, meta: {requireAuth: true}},
+                        {path: '/collection/collection-manage', name: 'CollectionManage', component: CollectionManage, meta: {requireAuth: true}},
+                        {path: '/collection/collection-look', name: 'CollectionLook', component: CollectionLook, meta: {requireAuth: true}},
+                        {path: '/collection/collection-statement', name: 'CollectionStatement', component: CollectionStatement, meta: {requireAuth: true}},
+                        {path: '/collection/colle-deal-check', name: 'ColleDealCheck', component: ColleDealCheck, meta: {requireAuth: true}},
                     ]
                 },
                 //基础样式三（tab页）
