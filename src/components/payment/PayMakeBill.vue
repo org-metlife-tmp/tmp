@@ -208,12 +208,12 @@
                         value-format="yyyy-MM-dd"
                         size="mini">
                 </el-date-picker>
-                <el-select v-model="billData.pay_mode" placeholder="请选择付款方"
+                <el-select v-model="billData.pay_account_id " placeholder="请选择付款方"
                            filterable clearable size="mini">
-                    <el-option v-for="(name,k) in payModeList"
-                               :key="k"
-                               :label="name"
-                               :value="k">
+                    <el-option v-for="item in accOptions"
+                               :key="item.acc_id"
+                               :label="item.acc_no"
+                               :value="item.acc_id">
                     </el-option>
                 </el-select>
                 <div class="serial-number">
@@ -228,37 +228,20 @@
                         <td rowspan="3" class="title-erect">收款人</td>
                         <td class="title-small">户名</td>
                         <td class="empty-input" colspan="4">
-                            <input type="text" placeholder="请输入户名" v-model="billData.payment_summary">
+                            <input type="text" placeholder="请输入户名" v-model="billData.acc_name">
                         </td>
                     </tr>
                     <tr>
                         <td class="title-small">账号</td>
                         <td class="empty-input" colspan="4">
-                            <input type="text" placeholder="请输入账号" v-model="billData.payment_summary">
+                            <input type="text" placeholder="请输入账号" v-model="billData.acc_no">
                         </td>
-                        <!--<td class="select-height" colspan="4">
-                            <el-select v-model="billData.pay_account_id"
-                                       clearable filterable remote
-                                       placeholder="请选择账号"
-                                       :loading="payLoading"
-                                       :remote-method="getPayList"
-                                       @change="selectNumber($event,'payNumber')"
-                                       @visible-change="selectVisible($event,'payNumber')"
-                                       @clear="clearSelect('payNumber')">
-                                <el-option
-                                        v-for="payItem in payList"
-                                        :key="payItem.acc_id"
-                                        :label="payItem.acc_no"
-                                        :value="payItem.acc_id">
-                                </el-option>
-                            </el-select>
-                        </td>-->
                     </tr>
                     <tr>
                         <td>开户行</td>
                         <td class="empty-input" colspan="4">
                             <input type="text" placeholder="请选择开户行"
-                                   v-model="billData.bank_type"
+                                   v-model="billData.bank_type_name"
                                    @focus="dialogVisible = true">
                         </td>
                     </tr>
@@ -353,6 +336,7 @@
                             <el-select v-model="dialogData.cnaps_code" placeholder="请选择银行"
                                        clearable filterable style="width:100%"
                                        @visible-change="getBankList"
+                                       @change="setCNAPS"
                                        :disabled="bankSelect">
                                 <el-option v-for="bankType in bankList"
                                            :key="bankType.cnaps_code"
@@ -364,7 +348,7 @@
                     </el-col>
                     <el-col :span="24">
                         <el-form-item label="CNAPS" :label-width="formLabelWidth">
-                            <el-input v-model="dialogData.acc_no"></el-input>
+                            <el-input v-model="dialogData.bankCNAPS"></el-input>
                         </el-form-item>
                     </el-col>
                 </el-row>
@@ -383,6 +367,21 @@
 
     export default {
         name: "PayMakeBill",
+        created: function(){
+            this.$axios({
+                url:"/cfm/normalProcess",
+                method:"post",
+                data:{
+                    optype:"account_accs",
+                    params:{
+                        status:1,
+                        acc_id:""
+                    }
+                }
+            }).then((result) =>{
+                this.accOptions = result.data.data;
+            });
+        },
         mounted: function(){
             /*获取下拉框数据*/
             //银行大类
@@ -399,13 +398,13 @@
             return {
                 dateValue: new Date(), //申请时间
                 billData: {
-                    pay_mode: "", //付款方式
-                    service_serial_number: "", //单据编号
-                    pay_account_name: "", //付款方
-                    pay_account_id: "",
-                    pay_account_bank: "",
-                    payment_amount: "", //金额
-                    payment_summary: "" //摘要
+                    acc_name: "",
+                    acc_no: "",
+                    cnaps_code: "",
+                    bank_type_name: "",
+                    payment_amount: "",
+                    payment_summary: "",
+                    pay_account_id: ""
                 },
                 moneyText: "", //金额-大写
                 fileMessage: { //附件
@@ -416,16 +415,21 @@
                 fileList: [],
                 fileLength: "",
                 dialogVisible: false, //弹框数据
-                dialogData: {},
+                dialogData: {
+                    bankTypeName: "",
+                    area: "",
+                    cnaps_code:"",
+                    bankCNAPS: "",
+                },
                 formLabelWidth: "100px",
                 bankSelect: true, //银行可选控制
-                bankAllList: [], //下拉框数据
+                bankAllList: [], //弹框下拉框数据
                 bankTypeList: [],
                 areaList: [],
                 loading: false,
                 bankList: [],
-
                 payModeList:{}, //下拉框数据
+                accOptions: []
             }
         },
         methods: {
@@ -519,10 +523,15 @@
                     })
                 }
             },
-            //设置开户行
-            confirmBank: function(){
-                this.billData.bank_type = this.dialogData.cnaps_code;
-                this.dialogVisible = false;
+            //设置CNPAS
+            setCNAPS: function(value){
+                var bankList = this.bankList;
+                for(var i = 0; i < bankList.length; i++){
+                    if(bankList[i].name == value){
+                        this.dialogData.bankCNAPS = bankList[i].cnaps_code;
+                        return;
+                    }
+                }
             },
             //输入金额后进行格式化
             setMoney: function () {
@@ -576,21 +585,41 @@
                     })
                 }
             },
-
-
+            //设置开户行
+            confirmBank: function(){
+                this.billData.cnaps_code = this.dialogData.bankCNAPS;
+                this.billData.bank_type_name = this.dialogData.cnaps_code;
+                this.dialogVisible = false;
+            },
             //清空
             clearBill: function(){
                 var billData = this.billData;
                 for(var k in billData){
-                    billData[k] = "";
+                    if(k != "id" && k != "service_serial_number"){
+                        billData[k] = "";
+                    }
                 }
                 this.moneyText = "";
-                this.allotType = "";
                 this.emptyFileList = [];
             },
-            //更多单据
-            goMoreBills: function(){
-                this.$router.push("/allot/more-bills");
+            //设置params
+            setParams: function(){
+                //校验数据是否完善 并设置发送给后台的数据
+                var billData = this.billData;
+                for(var k in billData){
+                    if(k != "payment_summary" && k != "files" && !billData[k]){
+                        this.$message({
+                            type: "warning",
+                            message: "请完善单据信息",
+                            duration: 2000
+                        });
+                        return false;
+                    }else if(k == "payment_amount"){  //金额
+                        billData[k] = billData[k].split(",").join("");
+                    }
+                }
+                billData.files= this.fileList;
+                return billData;
             },
             //保存
             saveBill: function(){
@@ -599,13 +628,11 @@
                     return;
                 }
 
-                var billData = this.billData;
-
                 this.$axios({
                     url: "/cfm/normalProcess",
                     method: "post",
                     data: {
-                        optype: billData.id ? "dbt_chg" : "dbt_add",
+                        optype: params.id ? "" : "zft_addbill",
                         params: params
                     }
                 }).then((result) => {
@@ -617,19 +644,25 @@
                         });
                     } else {
                         var data = result.data.data;
-                        data.payment_amount = this.$common.transitSeparator(data.payment_amount);
-                        data.pay_mode += "";
-
-                        this.billData = data;
                         this.$message({
                             type: "success",
                             message: "保存成功",
                             duration: 2000
                         });
+                        this.billData.id = data.id;
+                        this.billData.persist_version = data.persist_version;
+                        this.billData.service_serial_number = data.service_serial_number;
+                        console.log(data);
                     }
                 }).catch(function (error) {
                     console.log(error);
                 });
+            },
+
+
+            //更多单据
+            goMoreBills: function(){
+                this.$router.push("/allot/more-bills");
             },
             //提交
             submitBill: function(){
@@ -667,50 +700,7 @@
                     console.log(error);
                 });
             },
-            //设置params
-            setParams: function(){
-                //校验数据是否完善 并设置发送给后台的数据
-                var billData = this.billData;
-                var params = {
-                    pay_account_id: "",
-                    recv_account_id: "",
-                    payment_amount: "",
-                    pay_mode: "",
-                    payment_summary: "",
-                    files: [],
-                    biz_id: ""
-                }
-                for(var k in params){
-                    if(k != "payment_summary" && k != "files" && !billData[k]){
-                        this.$message({
-                            type: "warning",
-                            message: "请完善单据信息",
-                            duration: 2000
-                        });
-                        return false;
-                    }
-                    if(k == "payment_amount"){  //金额
-                        params[k] = billData[k].split(",").join("");
-                    }else if(k == "files"){  //附件
-                        params[k] = this.fileList;
-                    }else if(k == "biz_id"){
-                        params[k] = billData[k];
-                        var payStatList = this.payStatList;
-                        for(var i = 0; i < payStatList.length; i++){
-                            if(billData[k] == payStatList[i].biz_id){
-                                params.biz_name = payStatList[i].biz_name;
-                            }
-                        }
-                    }else{
-                        params[k] = billData[k];
-                    }
-                }
-                if(billData.id){
-                    params.id = billData.id;
-                    params.persist_version = billData.persist_version;
-                }
-                return params;
-            },
+
             //提交流程
             submitFlow: function(){
                 var workflowData = this.billData;
