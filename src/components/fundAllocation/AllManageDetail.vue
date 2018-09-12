@@ -1,5 +1,5 @@
 <style scoped lang="less" type="text/less">
-    #autoAllocationManage{
+    #allManageDetail{
         width: 100%;
         height: 100%;
         box-sizing: border-box;
@@ -165,7 +165,7 @@
     }
 </style>
 <style lang="less">
-    #autoAllocationManage {
+    #allManageDetail {
         .el-dialog__wrapper {
             .el-dialog__body {
                 height: 300px;
@@ -176,7 +176,7 @@
 </style>
 
 <template>
-    <div id="autoAllocationManage">
+    <div id="allManageDetail">
         <!-- 顶部查询 -->
         <!-- <div class="search-list-left">
             <el-select v-model="searchData.bbb" placeholder="请选择下拨额度" clearable size="mini">
@@ -387,9 +387,9 @@
 
 <script>
     export default {
-        name: "AutoAllocationManage",
+        name: "AllManageDetail",
         created: function () {
-            this.$emit("transmitTitle", "自动下拨管理");
+            this.$emit("transmitTitle", "自动归集管理查看明细");
         },
         mounted: function () {
             //下拨频率
@@ -438,7 +438,7 @@
             //查看详情
             lookDetail: function () {
                 debugger
-                this.$router.push("/allocation/allocation-manage-detail");
+                this.$router.push("/allot/more-bills");
             }
         },
         watch:{

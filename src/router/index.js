@@ -93,6 +93,7 @@ import FundPoolAccSet from '@/components/fundAllocation/FundPoolAccSet'
 import AutoAllocationSet from '@/components/fundAllocation/AutoAllocationSet'
 import AutoAllocationManage from '@/components/fundAllocation/AutoAllocationManage'
 import AllocationDealCheck from '@/components/fundAllocation/AllocationDealCheck'
+import AllManageDetail from '@/components/fundAllocation/AllManageDetail'
 
 
 Vue.use(Router)
@@ -177,7 +178,8 @@ const router = new Router({
                         //资金下拨
                         {path: '/allocation/fundpool-acc-set', name: 'FundPoolAccSet', component: FundPoolAccSet, meta: {requireAuth: true}},
                         {path: '/allocation/allocation-set', name: 'AutoAllocationSet', component: AutoAllocationSet, meta: {requireAuth: true}},
-                        {path: '/allocation/allocation-manage', name: 'AutoAllocationManage', component: AutoAllocationManage, meta: {requireAuth: true}}
+                        {path: '/allocation/allocation-manage', name: 'AutoAllocationManage', component: AutoAllocationManage, meta: {requireAuth: true}},
+                        {path: '/allocation/allocation-manage-detail', name: 'AllManageDetail', component: AllManageDetail, meta: {requireAuth: true}},
                     ]
                 },
                 //基础样式三（tab页）
