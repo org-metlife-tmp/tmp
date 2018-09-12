@@ -658,12 +658,12 @@
                     console.log(error);
                 });
             },
-
-
             //更多单据
             goMoreBills: function(){
-                this.$router.push("/allot/more-bills");
+                this.$router.push("/payment/pay-more-bills");
             },
+
+
             //提交
             submitBill: function(){
                 var params = this.setParams();
@@ -700,7 +700,6 @@
                     console.log(error);
                 });
             },
-
             //提交流程
             submitFlow: function(){
                 var workflowData = this.billData;

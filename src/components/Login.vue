@@ -288,6 +288,9 @@
                     if(data.constants){
                         window.sessionStorage.setItem("constants",JSON.stringify(data.constants));
                     }
+                    if(data.uuid){
+                        window.sessionStorage.setItem("uuid",JSON.stringify(data.uuid));
+                    }
                 }).catch(function (error) {
                     console.log(error);
                 })

@@ -5,13 +5,6 @@
         box-sizing: border-box;
         position: relative;
 
-        /*顶部按钮*/
-        .button-list-left {
-            position: absolute;
-            top: -56px;
-            left: -21px;
-        }
-
         /*搜索区*/
         .search-setion {
             text-align: left;
@@ -129,18 +122,6 @@
 
 <template>
     <div id="payLookOver">
-        <!--顶部按钮-->
-        <div class="button-list-left">
-            <el-select v-model="searchData.payment_type" placeholder="请选择调拨类型"
-                       filterable clearable size="mini"
-                       @change="queryData">
-                <el-option v-for="(name,k) in paymentTypeList"
-                           :key="k"
-                           :label="name"
-                           :value="k">
-                </el-option>
-            </el-select>
-        </div>
         <!--搜索区-->
         <div class="search-setion">
             <el-form :inline="true" :model="searchData" size="mini">
@@ -156,8 +137,7 @@
                                     value-format="yyyy-MM-dd"
                                     size="mini" clearable
                                     unlink-panels
-                                    :picker-options="pickerOptions"
-                                    @change="">
+                                    :picker-options="pickerOptions">
                             </el-date-picker>
                         </el-form-item>
                     </el-col>
@@ -312,15 +292,9 @@
         created: function () {
             this.$emit("transmitTitle", "资金支付-查看");
             this.$emit("getCommTable", this.routerMessage);
-
-            this.$common.transitSeparator();
         },
         mounted: function () {
-            //调拨类型
-            var constants = JSON.parse(window.sessionStorage.getItem("constants"));
-            if (constants.ZjdbType) {
-                this.paymentTypeList = constants.ZjdbType;
-            }
+
         },
         props: ["tableData"],
         components: {
@@ -330,14 +304,13 @@
         data: function () {
             return {
                 routerMessage: {
-                    optype: "dbt_detaillist",
+                    optype: "zft_bills",
                     params: {
                         page_size: 7,
                         page_num: 1
                     }
                 },
                 searchData: { //搜索条件
-                    payment_type: "",
                     pay_query_key: "",
                     recv_query_key: "",
                     min: "",
@@ -369,7 +342,7 @@
                     8: "已失败",
                     9: "已作废"
                 },
-                paymentTypeList: {}, //下拉框数据
+
                 dialogVisible: false, //弹框数据
                 dialogData: {},
                 emptyFileList: [], //附件
@@ -388,7 +361,6 @@
                 var searchData = this.searchData;
                 searchData.start_date = this.dateValue ? this.dateValue[0] : "";
                 searchData.end_date = this.dateValue ? this.dateValue[1] : "";
-
                 for (var k in searchData) {
                     this.routerMessage.params[k] = searchData[k];
                 }
@@ -411,14 +383,22 @@
             transitAmount: function (row, column, cellValue, index) {
                 return this.$common.transitSeparator(cellValue);
             },
+            //展示格式转换-处理状态
+            transitStatus: function (row, column, cellValue, index) {
+                var constants = JSON.parse(window.sessionStorage.getItem("constants"));
+                if (constants.BillStatus) {
+                    return constants.BillStatus[cellValue];
+                }
+            },
             //制单
             goMakeBill: function () {
-                this.$router.push("/allot/make-bill");
+                this.$router.push("/payment/pay-make-bill");
             },
             //支付处理
             goPayment: function () {
-                this.$router.push("/allot/payment");
+                this.$router.push("/payment/pay-payment");
             },
+
             //查看单据详情
             lookBill: function (row) {
                 for (var k in row) {
@@ -442,13 +422,6 @@
                 this.dialogVisible = true;
 
             },
-            //展示格式转换-处理状态
-            transitStatus: function (row, column, cellValue, index) {
-                var constants = JSON.parse(window.sessionStorage.getItem("constants"));
-                if (constants.BillStatus) {
-                    return constants.BillStatus[cellValue];
-                }
-            }
         },
         watch: {
             tableData: function (val, oldVal) {
