@@ -1,12 +1,25 @@
 <style scoped lang="less" type="text/less">
-    #allocationDealCheck{
+    #autoAllocationManage{
         width: 100%;
         height: 100%;
         box-sizing: border-box;
         position: relative;
 
+        /*顶部按钮*/
+        .button-list-right {
+            position: absolute;
+            top: -60px;
+            right: -18px;
+        }
+        /*顶部搜索框*/
+        // .search-list-left{
+        //     position: absolute;
+        //     top: -60px;
+        //     left: -20px; 
+        // }
+
         /*搜索区*/
-        .search-setion{
+        .search-setion {
             text-align: left;
         }
 
@@ -18,91 +31,221 @@
             background-color: #E7E7E7;
             margin-bottom: 20px;
         }
+        .icon-img{
+            background: url(../../assets/icon_common.png);
+        }
 
         /*数据展示区*/
-        .table-content{
-            height: 181px;
-        }
-        .table-content.height1 {
-            height: 325px;
-        }
-        .childTable{
-            height: 109px;
-        }
-
-        /*分页部分*/
-        .botton-pag {
-            position: absolute;
-            width: 100%;
-            height: 8%;
-            bottom: -6px;
-
-            .el-button {
-                float: right;
-                margin-top: -30px;
+        .detail-content{
+            height: 365px;
+            overflow-y: auto;
+            >div{
+                display: flex;
+                justify-content: space-between;
+                flex-wrap: wrap;
             }
-        }
-        .botton-pag-center{
-            top: 258px;
-        }
-
-        /*分割线*/
-        .split-form {
-            width: 100%;
-            height: 26px;
-            border-bottom: 1px solid #ccc;
-            margin-bottom: 10px;
-            h4 {
-                margin: 0;
+            .bill-box{
+                width: 256px;
+                height: 360px;
                 float: left;
+                background: #fff;
+                margin-bottom: 20px;
+                position: relative;
+                overflow: hidden;
+                box-shadow: 1px 2px 5px #CCCCCC;
+                .bill-top{
+                    background: white;
+                    height: 28px;
+                    line-height: 28px;
+                    .batch-name {
+                        width: 120px;
+                        text-align: left;
+                        padding: 0 10px;
+                        overflow: hidden;
+                        float: left;
+                    }
+                    .bill-btn{
+                        float: right;
+                        i{
+                            width: 24px;
+                            height: 28px;
+                            display: inline-block;
+                            cursor: pointer;
+                        }
+                        .active{
+                            background-position: -89px -74px;
+                        }
+                        .pause{
+                            background-position: -187px -74px;
+                        }
+                        .del{
+                            background-position: -43px -48px;
+                        }
+                        .view{
+                            background-position: -140px -74px;
+                        }
+                    }
+                }
+                .bill-gray{
+                    height: 120px;
+                    background: #F7F7F7;
+                    .bill-amount{
+                        padding: 30px 0 15px 0;
+                        text-align: center;
+                        color: #FF5800;
+                        font-size: 18px;
+                    }
+                    .bill-type-box{
+                        padding: 0 0 15px 0px;
+                        text-align: center;
+                        position: relative;
+                        .bill-type {
+                            width: 54px;
+                            margin: 0 10px 0 5px;
+                        }
+                        .bill-num {
+                            width: 74px;
+                            margin: 0 10px 0 5px;
+                        }
+                        .bill-status{
+                            position: absolute;
+                            width: 56px;
+                            height: 56px;
+                            border: 2px solid white;
+                            border-radius: 50%;
+                            top: 25px;
+                            left: 100px;
+                            .bill-icon{
+                                width: 55px;
+                                height: 55px;
+                                border: 1px solid #F1F1F1;
+                                border-radius: 50%;
+                                background: #F7F7F7;
+                                .iconStyle{
+                                    width: 100%;
+                                    height: 100%;
+                                    border-radius: 50%;
+                                }
+                                .icon-position{
+                                    background-position: -434px -305px;
+                                }
+                            }
+                        }
+                    }
+                }
+                .collectWay{
+                    margin-top: 45px;
+                    height: 25px;
+                    padding: 0 10px;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                    text-align: center;
+                }
+                .collectTime{
+                    height: 25px;
+                    text-align: center;
+                    margin: 0 10px;
+                    padding-bottom: 15px;
+                    border-bottom: 1px solid #ccc;
+                    background-color: white;
+                }
+                .acc-box{
+                    width: 232px;
+                    height: 70px;
+                    padding: 15px 0 15px 8px;
+                    .acc-detail{
+                        height: 30px;
+                        line-height: 30px;
+                        font-size: 12px;
+                    }
+                }
             }
         }
     }
 </style>
 <style lang="less">
-    #allocationDealCheck {
+    #autoAllocationManage {
         .el-dialog__wrapper {
             .el-dialog__body {
-                height: 400px;
-                overflow-y: scroll;
+                height: 300px;
+                overflow-y: auto;
             }
-        }
-        .el-table__expanded-cell[class*=cell] {
-            padding: 20px;
         }
     }
 </style>
 
 <template>
-    <div id="allocationDealCheck">
+    <div id="autoAllocationManage">
+        <!-- 顶部查询 -->
+        <!-- <div class="search-list-left">
+            <el-select v-model="searchData.bbb" placeholder="请选择下拨额度" clearable size="mini">
+                <el-option v-for="bankType in bankList"
+                        :key="bankType.id"
+                        :label="bankType.name"
+                        :value="bankType.id">
+                </el-option>
+            </el-select>
+            <el-select v-model="searchData.aaa" placeholder="请选择下拨频率" clearable size="mini">
+                <el-option v-for="bankType in bankList"
+                        :key="bankType.id"
+                        :label="bankType.name"
+                        :value="bankType.id">
+                </el-option>
+            </el-select>
+        </div> -->
+        <!-- 顶部按钮-->
+        <div class="button-list-right">
+            <el-button type="warning" size="mini" @click="">下载</el-button>
+        </div>
         <!--搜索区-->
         <div class="search-setion">
             <el-form :inline="true" :model="searchData" size="mini">
                 <el-row>
-                    <el-col :span="4">
+                    <el-col :span="5">
                         <el-form-item>
-                            <el-input v-model="searchData.pay_query_key" placeholder="请输入付款方账号" clearable></el-input>
+                            <el-input v-model="searchData.query_key" clearable placeholder="请输入归集关键字"></el-input>
                         </el-form-item>
                     </el-col>
-                    <el-col :span="4" v-if="isPending">
+                    <el-col :span="5">
                         <el-form-item>
-                            <el-input v-model="searchData.recv_query_key" placeholder="请输入收款方账号" clearable></el-input>
+                            <el-input v-model="searchData.query_key" clearable placeholder="请输入归集主账号关键字"></el-input>
                         </el-form-item>
                     </el-col>
-                    <el-col :span="7">
+                    <el-col :span="5">
                         <el-form-item>
-                            <el-col :span="11">
-                                <el-input v-model="searchData.min" placeholder="最小金额" clearable></el-input>
-                            </el-col>
-                            <el-col class="line" :span="1" style="text-align:center">-</el-col>
-                            <el-col :span="11">
-                                <el-input v-model="searchData.max" placeholder="最大金额" clearable></el-input>
-                            </el-col>
+                            <el-select v-model="searchData.bbb" placeholder="请选择下拨额度" clearable size="mini">
+                                <el-option v-for="(name,k) in poolTypeList"
+                                           :key="k"
+                                           :label="name"
+                                           :value="k">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="5">
+                        <el-form-item>
+                            <el-select v-model="searchData.bbb" placeholder="请选择下拨频率" clearable size="mini">
+                                <el-option v-for="(name,k) in pollFrequencyList"
+                                           :key="k"
+                                           :label="name"
+                                           :value="k">
+                                </el-option>
+                            </el-select>
                         </el-form-item>
                     </el-col>
                     <el-col :span="2">
                         <el-form-item>
                             <el-button type="primary" plain @click="queryData" size="mini">搜索</el-button>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="24">
+                        <el-form-item style="margin-bottom:0px">
+                            <el-checkbox-group v-model="searchData.service_status">
+                                <el-checkbox label="3" name="type">全部</el-checkbox>
+                                <el-checkbox label="12" name="type">已激活</el-checkbox>
+                                <el-checkbox label="1" name="type">未激活</el-checkbox>
+                            </el-checkbox-group>
                         </el-form-item>
                     </el-col>
                 </el-row>
@@ -111,263 +254,197 @@
         <!--分隔栏-->
         <div class="split-bar"></div>
         <!--数据展示区-->
-        <section class="table-content" :class="[isPending ? '' : 'height1']">
-            <el-table :data="tableList"
-                      border
-                      height="100%"
-                      highlight-current-row
-                      @row-click="getCurRowData"
-                      @expand-change="getExpandData"
-                      size="mini">
-                <el-table-column type="expand" v-if="!isPending"> 
-                    <template slot-scope="props" >
-                        <section class="childTable">
-                            <el-table :data="props.row.list"
-                                    border
-                                    height="100%"
-                                    size="mini">
-                                <el-table-column prop="acc_no" label="账户号" :show-overflow-tooltip="true"></el-table-column>
-                                <el-table-column prop="acc_name" label="账户名称" :show-overflow-tooltip="true"></el-table-column>
-                                <el-table-column prop="direction" label="收付方向" :show-overflow-tooltip="true" width="80"></el-table-column>
-                                <el-table-column prop="opp_acc_no" label="对方账户号" :show-overflow-tooltip="true"></el-table-column>
-                                <el-table-column prop="opp_acc_name" label="对方账户号名称" :show-overflow-tooltip="true"></el-table-column>
-                                <el-table-column prop="amount" label="交易金额" :show-overflow-tooltip="true"></el-table-column>
-                                <el-table-column prop="summary" label="摘要" :show-overflow-tooltip="true" width="80"></el-table-column>
-                                <el-table-column prop="trans_date" label="交易时间" :show-overflow-tooltip="true"></el-table-column>
-                            </el-table>
-                        </section>
-                    </template>
-                </el-table-column>
-                <el-table-column prop="pay_account_no" label="付款方账号" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="pay_account_bank" label="付款银行" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="recv_account_no" label="收款方账号" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="recv_account_name" label="收款方公司名称" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="payment_amount" label="金额" :show-overflow-tooltip="true"></el-table-column>
-            </el-table>
-        </section>
-        <!--分页部分-->
-        <div class="botton-pag" :class="{'botton-pag-center':isPending}">
-            <el-pagination
-                    background
-                    layout="sizes, prev, pager, next, jumper"
-                    :page-size="pagSize"
-                    :total="pagTotal"
-                    :page-sizes="[7, 50, 100, 500]"
-                    :pager-count="5"
-                    :current-page="pagCurrent"
-                    @current-change="getCurrentPage"
-                    @size-change="sizeChange">
-            </el-pagination>
-            <el-button type="warning" size="mini" @click="transactionConfirm" v-show="isPending">确认</el-button>
-        </div>
-        <!--主数据关联数据-->
-        <section class="table-content" style="margin-top:40px" v-if="isPending">
-            <el-table :data="childList"
-                      border
-                      height="100%"
-                      @selection-change="handleSelectionChange"
-                      size="mini">
-                <el-table-column type="selection" width="38"></el-table-column>
-                <el-table-column prop="acc_no" label="账户号" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="acc_name" label="账户名称" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="direction" label="收付方向" :show-overflow-tooltip="true" width="80"></el-table-column>
-                <el-table-column prop="opp_acc_no" label="对方账户号" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="opp_acc_name" label="对方账户号名称" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="amount" label="交易金额" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="summary" label="摘要" :show-overflow-tooltip="true" width="80"></el-table-column>
-                <el-table-column prop="trans_date" label="交易时间" :show-overflow-tooltip="true"></el-table-column>
-            </el-table>
+        <section class="detail-content">
+            <div>
+                <div class="bill-box">
+                    <div class="bill-top">
+                        <div class="batch-name">test</div>
+                        <div class="bill-btn">
+                            <i class="icon-img active" title="激活"></i>
+                            <i class="icon-img pause" title="暂停"></i>
+                            <i class="icon-img del" title="作废"></i>
+                            <i class="icon-img view" title="查看"></i>
+                        </div>
+                    </div>
+                    <div class="bill-gray">
+                        <div class="bill-amount">￥0.00</div>
+                        <div class="bill-type-box">
+                            <span class="bill-type">全额归集</span>
+                            <span class="bill-num">111</span>
+                            <div class="bill-status">
+                                <div class="bill-icon">
+                                    <div class="icon-img iconStyle icon-position"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="collectWay">每天</div>
+                    <div class="collectTime">01:05</div>
+                    <div class="acc-box">
+                        <div class="acc-detail">
+                            <span class="accNo">11087363445533344</span>
+                            （子账户<span class="accChildNo">1</span>个）
+                        </div>
+                    </div>
+                </div>
+                <div class="bill-box">
+                    <div class="bill-top">
+                        <div class="batch-name">test</div>
+                        <div class="bill-btn">
+                            <i class="icon-img active" title="激活"></i>
+                            <i class="icon-img pause" title="暂停"></i>
+                            <i class="icon-img del" title="作废"></i>
+                            <i class="icon-img view" title="查看" @click="lookDetail"></i>
+                        </div>
+                    </div>
+                    <div class="bill-gray">
+                        <div class="bill-amount">￥0.00</div>
+                        <div class="bill-type-box">
+                            <span class="bill-type">全额归集</span>
+                            <span class="bill-num">111</span>
+                            <div class="bill-status">
+                                <div class="bill-icon">
+                                    <div class="icon-img iconStyle icon-position"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="collectWay">每天</div>
+                    <div class="collectTime">01:05</div>
+                    <div class="acc-box">
+                        <div class="acc-detail">
+                            <span class="accNo">11087363445533344</span>
+                            （子账户<span class="accChildNo">1</span>个）
+                        </div>
+                    </div>
+                </div>
+                <div class="bill-box">
+                    <div class="bill-top">
+                        <div class="batch-name">test</div>
+                        <div class="bill-btn">
+                            <i class="icon-img active" title="激活"></i>
+                            <i class="icon-img pause" title="暂停"></i>
+                            <i class="icon-img del" title="作废"></i>
+                            <i class="icon-img view" title="查看"></i>
+                        </div>
+                    </div>
+                    <div class="bill-gray">
+                        <div class="bill-amount">￥0.00</div>
+                        <div class="bill-type-box">
+                            <span class="bill-type">全额归集</span>
+                            <span class="bill-num">111</span>
+                            <div class="bill-status">
+                                <div class="bill-icon">
+                                    <div class="icon-img iconStyle icon-position"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="collectWay">每天</div>
+                    <div class="collectTime">01:05</div>
+                    <div class="acc-box">
+                        <div class="acc-detail">
+                            <span class="accNo">11087363445533344</span>
+                            （子账户<span class="accChildNo">1</span>个）
+                        </div>
+                    </div>
+                </div>
+                <div class="bill-box">
+                    <div class="bill-top">
+                        <div class="batch-name">test</div>
+                        <div class="bill-btn">
+                            <i class="icon-img active" title="激活"></i>
+                            <i class="icon-img pause" title="暂停"></i>
+                            <i class="icon-img del" title="作废"></i>
+                            <i class="icon-img view" title="查看"></i>
+                        </div>
+                    </div>
+                    <div class="bill-gray">
+                        <div class="bill-amount">￥0.00</div>
+                        <div class="bill-type-box">
+                            <span class="bill-type">全额归集</span>
+                            <span class="bill-num">111</span>
+                            <div class="bill-status">
+                                <div class="bill-icon">
+                                    <div class="icon-img iconStyle icon-position"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="collectWay">每天</div>
+                    <div class="collectTime">01:05</div>
+                    <div class="acc-box">
+                        <div class="acc-detail">
+                            <span class="accNo">11087363445533344</span>
+                            （子账户<span class="accChildNo">1</span>个）
+                        </div>
+                    </div>
+                </div>
+            </div>
         </section>
     </div>
 </template>
 
 <script>
     export default {
-        name: "AllocationDealCheck",
+        name: "AutoAllocationManage",
         created: function () {
-            this.$emit("transmitTitle", "自动下拨设置");
-            this.$emit("tableText", {
-                leftTab: "未核对",
-                rightTab: "已核对"
-            });
-            // this.$emit("getTableData", this.routerMessage);
+            this.$emit("transmitTitle", "自动下拨管理");
         },
         mounted: function () {
+            //下拨频率
+            var constants = JSON.parse(window.sessionStorage.getItem("constants"));
+            if (constants.PollingFrequency) {
+                this.pollFrequencyList = constants.PollingFrequency;
+            }
+            //下拨额度
+            if (constants.PoolingType) {
+                this.poolTypeList = constants.PoolingType;
+            }
+            
         },
-        props:["isPending","tableData"],
+        props:["tableData"],
         data: function () {
             return {
-                routerMessage: {
-                    todo:{
-                        optype: "dbttrad_billList",
-                        params: {
-                            page_size: 7,
-                            page_num: 1
-                        }
-                    },
-                    done:{
-                        optype: "dbttrad_confirmbillList",
-                        params: {
-                            page_size: 7,
-                            page_num: 1
-                        }
-                    }
+                searchData: {
+                    service_status: []
                 },
-                searchData:{},
-                tableList:[],
-                childList: [],
-                pagSize: 8, //分页数据
-                pagTotal: 1,
-                pagCurrent: 1,
-                selectionList: [],//选中的交易确认
-                currenrRow: {},//当前选中行
+                bankList:[
+                    {
+                        id:"1",
+                        name:"定额归集"
+                    }
+                ],
+                pollFrequencyList: [],//下拨频率
+                poolTypeList: [],//下拨额度
+                detailList: [],
             }
         },
         methods: {
             //根据条件查询数据
-            queryData:function(){
+            queryData: function () {
                 var searchData = this.searchData;
-                for(var k in searchData){
-                    if(this.isPending){
+
+                for (var k in searchData) {
+                    if (this.isPending) {
                         this.routerMessage.todo.params[k] = searchData[k];
-                    }else{
-                        this.routerMessage.done.params[k] = searchData[k];
-                    }
-                }
-                this.$emit("getTableData", this.routerMessage);
-            },
-            //点击页数获取当前页数据
-            getCurrentPage:function(currPage){
-                if(this.isPending){
-                    this.routerMessage.todo.params.page_num = currPage;
-                }else{
-                    this.routerMessage.done.params.page_num = currPage;
-                }
-                this.$emit("getTableData", this.routerMessage);
-            },
-            //当前页数据条数发生变化
-            sizeChange:function(val){
-                this.routerMessage.todo.params = {
-                    page_size: val,
-                    page_num: 1
-                };
-                this.routerMessage.done.params = {
-                    page_size: val,
-                    page_num: 1
-                };
-                this.$emit("getTableData", this.routerMessage);
-            },
-            //获取未核对下第二个表格数据
-            getCurRowData: function (row, event, column) {
-                this.$axios({
-                    url:"/cfm/normalProcess",
-                    method:"post",
-                    data:{
-                        optype:"dbttrad_tradingList",
-                        params:{
-                            pay_account_no: row.pay_account_no,
-                            recv_account_no: row.recv_account_no,
-                            payment_amount: row.payment_amount
-                        }
-                    }
-                }).then((result) => {
-                    if (result.data.error_msg) {
-                        this.$message({
-                            type: "error",
-                            message: result.data.error_msg,
-                            duration: 2000
-                        })
+                        this.routerMessage.todo.params.page_num = 1;
                     } else {
-                        var data = result.data.data;
-                        this.childList = data;
-                        this.currenrRow = row;
+                        this.routerMessage.done.params[k] = searchData[k];
+                        this.routerMessage.done.params.page_num = 1;
                     }
-                }).catch(function (error) {
-                    console.log(error);
-                })
-            },
-            //选择确认数据
-            handleSelectionChange: function (val) {
-                this.selectionList = val;
-            },
-            //交易确认
-            transactionConfirm: function () {
-                let trading_no = [];
-                this.selectionList.forEach(element => {
-                    trading_no.push(element.id);
-                });
-                if(trading_no.length){
-                    var row = this.currenrRow;
-                    this.$axios({
-                        url:"/cfm/normalProcess",
-                        method:"post",
-                        data:{
-                            optype:"dbttrad_confirm",
-                            params:{
-                                bill_no: row.id,
-                                trading_no: trading_no,
-                                persist_version: row.persist_version
-                            }
-                        }
-                    }).then((result) => {
-                        if (result.data.error_msg) {
-                            this.$message({
-                                type: "error",
-                                message: result.data.error_msg,
-                                duration: 2000
-                            })
-                        } else {
-                            this.$emit("getTableData", this.routerMessage);
-                            this.childList = [];
-                            this.$message({
-                                type: "success",
-                                message: "交易成功！",
-                                duration: 2000
-                            })
-                        }
-                    }).catch(function (error) {
-                        console.log(error);
-                    })
                 }
             },
-            //点击获取当前展开表格数据
-            getExpandData: function (row, expandedRows) {
-                if(!row.list){
-                    this.$axios({
-                        url:"/cfm/normalProcess",
-                        method:"post",
-                        data:{
-                            optype:"dbttrad_confirmTradingList",
-                            params:{
-                                bill_no: row.id,
-                            }
-                        }
-                    }).then((result) => {
-                        if (result.data.error_msg) {
-                            this.$message({
-                                type: "error",
-                                message: result.data.error_msg,
-                                duration: 2000
-                            })
-                        } else {
-                            var data = result.data.data;
-                            this.$set(row,'list',data);
-                        }
-                    }).catch(function (error) {
-                        console.log(error);
-                    })
-                }
-            }  
+            //查看详情
+            lookDetail: function () {
+                debugger
+                this.$router.push("/allot/more-bills");
+            }
         },
         watch:{
-            isPending:function(val,oldVal){
-                
-            },
             tableData: function (val, oldVal) {
-                this.pagSize = val.page_size;
-                this.pagTotal = val.total_line;
-                this.pagCurrent = val.page_num;
-                this.tableList = val.data;
+                
+                // this.tableList = val.data;
             }
         }
     }
