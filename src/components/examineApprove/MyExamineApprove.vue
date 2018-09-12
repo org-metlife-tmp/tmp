@@ -531,9 +531,9 @@
                                     :label="item.name"
                                     :value="item">
                                 </el-option>
-                            </el-select> -->
-                        </el-form-item>
-                    </el-col>
+                            </el-select> 
+                        </el-form-item>-->
+                    </el-col>-->
                     <el-col :span="24">
                         <el-form-item label="拒绝原因">
                             <el-input v-model="thirdFunData.assignee_memo" type="textarea" :rows="3"></el-input>

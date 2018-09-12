@@ -190,7 +190,7 @@
                 leftTab: "未核对",
                 rightTab: "已核对"
             });
-            // this.$emit("getTableData", this.routerMessage);
+            this.$emit("getTableData", this.routerMessage);
         },
         mounted: function () {
         },
