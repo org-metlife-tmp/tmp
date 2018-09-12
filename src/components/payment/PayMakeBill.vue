@@ -188,6 +188,34 @@
             padding-left: 15px;
         }
     }
+
+    /*设置弹出框公共样式*/
+    .el-dialog {
+        text-align: left;
+        margin-bottom: 10px;
+        /*设置标题*/
+        .dialog-title {
+            margin-bottom: 0;
+        }
+        .el-dialog__body {
+            padding-top: 10px;
+            padding-bottom: 0;
+        }
+        .el-form {
+            width: 94%;
+            .el-select {
+                width: 100%;
+            }
+        }
+    }
+    .el-radio-group {
+        margin-top: -16px;
+        .el-radio {
+            display: block;
+            margin-left: 30px;
+            margin-bottom: 10px;
+        }
+    }
 </style>
 
 <template>
@@ -368,6 +396,7 @@
     export default {
         name: "PayMakeBill",
         created: function(){
+            //获取付款方账户列表
             this.$axios({
                 url:"/cfm/normalProcess",
                 method:"post",
@@ -381,6 +410,34 @@
             }).then((result) =>{
                 this.accOptions = result.data.data;
             });
+            //获取单据数据
+            var params = window.location.hash.split("?")[1];
+            if(params) {
+                params = params.split("=");
+                this.$axios({
+                    url: "/cfm/normalProcess",
+                    method: "post",
+                    data: {
+                        optype: "zft_billdetail",
+                        params: {
+                            id: params[1]
+                        }
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+
+                    } else {
+                        var data = result.data.data;
+                        //设置数字加千分符和转汉字
+                        this.moneyText = this.$common.transitText(data.payment_amount);
+                        data.payment_amount = this.$common.transitSeparator(data.payment_amount);
+                        console.log(data);
+                        this.billData = data;
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            }
         },
         mounted: function(){
             /*获取下拉框数据*/

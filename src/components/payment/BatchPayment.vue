@@ -5,13 +5,6 @@
         box-sizing: border-box;
         position: relative;
 
-        /*顶部按钮*/
-        .button-list-left {
-            position: absolute;
-            top: -56px;
-            left: -21px;
-        }
-
         /*搜索区*/
         .search-setion {
             text-align: left;
@@ -156,17 +149,6 @@
 
 <template>
     <div id="batchPayment">
-        <!--顶部按钮-->
-        <div class="button-list-left">
-            <el-select v-model="searchData.payment_type" placeholder="请选择调拨类型"
-                       filterable clearable size="mini">
-                <el-option v-for="(name,k) in paymentTypeList"
-                           :key="k"
-                           :label="name"
-                           :value="k">
-                </el-option>
-            </el-select>
-        </div>
         <!--搜索区-->
         <div class="search-setion">
             <el-form :inline="true" :model="searchData" size="mini">
@@ -212,15 +194,6 @@
                     <el-col :span="2">
                         <el-form-item>
                             <el-button type="primary" plain @click="queryData" size="mini">搜索</el-button>
-                        </el-form-item>
-                    </el-col>
-
-                    <el-col :span="24">
-                        <el-form-item style="margin-bottom:0px">
-                            <el-checkbox-group v-model="searchData.service_status">
-                                <el-checkbox label="1" name="type">审批通过</el-checkbox>
-                                <el-checkbox label="3" name="type">已失败</el-checkbox>
-                            </el-checkbox-group>
                         </el-form-item>
                     </el-col>
                 </el-row>
@@ -384,11 +357,7 @@
             BusinessTracking:BusinessTracking
         },
         mounted: function () {
-            //调拨类型
-            var constants = JSON.parse(window.sessionStorage.getItem("constants"));
-            if (constants.ZjdbType) {
-                this.paymentTypeList = constants.ZjdbType;
-            }
+
         },
         props: ["tableData"],
         data: function () {
@@ -401,7 +370,6 @@
                     }
                 },
                 searchData: { //搜索条件
-                    payment_type: "",
                     pay_query_key: "",
                     recv_query_key: "",
                     min: "",
@@ -424,7 +392,6 @@
                         return time.getTime() > Date.now();
                     }
                 },
-                paymentTypeList: {}, //下拉框数据
                 dialogVisible: false, //弹框数据
                 dialogData: {},
                 currentStatus: "",

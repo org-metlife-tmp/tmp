@@ -5,13 +5,6 @@
         box-sizing: border-box;
         position: relative;
 
-        /*顶部按钮*/
-        .button-list-left {
-            position: absolute;
-            top: -56px;
-            left: -21px;
-        }
-
         /*搜索区*/
         .search-setion {
             text-align: left;
@@ -129,18 +122,6 @@
 
 <template>
     <div id="batchLookOver">
-        <!--顶部按钮-->
-        <div class="button-list-left">
-            <el-select v-model="searchData.payment_type" placeholder="请选择调拨类型"
-                       filterable clearable size="mini"
-                       @change="queryData">
-                <el-option v-for="(name,k) in paymentTypeList"
-                           :key="k"
-                           :label="name"
-                           :value="k">
-                </el-option>
-            </el-select>
-        </div>
         <!--搜索区-->
         <div class="search-setion">
             <el-form :inline="true" :model="searchData" size="mini">
@@ -311,15 +292,8 @@
         created: function () {
             this.$emit("transmitTitle", "批量支付-查看");
             this.$emit("getCommTable", this.routerMessage);
-
-            this.$common.transitSeparator();
         },
         mounted: function () {
-            //调拨类型
-            var constants = JSON.parse(window.sessionStorage.getItem("constants"));
-            if (constants.ZjdbType) {
-                this.paymentTypeList = constants.ZjdbType;
-            }
         },
         props: ["tableData"],
         components: {
@@ -336,7 +310,6 @@
                     }
                 },
                 searchData: { //搜索条件
-                    payment_type: "",
                     pay_query_key: "",
                     recv_query_key: "",
                     min: "",
@@ -366,7 +339,6 @@
                     10: "未完结",
                     11: "已完结"
                 },
-                paymentTypeList: {}, //下拉框数据
                 dialogVisible: false, //弹框数据
                 dialogData: {},
                 emptyFileList: [], //附件

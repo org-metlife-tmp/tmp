@@ -188,36 +188,79 @@
             padding-left: 15px;
         }
     }
-</style>
-<style lang="less" type="text/less">
-    #batchMakeBill {
-        .upload-input {
-            position: relative;
 
-            .el-input{
-                position: absolute;
-                top: 10px;
-                left: 70px;
-                width: 80%;
+    /*设置弹出框样式*/
+    .el-dialog {
+        text-align: left;
+        margin-bottom: 10px;
+        /*设置标题*/
+        .dialog-title {
+            margin-bottom: 0;
+        }
+        .el-dialog__body {
+            padding-top: 10px;
+            padding-bottom: 0;
+        }
+        .el-form {
+            width: 94%;
+            .el-select {
+                width: 100%;
+            }
+        }
+    }
+    .el-radio-group {
+        margin-top: -16px;
+        .el-radio {
+            display: block;
+            margin-left: 30px;
+            margin-bottom: 10px;
+        }
+    }
+    .dialog-upload-input{
+        width: 90%;
+        margin: 10px auto 40px;
 
-                input{
-                    border-radius: 16px 0 0 16px;
-                    cursor: default;
-                }
+        .el-input{
+            width: 80%;
+            vertical-align: middle;
+            margin-left: 10px;
 
-                .el-input-group__append {
-                    border-radius: 16px;
-                    left: -16px;
-                    background-color: #409EFF;
-                    color: #fff;
-                    width: 14px;
-                }
+            input{
+                cursor: default;
+            }
 
-                .upload-button{
-                    background: url(../../assets/icon_common.png) -307px 2px;
-                    padding: 12px 18px;
-                    height: 30px;
-                }
+            div{
+                cursor: pointer;
+            }
+        }
+    }
+
+    .upload-input {
+        position: relative;
+
+        .el-input{
+            position: absolute;
+            top: 10px;
+            left: 70px;
+            width: 80%;
+
+            input{
+                border-radius: 16px 0 0 16px;
+                cursor: default;
+            }
+
+            .el-input-group__append {
+                border-radius: 16px;
+                left: -16px;
+                background-color: #409EFF;
+                color: #fff;
+                width: 14px;
+            }
+
+            .upload-button{
+                background: url(../../assets/icon_common.png) -307px 2px;
+                padding: 12px 18px;
+                height: 30px;
             }
         }
     }
@@ -241,12 +284,12 @@
                         value-format="yyyy-MM-dd"
                         size="mini">
                 </el-date-picker>
-                <el-select v-model="billData.pay_mode" placeholder="请选择付款方"
+                <el-select v-model="billData.pay_account_id " placeholder="请选择付款方"
                            filterable clearable size="mini">
-                    <el-option v-for="(name,k) in payModeList"
-                               :key="k"
-                               :label="name"
-                               :value="k">
+                    <el-option v-for="item in accOptions"
+                               :key="item.acc_id"
+                               :label="item.acc_no"
+                               :value="item.acc_id">
                     </el-option>
                 </el-select>
                 <div class="serial-number">
@@ -263,7 +306,7 @@
                         <td rowspan="3" colspan="5" class="upload-input">
                             <el-input class="input-with-select" readonly
                                       size="small" v-model="billData.searchData" clearable>
-                                <el-button type="primary" slot="append" class="upload-button" @click=""></el-button>
+                                <el-button type="primary" slot="append" class="upload-button" @click="dialogVisible = true"></el-button>
                             </el-input>
                         </td>
                     </tr>
@@ -320,70 +363,18 @@
         </section>
         <!--开户行选择弹框-->
         <el-dialog :visible.sync="dialogVisible"
-                   width="40%" title="选择开户行"
+                   width="800px" title="批量上传"
                    top="140px" :close-on-click-modal="false">
-
-            <el-form :model="dialogData" size="small">
-                <el-row>
-                    <el-col :span="24">
-                        <el-form-item label="银行名称" :label-width="formLabelWidth">
-                            <el-select v-model="dialogData.bankTypeName" placeholder="请选择银行大类"
-                                       clearable filterable
-                                       style="width:100%"
-                                       :filter-method="filterBankType"
-                                       @visible-change="clearSearch"
-                                       @change="bankIsSelect">
-                                <el-option v-for="bankType in bankTypeList"
-                                           :key="bankType.name"
-                                           :label="bankType.name"
-                                           :value="bankType.code">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="24">
-                        <el-form-item label="开户地址" :label-width="formLabelWidth">
-                            <el-select v-model="dialogData.area"
-                                       filterable remote clearable
-                                       style="width:100%"
-                                       placeholder="请输入地区关键字"
-                                       :remote-method="getAreaList"
-                                       :loading="loading"
-                                       @change="bankIsSelect">
-                                <el-option
-                                        v-for="area in areaList"
-                                        :key="area.name"
-                                        :label="area.name"
-                                        :value="area.code">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="24">
-                        <el-form-item label="开户行" :label-width="formLabelWidth">
-                            <el-select v-model="dialogData.cnaps_code" placeholder="请选择银行"
-                                       clearable filterable style="width:100%"
-                                       @visible-change="getBankList"
-                                       :disabled="bankSelect">
-                                <el-option v-for="bankType in bankList"
-                                           :key="bankType.cnaps_code"
-                                           :label="bankType.name"
-                                           :value="bankType.name">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="24">
-                        <el-form-item label="CNAPS" :label-width="formLabelWidth">
-                            <el-input v-model="dialogData.acc_no"></el-input>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-            </el-form>
-
+            <div class="dialog-upload-input">
+                模板上传
+                <el-input size="small" readonly>
+                    <template slot="append">浏览</template>
+                </el-input>
+            </div>
             <span slot="footer" class="dialog-footer" style="text-align:center">
+                    <el-button type="warning" size="mini" plain @click="">模板下载</el-button>
                     <el-button type="warning" size="mini" plain @click="dialogVisible = false">取 消</el-button>
-                    <el-button type="warning" size="mini" @click="confirmBank">确 定</el-button>
+                    <el-button type="warning" size="mini" @click="">确 定</el-button>
                 </span>
         </el-dialog>
     </div>
@@ -394,14 +385,24 @@
 
     export default {
         name: "PayMakeBill",
+        created: function(){
+            //获取付款方账户列表
+            this.$axios({
+                url:"/cfm/normalProcess",
+                method:"post",
+                data:{
+                    optype:"account_accs",
+                    params:{
+                        status:1,
+                        acc_id:""
+                    }
+                }
+            }).then((result) =>{
+                this.accOptions = result.data.data;
+            });
+        },
         mounted: function(){
-            /*获取下拉框数据*/
-            //银行大类
-            var bankTypeList = JSON.parse(window.sessionStorage.getItem("bankTypeList"));
-            if (bankTypeList) {
-                this.bankAllList = bankTypeList;
-                this.bankTypeList = bankTypeList;
-            }
+
         },
         components: {
             Upload: Upload
@@ -410,7 +411,7 @@
             return {
                 dateValue: new Date(), //申请时间
                 billData: {
-                    pay_mode: "", //付款方式
+                    pay_account_id: "", //付款方式
                     service_serial_number: "", //单据编号
                     pay_account_name: "", //付款方
                     pay_account_id: "",
@@ -427,114 +428,11 @@
                 fileList: [],
                 fileLength: "",
                 dialogVisible: false, //弹框数据
-                dialogData: {},
-                formLabelWidth: "100px",
-                bankSelect: true, //银行可选控制
-                bankAllList: [], //下拉框数据
-                bankTypeList: [],
-                areaList: [],
-                loading: false,
-                bankList: [],
 
-                payModeList:{}, //下拉框数据
+                accOptions:{}, //下拉框数据
             }
         },
         methods: {
-            //银行大类搜索筛选
-            filterBankType: function (value) {
-                if (value && value.trim()) {
-                    this.bankTypeList = this.bankAllList.filter(item => {
-                        var chineseReg = /^[\u0391-\uFFE5]+$/; //判断是否为中文
-                        var englishReg = /^[a-zA-Z]+$/; //判断是否为字母
-                        var quanpinReg = /(a[io]?|ou?|e[inr]?|ang?|ng|[bmp](a[io]?|[aei]ng?|ei|ie?|ia[no]|o|u)|pou|me|m[io]u|[fw](a|[ae]ng?|ei|o|u)|fou|wai|[dt](a[io]?|an|e|[aeio]ng|ie?|ia[no]|ou|u[ino]?|uan)|dei|diu|[nl][gh]ei|[jqx](i(ao?|ang?|e|ng?|ong|u)?|u[en]?|uan)|([csz]h?|r)([ae]ng?|ao|e|i|ou|u[ino]?|uan)|[csz](ai?|ong)|[csz]h(ai?|uai|uang)|zei|[sz]hua|([cz]h|r)ong|y(ao?|[ai]ng?|e|i|ong|ou|u[en]?|uan))/; //判断是否为全拼
-
-                        if (chineseReg.test(value)) {
-                            return item.name.toLowerCase().indexOf(value.toLowerCase()) > -1;
-                        } else if (englishReg.test(value)) {
-                            if (quanpinReg.test(value)) {
-                                return item.pinyin.toLowerCase().indexOf(value.toLowerCase()) > -1;
-                            } else {
-                                return item.jianpin.toLowerCase().indexOf(value.toLowerCase()) > -1;
-                            }
-                        }
-                    })
-                } else {
-                    this.bankTypeList = this.bankAllList;
-                }
-            },
-            //重置银行大类数据
-            clearSearch: function () {
-                if (this.bankTypeList != this.bankAllList) {
-                    this.bankTypeList = this.bankAllList;
-                }
-            },
-            //银行大类/地址变化后判断银行是否可选
-            bankIsSelect: function (value) {
-                this.bankList = [];
-                if (this.dialogData.area && this.dialogData.bankTypeName) {
-                    this.bankSelect = false;
-                } else {
-                    this.bankSelect = true;
-                }
-            },
-            //地区数据
-            getAreaList: function (query) {
-                if (query && query.trim()) {
-                    this.loading = true;
-                    this.$axios({
-                        url: "/cfm/commProcess",
-                        method: "post",
-                        data: {
-                            optype: "area_list",
-                            params: {
-                                query_key: query.trim()
-                            }
-                        }
-                    }).then((result) => {
-                        if (result.data.error_msg) {
-
-                        } else {
-                            this.loading = false;
-                            this.areaList = result.data.data;
-                        }
-                    }).catch(function (error) {
-                        console.log(error);
-                    })
-                } else {
-                    this.areaList = [];
-                }
-            },
-            //获取银行列表
-            getBankList: function (status) {
-                if (status) {
-                    var area_code = this.dialogData.area;
-                    var bank_type = this.dialogData.bankTypeName;
-
-                    this.$axios({
-                        url: "/cfm/commProcess",
-                        method: "post",
-                        data: {
-                            optype: "bank_list",
-                            params: {
-                                area_code: area_code,
-                                bank_type: bank_type
-                            }
-                        }
-                    }).then((result) => {
-                        if (result.data.error_msg) {
-                        } else {
-                            this.bankList = result.data.data;
-                        }
-                    }).catch(function (error) {
-                        console.log(error);
-                    })
-                }
-            },
-            //设置开户行
-            confirmBank: function(){
-                this.billData.bank_type = this.dialogData.cnaps_code;
-                this.dialogVisible = false;
-            },
             //输入金额后进行格式化
             setMoney: function () {
                 var moneyNum = this.billData.payment_amount.replace(/,/gi, "").trim();

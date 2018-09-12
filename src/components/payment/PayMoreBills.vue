@@ -5,13 +5,6 @@
         box-sizing: border-box;
         position: relative;
 
-        /*顶部按钮*/
-        .button-list-left {
-            position: absolute;
-            top: -56px;
-            left: -21px;
-        }
-
         /*搜索区*/
         .search-setion {
             text-align: left;
@@ -186,17 +179,6 @@
 
 <template>
     <div id="payMoreBills">
-        <!--顶部按钮-->
-        <div class="button-list-left">
-            <el-select v-model="searchData.payment_type" placeholder="请选择调拨类型"
-                       filterable clearable size="mini">
-                <el-option v-for="(name,k) in paymentTypeList"
-                           :key="k"
-                           :label="name"
-                           :value="k">
-                </el-option>
-            </el-select>
-        </div>
         <!--搜索区-->
         <div class="search-setion">
             <el-form :inline="true" :model="searchData" size="mini">
@@ -263,14 +245,12 @@
         <section class="table-content">
             <el-table :data="tableList"
                       border size="mini">
-                <el-table-column prop="pay_account_no" label="付款方账号" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="pay_account_bank" label="付款银行" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="recv_account_no" label="收款方账号" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="recv_account_name" label="收款方公司名称"
-                                 :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="recv_account_name" label="收款方名称" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="recv_account" label="收款方账号" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="recv_account_bank" label="收款方银行" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="payment_amount" label="金额" :show-overflow-tooltip="true"
                                  :formatter="transitAmount"></el-table-column>
-                <el-table-column prop="service_status" label="处理状态" :show-overflow-tooltip="true"
+                <el-table-column prop="service_status" label="业务状态" :show-overflow-tooltip="true"
                                  :formatter="transitStatus"></el-table-column>
                 <el-table-column
                         label="操作" width="110"
@@ -334,6 +314,7 @@
                     :current-page="pagCurrent">
             </el-pagination>
         </div>
+
         <!--查看弹出框-->
         <el-dialog title="调拨单信息"
                    :visible.sync="dialogVisible"
@@ -557,24 +538,19 @@
             BusinessTracking:BusinessTracking
         },
         mounted: function () {
-            //调拨类型
-            var constants = JSON.parse(window.sessionStorage.getItem("constants"));
-            if (constants.ZjdbType) {
-                this.paymentTypeList = constants.ZjdbType;
-            }
+
         },
         props: ["tableData"],
         data: function () {
             return {
                 routerMessage: {
-                    optype: "dbt_morelist",
+                    optype: "zft_morebills",
                     params: {
                         page_size: 7,
                         page_num: 1
                     }
                 },
                 searchData: { //搜索条件
-                    payment_type: "",
                     pay_query_key: "",
                     recv_query_key: "",
                     min: "",
@@ -608,7 +584,8 @@
                     8: "已失败",
                     9: "已作废"
                 },
-                paymentTypeList: {}, //下拉框数据
+
+
                 dialogVisible: false, //弹框数据
                 dialogData: {},
                 currentBill: {},
@@ -675,6 +652,10 @@
                 };
                 this.$emit("getCommTable", this.routerMessage);
             },
+            //展示格式转换-金额
+            transitAmount: function (row, column, cellValue, index) {
+                return this.$common.transitSeparator(cellValue);
+            },
             //展示格式转换-处理状态
             transitStatus: function (row, column, cellValue, index) {
                 var constants = JSON.parse(window.sessionStorage.getItem("constants"));
@@ -682,27 +663,25 @@
                     return constants.BillStatus[cellValue];
                 }
             },
-            //展示格式转换-金额
-            transitAmount: function (row, column, cellValue, index) {
-                return this.$common.transitSeparator(cellValue);
-            },
             //制单
             goMakeBill: function () {
-                this.$router.push("/allot/make-bill");
+                this.$router.push("/payment/pay-make-bill");
             },
             //支付处理
             goPayment: function () {
-                this.$router.push("/allot/payment");
+                this.$router.push("/payment/pay-payment");
             },
             //复制
             copyMakeBill: function (current) {
                 this.$router.push({
-                    name: "MakeBill",
+                    name: "PayMakeBill",
                     query: {
                         id: current.id
                     }
                 });
             },
+
+
             //查看
             lookBill: function (row) {
                 for (var k in row) {
@@ -842,7 +821,6 @@
                 }).catch(() => {
                 });
             },
-
             /*编辑弹框内功能*/
             //获取付款方账号
             getPayList: function (value) {

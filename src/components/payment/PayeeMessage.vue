@@ -43,6 +43,13 @@
             }
         }
     }
+    .upload-batch{
+        .el-input{
+            input{
+                cursor: default;
+            }
+        }
+    }
 </style>
 
 <template>
