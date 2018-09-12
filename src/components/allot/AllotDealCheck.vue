@@ -26,6 +26,9 @@
         .table-content.height1 {
             height: 325px;
         }
+        .childTable{
+            height: 109px;
+        }
 
         /*分页部分*/
         .botton-pag {
@@ -118,19 +121,21 @@
                       size="mini">
                 <el-table-column type="expand" v-if="!isPending"> 
                     <template slot-scope="props" >
-                        <el-table :data="props.row.list"
-                                border
-                                height="100%"
-                                size="mini">
-                            <el-table-column prop="acc_no" label="账户号" :show-overflow-tooltip="true"></el-table-column>
-                            <el-table-column prop="acc_name" label="账户名称" :show-overflow-tooltip="true"></el-table-column>
-                            <el-table-column prop="direction" label="收付方向" :show-overflow-tooltip="true" width="80"></el-table-column>
-                            <el-table-column prop="opp_acc_no" label="对方账户号" :show-overflow-tooltip="true"></el-table-column>
-                            <el-table-column prop="opp_acc_name" label="对方账户号名称" :show-overflow-tooltip="true"></el-table-column>
-                            <el-table-column prop="amount" label="交易金额" :show-overflow-tooltip="true"></el-table-column>
-                            <el-table-column prop="summary" label="摘要" :show-overflow-tooltip="true" width="80"></el-table-column>
-                            <el-table-column prop="trans_date" label="交易时间" :show-overflow-tooltip="true"></el-table-column>
-                        </el-table>
+                        <section class="childTable">
+                            <el-table :data="props.row.list"
+                                    border
+                                    height="100%"
+                                    size="mini">
+                                <el-table-column prop="acc_no" label="账户号" :show-overflow-tooltip="true"></el-table-column>
+                                <el-table-column prop="acc_name" label="账户名称" :show-overflow-tooltip="true"></el-table-column>
+                                <el-table-column prop="direction" label="收付方向" :show-overflow-tooltip="true" width="80"></el-table-column>
+                                <el-table-column prop="opp_acc_no" label="对方账户号" :show-overflow-tooltip="true"></el-table-column>
+                                <el-table-column prop="opp_acc_name" label="对方账户号名称" :show-overflow-tooltip="true"></el-table-column>
+                                <el-table-column prop="amount" label="交易金额" :show-overflow-tooltip="true"></el-table-column>
+                                <el-table-column prop="summary" label="摘要" :show-overflow-tooltip="true" width="80"></el-table-column>
+                                <el-table-column prop="trans_date" label="交易时间" :show-overflow-tooltip="true"></el-table-column>
+                            </el-table>
+                        </section>
                     </template>
                 </el-table-column>
                 <el-table-column prop="pay_account_no" label="付款方账号" :show-overflow-tooltip="true"></el-table-column>
@@ -165,7 +170,7 @@
                 <el-table-column type="selection" width="38"></el-table-column>
                 <el-table-column prop="acc_no" label="账户号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="acc_name" label="账户名称" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="direction" label="收付方向" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="direction" label="收付方向" :show-overflow-tooltip="true" width="80"></el-table-column>
                 <el-table-column prop="opp_acc_no" label="对方账户号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="opp_acc_name" label="对方账户号名称" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="amount" label="交易金额" :show-overflow-tooltip="true"></el-table-column>
@@ -252,6 +257,7 @@
                 };
                 this.$emit("getTableData", this.routerMessage);
             },
+            //获取未核对下第二个表格数据
             getCurRowData: function (row, event, column) {
                 this.$axios({
                     url:"/cfm/normalProcess",
@@ -280,23 +286,27 @@
                     console.log(error);
                 })
             },
+            //选择确认数据
             handleSelectionChange: function (val) {
                 this.selectionList = val;
             },
+            //交易确认
             transactionConfirm: function () {
                 let trading_no = [];
                 this.selectionList.forEach(element => {
                     trading_no.push(element.id);
                 });
                 if(trading_no.length){
+                    var row = this.currenrRow;
                     this.$axios({
                         url:"/cfm/normalProcess",
                         method:"post",
                         data:{
                             optype:"dbttrad_confirm",
                             params:{
-                                bill_no: this.currenrRow.id,
-                                trading_no: trading_no
+                                bill_no: row.id,
+                                trading_no: trading_no,
+                                persist_version: row.persist_version
                             }
                         }
                     }).then((result) => {
