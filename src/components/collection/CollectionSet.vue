@@ -76,17 +76,17 @@
             /*归集频率日期选择*/
             .date-select {
                 .el-input{
-                    width: 80%;
+                    width: 90%;
                 }
 
                 i {
                     font-size: 22px;
                     vertical-align: middle;
-                    color: #bbb;
+                    color: #00B3EC;
                     cursor: pointer;
                 }
 
-                i:nth-child(3) {
+                i:nth-child(2) {
                     color: #F9B32C;
                 }
             }
@@ -109,6 +109,46 @@
 
             .btnGroup {
                 float: right;
+            }
+        }
+    }
+
+    /*时间选择弹框*/
+    .set-date{
+        text-align: center;
+        margin-top: 10px;
+        margin-bottom: 30px;
+
+        h5{
+            width: 60%;
+            margin: 0 auto 10px;
+            background: #3dbaf0;
+            color: #fff;
+        }
+
+        .el-checkbox-group{
+            margin-bottom: 30px;
+        }
+
+        .month-day{
+            width: 60%;
+            height: 120px;
+            margin: 0 auto 30px;
+
+            li{
+                float: left;
+                width: 14%;
+                cursor: pointer;
+            }
+
+            li:hover{
+                .active;
+            }
+
+            .active{
+                background-color: #3dbaf0;
+                border-radius: 6px;
+                color: #fff;
             }
         }
     }
@@ -161,8 +201,8 @@
                     </el-col>
                     <el-col :span="20">
                         <el-form-item label="归集关系">
-                            <el-tabs v-model="collectionData.activeName" type="card" closable
-                                     @tab-remove="removeTab">
+                            <el-tabs v-model="collectionData.activeName" type="card"
+                                     @tab-click="handleClick">
                                 <el-tab-pane v-for="(item, index) in editableTabs"
                                              :key="item.name"
                                              :label="item.title"
@@ -199,13 +239,17 @@
                     <el-col :span="21" style="text-align:left">
                         <el-form-item label=" ">
                             <el-row>
-                                <el-col :span="8" class="date-select">
+                                <el-col :span="6" class="date-select" v-for="item in datePickList" :key="item">
                                     <el-input placeholder="请输入内容" prefix-icon="el-icon-date"
                                               v-model="collectionData.input21"
-                                              @focus="selectDate">
+                                              @focus="dateDialog = true">
                                     </el-input>
-                                    <i class="el-icon-circle-plus-outline"></i>
-                                    <i class="el-icon-remove-outline"></i>
+                                </el-col>
+                                <el-col :span="2" class="date-select">
+                                    <i class="el-icon-circle-plus-outline" @click="addDatePicker"
+                                       v-show="datePickList.length < 3"></i>
+                                    <i class="el-icon-remove-outline" @click="delDatePicker"
+                                       v-show="datePickList.length > 1"></i>
                                 </el-col>
                             </el-row>
                         </el-form-item>
@@ -266,9 +310,29 @@
         </el-dialog>
         <!--选择时间弹框-->
         <el-dialog :visible.sync="dateDialog"
-                   width="600px" title="选择时间"
+                   width="600px" title="归集时间选择"
                    top="140px" :close-on-click-modal="false">
-
+            <div class="set-date">
+                <h5>请选择日期</h5>
+                <ul class="month-day">
+                    <li v-for="item in monthDay" :key="item.day"
+                        :class="{active:item.isActive}"
+                        @click="item.isActive = !item.isActive">{{ item.day }}</li>
+                </ul>
+                <el-checkbox-group v-model="dateObj.checkboxGroup2" size="small">
+                    <el-checkbox-button v-for="(week,k) in weeks"
+                                        :label="k"
+                                        :key="k">
+                        {{week}}
+                    </el-checkbox-button>
+                </el-checkbox-group>
+                <el-time-picker
+                        arrow-control
+                        v-model="dateObj.value3"
+                        :format="'HH:mm'"
+                        placeholder="请选择时间">
+                </el-time-picker>
+            </div>
             <span slot="footer" class="dialog-footer" style="text-align:center">
                     <el-button type="warning" size="mini" plain @click="dateDialog = false">取 消</el-button>
                     <el-button type="warning" size="mini" @click="">确 定</el-button>
@@ -293,39 +357,95 @@
                     title: '01',
                     name: '1'
                 }, {
-                    title: '02',
+                    title: '+',
                     name: '2'
                 }],
                 dialogVisible: false, //弹框数据
                 searchData: {},
                 dateDialog: false,
+                dateObj:{
+                    checkboxGroup2: []
+                },
+                weeks: { //周选择
+                    1: "星期一",
+                    2: "星期二",
+                    3: "星期三",
+                    4: "星期四",
+                    5: "星期五",
+                    6: "星期六",
+                    7: "星期日",
+                },
+                monthDay: [ //月份选择
+                    {day:"01",isActive:false},
+                    {day:"02",isActive:false},
+                    {day:"03",isActive:false},
+                    {day:"04",isActive:false},
+                    {day:"05",isActive:false},
+                    {day:"06",isActive:false},
+                    {day:"07",isActive:false},
+                    {day:"08",isActive:false},
+                    {day:"09",isActive:false},
+                    {day:"10",isActive:false},
+                    {day:"11",isActive:false},
+                    {day:"12",isActive:false},
+                    {day:"13",isActive:false},
+                    {day:"14",isActive:false},
+                    {day:"15",isActive:false},
+                    {day:"16",isActive:false},
+                    {day:"17",isActive:false},
+                    {day:"18",isActive:false},
+                    {day:"19",isActive:false},
+                    {day:"20",isActive:false},
+                    {day:"21",isActive:false},
+                    {day:"22",isActive:false},
+                    {day:"23",isActive:false},
+                    {day:"24",isActive:false},
+                    {day:"25",isActive:false},
+                    {day:"26",isActive:false},
+                    {day:"27",isActive:false},
+                    {day:"28",isActive:false},
+                    {day:"29",isActive:false},
+                    {day:"30",isActive:false},
+                    {day:"31",isActive:false}
+                ],
+                datePickList:[1]
             }
         },
         methods: {
-            //删除tab页
-            removeTab:function(targetName) {
-                let tabs = this.editableTabs;
-                let activeName = this.collectionData.activeName;
-                if (activeName === targetName) {
-                    tabs.forEach((tab, index) => {
-                        if (tab.name === targetName) {
-                            let nextTab = tabs[index + 1] || tabs[index - 1];
-                            if (nextTab) {
-                                activeName = nextTab.name;
-                            }
-                        }
-                    });
+            //点击tab标签
+            handleClick: function(tab,event){
+                if(tab.label == "+"){
+                    var editableTabs = this.editableTabs;
+                    if(editableTabs.length < 3){
+                        editableTabs[1].title = "02";
+                        editableTabs.push({
+                            title: '+',
+                            name: '3'
+                        });
+                        this.collectionData.activeName = "2";
+                    }else{
+                        editableTabs[2].title = "03";
+                        this.collectionData.activeName = "3";
+                    }
                 }
-                this.collectionData.activeName = activeName;
-                this.editableTabs = tabs.filter(tab => tab.name !== targetName);
             },
             //添加被归集账号
             addTheCollect: function(){
                 this.dialogVisible = true;
             },
-            //选择时间
-            selectDate: function(){
-                this.dateDialog = true;
+            //添加时间选择器
+            addDatePicker: function(){
+                var datePickList = this.datePickList;
+                if(datePickList.length < 3){
+                    datePickList.push(datePickList[datePickList.length-1] + 1);
+                }
+            },
+            //删除时间选择器
+            delDatePicker: function(){
+                var datePickList = this.datePickList;
+                if(datePickList.length > 1){
+                    datePickList.pop();
+                }
             }
         }
     }
