@@ -49,7 +49,11 @@
                 <el-table-column prop="acc_no" label="账户号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="acc_name" label="账户名称" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="acc_attr_name" label="账户属性" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="direction" label="收付方向" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="direction" 
+                                 label="收付方向"
+                                 :formatter="transitionDirection" 
+                                 :show-overflow-tooltip="true">
+                </el-table-column>
                 <el-table-column prop="opp_acc_no" label="对方账户号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="opp_acc_name" label="对方账户名称" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="amount" label="交易金额" :show-overflow-tooltip="true"></el-table-column>
@@ -116,6 +120,13 @@
             }
         },
         methods: {
+            //展示格式转换-收付方向
+            transitionDirection: function (row, column, cellValue, index) {
+                var constants = JSON.parse(window.sessionStorage.getItem("constants"));
+                if (constants.AccPayOrRecvAttr) {
+                    return constants.AccPayOrRecvAttr[cellValue];
+                }
+            },
             //点击页数 获取当前页数据
             getCurrentPage: function (currPage) {
                 this.routerMessage.params.page_num = currPage;
@@ -148,6 +159,7 @@
                         }
                     })
                 }
+                debugger
                 this.barData = barData;
             }
         },
@@ -159,11 +171,17 @@
                 this.pagCurrent = val.page_num;
                 this.tableList = val.data;
 
-                //设置汇总数据
-                this.recvAll = val.ext.totalrecv;
-                this.payAll = val.ext.totalpay;
-                this.netrecvAll = val.ext.totalnetrecv;
-
+                if(val.data.length>0){
+                    //设置汇总数据
+                    this.recvAll = val.ext.totalrecv;
+                    this.payAll = val.ext.totalpay;
+                    this.netrecvAll = val.ext.totalnetrecv;
+                }else{
+                    //设置汇总数据
+                    this.recvAll = 0;
+                    this.payAll = 0;
+                    this.netrecvAll = 0;
+                }
                 //获取柱状图数据
                 this.getBarData();
             }
