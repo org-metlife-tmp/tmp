@@ -88,6 +88,12 @@ import CollectionLook from '@/components/collection/CollectionLook'
 import CollectionStatement from '@/components/collection/CollectionStatement'
 import ColleDealCheck from '@/components/collection/ColleDealCheck'
 
+//资金下拨
+import FundPoolAccSet from '@/components/fundAllocation/FundPoolAccSet'
+import AutoAllocationSet from '@/components/fundAllocation/AutoAllocationSet'
+import AutoAllocationManage from '@/components/fundAllocation/AutoAllocationManage'
+import AllocationDealCheck from '@/components/fundAllocation/AllocationDealCheck'
+
 
 Vue.use(Router)
 
@@ -168,6 +174,10 @@ const router = new Router({
                         {path: '/collection/collection-look', name: 'CollectionLook', component: CollectionLook, meta: {requireAuth: true}},
                         {path: '/collection/collection-statement', name: 'CollectionStatement', component: CollectionStatement, meta: {requireAuth: true}},
                         {path: '/collection/colle-deal-check', name: 'ColleDealCheck', component: ColleDealCheck, meta: {requireAuth: true}},
+                        //资金下拨
+                        {path: '/allocation/fundpool-acc-set', name: 'FundPoolAccSet', component: FundPoolAccSet, meta: {requireAuth: true}},
+                        {path: '/allocation/allocation-set', name: 'AutoAllocationSet', component: AutoAllocationSet, meta: {requireAuth: true}},
+                        {path: '/allocation/allocation-manage', name: 'AutoAllocationManage', component: AutoAllocationManage, meta: {requireAuth: true}}
                     ]
                 },
                 //基础样式三（tab页）
@@ -199,7 +209,10 @@ const router = new Router({
                     path:'/dynamic-tab',name:'DynamicTab',component:DynamicTab,
                     children:[
                         {path: '/payment/deal-check', name: 'DealCheck', component: DealCheck, meta: {requireAuth: true}},
-                        {path: '/allot/allot-deal-check', name: 'AllotDealCheck', component: AllotDealCheck, meta: {requireAuth: true}}
+                        //调拨通交易核对
+                        {path: '/allot/allot-deal-check', name: 'AllotDealCheck', component: AllotDealCheck, meta: {requireAuth: true}},
+                        //资金下拨交易核对
+                        {path: '/allocation/allocation-deal-check', name: 'AllocationDealCheck', component: AllocationDealCheck, meta: {requireAuth: true}},
                     ]
                 },
                 //调拨通

@@ -445,6 +445,18 @@
                     <el-menu-item index="/collection/colle-deal-check">交易核对</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
+            <el-submenu index="13">
+                <template slot="title" height="200px">
+                    <i class="icon-gjt"></i>
+                    <p>资金下拨</p>
+                </template>
+                <el-menu-item-group>
+                    <el-menu-item index="/allocation/fundpool-acc-set">资金池账户设置</el-menu-item>
+                    <el-menu-item index="/allocation/allocation-set">自动下拨设置</el-menu-item>
+                    <el-menu-item index="/allocation/allocation-manage">自动下拨管理</el-menu-item>
+                    <el-menu-item index="/allocation/allocation-deal-check">交易核对</el-menu-item>
+                </el-menu-item-group>
+            </el-submenu>
             <!--
 
             <el-submenu index="10">
