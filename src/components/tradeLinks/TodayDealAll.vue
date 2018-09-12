@@ -260,11 +260,17 @@
                 this.pagTotal = val.total_line;
                 this.pagCurrent = val.page_num;
                 this.tableList = val.data;
-
-                //设置汇总数据
-                this.recvAll = val.ext.totalrecv;
-                this.payAll = val.ext.totalpay;
-                this.netrecvAll = val.ext.totalnetrecv;
+                if(val.data.length>0){
+                    //设置汇总数据
+                    this.recvAll = val.ext.totalrecv;
+                    this.payAll = val.ext.totalpay;
+                    this.netrecvAll = val.ext.totalnetrecv;
+                }else{
+                    //设置汇总数据
+                    this.recvAll = 0;
+                    this.payAll = 0;
+                    this.netrecvAll = 0;
+                }
 
                 //获取柱状图数据
                 this.getBarData();
