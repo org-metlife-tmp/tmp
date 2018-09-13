@@ -57,8 +57,8 @@ import Payment from '@/components/allot/Payment'
 import LookOver from '@/components/allot/LookOver'
 import MoreBills from '@/components/allot/MoreBills'
 import LotMakeBill from '@/components/allot/LotMakeBill'
-import LotPayment from '@/components/allot/LotPayment'
-import LotLookOver from '@/components/allot/LotLookOver'
+// import LotPayment from '@/components/allot/LotPayment'
+// import LotLookOver from '@/components/allot/LotLookOver'
 import AllotDealCheck from '@/components/allot/AllotDealCheck'
 import LotMoreBills from '@/components/allot/LotMoreBills'
 //审批流管理
@@ -156,8 +156,8 @@ const router = new Router({
                         {path: '/allot/payment', name: 'Payment', component: Payment, meta: {requireAuth: true}},
                         {path: '/allot/look-over', name: 'LookOver', component: LookOver, meta: {requireAuth: true}},
                         {path: '/allot/more-bills', name: 'MoreBills', component: MoreBills, meta: {requireAuth: true}},
-                        {path: '/allot/lot-payment', name: 'LotPayment', component: LotPayment, meta: {requireAuth: true}},
-                        {path: '/allot/lot-look-over', name: 'LotLookOver', component: LotLookOver, meta: {requireAuth: true}},
+                        // {path: '/allot/lot-payment', name: 'LotPayment', component: LotPayment, meta: {requireAuth: true}},
+                        // {path: '/allot/lot-look-over', name: 'LotLookOver', component: LotLookOver, meta: {requireAuth: true}},
                         {path: '/allot/lot-more-bills', name: 'LotMoreBills', component: LotMoreBills, meta: {requireAuth: true}},
                         //支付通
                         {path: '/payment/pay-payment', name: 'PayPayment', component: PayPayment, meta: {requireAuth: true}},

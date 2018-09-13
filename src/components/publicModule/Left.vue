@@ -399,8 +399,8 @@
                     <el-menu-item index="/allot/payment" v-if="menuList.DbtPayBill">内部调拨-支付</el-menu-item>
                     <el-menu-item index="/allot/look-over" v-if="menuList.DbtViewBill">内部调拨-查看</el-menu-item>
                     <el-menu-item index="/allot/lot-make-bill">批量调拨-制单</el-menu-item>
-                    <el-menu-item index="/allot/lot-payment">批量调拨-支付</el-menu-item>
-                    <el-menu-item index="/allot/lot-look-over">批量调拨-查看</el-menu-item>
+                    <!-- <el-menu-item index="/allot/lot-payment">批量调拨-支付</el-menu-item>
+                    <el-menu-item index="/allot/lot-look-over">批量调拨-查看</el-menu-item> -->
                     <el-menu-item index="/allot/allot-deal-check">交易核对</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
