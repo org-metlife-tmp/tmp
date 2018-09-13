@@ -159,6 +159,9 @@
                 margin-bottom: 10px;
             }
         }
+        .table-content{
+            height: 279px;
+        }
     }
 </style>
 <style lang="less" type="text/less">
@@ -186,17 +189,6 @@
 
 <template>
     <div id="lotMoreBills">
-        <!--顶部按钮-->
-        <div class="button-list-left">
-            <el-select v-model="searchData.payment_type" placeholder="请选择调拨类型"
-                       filterable clearable size="mini">
-                <el-option v-for="(name,k) in paymentTypeList"
-                           :key="k"
-                           :label="name"
-                           :value="k">
-                </el-option>
-            </el-select>
-        </div>
         <!--搜索区-->
         <div class="search-setion">
             <el-form :inline="true" :model="searchData" size="mini">
@@ -262,15 +254,16 @@
         <!--数据展示区-->
         <section class="table-content">
             <el-table :data="tableList"
+                      height="100%"
                       border size="mini">
-                <el-table-column prop="pay_account_no" label="付款方账号" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="pay_account_bank" label="付款银行" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="recv_account_no" label="收款方账号" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="recv_account_name" label="收款方公司名称"
+                <el-table-column prop="batchno" label="批次号" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="total_num" label="总笔数" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="total_amount" label="总金额" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="total_num" label="成功笔数"
                                  :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="payment_amount" label="金额" :show-overflow-tooltip="true"
+                <el-table-column prop="success_num" label="成功金额" :show-overflow-tooltip="true"
                                  :formatter="transitAmount"></el-table-column>
-                <el-table-column prop="service_status" label="处理状态" :show-overflow-tooltip="true"
+                <el-table-column prop="service_status" label="批次状态" :show-overflow-tooltip="true"
                                  :formatter="transitStatus"></el-table-column>
                 <el-table-column
                         label="操作" width="110"
@@ -312,7 +305,7 @@
             <div class="allData">
                 <div class="btn-left">
                     <el-button type="warning" plain size="mini" @click="goMakeBill">制单</el-button>
-                    <el-button type="warning" plain size="mini" @click="goPayment">支付处理</el-button>
+                    <!-- <el-button type="warning" plain size="mini" @click="goPayment">支付处理</el-button> -->
                 </div>
                 <span>总笔数：</span>
                 <span v-text="totalData.total_num" class="numText"></span>
@@ -518,7 +511,7 @@
     export default {
         name: "LotMoreBills",
         created: function () {
-            this.$emit("transmitTitle", "内部调拨-更多单据111");
+            this.$emit("transmitTitle", "批量调拨制单-更多单据");
             this.$emit("getCommTable", this.routerMessage);
 
             //付款方式
@@ -567,14 +560,13 @@
         data: function () {
             return {
                 routerMessage: {
-                    optype: "dbt_morelist",
+                    optype: "dbtbatch_list",
                     params: {
                         page_size: 7,
                         page_num: 1
                     }
                 },
                 searchData: { //搜索条件
-                    payment_type: "",
                     pay_query_key: "",
                     recv_query_key: "",
                     min: "",
@@ -603,10 +595,8 @@
                     3: "审批中",
                     4: "审批通过",
                     5: "审批拒绝",
-                    6: "处理中",
-                    7: "已成功",
-                    8: "已失败",
-                    9: "已作废"
+                    10: "未完结",
+                    11: "已完结"
                 },
                 paymentTypeList: {}, //下拉框数据
                 dialogVisible: false, //弹框数据
@@ -688,12 +678,12 @@
             },
             //制单
             goMakeBill: function () {
-                this.$router.push("/allot/make-bill");
+                this.$router.push("/allot/lot-make-bill");
             },
             //支付处理
-            goPayment: function () {
-                this.$router.push("/allot/payment");
-            },
+            // goPayment: function () {
+            //     this.$router.push("/allot/payment");
+            // },
             //复制
             copyMakeBill: function (current) {
                 this.$router.push({

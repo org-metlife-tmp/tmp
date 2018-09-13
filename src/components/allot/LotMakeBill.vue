@@ -227,7 +227,7 @@
     <div id="lotMakeBill">
         <!--顶部标题-按钮-->
         <header>
-            <h1>资金调拨-制单</h1>
+            <h1>批量调拨-制单</h1>
             <el-button type="warning" size="small">打印</el-button>
         </header>
         <!--表单部分-->
