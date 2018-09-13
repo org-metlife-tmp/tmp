@@ -12,15 +12,6 @@
             right: -18px;
         }
 
-        /*分隔栏*/
-        .split-bar {
-            width: 106%;
-            height: 6px;
-            margin-left: -20px;
-            background-color: #E7E7E7;
-            margin-bottom: 20px;
-        }
-
         /*数据展示区*/
         .table-content{
             height: 397px;

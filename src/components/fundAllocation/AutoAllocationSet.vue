@@ -1,183 +1,267 @@
 <style scoped lang="less" type="text/less">
-    #autoAllocationSet{
+    #autoAllocationSet {
         width: 100%;
         height: 100%;
         box-sizing: border-box;
         position: relative;
 
-        /*搜索区*/
-        .search-setion{
-            text-align: left;
-        }
-
-        /*分隔栏*/
-        .split-bar {
-            width: 106%;
-            height: 6px;
-            margin-left: -20px;
-            background-color: #E7E7E7;
-            margin-bottom: 20px;
-        }
-
-        /*数据展示区*/
-        .table-content{
-            height: 181px;
-        }
-        .table-content.height1 {
-            height: 325px;
-        }
-        .childTable{
-            height: 109px;
-        }
-
-        /*分页部分*/
-        .botton-pag {
+        /*顶部按钮*/
+        .button-list-right {
             position: absolute;
-            width: 100%;
-            height: 8%;
-            bottom: -6px;
+            top: -60px;
+            right: -18px;
+        }
 
-            .el-button {
-                float: right;
-                margin-top: -30px;
+        /*主体内容*/
+        .table-content {
+            max-height: 94%;
+            overflow-y: auto;
+
+            /*标签页*/
+            .tab-content {
+                width: 100%;
+                height: 240px;
+                border: 1px solid #e4e7ed;
+                box-sizing: border-box;
+                border-top: none;
+
+                /*下拨主账户选择*/
+                .account-select {
+                    text-align: left;
+                    padding-left: 20px;
+                    padding-top: 15px;
+                    color: #676767;
+
+                    .el-input {
+                        width: 40%;
+                        margin-left: 10px;
+                    }
+                }
+
+                /*添加被下拨账户*/
+                .tab-add-collect {
+                    text-align: left;
+                    height: 30px;
+                    line-height: 30px;
+                    padding: 0 20px;
+                    background-color: #E9F2F9;
+                    margin-top: 10px;
+                    border-top: 1px solid #e4e7ed;
+                    color: #848484;
+
+                    i {
+                        color: #00B3EC;
+                        font-size: 22px;
+                        vertical-align: middle;
+                        background-color: #fff;
+                        border-radius: 50%;
+                        cursor: pointer;
+                    }
+
+                    div {
+                        float: right;
+
+                        span:nth-child(1) {
+                            margin-right: 20px;
+                            color: #0084A7;
+                            cursor: pointer;
+                        }
+                        span:nth-child(3) {
+                            color: red;
+                        }
+                    }
+                }
+            }
+
+            /*下拨频率日期选择*/
+            .date-select {
+                .el-input{
+                    width: 80%;
+                }
+
+                i {
+                    font-size: 22px;
+                    vertical-align: middle;
+                    color: #bbb;
+                    cursor: pointer;
+                }
+
+                i:nth-child(3) {
+                    color: #F9B32C;
+                }
             }
         }
-        .botton-pag-center{
-            top: 258px;
-        }
 
-        /*分割线*/
-        .split-form {
-            width: 100%;
-            height: 26px;
-            border-bottom: 1px solid #ccc;
-            margin-bottom: 10px;
-            h4 {
-                margin: 0;
-                float: left;
+        /*底部按钮组*/
+        .btn-bottom {
+            text-align: left;
+            margin-top: 10px;
+
+            .arrows {
+                height: 16px;
+                display: inline-block;
+                line-height: 13px;
+                font-size: 20px;
+                vertical-align: middle;
+                font-family: initial;
+                margin-left: 10px;
+            }
+
+            .btnGroup {
+                float: right;
             }
         }
     }
 </style>
-<style lang="less">
+<style lang="less" type="text/less">
     #autoAllocationSet {
-        .el-dialog__wrapper {
-            .el-dialog__body {
-                height: 400px;
-                overflow-y: scroll;
-            }
+        .el-tabs__header {
+            margin-bottom: 0;
         }
-        .el-table__expanded-cell[class*=cell] {
-            padding: 20px;
+        .el-tabs__item {
+            height: 32px;
+            line-height: 32px;
         }
     }
 </style>
 
 <template>
     <div id="autoAllocationSet">
-        <!--搜索区-->
-        <div class="search-setion">
-            <el-form :inline="true" :model="searchData" size="mini">
+        <!-- 顶部按钮-->
+        <div class="button-list-right">
+            <el-button type="warning" size="mini" @click="">打印</el-button>
+        </div>
+        <!--中间内容-->
+        <section class="table-content">
+            <el-form :model="collectionData" size="small"
+                     :label-width="formLabelWidth">
                 <el-row>
-                    <el-col :span="4">
-                        <el-form-item>
-                            <el-input v-model="searchData.pay_query_key" placeholder="请输入付款方账号" clearable></el-input>
+                    <el-col :span="14">
+                        <el-form-item label="下拨主题">
+                            <el-input v-model="collectionData.acc_no" placeholder="请为本次下拨主题命名以方便识别"></el-input>
                         </el-form-item>
                     </el-col>
-                    <el-col :span="4" v-if="isPending">
-                        <el-form-item>
-                            <el-input v-model="searchData.recv_query_key" placeholder="请输入收款方账号" clearable></el-input>
+                    <el-col :span="24" style="text-align:left">
+                        <el-form-item label="定额下拨">
+                            <el-input style="width:200px" v-model="collectionData.acc_name" placeholder="请填写下拨金额"></el-input>
+                            <span style="color:#676767">（将下拨账户内所有余额转入下拨主账户）</span>
                         </el-form-item>
                     </el-col>
-                    <el-col :span="7">
-                        <el-form-item>
-                            <el-col :span="11">
-                                <el-input v-model="searchData.min" placeholder="最小金额" clearable></el-input>
-                            </el-col>
-                            <el-col class="line" :span="1" style="text-align:center">-</el-col>
-                            <el-col :span="11">
-                                <el-input v-model="searchData.max" placeholder="最大金额" clearable></el-input>
-                            </el-col>
+                    <el-col :span="20">
+                        <el-form-item label="下拨关系">
+                            <el-tabs v-model="collectionData.activeName" type="card" closable
+                                     @tab-remove="removeTab">
+                                <el-tab-pane v-for="(item, index) in editableTabs"
+                                             :key="item.name"
+                                             :label="item.title"
+                                             :name="item.name">
+                                    <div class="tab-content">
+                                        <div class="account-select">
+                                            下拨主账户
+                                            <el-input v-model="collectionData.acc_name"></el-input>
+                                        </div>
+                                        <div class="tab-add-collect">
+                                            <span>添加被下拨账户</span>
+                                            <i class="el-icon-circle-plus-outline" @click="addTheCollect"></i>
+                                            <div>
+                                                <span>全部清除</span>
+                                                <span>被下拨账户：</span>
+                                                <span>0</span>
+                                                <span>个</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </el-tab-pane>
+                            </el-tabs>
                         </el-form-item>
                     </el-col>
-                    <el-col :span="2">
-                        <el-form-item>
-                            <el-button type="primary" plain @click="queryData" size="mini">搜索</el-button>
+                    <el-col :span="14">
+                        <el-form-item label="下拨频率" style="text-align:left">
+                            <el-radio-group v-model="collectionData.resource">
+                                <el-radio label="1">每日</el-radio>
+                                <el-radio label="2">每周</el-radio>
+                                <el-radio label="3">每月</el-radio>
+                            </el-radio-group>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="21" style="text-align:left">
+                        <el-form-item label=" ">
+                            <el-row>
+                                <el-col :span="8" class="date-select">
+                                    <el-input placeholder="请输入内容" prefix-icon="el-icon-date"
+                                              v-model="collectionData.input21"
+                                              @focus="selectDate">
+                                    </el-input>
+                                    <i class="el-icon-circle-plus-outline"></i>
+                                    <i class="el-icon-remove-outline"></i>
+                                </el-col>
+                            </el-row>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="14">
+                        <el-form-item label="摘要">
+                            <el-input v-model="collectionData.acc_no"></el-input>
                         </el-form-item>
                     </el-col>
                 </el-row>
             </el-form>
-        </div>
-        <!--分隔栏-->
-        <div class="split-bar"></div>
-        <!--数据展示区-->
-        <section class="table-content" :class="[isPending ? '' : 'height1']">
-            <el-table :data="tableList"
-                      border
-                      height="100%"
-                      highlight-current-row
-                      @row-click="getCurRowData"
-                      @expand-change="getExpandData"
-                      size="mini">
-                <el-table-column type="expand" v-if="!isPending"> 
-                    <template slot-scope="props" >
-                        <section class="childTable">
-                            <el-table :data="props.row.list"
-                                    border
-                                    height="100%"
-                                    size="mini">
-                                <el-table-column prop="acc_no" label="账户号" :show-overflow-tooltip="true"></el-table-column>
-                                <el-table-column prop="acc_name" label="账户名称" :show-overflow-tooltip="true"></el-table-column>
-                                <el-table-column prop="direction" label="收付方向" :show-overflow-tooltip="true" width="80"></el-table-column>
-                                <el-table-column prop="opp_acc_no" label="对方账户号" :show-overflow-tooltip="true"></el-table-column>
-                                <el-table-column prop="opp_acc_name" label="对方账户号名称" :show-overflow-tooltip="true"></el-table-column>
-                                <el-table-column prop="amount" label="交易金额" :show-overflow-tooltip="true"></el-table-column>
-                                <el-table-column prop="summary" label="摘要" :show-overflow-tooltip="true" width="80"></el-table-column>
-                                <el-table-column prop="trans_date" label="交易时间" :show-overflow-tooltip="true"></el-table-column>
-                            </el-table>
-                        </section>
-                    </template>
-                </el-table-column>
-                <el-table-column prop="pay_account_no" label="付款方账号" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="pay_account_bank" label="付款银行" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="recv_account_no" label="收款方账号" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="recv_account_name" label="收款方公司名称" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="payment_amount" label="金额" :show-overflow-tooltip="true"></el-table-column>
-            </el-table>
         </section>
-        <!--分页部分-->
-        <div class="botton-pag" :class="{'botton-pag-center':isPending}">
-            <el-pagination
-                    background
-                    layout="sizes, prev, pager, next, jumper"
-                    :page-size="pagSize"
-                    :total="pagTotal"
-                    :page-sizes="[7, 50, 100, 500]"
-                    :pager-count="5"
-                    :current-page="pagCurrent"
-                    @current-change="getCurrentPage"
-                    @size-change="sizeChange">
-            </el-pagination>
-            <el-button type="warning" size="mini" @click="transactionConfirm" v-show="isPending">确认</el-button>
+        <!--底部按钮-->
+        <div class="btn-bottom">
+            <el-button type="warning" plain size="mini" @click="">
+                更多单据<span class="arrows">></span>
+            </el-button>
+            <div class="btnGroup">
+                <el-button type="warning" size="small" @click="">清空</el-button>
+                <el-button type="warning" size="small" @click="">保存</el-button>
+                <el-button type="warning" size="small" @click="">提交</el-button>
+            </div>
         </div>
-        <!--主数据关联数据-->
-        <section class="table-content" style="margin-top:40px" v-if="isPending">
-            <el-table :data="childList"
-                      border
-                      height="100%"
-                      @selection-change="handleSelectionChange"
-                      size="mini">
-                <el-table-column type="selection" width="38"></el-table-column>
-                <el-table-column prop="acc_no" label="账户号" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="acc_name" label="账户名称" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="direction" label="收付方向" :show-overflow-tooltip="true" width="80"></el-table-column>
-                <el-table-column prop="opp_acc_no" label="对方账户号" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="opp_acc_name" label="对方账户号名称" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="amount" label="交易金额" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="summary" label="摘要" :show-overflow-tooltip="true" width="80"></el-table-column>
-                <el-table-column prop="trans_date" label="交易时间" :show-overflow-tooltip="true"></el-table-column>
-            </el-table>
-        </section>
+        <!--添加被下拨账户弹框-->
+        <el-dialog :visible.sync="dialogVisible"
+                   width="860px" title="添加被下拨账户"
+                   top="140px" :close-on-click-modal="false">
+
+            <el-form :inline="true" :model="searchData" size="mini">
+                <el-row>
+                    <el-col :span="6">
+                        <el-form-item>
+                            <el-input v-model="searchData.query_key" clearable placeholder="请输入账户号"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="6">
+                        <el-form-item>
+                            <el-input v-model="searchData.query_key" clearable placeholder="请输入账户号"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="6">
+                        <el-form-item>
+                            <el-input v-model="searchData.query_key" clearable placeholder="请输入账户号"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="2">
+                        <el-form-item>
+                            <el-button type="primary" plain @click="" size="mini">搜索</el-button>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+            </el-form>
+
+            <span slot="footer" class="dialog-footer" style="text-align:center">
+                    <el-button type="warning" size="mini" plain @click="dialogVisible = false">取 消</el-button>
+                    <el-button type="warning" size="mini" @click="">确 定</el-button>
+                </span>
+        </el-dialog>
+        <!--选择时间弹框-->
+        <el-dialog :visible.sync="dateDialog"
+                   width="600px" title="选择时间"
+                   top="140px" :close-on-click-modal="false">
+
+            <span slot="footer" class="dialog-footer" style="text-align:center">
+                    <el-button type="warning" size="mini" plain @click="dateDialog = false">取 消</el-button>
+                    <el-button type="warning" size="mini" @click="">确 定</el-button>
+                </span>
+        </el-dialog>
     </div>
 </template>
 
@@ -186,190 +270,48 @@
         name: "AutoAllocationSet",
         created: function () {
             this.$emit("transmitTitle", "自动下拨设置");
-            this.$emit("tableText", {
-                leftTab: "未核对",
-                rightTab: "已核对"
-            });
-            // this.$emit("getTableData", this.routerMessage);
         },
-        mounted: function () {
-        },
-        props:["isPending","tableData"],
         data: function () {
             return {
-                routerMessage: {
-                    todo:{
-                        optype: "dbttrad_billList",
-                        params: {
-                            page_size: 7,
-                            page_num: 1
-                        }
-                    },
-                    done:{
-                        optype: "dbttrad_confirmbillList",
-                        params: {
-                            page_size: 7,
-                            page_num: 1
-                        }
-                    }
+                collectionData: { //表单数据
+                    activeName: "1",
                 },
-                searchData:{},
-                tableList:[],
-                childList: [],
-                pagSize: 8, //分页数据
-                pagTotal: 1,
-                pagCurrent: 1,
-                selectionList: [],//选中的交易确认
-                currenrRow: {},//当前选中行
+                formLabelWidth: "100px",
+                editableTabs: [{ //控制标签页数据
+                    title: '01',
+                    name: '1'
+                }],
+                dialogVisible: false, //弹框数据
+                searchData: {},
+                dateDialog: false,
             }
         },
         methods: {
-            //根据条件查询数据
-            queryData:function(){
-                var searchData = this.searchData;
-                for(var k in searchData){
-                    if(this.isPending){
-                        this.routerMessage.todo.params[k] = searchData[k];
-                    }else{
-                        this.routerMessage.done.params[k] = searchData[k];
-                    }
-                }
-                this.$emit("getTableData", this.routerMessage);
-            },
-            //点击页数获取当前页数据
-            getCurrentPage:function(currPage){
-                if(this.isPending){
-                    this.routerMessage.todo.params.page_num = currPage;
-                }else{
-                    this.routerMessage.done.params.page_num = currPage;
-                }
-                this.$emit("getTableData", this.routerMessage);
-            },
-            //当前页数据条数发生变化
-            sizeChange:function(val){
-                this.routerMessage.todo.params = {
-                    page_size: val,
-                    page_num: 1
-                };
-                this.routerMessage.done.params = {
-                    page_size: val,
-                    page_num: 1
-                };
-                this.$emit("getTableData", this.routerMessage);
-            },
-            //获取未核对下第二个表格数据
-            getCurRowData: function (row, event, column) {
-                this.$axios({
-                    url:"/cfm/normalProcess",
-                    method:"post",
-                    data:{
-                        optype:"dbttrad_tradingList",
-                        params:{
-                            pay_account_no: row.pay_account_no,
-                            recv_account_no: row.recv_account_no,
-                            payment_amount: row.payment_amount
-                        }
-                    }
-                }).then((result) => {
-                    if (result.data.error_msg) {
-                        this.$message({
-                            type: "error",
-                            message: result.data.error_msg,
-                            duration: 2000
-                        })
-                    } else {
-                        var data = result.data.data;
-                        this.childList = data;
-                        this.currenrRow = row;
-                    }
-                }).catch(function (error) {
-                    console.log(error);
-                })
-            },
-            //选择确认数据
-            handleSelectionChange: function (val) {
-                this.selectionList = val;
-            },
-            //交易确认
-            transactionConfirm: function () {
-                let trading_no = [];
-                this.selectionList.forEach(element => {
-                    trading_no.push(element.id);
-                });
-                if(trading_no.length){
-                    var row = this.currenrRow;
-                    this.$axios({
-                        url:"/cfm/normalProcess",
-                        method:"post",
-                        data:{
-                            optype:"dbttrad_confirm",
-                            params:{
-                                bill_no: row.id,
-                                trading_no: trading_no,
-                                persist_version: row.persist_version
+            //删除tab页
+            removeTab:function(targetName) {
+                let tabs = this.editableTabs;
+                let activeName = this.collectionData.activeName;
+                if (activeName === targetName) {
+                    tabs.forEach((tab, index) => {
+                        if (tab.name === targetName) {
+                            let nextTab = tabs[index + 1] || tabs[index - 1];
+                            if (nextTab) {
+                                activeName = nextTab.name;
                             }
                         }
-                    }).then((result) => {
-                        if (result.data.error_msg) {
-                            this.$message({
-                                type: "error",
-                                message: result.data.error_msg,
-                                duration: 2000
-                            })
-                        } else {
-                            this.$emit("getTableData", this.routerMessage);
-                            this.childList = [];
-                            this.$message({
-                                type: "success",
-                                message: "交易成功！",
-                                duration: 2000
-                            })
-                        }
-                    }).catch(function (error) {
-                        console.log(error);
-                    })
+                    });
                 }
+                this.collectionData.activeName = activeName;
+                this.editableTabs = tabs.filter(tab => tab.name !== targetName);
             },
-            //点击获取当前展开表格数据
-            getExpandData: function (row, expandedRows) {
-                if(!row.list){
-                    this.$axios({
-                        url:"/cfm/normalProcess",
-                        method:"post",
-                        data:{
-                            optype:"dbttrad_confirmTradingList",
-                            params:{
-                                bill_no: row.id,
-                            }
-                        }
-                    }).then((result) => {
-                        if (result.data.error_msg) {
-                            this.$message({
-                                type: "error",
-                                message: result.data.error_msg,
-                                duration: 2000
-                            })
-                        } else {
-                            var data = result.data.data;
-                            this.$set(row,'list',data);
-                        }
-                    }).catch(function (error) {
-                        console.log(error);
-                    })
-                }
-            }  
-        },
-        watch:{
-            isPending:function(val,oldVal){
-                
+            //添加被下拨账号
+            addTheCollect: function(){
+                this.dialogVisible = true;
             },
-            tableData: function (val, oldVal) {
-                this.pagSize = val.page_size;
-                this.pagTotal = val.total_line;
-                this.pagCurrent = val.page_num;
-                this.tableList = val.data;
+            //选择时间
+            selectDate: function(){
+                this.dateDialog = true;
             }
         }
     }
 </script>
-

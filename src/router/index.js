@@ -57,9 +57,10 @@ import Payment from '@/components/allot/Payment'
 import LookOver from '@/components/allot/LookOver'
 import MoreBills from '@/components/allot/MoreBills'
 import LotMakeBill from '@/components/allot/LotMakeBill'
-import LotPayment from '@/components/allot/LotPayment'
-import LotLookOver from '@/components/allot/LotLookOver'
+// import LotPayment from '@/components/allot/LotPayment'
+// import LotLookOver from '@/components/allot/LotLookOver'
 import AllotDealCheck from '@/components/allot/AllotDealCheck'
+import LotMoreBills from '@/components/allot/LotMoreBills'
 //审批流管理
 import WorkflowDefinition from '@/components/workflow/WorkflowDefinition'
 import WorkflowTrace from '@/components/workflow/WorkflowTrace'
@@ -94,6 +95,7 @@ import FundPoolAccSet from '@/components/fundAllocation/FundPoolAccSet'
 import AutoAllocationSet from '@/components/fundAllocation/AutoAllocationSet'
 import AutoAllocationManage from '@/components/fundAllocation/AutoAllocationManage'
 import AllocationDealCheck from '@/components/fundAllocation/AllocationDealCheck'
+import AllManageDetail from '@/components/fundAllocation/AllManageDetail'
 
 
 Vue.use(Router)
@@ -155,8 +157,9 @@ const router = new Router({
                         {path: '/allot/payment', name: 'Payment', component: Payment, meta: {requireAuth: true}},
                         {path: '/allot/look-over', name: 'LookOver', component: LookOver, meta: {requireAuth: true}},
                         {path: '/allot/more-bills', name: 'MoreBills', component: MoreBills, meta: {requireAuth: true}},
-                        {path: '/allot/lot-payment', name: 'LotPayment', component: LotPayment, meta: {requireAuth: true}},
-                        {path: '/allot/lot-look-over', name: 'LotLookOver', component: LotLookOver, meta: {requireAuth: true}},
+                        // {path: '/allot/lot-payment', name: 'LotPayment', component: LotPayment, meta: {requireAuth: true}},
+                        // {path: '/allot/lot-look-over', name: 'LotLookOver', component: LotLookOver, meta: {requireAuth: true}},
+                        {path: '/allot/lot-more-bills', name: 'LotMoreBills', component: LotMoreBills, meta: {requireAuth: true}},
                         //支付通
                         {path: '/payment/pay-payment', name: 'PayPayment', component: PayPayment, meta: {requireAuth: true}},
                         {path: '/payment/pay-look-over', name: 'PayLookOver', component: PayLookOver, meta: {requireAuth: true}},
@@ -179,7 +182,8 @@ const router = new Router({
                         //资金下拨
                         {path: '/allocation/fundpool-acc-set', name: 'FundPoolAccSet', component: FundPoolAccSet, meta: {requireAuth: true}},
                         {path: '/allocation/allocation-set', name: 'AutoAllocationSet', component: AutoAllocationSet, meta: {requireAuth: true}},
-                        {path: '/allocation/allocation-manage', name: 'AutoAllocationManage', component: AutoAllocationManage, meta: {requireAuth: true}}
+                        {path: '/allocation/allocation-manage', name: 'AutoAllocationManage', component: AutoAllocationManage, meta: {requireAuth: true}},
+                        {path: '/allocation/allocation-manage-detail', name: 'AllManageDetail', component: AllManageDetail, meta: {requireAuth: true}},
                     ]
                 },
                 //基础样式三（tab页）
