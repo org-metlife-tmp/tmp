@@ -372,7 +372,8 @@
                         <el-upload
                                 class="upload-demo"
                                 action="/cfm/normal/excel/upload"
-                                :headers="{pk:2,Authorization:currToken}"
+                                :headers="{pk:'2',Authorization:currToken}"
+                                :data="uploadData"
                                 multiple>
                             <span class="">浏览</span>
                         </el-upload>
@@ -441,7 +442,7 @@
                 accOptions:{}, //下拉框数据
 
                 uploadData: {
-                    pk: 2
+                    pk:2
                 },
                 currToken: ""
             }

@@ -88,8 +88,8 @@
             padding: 0;
             vertical-align: middle;
         }
-        .get-all, .get-list{
-            display:inline-block;
+        .get-all, .get-list {
+            display: inline-block;
         }
         /*复制按钮*/
         .on-copy {
@@ -100,26 +100,43 @@
             background-position: -48px 0;
         }
         /*弹框-汇总按钮*/
-        .get-all{
+        .get-all {
             background-position: -366px -2px;
         }
         /*弹框-列表按钮*/
-        .get-list{
+        .get-list {
             background-position: -393px -2px;
         }
 
         /*查看弹框*/
-        .switchover{
-            .el-button{
+        .switchover {
+            text-align: center;
+            margin: -22px 0 20px 0;
+
+            .el-button {
                 background-color: #fff;
                 border-color: #e8e8e8;
-                border-radius: 10px;
+                padding: 4px 15px;
             }
+            .el-button:nth-child(1) {
+                border-radius: 10px 0 0 10px;
+            }
+            .el-button:nth-child(2) {
+                border-radius: 0 10px 10px 0;
+            }
+            .active {
+                background-color: #fafafa;
+            }
+        }
+
+        .list-table{
+            padding-bottom: 20px;
         }
 
         .dialog-talbe {
             width: 100%;
             height: 230px;
+            margin-bottom: 42px;
 
             li {
                 float: left;
@@ -142,10 +159,17 @@
                 padding-left: 10px;
             }
 
+            .small-title {
+                border-right: none;
+            }
             .table-two-row {
                 width: 88%;
                 margin-left: -3px;
                 border-left: none;
+            }
+
+            .partition{
+                margin-left: 20px;
             }
         }
 
@@ -198,7 +222,8 @@
                     </el-col>
                     <el-col :span="4">
                         <el-form-item>
-                            <el-input v-model="searchData.pay_account_no" clearable placeholder="请输入付款方名称或账号"></el-input>
+                            <el-input v-model="searchData.pay_account_no" clearable
+                                      placeholder="请输入付款方名称或账号"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="4">
@@ -314,45 +339,63 @@
                    :close-on-click-modal="false">
             <div class="switchover">
                 <el-button-group>
-                    <el-button type="primary" size="mini">
+                    <el-button type="primary" size="mini" :class="{active:showAll}"
+                               @click="showAll=!showAll">
                         <i class="get-all"></i>
                     </el-button>
-                    <el-button type="primary" size="mini">
+                    <el-button type="primary" size="mini" :class="{active:!showAll}"
+                               @click="showAll=!showAll">
                         <i class="get-list"></i>
                     </el-button>
                 </el-button-group>
             </div>
-            <div class="all-table">
+            <div class="all-table" v-show="showAll">
                 <div class="serial-number">
                     [编号:
-                    <span v-text="dialogData.service_serial_number"></span>
+                    <span v-text="dialogData.batchno"></span>
                     ]
                 </div>
                 <ul class="dialog-talbe">
-                    <li class="table-li-title">业务类型</li>
-                    <li class="table-li-content" v-text="dialogData.biz_name"></li>
-                    <li class="table-li-title">付款方式</li>
-                    <li class="table-li-content" v-text="dialogData.pay_mode"></li>
+                    <li class="table-li-title">总笔数</li>
+                    <li class="table-li-content" v-text="dialogData.total_num"></li>
+                    <li class="table-li-title">总金额</li>
+                    <li class="table-li-content" v-text="dialogData.total_amount"></li>
 
-                    <li class="table-li-title">付款单位</li>
-                    <li class="table-li-content" v-text="dialogData.pay_account_name"></li>
-                    <li class="table-li-title">收款单位</li>
-                    <li class="table-li-content" v-text="dialogData.recv_account_name"></li>
-
-                    <li class="table-li-title">账号</li>
+                    <li class="table-li-title">付款账号</li>
                     <li class="table-li-content" v-text="dialogData.pay_account_no"></li>
-                    <li class="table-li-title">账号</li>
-                    <li class="table-li-content" v-text="dialogData.recv_account_no"></li>
-
                     <li class="table-li-title">开户行</li>
                     <li class="table-li-content" v-text="dialogData.pay_account_bank"></li>
-                    <li class="table-li-title">开户行</li>
-                    <li class="table-li-content" v-text="dialogData.recv_account_bank"></li>
 
-                    <li class="table-li-title">调拨金额</li>
-                    <li class="table-li-content" v-text="dialogData.payment_amount" style="color:#fd7d2f"></li>
-                    <li class="table-li-title">大写</li>
-                    <li class="table-li-content" v-text="dialogData.numText"></li>
+                    <li class="table-li-title small-title">支付结果</li>
+                    <li class="table-li-content table-two-row"></li>
+
+                    <li class="table-li-title">已失败</li>
+                    <li class="table-li-content"  style="color:#fd7d2f">
+                        <span v-text="dialogData.failed_num"></span>笔
+                        <span v-text="dialogData.failed_amount" class="partition"></span>元
+                    </li>
+                    <li class="table-li-title">处理中</li>
+                    <li class="table-li-content">
+                        <span v-text="dialogData.process_num"></span>笔
+                        <span v-text="dialogData.process_amount" class="partition"></span>元
+                    </li>
+
+                    <li class="table-li-title">已保存</li>
+                    <li class="table-li-content">
+                        <span v-text="dialogData.saved_num"></span>笔
+                        <span v-text="dialogData.saved_amount" class="partition"></span>元
+                    </li>
+                    <li class="table-li-title">已作废</li>
+                    <li class="table-li-content">
+                        <span v-text="dialogData.cancel_num"></span>笔
+                        <span v-text="dialogData.cancel_amount" class="partition"></span>元
+                    </li>
+
+                    <li class="table-li-title">已成功</li>
+                    <li class="table-li-content table-two-row">
+                        <span v-text="dialogData.sucess_num"></span>笔
+                        <span v-text="dialogData.sucess_amount" class="partition"></span>元
+                    </li>
 
                     <li class="table-li-title">摘要</li>
                     <li class="table-li-content table-two-row" v-text="dialogData.payment_summary"></li>
@@ -367,7 +410,56 @@
                 </ul>
                 <BusinessTracking :businessParams="businessParams"></BusinessTracking>
             </div>
-            <div class="list-table"></div>
+            <div class="list-table" v-show="!showAll">
+                <el-form :inline="true" :model="dialogSearch" size="mini">
+                    <el-row>
+                        <el-col :span="6">
+                            <el-form-item>
+                                <el-input v-model="dialogSearch.recv_account_no" clearable
+                                          placeholder="请输入收款方名称或账号"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="8">
+                            <el-form-item>
+                                <el-col :span="11">
+                                    <el-input v-model="dialogSearch.min_amount" clearable placeholder="最小金额"></el-input>
+                                </el-col>
+                                <el-col class="line" :span="1" style="text-align:center">-</el-col>
+                                <el-col :span="11">
+                                    <el-input v-model="dialogSearch.max_amount" clearable placeholder="最大金额"></el-input>
+                                </el-col>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="2">
+                            <el-form-item>
+                                <el-button type="primary" plain @click="queryData" size="mini">搜索</el-button>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                </el-form>
+                <el-table :data="dialogList"
+                          border size="mini">
+                    <el-table-column prop="batchno" label="收款户名" :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column prop="total_num" label="收款账号" :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column prop="total_amount" label="收款行" :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column prop="sucess_amount" label="金额" :show-overflow-tooltip="true"
+                                     :formatter="transitAmount"></el-table-column>
+                    <el-table-column prop="service_status" label="业务状态" :show-overflow-tooltip="true"
+                                     :formatter="transitStatus"></el-table-column>
+                    <el-table-column prop="sucess_num" label="反馈信息" :show-overflow-tooltip="true"></el-table-column>
+                </el-table>
+                <el-pagination style="margin-top:20px;margin-left:220px"
+                        background
+                        layout="sizes, prev, pager, next, jumper"
+                        :page-size="pagSize"
+                        :total="pagTotal"
+                        :page-sizes="[7, 50, 100, 500]"
+                        :pager-count="5"
+                        @current-change="getCurrentPage"
+                        @size-change="sizeChange"
+                        :current-page="pagCurrent">
+                </el-pagination>
+            </div>
         </el-dialog>
 
 
@@ -403,21 +495,21 @@
 
             //付款方式
             var constants = JSON.parse(window.sessionStorage.getItem("constants"));
-            if(constants.PayMode){
+            if (constants.PayMode) {
                 this.payModeList = constants.PayMode;
             }
 
             //业务类型
             this.$axios({
-                url:"/cfm/commProcess",
-                method:"post",
-                data:{
-                    optype:"biztype_biztypes",
+                url: "/cfm/commProcess",
+                method: "post",
+                data: {
+                    optype: "biztype_biztypes",
                     params: {
                         p_id: 8
                     }
                 }
-            }).then((result) =>{
+            }).then((result) => {
                 if (result.data.error_msg) {
                     this.$message({
                         type: "error",
@@ -434,7 +526,7 @@
         },
         components: {
             Upload: Upload,
-            BusinessTracking:BusinessTracking
+            BusinessTracking: BusinessTracking
         },
         mounted: function () {
 
@@ -481,10 +573,20 @@
                     10: "未完结",
                     11: "已完结"
                 },
-
-
-                dialogVisible: false, //弹框数据
+                showAll: true, //查看弹框-汇总/列表选择
+                dialogVisible: false, //查看弹框
                 dialogData: {},
+                dialogSearch: {},
+                dialogList: [],
+                emptyFileList: [], //附件
+                fileMessage: {
+                    bill_id: "",
+                    biz_type: 11
+                },
+                triggerFile: false,
+                fileList: [],
+
+
                 currentBill: {},
                 editVisible: false,
                 innerVisible: false, //提交弹框
@@ -509,18 +611,9 @@
                 gatherList: [],
                 payModeList: {}, //下拉框数据
                 payStatList: [],
-                emptyFileList: [], //附件
-                fileMessage: {
-                    bill_id: "",
-                    biz_type: 8
+                businessParams: { //业务状态追踪参数
                 },
-                triggerFile: false,
-                editEmptyFile: [],
-                eidttrigFile: false,
-                fileList: [],
-                businessParams:{ //业务状态追踪参数
-                },
-                payModeList:{}, //下拉框数据
+                payModeList: {}, //下拉框数据
                 payStatList: [],
             }
         },
@@ -569,16 +662,36 @@
             //查看
             lookBill: function (row) {
                 console.log(row);
+                //获取汇总数据
+                this.$axios({
+                    url: "/cfm/normalProcess",
+                    method: "post",
+                    data: {
+                        optype: "zftbatch_billdetail",
+                        params: {
+                            id: row.id,
+                            persist_version: row.persist_version
+                        }
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                    }else{
+                        var data = result.data.data;
+                        this.dialogData = data;
+                        this.dialogData.batchno = row.batchno;
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                })
+
+
                 this.dialogVisible = true;
                 return;
-                for (var k in row) {
-                    this.dialogData[k] = row[k];
-                }
-
-                this.dialogData.numText = this.$common.transitText(row.payment_amount);
-                this.dialogData.payment_amount = "￥" + this.$common.transitSeparator(row.payment_amount);
-                this.dialogData.pay_mode = JSON.parse(window.sessionStorage.getItem("constants")).PayMode[row.pay_mode];
-                this.dialogVisible = true;
 
                 //附件数据
                 this.emptyFileList = [];
@@ -994,11 +1107,11 @@
                         params[k] = billData[k].split(",").join("");
                     } else if (k == "files") {  //附件
                         params[k] = this.fileList;
-                    } else if(k == "biz_id"){
+                    } else if (k == "biz_id") {
                         params[k] = billData[k];
                         var payStatList = this.payStatList;
-                        for(var i = 0; i < payStatList.length; i++){
-                            if(billData[k] == payStatList[i].biz_id){
+                        for (var i = 0; i < payStatList.length; i++) {
+                            if (billData[k] == payStatList[i].biz_id) {
                                 params.biz_name = payStatList[i].biz_name;
                             }
                         }
