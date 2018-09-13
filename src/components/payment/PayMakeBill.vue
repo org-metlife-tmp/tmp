@@ -135,6 +135,19 @@
                 text-align: left;
                 padding-left: 16px;
 
+                .el-select{
+                    height: 22px;
+
+                    .el-input{
+                        height: 100%;
+
+                        input {
+                            height: 100%;
+                            padding-left: 0;
+                        }
+                    }
+                }
+
                 input {
                     border: none;
                     outline: none;
@@ -256,20 +269,41 @@
                         <td rowspan="3" class="title-erect">收款人</td>
                         <td class="title-small">户名</td>
                         <td class="empty-input" colspan="4">
-                            <input type="text" placeholder="请输入户名" v-model="billData.acc_name">
+                            <el-select v-model="billData.acc_name"
+                                       filterable allow-create default-first-option
+                                       placeholder="请输入或选择户名"
+                                       @change="setPayer($event,'acc_no')">
+                                <el-option
+                                        v-for="item in payerList"
+                                        :key="item.id"
+                                        :label="item.acc_name"
+                                        :value="item.id">
+                                </el-option>
+                            </el-select>
                         </td>
                     </tr>
                     <tr>
                         <td class="title-small">账号</td>
                         <td class="empty-input" colspan="4">
-                            <input type="text" placeholder="请输入账号" v-model="billData.acc_no">
+                            <el-select v-model="billData.acc_no"
+                                       filterable allow-create
+                                       default-first-option
+                                       placeholder="请输入或选择账号"
+                                       @change="setPayer($event,'acc_name')">
+                                <el-option
+                                        v-for="item in payerList"
+                                        :key="item.id"
+                                        :label="item.acc_no"
+                                        :value="item.id">
+                                </el-option>
+                            </el-select>
                         </td>
                     </tr>
                     <tr>
                         <td>开户行</td>
                         <td class="empty-input" colspan="4">
                             <input type="text" placeholder="请选择开户行"
-                                   v-model="billData.bank_type_name"
+                                   v-model="billData.bank_name"
                                    @focus="dialogVisible = true">
                         </td>
                     </tr>
@@ -408,8 +442,14 @@
                     }
                 }
             }).then((result) =>{
-                this.accOptions = result.data.data;
+                if (result.data.error_msg) {
+
+                } else {
+                    this.accOptions = result.data.data;
+                }
             });
+            //获取户名和账号的下拉列表值
+            this.getPayerSelect();
             //获取单据数据
             var params = window.location.hash.split("?")[1];
             if(params) {
@@ -457,8 +497,9 @@
                 billData: {
                     acc_name: "",
                     acc_no: "",
+                    acc_id: "",
                     cnaps_code: "",
-                    bank_type_name: "",
+                    bank_name: "",
                     payment_amount: "",
                     payment_summary: "",
                     pay_account_id: ""
@@ -485,8 +526,8 @@
                 areaList: [],
                 loading: false,
                 bankList: [],
-                payModeList:{}, //下拉框数据
-                accOptions: []
+                accOptions: [],//下拉框数据
+                payerList: []
             }
         },
         methods: {
@@ -645,7 +686,7 @@
             //设置开户行
             confirmBank: function(){
                 this.billData.cnaps_code = this.dialogData.bankCNAPS;
-                this.billData.bank_type_name = this.dialogData.cnaps_code;
+                this.billData.bank_name = this.dialogData.cnaps_code;
                 this.dialogVisible = false;
             },
             //清空
@@ -718,6 +759,48 @@
             //更多单据
             goMoreBills: function(){
                 this.$router.push("/payment/pay-more-bills");
+            },
+            //获取户名和账号的下拉列表值
+            getPayerSelect: function(){
+                //获取付款方户名列表
+                this.$axios({
+                    url:"/cfm/normalProcess",
+                    method:"post",
+                    data:{
+                        optype:"zft_payacclist",
+                        params:{
+                            page_num:1,
+                            page_size: 10000
+                        }
+                    }
+                }).then((result) =>{
+                    if (result.data.error_msg) {
+
+                    } else {
+                        this.payerList = result.data.data;
+                    }
+                    console.log(result.data.data);
+                });
+            },
+            //修改户名和账号后改变对应的值
+            setPayer: function(val,target){
+                var payerList = this.payerList;
+                var flag = true;
+                for(var i = 0; i < payerList.length; i++){
+                    if(payerList[i].id == val){
+                        this.billData.acc_id = val;
+                        this.billData[target] = val;
+                        this.billData.bank_name = payerList[i].bank_name;
+                        flag = false;
+                        continue;
+                    }
+                    if(this.billData[target] == payerList[i].id){
+                        flag = false;
+                    }
+                }
+                if(flag){
+                    this.billData.acc_id = "";
+                }
             },
 
 

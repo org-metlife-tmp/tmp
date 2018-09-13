@@ -81,6 +81,7 @@ import BatchLookOver from '@/components/payment/BatchLookOver'
 import PayeeMessage from '@/components/payment/PayeeMessage'
 import DealCheck from '@/components/payment/DealCheck'
 import PayMoreBills from '@/components/payment/PayMoreBills'
+import BatchMoreBills from '@/components/payment/BatchMoreBills'
 //归集通
 import CollectionSet from '@/components/collection/CollectionSet'
 import CollectionManage from '@/components/collection/CollectionManage'
@@ -163,6 +164,7 @@ const router = new Router({
                         {path: '/payment/batch-look-over', name: 'BatchLookOver', component: BatchLookOver, meta: {requireAuth: true}},
                         {path: '/payment/payee-message', name: 'PayeeMessage', component: PayeeMessage, meta: {requireAuth: true}},
                         {path: '/payment/pay-more-bills', name: 'PayMoreBills', component: PayMoreBills, meta: {requireAuth: true}},
+                        {path: '/payment/batch-more-bills', name: 'BatchMoreBills', component: BatchMoreBills, meta: {requireAuth: true}},
                         //日历
                         {path: '/calendar/set-workday', name: 'SetWorkday', component: SetWorkday, meta: {requireAuth: true}},
                         {path: '/calendar/work-section', name: 'WorkSection', component: WorkSection, meta: {requireAuth: true}},

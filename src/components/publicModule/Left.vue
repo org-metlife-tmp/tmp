@@ -426,7 +426,7 @@
                     <el-menu-item index="/payment/pay-payment">资金支付-支付</el-menu-item>
                     <el-menu-item index="/payment/pay-look-over">资金支付-查看</el-menu-item>
                     <el-menu-item index="/payment/batch-make-bill">批量支付-制单</el-menu-item>
-                    <el-menu-item index="/payment/batch-payment">批量支付-支付</el-menu-item>
+                    <!--<el-menu-item index="/payment/batch-payment">批量支付-支付</el-menu-item>-->
                     <el-menu-item index="/payment/batch-look-over">批量支付-查看</el-menu-item>
                     <el-menu-item index="/payment/payee-message">收款方信息管理</el-menu-item>
                     <el-menu-item index="/payment/deal-check">交易核对</el-menu-item>

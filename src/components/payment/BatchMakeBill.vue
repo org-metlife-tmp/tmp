@@ -368,7 +368,15 @@
             <div class="dialog-upload-input">
                 模板上传
                 <el-input size="small" readonly>
-                    <template slot="append">浏览</template>
+                    <template slot="append">
+                        <el-upload
+                                class="upload-demo"
+                                action="/cfm/normal/excel/upload"
+                                :headers="{pk:2,Authorization:currToken}"
+                                multiple>
+                            <span class="">浏览</span>
+                        </el-upload>
+                    </template>
                 </el-input>
             </div>
             <span slot="footer" class="dialog-footer" style="text-align:center">
@@ -400,6 +408,8 @@
             }).then((result) =>{
                 this.accOptions = result.data.data;
             });
+
+            this.currToken = this.$store.state.token;
         },
         mounted: function(){
 
@@ -428,8 +438,12 @@
                 fileList: [],
                 fileLength: "",
                 dialogVisible: false, //弹框数据
-
                 accOptions:{}, //下拉框数据
+
+                uploadData: {
+                    pk: 2
+                },
+                currToken: ""
             }
         },
         methods: {
@@ -499,7 +513,7 @@
             },
             //更多单据
             goMoreBills: function(){
-                this.$router.push("/allot/more-bills");
+                this.$router.push("/payment/batch-more-bills");
             },
             //保存
             saveBill: function(){

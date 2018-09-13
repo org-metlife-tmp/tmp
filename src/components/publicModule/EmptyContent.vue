@@ -17,10 +17,9 @@
         //表格内部操作按钮
         .el-table .el-button {
             padding: 3px 3px;
-        }
-
-        .el-button + .el-button {
-            margin-left: 4px;
+            + .el-button {
+                margin-left: 4px;
+            }
         }
     }
 
