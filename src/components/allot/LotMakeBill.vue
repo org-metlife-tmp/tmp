@@ -601,7 +601,7 @@
             },
             //更多单据
             goMoreBills: function(){
-                this.$router.push("/allot/more-bills");
+                this.$router.push("/allot/lot-more-bills");
             },
             //保存
             saveBill: function(){
