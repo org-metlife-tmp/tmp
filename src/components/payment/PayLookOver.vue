@@ -348,7 +348,7 @@
                 emptyFileList: [], //附件
                 fileMessage: {
                     bill_id: "",
-                    biz_type: 8
+                    biz_type: 9
                 },
                 triggerFile: false,
                 businessParams:{ //业务状态追踪参数
@@ -416,7 +416,7 @@
 
                 //业务状态跟踪
                 this.businessParams = {};
-                this.businessParams.biz_type = 8;
+                this.businessParams.biz_type = 9;
                 this.businessParams.id = row.id;
 
                 this.dialogVisible = true;

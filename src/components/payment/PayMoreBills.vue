@@ -28,6 +28,11 @@
             margin-bottom: 20px;
         }
 
+        /*列表数据*/
+        .table-content{
+            height: 289px;
+        }
+
         /*分页部分*/
         .botton-pag {
             position: absolute;
@@ -244,9 +249,10 @@
         <!--数据展示区-->
         <section class="table-content">
             <el-table :data="tableList"
-                      border size="mini">
+                      border size="mini"
+                      height="100%">
                 <el-table-column prop="recv_account_name" label="收款方名称" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="recv_account" label="收款方账号" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="recv_account_no" label="收款方账号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="recv_account_bank" label="收款方银行" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="payment_amount" label="金额" :show-overflow-tooltip="true"
                                  :formatter="transitAmount"></el-table-column>
@@ -314,7 +320,6 @@
                     :current-page="pagCurrent">
             </el-pagination>
         </div>
-
         <!--查看弹出框-->
         <el-dialog title="调拨单信息"
                    :visible.sync="dialogVisible"
@@ -326,30 +331,18 @@
                 ]
             </div>
             <ul class="dialog-talbe">
-                <li class="table-li-title">业务类型</li>
-                <li class="table-li-content" v-text="dialogData.biz_name"></li>
-                <li class="table-li-title">付款方式</li>
-                <li class="table-li-content" v-text="dialogData.pay_mode"></li>
+                <li class="table-li-title">付款账号</li>
+                <li class="table-li-content table-two-row" v-text="dialogData.pay_account_no"></li>
 
-                <li class="table-li-title">付款单位</li>
-                <li class="table-li-content" v-text="dialogData.pay_account_name"></li>
-                <li class="table-li-title">收款单位</li>
+                <li class="table-li-title">收款人户名</li>
                 <li class="table-li-content" v-text="dialogData.recv_account_name"></li>
-
-                <li class="table-li-title">账号</li>
-                <li class="table-li-content" v-text="dialogData.pay_account_no"></li>
-                <li class="table-li-title">账号</li>
+                <li class="table-li-title">收款人账号</li>
                 <li class="table-li-content" v-text="dialogData.recv_account_no"></li>
 
                 <li class="table-li-title">开户行</li>
-                <li class="table-li-content" v-text="dialogData.pay_account_bank"></li>
-                <li class="table-li-title">开户行</li>
                 <li class="table-li-content" v-text="dialogData.recv_account_bank"></li>
-
-                <li class="table-li-title">调拨金额</li>
+                <li class="table-li-title">金额</li>
                 <li class="table-li-content" v-text="dialogData.payment_amount" style="color:#fd7d2f"></li>
-                <li class="table-li-title">大写</li>
-                <li class="table-li-content" v-text="dialogData.numText"></li>
 
                 <li class="table-li-title">摘要</li>
                 <li class="table-li-content table-two-row" v-text="dialogData.payment_summary"></li>
@@ -364,6 +357,8 @@
             </ul>
             <BusinessTracking :businessParams="businessParams"></BusinessTracking>
         </el-dialog>
+
+
         <!--编辑弹出框-->
         <el-dialog title="编辑调拨单"
                    :visible.sync="editVisible"
@@ -375,79 +370,57 @@
                 ]
             </div>
             <ul class="dialog-talbe">
-                <li class="table-li-title">业务类型</li>
-                <li class="table-li-content table-select">
-                    <el-select v-model="editDialogData.biz_id" placeholder="请选择业务类型"
+                <li class="table-li-title">付款账号</li>
+                <li class="table-li-content table-select table-two-row">
+                    <el-select v-model="editDialogData.pay_account_id" placeholder="请选择付款方"
                                filterable clearable size="mini">
-                        <el-option v-for="payItem in payStatList"
-                                   :key="payItem.biz_id"
-                                   :label="payItem.biz_name"
-                                   :value="payItem.biz_id">
-                        </el-option>
-                    </el-select>
-                </li>
-                <li class="table-li-title">付款方式</li>
-                <li class="table-li-content table-select">
-                    <el-select v-model="editDialogData.pay_mode" placeholder="请选择付款方式"
-                               filterable clearable size="mini">
-                        <el-option v-for="(name,k) in payModeList"
-                                   :key="k"
-                                   :label="name"
-                                   :value="k">
+                        <el-option v-for="item in accOptions"
+                                   :key="item.acc_id"
+                                   :label="item.acc_no"
+                                   :value="item.acc_id">
                         </el-option>
                     </el-select>
                 </li>
 
-                <li class="table-li-title">付款单位</li>
-                <li class="table-li-content" v-text="editDialogData.pay_account_name"></li>
-                <li class="table-li-title">收款单位</li>
-                <li class="table-li-content" v-text="editDialogData.recv_account_name"></li>
-
-                <li class="table-li-title">账号</li>
+                <li class="table-li-title">收款人户名</li>
                 <li class="table-li-content table-select">
-                    <el-select v-model="editDialogData.pay_account_id"
-                               clearable filterable remote
-                               placeholder="请选择账号"
-                               :loading="payLoading"
-                               :remote-method="getPayList"
-                               @change="selectNumber($event,'payNumber')"
-                               @visible-change="selectVisible($event,'payNumber')"
-                               @clear="clearSelect('payNumber')">
+                    <el-select v-model="editDialogData.recv_account_name"
+                               filterable allow-create default-first-option
+                               placeholder="请输入或选择户名"
+                               @change="setPayer($event,'acc_no')">
                         <el-option
-                                v-for="payItem in payList"
-                                :key="payItem.acc_id"
-                                :label="payItem.acc_no"
-                                :value="payItem.acc_id">
+                                v-for="item in payerList"
+                                :key="item.id"
+                                :label="item.acc_name"
+                                :value="item.acc_name">
                         </el-option>
                     </el-select>
                 </li>
-                <li class="table-li-title">账号</li>
+                <li class="table-li-title">收款人账号</li>
                 <li class="table-li-content table-select">
-                    <el-select v-model="editDialogData.recv_account_id"
-                               clearable filterable remote
-                               placeholder="请选择账号"
-                               :loading="gatherLoading"
-                               :remote-method="getGatherList"
-                               @change="selectNumber($event,'gatherNumber')"
-                               @visible-change="selectVisible($event,'gatherNumber')"
-                               @clear="clearSelect('gatherNumber')">
+                    <el-select v-model="editDialogData.recv_account_no"
+                               filterable allow-create
+                               default-first-option
+                               placeholder="请输入或选择账号"
+                               @change="setPayer($event,'acc_name')">
                         <el-option
-                                v-for="gatherItem in gatherList"
-                                :key="gatherItem.acc_id"
-                                :label="gatherItem.acc_no"
-                                :value="gatherItem.acc_id">
+                                v-for="item in payerList"
+                                :key="item.id"
+                                :label="item.acc_no"
+                                :value="item.acc_no">
                         </el-option>
                     </el-select>
                 </li>
 
                 <li class="table-li-title">开户行</li>
-                <li class="table-li-content" v-text="editDialogData.pay_account_bank"></li>
-                <li class="table-li-title">开户行</li>
-                <li class="table-li-content" v-text="editDialogData.recv_account_bank"></li>
+                <li class="table-li-content table-two-row">
+                    <input type="text" placeholder="请选择开户行" class="table-input"
+                           v-model="editDialogData.bank_name">
+                </li>
 
-                <li class="table-li-title">调拨金额</li>
+                <li class="table-li-title">金额</li>
                 <li class="table-li-content">
-                    <input type="text" @blur="setMoney" class="table-input"
+                    <input type="text" @blur="setMoney" class="table-input" style="color:#fd7d2f"
                            v-model="editDialogData.payment_amount">
                 </li>
                 <li class="table-li-title">大写</li>
@@ -502,43 +475,28 @@
             this.$emit("transmitTitle", "资金支付-更多单据");
             this.$emit("getCommTable", this.routerMessage);
 
-            //付款方式
-            var constants = JSON.parse(window.sessionStorage.getItem("constants"));
-            if(constants.PayMode){
-                this.payModeList = constants.PayMode;
-            }
-
-            //业务类型
+            //获取付款方账户列表
             this.$axios({
-                url:"/cfm/commProcess",
+                url:"/cfm/normalProcess",
                 method:"post",
                 data:{
-                    optype:"biztype_biztypes",
-                    params: {
-                        p_id: 8
+                    optype:"account_accs",
+                    params:{
+                        status:1,
+                        acc_id:""
                     }
                 }
             }).then((result) =>{
                 if (result.data.error_msg) {
-                    this.$message({
-                        type: "error",
-                        message: result.data.error_msg,
-                        duration: 2000
-                    })
+
                 } else {
-                    var data = result.data.data;
-                    this.payStatList = data;
+                    this.accOptions = result.data.data;
                 }
-            }).catch(function (error) {
-                console.log(error);
-            })
+            });
         },
         components: {
             Upload: Upload,
             BusinessTracking:BusinessTracking
-        },
-        mounted: function () {
-
         },
         props: ["tableData"],
         data: function () {
@@ -584,43 +542,43 @@
                     8: "已失败",
                     9: "已作废"
                 },
-
-
                 dialogVisible: false, //弹框数据
                 dialogData: {},
-                currentBill: {},
-                editVisible: false,
-                innerVisible: false, //提交弹框
-                selectWorkflow: "",
-                workflows: [],
-                editDialogData: {
-                    pay_account_name: "",
-                    recv_account_name: "",
-                    pay_account_no: "",
-                    recv_account_no: "",
-                    pay_account_bank: "",
-                    recv_account_bank: "",
-                    payment_amount: "",
-                    numText: "",
-                    payment_summary: "",
-                    pay_mode: "",
-                    biz_id: ""
-                },
-                payLoading: false, //付款方数据
-                payList: [],
-                gatherLoading: false, //收款方数据
-                gatherList: [],
-                payModeList: {}, //下拉框数据
-                payStatList: [],
                 emptyFileList: [], //附件
                 fileMessage: {
                     bill_id: "",
-                    biz_type: 8
+                    biz_type: 9
                 },
                 triggerFile: false,
-                editEmptyFile: [],
+                editVisible: false, //编辑弹框数据
+                editDialogData: {
+                    id:"",
+                    persist_version: "",
+                    rev_persist_version: "",
+                    pay_account_id: "",
+                    recv_account_id: "",
+                    recv_account_no: "",
+                    recv_account_name: "",
+                    recv_bank_cnaps: "",
+                    payment_amount: "",
+                    payment_summary: "",
+                    service_serial_number: "",
+                    bank_name: "",
+                    numText: ""
+                },
+                currentBill: {},
+                editEmptyFile: [], //编辑附件
                 eidttrigFile: false,
                 fileList: [],
+                accOptions: [],//编辑弹框下拉框数据
+                payerList: [],
+
+
+                innerVisible: false, //提交弹框
+                selectWorkflow: "",
+                workflows: [],
+                payModeList: {}, //下拉框数据
+                payStatList: [],
                 businessParams:{ //业务状态追踪参数
                 },
                 payModeList:{}, //下拉框数据
@@ -628,6 +586,27 @@
             }
         },
         methods: {
+            //获取户名和账号的下拉列表值
+            getPayerSelect: function(){
+                //获取收款方户名列表
+                this.$axios({
+                    url:"/cfm/normalProcess",
+                    method:"post",
+                    data:{
+                        optype:"zft_payacclist",
+                        params:{
+                            page_num:1,
+                            page_size: 10000
+                        }
+                    }
+                }).then((result) =>{
+                    if (result.data.error_msg) {
+
+                    } else {
+                        this.payerList = result.data.data;
+                    }
+                });
+            },
             //根据条件查询数据
             queryData: function () {
                 var searchData = this.searchData;
@@ -680,56 +659,25 @@
                     }
                 });
             },
-
-
             //查看
             lookBill: function (row) {
                 for (var k in row) {
-                    this.dialogData[k] = row[k];
+                    if(k == "payment_amount"){
+                        this.dialogData[k] = "￥" + this.$common.transitSeparator(row.payment_amount);
+                    }else{
+                        this.dialogData[k] = row[k];
+                    }
                 }
-
-                this.dialogData.numText = this.$common.transitText(row.payment_amount);
-                this.dialogData.payment_amount = "￥" + this.$common.transitSeparator(row.payment_amount);
-                this.dialogData.pay_mode = JSON.parse(window.sessionStorage.getItem("constants")).PayMode[row.pay_mode];
                 this.dialogVisible = true;
 
                 //附件数据
                 this.emptyFileList = [];
                 this.fileMessage.bill_id = row.id;
                 this.triggerFile = !this.triggerFile;
-
                 //业务状态跟踪
                 this.businessParams = {};
-                this.businessParams.biz_type = 8;
+                this.businessParams.biz_type = 9;
                 this.businessParams.id = row.id;
-            },
-            //编辑
-            editBill: function (row) {
-                for (var k in row) {
-                    this.editDialogData[k] = row[k];
-                }
-                this.currentBill = row;
-                //下拉框列表
-                this.payList = [];
-                this.payList.push({
-                    acc_id: row.pay_account_id,
-                    acc_no: row.pay_account_no
-                });
-                this.gatherList = [];
-                this.gatherList.push({
-                    acc_id: row.recv_account_id,
-                    acc_no: row.recv_account_no
-                });
-                this.editDialogData.numText = this.$common.transitText(row.payment_amount);
-                this.editDialogData.payment_amount = this.$common.transitSeparator(row.payment_amount);
-                this.editDialogData.pay_mode += "";
-
-                //附件数据
-                this.editEmptyFile = [];
-                this.fileMessage.bill_id = row.id;
-                this.eidttrigFile = !this.eidttrigFile;
-
-                this.editVisible = true;
             },
             //删除
             removeBill: function (row, index, rows) {
@@ -742,7 +690,7 @@
                         url: "/cfm/normalProcess",
                         method: "post",
                         data: {
-                            optype: "dbt_del",
+                            optype: "zft_delbill",
                             params: {
                                 id: row.id,
                                 persist_version: row.persist_version
@@ -792,7 +740,7 @@
                         url: "/cfm/normalProcess",
                         method: "post",
                         data: {
-                            optype: "dbt_revoke",
+                            optype: "zft_revoke",
                             params: {
                                 id: row.id,
                                 persist_version: row.persist_version,
@@ -821,108 +769,61 @@
                 }).catch(() => {
                 });
             },
+            //编辑
+            editBill: function (row) {
+                this.getPayerSelect();
+
+                var editDialogData = this.editDialogData;
+                for(var k in editDialogData){
+                    if(k == "bank_name"){
+                        editDialogData[k] = row.recv_account_bank;
+                    }else{
+                        editDialogData[k] = row[k];
+                    }
+                }
+                //设置数字加千分符和转汉字
+                editDialogData.numText = this.$common.transitText(row.payment_amount);
+                editDialogData.payment_amount = this.$common.transitSeparator(row.payment_amount);
+                //附件数据
+                this.editEmptyFile = [];
+                this.fileMessage.bill_id = row.id;
+                this.eidttrigFile = !this.eidttrigFile;
+
+                this.editVisible = true;
+            },
             /*编辑弹框内功能*/
-            //获取付款方账号
-            getPayList: function (value) {
-                this.payLoading = true;
-                var billData = this.editDialogData;
+            //修改户名和账号后改变对应的值
+            setPayer: function(val,target){
+                var payerList = this.payerList;
+                var editDialogData = this.editDialogData;
+                var flag = true;
+                var key = target == "acc_no" ? "acc_name" : "acc_no";
 
-                this.$axios({
-                    url: "/cfm/normalProcess",
-                    method: "post",
-                    data: {
-                        optype: "dbt_payacclist",
-                        params: {
-                            query_key: value.trim(),
-                            exclude_ids: billData.recv_account_id,
-                            page_size: 10000,
-                            page_num: 1
+                for(var i = 0; i < payerList.length; i++){
+                    if(payerList[i][key] == val){
+                        editDialogData.recv_account_id = payerList[i].id;
+                        editDialogData.recv_bank_cnaps = payerList[i].cnaps_code;
+                        editDialogData.rev_persist_version = payerList[i].persist_version;
+                        if(target == "acc_no"){
+                            editDialogData.recv_account_no = payerList[i][target];
+                        }else{
+                            editDialogData.recv_account_name = payerList[i][target];
                         }
+                        editDialogData.bank_name = payerList[i].bank_name;
+                        flag = false;
+                        continue;
                     }
-                }).then((result) => {
-                    if (result.data.error_msg) {
+                    if(editDialogData.recv_account_no == payerList[i].acc_no){
+                        flag = false;
+                    }
+                }
+                if(flag){
+                    editDialogData.recv_account_id = "";
+                    editDialogData.rev_persist_version = "";
+                }
+            },
 
-                    } else {
-                        this.payLoading = false;
-                        this.payList = result.data.data;
-                    }
-                }).catch(function (error) {
-                    console.log(error);
-                });
-            },
-            //获取收款方账号
-            getGatherList: function (value) {
-                this.gatherLoading = true;
-                var billData = this.editDialogData;
 
-                this.$axios({
-                    url: "/cfm/normalProcess",
-                    method: "post",
-                    data: {
-                        optype: "dbt_recvacclist",
-                        params: {
-                            query_key: value.trim(),
-                            exclude_ids: billData.pay_account_id,
-                            page_size: 10000,
-                            page_num: 1
-                        }
-                    }
-                }).then((result) => {
-                    if (result.data.error_msg) {
-
-                    } else {
-                        this.gatherLoading = false;
-                        this.gatherList = result.data.data;
-                    }
-                }).catch(function (error) {
-                    console.log(error);
-                });
-            },
-            //选择账号时设置户名和开户行
-            selectNumber: function (value, target) {
-                var payList = this.payList;
-                var gatherList = this.gatherList;
-                var billData = this.editDialogData;
-
-                if (target == "payNumber") {
-                    for (var i = 0; i < payList.length; i++) {
-                        if (payList[i].acc_id == value) {
-                            billData.pay_account_name = payList[i].acc_name;
-                            billData.pay_account_bank = payList[i].bank_name;
-                        }
-                    }
-                }
-                if (target == "gatherNumber") {
-                    for (var i = 0; i < gatherList.length; i++) {
-                        if (gatherList[i].acc_id == value) {
-                            billData.recv_account_name = gatherList[i].acc_name;
-                            billData.recv_account_bank = gatherList[i].bank_name;
-                        }
-                    }
-                }
-            },
-            //账号下拉框显示时更新数据
-            selectVisible: function (curStatus, target) {
-                if (curStatus) {
-                    if (target == "payNumber") {
-                        this.getPayList("");
-                    } else {
-                        this.getGatherList("");
-                    }
-                }
-            },
-            //清空账号时清空户名和开户行
-            clearSelect: function (target) {
-                var billData = this.editDialogData;
-                if (target == "payNumber") {
-                    billData.pay_account_name = "";
-                    billData.pay_account_bank = "";
-                }
-                if (target == "gatherNumber") {
-                    billData.recv_account_name = "";
-                    billData.recv_account_bank = "";
-                }
-            },
             //输入金额后进行格式化
             setMoney: function () {
                 var moneyNum = this.editDialogData.payment_amount.replace(/,/gi, "").trim();

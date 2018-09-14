@@ -425,7 +425,8 @@
                             <Upload @currentFielList="setFileList"
                                     :fileMessage="fileMessage"
                                     :emptyFileList="emptyFileList"
-                                    :isPending="true">
+                                    :isPending="true"
+                                    :triggerFile="eidttrigFile">
                             </Upload>
                         </td>
                     </tr>
@@ -509,6 +510,51 @@
                 this.accOptions = result.data.data;
             });
 
+            //获取单据数据
+            var hash = window.location.hash.split("?")[1];
+            if(hash){
+                var paramsList = hash.split("&");
+                var params = {
+                    uuid: JSON.parse(window.sessionStorage.getItem("uuid"))
+                };
+                paramsList.forEach((item) => {
+                    var keyValue = item.split("=");
+                    params[keyValue[0]] = keyValue[1];
+                })
+
+                this.$axios({
+                    url: "/cfm/normalProcess",
+                    method: "post",
+                    data: {
+                        optype: "zftbatch_prechgbill",
+                        params: params
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+
+                    } else {
+                        var data = result.data.data;
+                        var billData = this.billData;
+
+                        billData.id = data.id;
+                        billData.batchno = data.batchno;
+                        billData.pay_acc_id = data.pay_account_id;
+                        billData.version = data.persist_version;
+                        billData.memo = data.payment_summary;
+                        billData.allList = data.total_num;
+                        this.saveUploadList = data.obbaiTempList;
+                        billData.payment_amount = this.$common.transitSeparator(data.total_amount);
+                        this.moneyText = this.$common.transitText(data.total_amount);
+                        //附件数据
+                        this.fileMessage.bill_id = data.id;
+                        this.eidttrigFile = !this.eidttrigFile;
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            }
+
+            //设置token数据
             this.currToken = this.$store.state.token;
         },
         mounted: function () {
@@ -535,8 +581,9 @@
                 moneyText: "", //金额-大写
                 fileMessage: { //附件
                     bill_id: "",
-                    biz_type: 1
+                    biz_type: 11
                 },
+                eidttrigFile: false,
                 emptyFileList: [],
                 fileList: [],
                 fileLength: "",
@@ -731,8 +778,6 @@
                     console.log(error);
                 });
             },
-
-
             //提交
             submitBill: function () {
                 var params = this.setParams();
@@ -756,13 +801,10 @@
                         });
                     } else {
                         var data = result.data.data;
-                        console.log(data);
-                        return;
-                        //设置表单数据
-                        data.payment_amount = this.$common.transitSeparator(data.payment_amount);
-                        data.pay_mode += "";
-                        this.billData = data;
-                        //设置弹框数据
+                        this.billData.id = data.id;
+                        this.billData.service_status = data.service_status;
+                        this.billData.version = data.persist_version;
+                        //设置流程数据
                         this.selectWorkflow = "";
                         this.workflows = data.workflows;
                         this.innerVisible = true;
@@ -771,22 +813,24 @@
                     console.log(error);
                 });
             },
+
+
             //提交流程
             submitFlow: function () {
                 var workflowData = this.billData;
                 var params = {
                     define_id: this.selectWorkflow,
                     id: workflowData.id,
-                    service_serial_number: workflowData.service_serial_number,
+                    service_serial_number : workflowData.batchno,
                     service_status: workflowData.service_status,
-                    persist_version: workflowData.persist_version
+                    persist_version: workflowData.version
                 };
 
                 this.$axios({
                     url: "/cfm/normalProcess",
                     method: "post",
                     data: {
-                        optype: "dbt_submit",
+                        optype: "zftbatch_submit",
                         params: params
                     }
                 }).then((result) => {
@@ -799,6 +843,9 @@
                     } else {
                         var data = result.data.data;
                         this.innerVisible = false;
+                        this.$router.push({
+                            name: "BatchMakeBill"
+                        });
                         this.clearBill();
                         this.$message({
                             type: "success",

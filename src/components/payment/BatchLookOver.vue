@@ -303,7 +303,7 @@
         data: function () {
             return {
                 routerMessage: {
-                    optype: "dbt_detaillist",
+                    optype: "zftbatch_paybatchlist",
                     params: {
                         page_size: 7,
                         page_num: 1
@@ -344,7 +344,7 @@
                 emptyFileList: [], //附件
                 fileMessage: {
                     bill_id: "",
-                    biz_type: 8
+                    biz_type: 11
                 },
                 triggerFile: false,
                 businessParams:{ //业务状态追踪参数
@@ -405,7 +405,7 @@
 
                 //业务状态跟踪
                 this.businessParams = {};
-                this.businessParams.biz_type = 8;
+                this.businessParams.biz_type = 11;
                 this.businessParams.id = row.id;
 
                 this.dialogVisible = true;
