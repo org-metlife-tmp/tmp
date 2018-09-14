@@ -1236,6 +1236,7 @@
                 this.thirdFunVisible = true;
             },
             viewDetail:function(row,index){
+                debugger
                 this.businessParams = {};//清空数据
                 let bizType = row.biz_type;
                 this.dialogTitle = this.classParams[bizType].text;
@@ -1265,7 +1266,7 @@
                 var params = {};
                 params.id = id;
                 if(bizType == '10'){
-                    params.batchno = row.batchno;
+                    params.batchno = row.batchno ? row.batchno : row.bill_code;
                 }
                 this.$axios({
                     url:"/cfm/normalProcess",
