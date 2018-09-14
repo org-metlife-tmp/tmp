@@ -42,6 +42,17 @@
             height: 8%;
             bottom: -6px;
         }
+        /*弹框表格-分页部分*/
+        .inner-botton-pag {
+            position: absolute;
+            width: 100%;
+            height: 8%;
+            bottom: 6px;
+            left: 0;
+            .el-pagination{
+                text-align: center;
+            }
+        }
 
         /*汇总数据*/
         .allData {
@@ -87,7 +98,7 @@
         }
 
         /*按钮样式*/
-        .on-copy, .withdraw {
+        .withdraw {
             width: 20px;
             height: 20px;
             background-image: url(../../assets/icon_common.png);
@@ -95,47 +106,13 @@
             padding: 0;
             vertical-align: middle;
         }
-        /*复制按钮*/
-        .on-copy {
-            background-position: -24px 1px;
-        }
+        
         /*撤回按钮*/
         .withdraw {
             background-position: -48px 0;
         }
 
-        /*查看弹框*/
-        .dialog-talbe {
-            width: 100%;
-            height: 230px;
-
-            li {
-                float: left;
-                box-sizing: border-box;
-                border: 1px solid #e2e2e2;
-                margin-left: -1px;
-                margin-top: -1px;
-                height: 30px;
-                line-height: 30px;
-            }
-
-            .table-li-title {
-                width: 12%;
-                text-align: right;
-                padding-right: 10px;
-                font-weight: bold;
-            }
-            .table-li-content {
-                width: 38%;
-                padding-left: 10px;
-            }
-
-            .table-two-row {
-                width: 88%;
-                margin-left: -3px;
-                border-left: none;
-            }
-        }
+        
 
         .serial-number {
             color: #ccc;
@@ -162,6 +139,118 @@
         .table-content{
             height: 279px;
         }
+
+        //查看弹出框
+        .view-mode{
+            position: absolute;
+            margin: auto;
+            top: 15px;
+            left: 400px;
+            height: 30px;
+            line-height: 30px;
+            text-align: center;
+            .tabBtn{
+                width: 20px;
+                height: 20px;
+                background-image: url(../../assets/icon_common.png);
+                border: none;
+                padding: 0;
+                display: inline-block;
+                background-repeat: no-repeat;
+            }
+            .total{
+                background-position: -344px -2px
+            }
+            .detail{
+                background-position: -393px -2px;
+            }
+            .viewSelect{
+                .total{
+                    background-position: -366px -2px;
+                }
+                .detail{
+                    background-position: -420px -2px;
+                }
+            }
+        }
+        /*查看弹框*/
+        .dialog-talbe {
+            width: 100%;
+            overflow: hidden;
+            li {
+                float: left;
+                box-sizing: border-box;
+                border-top: 1px solid #e2e2e2;
+                height: 30px;
+                line-height: 30px;
+                width: 50%;
+                display:flex;/*设为伸缩容器*/  
+                flex-flow:row;/*伸缩项目单行排列*/  
+                span{
+                    display: inline-block;
+                    padding: 0 5px;
+                }
+                .table-title{
+                    width: 100px;
+                    text-align: right;
+                }
+                .tab-content{
+                    flex:1;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                }
+                .font-red{
+                    color: #fd7d2f;
+                    font-weight: bold;
+                }
+                .money-box{
+                    flex: 1;
+                    display:flex;/*设为伸缩容器*/  
+                    flex-flow:row;/*伸缩项目单行排列*/  
+                    .num{
+                        width: 100px;
+                        text-align:right;;
+                    }
+                    .amount{
+                        flex: 1;
+                        text-align: center;
+                    }
+                }
+            }
+            .font-red{
+                color: #fd7d2f;
+            }
+            .payTitle{
+                    width: 100%;
+                }
+            .borderRight{
+                border-right: 1px solid #e2e2e2;
+            }
+            .bgColor{
+                background-color: #fafafa;
+            }
+        }
+        .table-memo{
+            height: 30px;
+            line-height: 30px;
+        }
+        .memo-title{
+            width: 60px;
+            display: inline-block;
+            padding: 0 5px;
+            text-align: right;
+        }
+        .table-file{
+            >*{
+                float: left;
+            }
+        }
+        #batchDeatil{
+            .tab-content{
+                height: 300px;
+            }
+        }
     }
 </style>
 <style lang="less" type="text/less">
@@ -182,6 +271,15 @@
                         border: none;
                     }
                 }
+            }
+        }
+        .el-button-group .el-button:not(:last-child) {
+            // margin-right: -6px;
+        }
+        .el-dialog__wrapper {
+            .el-dialog__body {
+                height: 440px;
+                overflow-y: auto;
             }
         }
     }
@@ -281,12 +379,6 @@
                             <el-button type="primary" icon="el-icon-edit" size="mini"
                                        @click="editBill(scope.row)"></el-button>
                         </el-tooltip>
-                        <el-tooltip content="复制" placement="bottom" effect="light"
-                                    :enterable="false" :open-delay="500"
-                                    v-if="scope.row.service_status == 1 || scope.row.service_status == 5 || scope.row.service_status == 2">
-                            <el-button class="on-copy" size="mini"
-                                       @click="copyMakeBill(scope.row)"></el-button>
-                        </el-tooltip>
                         <el-tooltip content="撤回" placement="bottom" effect="light"
                                     :enterable="false" :open-delay="500"
                                     v-if="scope.row.service_status == 2">
@@ -307,10 +399,10 @@
                     <el-button type="warning" plain size="mini" @click="goMakeBill">制单</el-button>
                     <!-- <el-button type="warning" plain size="mini" @click="goPayment">支付处理</el-button> -->
                 </div>
-                <span>总笔数：</span>
-                <span v-text="totalData.total_num" class="numText"></span>
                 <span>总金额：</span>
-                <span v-text="totalData.total_amount" class="numText"></span>
+                <span v-text="total_amount" class="numText"></span>
+                <span>成功金额：</span>
+                <span v-text="success_amount" class="numText"></span>
             </div>
         </section>
         <!--分页部分-->
@@ -328,53 +420,162 @@
             </el-pagination>
         </div>
         <!--查看弹出框-->
-        <el-dialog title="调拨单信息"
+        <el-dialog title=""
                    :visible.sync="dialogVisible"
                    width="900px" top="76px"
                    :close-on-click-modal="false">
-            <div class="serial-number">
+            <h1 slot="title" v-text="dialogTitle" class="dialog-title"></h1>
+            <div class="view-mode">
+                <el-button-group>
+                    <el-button size="mini" :class="{viewSelect:curTab}" round title="查看批次汇总" @click="changeTab(true)"><i class="tabBtn total"></i></el-button>
+                    <el-button size="mini" :class="{viewSelect:!curTab}" round title="查看批次明细" @click="changeTab(false)"><i class="tabBtn detail"></i></el-button>
+                </el-button-group>
+            </div>
+            <!-- <div class="serial-number">
                 [编号:
                 <span v-text="dialogData.service_serial_number"></span>
                 ]
-            </div>
-            <ul class="dialog-talbe">
-                <li class="table-li-title">业务类型</li>
-                <li class="table-li-content" v-text="dialogData.biz_name"></li>
-                <li class="table-li-title">付款方式</li>
-                <li class="table-li-content" v-text="dialogData.pay_mode"></li>
-
-                <li class="table-li-title">付款单位</li>
-                <li class="table-li-content" v-text="dialogData.pay_account_name"></li>
-                <li class="table-li-title">收款单位</li>
-                <li class="table-li-content" v-text="dialogData.recv_account_name"></li>
-
-                <li class="table-li-title">账号</li>
-                <li class="table-li-content" v-text="dialogData.pay_account_no"></li>
-                <li class="table-li-title">账号</li>
-                <li class="table-li-content" v-text="dialogData.recv_account_no"></li>
-
-                <li class="table-li-title">开户行</li>
-                <li class="table-li-content" v-text="dialogData.pay_account_bank"></li>
-                <li class="table-li-title">开户行</li>
-                <li class="table-li-content" v-text="dialogData.recv_account_bank"></li>
-
-                <li class="table-li-title">调拨金额</li>
-                <li class="table-li-content" v-text="dialogData.payment_amount" style="color:#fd7d2f"></li>
-                <li class="table-li-title">大写</li>
-                <li class="table-li-content" v-text="dialogData.numText"></li>
-
-                <li class="table-li-title">摘要</li>
-                <li class="table-li-content table-two-row" v-text="dialogData.payment_summary"></li>
-
-                <li class="table-li-title" style="height:60px;line-height:60px">附件</li>
-                <li class="table-li-content table-two-row" style="height:60px;padding-top:6px;overflow-y:auto">
-                    <Upload :emptyFileList="emptyFileList"
+            </div> -->
+            <section id="batchSummary" v-show="curTab">
+                <ul class="dialog-talbe">
+                    <li class="borderRight bgColor">
+                        <span class="table-title">总笔数</span>
+                        <span class="tab-content">{{dialogData.total_num}}</span>
+                    </li>
+                    <li class="bgColor">
+                        <span class="table-title">总金额</span>
+                        <span class="tab-content font-red">{{dialogData.total_amount}}元</span>
+                    </li>
+                    <li>
+                        <span class="table-title">付款账号</span>
+                        <span class="tab-content" :title="dialogData.pay_account_no">{{dialogData.pay_account_no}}</span>
+                    </li>
+                    <li>
+                        <span class="table-title">开户行</span>
+                        <span class="tab-content" :title="dialogData.pay_account_bank">{{dialogData.pay_account_bank}}</span>
+                    </li>
+                    <li class="payTitle">
+                        <span class="table-title">支付结果</span>
+                    </li>
+                    <li class="font-red">
+                        <span class="table-title">已失败</span>
+                        <div class="money-box">
+                            <span class="num">{{dialogData.failed_num}}笔</span>
+                            <span class="amount">{{dialogData.failed_amount}}元</span>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="table-title">处理中</span>
+                        <div class="money-box">
+                            <span class="num">{{dialogData.process_num}}笔</span>
+                            <span class="amount">{{dialogData.process_amount}}元</span>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="table-title">已保存</span>
+                        <div class="money-box">
+                            <span class="num">{{dialogData.saved_num}}笔</span>
+                            <span class="amount">{{dialogData.saved_amount}}元</span>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="table-title">已作废</span>
+                        <div class="money-box">
+                            <span class="num">{{dialogData.cancel_num}}笔</span>
+                            <span class="amount">{{dialogData.cancel_amount}}元</span>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="table-title">已成功</span>
+                        <div class="money-box">
+                            <span class="num">{{dialogData.success_num}}笔</span>
+                            <span class="amount">{{dialogData.success_amount}}元</span>
+                        </div>
+                    </li>
+                    <li></li>
+                </ul>
+                <div class="table-memo">
+                    <span class="memo-title">备注</span>
+                    <span class="memo-content">{{dialogData.payment_summary}}</span>
+                </div>
+                <div class="table-file">
+                    <span class="memo-title" style="height:60px;line-height:60px">附件</span>
+                    <span class="memo-content" style="height:60px;padding-top:6px;overflow-y:auto">
+                        <Upload :emptyFileList="emptyFileList"
                             :fileMessage="fileMessage"
                             :triggerFile="triggerFile"
                             :isPending="false"></Upload>
-                </li>
-            </ul>
-            <BusinessTracking :businessParams="businessParams"></BusinessTracking>
+                    </span>
+                </div>
+                <BusinessTracking :businessParams="businessParams"></BusinessTracking>
+            </section>
+            <section id="batchDeatil" v-show="!curTab">
+                <!--搜索区-->
+                <div class="search-setion">
+                    <el-form :inline="true" :model="searchDetailData" size="mini">
+                        <el-row>
+                            <el-col :span="6">
+                                <el-form-item>
+                                    <el-input v-model="searchDetailData.recv_query_key" clearable
+                                            placeholder="请输入收款方名称或账号"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="6">
+                                <el-form-item>
+                                    <el-col :span="11">
+                                        <el-input v-model="searchDetailData.min" clearable placeholder="最小金额"></el-input>
+                                    </el-col>
+                                    <el-col class="line" :span="2">-</el-col>
+                                    <el-col :span="11">
+                                        <el-input v-model="searchDetailData.max" clearable placeholder="最大金额"></el-input>
+                                    </el-col>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="2">
+                                <el-form-item>
+                                    <el-button type="primary" plain @click="queryDetailData" size="mini">搜索</el-button>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                    </el-form>
+                </div>
+                <section class="tab-content">
+                    <el-table :data="detailTableList"
+                            height="100%"
+                            border size="mini">
+                        <el-table-column prop="recv_account_name" label="收款户名" :show-overflow-tooltip="true"></el-table-column>
+                        <el-table-column prop="recv_account_no" label="收款账号" :show-overflow-tooltip="true"></el-table-column>
+                        <el-table-column prop="recv_account_bank" label="收款行" :show-overflow-tooltip="true"></el-table-column>
+                        <el-table-column prop="payment_amount" label="金额" :show-overflow-tooltip="true"
+                                        :formatter="transitAmount"></el-table-column>
+                        <el-table-column prop="pay_status" label="业务状态" :show-overflow-tooltip="true"
+                                        :formatter="transitStatus"></el-table-column>
+                        <el-table-column prop="feed_back" label="反馈信息"
+                                        :show-overflow-tooltip="true"></el-table-column>
+                    </el-table>
+                    <div class="allData">
+                        <span>总笔数：</span>
+                        <span v-text="detailTotal.total_num" class="numText"></span>
+                        <span>总金额：</span>
+                        <span v-text="detailTotal.total_amount" class="numText"></span>
+                    </div>
+                </section>
+                <!--分页部分-->
+                <div class="inner-botton-pag">
+                    <el-pagination
+                            background
+                            layout="sizes, prev, pager, next, jumper"
+                            :page-size="pagDeSize"
+                            :total="pagDeTotal"
+                            :page-sizes="[7, 50, 100, 500]"
+                            :pager-count="5"
+                            @current-change="getCurrentDePage"
+                            @size-change="sizeDeChange"
+                            :current-page="pagDeCurrent">
+                    </el-pagination>
+                </div>
+            </section>
+            
         </el-dialog>
         <!--编辑弹出框-->
         <el-dialog title="编辑调拨单"
@@ -579,10 +780,12 @@
                 pagSize: 8, //分页数据
                 pagTotal: 1,
                 pagCurrent: 1,
-                totalData: { //汇总数据
-                    total_amount: "",
-                    total_num: ""
-                },
+                pagDeSize: 8, //弹窗分页数据
+                pagDeTotal: 1,
+                pagDeCurrent: 1,
+                //汇总数据
+                total_amount: "",
+                success_amount: "",
                 dateValue: "", //时间选择
                 pickerOptions: {
                     disabledDate(time) {
@@ -628,7 +831,7 @@
                 emptyFileList: [], //附件
                 fileMessage: {
                     bill_id: "",
-                    biz_type: 8
+                    biz_type: 10
                 },
                 triggerFile: false,
                 editEmptyFile: [],
@@ -638,6 +841,11 @@
                 },
                 payModeList:{}, //下拉框数据
                 payStatList: [],
+                dialogTitle:"批次汇总查看",
+                curTab: true,//当前显示的tab
+                detailTableList: [],//弹窗的表格
+                detailTotal:{},//弹窗的表格汇总
+                searchDetailData: {},//弹窗的表格的搜索条件
             }
         },
         methods: {
@@ -665,6 +873,21 @@
                 };
                 this.$emit("getCommTable", this.routerMessage);
             },
+            //根据条件查询数据(弹窗表格)
+            queryDetailData: function () {
+                this.getDetailTable(this.searchDetailData);
+            },
+            //换页后获取数据(弹窗表格)
+            getCurrentDePage: function (currPage) {
+                this.searchDetailData.page_num = currPage;
+                this.getDetailTable(this.searchDetailData);
+            },
+            //当前页数据条数发生变化(弹窗表格)
+            sizeDeChange: function (val) {
+                this.searchDetailData.page_size = val;
+                this.searchDetailData.page_num = 1;
+                this.getDetailTable(this.searchDetailData);
+            },
             //展示格式转换-处理状态
             transitStatus: function (row, column, cellValue, index) {
                 var constants = JSON.parse(window.sessionStorage.getItem("constants"));
@@ -684,25 +907,41 @@
             // goPayment: function () {
             //     this.$router.push("/allot/payment");
             // },
-            //复制
-            copyMakeBill: function (current) {
-                this.$router.push({
-                    name: "MakeBill",
-                    query: {
-                        id: current.id
-                    }
-                });
-            },
             //查看
             lookBill: function (row) {
-                for (var k in row) {
-                    this.dialogData[k] = row[k];
-                }
-
-                this.dialogData.numText = this.$common.transitText(row.payment_amount);
-                this.dialogData.payment_amount = "￥" + this.$common.transitSeparator(row.payment_amount);
-                this.dialogData.pay_mode = JSON.parse(window.sessionStorage.getItem("constants")).PayMode[row.pay_mode];
-                this.dialogVisible = true;
+                this.searchDetailData.batchno = row.batchno;
+                this.$axios({
+                    url: "/cfm/normalProcess",
+                    method: "post",
+                    data: {
+                        optype: "dbtbatch_viewbill",
+                        params: {
+                            batchno: row.batchno
+                        }
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                    } else {
+                        var data = result.data.data;
+                        data.cancel_amount = this.$common.transitSeparator(data.cancel_amount);
+                        data.failed_amount = this.$common.transitSeparator(data.failed_amount);
+                        data.process_amount = this.$common.transitSeparator(data.process_amount);
+                        data.saved_amount = this.$common.transitSeparator(data.saved_amount);
+                        data.success_amount = this.$common.transitSeparator(data.success_amount);
+                        data.total_amount = this.$common.transitSeparator(data.total_amount);
+                        this.dialogData = data;
+                        this.dialogVisible = true;
+                        
+                        this.getDetailTable({batchno:row.batchno});
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                });
 
                 //附件数据
                 this.emptyFileList = [];
@@ -711,125 +950,47 @@
 
                 //业务状态跟踪
                 this.businessParams = {};
-                this.businessParams.biz_type = 8;
+                this.businessParams.biz_type = 10;
                 this.businessParams.id = row.id;
+            },
+            getDetailTable: function (params) {
+                params.page_size = params.page_size ? params.page_size : 7;
+                params.page_num = params.page_num ? params.page_num : 1;
+                this.$axios({
+                    url: "/cfm/normalProcess",
+                    method: "post",
+                    data: {
+                        optype: "dbtbatch_detaillist",
+                        params: params
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                    } else {
+                        var val = result.data;
+                        var data = val.data;
+                        this.detailTotal = val.ext;
+                        this.pagDeSize = val.page_size;
+                        this.pagDeTotal = val.total_line;
+                        this.pagDeCurrent = val.page_num;
+                        this.detailTableList = data;
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                });
             },
             //编辑
             editBill: function (row) {
-                for (var k in row) {
-                    this.editDialogData[k] = row[k];
-                }
-                this.currentBill = row;
-                //下拉框列表
-                this.payList = [];
-                this.payList.push({
-                    acc_id: row.pay_account_id,
-                    acc_no: row.pay_account_no
-                });
-                this.gatherList = [];
-                this.gatherList.push({
-                    acc_id: row.recv_account_id,
-                    acc_no: row.recv_account_no
-                });
-                this.editDialogData.numText = this.$common.transitText(row.payment_amount);
-                this.editDialogData.payment_amount = this.$common.transitSeparator(row.payment_amount);
-                this.editDialogData.pay_mode += "";
-
-                //附件数据
-                this.editEmptyFile = [];
-                this.fileMessage.bill_id = row.id;
-                this.eidttrigFile = !this.eidttrigFile;
-
-                this.editVisible = true;
-            },
-            //删除
-            removeBill: function (row, index, rows) {
-                this.$confirm('确认删除当前单据吗?', '提示', {
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                    type: 'warning'
-                }).then(() => {
-                    this.$axios({
-                        url: "/cfm/normalProcess",
-                        method: "post",
-                        data: {
-                            optype: "dbt_del",
-                            params: {
-                                id: row.id,
-                                persist_version: row.persist_version
-                            }
-                        }
-                    }).then((result) => {
-                        if (result.data.error_msg) {
-                            this.$message({
-                                type: "error",
-                                message: result.data.error_msg,
-                                duration: 2000
-                            })
-                            return;
-                        }
-
-                        if (this.pagCurrent < (this.pagTotal / this.pagSize)) { //存在下一页
-                            this.$emit("getCommTable", this.routerMessage);
-                        } else {
-                            if (rows.length == "1" && (this.routerMessage.todo.params.page_num != 1)) { //是当前页最后一条
-                                this.routerMessage.todo.params.page_num--;
-                                this.$emit("getCommTable", this.routerMessage);
-                            } else {
-                                rows.splice(index, 1);
-                                this.pagTotal--;
-                            }
-                        }
-
-                        this.$message({
-                            type: "success",
-                            message: "删除成功",
-                            duration: 2000
-                        })
-                    }).catch(function (error) {
-                        console.log(error);
-                    })
-                }).catch(() => {
-                });
-            },
-            //撤回
-            withdrawBill: function (row) {
-                this.$confirm('确认撤回当前单据吗?', '提示', {
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                    type: 'warning'
-                }).then(() => {
-                    this.$axios({
-                        url: "/cfm/normalProcess",
-                        method: "post",
-                        data: {
-                            optype: "dbt_revoke",
-                            params: {
-                                id: row.id,
-                                persist_version: row.persist_version,
-                                service_status: row.service_status
-                            }
-                        }
-                    }).then((result) => {
-                        if (result.data.error_msg) {
-                            this.$message({
-                                type: "error",
-                                message: result.data.error_msg,
-                                duration: 2000
-                            })
-                            return;
-                        } else {
-                            this.$message({
-                                type: "success",
-                                message: "撤回成功",
-                                duration: 2000
-                            });
-                            this.$emit("getCommTable", this.routerMessage);
-                        }
-                    }).catch(function (error) {
-                        console.log(error);
-                    })
-                }).catch(() => {
+                this.$router.push({
+                    name:"LotMakeBill",
+                    params:{
+                        id: row.id,
+                        batchno: row.batchno
+                    }
                 });
             },
 
@@ -1148,14 +1309,109 @@
                     })
                 }
             },
+            //切换弹框内tab
+            changeTab: function (type) {
+                this.dialogTitle = type ? '批次汇总查看' : '批次汇总明细';
+                this.curTab = type;
+            },
+             //删除
+            removeBill: function (row, index, rows) {
+                this.$confirm('确认删除当前单据吗?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.$axios({
+                        url: "/cfm/normalProcess",
+                        method: "post",
+                        data: {
+                            optype: "dbtbatch_del",
+                            params: {
+                                id: row.id,
+                                persist_version: row.version
+                            }
+                        }
+                    }).then((result) => {
+                        if (result.data.error_msg) {
+                            this.$message({
+                                type: "error",
+                                message: result.data.error_msg,
+                                duration: 2000
+                            })
+                        }else{
+                            if (this.pagCurrent < (this.pagTotal / this.pagSize)) { //存在下一页
+                                this.$emit("getCommTable", this.routerMessage);
+                            } else {
+                                if (rows.length == "1" && (this.routerMessage.params.page_num != 1)) { //是当前页最后一条
+                                    this.routerMessage.params.page_num--;
+                                    this.$emit("getCommTable", this.routerMessage);
+                                } else {
+                                    rows.splice(index, 1);
+                                    this.pagTotal--;
+                                }
+                            }
+                            this.$message({
+                                type: "success",
+                                message: "删除成功",
+                                duration: 2000
+                            })
+                        }
+                    }).catch(function (error) {
+                        console.log(error);
+                    })
+                }).catch(() => {
+                });
+            },
+            //已处理撤回
+            withdrawBill:function(row){
+                this.$confirm('确认撤回当前事项申请吗?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.$axios({
+                        url: "/cfm/normalProcess",
+                        method: "post",
+                        data: {
+                            optype: "dbtbatch_revoke",
+                            params: {
+                                id: row.id,
+                                persist_version: row.version,
+                                service_status: row.service_status
+                            }
+                        }
+                    }).then((result) => {
+                        if (result.data.error_msg) {
+                            this.$message({
+                                type: "error",
+                                message: result.data.error_msg,
+                                duration: 2000
+                            })
+                            return;
+                        }
+                        this.$emit('getCommTable', this.routerMessage);
+
+                        this.$message({
+                            type: "success",
+                            message: "撤回成功",
+                            duration: 2000
+                        })
+                    }).catch(function (error) {
+                        console.log(error);
+                    })
+                }).catch(() => {
+                });
+            },
+
         },
         watch: {
             tableData: function (val, oldVal) {
                 this.pagSize = val.page_size;
                 this.pagTotal = val.total_line;
-                this.tableList = val.data;
                 this.pagCurrent = val.page_num;
-                this.totalData = val.ext;
+                this.success_amount = val.success_amount;
+                this.total_amount = val.total_amount;
+                this.tableList = val.data;
             }
         }
     }
