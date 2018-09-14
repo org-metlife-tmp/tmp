@@ -346,7 +346,7 @@
                             >
                             </el-table-column>
                             <!-- 调拨通金额处理千分位 -->
-                            <el-table-column v-else-if="head.prop=='payment_amount'"
+                            <el-table-column v-else-if="head.prop=='payment_amount' || head.prop== 'total_amount'"
                                 :key="head.id"
                                 :prop="head.prop"
                                 :label="head.name"
@@ -434,12 +434,12 @@
                         <el-col v-else-if="detail.prop=='payment_type'" 
                                 :key="detail.id"
                                 :span="detail.pspan">{{dbtTypeList[dialogData.payment_type]}}</el-col>
-                        <el-col v-else-if="detail.prop=='payment_amount'" 
+                        <el-col v-else-if="detail.prop=='payment_amount' || detail.prop=='total_amount'" 
                                 :key="detail.id"
                                 :span="detail.pspan">
                                 <span>￥</span>
-                                <span class="aomuntColor">{{tansss(dialogData.payment_amount)}}</span>
-                                <span class="grey">(大写){{payAmountUp}}</span></el-col>
+                                <span class="aomuntColor">{{tansss(dialogData[detail.prop])}}</span>
+                                <span class="grey">(大写){{dialogData.payAmountUp}}</span></el-col>
                         <el-col  v-else 
                                 :key="detail.id" 
                                 :span="detail.pspan">{{dialogData[detail.prop]}}</el-col>
@@ -533,7 +533,7 @@
                                 </el-option>
                             </el-select> 
                         </el-form-item>-->
-                    </el-col>-->
+                    </el-col>
                     <el-col :span="24">
                         <el-form-item label="拒绝原因">
                             <el-input v-model="thirdFunData.assignee_memo" type="textarea" :rows="3"></el-input>
@@ -657,7 +657,31 @@
                     addLots:"dbt_append",
                     agree:"dbt_agree",
                     reject:"dbt_reject"
-                }
+                },
+                {
+                    text:"支付通",
+                    detail:"dbt_detail",
+                    list:"dbt_pendingtasks",
+                    addLots:"dbt_append",
+                    agree:"dbt_agree",
+                    reject:"dbt_reject"
+                },
+                {
+                    text:"内部调拨-批量",
+                    detail:"dbtbatch_detail",
+                    list:"dbtbatch_pendingtasks",
+                    addLots:"dbtbatch_append",
+                    agree:"dbtbatch_agree",
+                    reject:"dbtbatch_reject"
+                },
+                {
+                    text:"支付通-批量",
+                    detail:"dbt_detail",
+                    list:"dbt_pendingtasks",
+                    addLots:"dbt_append",
+                    agree:"dbt_agree",
+                    reject:"dbt_reject"
+                },
             ]
 
             this.detailDialog ={
@@ -889,7 +913,24 @@
                     {id:"18", pspan:8, prop:"payment_summary"},
                     {id:"19", lspan:4, label:"调拨类型"},
                     {id:"20", pspan:8, prop:"payment_type"}
-                ]
+                ],
+                "10":[//调拨通-批量
+                    {id:"1", lspan:4, label:"批次号"},
+                    {id:"2",pspan:20, prop:"batchno"},
+                    {id:"3", lspan:4, label:"总笔数"},
+                    {id:"4", pspan:8, prop:"total_num"},
+                    {id:"5", lspan:4, label:"付款方户名"},
+                    {id:"6", pspan:8, prop:"pay_account_name"},
+                    {id:"7", lspan:4, label:"付款方账号"},
+                    {id:"8", pspan:8, prop:"pay_account_no"},
+                    {id:"9", lspan:4, label:"付款行"},
+                    {id:"10", pspan:8, prop:"pay_account_bank"},
+                    {id:"11", lspan:4, label:"金额"},
+                    {id:"12", pspan:8, prop:"total_amount"},
+                    {id:"13", lspan:4, label:"备注"},
+                    {id:"14", pspan:8, prop:"payment_summary"},
+                ],
+                
             }   
         },
         mounted:function(){
@@ -1008,6 +1049,17 @@
                         {id:'4',prop:"recv_account_no",name:'收款账号'},
                         {id:'5',prop:"payment_amount",name:'金额'},
                         {id:'6',prop:"nextUserList[0].name",name:'下级审批人'}
+                    ],
+                    "10":[//调拨通-批量
+                        {id:'1',prop:"batchno",name:'批次号'},
+                        {id:'2',prop:"pay_account_no",name:'付款方账号'},
+                        {id:'3',prop:"pay_account_name",name:'付款方名称'},
+                        {id:'4',prop:"pay_account_bank",name:'付款方银行'},
+                        {id:'5',prop:"total_num",name:'总笔数'},
+                        {id:'6',prop:"total_amount",name:'总金额'},
+                        // {id:'7',prop:"success_num",name:'成功笔数'},
+                        // {id:'8',prop:"success_amount",name:'成功金额'},
+                        {id:'9',prop:"service_status",name:'批次状态'}
                     ]
                 },
                 editableTabsList: [],
@@ -1118,7 +1170,7 @@
             //处理弹出表格的金额展示问题
             tansss:function(value){
                 if(value){
-                    this.payAmountUp = this.$common.transitText(value);
+                    this.dialogData.payAmountUp = this.$common.transitText(value);
                     return this.$common.transitSeparator(value);
                 }
             },
@@ -1209,14 +1261,18 @@
                 // }
                 this.currentData.wf_inst_id = _index == '0' ? row.id : row.inst_id;
                 // let optype = this.classParams[bizType].detail;
+                //详情接口参数
+                var params = {};
+                params.id = id;
+                if(bizType == '10'){
+                    params.batchno = row.batchno;
+                }
                 this.$axios({
                     url:"/cfm/normalProcess",
                     method:"post",
                     data:{
                         optype:this.classParams[bizType].detail,
-                        params:{
-                            id:id
-                        }
+                        params:params
                     }
                 }).then((result) =>{
                     if (result.data.error_msg) {

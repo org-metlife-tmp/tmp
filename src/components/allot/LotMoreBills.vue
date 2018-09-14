@@ -357,9 +357,9 @@
                 <el-table-column prop="batchno" label="批次号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="total_num" label="总笔数" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="total_amount" label="总金额" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="total_num" label="成功笔数"
+                <el-table-column prop="success_num" label="成功笔数"
                                  :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="success_num" label="成功金额" :show-overflow-tooltip="true"
+                <el-table-column prop="success_amount" label="成功金额" :show-overflow-tooltip="true"
                                  :formatter="transitAmount"></el-table-column>
                 <el-table-column prop="service_status" label="批次状态" :show-overflow-tooltip="true"
                                  :formatter="transitStatus"></el-table-column>
