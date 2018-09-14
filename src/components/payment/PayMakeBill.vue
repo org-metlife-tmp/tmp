@@ -791,10 +791,12 @@
                         this.billData.acc_id = val;
                         this.billData[target] = val;
                         this.billData.bank_name = payerList[i].bank_name;
-                        flag = false;
+                        if(target == "acc_name"){
+                            flag = false;
+                        }
                         continue;
                     }
-                    if(this.billData[target] == payerList[i].id){
+                    if(this.billData.acc_no == payerList[i].id){
                         flag = false;
                     }
                 }

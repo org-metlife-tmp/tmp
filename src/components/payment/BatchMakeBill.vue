@@ -1,5 +1,5 @@
 <style lang="less" type="text/less">
-    #batchMakeBill{
+    #batchMakeBill {
         min-width: 980px;
         width: 80%;
         height: 100%;
@@ -143,6 +143,72 @@
                     width: 100%;
                 }
             }
+
+            .pay-file-list{
+                height: 50px;
+                width: 80%;
+                margin: 10px auto 0px;
+
+                li{
+                    float: left;
+                    position: relative;
+                    cursor: pointer;
+                    margin-right: 40px;
+                    border: 1px solid #ccc;
+                    padding: 6px;
+
+                    span{
+                        width: 38px;
+                        height: 42px;
+                        display: inline-block;
+                        background: url("../../assets/icon_common.png") no-repeat;
+                        background-position: -85px -103px;
+                        vertical-align: middle;
+                    }
+                    .txt{
+                        background-position: -85px -103px;
+                    }
+                    .doc,.docx{
+                        background-position: 0px -103px;
+                    }
+                    .xls,.xlsx{
+                        background-position: -44px -103px;
+                    }
+                    .png,.jpg{
+                        background-position: -132px -103px;
+                    }
+
+                    i{
+                        position: absolute;
+                        width: 21px;
+                        height: 21px;
+                        background: url("../../assets/icon_common.png") no-repeat;
+                        background-position: -248px 0;
+                        top: -8px;
+                        left: 40px;
+                        display: none;
+                    }
+
+                    div{
+                        position: absolute;
+                        bottom: -22px;
+                        width: 60px;
+                        left: -6px;
+                    }
+
+                    div:nth-child(4){
+                        bottom: -42px;
+                        width: 300px;
+                        left: -124px;
+                    }
+                }
+
+                li:hover{
+                    i{
+                        display: inline-block;
+                    }
+                }
+            }
         }
 
         /*底部按钮组*/
@@ -166,18 +232,18 @@
         }
 
         /*附件*/
-        .upload-content{
+        .upload-content {
             height: 77px;
             padding-left: 16px;
 
-            #upload{
+            #upload {
                 height: 77px;
                 padding-top: 16px;
                 box-sizing: border-box;
                 overflow-y: auto;
             }
         }
-        .upload-num{
+        .upload-num {
             display: inline-block;
             width: 18px;
             height: 18px;
@@ -208,6 +274,7 @@
             }
         }
     }
+
     .el-radio-group {
         margin-top: -16px;
         .el-radio {
@@ -216,35 +283,42 @@
             margin-bottom: 10px;
         }
     }
-    .dialog-upload-input{
+
+    .dialog-upload-input {
         width: 90%;
         margin: 10px auto 40px;
 
-        .el-input{
+        .el-input {
             width: 80%;
             vertical-align: middle;
             margin-left: 10px;
 
-            input{
+            input {
                 cursor: default;
             }
 
-            div{
+            div {
                 cursor: pointer;
             }
+        }
+    }
+
+    .upload-demo {
+        .el-upload-list {
+            display: none;
         }
     }
 
     .upload-input {
         position: relative;
 
-        .el-input{
+        .el-input {
             position: absolute;
             top: 10px;
-            left: 70px;
+            left: 90px;
             width: 80%;
 
-            input{
+            input {
                 border-radius: 16px 0 0 16px;
                 cursor: default;
             }
@@ -257,7 +331,7 @@
                 width: 14px;
             }
 
-            .upload-button{
+            .upload-button {
                 background: url(../../assets/icon_common.png) -307px 2px;
                 padding: 12px 18px;
                 height: 30px;
@@ -270,7 +344,7 @@
     <div id="batchMakeBill">
         <!--顶部标题-按钮-->
         <header>
-            <h1>资金支付-制单</h1>
+            <h1>批量支付-制单</h1>
             <el-button type="warning" size="small">打印</el-button>
         </header>
         <!--表单部分-->
@@ -284,7 +358,7 @@
                         value-format="yyyy-MM-dd"
                         size="mini">
                 </el-date-picker>
-                <el-select v-model="billData.pay_account_id " placeholder="请选择付款方"
+                <el-select v-model="billData.pay_acc_id" placeholder="请选择付款方"
                            filterable clearable size="mini">
                     <el-option v-for="item in accOptions"
                                :key="item.acc_id"
@@ -294,7 +368,7 @@
                 </el-select>
                 <div class="serial-number">
                     <span>批次号:</span>
-                    <span v-text="billData.service_serial_number"></span>
+                    <span v-text="billData.batchno"></span>
                 </div>
             </div>
             <!--表单-->
@@ -302,12 +376,20 @@
                 <table>
                     <tr>
                         <td rowspan="3" class="title-erect">收款信息</td>
-                        <!--<td class="title-small" rowspan="3">户名</td>-->
                         <td rowspan="3" colspan="5" class="upload-input">
                             <el-input class="input-with-select" readonly
-                                      size="small" v-model="billData.searchData" clearable>
-                                <el-button type="primary" slot="append" class="upload-button" @click="dialogVisible = true"></el-button>
+                                      size="small" v-model="billData.uploadName" clearable>
+                                <el-button type="primary" slot="append" class="upload-button"
+                                           @click="showUpload"></el-button>
                             </el-input>
+                            <ul class="pay-file-list">
+                                <li v-for="file in saveUploadList">
+                                    <span :class="file.file_extension_suffix"></span>
+                                    <i title="点击删除" @click="delUpFile(file)"></i>
+                                    <div>{{ file.number }}笔</div>
+                                    <div>{{ file.amount }}元</div>
+                                </li>
+                            </ul>
                         </td>
                     </tr>
                     <tr></tr>
@@ -320,19 +402,19 @@
                         <td>金额合计（元）</td>
                         <td colspan="3" class="money-input">
                             <span>￥</span>
-                            <input type="text" @blur="setMoney" v-model="billData.payment_amount">
+                            <input type="text" v-model="billData.payment_amount" readonly>
                             <span>(大写)</span>
                             <span v-text="moneyText"></span>
                         </td>
                         <td style="width:80px">总笔数</td>
                         <td class="empty-input" style="width:100px">
-                            <input type="text" v-model="billData.payment_summary">
+                            <input type="text" v-model="billData.allList" readonly>
                         </td>
                     </tr>
                     <tr>
                         <td class="set-space">摘要</td>
                         <td class="empty-input" colspan="5">
-                            <input type="text" placeholder="请在此处填写摘要" v-model="billData.payment_summary">
+                            <input type="text" placeholder="请在此处填写摘要" v-model="billData.memo">
                         </td>
                     </tr>
                     <tr>
@@ -367,13 +449,13 @@
                    top="140px" :close-on-click-modal="false">
             <div class="dialog-upload-input">
                 模板上传
-                <el-input size="small" readonly>
+                <el-input size="small" readonly v-model="currentUpload.original_file_name">
                     <template slot="append">
                         <el-upload
                                 class="upload-demo"
                                 action="/cfm/normal/excel/upload"
                                 :headers="{pk:'2',Authorization:currToken}"
-                                :data="uploadData"
+                                :on-success="uploadSuccess"
                                 multiple>
                             <span class="">浏览</span>
                         </el-upload>
@@ -383,7 +465,24 @@
             <span slot="footer" class="dialog-footer" style="text-align:center">
                     <el-button type="warning" size="mini" plain @click="">模板下载</el-button>
                     <el-button type="warning" size="mini" plain @click="dialogVisible = false">取 消</el-button>
-                    <el-button type="warning" size="mini" @click="">确 定</el-button>
+                    <el-button type="warning" size="mini" @click="addCurUpload" :disabled="addExcel">确 定</el-button>
+                </span>
+        </el-dialog>
+        <!--提交弹框-->
+        <el-dialog :visible.sync="innerVisible"
+                   width="50%" title="提交审批流程"
+                   top="76px"
+                   :close-on-click-modal="false">
+            <el-radio-group v-model="selectWorkflow">
+                <el-radio v-for="workflow in workflows"
+                          :key="workflow.define_id"
+                          :label="workflow.define_id"
+                >{{ workflow.workflow_name }}
+                </el-radio>
+            </el-radio-group>
+            <span slot="footer" class="dialog-footer" style="text-align:center">
+                    <el-button type="warning" size="mini" plain @click="innerVisible = false">取 消</el-button>
+                    <el-button type="warning" size="mini" @click="submitFlow">确 定</el-button>
                 </span>
         </el-dialog>
     </div>
@@ -394,25 +493,25 @@
 
     export default {
         name: "PayMakeBill",
-        created: function(){
+        created: function () {
             //获取付款方账户列表
             this.$axios({
-                url:"/cfm/normalProcess",
-                method:"post",
-                data:{
-                    optype:"account_accs",
-                    params:{
-                        status:1,
-                        acc_id:""
+                url: "/cfm/normalProcess",
+                method: "post",
+                data: {
+                    optype: "account_accs",
+                    params: {
+                        status: 1,
+                        acc_id: ""
                     }
                 }
-            }).then((result) =>{
+            }).then((result) => {
                 this.accOptions = result.data.data;
             });
 
             this.currToken = this.$store.state.token;
         },
-        mounted: function(){
+        mounted: function () {
 
         },
         components: {
@@ -422,13 +521,16 @@
             return {
                 dateValue: new Date(), //申请时间
                 billData: {
-                    pay_account_id: "", //付款方式
-                    service_serial_number: "", //单据编号
-                    pay_account_name: "", //付款方
-                    pay_account_id: "",
-                    pay_account_bank: "",
+                    uploadName: "", //上传的文件名
+                    allList: "", //总笔数
+                    pay_acc_id: "", //付款方式
                     payment_amount: "", //金额
-                    payment_summary: "" //摘要
+                    memo: "",
+                    files: [],
+                    batchno: "",
+                    pay_mode: 8,
+                    version: "",
+                    id: ""
                 },
                 moneyText: "", //金额-大写
                 fileMessage: { //附件
@@ -438,57 +540,18 @@
                 emptyFileList: [],
                 fileList: [],
                 fileLength: "",
+                accOptions: {}, //下拉框数据
                 dialogVisible: false, //弹框数据
-                accOptions:{}, //下拉框数据
-
-                uploadData: {
-                    pk:2
-                },
-                currToken: ""
+                innerVisible: false, //提交弹框
+                selectWorkflow: "",
+                workflows: [],
+                addExcel: true, //上传文件数据
+                currentUpload: {},
+                saveUploadList: [],
+                currToken: "", //token信息
             }
         },
         methods: {
-            //输入金额后进行格式化
-            setMoney: function () {
-                var moneyNum = this.billData.payment_amount.replace(/,/gi, "").trim();
-                /*校验数据格式是否正确*/
-                if (moneyNum == "") {
-                    return;
-                }
-                if (isNaN(moneyNum)) {
-                    this.$message({
-                        type: "warning",
-                        message: "请输入正确的金额",
-                        duration: 2000
-                    });
-                    this.billData.payment_amount = "";
-                    return;
-                }
-                var verify = moneyNum.split(".");
-                if (verify[0].length > 10) {
-                    this.$message({
-                        type: "warning",
-                        message: "整数位不能超过10位数",
-                        duration: 2000
-                    });
-                    verify[0] = verify[0].slice(0, 10);
-                    moneyNum = verify.join(".");
-                }
-                if (verify[1] && verify[1].length > 2) {
-                    this.$message({
-                        type: "warning",
-                        message: "小数点后只能保留两位小数",
-                        duration: 2000
-                    });
-                    verify[1] = verify[1].slice(0, 2);
-                    moneyNum = verify.join(".");
-                }
-
-                //设置数字部分格式
-                this.billData.payment_amount = this.$common.transitSeparator(moneyNum);
-                //设置汉字
-                this.moneyText = this.$common.transitText(moneyNum);
-            },
             //设置当前项上传附件
             setFileList: function ($event) {
                 this.fileLength = "";
@@ -500,36 +563,42 @@
                     })
                 }
             },
-
-
-            //清空
-            clearBill: function(){
-                var billData = this.billData;
-                for(var k in billData){
-                    billData[k] = "";
-                }
-                this.moneyText = "";
-                this.allotType = "";
-                this.emptyFileList = [];
+            //弹出上传弹框
+            showUpload: function () {
+                this.currentUpload = {};
+                this.addExcel = true;
+                this.dialogVisible = true;
             },
-            //更多单据
-            goMoreBills: function(){
-                this.$router.push("/payment/batch-more-bills");
+            //上传成功
+            uploadSuccess: function (response, file, fileList) {
+                this.currentUpload = response;
+                this.addExcel = false;
+                this.$message({
+                    type: "success",
+                    message: "上传成功",
+                    duration: 2000
+                });
+                console.log(response);
             },
-            //保存
-            saveBill: function(){
-                var params = this.setParams();
-                if(!params){
-                    return;
+            //添加上传成功的文件
+            addCurUpload: function () {
+                this.addExcel = true;
+                var currentUpload = this.currentUpload;
+                var params = {
+                    uuid: JSON.parse(window.sessionStorage.getItem("uuid")),
+                    object_id: currentUpload.object_id,
+                    document_id: currentUpload.document_id,
+                    origin_name: currentUpload.original_file_name
                 }
-
-                var billData = this.billData;
+                if(this.billData.batchno){
+                    params.batchno = this.billData.batchno;
+                }
 
                 this.$axios({
                     url: "/cfm/normalProcess",
                     method: "post",
                     data: {
-                        optype: billData.id ? "dbt_chg" : "dbt_add",
+                        optype: "zftbatch_addbillexcel",
                         params: params
                     }
                 }).then((result) => {
@@ -538,16 +607,21 @@
                             type: "error",
                             message: result.data.error_msg,
                             duration: 2000
-                        });
+                        })
                     } else {
                         var data = result.data.data;
-                        data.payment_amount = this.$common.transitSeparator(data.payment_amount);
-                        data.pay_mode += "";
+                        //设置附件数据
+                        this.saveUploadList.push(data);
+                        this.billData.batchno = data.batchno;
+                        //设置汇总数据
+                        this.billData.allList = data.total_num;
+                        this.billData.payment_amount = this.$common.transitSeparator(data.total_amount);
+                        this.moneyText = this.$common.transitText(data.total_amount);
 
-                        this.billData = data;
+                        this.dialogVisible = false;
                         this.$message({
                             type: "success",
-                            message: "保存成功",
+                            message: "添加附件成功",
                             duration: 2000
                         });
                     }
@@ -555,18 +629,85 @@
                     console.log(error);
                 });
             },
-            //提交
-            submitBill: function(){
-                var params = this.setParams();
-                if(!params){
-                    return;
+            //删除
+            delUpFile: function(file){
+                console.log(file);
+                var params = {
+                    batchno: file.batchno,
+                    uuid: file.uuid,
+                    info_id: file.id
                 }
-
                 this.$axios({
                     url: "/cfm/normalProcess",
                     method: "post",
                     data: {
-                        optype: "dbt_presubmit",
+                        optype: "zftbatch_delbillexcel",
+                        params: params
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                    } else {
+                        var data = result.data.data;
+                        var saveUploadList = this.saveUploadList;
+                        //设置附件数据
+                        var index = saveUploadList.indexOf(file);
+                        saveUploadList.splice(index, 1);
+                        //设置汇总数据
+                        this.billData.allList = data.total_num;
+                        this.billData.payment_amount = this.$common.transitSeparator(data.total_amount);
+                        this.moneyText = this.$common.transitText(data.total_amount);
+
+                        this.$message({
+                            type: "success",
+                            message: "删除附件成功",
+                            duration: 2000
+                        });
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            },
+            //清空
+            clearBill: function () {
+                var billData = this.billData;
+                for (var k in billData) {
+                    billData[k] = "";
+                }
+                this.saveUploadList = [];
+                this.moneyText = "";
+                this.emptyFileList = [];
+            },
+            //更多单据
+            goMoreBills: function () {
+                this.$router.push("/payment/batch-more-bills");
+            },
+            //设置params
+            setParams: function () {
+                //校验数据是否完善 并设置发送给后台的数据
+                var params = this.billData;
+                params.files = this.fileList;
+                params.pay_mode = 8;
+                params.uuid = JSON.parse(window.sessionStorage.getItem("uuid"));
+                return params;
+            },
+            //保存
+            saveBill: function () {
+                var params = this.setParams();
+                if (!params) {
+                    return;
+                }
+
+                var billData = this.billData;
+                this.$axios({
+                    url: "/cfm/normalProcess",
+                    method: "post",
+                    data: {
+                        optype: billData.id ? "zftbatch_chgbill" : "zftbatch_addbill",
                         params: params
                     }
                 }).then((result) => {
@@ -578,6 +719,45 @@
                         });
                     } else {
                         var data = result.data.data;
+                        this.$message({
+                            type: "success",
+                            message: billData.id ? "修改成功" : "保存成功",
+                            duration: 2000
+                        });
+                        this.billData.id = data.id;
+                        this.billData.version = data.persist_version;
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            },
+
+
+            //提交
+            submitBill: function () {
+                var params = this.setParams();
+                if (!params) {
+                    return;
+                }
+
+                this.$axios({
+                    url: "/cfm/normalProcess",
+                    method: "post",
+                    data: {
+                        optype: "zftbatch_presubmit",
+                        params: params
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        });
+                    } else {
+                        var data = result.data.data;
+                        console.log(data);
+                        return;
                         //设置表单数据
                         data.payment_amount = this.$common.transitSeparator(data.payment_amount);
                         data.pay_mode += "";
@@ -591,52 +771,8 @@
                     console.log(error);
                 });
             },
-            //设置params
-            setParams: function(){
-                //校验数据是否完善 并设置发送给后台的数据
-                var billData = this.billData;
-                var params = {
-                    pay_account_id: "",
-                    recv_account_id: "",
-                    payment_amount: "",
-                    pay_mode: "",
-                    payment_summary: "",
-                    files: [],
-                    biz_id: ""
-                }
-                for(var k in params){
-                    if(k != "payment_summary" && k != "files" && !billData[k]){
-                        this.$message({
-                            type: "warning",
-                            message: "请完善单据信息",
-                            duration: 2000
-                        });
-                        return false;
-                    }
-                    if(k == "payment_amount"){  //金额
-                        params[k] = billData[k].split(",").join("");
-                    }else if(k == "files"){  //附件
-                        params[k] = this.fileList;
-                    }else if(k == "biz_id"){
-                        params[k] = billData[k];
-                        var payStatList = this.payStatList;
-                        for(var i = 0; i < payStatList.length; i++){
-                            if(billData[k] == payStatList[i].biz_id){
-                                params.biz_name = payStatList[i].biz_name;
-                            }
-                        }
-                    }else{
-                        params[k] = billData[k];
-                    }
-                }
-                if(billData.id){
-                    params.id = billData.id;
-                    params.persist_version = billData.persist_version;
-                }
-                return params;
-            },
             //提交流程
-            submitFlow: function(){
+            submitFlow: function () {
                 var workflowData = this.billData;
                 var params = {
                     define_id: this.selectWorkflow,

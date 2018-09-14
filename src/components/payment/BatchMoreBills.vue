@@ -178,23 +178,6 @@
             margin-bottom: 2px;
             margin-top: -15px;
         }
-
-        /*编辑弹框*/
-        .table-input {
-            width: 100%;
-            height: 100%;
-            border: none;
-            outline: none;
-        }
-
-        .el-radio-group {
-            margin-top: 0;
-            .el-radio {
-                display: block;
-                margin-left: 30px;
-                margin-bottom: 10px;
-            }
-        }
     }
 </style>
 
@@ -331,7 +314,6 @@
                     :current-page="pagCurrent">
             </el-pagination>
         </div>
-
         <!--查看弹出框-->
         <el-dialog title="调拨单信息"
                    :visible.sync="dialogVisible"
@@ -351,7 +333,7 @@
             </div>
             <div class="all-table" v-show="showAll">
                 <div class="serial-number">
-                    [编号:
+                    [批次号:
                     <span v-text="dialogData.batchno"></span>
                     ]
                 </div>
@@ -415,7 +397,7 @@
                     <el-row>
                         <el-col :span="6">
                             <el-form-item>
-                                <el-input v-model="dialogSearch.recv_account_no" clearable
+                                <el-input v-model="dialogSearch.query_key" clearable
                                           placeholder="请输入收款方名称或账号"></el-input>
                             </el-form-item>
                         </el-col>
@@ -432,53 +414,38 @@
                         </el-col>
                         <el-col :span="2">
                             <el-form-item>
-                                <el-button type="primary" plain @click="queryData" size="mini">搜索</el-button>
+                                <el-button type="primary" plain @click="queryDialogData" size="mini">搜索</el-button>
                             </el-form-item>
                         </el-col>
                     </el-row>
                 </el-form>
                 <el-table :data="dialogList"
                           border size="mini">
-                    <el-table-column prop="batchno" label="收款户名" :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="total_num" label="收款账号" :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="total_amount" label="收款行" :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="sucess_amount" label="金额" :show-overflow-tooltip="true"
+                    <el-table-column prop="recv_account_name" label="收款户名" :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column prop="recv_account_no" label="收款账号" :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column prop="recv_account_bank" label="收款行" :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column prop="payment_amount" label="金额" :show-overflow-tooltip="true"
                                      :formatter="transitAmount"></el-table-column>
-                    <el-table-column prop="service_status" label="业务状态" :show-overflow-tooltip="true"
+                    <el-table-column prop="pay_status" label="业务状态" :show-overflow-tooltip="true"
                                      :formatter="transitStatus"></el-table-column>
-                    <el-table-column prop="sucess_num" label="反馈信息" :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column prop="feed_back" label="反馈信息" :show-overflow-tooltip="true"></el-table-column>
                 </el-table>
-                <el-pagination style="margin-top:20px;margin-left:220px"
+                <div class="allData">
+                    <span>总笔数：</span>
+                    <span v-text="dialogTotal.total_num" class="numText"></span>
+                    <span>总金额：</span>
+                    <span v-text="dialogTotal.total_amount" class="numText"></span>
+                </div>
+                <el-pagination style="margin-top:20px;margin-left:280px"
                         background
-                        layout="sizes, prev, pager, next, jumper"
-                        :page-size="pagSize"
-                        :total="pagTotal"
-                        :page-sizes="[7, 50, 100, 500]"
+                        layout="prev, pager, next, jumper"
+                        :page-size="dialogPagSize"
+                        :total="dialogPagTotal"
                         :pager-count="5"
-                        @current-change="getCurrentPage"
-                        @size-change="sizeChange"
-                        :current-page="pagCurrent">
+                        @current-change="diaCurrentPage"
+                        :current-page="dialogPagCurrent">
                 </el-pagination>
             </div>
-        </el-dialog>
-
-
-        <!--提交弹框-->
-        <el-dialog :visible.sync="innerVisible"
-                   width="50%" title="提交审批流程"
-                   top="76px"
-                   :close-on-click-modal="false">
-            <el-radio-group v-model="selectWorkflow">
-                <el-radio v-for="workflow in workflows"
-                          :key="workflow.define_id"
-                          :label="workflow.define_id"
-                >{{ workflow.workflow_name }}
-                </el-radio>
-            </el-radio-group>
-            <span slot="footer" class="dialog-footer" style="text-align:center">
-                    <el-button type="warning" size="mini" plain @click="innerVisible = false">取 消</el-button>
-                    <el-button type="warning" size="mini" @click="submitFlow">确 定</el-button>
-                </span>
         </el-dialog>
     </div>
 </template>
@@ -492,44 +459,10 @@
         created: function () {
             this.$emit("transmitTitle", "批量支付-更多单据");
             this.$emit("getCommTable", this.routerMessage);
-
-            //付款方式
-            var constants = JSON.parse(window.sessionStorage.getItem("constants"));
-            if (constants.PayMode) {
-                this.payModeList = constants.PayMode;
-            }
-
-            //业务类型
-            this.$axios({
-                url: "/cfm/commProcess",
-                method: "post",
-                data: {
-                    optype: "biztype_biztypes",
-                    params: {
-                        p_id: 8
-                    }
-                }
-            }).then((result) => {
-                if (result.data.error_msg) {
-                    this.$message({
-                        type: "error",
-                        message: result.data.error_msg,
-                        duration: 2000
-                    })
-                } else {
-                    var data = result.data.data;
-                    this.payStatList = data;
-                }
-            }).catch(function (error) {
-                console.log(error);
-            })
         },
         components: {
             Upload: Upload,
             BusinessTracking: BusinessTracking
-        },
-        mounted: function () {
-
         },
         props: ["tableData"],
         data: function () {
@@ -576,8 +509,27 @@
                 showAll: true, //查看弹框-汇总/列表选择
                 dialogVisible: false, //查看弹框
                 dialogData: {},
-                dialogSearch: {},
+                dialogSearch: {
+                    query_key: "",
+                    min_amount: "",
+                    max_amount: ""
+                },
                 dialogList: [],
+                dialogMessage: {
+                    optype: "zftbatch_billdetaillist",
+                    params: {
+                        page_num: 1,
+                        page_size: 8,
+                        batchno: ""
+                    }
+                },
+                dialogPagSize: 10,
+                dialogPagTotal: 1,
+                dialogPagCurrent: 1,
+                dialogTotal: {
+                    total_num: 0,
+                    total_amount: 0
+                },
                 emptyFileList: [], //附件
                 fileMessage: {
                     bill_id: "",
@@ -585,36 +537,8 @@
                 },
                 triggerFile: false,
                 fileList: [],
-
-
-                currentBill: {},
-                editVisible: false,
-                innerVisible: false, //提交弹框
-                selectWorkflow: "",
-                workflows: [],
-                editDialogData: {
-                    pay_account_name: "",
-                    recv_account_name: "",
-                    pay_account_no: "",
-                    recv_account_no: "",
-                    pay_account_bank: "",
-                    recv_account_bank: "",
-                    payment_amount: "",
-                    numText: "",
-                    payment_summary: "",
-                    pay_mode: "",
-                    biz_id: ""
-                },
-                payLoading: false, //付款方数据
-                payList: [],
-                gatherLoading: false, //收款方数据
-                gatherList: [],
-                payModeList: {}, //下拉框数据
-                payStatList: [],
                 businessParams: { //业务状态追踪参数
-                },
-                payModeList: {}, //下拉框数据
-                payStatList: [],
+                }
             }
         },
         methods: {
@@ -657,11 +581,8 @@
             goMakeBill: function () {
                 this.$router.push("/payment/batch-make-bill");
             },
-
-
             //查看
             lookBill: function (row) {
-                console.log(row);
                 //获取汇总数据
                 this.$axios({
                     url: "/cfm/normalProcess",
@@ -684,55 +605,71 @@
                         var data = result.data.data;
                         this.dialogData = data;
                         this.dialogData.batchno = row.batchno;
+
+                        //附件数据
+                        this.emptyFileList = [];
+                        this.fileMessage.bill_id = row.id;
+                        this.triggerFile = !this.triggerFile;
+
+                        //业务状态跟踪
+                        this.businessParams = {};
+                        this.businessParams.biz_type = 11;
+                        this.businessParams.id = row.id;
                     }
                 }).catch(function (error) {
                     console.log(error);
-                })
+                });
 
+                //获取详细列表
+                this.dialogMessage.params.batchno = row.batchno;
+                this.getDialogList(1);
 
                 this.dialogVisible = true;
-                return;
-
-                //附件数据
-                this.emptyFileList = [];
-                this.fileMessage.bill_id = row.id;
-                this.triggerFile = !this.triggerFile;
-
-                //业务状态跟踪
-                this.businessParams = {};
-                this.businessParams.biz_type = 8;
-                this.businessParams.id = row.id;
             },
-            //编辑
-            editBill: function (row) {
-                for (var k in row) {
-                    this.editDialogData[k] = row[k];
+            //查看-获取详细列表
+            getDialogList: function(pageNum){
+                var params = this.dialogMessage;
+                params.params.page_num = pageNum;
+                this.$axios({
+                    url: "/cfm/normalProcess",
+                    method: "post",
+                    data: params
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                    }else{
+                        var data = result.data;
+                        this.dialogPagSize = data.page_size;
+                        this.dialogPagTotal = data.total_line;
+                        this.dialogList = data.data;
+                        this.dialogPagCurrent = data.page_num;
+                        this.dialogTotal = data.ext;
+                        console.log(data);
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            },
+            //查看-列表换页
+            diaCurrentPage: function(currPage){
+                this.getDialogList(currPage);
+            },
+            //查询弹框数据
+            queryDialogData: function(){
+                var dialogSearch = this.dialogSearch;
+                for(var k in dialogSearch){
+                    this.dialogMessage.params[k] = dialogSearch[k];
                 }
-                this.currentBill = row;
-                //下拉框列表
-                this.payList = [];
-                this.payList.push({
-                    acc_id: row.pay_account_id,
-                    acc_no: row.pay_account_no
-                });
-                this.gatherList = [];
-                this.gatherList.push({
-                    acc_id: row.recv_account_id,
-                    acc_no: row.recv_account_no
-                });
-                this.editDialogData.numText = this.$common.transitText(row.payment_amount);
-                this.editDialogData.payment_amount = this.$common.transitSeparator(row.payment_amount);
-                this.editDialogData.pay_mode += "";
-
-                //附件数据
-                this.editEmptyFile = [];
-                this.fileMessage.bill_id = row.id;
-                this.eidttrigFile = !this.eidttrigFile;
-
-                this.editVisible = true;
+                this.getDialogList(1);
             },
             //删除
             removeBill: function (row, index, rows) {
+                console.log(row);
+
                 this.$confirm('确认删除当前单据吗?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
@@ -742,10 +679,10 @@
                         url: "/cfm/normalProcess",
                         method: "post",
                         data: {
-                            optype: "dbt_del",
+                            optype: "zftbatch_delbill",
                             params: {
                                 id: row.id,
-                                persist_version: row.persist_version
+                                version: row.version
                             }
                         }
                     }).then((result) => {
@@ -755,26 +692,24 @@
                                 message: result.data.error_msg,
                                 duration: 2000
                             })
-                            return;
-                        }
-
-                        if (this.pagCurrent < (this.pagTotal / this.pagSize)) { //存在下一页
-                            this.$emit("getCommTable", this.routerMessage);
-                        } else {
-                            if (rows.length == "1" && (this.routerMessage.todo.params.page_num != 1)) { //是当前页最后一条
-                                this.routerMessage.todo.params.page_num--;
+                        }else{
+                            if (this.pagCurrent < (this.pagTotal / this.pagSize)) { //存在下一页
                                 this.$emit("getCommTable", this.routerMessage);
                             } else {
-                                rows.splice(index, 1);
-                                this.pagTotal--;
+                                if (rows.length == "1" && (this.routerMessage.todo.params.page_num != 1)) { //是当前页最后一条
+                                    this.routerMessage.todo.params.page_num--;
+                                    this.$emit("getCommTable", this.routerMessage);
+                                } else {
+                                    rows.splice(index, 1);
+                                    this.pagTotal--;
+                                }
                             }
+                            this.$message({
+                                type: "success",
+                                message: "删除成功",
+                                duration: 2000
+                            })
                         }
-
-                        this.$message({
-                            type: "success",
-                            message: "删除成功",
-                            duration: 2000
-                        })
                     }).catch(function (error) {
                         console.log(error);
                     })
@@ -783,6 +718,7 @@
             },
             //撤回
             withdrawBill: function (row) {
+                console.log(row);
                 this.$confirm('确认撤回当前单据吗?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
@@ -792,10 +728,10 @@
                         url: "/cfm/normalProcess",
                         method: "post",
                         data: {
-                            optype: "dbt_revoke",
+                            optype: "zftbatch_revoke",
                             params: {
                                 id: row.id,
-                                persist_version: row.persist_version,
+                                persist_version: row.version,
                                 service_status: row.service_status
                             }
                         }
@@ -821,320 +757,15 @@
                 }).catch(() => {
                 });
             },
-            /*编辑弹框内功能*/
-            //获取付款方账号
-            getPayList: function (value) {
-                this.payLoading = true;
-                var billData = this.editDialogData;
-
-                this.$axios({
-                    url: "/cfm/normalProcess",
-                    method: "post",
-                    data: {
-                        optype: "dbt_payacclist",
-                        params: {
-                            query_key: value.trim(),
-                            exclude_ids: billData.recv_account_id,
-                            page_size: 10000,
-                            page_num: 1
-                        }
+            //编辑
+            editBill: function (row) {
+                this.$router.push({
+                    name: "BatchMakeBill",
+                    query: {
+                        id: row.id,
+                        batchno: row.batchno
                     }
-                }).then((result) => {
-                    if (result.data.error_msg) {
-
-                    } else {
-                        this.payLoading = false;
-                        this.payList = result.data.data;
-                    }
-                }).catch(function (error) {
-                    console.log(error);
                 });
-            },
-            //获取收款方账号
-            getGatherList: function (value) {
-                this.gatherLoading = true;
-                var billData = this.editDialogData;
-
-                this.$axios({
-                    url: "/cfm/normalProcess",
-                    method: "post",
-                    data: {
-                        optype: "dbt_recvacclist",
-                        params: {
-                            query_key: value.trim(),
-                            exclude_ids: billData.pay_account_id,
-                            page_size: 10000,
-                            page_num: 1
-                        }
-                    }
-                }).then((result) => {
-                    if (result.data.error_msg) {
-
-                    } else {
-                        this.gatherLoading = false;
-                        this.gatherList = result.data.data;
-                    }
-                }).catch(function (error) {
-                    console.log(error);
-                });
-            },
-            //选择账号时设置户名和开户行
-            selectNumber: function (value, target) {
-                var payList = this.payList;
-                var gatherList = this.gatherList;
-                var billData = this.editDialogData;
-
-                if (target == "payNumber") {
-                    for (var i = 0; i < payList.length; i++) {
-                        if (payList[i].acc_id == value) {
-                            billData.pay_account_name = payList[i].acc_name;
-                            billData.pay_account_bank = payList[i].bank_name;
-                        }
-                    }
-                }
-                if (target == "gatherNumber") {
-                    for (var i = 0; i < gatherList.length; i++) {
-                        if (gatherList[i].acc_id == value) {
-                            billData.recv_account_name = gatherList[i].acc_name;
-                            billData.recv_account_bank = gatherList[i].bank_name;
-                        }
-                    }
-                }
-            },
-            //账号下拉框显示时更新数据
-            selectVisible: function (curStatus, target) {
-                if (curStatus) {
-                    if (target == "payNumber") {
-                        this.getPayList("");
-                    } else {
-                        this.getGatherList("");
-                    }
-                }
-            },
-            //清空账号时清空户名和开户行
-            clearSelect: function (target) {
-                var billData = this.editDialogData;
-                if (target == "payNumber") {
-                    billData.pay_account_name = "";
-                    billData.pay_account_bank = "";
-                }
-                if (target == "gatherNumber") {
-                    billData.recv_account_name = "";
-                    billData.recv_account_bank = "";
-                }
-            },
-            //输入金额后进行格式化
-            setMoney: function () {
-                var moneyNum = this.editDialogData.payment_amount.replace(/,/gi, "").trim();
-                /*校验数据格式是否正确*/
-                if (moneyNum == "") {
-                    return;
-                }
-                if (isNaN(moneyNum)) {
-                    this.$message({
-                        type: "warning",
-                        message: "请输入正确的金额",
-                        duration: 2000
-                    });
-                    this.editDialogData.payment_amount = "";
-                    return;
-                }
-                var verify = moneyNum.split(".");
-                if (verify[0].length > 10) {
-                    this.$message({
-                        type: "warning",
-                        message: "整数位不能超过10位数",
-                        duration: 2000
-                    });
-                    verify[0] = verify[0].slice(0, 10);
-                    moneyNum = verify.join(".");
-                }
-                if (verify[1] && verify[1].length > 2) {
-                    this.$message({
-                        type: "warning",
-                        message: "小数点后只能保留两位小数",
-                        duration: 2000
-                    });
-                    verify[1] = verify[1].slice(0, 2);
-                    moneyNum = verify.join(".");
-                }
-
-                //设置数字部分格式
-                this.editDialogData.payment_amount = this.$common.transitSeparator(moneyNum);
-                //设置汉字
-                this.editDialogData.numText = this.$common.transitText(moneyNum);
-            },
-            //保存
-            saveBill: function () {
-                var params = this.setParams();
-                if (!params) {
-                    return;
-                }
-
-                this.$axios({
-                    url: "/cfm/normalProcess",
-                    method: "post",
-                    data: {
-                        optype: "dbt_chg",
-                        params: params
-                    }
-                }).then((result) => {
-                    if (result.data.error_msg) {
-                        this.$message({
-                            type: "error",
-                            message: result.data.error_msg,
-                            duration: 2000
-                        });
-                    } else {
-                        var data = result.data.data;
-                        data.pay_mode += "";
-
-                        for (var k in data) {
-                            this.currentBill[k] = data[k];
-                        }
-                        this.editVisible = false;
-                        this.$message({
-                            type: "success",
-                            message: "保存成功",
-                            duration: 2000
-                        });
-                    }
-                }).catch(function (error) {
-                    console.log(error);
-                });
-            },
-            //提交
-            submitBill: function () {
-                var params = this.setParams();
-                if (!params) {
-                    return;
-                }
-
-                this.$axios({
-                    url: "/cfm/normalProcess",
-                    method: "post",
-                    data: {
-                        optype: "dbt_presubmit",
-                        params: params
-                    }
-                }).then((result) => {
-                    if (result.data.error_msg) {
-                        this.$message({
-                            type: "error",
-                            message: result.data.error_msg,
-                            duration: 2000
-                        });
-                    } else {
-                        var data = result.data.data;
-                        //设置表单数据
-                        data.pay_mode += "";
-
-                        for (var k in data) {
-                            this.currentBill[k] = data[k];
-                        }
-                        //设置弹框数据
-                        this.selectWorkflow = "";
-                        this.workflows = data.workflows;
-
-                        this.innerVisible = true;
-                        this.editVisible = false;
-                    }
-                }).catch(function (error) {
-                    console.log(error);
-                });
-            },
-            //提交流程
-            submitFlow: function () {
-                var workflowData = this.currentBill;
-                var params = {
-                    define_id: this.selectWorkflow,
-                    id: workflowData.id,
-                    service_serial_number: workflowData.service_serial_number,
-                    service_status: workflowData.service_status,
-                    persist_version: workflowData.persist_version
-                };
-
-                this.$axios({
-                    url: "/cfm/normalProcess",
-                    method: "post",
-                    data: {
-                        optype: "dbt_submit",
-                        params: params
-                    }
-                }).then((result) => {
-                    if (result.data.error_msg) {
-                        this.$message({
-                            type: "error",
-                            message: result.data.error_msg,
-                            duration: 2000
-                        })
-                    } else {
-                        this.innerVisible = false;
-                        this.$message({
-                            type: "success",
-                            message: "提交成功",
-                            duration: 2000
-                        });
-                        this.$emit("getCommTable", this.routerMessage);
-                    }
-                }).catch(function (error) {
-                    console.log(error);
-                })
-            },
-            //设置params
-            setParams: function () {
-                //校验数据是否完善 并设置发送给后台的数据
-                var billData = this.editDialogData;
-                var params = {
-                    pay_account_id: "",
-                    recv_account_id: "",
-                    payment_amount: "",
-                    pay_mode: "",
-                    payment_summary: "",
-                    files: [],
-                    biz_id: ""
-                }
-                for (var k in params) {
-                    if (k != "payment_summary" && k != "files" && !billData[k]) {
-                        this.$message({
-                            type: "warning",
-                            message: "请完善单据信息",
-                            duration: 2000
-                        });
-                        return false;
-                    }
-                    if (k == "payment_amount") {  //金额
-                        params[k] = billData[k].split(",").join("");
-                    } else if (k == "files") {  //附件
-                        params[k] = this.fileList;
-                    } else if (k == "biz_id") {
-                        params[k] = billData[k];
-                        var payStatList = this.payStatList;
-                        for (var i = 0; i < payStatList.length; i++) {
-                            if (billData[k] == payStatList[i].biz_id) {
-                                params.biz_name = payStatList[i].biz_name;
-                            }
-                        }
-                    } else {
-                        params[k] = billData[k];
-                    }
-                }
-                if (billData.id) {
-                    params.id = billData.id;
-                    params.persist_version = billData.persist_version;
-                }
-                return params;
-            },
-
-            /*附件*/
-            //设置当前项上传附件
-            setFileList: function ($event) {
-                this.fileList = [];
-                if ($event.length > 0) {
-                    $event.forEach((item) => {
-                        this.fileList.push(item.id);
-                    })
-                }
             },
         },
         watch: {

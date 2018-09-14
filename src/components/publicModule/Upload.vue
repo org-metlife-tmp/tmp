@@ -45,7 +45,7 @@
                 .doc,.docx{
                     background-position: 0px -103px;
                 }
-                .xls,xlsx{
+                .xls,.xlsx{
                     background-position: -44px -103px;
                 }
                 .png,.jpg{
