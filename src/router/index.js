@@ -67,6 +67,7 @@ import WorkflowTrace from '@/components/workflow/WorkflowTrace'
 import WorkflowConfigure from '@/components/workflow/WorkflowConfigure'
 //审批平台
 import MyExamineApprove from '@/components/examineApprove/MyExamineApprove'
+import PermissionTransfer from '@/components/examineApprove/PermissionTransfer'
 //日历
 import SetWorkday from '@/components/calendar/SetWorkday'
 import WorkSection from '@/components/calendar/WorkSection'
@@ -184,6 +185,9 @@ const router = new Router({
                         {path: '/allocation/allocation-set', name: 'AutoAllocationSet', component: AutoAllocationSet, meta: {requireAuth: true}},
                         {path: '/allocation/allocation-manage', name: 'AutoAllocationManage', component: AutoAllocationManage, meta: {requireAuth: true}},
                         {path: '/allocation/allocation-manage-detail', name: 'AllManageDetail', component: AllManageDetail, meta: {requireAuth: true}},
+                        //审批转移
+                        {path: '/examine-approve/permission-transfer', name: 'PermissionTransfer', component: PermissionTransfer, meta: {requireAuth: true}},
+
                     ]
                 },
                 //基础样式三（tab页）

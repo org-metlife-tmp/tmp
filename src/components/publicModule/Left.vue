@@ -357,6 +357,8 @@
                 <el-menu-item-group>
                     <el-menu-item index="/examine-approve/my-examine-approve" v-if="menuList.MyWFPLAT">我的审批平台
                     </el-menu-item>
+                    <el-menu-item index="/examine-approve/permission-transfer">权限转移
+                    </el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
             <el-submenu index="7" v-if="menuList.YET">
