@@ -94,6 +94,7 @@
             //向父组件发送自己的信息
             this.$emit('transmitTitle', '历史交易波动');
             this.$emit('getTableData', this.routerMessage);
+            this.$emit('exportOptype','jyt_hiswavelistexport');
         },
         components:{
             LineChart:LineChart

@@ -17,7 +17,7 @@
         mounted: function () {
             //创建折线图
             this.myChart = this.$echarts.init(document.getElementById("line-chart"));
-            this.myChart.showLoading();
+            // this.myChart.showLoading();
             var myChartDom = this.myChart;
             window.onresize = function(){
                 var setSize = setTimeout(() => {
@@ -266,7 +266,7 @@
                         custom: "wave"
                     });
                 }
-                this.$myChart.hideLoading();
+                // this.$myChart.hideLoading();
             }
         }
     }

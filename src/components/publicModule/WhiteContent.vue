@@ -125,7 +125,7 @@
             </div>
             <div class="button-list-right">
                 <el-button type="warning" size="mini">打印</el-button>
-                <el-button type="warning" size="mini">下载</el-button>
+                <el-button type="warning" size="mini" @click="exportFun">导出</el-button>
             </div>
             <div class="button-left-bottom" :class="{'display-none':showAccBank()}">
                 <el-input v-model="accNo" placeholder="请输入账户号" size="mini"
@@ -145,6 +145,7 @@
             </div>
             <router-view @transmitTitle="currentTitle= $event"
                          @getTableData="getRouterData"
+                         @exportOptype="exportOptype=$event"
                          :tableData="childData"></router-view>
         </section>
         <!--请选择公司弹出框-->
@@ -272,8 +273,8 @@
                 bankTypeName: "", //银行大类
                 bankAllList: [],
                 bankTypeList: [],
-                accNo: "" //账户号
-
+                accNo: "" ,//账户号
+                exportOptype: "",//导入url
             }
         },
         methods: {
@@ -448,6 +449,46 @@
                 if (this.bankTypeList != this.bankAllList) {
                     this.bankTypeList = this.bankAllList;
                 }
+            },
+            //导出
+            exportFun:function () {
+                debugger
+                var user = JSON.parse(window.sessionStorage.getItem("user"));
+                var params = this.curRouterParam.params;
+                params.org_id = user.curUodp.org_id;
+                this.$axios({
+                    url: "/cfm/normalProcess",
+                    method: "post",
+                    data: {
+                        optype:this.exportOptype,
+                        params:params
+                    },
+                    responseType: 'blob'
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                    } else {
+                        var fileName = decodeURI(result.headers["content-disposition"]).split("=")[1];
+                        //ie兼容
+                        if (window.navigator && window.navigator.msSaveOrOpenBlob) {
+                            window.navigator.msSaveOrOpenBlob(new Blob([result.data]), fileName);
+                        } else {
+                            let url = window.URL.createObjectURL(new Blob([result.data]));
+                            let link = document.createElement('a');
+                            link.style.display = 'none';
+                            link.href = url;
+                            link.setAttribute('download', fileName);
+                            document.body.appendChild(link);
+                            link.click();
+                        }
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                })
             }
         },
         computed: {}

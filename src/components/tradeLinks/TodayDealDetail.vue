@@ -95,6 +95,7 @@
         created: function () {
             this.$emit('transmitTitle', '当日交易明细');
             this.$emit('getTableData', this.routerMessage);
+            this.$emit('exportOptype','jyt_currtransexport');
         },
         props: ["tableData"],
         components: {
@@ -160,7 +161,6 @@
                         }
                     })
                 }
-                debugger
                 this.barData = barData;
             }
         },

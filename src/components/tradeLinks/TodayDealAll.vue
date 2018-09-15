@@ -161,6 +161,7 @@
             //向父组件发送自己的信息
             this.$emit('transmitTitle', '当日交易汇总');
             this.$emit('getTableData', this.routerMessage);
+            this.$emit('exportOptype','jyt_curcollectlistaccexport');
         },
         props: ["tableData"],
         components: {
@@ -215,6 +216,7 @@
                         this.btActive.bankActive = false;
                         this.btActive.accActive = true;
                     }
+                    this.$emit('exportOptype','jyt_curcollectlistaccexport');
                 }else if(type == "1"){ //公司
                     if(this.btActive.comActive){
                         return;
@@ -223,6 +225,7 @@
                         this.btActive.bankActive = false;
                         this.btActive.accActive = false;
                     }
+                    this.$emit('exportOptype','jyt_curcollectlistorgexport');
                 }else if(type == "2"){ //银行
                     if(this.btActive.bankActive){
                         return;
@@ -231,6 +234,7 @@
                         this.btActive.bankActive = true;
                         this.btActive.accActive = false;
                     }
+                    this.$emit('exportOptype','jyt_curcollectlistbankexport');
                 };
                 //获取表格数据
                 this.routerMessage.params.page_num = 1;
