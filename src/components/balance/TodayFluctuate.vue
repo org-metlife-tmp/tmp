@@ -108,6 +108,7 @@
         created: function () {
             this.$emit('transmitTitle', '当日余额波动');
             this.$emit('getTableData', this.routerMessage);
+            this.$emit('exportOptype','yet_currtransexport');
         },
         components:{
             LineChart:LineChart

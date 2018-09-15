@@ -83,6 +83,7 @@
 
             this.$emit('transmitTitle', '当日余额明细');
             this.$emit('getTableData', this.routerMessage);
+            this.$emit('exportOptype','yet_currtransexport');
 
             //获取饼图数据
             this.getPieData();

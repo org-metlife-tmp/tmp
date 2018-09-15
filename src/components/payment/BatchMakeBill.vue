@@ -366,6 +366,15 @@
                                :value="item.acc_id">
                     </el-option>
                 </el-select>
+                <el-select v-model="billData.biz_id" placeholder="请选择业务类型"
+                           filterable clearable size="mini"
+                           @change="setBizName">
+                    <el-option v-for="payItem in payStatList"
+                               :key="payItem.biz_id"
+                               :label="payItem.biz_name"
+                               :value="payItem.biz_id">
+                    </el-option>
+                </el-select>
                 <div class="serial-number">
                     <span>批次号:</span>
                     <span v-text="billData.batchno"></span>
@@ -554,11 +563,33 @@
                 });
             }
 
+            //业务类型
+            this.$axios({
+                url:"/cfm/commProcess",
+                method:"post",
+                data:{
+                    optype:"biztype_biztypes",
+                    params: {
+                        p_id: 11
+                    }
+                }
+            }).then((result) =>{
+                if (result.data.error_msg) {
+                    this.$message({
+                        type: "error",
+                        message: result.data.error_msg,
+                        duration: 2000
+                    })
+                } else {
+                    var data = result.data.data;
+                    this.payStatList = data;
+                }
+            }).catch(function (error) {
+                console.log(error);
+            })
+
             //设置token数据
             this.currToken = this.$store.state.token;
-        },
-        mounted: function () {
-
         },
         components: {
             Upload: Upload
@@ -576,7 +607,9 @@
                     batchno: "",
                     pay_mode: 8,
                     version: "",
-                    id: ""
+                    id: "",
+                    biz_id: "",
+                    biz_name: ""
                 },
                 moneyText: "", //金额-大写
                 fileMessage: { //附件
@@ -588,6 +621,7 @@
                 fileList: [],
                 fileLength: "",
                 accOptions: {}, //下拉框数据
+                payStatList: [],
                 dialogVisible: false, //弹框数据
                 innerVisible: false, //提交弹框
                 selectWorkflow: "",
@@ -618,6 +652,14 @@
             },
             //上传成功
             uploadSuccess: function (response, file, fileList) {
+                if(response.error_message){
+                    this.$message({
+                        type: "error",
+                        message: response.error_message,
+                        duration: 2000
+                    });
+                    return;
+                }
                 this.currentUpload = response;
                 this.addExcel = false;
                 this.$message({
@@ -625,7 +667,6 @@
                     message: "上传成功",
                     duration: 2000
                 });
-                console.log(response);
             },
             //添加上传成功的文件
             addCurUpload: function () {
@@ -813,8 +854,6 @@
                     console.log(error);
                 });
             },
-
-
             //提交流程
             submitFlow: function () {
                 var workflowData = this.billData;
@@ -856,6 +895,15 @@
                 }).catch(function (error) {
                     console.log(error);
                 })
+            },
+            //同时保存biztype和name
+            setBizName: function(val){
+                var payStatList = this.payStatList;
+                for(var i = 0; i < payStatList.length; i++){
+                    if(payStatList[i].biz_id == val){
+                        this.billData.biz_name = payStatList[i].biz_name;
+                    }
+                }
             }
         }
     }

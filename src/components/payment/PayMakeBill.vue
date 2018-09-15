@@ -256,6 +256,15 @@
                                :value="item.acc_id">
                     </el-option>
                 </el-select>
+                <el-select v-model="billData.biz_id" placeholder="请选择业务类型"
+                           filterable clearable size="mini"
+                           @change="setBizName">
+                    <el-option v-for="payItem in payStatList"
+                               :key="payItem.biz_id"
+                               :label="payItem.biz_name"
+                               :value="payItem.biz_id">
+                    </el-option>
+                </el-select>
                 <div class="serial-number">
                     <span>单据编号:</span>
                     <span v-text="billData.service_serial_number"></span>
@@ -505,6 +514,31 @@
                     console.log(error);
                 });
             }
+
+            //业务类型
+            this.$axios({
+                url:"/cfm/commProcess",
+                method:"post",
+                data:{
+                    optype:"biztype_biztypes",
+                    params: {
+                        p_id: 9
+                    }
+                }
+            }).then((result) =>{
+                if (result.data.error_msg) {
+                    this.$message({
+                        type: "error",
+                        message: result.data.error_msg,
+                        duration: 2000
+                    })
+                } else {
+                    var data = result.data.data;
+                    this.payStatList = data;
+                }
+            }).catch(function (error) {
+                console.log(error);
+            })
         },
         mounted: function(){
             /*获取下拉框数据*/
@@ -533,7 +567,9 @@
                     payment_amount: "",
                     payment_summary: "",
                     service_serial_number: "",
-                    bank_name: ""
+                    bank_name: "",
+                    biz_id: "",
+                    biz_name: ""
                 },
                 moneyText: "", //金额-大写
                 fileMessage: { //附件
@@ -562,7 +598,8 @@
                 loading: false,
                 bankList: [],
                 accOptions: [],//下拉框数据
-                payerList: []
+                payerList: [],
+                payStatList: [],
             }
         },
         methods: {
@@ -872,8 +909,6 @@
                     console.log(error);
                 });
             },
-
-
             //提交流程
             submitFlow: function(){
                 var workflowData = this.billData;
@@ -915,6 +950,15 @@
                 }).catch(function (error) {
                     console.log(error);
                 })
+            },
+            //同时保存biztype和name
+            setBizName: function(val){
+                var payStatList = this.payStatList;
+                for(var i = 0; i < payStatList.length; i++){
+                    if(payStatList[i].biz_id == val){
+                        this.billData.biz_name = payStatList[i].biz_name;
+                    }
+                }
             }
         }
     }
