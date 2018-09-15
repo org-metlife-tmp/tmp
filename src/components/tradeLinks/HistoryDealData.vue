@@ -136,8 +136,9 @@
                 });
                 if(!response.success && response.download_object_id){
                     this.errorTipShow = true;
+                }else{
+                    this.errorTipShow = false;
                 }
-                
             },
             //下载正确excel文件
             downLoadExcel:function(){
@@ -146,9 +147,10 @@
                     method: "post",
                     data:{
                         params:{
-                            objectId:this.currentUpload.download_object_id
+                            object_id:this.currentUpload.download_object_id
                         }
-                    }
+                    },
+                    responseType: 'blob'
                 }).then((result) => {
                     if (result.data.error_msg) {
                         this.$message({
@@ -176,17 +178,14 @@
                 });
             },
             subConfirm: function (){
-                var url = this.isPending ? '/normal/jyt/curTransImport' : '/normal/jyt/hisTransImport';
+                var url = this.isPending ? '/cfm/normal/jyt/curTransImport' : '/cfm/normal/jyt/hisTransImport';
                 var currentUpload = this.currentUpload;
-                var params = {
-                    // uuid: JSON.parse(window.sessionStorage.getItem("uuid")),
-                    object_id: currentUpload.object_id,
-                    // document_id: currentUpload.document_id,
-                    // origin_name: currentUpload.original_file_name
-                }
                 this.$axios({
-                    url: "normal/jyt/curTransImport",
+                    url: url,
                     method: "post",
+                    data:{
+                        params: currentUpload
+                    }
                 }).then((result) => {
                     if (result.data.error_msg) {
                         this.$message({
@@ -195,14 +194,17 @@
                             duration: 2000
                         })
                     } else {
-                        var data = result.data.data;
-                        
+                        this.currentUpload = {};
+                        this.$message({
+                            type: "success",
+                            message: "确认成功",
+                            duration: 2000
+                        });
                     }
                 }).catch(function (error) {
                     console.log(error);
                 });
-            },
-            
+            }
         },
         watch: {
             isPending: function (val, oldVal) {

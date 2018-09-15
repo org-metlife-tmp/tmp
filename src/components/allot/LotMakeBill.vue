@@ -530,12 +530,12 @@
                         value-format="yyyy-MM-dd"
                         size="mini">
                 </el-date-picker>
-                <el-select v-model="billData.biz_id" placeholder="请选择业务类型"
-                           filterable clearable size="mini">
+                <el-select v-model="billData.bizObj" placeholder="请选择业务类型"
+                           filterable clearable size="mini" value-key="biz_id">
                     <el-option v-for="payItem in payStatList"
                                :key="payItem.biz_id"
                                :label="payItem.biz_name"
-                               :value="payItem.biz_id">
+                               :value="payItem">
                     </el-option>
                 </el-select>
                 <div class="serial-number">
@@ -749,6 +749,10 @@
                         this.moneyText = this.$common.transitText(data.total_amount);
                         data.total_amount = this.$common.transitSeparator(data.total_amount);
                         data.pay_mode = data.pay_mode+"";
+                        data.bizObj ={
+                            biz_id: data.biz_id,
+                            biz_name: data.biz_name
+                        }
                         this.billData = data;
                         // //调拨类型
                         // this.allotType = JSON.parse(window.sessionStorage.getItem("constants")).ZjdbType[data.payment_type];
@@ -952,13 +956,14 @@
                 // if(!params){
                 //     return;
                 // }
-                this.saveParams.pay_account_id = this.billData.pay_account_id;
-                // this.saveParams.biz_id = this.billData.biz_id;
-                // this.saveParams.biz_name = this.billData.biz_name;
-                this.saveParams.pay_mode = this.billData.pay_mode;
-                this.saveParams.payment_summary = this.billData.payment_summary;
-                this.saveParams.files = this.fileList;
                 var billData = this.billData;
+                this.saveParams.pay_account_id = billData.pay_account_id;
+                this.saveParams.biz_id = billData.bizObj.biz_id;
+                this.saveParams.biz_name = billData.bizObj.biz_name;
+
+                this.saveParams.pay_mode = billData.pay_mode;
+                this.saveParams.payment_summary = billData.payment_summary;
+                this.saveParams.files = this.fileList;
                 this.$axios({
                     url: "/cfm/normalProcess",
                     method: "post",
@@ -1054,7 +1059,11 @@
             },
             //amount小数位
             tansitionAmount: function (val) {
+                debugger
                 if(val){
+                    if(Number.isNaN(Number(val))){
+                        return val;
+                    }
                     return this.$common.transitSeparator(val);
                 }
             },
@@ -1272,12 +1281,13 @@
                 // if(!params){
                 //     return;
                 // }
+                var billData = this.billData;
                 var params = this.saveParams;
-                params.pay_account_id = this.billData.pay_account_id;
-                // params.biz_id = this.billData.biz_id;
-                // params.biz_name = this.billData.biz_name;
-                params.pay_mode = this.billData.pay_mode;
-                params.payment_summary = this.billData.payment_summary;
+                params.pay_account_id = billData.pay_account_id;
+                params.biz_id = billData.bizObj.biz_id;
+                params.biz_name = billData.bizObj.biz_name;
+                params.pay_mode = billData.pay_mode;
+                params.payment_summary = billData.payment_summary;
                 params.files = this.fileList;
                 this.$axios({
                     url: "/cfm/normalProcess",
