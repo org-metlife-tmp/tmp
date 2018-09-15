@@ -111,6 +111,7 @@
             this.routerMessage.params.end_date = this.dateValue[1];
             this.$emit('transmitTitle', '历史余额明细');
             this.$emit('getTableData', this.routerMessage);
+            this.$emit('exportOptype','yet_histransexport');
             //获取饼图数据
             this.getPieData();
         },

@@ -115,7 +115,7 @@
             <img src="../../assets/icon_arrow_up.jpg" alt="" v-show="tableSite" @click="tableSite=!tableSite"/>
             <img src="../../assets/icon_arrow_down.jpg" alt="" v-show="!tableSite" @click="tableSite=!tableSite"/>
             <el-table :data="tableList"
-                      border 
+                      border
                       size="mini"
                       height="81%"
                       max-height="362px">
@@ -168,14 +168,15 @@
             oldDate.setFullYear(curDate.getFullYear());
             oldDate.setMonth(curDate.getMonth());
             oldDate.setDate(curDate.getDate()-7);
-            
+
             this.dateValue = [oldDate,curDate];
 
             this.routerMessage.params.start_date = this.dateValue[0];
             this.routerMessage.params.end_date = this.dateValue[1];
-            
+
             this.$emit('transmitTitle', '历史余额汇总');
             this.$emit('getTableData', this.routerMessage);
+            this.$emit('exportOptype','yet_hiscollectlistorgexport');
 
             //获取饼图数据
             this.getPieData();
@@ -242,6 +243,7 @@
                     this.routerMessage.params.page_num = 1;
                     this.routerMessage.params.type = 1;
                     this.$emit("getTableData", this.routerMessage);
+                    this.$emit('exportOptype','yet_hiscollectlistorgexport');
                     //获取饼图数据
                     this.getPieData();
                 }
@@ -256,6 +258,7 @@
                     this.routerMessage.params.type = 2;
                     //获取表格数据
                     this.$emit("getTableData", this.routerMessage);
+                    this.$emit('exportOptype','yet_hiscollectlistbankexport');
                     //获取饼图数据
                     this.getPieData();
                 }

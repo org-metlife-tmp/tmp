@@ -128,6 +128,7 @@
 
             this.$emit('transmitTitle', '历史余额波动');
             this.$emit('getTableData', this.routerMessage);
+            this.$emit('exportOptype','yet_hiswavelistexport');
         },
         components:{
             LineChart:LineChart

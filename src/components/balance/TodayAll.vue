@@ -85,7 +85,7 @@
             }
         }
     }
-    
+
 </style>
 
 <template>
@@ -97,7 +97,7 @@
             <img src="../../assets/icon_arrow_up.jpg" alt="" v-show="tableSite" @click="tableSite=!tableSite"/>
             <img src="../../assets/icon_arrow_down.jpg" alt="" v-show="!tableSite" @click="tableSite=!tableSite"/>
             <el-table :data="tableList"
-                      border 
+                      border
                       size="mini"
                       height="81%"
                       max-height="362px">
@@ -147,6 +147,7 @@
             //向父组件发送自己的信息
             this.$emit('transmitTitle', '当日余额汇总');
             this.$emit('getTableData', this.routerMessage);
+            this.$emit('exportOptype','yet_curcollectlistorgexport');
 
             //获取饼图数据
             this.getPieData();
@@ -207,6 +208,7 @@
                     this.routerMessage.params.page_num = 1;
                     this.routerMessage.params.type = 1;
                     this.$emit("getTableData", this.routerMessage);
+                    this.$emit('exportOptype','yet_curcollectlistorgexport');
                     //获取饼图数据
                     this.getPieData();
                 }
@@ -221,6 +223,7 @@
                     this.routerMessage.params.type = 2;
                     //获取表格数据
                     this.$emit("getTableData", this.routerMessage);
+                    this.$emit('exportOptype','yet_curcollectlistbankexport');
                     //获取饼图数据
                     this.getPieData();
                 }

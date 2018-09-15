@@ -91,9 +91,9 @@
             }
             .el-row:last-child{
                 >div{
-                   border-bottom: 0; 
+                   border-bottom: 0;
                 }
-                
+
             }
             .el-col:hover{
                 background-color: #EEF7FE;
@@ -141,7 +141,7 @@
             }
         }
 
-        
+
         .blue{
             color: #409EFF;
         }
@@ -193,8 +193,8 @@
 
     .enclosureUp {
         .file-list li{
-            margin-bottom: 0!important;  
-        }   
+            margin-bottom: 0!important;
+        }
         .el-textarea__inner{
             border:none;
         }
@@ -276,7 +276,7 @@
                         border
                         height="100%"
                         size="mini">
-                    <el-table-column prop="biz_type" label="业务种类" 
+                    <el-table-column prop="biz_type" label="业务种类"
                                     :formatter="transitionStatus"
                                     :show-overflow-tooltip="true"></el-table-column>
                     <el-table-column prop="bill_code" label="单据编号" :show-overflow-tooltip="true"></el-table-column>
@@ -313,8 +313,8 @@
                     v-for="item in editableTabsList"
                     :key="item.name"
                     :label="item.title"
-                    :name="item.name" 
-                >   
+                    :name="item.name"
+                >
                     <!--数据展示-->
                     <el-table :data="item.tableList"
                         border
@@ -364,7 +364,7 @@
                             >
                             </el-table-column>
                         </template>
-                        
+
                         <el-table-column
                                 label="操作" width="110"
                                 fixed="right">
@@ -382,12 +382,12 @@
         </div>
         <!--加签同意功能-->
         <!-- <div class="button-list" v-if="isPending" v-show="activeName!='0'">
-            <el-button type="primary" 
-                plain 
-                size="small" 
+            <el-button type="primary"
+                plain
+                size="small"
                 @click=""
                 icon="el-icon-circle-plus-outline">加签</el-button>
-            <el-button type="warning" 
+            <el-button type="warning"
                 plain
                 size="small"
                 @click=""
@@ -416,32 +416,32 @@
             <div class="dialogTable">
                 <el-row>
                     <template v-for="detail in currentDetailDialog" >
-                        <el-col v-if="detail.type" 
+                        <el-col v-if="detail.type"
                                 :key="detail.id"
-                                :span="detail.lspan" class="left center">{{detail.label}}</el-col> 
+                                :span="detail.lspan" class="left center">{{detail.label}}</el-col>
                         <el-col v-else-if="detail.label"
                                 :key="detail.id"
                                 :span="detail.lspan" class="left">{{detail.label}}</el-col>
                         <el-col  v-else-if="detail.parent"
-                                :key="detail.id" 
+                                :key="detail.id"
                                 :span="detail.pspan">{{hasParent(detail.prop)}}</el-col>
-                        <el-col v-else-if="detail.prop=='interactive_mode'" 
+                        <el-col v-else-if="detail.prop=='interactive_mode'"
                                 :key="detail.id"
                                 :span="detail.pspan">{{interList[dialogData.interactive_mode]}}</el-col>
-                        <el-col v-else-if="detail.prop=='deposits_mode'" 
+                        <el-col v-else-if="detail.prop=='deposits_mode'"
                                 :key="detail.id"
                                 :span="detail.pspan">{{depositsList[dialogData.deposits_mode]}}</el-col>
-                        <el-col v-else-if="detail.prop=='payment_type'" 
+                        <el-col v-else-if="detail.prop=='payment_type'"
                                 :key="detail.id"
                                 :span="detail.pspan">{{dbtTypeList[dialogData.payment_type]}}</el-col>
-                        <el-col v-else-if="detail.prop=='payment_amount' || detail.prop=='total_amount'" 
+                        <el-col v-else-if="detail.prop=='payment_amount' || detail.prop=='total_amount'"
                                 :key="detail.id"
                                 :span="detail.pspan">
                                 <span>￥</span>
                                 <span class="aomuntColor">{{tansss(dialogData[detail.prop])}}</span>
                                 <span class="grey">(大写){{dialogData.payAmountUp}}</span></el-col>
-                        <el-col  v-else 
-                                :key="detail.id" 
+                        <el-col  v-else
+                                :key="detail.id"
                                 :span="detail.pspan">{{dialogData[detail.prop]}}</el-col>
                     </template>
                 </el-row>
@@ -459,7 +459,7 @@
                 <el-row class="enclosureUp">
                     <el-col :span="enclosureLWidth" class="left"></el-col>
                     <el-col :span="enclosurePWidth" :class="[enclosureLWidth==6 ? 'mw25' : 'mw167']">
-                        <Upload 
+                        <Upload
                             @currentFielList="setFileList"
                             :emptyFileList="emptyFileList"
                             :isPending="false"
@@ -468,24 +468,24 @@
                     </el-col>
                 </el-row>
             </div>
-            <BusinessTracking 
+            <BusinessTracking
                 :businessParams="businessParams"
             ></BusinessTracking>
             <span slot="footer" class="dialog-footer" v-if="isPending">
-                <el-button type="primary" 
-                    size="mini" 
-                    plain 
-                    @click="showThirdDialog('addLots')" 
-                    icon="el-icon-circle-plus-outline">加 签</el-button>
-                <el-button type="danger" 
+                <el-button type="primary"
                     size="mini"
-                    plain 
-                    @click="showThirdDialog('reject')" 
-                    icon="el-icon-circle-close-outline">拒 绝</el-button>
-                <el-button type="warning" 
-                    size="mini" 
                     plain
-                    @click="showThirdDialog('agree')" 
+                    @click="showThirdDialog('addLots')"
+                    icon="el-icon-circle-plus-outline">加 签</el-button>
+                <el-button type="danger"
+                    size="mini"
+                    plain
+                    @click="showThirdDialog('reject')"
+                    icon="el-icon-circle-close-outline">拒 绝</el-button>
+                <el-button type="warning"
+                    size="mini"
+                    plain
+                    @click="showThirdDialog('agree')"
                     icon="el-icon-circle-check-outline">同 意</el-button>
             </span>
         </el-dialog>
@@ -531,7 +531,7 @@
                                     :label="item.name"
                                     :value="item">
                                 </el-option>
-                            </el-select> 
+                            </el-select>
                         </el-form-item>-->
                     </el-col>
                     <el-col :span="24">
@@ -542,8 +542,8 @@
                 </el-row>
                 <el-row class="agreeAdvice" v-else>
                     <el-col :span="24">
-                        <el-input v-model="thirdFunData.assignee_memo" 
-                            type="textarea" 
+                        <el-input v-model="thirdFunData.assignee_memo"
+                            type="textarea"
                             :rows="3"
                             placeholder="再此可填写审批意见!"
                             ></el-input>
@@ -586,7 +586,7 @@
                 } else {
                     this.user_options = result.data.data;
                 }
-                
+
             })
             this.classParams = [
                 {//全部的开户详情
@@ -660,11 +660,11 @@
                 },
                 {
                     text:"支付通",
-                    detail:"dbt_detail",
-                    list:"dbt_pendingtasks",
-                    addLots:"dbt_append",
-                    agree:"dbt_agree",
-                    reject:"dbt_reject"
+                    detail:"zft_detail",
+                    list:"zft_pendingtasks",
+                    addLots:"zft_append",
+                    agree:"zft_agree",
+                    reject:"zft_reject"
                 },
                 {
                     text:"内部调拨-批量",
@@ -676,11 +676,11 @@
                 },
                 {
                     text:"支付通-批量",
-                    detail:"dbt_detail",
-                    list:"dbt_pendingtasks",
-                    addLots:"dbt_append",
-                    agree:"dbt_agree",
-                    reject:"dbt_reject"
+                    detail:"zftbatch_detail",
+                    list:"zftbatch_pendingtasks",
+                    addLots:"zftbatch_append",
+                    agree:"zftbatch_agree",
+                    reject:"zftbatch_reject"
                 },
             ]
 
@@ -740,7 +740,7 @@
                     {id:"32", pspan:20, prop:"reserved_seal"},
                     {id:"33", lspan:4, label:"备注"},
                     {id:"34", pspan:20, prop:"memo"}
-                    
+
                 ],
                 "3":[
                     {id:"1", lspan:4, label:"编号"},
@@ -914,6 +914,22 @@
                     {id:"19", lspan:4, label:"调拨类型"},
                     {id:"20", pspan:8, prop:"payment_type"}
                 ],
+                "9":[
+                    {id:"1", lspan:4, label:"编号"},
+                    {id:"2",pspan:20, prop:"service_serial_number"},
+                    {id:"3", lspan:4, label:"付款账号"},
+                    {id:"4", pspan:8, prop:"pay_account_no"},
+                    {id:"5", lspan:4, label:"收款人户名"},
+                    {id:"6", pspan:8, prop:"recv_account_name"},
+                    {id:"7", lspan:4, label:"收款人账号"},
+                    {id:"8", pspan:8, prop:"recv_account_no"},
+                    {id:"9", lspan:4, label:"开户行"},
+                    {id:"10", pspan:8, prop:"recv_account_bank"},
+                    {id:"11", lspan:4, label:"金额"},
+                    {id:"12", pspan:8, prop:"payment_amount"},
+                    {id:"13", lspan:4, label:"摘要"},
+                    {id:"14", pspan:8, prop:"payment_summary"}
+                ],
                 "10":[//调拨通-批量
                     {id:"1", lspan:4, label:"批次号"},
                     {id:"2",pspan:20, prop:"batchno"},
@@ -930,8 +946,28 @@
                     {id:"13", lspan:4, label:"备注"},
                     {id:"14", pspan:8, prop:"payment_summary"},
                 ],
-                
-            }   
+                "11":[
+                    {id:"1", lspan:4, label:"批次号"},
+                    {id:"2",pspan:20, prop:"batchno"},
+                    {id:"3", lspan:4, label:"总笔数"},
+                    {id:"4", pspan:8, prop:"total_num"},
+                    {id:"5", lspan:4, label:"总金额"},
+                    {id:"6", pspan:8, prop:"total_amount"},
+                    {id:"7", lspan:4, label:"付款账号"},
+                    {id:"8", pspan:8, prop:"pay_account_no"},
+                    {id:"9", lspan:4, label:"开户行"},
+                    {id:"10", pspan:8, prop:"pay_account_bank"},
+                    {id:"11", lspan:4, label:"已失败笔数"},
+                    {id:"12", pspan:8, prop:"failed_num"},
+                    {id:"13", lspan:4, label:"已失败金额"},
+                    {id:"14", pspan:8, prop:"failed_amount"},
+                    {id:"15", lspan:4, label:"已成功笔数"},
+                    {id:"16", pspan:8, prop:"sucess_num"},
+                    {id:"17", lspan:4, label:"已成功金额"},
+                    {id:"18", pspan:8, prop:"sucess_amount"},
+                ],
+
+            }
         },
         mounted:function(){
             //账户模式
@@ -939,7 +975,7 @@
             if (constants.InactiveMode) {
                 this.interList = constants.InactiveMode;
             }
-            //存款类型 
+            //存款类型
             if (constants.DepositsMode) {
                 this.depositsList = constants.DepositsMode;
             }
@@ -1050,6 +1086,13 @@
                         {id:'5',prop:"payment_amount",name:'金额'},
                         {id:'6',prop:"nextUserList[0].name",name:'下级审批人'}
                     ],
+                    "9":[
+                        {id:'1',prop:"pay_account_bank",name:'收款方名称'},
+                        {id:'2',prop:"recv_account_no",name:'收款方账号'},
+                        {id:'3',prop:"recv_account_name",name:'收款方银行'},
+                        {id:'4',prop:"payment_amount",name:'金额'},
+                        {id:'5',prop:"service_status",name:'处理状态'}
+                    ],
                     "10":[//调拨通-批量
                         {id:'1',prop:"batchno",name:'批次号'},
                         {id:'2',prop:"pay_account_no",name:'付款方账号'},
@@ -1060,7 +1103,15 @@
                         // {id:'7',prop:"success_num",name:'成功笔数'},
                         // {id:'8',prop:"success_amount",name:'成功金额'},
                         {id:'9',prop:"service_status",name:'批次状态'}
-                    ]
+                    ],
+                    "11":[
+                        {id:'1',prop:"batchno",name:'批次号'},
+                        {id:'2',prop:"total_num",name:'总笔数'},
+                        {id:'3',prop:"total_amount",name:'总金额'},
+                        {id:'4',prop:"sucess_num",name:'成功笔数'},
+                        {id:'5',prop:"sucess_amount",name:'成功金额'},
+                        {id:'6',prop:"service_status",name:'批次状态'}
+                    ],
                 },
                 editableTabsList: [],
                 bizType:{},//业务种类
@@ -1247,10 +1298,10 @@
                 this.currentData.index = index;
                 this.currentData.id = id;
                 this.currentData.define_id = row.define_id;
-                
+
                 this.businessParams.biz_type = bizType;
                 this.businessParams.id = id;
-                
+
                 //附件所占宽度
                 // if( bizType === 1 || bizType === 6){
                 // if(bizType === 6){
@@ -1287,7 +1338,7 @@
                         //组装开户同意接口的参数
                         this.currentData.service_status = data.service_status;
                         this.currentData.persist_version = data.persist_version;
-                        
+
                         if(bizType === 3){//账户变更的时候打平数据
                             let content = data.change_content;
                             let len = content.length;
@@ -1376,7 +1427,7 @@
                      optype = this.classParams[_index].agree;
                     message = "同意成功";
                 }
-                
+
                 this.currentData.assignee_memo = this.thirdFunData.assignee_memo;
                 let paramsObj = this.currentData;
                 this.$axios({
@@ -1432,7 +1483,7 @@
                 }else{
                     return result;
                 }
-                
+
             }
         },
         watch: {
