@@ -473,7 +473,7 @@
             showRight:function(){
                 document.getElementsByClassName("rightContainer")[0].style.right = "0";
             },
-            closeRight:function(){
+            closeRight:function(event){
                 if(this.businessParams.type){
                     this.$emit("closeRightDialog");
                 }else{
