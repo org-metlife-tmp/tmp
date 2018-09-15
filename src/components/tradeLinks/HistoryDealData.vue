@@ -35,25 +35,56 @@
         .title-content{
             float: left;
         }
+
+        .errorTip{
+            width: 100%;
+            display: inline-block;
+            text-align: center;
+            margin-top: 30px;
+            .error-name{
+                color: #fc6e21;
+                line-height: 25px;
+            }
+            .downLoad{
+                color: #00B4EC;
+            }
+        }
+        
     }
 </style>
+<style lang="less">
+    .upload-demo {
+        .el-upload-list {
+            display: none;
+        }
+    }
+</style>
+
 
 <template>
     <div id="historyDealData">
         <div class="dataBox" v-show="!isPending">
             <div class="title-text">导入范围</div>
-            <div class="title-content">截止到2018年8月19号</div>
+            <div class="title-content">截止到{{limitDate}}</div>
+        </div>
+        <div class="errorTip" v-show="errorTipShow">
+            <div class="error-name">文档内容不符合要求</div>
+            <a class="downLoad" href="javascript:;"
+                @click = "downLoadExcel"
+               v-text="'/cfm/normal/excel/downExcel?objectId='+currentUpload.download_object_id"
+            ></a>
         </div>
         <div class="modeUpload">
-            <div class="title-text">当日余额数据文件上传</div>
-            <el-input v-model="input">
+            <div class="title-text">当日交易数据文件上传</div>
+            <el-input v-model="currentUpload.original_file_name" readonly>
                 <template slot="append">
                     <el-upload
-                            class="upload-demo"
-                            action="/cfm/comm/attachment/upload"
-                            multiple
-                            :on-success="uploadSuccess"
-                            :before-upload="beforeUpload">
+                        class="upload-demo"
+                        action="/cfm/normal/excel/upload"
+                        :headers="uploadHeaders"
+                        multiple
+                        accept=".xlsx,.xls"
+                        :on-success="uploadSuccess">
                         <span class="">浏览</span>
                     </el-upload>
                 </template>
@@ -62,7 +93,7 @@
         <div class="btnList">
             <el-button type="warning" size="small" plain >模板下载</el-button>
             <el-button type="warning" size="small" plain>取 消</el-button>
-            <el-button type="warning" size="small" >确 定</el-button>
+            <el-button type="warning" size="small" @click="subConfirm">确 定</el-button>
         </div>
     </div>
 </template>
@@ -72,26 +103,112 @@
     export default {
         name: "HistoryDealData",
         created: function () {
+            this.currToken = this.$store.state.token;
             this.$emit("transmitTitle", "交易数据导入");
-            // this.$emit('getTableData', this.routerMessage);
+            this.uploadHeaders.Authorization = this.currToken;
+            this.uploadHeaders.pk = this.isPending ? '5' : '6';
+            var date = new Date();
+            this.limitDate = new Date(date.setDate(date.getDate()-1)).toLocaleDateString().replace(/\//g,"-");
         },
-        props: ["isPending","tableData"],
+        props: ["isPending"],
         data: function () {
             return {
-                input:""
+                currToken:"",
+                currentUpload:{},
+                uploadHeaders:{},
+                errorTipShow: false,
+                limitDate:"",
             }
         },
         methods: {
-            uploadSuccess:function(){
-
+            //上传成功
+            uploadSuccess:function(response, file, fileList){
+                debugger
+                this.currentUpload = response;
+                // this.addExcel = false;
+                var message = "";
+                var message  = response.success ? '上传成功' : response.error_message;
+                var type = response.success ? 'success' : 'warning';
+                this.$message({
+                    type: type,
+                    message: message,
+                    duration: 2000
+                });
+                if(!response.success && response.download_object_id){
+                    this.errorTipShow = true;
+                }
+                
             },
-            beforeUpload:function(){
-
-            }
+            //下载正确excel文件
+            downLoadExcel:function(){
+                this.$axios({
+                    url: "/cfm/normal/excel/downExcel",
+                    method: "post",
+                    data:{
+                        params:{
+                            objectId:this.currentUpload.download_object_id
+                        }
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                    } else {
+                        var fileName = decodeURI(result.headers["content-disposition"]).split("=")[1];
+                        //ie兼容
+                        if (window.navigator && window.navigator.msSaveOrOpenBlob) {
+                            window.navigator.msSaveOrOpenBlob(new Blob([result.data]), fileName);
+                        } else {
+                            let url = window.URL.createObjectURL(new Blob([result.data]));
+                            let link = document.createElement('a');
+                            link.style.display = 'none';
+                            link.href = url;
+                            link.setAttribute('download', fileName);
+                            document.body.appendChild(link);
+                            link.click();
+                        }
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            },
+            subConfirm: function (){
+                var url = this.isPending ? '/normal/jyt/curTransImport' : '/normal/jyt/hisTransImport';
+                var currentUpload = this.currentUpload;
+                var params = {
+                    // uuid: JSON.parse(window.sessionStorage.getItem("uuid")),
+                    object_id: currentUpload.object_id,
+                    // document_id: currentUpload.document_id,
+                    // origin_name: currentUpload.original_file_name
+                }
+                this.$axios({
+                    url: "normal/jyt/curTransImport",
+                    method: "post",
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                    } else {
+                        var data = result.data.data;
+                        
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            },
+            
         },
         watch: {
-            //设置数据
-            tableData: function (val, oldValue) {
+            isPending: function (val, oldVal) {
+                this.uploadHeaders.pk = val ? '5' : '6';
+                this.currentUpload = {};
+                this.errorTipShow = false;
             }
         }
     }

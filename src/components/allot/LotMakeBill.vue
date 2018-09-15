@@ -681,6 +681,7 @@
                                 action="/cfm/normal/excel/upload"
                                 :headers="{pk:'2',Authorization:currToken}"
                                 multiple
+                                accept=".xlsx,.xls"
                                 :on-success="uploadSuccess"
                                 :before-upload="beforeUpload">
                             <span class="">浏览</span>
