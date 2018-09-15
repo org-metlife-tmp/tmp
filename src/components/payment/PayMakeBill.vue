@@ -863,6 +863,7 @@
                         billData.id = data.id;
                         billData.persist_version = data.persist_version;
                         billData.service_serial_number = data.service_serial_number;
+                        billData.rev_persist_version = data.rev_persist_version;
                         this.getPayerSelect();
                     }
                 }).catch(function (error) {
