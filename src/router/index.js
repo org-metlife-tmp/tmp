@@ -58,10 +58,10 @@ import Payment from '@/components/allot/Payment'
 import LookOver from '@/components/allot/LookOver'
 import MoreBills from '@/components/allot/MoreBills'
 import LotMakeBill from '@/components/allot/LotMakeBill'
+import LotMoreBills from '@/components/allot/LotMoreBills'
 // import LotPayment from '@/components/allot/LotPayment'
 // import LotLookOver from '@/components/allot/LotLookOver'
 import AllotDealCheck from '@/components/allot/AllotDealCheck'
-import LotMoreBills from '@/components/allot/LotMoreBills'
 //审批流管理
 import WorkflowDefinition from '@/components/workflow/WorkflowDefinition'
 import WorkflowTrace from '@/components/workflow/WorkflowTrace'
@@ -232,10 +232,11 @@ const router = new Router({
                 },
                 //调拨通
                 {path: '/allot/make-bill', name: 'MakeBill', component: MakeBill,meta: {requireAuth: true}},
+                {path: '/allot/lot-make-bill', name: 'LotMakeBill', component: LotMakeBill, meta: {requireAuth: true}},
                 //支付通
                 {path: '/payment/pay-make-bill', name: 'PayMakeBill', component: PayMakeBill, meta: {requireAuth: true}},
                 {path: '/payment/batch-make-bill', name: 'BatchMakeBill', component: BatchMakeBill, meta: {requireAuth: true}},
-                {path: '/allot/lot-make-bill', name: 'LotMakeBill', component: LotMakeBill, meta: {requireAuth: true}}
+                
             ]
         }
     ]
