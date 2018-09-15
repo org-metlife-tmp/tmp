@@ -13,18 +13,12 @@ module.exports = {
         proxyTable: {
             '/cfm':{
                 //域名，代码中路径中的cfm会替换成此路径
-<<<<<<< Updated upstream
                 //  target: 'http://10.1.1.151:8081/cfm/',
                 // target: 'http://10.1.1.157:8080/cfm/', //世强
                 target: 'http://10.1.1.102:9001/cfm/', //李伟兵
-                // target: 'http://10.1.1.110:8080/cfm/', //圆圆
+                // target: 'http://10.1.1.109:8080/cfm/', //圆圆
                 // target: 'http://10.1.1.194:9001/cfm/', //
-=======
-                //  target: 'http://10.1.1.152:9001/cfm/',
-                // target: 'http://172.100.1.132:8080/cfm/', //世强
-                target: 'http://10.1.1.109:8080/cfm/', //圆圆
                 // target: 'http://10.1.1.198:8080/cfm/', //高俊峰
->>>>>>> Stashed changes
                 //设置为true 解决跨域问题
                 changeOrigin: true,
                 //请求路径中会用后面的替换前面的
@@ -35,7 +29,7 @@ module.exports = {
         },
 
         // Various Dev Server settings
-        host: '10.1.1.139', // can be overwritten by process.env.HOST
+        host: 'localhost', // can be overwritten by process.env.HOST
         port: 8080, // can be overwritten by process.env.PORT, if port is in use, a free one will be determined
         autoOpenBrowser: false,
         errorOverlay: true,
