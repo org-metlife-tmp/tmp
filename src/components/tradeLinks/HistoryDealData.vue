@@ -71,7 +71,7 @@
             <div class="error-name">文档内容不符合要求</div>
             <a class="downLoad" href="javascript:;"
                 @click = "downLoadExcel"
-               v-text="'/cfm/normal/excel/downExcel?objectId='+currentUpload.download_object_id"
+               v-text="'/cfm/normal/excel/downExcel?object_id='+currentUpload.download_object_id"
             ></a>
         </div>
         <div class="modeUpload">
@@ -91,7 +91,7 @@
             </el-input>
         </div>
         <div class="btnList">
-            <el-button type="warning" size="small" plain >模板下载</el-button>
+            <el-button type="warning" size="small" plain @click="templateDownLoad">模板下载</el-button>
             <el-button type="warning" size="small" plain>取 消</el-button>
             <el-button type="warning" size="small" @click="subConfirm">确 定</el-button>
         </div>
@@ -141,14 +141,18 @@
                 }
             },
             //下载正确excel文件
-            downLoadExcel:function(){
+            downLoadExcel:function(type){
+                var params = {};
+                if(type =='template'){
+                    params.pk = this.isPending ? '5':'6';
+                }else{
+                    params.object_id = this.currentUpload.download_object_id;
+                }
                 this.$axios({
                     url: "/cfm/normal/excel/downExcel",
                     method: "post",
                     data:{
-                        params:{
-                            object_id:this.currentUpload.download_object_id
-                        }
+                        params:params
                     },
                     responseType: 'blob'
                 }).then((result) => {
@@ -204,6 +208,9 @@
                 }).catch(function (error) {
                     console.log(error);
                 });
+            },
+            templateDownLoad:function (){
+                this.downLoadExcel('template');
             }
         },
         watch: {

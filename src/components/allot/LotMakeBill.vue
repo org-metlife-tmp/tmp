@@ -556,7 +556,7 @@
                             </el-input>
                             <div class="bills-container">
                                 <div class="bills-source">
-                                    <div class="bill-item" v-for="file in fileModeList">
+                                    <div class="bill-item" v-for="file in fileModeList" :key="file.id">
                                         <div class="icons icon-items">
                                             <span class="icon-container">
                                                 <span :class="file.file_extension_suffix"></span>
@@ -690,7 +690,7 @@
                 </el-input>
             </div>
             <span slot="footer" class="dialog-footer">
-                <el-button type="warning" size="mini" plain @click="">模板下载</el-button>
+                <el-button type="warning" size="mini" plain @click="templateDownLoad">模板下载</el-button>
                 <el-button type="warning" size="mini" plain @click="tempalteDailogVisible = false">取 消</el-button>
                 <el-button type="warning" size="mini" plain @click="addCurUpload" :disabled="addExcel">确 定</el-button>
             </span>
@@ -1374,6 +1374,42 @@
                     console.log(error);
                 })
             },
+            templateDownLoad:function (){
+                this.$axios({
+                    url: "/cfm/normal/excel/downExcel",
+                    method: "post",
+                    data:{
+                        params:{
+                            pk:'2'
+                        }
+                    },
+                    responseType: 'blob'
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                    } else {
+                        var fileName = decodeURI(result.headers["content-disposition"]).split("=")[1];
+                        //ie兼容
+                        if (window.navigator && window.navigator.msSaveOrOpenBlob) {
+                            window.navigator.msSaveOrOpenBlob(new Blob([result.data]), fileName);
+                        } else {
+                            let url = window.URL.createObjectURL(new Blob([result.data]));
+                            let link = document.createElement('a');
+                            link.style.display = 'none';
+                            link.href = url;
+                            link.setAttribute('download', fileName);
+                            document.body.appendChild(link);
+                            link.click();
+                        }
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            }
         }
     }
 </script>
