@@ -177,7 +177,7 @@
                             }
                         }else{
                             for(var k in params){
-                                if(k != "page_size" && k != "page_num"){
+                                if(k != "page_size" && k != "page_num" && k != "is_checked"){
                                     delete params[k];
                                 }
                             }
@@ -190,7 +190,7 @@
                         this.getRouterData(this.doneMessage);
                         var params = this.todoMessage.params;
                         for(var k in params){
-                            if(k != "page_size" && k != "page_num"){
+                            if(k != "page_size" && k != "page_num" && k != "is_checked"){
                                 delete params[k];
                             }
                         }

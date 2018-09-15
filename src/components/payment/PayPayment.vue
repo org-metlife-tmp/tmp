@@ -5,13 +5,6 @@
         box-sizing: border-box;
         position: relative;
 
-        /*顶部按钮*/
-        .button-list-left {
-            position: absolute;
-            top: -56px;
-            left: -21px;
-        }
-
         /*搜索区*/
         .search-setion {
             text-align: left;
@@ -116,7 +109,7 @@
 
         .dialog-talbe {
             width: 100%;
-            height: 230px;
+            height: 180px;
 
             li {
                 float: left;
@@ -156,17 +149,6 @@
 
 <template>
     <div id="payPayment">
-        <!--顶部按钮-->
-        <div class="button-list-left">
-            <el-select v-model="searchData.payment_type" placeholder="请选择调拨类型"
-                       filterable clearable size="mini">
-                <el-option v-for="(name,k) in paymentTypeList"
-                           :key="k"
-                           :label="name"
-                           :value="k">
-                </el-option>
-            </el-select>
-        </div>
         <!--搜索区-->
         <div class="search-setion">
             <el-form :inline="true" :model="searchData" size="mini">
@@ -218,8 +200,8 @@
                     <el-col :span="24">
                         <el-form-item style="margin-bottom:0px">
                             <el-checkbox-group v-model="searchData.service_status">
-                                <el-checkbox label="1" name="type">审批通过</el-checkbox>
-                                <el-checkbox label="3" name="type">已失败</el-checkbox>
+                                <el-checkbox label="4" name="type">审批通过</el-checkbox>
+                                <el-checkbox label="8" name="type">已失败</el-checkbox>
                             </el-checkbox-group>
                         </el-form-item>
                     </el-col>
@@ -234,9 +216,9 @@
                       border size="mini"
                       @selection-change="selectChange">
                 <el-table-column type="selection" width="38"></el-table-column>
-                <el-table-column prop="pay_account_bank" label="收款方名称" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="recv_account_name" label="收款方名称" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="recv_account_no" label="收款方账号" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="recv_account_name" label="收款方开户行" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="recv_account_bank" label="收款方开户行" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="payment_amount" label="金额" :show-overflow-tooltip="true"
                                  :formatter="transitAmount"></el-table-column>
                 <el-table-column prop="service_status" label="处理状态" :show-overflow-tooltip="true"
@@ -284,8 +266,10 @@
                     :current-page="pagCurrent">
             </el-pagination>
         </div>
+
+
         <!--查看弹出框-->
-        <el-dialog title="调拨单信息"
+        <el-dialog title="支付信息"
                    :visible.sync="dialogVisible"
                    width="900px" top="76px"
                    :close-on-click-modal="false">
@@ -311,30 +295,18 @@
                 ]
             </div>
             <ul class="dialog-talbe">
-                <li class="table-li-title">业务类型</li>
-                <li class="table-li-content" v-text="dialogData.biz_name"></li>
-                <li class="table-li-title">付款方式</li>
-                <li class="table-li-content" v-text="dialogData.pay_mode"></li>
+                <li class="table-li-title">付款账号</li>
+                <li class="table-li-content table-two-row" v-text="dialogData.pay_account_no"></li>
 
-                <li class="table-li-title">付款单位</li>
-                <li class="table-li-content" v-text="dialogData.pay_account_name"></li>
-                <li class="table-li-title">收款单位</li>
+                <li class="table-li-title">收款人户名</li>
                 <li class="table-li-content" v-text="dialogData.recv_account_name"></li>
-
-                <li class="table-li-title">账号</li>
-                <li class="table-li-content" v-text="dialogData.pay_account_no"></li>
-                <li class="table-li-title">账号</li>
+                <li class="table-li-title">收款人账号</li>
                 <li class="table-li-content" v-text="dialogData.recv_account_no"></li>
 
                 <li class="table-li-title">开户行</li>
-                <li class="table-li-content" v-text="dialogData.pay_account_bank"></li>
-                <li class="table-li-title">开户行</li>
                 <li class="table-li-content" v-text="dialogData.recv_account_bank"></li>
-
-                <li class="table-li-title">调拨金额</li>
+                <li class="table-li-title">金额</li>
                 <li class="table-li-content" v-text="dialogData.payment_amount" style="color:#fd7d2f"></li>
-                <li class="table-li-title">大写</li>
-                <li class="table-li-content" v-text="dialogData.numText"></li>
 
                 <li class="table-li-title">摘要</li>
                 <li class="table-li-content table-two-row" v-text="dialogData.payment_summary"></li>
@@ -349,6 +321,7 @@
             </ul>
             <BusinessTracking :businessParams="businessParams"></BusinessTracking>
         </el-dialog>
+
         <!--支付作废弹出框-->
         <el-dialog title="作废"
                    :visible.sync="innerVisible"
@@ -384,31 +357,16 @@
             BusinessTracking:BusinessTracking
         },
         mounted: function () {
-            //调拨类型
-            var constants = JSON.parse(window.sessionStorage.getItem("constants"));
-            if (constants.ZjdbType) {
-                this.paymentTypeList = constants.ZjdbType;
-            }
         },
         props: ["tableData"],
         data: function () {
             return {
                 routerMessage: {
-                    optype: "dbt_paylist",
+                    optype: "zft_payList",
                     params: {
                         page_size: 7,
                         page_num: 1
                     }
-                },
-                searchData: { //搜索条件
-                    payment_type: "",
-                    pay_query_key: "",
-                    recv_query_key: "",
-                    min: "",
-                    max: "",
-                    service_status: [],
-                    start_date: "",
-                    end_date: ""
                 },
                 tableList: [], //列表数据
                 pagSize: 8, //分页数据
@@ -418,22 +376,33 @@
                     total_amount: "",
                     total_num: ""
                 },
+                searchData: { //搜索条件
+                    pay_query_key: "",
+                    recv_query_key: "",
+                    min: "",
+                    max: "",
+                    service_status: [],
+                    start_date: "",
+                    end_date: ""
+                },
                 dateValue: "", //时间选择
                 pickerOptions: {
                     disabledDate(time) {
                         return time.getTime() > Date.now();
                     }
                 },
-                paymentTypeList: {}, //下拉框数据
-                dialogVisible: false, //弹框数据
+                selectData: [], //列表选中数据
+                selectVersion: [],
+                dialogVisible: false, //查看弹框数据
                 dialogData: {},
                 currentStatus: "",
-                innerVisible: false,
-                selectData: [], //列表选中数据
+                innerVisible: false, //支付作废弹框
                 paymentData: { //支付作废参数
                     ids: [],
-                    feed_back: ""
+                    feed_back: "",
+                    persist_version: ""
                 },
+
                 emptyFileList: [], //附件
                 fileMessage: {
                     bill_id: "",
@@ -456,11 +425,15 @@
                 }
                 this.$emit("getCommTable", this.routerMessage);
             },
-            //列表选择框改变后
-            selectChange: function (val) {
-                this.selectData = [];
-                for (var i = 0; i < val.length; i++) {
-                    this.selectData.push(val[i].id);
+            //展示格式转换-金额
+            transitAmount: function (row, column, cellValue, index) {
+                return this.$common.transitSeparator(cellValue);
+            },
+            //展示格式转换-处理状态
+            transitStatus: function (row, column, cellValue, index) {
+                var constants = JSON.parse(window.sessionStorage.getItem("constants"));
+                if (constants.BillStatus) {
+                    return constants.BillStatus[cellValue];
                 }
             },
             //换页后获取数据
@@ -476,30 +449,28 @@
                 };
                 this.$emit("getCommTable", this.routerMessage);
             },
-            //展示格式转换-金额
-            transitAmount: function (row, column, cellValue, index) {
-                return this.$common.transitSeparator(cellValue);
-            },
             //更多单据
             goLookOver: function () {
-                this.$router.push("/allot/look-over");
+                this.$router.push("/payment/pay-look-over");
             },
-            //展示格式转换-处理状态
-            transitStatus: function (row, column, cellValue, index) {
-                var constants = JSON.parse(window.sessionStorage.getItem("constants"));
-                if (constants.BillStatus) {
-                    return constants.BillStatus[cellValue];
+            //列表选择框改变后
+            selectChange: function (val) {
+                this.selectData = [];
+                this.selectVersion = [];
+                for (var i = 0; i < val.length; i++) {
+                    this.selectData.push(val[i].id);
+                    this.selectVersion.push(val[i].persist_version);
                 }
             },
             //查看单据详情
             lookBill: function (row) {
+                this.dialogData = {};
                 for (var k in row) {
                     this.dialogData[k] = row[k];
                 }
-                this.dialogData.numText = this.$common.transitText(row.payment_amount);
                 this.dialogData.payment_amount = "￥" + this.$common.transitSeparator(row.payment_amount);
                 this.currentStatus = JSON.parse(window.sessionStorage.getItem("constants")).BillStatus[row.service_status];
-                this.dialogData.pay_mode = JSON.parse(window.sessionStorage.getItem("constants")).PayMode[row.pay_mode];
+                this.dialogVisible = true;
 
                 //附件数据
                 this.emptyFileList = [];
@@ -510,9 +481,70 @@
                 this.businessParams = {};
                 this.businessParams.biz_type = 9;
                 this.businessParams.id = row.id;
-
-                this.dialogVisible = true;
             },
+            //支付作废
+            cancellation: function (number) {
+                this.paymentData.ids = [];
+                this.paymentData.persist_version = [];
+                this.paymentData.feed_back = "";
+
+                if (number == "more") {
+                    if(this.selectData.length > 0){
+                        this.paymentData.ids = this.selectData;
+                        this.paymentData.persist_version = this.selectVersion;
+                    }else{
+                        this.$message({
+                            type: "warning",
+                            message: "请选择要作废的单据",
+                            duration: 2000
+                        });
+                        return;
+                    }
+                } else {
+                    this.dialogVisible = false;
+                    this.paymentData.ids.push(this.dialogData.id);
+                    this.paymentData.persist_version.push(this.dialogData.persist_version);
+                }
+                this.innerVisible = true;
+            },
+            //确定作废
+            confirmcancell: function () {
+                if(!this.paymentData.feed_back){
+                    this.$message({
+                        type:"warning",
+                        message:"请输入作废原因",
+                        duration:2000
+                    });
+                    return;
+                }
+                this.$axios({
+                    url: "/cfm/normalProcess",
+                    method: "post",
+                    data: {
+                        optype: "zft_payOff",
+                        params: this.paymentData
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                    } else {
+                        this.$message({
+                            type: "success",
+                            message: "数据已作废",
+                            duration: 2000
+                        });
+                        this.innerVisible = false;
+                        this.$emit("getCommTable", this.routerMessage);
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            },
+
             //发送
             sendBill: function (number) {
                 var params = {
@@ -553,47 +585,6 @@
                     console.log(error);
                 });
             },
-            //支付作废
-            cancellation: function (number) {
-                this.innerVisible = true;
-                this.paymentData.ids = [];
-                this.paymentData.feed_back = "";
-                if (number == "more") {
-                    this.paymentData.ids = this.selectData;
-                } else {
-                    this.dialogVisible = false;
-                    this.paymentData.ids.push(this.dialogData.id);
-                }
-            },
-            //确定作废
-            confirmcancell: function () {
-                this.$axios({
-                    url: "/cfm/normalProcess",
-                    method: "post",
-                    data: {
-                        optype: "dbt_cancel",
-                        params: this.paymentData
-                    }
-                }).then((result) => {
-                    if (result.data.error_msg) {
-                        this.$message({
-                            type: "error",
-                            message: result.data.error_msg,
-                            duration: 2000
-                        })
-                    } else {
-                        this.$message({
-                            type: "success",
-                            message: "数据已作废",
-                            duration: 2000
-                        });
-                        this.innerVisible = false;
-                        this.$emit("getCommTable", this.routerMessage);
-                    }
-                }).catch(function (error) {
-                    console.log(error);
-                });
-            }
         },
         computed: {},
         watch: {

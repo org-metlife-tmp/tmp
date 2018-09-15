@@ -24,6 +24,11 @@
             height: 181px;
         }
 
+        .validated-content{
+            height: 75%;
+            overflow-y: auto;
+        }
+
         /*分页部分*/
         .botton-pag {
             position: absolute;
@@ -62,22 +67,22 @@
                 <el-row>
                     <el-col :span="4">
                         <el-form-item>
-                            <el-input v-model="searchData.query_key" placeholder="请输入付款方账号"></el-input>
+                            <el-input v-model="searchData.pay_account_no" placeholder="请输入付款方账号"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="4" v-if="isPending">
                         <el-form-item>
-                            <el-input v-model="searchData.query_key" placeholder="请输入收款方账号"></el-input>
+                            <el-input v-model="searchData.recv_account_no" placeholder="请输入收款方账号"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="7">
                         <el-form-item>
                             <el-col :span="11">
-                                <el-input v-model="searchData.query_key" placeholder="最小金额"></el-input>
+                                <el-input v-model="searchData.min" placeholder="最小金额"></el-input>
                             </el-col>
                             <el-col class="line" :span="1" style="text-align:center">-</el-col>
                             <el-col :span="11">
-                                <el-input v-model="searchData.query_key" placeholder="最大金额"></el-input>
+                                <el-input v-model="searchData.max" placeholder="最大金额"></el-input>
                             </el-col>
                         </el-form-item>
                     </el-col>
@@ -93,29 +98,45 @@
         <div class="split-bar"></div>
         <!--数据展示区-->
         <section class="table-content" v-if="isPending">
-            <el-table :data="tableList"
-                      border
-                      height="100%"
-                      size="mini">
-                <el-table-column prop="apply_on" label="付款方账号" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="memo" label="付款银行" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="service_status" label="收款方账号" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="service_status" label="收款方公司名称" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="service_status" label="金额" :show-overflow-tooltip="true"></el-table-column>
-
-                <el-table-column
-                        label="操作" width="50"
-                        fixed="right">
-                    <template slot-scope="scope" class="operationBtn">
-                        <el-tooltip content="查看" placement="bottom" effect="light"
-                                    :enterable="false" :open-delay="500" v-show="!isPending">
-                            <el-button type="primary" icon="el-icon-search" size="mini"
-                                       @click="lookMatter(scope.row)"></el-button>
-                        </el-tooltip>
-                    </template>
-                </el-table-column>
+            <el-table :data="tableList" border
+                      height="100%" size="mini"
+                      highlight-current-row
+                      @current-change="getCheckData">
+                <el-table-column prop="pay_account_no" label="付款方账号" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="pay_account_bank" label="付款银行" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="recv_account_no" label="收款方账号" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="recv_account_name" label="收款方公司名称" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="payment_amount" label="金额" :show-overflow-tooltip="true"
+                                 :formatter="transitAmount"></el-table-column>
             </el-table>
         </section>
+        <div class="validated-content" v-if="!isPending">
+            <el-table :data="tableList" border
+                      size="mini"
+                      @expand-change="getValidated">
+                <el-table-column type="expand">
+                    <template slot-scope="props">
+                        <el-table :data="validatedList" border
+                                  size="mini">
+                            <el-table-column prop="acc_no" label="账户号" :show-overflow-tooltip="true"></el-table-column>
+                            <el-table-column prop="acc_name" label="账户名称" :show-overflow-tooltip="true"></el-table-column>
+                            <el-table-column prop="bank_name" label="所属银行" :show-overflow-tooltip="true"></el-table-column>
+                            <el-table-column prop="direction" label="收付方向" :show-overflow-tooltip="true"></el-table-column>
+                            <el-table-column prop="opp_acc_no" label="对方账户号" :show-overflow-tooltip="true"></el-table-column>
+                            <el-table-column prop="opp_acc_name" label="对方账户名称" :show-overflow-tooltip="true"></el-table-column>
+                            <el-table-column prop="amount" label="交易金额" :show-overflow-tooltip="true"></el-table-column>
+                            <el-table-column prop="summary" label="摘要" :show-overflow-tooltip="true"></el-table-column>
+                        </el-table>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="pay_account_no" label="付款方账号" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="pay_account_bank" label="付款银行" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="recv_account_no" label="收款方账号" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="recv_account_name" label="收款方公司名称" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="payment_amount" label="金额" :show-overflow-tooltip="true"
+                                 :formatter="transitAmount"></el-table-column>
+            </el-table>
+        </div>
         <!--分页部分-->
         <div class="botton-pag" :class="{'botton-pag-center':isPending}">
             <el-pagination
@@ -129,32 +150,22 @@
                     @current-change="getCurrentPage"
                     @size-change="sizeChange">
             </el-pagination>
-            <el-button type="warning" size="mini" @click="" v-show="isPending">确认</el-button>
+            <el-button type="warning" size="mini" @click="confirmCheck" v-show="isPending">确认</el-button>
         </div>
         <!--主数据关联数据-->
         <section class="table-content" style="margin-top:40px" v-if="isPending">
-            <el-table :data="childList"
-                      border
-                      height="100%"
-                      size="mini">
+            <el-table :data="childList" border
+                      height="100%" size="mini"
+                      @selection-change="selectChange">
                 <el-table-column type="selection" width="38"></el-table-column>
-                <el-table-column prop="apply_on" label="付款方账号" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="memo" label="付款银行" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="service_status" label="收款方账号" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="service_status" label="收款方公司名称" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="service_status" label="金额" :show-overflow-tooltip="true"></el-table-column>
-
-                <el-table-column
-                        label="操作" width="50"
-                        fixed="right">
-                    <template slot-scope="scope" class="operationBtn">
-                        <el-tooltip content="查看" placement="bottom" effect="light"
-                                    :enterable="false" :open-delay="500" v-show="!isPending">
-                            <el-button type="primary" icon="el-icon-search" size="mini"
-                                       @click="lookMatter(scope.row)"></el-button>
-                        </el-tooltip>
-                    </template>
-                </el-table-column>
+                <el-table-column prop="acc_no" label="账户号" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="acc_name" label="账户名称" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="bank_name" label="所属银行" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="direction" label="收付方向" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="opp_acc_no" label="对方账户号" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="opp_acc_name" label="对方账户名称" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="amount" label="交易金额" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="summary" label="摘要" :show-overflow-tooltip="true"></el-table-column>
             </el-table>
         </section>
     </div>
@@ -178,31 +189,43 @@
             return {
                 routerMessage: {
                     todo:{
-                        optype: "closeacc_todolist",
+                        optype: "zft_checkbillList",
                         params: {
                             page_size: 7,
-                            page_num: 1
+                            page_num: 1,
+                            is_checked: 0
                         }
                     },
                     done:{
-                        optype: "closeacc_donelist",
+                        optype: "zft_checkbillList",
                         params: {
                             page_size: 7,
-                            page_num: 1
+                            page_num: 1,
+                            is_checked: 1
                         }
                     }
                 },
                 searchData:{
-                    service_status:[]
+                    pay_account_no:"",
+                    recv_account_no:"",
+                    min:"",
+                    max:""
                 },
                 tableList:[],
                 childList: [],
+                validatedList: [],
                 pagSize: 8, //分页数据
                 pagTotal: 1,
                 pagCurrent: 1,
+                currSelectData: {},
+                selectData: [], //待管理数据选中数据
             }
         },
         methods: {
+            //展示格式转换-金额
+            transitAmount: function (row, column, cellValue, index) {
+                return this.$common.transitSeparator(cellValue);
+            },
             //根据条件查询数据
             queryData:function(){
                 var searchData = this.searchData;
@@ -228,30 +251,30 @@
             sizeChange:function(val){
                 this.routerMessage.todo.params = {
                     page_size: val,
-                    page_num: 1
+                    page_num: 1,
+                    is_checked: 0
                 };
                 this.routerMessage.done.params = {
                     page_size: val,
-                    page_num: 1
+                    page_num: 1,
+                    is_checked: 1
                 };
                 this.$emit("getTableData", this.routerMessage);
             },
-            //已处理事项查看
-            lookMatter:function(row){
-                this.businessParams = {};//清空数据
-                this.businessParams.biz_type = 6;
-                this.businessParams.id = row.id;
-
-                for(var k in this.lookDialogData){
-                    this.lookDialogData[k] = "";
+            //获取当前数据对应的核对数据
+            getCheckData: function(val){
+                if(!val){
+                    return;
                 }
+                this.currSelectData = val;
+                this.childList = [];
                 this.$axios({
                     url: "/cfm/normalProcess",
                     method: "post",
                     data: {
-                        optype: "closeacc_detail",
-                        params:{
-                            id:row.id
+                        optype: "zft_checkTradeList",
+                        params: {
+                            id: val.id
                         }
                     }
                 }).then((result) => {
@@ -261,30 +284,103 @@
                             message: result.data.error_msg,
                             duration: 2000
                         })
-                    } else {
-                        let data = result.data.data
-                        data.org_name = row.org_name;
-                        data.dept_name = row.dept_name;
-                        data.user_name = row.user_name;
-                        this.lookDialogData = data;
-                        this.lookDialog = true;
+                    }else{
+                        var data = result.data.data;
+                        this.childList = data;
                     }
+                }).catch(function (error) {
+                    console.log(error);
                 })
-                if(row.issues){
-                    this.issueList = row.issues.split(",");
-                }else{
-                    this.issueList = [];
+            },
+            //列表选择框改变后
+            selectChange: function (val) {
+                this.selectData = [];
+                for (var i = 0; i < val.length; i++) {
+                    this.selectData.push(val[i].id);
                 }
-                //附件数据
-                this.emptyFileList = [];
-                this.fileMessage.bill_id = row.id;
-                this.triggerFile = !this.triggerFile;
+            },
+            //确认核对
+            confirmCheck: function(){
+                //校验是否选择核对数据
+                if(this.selectData.length == 0){
+                    this.$message({
+                        type:"warning",
+                        message: "请选择核对数据",
+                        duration: 2000
+                    });
+                    return;
+                }
+                var currSelectData = this.currSelectData;
+                var params = {
+                    bill_id: currSelectData.id,
+                    persist_version: currSelectData.persist_version,
+                    trade_id: this.selectData
+                }
+
+                this.$confirm('确认核对当前选择数据吗?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.$axios({
+                        url: "/cfm/normalProcess",
+                        method: "post",
+                        data: {
+                            optype: "zft_confirmCheck",
+                            params: params
+                        }
+                    }).then((result) => {
+                        if (result.data.error_msg) {
+                            this.$message({
+                                type: "error",
+                                message: result.data.error_msg,
+                                duration: 2000
+                            })
+                        }else{
+                            var data = result.data.data;
+                            this.$emit("getTableData", this.routerMessage);
+                            this.childList = [];
+                        }
+                    }).catch(function (error) {
+                        console.log(error);
+                    });
+                }).catch(() => {
+                });
+            },
+            //获取已核对数据的关联数据
+            getValidated: function(row){
+                this.validatedList = [];
+                this.$axios({
+                    url: "/cfm/normalProcess",
+                    method: "post",
+                    data: {
+                        optype: "zft_checkAlreadyTradeList",
+                        params: {
+                            id: row.id
+                        }
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                    }else{
+                        var data = result.data.data;
+                        this.validatedList = data;
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                })
             },
         },
         watch:{
             isPending:function(val,oldVal){
-                this.searchData.query_key = "";
-                this.searchData.service_status = [];
+                var searchData = this.searchData;
+                for(var k in searchData){
+                    searchData[k] = "";
+                }
             },
             tableData: function (val, oldVal) {
                 this.pagSize = val.page_size;

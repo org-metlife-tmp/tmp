@@ -82,7 +82,7 @@
         /*查看弹框*/
         .dialog-talbe {
             width: 100%;
-            height: 230px;
+            height: 180px;
 
             li {
                 float: left;
@@ -242,30 +242,18 @@
                 ]
             </div>
             <ul class="dialog-talbe">
-                <li class="table-li-title">业务类型</li>
-                <li class="table-li-content" v-text="dialogData.biz_name"></li>
-                <li class="table-li-title">付款方式</li>
-                <li class="table-li-content" v-text="dialogData.pay_mode"></li>
+                <li class="table-li-title">付款账号</li>
+                <li class="table-li-content table-two-row" v-text="dialogData.pay_account_no"></li>
 
-                <li class="table-li-title">付款单位</li>
-                <li class="table-li-content" v-text="dialogData.pay_account_name"></li>
-                <li class="table-li-title">收款单位</li>
+                <li class="table-li-title">收款人户名</li>
                 <li class="table-li-content" v-text="dialogData.recv_account_name"></li>
-
-                <li class="table-li-title">账号</li>
-                <li class="table-li-content" v-text="dialogData.pay_account_no"></li>
-                <li class="table-li-title">账号</li>
+                <li class="table-li-title">收款人账号</li>
                 <li class="table-li-content" v-text="dialogData.recv_account_no"></li>
 
                 <li class="table-li-title">开户行</li>
-                <li class="table-li-content" v-text="dialogData.pay_account_bank"></li>
-                <li class="table-li-title">开户行</li>
                 <li class="table-li-content" v-text="dialogData.recv_account_bank"></li>
-
-                <li class="table-li-title">调拨金额</li>
+                <li class="table-li-title">金额</li>
                 <li class="table-li-content" v-text="dialogData.payment_amount" style="color:#fd7d2f"></li>
-                <li class="table-li-title">大写</li>
-                <li class="table-li-content" v-text="dialogData.numText"></li>
 
                 <li class="table-li-title">摘要</li>
                 <li class="table-li-content table-two-row" v-text="dialogData.payment_summary"></li>
@@ -277,6 +265,7 @@
                             :triggerFile="triggerFile"
                             :isPending="false"></Upload>
                 </li>
+
             </ul>
             <BusinessTracking :businessParams="businessParams"></BusinessTracking>
         </el-dialog>
@@ -342,7 +331,6 @@
                     8: "已失败",
                     9: "已作废"
                 },
-
                 dialogVisible: false, //弹框数据
                 dialogData: {},
                 emptyFileList: [], //附件
@@ -402,12 +390,13 @@
             //查看单据详情
             lookBill: function (row) {
                 for (var k in row) {
-                    this.dialogData[k] = row[k];
+                    if(k == "payment_amount"){
+                        this.dialogData[k] = "￥" + this.$common.transitSeparator(row[k]);
+                    }else{
+                        this.dialogData[k] = row[k];
+                    }
                 }
-                this.dialogData.numText = this.$common.transitText(row.payment_amount);
-                this.dialogData.payment_amount = "￥" + this.$common.transitSeparator(row.payment_amount);
-                this.dialogData.pay_mode = JSON.parse(window.sessionStorage.getItem("constants")).PayMode[row.pay_mode];
-
+                this.dialogVisible = true;
 
                 //附件数据
                 this.emptyFileList = [];
@@ -418,9 +407,6 @@
                 this.businessParams = {};
                 this.businessParams.biz_type = 9;
                 this.businessParams.id = row.id;
-
-                this.dialogVisible = true;
-
             },
         },
         watch: {

@@ -57,15 +57,15 @@
         <!-- 顶部按钮-->
         <div class="button-list-right">
             <el-button type="warning" size="mini" @click="addPayee">新增</el-button>
-            <el-button type="warning" size="mini" @click="addBatchPayee">批量新增</el-button>
-            <el-button type="warning" size="mini" @click="">下载</el-button>
+            <!--<el-button type="warning" size="mini" @click="addBatchPayee">批量新增</el-button>-->
+            <!--<el-button type="warning" size="mini" @click="">下载</el-button>-->
         </div>
 
         <!--搜索区-->
         <div class="search-setion">
-            <el-input placeholder="请输入流程名查询" class="input-with-select"
+            <el-input placeholder="请输入收款方名称或账号" class="input-with-select"
                       size="small" v-model="searchData" clearable>
-                <el-button type="primary" slot="append" icon="el-icon-search" @click=""></el-button>
+                <el-button type="primary" slot="append" icon="el-icon-search" @click="queryData"></el-button>
             </el-input>
         </div>
 
@@ -73,27 +73,26 @@
         <section class="table-content">
             <el-table :data="tableList"
                       border
-                      height="100%"
                       size="mini">
-                <el-table-column prop="workflow_name" label="收款方账户名称" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="workflow_name" label="收款方账号" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="workflow_name" label="开户行" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="workflow_name" label="属性" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="acc_name" label="收款方账户名称" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="acc_no" label="收款方账号" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="bank_name" label="开户行" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="type" label="属性" :show-overflow-tooltip="true"
+                                 :formatter="transitType"></el-table-column>
 
                 <el-table-column
                         label="操作"
                         width="80">
                     <template slot-scope="scope" class="operationBtn">
-                        <el-tooltip content="设置状态" placement="bottom" effect="light" :enterable="false"
-                                    :open-delay="500">
-                            <el-button size="mini"
-                                       @click="setStatus(scope.row)"
-                                       class="on-off"></el-button>
+                        <el-tooltip content="编辑" placement="bottom" effect="light"
+                                    :enterable="false" :open-delay="500">
+                            <el-button type="primary" icon="el-icon-edit" size="mini"
+                                       @click="editPayee(scope.row)"></el-button>
                         </el-tooltip>
-                        <el-tooltip content="查看" placement="bottom" effect="light" :enterable="false" :open-delay="500">
-                            <el-button size="mini"
-                                       @click="lookFlow(scope.row)"
-                                       class="look-work-flow"></el-button>
+                        <el-tooltip content="删除" placement="bottom" effect="light"
+                                    :enterable="false" :open-delay="500">
+                            <el-button type="danger" icon="el-icon-delete" size="mini"
+                                       @click="removePayee(scope.row,scope.$index,tableList)"></el-button>
                         </el-tooltip>
                     </template>
                 </el-table-column>
@@ -113,25 +112,26 @@
             </el-pagination>
         </div>
 
-        <!--新增 弹出框-->
+        <!--新增/修改 弹出框-->
         <el-dialog :visible.sync="dialogVisible"
                    width="860px" top="76px"
                    :close-on-click-modal="false">
             <h1 slot="title" v-text="dialogTitle" class="dialog-title"></h1>
-            <el-form :model="dialogData" size="small">
+            <el-form :model="dialogData" size="small"
+                     :label-width="formLabelWidth">
                 <el-row>
                     <el-col :span="24">
-                        <el-form-item label="收款方账号" :label-width="formLabelWidth" prop="acc_no">
+                        <el-form-item label="收款方账号">
                             <el-input v-model="dialogData.acc_no" auto-complete="off"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="24">
-                        <el-form-item label="收款方名称" :label-width="formLabelWidth" prop="acc_name">
+                        <el-form-item label="收款方名称">
                             <el-input v-model="dialogData.acc_name" auto-complete="off"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="24">
-                        <el-form-item label="开户行" :label-width="formLabelWidth">
+                        <el-form-item label="开户行">
                             <el-col :span="14">
                                 <el-select v-model="bankCorrelation.bankTypeName" placeholder="请选择银行大类"
                                            clearable filterable
@@ -164,7 +164,7 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="24">
-                        <el-form-item label=" " :label-width="formLabelWidth">
+                        <el-form-item label=" ">
                             <el-select v-model="dialogData.cnaps_code" placeholder="请选择银行"
                                        clearable filterable
                                        @visible-change="getBankList"
@@ -178,11 +178,23 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="属性" :label-width="formLabelWidth">
-                            <el-select v-model="dialogData.org_id" placeholder="请选择机构"
+                        <el-form-item label="属性">
+                            <el-select v-model="dialogData.type" placeholder="请选择属性"
                                        filterable clearable>
-                                <el-option value="1">公司</el-option>
-                                <el-option value="2">个人</el-option>
+                                <el-option value="1" label="公司"></el-option>
+                                <el-option value="2" label="个人"></el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="币种">
+                            <el-select v-model="dialogData.curr_id" placeholder="请选择币种"
+                                       filterable clearable>
+                                <el-option v-for="currency in currencyList"
+                                           :key="currency.id"
+                                           :label="currency.name"
+                                           :value="currency.id">
+                                </el-option>
                             </el-select>
                         </el-form-item>
                     </el-col>
@@ -191,7 +203,7 @@
             <span slot="footer" class="dialog-footer">
                 <el-button type="warning" size="mini" plain
                            @click="dialogVisible = false">取 消</el-button>
-                <el-button type="warning" size="mini" @click="">确 定</el-button>
+                <el-button type="warning" size="mini" @click="confirm">确 定</el-button>
             </span>
         </el-dialog>
 
@@ -222,6 +234,7 @@
         name: "PayeeMessage",
         created: function () {
             this.$emit("transmitTitle", "收款方信息管理");
+            this.$emit("getCommTable", this.routerMessage);
         },
         mounted: function(){
             /*下拉框数据*/
@@ -231,12 +244,17 @@
                 this.bankAllList = bankTypeList;
                 this.bankTypeList = bankTypeList;
             }
+            //币种
+            var currencyList = JSON.parse(window.sessionStorage.getItem("selectCurrencyList"));
+            if (currencyList) {
+                this.currencyList = currencyList;
+            }
         },
         props: ["tableData"],
         data: function(){
             return {
                 routerMessage: { //本页数据获取参数
-                    optype: "wfdefine_list",
+                    optype: "supplier_list",
                     params: {
                         page_size: 10,
                         page_num: 1
@@ -249,8 +267,16 @@
                 pagCurrent: 1,
                 dialogVisible: false, //弹框相关数据
                 dialogTitle: "新增",
-                dialogData: {},
-                formLabelWidth: "120px",
+                dialogData: {
+                    id: "",
+                    acc_no: "",
+                    acc_name: "",
+                    curr_id: "",
+                    type: "",
+                    cnaps_code: ""
+                },
+                formLabelWidth: "100px",
+                currPayee: {},
                 batchDialog: false, //批量弹框相关数据
                 bankAllList: [], //银行相关数据
                 bankTypeList: [],
@@ -262,6 +288,7 @@
                     area: "",
                     bankTypeName: ""
                 },
+                currencyList: [], //下拉框数据
             }
         },
         methods: {
@@ -277,6 +304,19 @@
                     page_num: "1"
                 };
                 this.$emit("getTableData", this.routerMessage);
+            },
+            //展示格式转换-金额
+            transitType: function (row, column, cellValue, index) {
+                if(cellValue){
+                    return cellValue == 1 ? "公司" : "个人";
+                }else{
+                     return "";
+                }
+            },
+            //搜索
+            queryData: function(){
+                this.routerMessage.params.query_key = this.searchData;
+                this.$emit("getCommTable", this.routerMessage);
             },
             //银行大类搜索筛选
             filterBankType: function (value) {
@@ -370,7 +410,139 @@
             },
             //新增
             addPayee: function(){
+                var dialogData = this.dialogData;
+                var bankCorrelation = this.bankCorrelation;
+                for(var k in dialogData){
+                    dialogData[k] = "";
+                }
+                for(var key in bankCorrelation){
+                    bankCorrelation[key] = "";
+                }
+                this.dialogTitle = "新增";
                 this.dialogVisible = true;
+            },
+            //编辑
+            editPayee: function(row){
+                this.addPayee();
+                this.dialogTitle = "修改";
+                this.currPayee = row;
+                var dialogData = this.dialogData;
+                for(var k in dialogData){
+                    if(k == "type"){
+                        dialogData[k] = row[k] + "";
+                    }else if(k == "cnaps_code"){
+                        dialogData[k] = row[k];
+                        this.bankList = [];
+                        this.bankList.push({
+                            cnaps_code: row[k],
+                            name: row.bank_name
+                        })
+                    }else{
+                        dialogData[k] = row[k];
+                    }
+                }
+                dialogData.id = row.id;
+                dialogData.persist_version = row.persist_version;
+            },
+            //确认新增或修改
+            confirm: function(){
+                console.log(this.dialogData);
+                var params = this.dialogData;
+                var optype = "";
+                if(this.dialogTitle == "新增"){
+                    optype = "supplier_add";
+                }else{
+                    optype = "supplier_chg";
+                }
+
+                this.$axios({
+                    url: "/cfm/normalProcess",
+                    method: "post",
+                    data: {
+                        optype: optype,
+                        params: params
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                    } else {
+                        var data = result.data.data;
+                        if (this.dialogTitle == "新增") {
+                            if (this.tableList.length < this.routerMessage.params.page_size) {
+                                this.tableList.push(data);
+                            }
+                            this.pagTotal++;
+                            var message = "新增成功"
+                        } else {
+                            for (var k in data) {
+                                this.currPayee[k] = data[k];
+                            }
+                            var message = "修改成功"
+                        }
+                        this.dialogVisible = false;
+                        this.$message({
+                            type: 'success',
+                            message: message,
+                            duration: 2000
+                        });
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                })
+            },
+            //删除
+            removePayee: function (row, index, rows) {
+                this.$confirm('确认删除当前数据吗?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.$axios({
+                        url: "/cfm/normalProcess",
+                        method: "post",
+                        data: {
+                            optype: "supplier_del",
+                            params: {
+                                id: row.id,
+                                persist_version: row.persist_version
+                            }
+                        }
+                    }).then((result) => {
+                        if (result.data.error_msg) {
+                            this.$message({
+                                type: "error",
+                                message: result.data.error_msg,
+                                duration: 2000
+                            })
+                            return;
+                        }
+
+                        if (this.pagCurrent < (this.pagTotal / this.pagSize)) { //存在下一页
+                            this.$emit("getCommTable", this.routerMessage);
+                        } else {
+                            if (rows.length == "1" && (this.routerMessage.todo.params.page_num != 1)) { //是当前页最后一条
+                                this.routerMessage.todo.params.page_num--;
+                                this.$emit("getCommTable", this.routerMessage);
+                            } else {
+                                rows.splice(index, 1);
+                                this.pagTotal--;
+                            }
+                        }
+
+                        this.$message({
+                            type: "success",
+                            message: "删除成功",
+                            duration: 2000
+                        })
+                    }).catch(function (error) {
+                        console.log(error);
+                    })
+                }).catch(() => {
+                });
             },
             //批量新增
             addBatchPayee: function(){
