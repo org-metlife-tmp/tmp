@@ -387,8 +387,8 @@
                     <el-menu-item index="/trade-links/today-all" v-if="menuList.CurTransSummary">当日交易汇总</el-menu-item>
                     <el-menu-item index="/trade-links/history-detail" v-if="menuList.HisTrans">历史交易明细</el-menu-item>
                     <el-menu-item index="/trade-links/history-all" v-if="menuList.HisTransSummary">历史交易汇总</el-menu-item>
-                    <el-menu-item index="/trade-links/history-fluctuate" v-if="menuList.HisTransWave">历史交易波动
-                    </el-menu-item>
+                    <el-menu-item index="/trade-links/history-fluctuate" v-if="menuList.HisTransWave">历史交易波动</el-menu-item>
+                    <el-menu-item index="/trade-links/history-data">交易数据导入</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
             <el-submenu index="9" v-if="menuList.DBT">

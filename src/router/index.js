@@ -51,6 +51,7 @@ import TodayDealAll from '@/components/tradeLinks/TodayDealAll'
 import HistoryDealDetail from '@/components/tradeLinks/HistoryDealDetail'
 import HistoryDealAll from '@/components/tradeLinks/HistoryDealAll'
 import HistoryDealFluctuate from '@/components/tradeLinks/HistoryDealFluctuate'
+import HistoryDealData from '@/components/tradeLinks/HistoryDealData'
 //调拨通
 import MakeBill from '@/components/allot/MakeBill'
 import Payment from '@/components/allot/Payment'
@@ -211,7 +212,10 @@ const router = new Router({
                     path:'/import-tab-content',name:'ImportTabContent',component:ImportTabContent,
                     children:[
                         //余额通
-                        {path: '/balance/history-data', name: 'HistoryData', component: HistoryData, meta: {requireAuth: true}}
+                        {path: '/balance/history-data', name: 'HistoryData', component: HistoryData, meta: {requireAuth: true}},
+                        //交易通
+                        {path: '/trade-links/history-data', name: 'HistoryDealData', component: HistoryDealData, meta: {requireAuth: true}}
+                        
                     ]
                 },
                 //基础样式五（可切换tab文字的tab页）
@@ -223,6 +227,7 @@ const router = new Router({
                         {path: '/allot/allot-deal-check', name: 'AllotDealCheck', component: AllotDealCheck, meta: {requireAuth: true}},
                         //资金下拨交易核对
                         {path: '/allocation/allocation-deal-check', name: 'AllocationDealCheck', component: AllocationDealCheck, meta: {requireAuth: true}},
+                        
                     ]
                 },
                 //调拨通
