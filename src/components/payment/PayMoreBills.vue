@@ -105,7 +105,7 @@
         /*查看弹框*/
         .dialog-talbe {
             width: 100%;
-            height: 230px;
+            height: 180px;
 
             li {
                 float: left;
@@ -357,8 +357,6 @@
             </ul>
             <BusinessTracking :businessParams="businessParams"></BusinessTracking>
         </el-dialog>
-
-
         <!--编辑弹出框-->
         <el-dialog title="编辑调拨单"
                    :visible.sync="editVisible"
@@ -415,7 +413,8 @@
                 <li class="table-li-title">开户行</li>
                 <li class="table-li-content table-two-row">
                     <input type="text" placeholder="请选择开户行" class="table-input"
-                           v-model="editDialogData.bank_name">
+                           v-model="editDialogData.bank_name"
+                           @focus="bankVisible = true">
                 </li>
 
                 <li class="table-li-title">金额</li>
@@ -443,6 +442,75 @@
             <span slot="footer" class="dialog-footer" style="text-align:center">
                     <el-button type="warning" size="mini" @click="saveBill">保 存</el-button>
                     <el-button type="warning" size="mini" @click="submitBill">提 交</el-button>
+                </span>
+        </el-dialog>
+        <!--开户行选择弹框-->
+        <el-dialog :visible.sync="bankVisible"
+                   width="40%" title="选择开户行"
+                   top="140px" :close-on-click-modal="false">
+
+            <el-form :model="bankDialogData" size="small">
+                <el-row>
+                    <el-col :span="24">
+                        <el-form-item label="银行名称" :label-width="formLabelWidth">
+                            <el-select v-model="bankDialogData.bankTypeName" placeholder="请选择银行大类"
+                                       clearable filterable
+                                       style="width:100%"
+                                       :filter-method="filterBankType"
+                                       @visible-change="clearSearch"
+                                       @change="bankIsSelect">
+                                <el-option v-for="bankType in bankTypeList"
+                                           :key="bankType.name"
+                                           :label="bankType.name"
+                                           :value="bankType.code">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="24">
+                        <el-form-item label="开户地址" :label-width="formLabelWidth">
+                            <el-select v-model="bankDialogData.area"
+                                       filterable remote clearable
+                                       style="width:100%"
+                                       placeholder="请输入地区关键字"
+                                       :remote-method="getAreaList"
+                                       :loading="loading"
+                                       @change="bankIsSelect">
+                                <el-option
+                                        v-for="area in areaList"
+                                        :key="area.name"
+                                        :label="area.name"
+                                        :value="area.code">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="24">
+                        <el-form-item label="开户行" :label-width="formLabelWidth">
+                            <el-select v-model="bankDialogData.bank_name" placeholder="请选择银行"
+                                       clearable filterable style="width:100%"
+                                       @visible-change="getBankList"
+                                       @change="setCNAPS"
+                                       :disabled="bankSelect">
+                                <el-option v-for="bankType in bankList"
+                                           :key="bankType.cnaps_code"
+                                           :label="bankType.name"
+                                           :value="bankType.name">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="24">
+                        <el-form-item label="CNAPS" :label-width="formLabelWidth">
+                            <el-input v-model="bankDialogData.cnaps_code"></el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+            </el-form>
+
+            <span slot="footer" class="dialog-footer" style="text-align:center">
+                    <el-button type="warning" size="mini" plain @click="bankVisible = false">取 消</el-button>
+                    <el-button type="warning" size="mini" @click="confirmBank">确 定</el-button>
                 </span>
         </el-dialog>
         <!--提交弹框-->
@@ -493,6 +561,13 @@
                     this.accOptions = result.data.data;
                 }
             });
+
+            //银行大类
+            var bankTypeList = JSON.parse(window.sessionStorage.getItem("bankTypeList"));
+            if (bankTypeList) {
+                this.bankAllList = bankTypeList;
+                this.bankTypeList = bankTypeList;
+            }
         },
         components: {
             Upload: Upload,
@@ -572,17 +647,25 @@
                 fileList: [],
                 accOptions: [],//编辑弹框下拉框数据
                 payerList: [],
-
-
+                bankVisible: false, //银行选择弹框
+                bankDialogData: {
+                    bankTypeName: "",
+                    area: "",
+                    bank_name: "",
+                    cnaps_code: ""
+                },
+                formLabelWidth: "100px",
+                bankAllList: [],
+                bankTypeList: [],
+                areaList: [],
+                loading: false,
+                bankList: [],
+                bankSelect: true,
                 innerVisible: false, //提交弹框
                 selectWorkflow: "",
                 workflows: [],
-                payModeList: {}, //下拉框数据
-                payStatList: [],
                 businessParams:{ //业务状态追踪参数
-                },
-                payModeList:{}, //下拉框数据
-                payStatList: [],
+                }
             }
         },
         methods: {
@@ -772,12 +855,13 @@
             //编辑
             editBill: function (row) {
                 this.getPayerSelect();
+                this.currentBill = row;
 
                 var editDialogData = this.editDialogData;
                 for(var k in editDialogData){
                     if(k == "bank_name"){
                         editDialogData[k] = row.recv_account_bank;
-                    }else{
+                    } else{
                         editDialogData[k] = row[k];
                     }
                 }
@@ -822,8 +906,112 @@
                     editDialogData.rev_persist_version = "";
                 }
             },
+            //银行大类搜索筛选
+            filterBankType: function (value) {
+                if (value && value.trim()) {
+                    this.bankTypeList = this.bankAllList.filter(item => {
+                        var chineseReg = /^[\u0391-\uFFE5]+$/; //判断是否为中文
+                        var englishReg = /^[a-zA-Z]+$/; //判断是否为字母
+                        var quanpinReg = /(a[io]?|ou?|e[inr]?|ang?|ng|[bmp](a[io]?|[aei]ng?|ei|ie?|ia[no]|o|u)|pou|me|m[io]u|[fw](a|[ae]ng?|ei|o|u)|fou|wai|[dt](a[io]?|an|e|[aeio]ng|ie?|ia[no]|ou|u[ino]?|uan)|dei|diu|[nl][gh]ei|[jqx](i(ao?|ang?|e|ng?|ong|u)?|u[en]?|uan)|([csz]h?|r)([ae]ng?|ao|e|i|ou|u[ino]?|uan)|[csz](ai?|ong)|[csz]h(ai?|uai|uang)|zei|[sz]hua|([cz]h|r)ong|y(ao?|[ai]ng?|e|i|ong|ou|u[en]?|uan))/; //判断是否为全拼
 
+                        if (chineseReg.test(value)) {
+                            return item.name.toLowerCase().indexOf(value.toLowerCase()) > -1;
+                        } else if (englishReg.test(value)) {
+                            if (quanpinReg.test(value)) {
+                                return item.pinyin.toLowerCase().indexOf(value.toLowerCase()) > -1;
+                            } else {
+                                return item.jianpin.toLowerCase().indexOf(value.toLowerCase()) > -1;
+                            }
+                        }
+                    })
+                } else {
+                    this.bankTypeList = this.bankAllList;
+                }
+            },
+            //重置银行大类数据
+            clearSearch: function () {
+                if (this.bankTypeList != this.bankAllList) {
+                    this.bankTypeList = this.bankAllList;
+                }
+            },
+            //银行大类/地址变化后判断银行是否可选
+            bankIsSelect: function (value) {
+                this.bankList = [];
+                if (this.bankDialogData.area && this.bankDialogData.bankTypeName) {
+                    this.bankSelect = false;
+                } else {
+                    this.bankSelect = true;
+                }
+            },
+            //地区数据
+            getAreaList: function (query) {
+                if (query && query.trim()) {
+                    this.loading = true;
+                    this.$axios({
+                        url: "/cfm/commProcess",
+                        method: "post",
+                        data: {
+                            optype: "area_list",
+                            params: {
+                                query_key: query.trim()
+                            }
+                        }
+                    }).then((result) => {
+                        if (result.data.error_msg) {
 
+                        } else {
+                            this.loading = false;
+                            this.areaList = result.data.data;
+                        }
+                    }).catch(function (error) {
+                        console.log(error);
+                    })
+                } else {
+                    this.areaList = [];
+                }
+            },
+            //获取银行列表
+            getBankList: function (status) {
+                if (status) {
+                    var area_code = this.bankDialogData.area;
+                    var bank_type = this.bankDialogData.bankTypeName;
+
+                    this.$axios({
+                        url: "/cfm/commProcess",
+                        method: "post",
+                        data: {
+                            optype: "bank_list",
+                            params: {
+                                area_code: area_code,
+                                bank_type: bank_type
+                            }
+                        }
+                    }).then((result) => {
+                        if (result.data.error_msg) {
+                        } else {
+                            this.bankList = result.data.data;
+                        }
+                    }).catch(function (error) {
+                        console.log(error);
+                    })
+                }
+            },
+            //设置CNPAS
+            setCNAPS: function(value){
+                var bankList = this.bankList;
+                for(var i = 0; i < bankList.length; i++){
+                    if(bankList[i].name == value){
+                        this.bankDialogData.cnaps_code = bankList[i].cnaps_code;
+                        return;
+                    }
+                }
+            },
+            //设置开户行
+            confirmBank: function(){
+                this.editDialogData.recv_bank_cnaps = this.bankDialogData.cnaps_code;
+                this.editDialogData.bank_name = this.bankDialogData.bank_name;
+                this.bankVisible = false;
+            },
             //输入金额后进行格式化
             setMoney: function () {
                 var moneyNum = this.editDialogData.payment_amount.replace(/,/gi, "").trim();
@@ -865,6 +1053,23 @@
                 //设置汉字
                 this.editDialogData.numText = this.$common.transitText(moneyNum);
             },
+            //设置当前项上传附件
+            setFileList: function ($event) {
+                this.fileList = [];
+                if ($event.length > 0) {
+                    $event.forEach((item) => {
+                        this.fileList.push(item.id);
+                    })
+                }
+            },
+            //设置params
+            setParams: function () {
+                //校验数据是否完善 并设置发送给后台的数据
+                var params = this.editDialogData;
+                params.files = this.fileList;
+
+                return params;
+            },
             //保存
             saveBill: function () {
                 var params = this.setParams();
@@ -876,7 +1081,7 @@
                     url: "/cfm/normalProcess",
                     method: "post",
                     data: {
-                        optype: "dbt_chg",
+                        optype: "zft_chgbill",
                         params: params
                     }
                 }).then((result) => {
@@ -888,12 +1093,11 @@
                         });
                     } else {
                         var data = result.data.data;
-                        data.pay_mode += "";
-
                         for (var k in data) {
                             this.currentBill[k] = data[k];
                         }
                         this.editVisible = false;
+                        this.getPayerSelect();
                         this.$message({
                             type: "success",
                             message: "保存成功",
@@ -915,7 +1119,7 @@
                     url: "/cfm/normalProcess",
                     method: "post",
                     data: {
-                        optype: "dbt_presubmit",
+                        optype: "zft_presubmit",
                         params: params
                     }
                 }).then((result) => {
@@ -928,8 +1132,6 @@
                     } else {
                         var data = result.data.data;
                         //设置表单数据
-                        data.pay_mode += "";
-
                         for (var k in data) {
                             this.currentBill[k] = data[k];
                         }
@@ -959,7 +1161,7 @@
                     url: "/cfm/normalProcess",
                     method: "post",
                     data: {
-                        optype: "dbt_submit",
+                        optype: "zft_submit",
                         params: params
                     }
                 }).then((result) => {
@@ -981,62 +1183,7 @@
                 }).catch(function (error) {
                     console.log(error);
                 })
-            },
-            //设置params
-            setParams: function () {
-                //校验数据是否完善 并设置发送给后台的数据
-                var billData = this.editDialogData;
-                var params = {
-                    pay_account_id: "",
-                    recv_account_id: "",
-                    payment_amount: "",
-                    pay_mode: "",
-                    payment_summary: "",
-                    files: [],
-                    biz_id: ""
-                }
-                for (var k in params) {
-                    if (k != "payment_summary" && k != "files" && !billData[k]) {
-                        this.$message({
-                            type: "warning",
-                            message: "请完善单据信息",
-                            duration: 2000
-                        });
-                        return false;
-                    }
-                    if (k == "payment_amount") {  //金额
-                        params[k] = billData[k].split(",").join("");
-                    } else if (k == "files") {  //附件
-                        params[k] = this.fileList;
-                    } else if(k == "biz_id"){
-                        params[k] = billData[k];
-                        var payStatList = this.payStatList;
-                        for(var i = 0; i < payStatList.length; i++){
-                            if(billData[k] == payStatList[i].biz_id){
-                                params.biz_name = payStatList[i].biz_name;
-                            }
-                        }
-                    } else {
-                        params[k] = billData[k];
-                    }
-                }
-                if (billData.id) {
-                    params.id = billData.id;
-                    params.persist_version = billData.persist_version;
-                }
-                return params;
-            },
-
-            /*附件*/
-            //设置当前项上传附件
-            setFileList: function ($event) {
-                this.fileList = [];
-                if ($event.length > 0) {
-                    $event.forEach((item) => {
-                        this.fileList.push(item.id);
-                    })
-                }
-            },
+            }
         },
         watch: {
             tableData: function (val, oldVal) {

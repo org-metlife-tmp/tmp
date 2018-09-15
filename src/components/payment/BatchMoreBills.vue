@@ -294,10 +294,10 @@
                 <div class="btn-left">
                     <el-button type="warning" plain size="mini" @click="goMakeBill">制单</el-button>
                 </div>
-                <span>总笔数：</span>
-                <span v-text="totalData.total_num" class="numText"></span>
                 <span>总金额：</span>
                 <span v-text="totalData.total_amount" class="numText"></span>
+                <span>成功金额：</span>
+                <span v-text="totalData.sucess_amount" class="numText"></span>
             </div>
         </section>
         <!--分页部分-->
@@ -489,7 +489,7 @@
                 pagCurrent: 1,
                 totalData: { //汇总数据
                     total_amount: "",
-                    total_num: ""
+                    sucess_amount: ""
                 },
                 dateValue: "", //时间选择
                 pickerOptions: {
