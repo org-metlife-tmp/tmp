@@ -864,6 +864,7 @@
                         billData.persist_version = data.persist_version;
                         billData.service_serial_number = data.service_serial_number;
                         billData.rev_persist_version = data.rev_persist_version;
+                        billData.recv_account_id = data.recv_account_id;
                         this.getPayerSelect();
                     }
                 }).catch(function (error) {
