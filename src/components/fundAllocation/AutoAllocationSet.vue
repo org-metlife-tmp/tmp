@@ -208,7 +208,7 @@
         </section>
         <!--底部按钮-->
         <div class="btn-bottom">
-            <el-button type="warning" plain size="mini" @click="moreBill">
+            <el-button type="warning" plain size="mini" @click="gomoreBills">
                 更多单据<span class="arrows">></span>
             </el-button>
             <div class="btnGroup">
@@ -313,7 +313,7 @@
             selectDate: function(){
                 this.dateDialog = true;
             },
-            moreBill: function(){
+            gomoreBills: function(){
                 this.$router.push("/allocation/allocation-look");
             }
         }
