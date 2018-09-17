@@ -129,13 +129,23 @@
             .img-left{
                 float:left;
                 height: 100%;
-                width: 40%;
+                width: 30%;
                 background-color: #F7F7F6;
+
+                h2{
+                    color: #C0BBB5;
+                    margin-bottom: 120px;
+                }
+
+                div{
+                    font-size: 18px;
+                    color: #FF4800;
+                }
             }
             .img-right{
                 float:right;
                 height: 100%;
-                width: 60%;
+                width: 70%;
             }
         }
 
@@ -190,7 +200,11 @@
         </div>
         <!--图表内容-->
         <section class="img-content" v-show="showImg">
-            <div class="img-left"></div>
+            <div class="img-left">
+                <h2>TOP5</h2>
+                <span>汇总金额</span>
+                <div>￥0.00</div>
+            </div>
             <div class="img-right"></div>
         </section>
         <!--列表内容-->

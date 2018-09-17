@@ -1,12 +1,12 @@
 <style scoped lang="less" type="text/less">
-    #dealCheck{
+    #dealCheck {
         width: 100%;
         height: 100%;
         box-sizing: border-box;
         position: relative;
 
         /*搜索区*/
-        .search-setion{
+        .search-setion {
             text-align: left;
         }
 
@@ -24,7 +24,7 @@
             height: 181px;
         }
 
-        .validated-content{
+        .validated-content {
             height: 75%;
             overflow-y: auto;
         }
@@ -41,7 +41,7 @@
                 margin-top: -30px;
             }
         }
-        .botton-pag-center{
+        .botton-pag-center {
             top: 258px;
         }
 
@@ -105,7 +105,8 @@
                 <el-table-column prop="pay_account_no" label="付款方账号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="pay_account_bank" label="付款银行" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="recv_account_no" label="收款方账号" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="recv_account_name" label="收款方公司名称" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="recv_account_name" label="收款方公司名称"
+                                 :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="payment_amount" label="金额" :show-overflow-tooltip="true"
                                  :formatter="transitAmount"></el-table-column>
             </el-table>
@@ -119,11 +120,16 @@
                         <el-table :data="validatedList" border
                                   size="mini">
                             <el-table-column prop="acc_no" label="账户号" :show-overflow-tooltip="true"></el-table-column>
-                            <el-table-column prop="acc_name" label="账户名称" :show-overflow-tooltip="true"></el-table-column>
-                            <el-table-column prop="bank_name" label="所属银行" :show-overflow-tooltip="true"></el-table-column>
-                            <el-table-column prop="direction" label="收付方向" :show-overflow-tooltip="true"></el-table-column>
-                            <el-table-column prop="opp_acc_no" label="对方账户号" :show-overflow-tooltip="true"></el-table-column>
-                            <el-table-column prop="opp_acc_name" label="对方账户名称" :show-overflow-tooltip="true"></el-table-column>
+                            <el-table-column prop="acc_name" label="账户名称"
+                                             :show-overflow-tooltip="true"></el-table-column>
+                            <el-table-column prop="bank_name" label="所属银行"
+                                             :show-overflow-tooltip="true"></el-table-column>
+                            <el-table-column prop="direction" label="收付方向"
+                                             :show-overflow-tooltip="true"></el-table-column>
+                            <el-table-column prop="opp_acc_no" label="对方账户号"
+                                             :show-overflow-tooltip="true"></el-table-column>
+                            <el-table-column prop="opp_acc_name" label="对方账户名称"
+                                             :show-overflow-tooltip="true"></el-table-column>
                             <el-table-column prop="amount" label="交易金额" :show-overflow-tooltip="true"></el-table-column>
                             <el-table-column prop="summary" label="摘要" :show-overflow-tooltip="true"></el-table-column>
                         </el-table>
@@ -132,7 +138,8 @@
                 <el-table-column prop="pay_account_no" label="付款方账号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="pay_account_bank" label="付款银行" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="recv_account_no" label="收款方账号" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="recv_account_name" label="收款方公司名称" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="recv_account_name" label="收款方公司名称"
+                                 :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="payment_amount" label="金额" :show-overflow-tooltip="true"
                                  :formatter="transitAmount"></el-table-column>
             </el-table>
@@ -175,6 +182,17 @@
     export default {
         name: "DealCheck",
         created: function () {
+            //设置当前optype信息
+            var queryData = this.$router.currentRoute.query;
+            if (queryData.bizType == "9") { //支付通
+                this.routerMessage.todo.optype = "zft_checkbillList";
+                this.routerMessage.done.optype = "zft_checkbillList";
+                this.checkOptype = "zft_checkTradeList";
+                this.confirmOptype = "zft_confirmCheck";
+                this.validatedOptype = "zft_checkAlreadyTradeList";
+            }
+
+            //设置当前页基本信息
             this.$emit("transmitTitle", "交易核对");
             this.$emit("tableText", {
                 leftTab: "未核对",
@@ -184,20 +202,20 @@
         },
         mounted: function () {
         },
-        props:["isPending","tableData"],
+        props: ["isPending", "tableData"],
         data: function () {
             return {
                 routerMessage: {
-                    todo:{
-                        optype: "zft_checkbillList",
+                    todo: {
+                        optype: "",
                         params: {
                             page_size: 7,
                             page_num: 1,
                             is_checked: 0
                         }
                     },
-                    done:{
-                        optype: "zft_checkbillList",
+                    done: {
+                        optype: "",
                         params: {
                             page_size: 7,
                             page_num: 1,
@@ -205,13 +223,16 @@
                         }
                     }
                 },
-                searchData:{
-                    pay_account_no:"",
-                    recv_account_no:"",
-                    min:"",
-                    max:""
+                checkOptype:"",
+                confirmOptype: "",
+                validatedOptype: "",
+                searchData: {
+                    pay_account_no: "",
+                    recv_account_no: "",
+                    min: "",
+                    max: ""
                 },
-                tableList:[],
+                tableList: [],
                 childList: [],
                 validatedList: [],
                 pagSize: 8, //分页数据
@@ -227,28 +248,28 @@
                 return this.$common.transitSeparator(cellValue);
             },
             //根据条件查询数据
-            queryData:function(){
+            queryData: function () {
                 var searchData = this.searchData;
-                for(var k in searchData){
-                    if(this.isPending){
+                for (var k in searchData) {
+                    if (this.isPending) {
                         this.routerMessage.todo.params[k] = searchData[k];
-                    }else{
+                    } else {
                         this.routerMessage.done.params[k] = searchData[k];
                     }
                 }
                 this.$emit("getTableData", this.routerMessage);
             },
             //点击页数获取当前页数据
-            getCurrentPage:function(currPage){
-                if(this.isPending){
+            getCurrentPage: function (currPage) {
+                if (this.isPending) {
                     this.routerMessage.todo.params.page_num = currPage;
-                }else{
+                } else {
                     this.routerMessage.done.params.page_num = currPage;
                 }
                 this.$emit("getTableData", this.routerMessage);
             },
             //当前页数据条数发生变化
-            sizeChange:function(val){
+            sizeChange: function (val) {
                 this.routerMessage.todo.params = {
                     page_size: val,
                     page_num: 1,
@@ -262,8 +283,8 @@
                 this.$emit("getTableData", this.routerMessage);
             },
             //获取当前数据对应的核对数据
-            getCheckData: function(val){
-                if(!val){
+            getCheckData: function (val) {
+                if (!val) {
                     return;
                 }
                 this.currSelectData = val;
@@ -272,7 +293,7 @@
                     url: "/cfm/normalProcess",
                     method: "post",
                     data: {
-                        optype: "zft_checkTradeList",
+                        optype: this.checkOptype,
                         params: {
                             id: val.id
                         }
@@ -284,7 +305,7 @@
                             message: result.data.error_msg,
                             duration: 2000
                         })
-                    }else{
+                    } else {
                         var data = result.data.data;
                         this.childList = data;
                     }
@@ -300,11 +321,11 @@
                 }
             },
             //确认核对
-            confirmCheck: function(){
+            confirmCheck: function () {
                 //校验是否选择核对数据
-                if(this.selectData.length == 0){
+                if (this.selectData.length == 0) {
                     this.$message({
-                        type:"warning",
+                        type: "warning",
                         message: "请选择核对数据",
                         duration: 2000
                     });
@@ -326,7 +347,7 @@
                         url: "/cfm/normalProcess",
                         method: "post",
                         data: {
-                            optype: "zft_confirmCheck",
+                            optype: this.confirmOptype,
                             params: params
                         }
                     }).then((result) => {
@@ -336,7 +357,7 @@
                                 message: result.data.error_msg,
                                 duration: 2000
                             })
-                        }else{
+                        } else {
                             var data = result.data.data;
                             this.$emit("getTableData", this.routerMessage);
                             this.childList = [];
@@ -348,13 +369,13 @@
                 });
             },
             //获取已核对数据的关联数据
-            getValidated: function(row){
+            getValidated: function (row) {
                 this.validatedList = [];
                 this.$axios({
                     url: "/cfm/normalProcess",
                     method: "post",
                     data: {
-                        optype: "zft_checkAlreadyTradeList",
+                        optype: this.validatedOptype,
                         params: {
                             id: row.id
                         }
@@ -366,7 +387,7 @@
                             message: result.data.error_msg,
                             duration: 2000
                         })
-                    }else{
+                    } else {
                         var data = result.data.data;
                         this.validatedList = data;
                     }
@@ -375,10 +396,10 @@
                 })
             },
         },
-        watch:{
-            isPending:function(val,oldVal){
+        watch: {
+            isPending: function (val, oldVal) {
                 var searchData = this.searchData;
-                for(var k in searchData){
+                for (var k in searchData) {
                     searchData[k] = "";
                 }
             },
