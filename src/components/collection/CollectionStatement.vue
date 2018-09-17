@@ -78,12 +78,76 @@
             width: 300px;
             float: left;
         }
+
+        /*图表/列表切换按钮*/
+        .switchover {
+            position: absolute;
+            bottom: -12px;
+            left: 10px;
+            text-align: left;
+            margin: -22px 0 20px 0;
+
+            .el-button {
+                background-color: #fff;
+                border-color: #e8e8e8;
+                padding: 4px 15px;
+            }
+            .el-button:nth-child(1) {
+                border-radius: 10px 0 0 10px;
+            }
+            .el-button:nth-child(2) {
+                border-radius: 0 10px 10px 0;
+            }
+            .get-img, .get-list {
+                display: inline-block;
+                width: 20px;
+                height: 20px;
+                background-image: url(../../assets/icon_common.png);
+                border: none;
+                padding: 0;
+                vertical-align: middle;
+            }
+            .get-img {
+                background-position: -476px -2px;
+            }
+            /*弹框-列表按钮*/
+            .get-list {
+                background-position: -393px -2px;
+            }
+
+            .active {
+                background-color: #fafafa;
+            }
+        }
+
+        /*图表内容*/
+        .img-content{
+            width: 100%;
+            height: 100%;
+            border: 1px solid #f1f1f1;
+
+            .img-left{
+                float:left;
+                height: 100%;
+                width: 40%;
+                background-color: #F7F7F6;
+            }
+            .img-right{
+                float:right;
+                height: 100%;
+                width: 60%;
+            }
+        }
+
+        /*列表内容*/
+        .list-content{
+        }
     }
 </style>
 
 <template>
     <div id="collectionStatement">
-        <el-date-picker
+        <el-date-picker v-show="!showImg" style="margin-bottom:10px"
                 v-model="dateValue"
                 type="daterange"
                 range-separator="至"
@@ -111,6 +175,46 @@
                 </li>
             </ul>
         </div>
+        <!--图表/列表切换按钮-->
+        <div class="switchover">
+            <el-button-group>
+                <el-button type="primary" size="mini" :class="{active:showImg}"
+                           @click="showImg=!showImg">
+                    <i class="get-img"></i>
+                </el-button>
+                <el-button type="primary" size="mini" :class="{active:!showImg}"
+                           @click="showImg=!showImg">
+                    <i class="get-list"></i>
+                </el-button>
+            </el-button-group>
+        </div>
+        <!--图表内容-->
+        <section class="img-content" v-show="showImg">
+            <div class="img-left"></div>
+            <div class="img-right"></div>
+        </section>
+        <!--列表内容-->
+        <section class="list-content" v-show="!showImg">
+            <el-table :data="tableList"
+                      border size="mini">
+                <el-table-column prop="pay_account_bank" label="归集主题" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="recv_account_no" label="归集额度" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="recv_account_name" label="归集频率" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="recv_account_name" label="归集集户(个)" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="recv_account_name" label="归集金额" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="recv_account_name" label="业务状态" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column
+                        label="操作" width="50"
+                        fixed="right">
+                    <template slot-scope="scope" class="operationBtn">
+                        <el-tooltip content="查看" placement="bottom" effect="light" :enterable="false" :open-delay="500">
+                            <el-button type="primary" icon="el-icon-search" size="mini"
+                                       @click=""></el-button>
+                        </el-tooltip>
+                    </template>
+                </el-table-column>
+            </el-table>
+        </section>
         <!--选择公司弹出框-->
         <el-dialog :visible.sync="dialogVisible"
                    class="comDialog"
@@ -199,6 +303,7 @@
                         return time.getTime() > Date.now();
                     }
                 },
+                showImg: true, //图表/列表显示控制
             }
         },
         methods: {

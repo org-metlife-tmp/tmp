@@ -19,6 +19,106 @@
             margin-bottom: 20px;
         }
 
+        /*数据展示区*/
+        .table-content{
+            text-align: left;
+            height: 76%;
+            overflow-y: auto;
+
+            .el-card{
+                width: 92%;
+                margin-bottom: 20px;
+
+                /*顶部按钮*/
+                .title-btn{
+                    float: right;
+                    margin-top: -4px;
+
+                    .icon-img{
+                        width: 24px;
+                        height: 28px;
+                        display: inline-block;
+                        cursor: pointer;
+                        background: url(../../assets/icon_common.png);
+                    }
+                    i:nth-child(1){
+                        background-position: -89px -74px;
+                    }
+                    i:nth-child(2){
+                        background-position: -187px -74px;
+                    }
+                    i:nth-child(3){
+                        background-position: -43px -48px;
+                    }
+                    i:nth-child(4){
+                        background-position: -140px -74px;
+                    }
+                }
+
+                /*卡片内容*/
+                .card-content{
+                    text-align: center;
+
+                    .content-top{
+                        height: 110px;
+                        background-color: #F7F7F7;
+
+                        .collect-money{
+                            padding: 20px 0 15px 0;
+                            color: #FF5800;
+                            font-size: 18px;
+                        }
+
+                        .collect-status{
+                            width: 56px;
+                            height: 56px;
+                            margin: 10px auto;
+                            border-radius: 50%;
+                            background-color: #fff;
+                            padding-top: 2px;
+
+                            div{
+                                width: 52px;
+                                height: 52px;
+                                box-sizing: border-box;
+                                border: 1px solid #F1F1F1;
+                                border-radius: 50%;
+                                background: #F7F7F7;
+                                margin: 0 auto;
+
+                                .status-icon{
+                                    display: inline-block;
+                                    width: 52px;
+                                    height: 52px;
+                                    background: url(../../assets/icon_common.png);
+                                    background-position: -388px -308px;
+                                }
+                            }
+                        }
+                    }
+
+                    .content-center{
+                        height: 60px;
+                        width: 90%;
+                        margin: 50px auto 10px;
+                        border-bottom: 1px solid #ccc;
+
+                        span{
+                            display: block;
+                            margin-top: 6px;
+                        }
+                    }
+
+                    .content-bottom{
+                        width: 90%;
+                        margin: 0 auto;
+                        text-align: left;
+                        padding-bottom: 60px;
+                    }
+                }
+            }
+        }
+
         /*分页部分*/
         .botton-pag {
             position: absolute;
@@ -27,6 +127,18 @@
             bottom: -6px;
         }
 
+    }
+</style>
+<style lang="less" type="text/less">
+    #collectionManage{
+        .el-card{
+            .el-card__header{
+                padding: 8px 14px;
+            }
+            .el-card__body{
+                padding: 0;
+            }
+        }
     }
 </style>
 
@@ -78,40 +190,40 @@
         <div class="split-bar"></div>
         <!--数据展示区-->
         <section class="table-content">
-            <el-table :data="tableList"
-                      border size="mini">
-                <el-table-column prop="pay_account_bank" label="归集主题" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="recv_account_no" label="归集额度" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="recv_account_name" label="归集频率" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="recv_account_name" label="归集集户(个)" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="recv_account_name" label="归集金额" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="recv_account_name" label="业务状态" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column
-                        label="操作" width="50"
-                        fixed="right">
-                    <template slot-scope="scope" class="operationBtn">
-                        <el-tooltip content="查看" placement="bottom" effect="light" :enterable="false" :open-delay="500">
-                            <el-button type="primary" icon="el-icon-search" size="mini"
-                                       @click=""></el-button>
-                        </el-tooltip>
-                    </template>
-                </el-table-column>
-            </el-table>
+            <el-row>
+                <el-col :span="6" v-for="card in tableList" :key="card.id">
+                    <el-card class="box-card">
+                        <div slot="header">
+                            <span>{{ card.name }}</span>
+                            <div class="title-btn">
+                                <i class="icon-img" title="激活"></i>
+                                <i class="icon-img" title="暂停"></i>
+                                <i class="icon-img" title="作废"></i>
+                                <i class="icon-img" title="查看"></i>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <div class="content-top">
+                                <div class="collect-money">￥0.00</div>
+                                <div class="collect-way">全额归集</div>
+                                <div class="collect-status">
+                                    <div>
+                                        <i class="status-icon"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="content-center">
+                                <span>每天</span>
+                                <span>01:04</span>
+                            </div>
+                            <div class="content-bottom">
+                                11087363445533344 (子账户 1个)
+                            </div>
+                        </div>
+                    </el-card>
+                </el-col>
+            </el-row>
         </section>
-        <!--分页部分-->
-        <div class="botton-pag">
-            <el-pagination
-                    background
-                    layout="sizes, prev, pager, next, jumper"
-                    :page-size="pagSize"
-                    :total="pagTotal"
-                    :page-sizes="[7, 50, 100, 500]"
-                    :pager-count="5"
-                    @current-change="getCurrentPage"
-                    @size-change="sizeChange"
-                    :current-page="pagCurrent">
-            </el-pagination>
-        </div>
     </div>
 </template>
 
@@ -127,13 +239,21 @@
 
                 },
                 statusList: {
-                    2: "已激活",
-                    3: "未激活"
+                    1: "已激活",
+                    0: "未激活"
                 },
-                tableList: [], //列表数据
-                pagSize: 8, //分页数据
-                pagTotal: 1,
-                pagCurrent: 1,
+                tableList: [
+                    {id:1,name:"lala"},
+                    {id:2,name:"lala"},
+                    {id:3,name:"lala"},
+                    {id:4,name:"lala"},
+                    {id:5,name:"lala"},
+                    {id:6,name:"lala"},
+                    {id:7,name:"lala"},
+                    {id:8,name:"lala"},
+                    {id:9,name:"lala"},
+                    {id:0,name:"lala"},
+                ], //列表数据
             }
         },
         methods: {
