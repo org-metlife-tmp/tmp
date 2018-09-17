@@ -117,9 +117,9 @@
 
 <script>
     export default {
-        name: "AutoAllocationLook",
+        name: "AutoAllocationView",
         created: function () {
-            this.$emit("transmitTitle", "自动下拨设置-更多单据");
+            this.$emit("transmitTitle", "自动下拨设置-查看");
         },
         data:function(){
             return {

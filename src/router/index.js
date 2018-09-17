@@ -98,8 +98,8 @@ import AutoAllocationSet from '@/components/fundAllocation/AutoAllocationSet'
 import AutoAllocationManage from '@/components/fundAllocation/AutoAllocationManage'
 import AllocationDealCheck from '@/components/fundAllocation/AllocationDealCheck'
 import AllManageDetail from '@/components/fundAllocation/AllManageDetail'
-import AutoAllocationLook from '@/components/fundAllocation/AutoAllocationLook'
-
+import AutoAllocationView from '@/components/fundAllocation/AutoAllocationView'
+import AutoAllocationMoreBills from '@/components/fundAllocation/AutoAllocationMoreBills'
 
 Vue.use(Router)
 
@@ -187,7 +187,8 @@ const router = new Router({
                         {path: '/allocation/allocation-set', name: 'AutoAllocationSet', component: AutoAllocationSet, meta: {requireAuth: true}},
                         {path: '/allocation/allocation-manage', name: 'AutoAllocationManage', component: AutoAllocationManage, meta: {requireAuth: true}},
                         {path: '/allocation/allocation-manage-detail', name: 'AllManageDetail', component: AllManageDetail, meta: {requireAuth: true}},
-                        {path: '/allocation/allocation-look', name: 'AutoAllocationLook', component: AutoAllocationLook, meta: {requireAuth: true}},
+                        {path: '/allocation/allocation-view', name: 'AutoAllocationView', component: AutoAllocationView, meta: {requireAuth: true}},
+                        {path: '/allocation/allocation-more-bills', name: 'AutoAllocationMoreBills', component: AutoAllocationMoreBills, meta: {requireAuth: true}},
                         //审批转移
                         {path: '/examine-approve/permission-transfer', name: 'PermissionTransfer', component: PermissionTransfer, meta: {requireAuth: true}},
 

@@ -314,7 +314,7 @@
                 this.dateDialog = true;
             },
             gomoreBills: function(){
-                this.$router.push("/allocation/allocation-look");
+                this.$router.push("/allocation/allocation-more-bills");
             }
         }
     }

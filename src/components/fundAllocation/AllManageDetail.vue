@@ -95,6 +95,10 @@
                 float: left;
                 margin-left: 30px;
             }
+            .eidtRight{
+                float: right;
+                margin-right: 20px;
+            }
         }
         #showbox{
             position: fixed;
@@ -102,6 +106,12 @@
             z-index: 999;
             transition: all 1.5s;
         } 
+        .policyNo{
+            position: absolute;
+            top: -45px;
+            left: -15px;
+            color: #999999;
+        }
     }
 </style>
 <style lang="less">
@@ -124,6 +134,11 @@
 
 <template>
     <div id="allManageDetail">
+        <div class="policyNo">
+            <span>策略编号[</span>
+            <span>GJT201809120000001</span>
+            <span>]</span>
+        </div>
         <!--中间内容-->
         <section class="table-content">
             <el-form :model="allocationData" size="small"
@@ -202,6 +217,11 @@
                     </el-button>
                     <el-button type="warning" plain size="medium" @click="goMoreBills">
                         更多单据<span class="arrows">></span>
+                    </el-button>
+                </div>
+                <div class="eidtRight">
+                    <el-button type="warning" size="medium" @click="showRightFlow">
+                        策略暂停<span class="arrows">></span>
                     </el-button>
                 </div>
             </el-form>

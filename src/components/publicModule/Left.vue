@@ -456,6 +456,7 @@
                     <el-menu-item index="/allocation/fundpool-acc-set">资金池账户设置</el-menu-item>
                     <el-menu-item index="/allocation/allocation-set">自动下拨设置</el-menu-item>
                     <el-menu-item index="/allocation/allocation-manage">自动下拨管理</el-menu-item>
+                    <el-menu-item index="/allocation/allocation-view">自动下拨查看</el-menu-item>
                     <el-menu-item index="/allocation/allocation-deal-check">交易核对</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
