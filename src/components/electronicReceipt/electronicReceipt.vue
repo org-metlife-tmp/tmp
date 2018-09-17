@@ -5,6 +5,18 @@
         box-sizing: border-box;
         position: relative;
 
+        /*搜索区*/
+        .search-setion {
+            text-align: left;
+            .line {
+                text-align: center;
+            }
+        }
+        
+        .table-content{
+            height: 325px;
+        }
+
         /*分隔栏*/
         .split-bar {
             width: 106%;
@@ -13,31 +25,13 @@
             background-color: #E7E7E7;
             margin-bottom: 20px;
         }
-        /*列表部分*/
-        .table-list{
-            border: 1px solid #ebeef5;
-            border-top: 0;
-            height: 321px;
-            overflow-y: auto;
-            .title{
-                background: #E9F2F9;
-                height: 35px;
-                line-height: 35px;
-                border-bottom: 1px solid #ebeef5;
-            }
-            .list-body{
-                height: 35px;
-                line-height: 35px;
-                text-align: left;
-                .item{
-                    padding: 0 10px;
-                    border-bottom: 1px solid #ebeef5;
-                    span{
-                        width: 100%;
-                        display: inline-block;
-                    }
-                }
-            }
+
+        /*分页部分*/
+        .botton-pag {
+            position: absolute;
+            width: 100%;
+            height: 8%;
+            bottom: -6px;
         }
 
         /*分页部分*/
@@ -47,10 +41,6 @@
             height: 8%;
             bottom: -10px;
         }
-        // 弹框表单
-        .addDialog{
-            margin-bottom: 100px;
-        }
     }
 </style>
 
@@ -58,26 +48,33 @@
     <div id="electronicReceipt">
         <!--搜索区-->
         <div class="search-setion">
-            <el-form :model="userData" size="small" :label-width="formLabelWidth">
+            <el-form :inline="true" :model="searchData" size="mini">
                 <el-row>
-                    <el-col :span="5">
-                        <el-form-item label="被授权人：">
-                            <span v-text="userData.be_authorize_usr_name"></span>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="6">
-                        <el-form-item label="被授权时间：">
-                            <span v-text="userData.start_date"></span>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="6">
-                        <el-form-item label="授权结束时间：">
-                            <span v-text="userData.end_date"></span>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="2" :offset="2">
+                    <el-col :span="4">
                         <el-form-item>
-                            <el-button type="primary" plain @click="editUser" size="mini">编辑</el-button>
+                            <el-input v-model="searchData.pay_query_key" clearable placeholder="请输入付款方名称或账号"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="4">
+                        <el-form-item>
+                            <el-input v-model="searchData.recv_query_key" clearable
+                                      placeholder="请输入收款方名称或账号"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="6">
+                        <el-form-item>
+                            <el-col :span="11">
+                                <el-input v-model="searchData.min" clearable placeholder="最小金额"></el-input>
+                            </el-col>
+                            <el-col class="line" :span="2">-</el-col>
+                            <el-col :span="11">
+                                <el-input v-model="searchData.max" clearable placeholder="最大金额"></el-input>
+                            </el-col>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="2">
+                        <el-form-item>
+                            <el-button type="primary" plain @click="queryData" size="mini">搜索</el-button>
                         </el-form-item>
                     </el-col>
                 </el-row>
@@ -86,15 +83,31 @@
         <!--分隔栏-->
         <div class="split-bar"></div>
         <!--数据展示区-->
-        <section :class="['table-content']">
-            <div class="table-list">
-                <div class="title">授权记录</div>
-                <div class="list-body">
-                    <div class="item" v-for="item in tableList" :key="item.temprownumber">
-                        <span v-text="item.memo"></span>
-                    </div>
-                </div>
-            </div>
+        <section class="table-content">
+            <el-table :data="tableList"
+                      height="100%"
+                      border size="mini">
+                <el-table-column prop="batchno" label="本方账户" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="total_num" label="交易日期" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="total_amount" label="方向" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="success_num" label="对方户名" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="success_num" label="对方账户号" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="success_amount" label="金额" :show-overflow-tooltip="true"
+                                 :formatter="transitAmount"></el-table-column>
+                <el-table-column prop="service_status" label="摘要" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column
+                        label="操作" width="110"
+                        fixed="right">
+                    <template slot-scope="scope" class="operationBtn">
+                        <el-tooltip content="查看" placement="bottom" effect="light"
+                                    :enterable="false" :open-delay="500"
+                                    v-if="scope.row.service_status != 1 && scope.row.service_status != 5">
+                            <el-button type="primary" icon="el-icon-search" size="mini"
+                                       @click="lookBill(scope.row)"></el-button>
+                        </el-tooltip>
+                    </template>
+                </el-table-column>
+            </el-table>
         </section>
         <!--分页部分-->
         <div class="botton-pag">
@@ -103,7 +116,7 @@
                     layout="sizes, prev, pager, next, jumper"
                     :page-size="pagSize"
                     :total="pagTotal"
-                    :page-sizes="[8, 50, 100, 500]"
+                    :page-sizes="[7, 50, 100, 500]"
                     :pager-count="5"
                     @current-change="getCurrentPage"
                     @size-change="sizeChange"
@@ -112,59 +125,10 @@
         </div>
         <!--待处理编辑弹出框-->
         <el-dialog :visible.sync="dialogVisible"
-                   width="800px" title="新增被授权人"
+                   width="800px" title="调拨单信息查看 "
                    :close-on-click-modal="false"
                    top="56px">
-            <h1 slot="title" class="dialog-title">新增被授权人</h1>
-            <el-form :model="dialogData" size="small"
-                     class="addDialog"
-                     :label-width="formLabelWidth">
-                <el-row>
-                    <el-col :span="12">
-                        <el-form-item label="被授权人">
-                            <el-select v-model="dialogData.be_authorize"
-                                        filterable remote clearable
-                                        placeholder="请输入关键字"
-                                        :remote-method="getUserListByKey"
-                                        :loading="loading"
-                                        value-key="usr_id">
-                                <el-option
-                                        v-for="user in be_authorize_list"
-                                        :key="user.name"
-                                        :label="user.name"
-                                        :value="user">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="授权开始时间">
-                            <el-date-picker
-                                v-model="dialogData.start_date"
-                                type="date"
-                                placeholder="结束日期"
-                                value-format="yyyy-MM-dd"
-                                style="width: 100%;">
-                            </el-date-picker>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="授权结束时间">
-                            <el-date-picker
-                                v-model="dialogData.end_date"
-                                type="date"
-                                placeholder="结束日期"
-                                value-format="yyyy-MM-dd"
-                                style="width: 100%;">
-                            </el-date-picker>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-            </el-form>
-            <span slot="footer" class="dialog-footer">
-                <el-button type="warning" plain size="mini" @click="dialogVisible=false">取 消</el-button>
-                <el-button type="warning" size="mini" @click="subConfirm">确 定</el-button>
-            </span>
+            <h1 slot="title" class="dialog-title">调拨单信息查看</h1>
         </el-dialog>
     </div>
 </template>
@@ -194,6 +158,12 @@
                 pagCurrent: 1,
                 dialogVisible: false,
                 dialogData: {},
+                searchData: { //搜索条件
+                    pay_query_key: "",
+                    recv_query_key: "",
+                    min: "",
+                    max: "",
+                },
             }
         },
         methods: {
@@ -210,9 +180,16 @@
                 };
                 this.$emit("getCommTable", this.routerMessage);
             },
-            //显示编辑弹出框
-            editUser: function () {
-                this.getBeUsrList();
+            //根据条件查询
+            queryData:function (){
+
+            },
+            //展示格式转换-金额
+            transitAmount: function (row, column, cellValue, index) {
+                return this.$common.transitSeparator(cellValue);
+            },
+            //查看
+            lookBill: function (row) {
                 this.dialogVisible = true;
             }
         },
