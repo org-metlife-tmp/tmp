@@ -192,7 +192,9 @@
                 formLabelWidth: "120px",
                 dialogTitle: "新增",
                 dialogVisible: false,
-                dialogData: {},
+                dialogData: {
+                    default_flag: false
+                },
                 bankAllList: [], //银行大类全部
                 bankTypeList: [], //银行大类
                 accOptions:[],//账户号下拉数据,
@@ -232,7 +234,7 @@
                     data:{
                         optype:"poolacc_defaultSet",
                         params:{
-                            bill_no:row.id
+                            id:row.id
                         }
                     }
                 }).then((result) =>{
@@ -249,10 +251,10 @@
             },
             //增加
             addAccount: function(){
-                this.dialogData = {};
+                this.dialogData = {
+                    default_flag: false
+                }
                 this.dialogVisible = true;
-                this.$emit("getCommTable", this.routerMessage);
-                
             },
             //银行大类搜索筛选
             filterBankType: function (value) {
@@ -321,6 +323,7 @@
                         })
                     } else {
                         var data = result.data.data;
+                        this.$emit("getCommTable", this.routerMessage);
                         this.dialogVisible = false;
                     }
                 });
