@@ -61,6 +61,8 @@
             <el-table :data="tableList"
                       border
                       height="100%"
+                      @cell-mouse-enter="cellEnter"
+                      @cell-mouse-leave="cellLeave"
                       size="mini">
                 <el-table-column prop="acc_no" label="账户号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="acc_name" label="账户名称" :show-overflow-tooltip="true"></el-table-column>
@@ -69,8 +71,8 @@
                         label="是否默认" width="100"
                         fixed="right">
                     <template slot-scope="scope" class="operationBtn">
-                        <span v-show="scope.row.flag">默认</span>
-                        <el-button type="warning" size="mini" v-show="!scope.row.flag"
+                        <span v-show="scope.row.default_flag">默认</span>
+                        <el-button type="warning" size="mini" v-show="scope.row.visible"
                             @click="setDefault(scope.row)">设为默认</el-button>
                     </template>
                 </el-table-column>
@@ -112,10 +114,11 @@
                 <el-row>
                     <el-col :span="12">
                         <el-form-item label="银行大类">
-                            <el-select v-model="dialogData.bankType" placeholder="请选择银行大类"
+                            <el-select v-model="dialogData.bank_type" placeholder="请选择银行大类"
                                        clearable filterable
                                        :filter-method="filterBankType"
-                                       @visible-change="clearSearch">
+                                       @visible-change="clearSearch"
+                                       @change="seletBank">
                                 <el-option v-for="bankType in bankTypeList"
                                            :key="bankType.name"
                                            :label="bankType.name"
@@ -139,7 +142,7 @@
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="账户名称">
-                            <el-input v-model="dialogData.acc_name" ></el-input>
+                            <el-input v-model="dialogData.acc_name" readonly></el-input>
                         </el-form-item>
                     </el-col>
                 </el-row>
@@ -147,7 +150,7 @@
             <span slot="footer" class="dialog-footer">
                 <el-switch
                     class="switch"
-                    v-model="dialogData.value3"
+                    v-model="dialogData.default_flag"
                     active-text="默认">
                 </el-switch>
                 <el-button type="warning" size="mini" plain @click="dialogVisible = false">取 消</el-button>
@@ -176,7 +179,7 @@
         data: function () {
             return {
                 routerMessage: {
-                    optype: "opencom_todolist",
+                    optype: "poolacc_accList",
                     params: {
                         page_size: 11,
                         page_num: 1
@@ -210,20 +213,12 @@
             },
             //点击页数获取当前页数据
             getCurrentPage:function(currPage){
-                if(this.isPending){
-                    this.routerMessage.todo.params.page_num = currPage;
-                }else{
-                    this.routerMessage.done.params.page_num = currPage;
-                }
+                this.routerMessage.params.page_num = currPage;
                 this.$emit("getCommTable", this.routerMessage);
             },
             //当前页数据条数发生变化
             sizeChange:function(val){
-                this.routerMessage.todo.params = {
-                    page_size: val,
-                    page_num: 1
-                };
-                this.routerMessage.done.params = {
+                this.routerMessage.params = {
                     page_size: val,
                     page_num: 1
                 };
@@ -231,24 +226,33 @@
             },
             //设为默认
             setDefault: function (row) {
-
-            },
-            //增加
-            addAccount: function(){
                 this.$axios({
                     url:"/cfm/normalProcess",
                     method:"post",
                     data:{
-                        optype:"account_accs",
+                        optype:"dbttrad_confirmTradingList",
                         params:{
-                            status:1,
-                            acc_id:""
+                            bill_no:row.id
                         }
                     }
                 }).then((result) =>{
-                    this.accOptions = result.data.data;
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                    } else {
+                        this.$emit("getCommTable", this.routerMessage);
+                    }
                 });
+            },
+            //增加
+            addAccount: function(){
+                this.dialogData = {};
                 this.dialogVisible = true;
+                this.$emit("getCommTable", this.routerMessage);
+                
             },
             //银行大类搜索筛选
             filterBankType: function (value) {
@@ -278,15 +282,48 @@
                     this.bankTypeList = this.bankAllList;
                 }
             },
+            //选择银行大类后查询账户
+            seletBank:function (val){
+                this.$axios({
+                    url:"/cfm/normalProcess",
+                    method:"post",
+                    data:{
+                        optype:"poolacc_getAccByBank",
+                        params:{
+                            bank_type:val
+                        }
+                    }
+                }).then((result) =>{
+                    this.accOptions = result.data.data;
+                });
+            },
             //切换账户号
             changeAccount:function(cur){
+                this.dialogData.acc_id = cur.acc_id;
                 this.dialogData.acc_no = cur.acc_no;
                 this.dialogData.acc_name = cur.acc_name;
             },
             //确认提交
             subAdd: function () {
-                // this.dialogData;
-                this.dialogVisible = false;
+                this.$axios({
+                    url:"/cfm/normalProcess",
+                    method:"post",
+                    data:{
+                        optype:"poolacc_add",
+                        params:this.dialogData
+                    }
+                }).then((result) =>{
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                    } else {
+                        var data = result.data.data;
+                        this.dialogVisible = false;
+                    }
+                });
             },
             //删除账户
             delAcc: function (row, index, rows) {
@@ -295,50 +332,59 @@
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(() => {
-                    // var rows = this.tableList;
-                    // var index = this.tableList.indexOf(row);
-                    // if (this.pagCurrent < (this.pagTotal / this.pagSize)) { //存在下一页
-                    //     this.$emit('getCommTable', this.routerMessage);
-                    // } else {
-                    //     if (rows.length == "1" && (this.routerMessage.todo.params.page_num != 1)) { //是当前页最后一条
-                    //         this.routerMessage.params.page_num--;
-                    //         this.$emit('getCommTable', this.routerMessage);
-                    //     } else {
-                    //         rows.splice(index, 1);
-                    //         this.pagTotal--;
-                    //     }
-                    // }
-                    // this.$axios({
-                    //     url: "/cfm/normalProcess",
-                    //     method: "post",
-                    //     data: {
-                    //         optype: "opencom_del",
-                    //         params: {
-                    //             id: row.id,
-                    //             persist_version: row.persist_version
-                    //         }
-                    //     }
-                    // }).then((result) => {
-                    //     if (result.data.error_msg) {
-                    //         this.$message({
-                    //             type: "error",
-                    //             message: result.data.error_msg,
-                    //             duration: 2000
-                    //         })
-                    //         return;
-                    //     }
-                    //     this.$message({
-                    //         type: "success",
-                    //         message: "删除成功",
-                    //         duration: 2000
-                    //     })
-                    //     this.$emit("getTableData", this.routerMessage);
-                    // }).catch(function (error) {
-                    //     console.log(error);
-                    // })
+                    this.$axios({
+                        url: "/cfm/normalProcess",
+                        method: "post",
+                        data: {
+                            optype: "poolacc_delete",
+                            params: {
+                                id: row.id
+                            }
+                        }
+                    }).then((result) => {
+                        if (result.data.error_msg) {
+                            this.$message({
+                                type: "error",
+                                message: result.data.error_msg,
+                                duration: 2000
+                            })
+                            return;
+                        }
+                        var rows = this.tableList;
+                        var index = this.tableList.indexOf(row);
+                        if (this.pagCurrent < (this.pagTotal / this.pagSize)) { //存在下一页
+                            this.$emit('getCommTable', this.routerMessage);
+                        } else {
+                            if (rows.length == "1" && (this.routerMessage.params.page_num != 1)) { //是当前页最后一条
+                                this.routerMessage.params.page_num--;
+                                this.$emit('getCommTable', this.routerMessage);
+                            } else {
+                                rows.splice(index, 1);
+                                this.pagTotal--;
+                            }
+                        }
+                        this.$message({
+                            type: "success",
+                            message: "删除成功",
+                            duration: 2000
+                        })
+                    }).catch(function (error) {
+                        console.log(error);
+                    })
                 }).catch(() => {
                 });
-            }
+            },
+            //单元格hover
+            cellEnter: function (row, column, cell, event){
+                if(!row.default_flag){
+                    this.$set(row,'visible',true);
+                }
+            },
+            cellLeave: function (row, column, cell, event){
+                if(!row.default_flag){
+                    this.$set(row,'visible',false);
+                }
+            },
         },
         watch:{
             tableData: function (val, oldVal) {
@@ -346,24 +392,6 @@
                 this.pagTotal = val.total_line;
                 this.pagCurrent = val.page_num;
                 this.tableList = val.data;
-                this.tableList = [{
-                    acc_no:"1111011111",
-                    acc_name:"圈圈呀",
-                    bank_name:"北京银行",
-                    flag:true
-                },
-                {
-                    acc_no:"223232",
-                    acc_name:"圈圈2号",
-                    bank_name:"上海银行",
-                    flag:false
-                },
-                {
-                    acc_no:"223232",
-                    acc_name:"圈圈3号想次方便面",
-                    bank_name:"上海银行",
-                    flag:false
-                }];
             }
         }
     }
