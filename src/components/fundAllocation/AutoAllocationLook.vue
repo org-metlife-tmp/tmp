@@ -38,22 +38,22 @@
                 <el-row>
                     <el-col :span="4">
                         <el-form-item>
-                            <el-input v-model="searchData.query_key" clearable placeholder="归集额度"></el-input>
+                            <el-input v-model="searchData.query_key" clearable placeholder="下拨额度"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="4">
                         <el-form-item>
-                            <el-input v-model="searchData.query_key" clearable placeholder="归集频率"></el-input>
+                            <el-input v-model="searchData.query_key" clearable placeholder="下拨频率"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="4">
                         <el-form-item>
-                            <el-input v-model="searchData.query_key" clearable placeholder="请输入归集关键字"></el-input>
+                            <el-input v-model="searchData.query_key" clearable placeholder="请输入下拨关键字"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="4">
                         <el-form-item>
-                            <el-input v-model="searchData.query_key" clearable placeholder="请输入归集主账号关键字"></el-input>
+                            <el-input v-model="searchData.query_key" clearable placeholder="请输入下拨主账号关键字"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="2">
@@ -80,11 +80,11 @@
         <section class="table-content">
             <el-table :data="tableList"
                       border size="mini">
-                <el-table-column prop="pay_account_bank" label="归集主题" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="recv_account_no" label="归集额度" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="recv_account_name" label="归集频率" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="recv_account_name" label="归集集户(个)" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="recv_account_name" label="归集金额" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="pay_account_bank" label="下拨主题" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="recv_account_no" label="下拨额度" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="recv_account_name" label="下拨频率" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="recv_account_name" label="下拨集户(个)" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="recv_account_name" label="下拨金额" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="recv_account_name" label="业务状态" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column
                         label="操作" width="50"
@@ -127,10 +127,14 @@
 
                 },
                 statusList: {
+                    1:"已保存",
                     2: "已提交",
                     3: "审批中",
+                    5: "审批拒绝",
                     4: "审批通过",
-                    9: "已作废"
+                    9: "已激活",
+                    10: "未激活",
+                    11: "已作废"
                 },
                 tableList: [], //列表数据
                 pagSize: 8, //分页数据

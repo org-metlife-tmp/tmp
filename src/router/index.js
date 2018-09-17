@@ -98,7 +98,7 @@ import AutoAllocationSet from '@/components/fundAllocation/AutoAllocationSet'
 import AutoAllocationManage from '@/components/fundAllocation/AutoAllocationManage'
 import AllocationDealCheck from '@/components/fundAllocation/AllocationDealCheck'
 import AllManageDetail from '@/components/fundAllocation/AllManageDetail'
-import AutoAllocationLook from '@/components/fundAllocation/AllManageDetail'
+import AutoAllocationLook from '@/components/fundAllocation/AutoAllocationLook'
 
 
 Vue.use(Router)

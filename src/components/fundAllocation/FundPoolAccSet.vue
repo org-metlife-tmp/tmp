@@ -230,7 +230,7 @@
                     url:"/cfm/normalProcess",
                     method:"post",
                     data:{
-                        optype:"dbttrad_confirmTradingList",
+                        optype:"poolacc_defaultSet",
                         params:{
                             bill_no:row.id
                         }
