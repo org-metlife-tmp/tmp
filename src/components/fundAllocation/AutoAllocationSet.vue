@@ -208,7 +208,7 @@
         </section>
         <!--底部按钮-->
         <div class="btn-bottom">
-            <el-button type="warning" plain size="mini" @click="">
+            <el-button type="warning" plain size="mini" @click="moreBill">
                 更多单据<span class="arrows">></span>
             </el-button>
             <div class="btnGroup">
@@ -270,6 +270,7 @@
         name: "AutoAllocationSet",
         created: function () {
             this.$emit("transmitTitle", "自动下拨设置");
+            // 
         },
         data: function () {
             return {
@@ -311,6 +312,9 @@
             //选择时间
             selectDate: function(){
                 this.dateDialog = true;
+            },
+            moreBill: function(){
+                this.$router.push("/allocation/allocation-look");
             }
         }
     }
