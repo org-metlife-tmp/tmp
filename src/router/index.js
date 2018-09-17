@@ -101,6 +101,9 @@ import AllManageDetail from '@/components/fundAllocation/AllManageDetail'
 import AutoAllocationView from '@/components/fundAllocation/AutoAllocationView'
 import AutoAllocationMoreBills from '@/components/fundAllocation/AutoAllocationMoreBills'
 
+//电子回单
+import ElectronicReceipt from '@/components/electronicReceipt/ElectronicReceipt'
+
 Vue.use(Router)
 
 const router = new Router({
@@ -191,6 +194,8 @@ const router = new Router({
                         {path: '/allocation/allocation-more-bills', name: 'AutoAllocationMoreBills', component: AutoAllocationMoreBills, meta: {requireAuth: true}},
                         //审批转移
                         {path: '/examine-approve/permission-transfer', name: 'PermissionTransfer', component: PermissionTransfer, meta: {requireAuth: true}},
+                        //电子回单
+                        {path: '/electronicReceipt/electronic-receipt', name: 'ElectronicReceipt', component: ElectronicReceipt, meta: {requireAuth: true}},
 
                     ]
                 },

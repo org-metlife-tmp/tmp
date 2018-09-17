@@ -460,6 +460,15 @@
                     <el-menu-item index="/allocation/allocation-deal-check">交易核对</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
+            <el-submenu index="14">
+                <template slot="title" height="200px">
+                    <i class="icon-gjt"></i>
+                    <p>电子回单</p>
+                </template>
+                <el-menu-item-group>
+                    <el-menu-item index="/electronicReceipt/electronic-receipt">电子回单</el-menu-item>
+                </el-menu-item-group>
+            </el-submenu>
             <!--
 
             <el-submenu index="10">
