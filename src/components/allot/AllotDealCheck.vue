@@ -131,7 +131,8 @@
                                 <el-table-column prop="direction" label="收付方向" :show-overflow-tooltip="true" width="80"></el-table-column>
                                 <el-table-column prop="opp_acc_no" label="对方账户号" :show-overflow-tooltip="true"></el-table-column>
                                 <el-table-column prop="opp_acc_name" label="对方账户号名称" :show-overflow-tooltip="true"></el-table-column>
-                                <el-table-column prop="amount" label="交易金额" :show-overflow-tooltip="true"></el-table-column>
+                                <el-table-column prop="amount" label="交易金额" :show-overflow-tooltip="true"
+                                                :formatter="transitAmount"></el-table-column>
                                 <el-table-column prop="summary" label="摘要" :show-overflow-tooltip="true" width="80"></el-table-column>
                                 <el-table-column prop="trans_date" label="交易时间" :show-overflow-tooltip="true"></el-table-column>
                             </el-table>
@@ -142,7 +143,8 @@
                 <el-table-column prop="pay_account_bank" label="付款银行" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="recv_account_no" label="收款方账号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="recv_account_name" label="收款方公司名称" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="payment_amount" label="金额" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="payment_amount" label="金额" :show-overflow-tooltip="true"
+                                :formatter="transitAmount"></el-table-column>
             </el-table>
         </section>
         <!--分页部分-->
@@ -173,7 +175,8 @@
                 <el-table-column prop="direction" label="收付方向" :show-overflow-tooltip="true" width="80"></el-table-column>
                 <el-table-column prop="opp_acc_no" label="对方账户号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="opp_acc_name" label="对方账户号名称" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="amount" label="交易金额" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="amount" label="交易金额" :show-overflow-tooltip="true"
+                                :formatter="transitAmount"></el-table-column>
                 <el-table-column prop="summary" label="摘要" :show-overflow-tooltip="true" width="80"></el-table-column>
                 <el-table-column prop="trans_date" label="交易时间" :show-overflow-tooltip="true"></el-table-column>
             </el-table>
@@ -187,14 +190,14 @@
         created: function () {
             //设置当前optype信息
             var queryData = this.$router.currentRoute.query;
-            this.getRouterParamsChange(queryData.bizType);
 
             this.$emit("transmitTitle", "交易核对");
             this.$emit("tableText", {
                 leftTab: "未核对",
                 rightTab: "已核对"
             });
-            this.$emit("getTableData", this.routerMessage);
+            this.getRouterParamsChange(queryData.bizType);
+            // this.$emit("getTableData", this.routerMessage);
         },
         mounted: function () {
         },
@@ -231,6 +234,10 @@
             }
         },
         methods: {
+            //展示格式转换-金额
+            transitAmount: function (row, column, cellValue, index) {
+                return this.$common.transitSeparator(cellValue);
+            },
             //根据条件查询数据
             queryData:function(){
                 var searchData = this.searchData;
@@ -367,7 +374,6 @@
             },
             //路由变化而导致的参数变化
             getRouterParamsChange:function(type){
-                debugger
                 if(type == '13'){
                     this.routerMessage.todo.optype = "pooltrad_billList";
                     this.routerMessage.done.optype = "pooltrad_confirmbillList";
@@ -386,7 +392,10 @@
         },
         watch:{
             isPending:function(val,oldVal){
-                
+                var searchData = this.searchData;
+                for (var k in searchData) {
+                    searchData[k] = "";
+                }
             },
             tableData: function (val, oldVal) {
                 this.pagSize = val.page_size;
