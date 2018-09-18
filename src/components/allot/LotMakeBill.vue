@@ -71,11 +71,11 @@
             box-sizing: border-box;
             border: 3px solid #dde0e0;
             background: url(../../assets/slice_bg.png) repeat;
-
             table {
                 width: 100%;
                 height: 100%;
                 border-collapse: collapse;
+                table-layout:fixed
             }
 
             td {
@@ -223,11 +223,14 @@
             z-index: 1;
             margin-top: 30px;
             width: 100%;
-            // text-align: left;
+            text-align: left;
             height: 100px;
             .bills-source{
-                overflow-x: auto;
-                width: 100%;
+                transition: all 1s;
+                -moz-transition: all 1s; /* Firefox 4 */
+                -webkit-transition: all 1s; /* Safari and Chrome */
+                -o-transition: all 1s; /* Opera */
+                display: inline-block;
                 .bill-item{
                     // float: left;
                     display: inline-block;
@@ -237,8 +240,8 @@
                     white-space: nowrap;
                     margin: 0 10px;
                     cursor: pointer;
-                    // text-align: center;
-                    min-width: 140px;
+                    text-align: center;
+                    min-width: 130px;
 
                     .icon-container span{
                         margin-top: 5px;
@@ -340,6 +343,7 @@
             top: 90px;
             border: 0;
             display: none;
+            outline: none;
             cursor: pointer;
         }
         .bills-page.left{
@@ -349,6 +353,9 @@
         .bills-page.right{
             right: 5px;
             background-position: -224px -26px;
+        }
+        .showBtn{
+            display: inline-block!important;
         }
 
 //弹框内部样式
@@ -549,13 +556,13 @@
                     <tr>
                         <td rowspan="3" class="title-erect">收款信息</td>
                         <!--<td class="title-small" rowspan="3">户名</td>-->
-                        <td rowspan="3" colspan="5" class="upload-input">
+                        <td rowspan="3" colspan="6" class="upload-input">
                             <el-input class="input-with-select" readonly
                                       size="small" v-model="billData.searchData" clearable>
                                 <el-button type="primary" slot="append" class="upload-button" @click="openTemplateUpload"></el-button>
                             </el-input>
-                            <div class="bills-container">
-                                <div class="bills-source">
+                            <div class="bills-container" id="billContainer">
+                                <div class="bills-source" >
                                     <div class="bill-item" v-for="file in fileModeList" :key="file.id">
                                         <div class="icons icon-items">
                                             <span class="icon-container">
@@ -572,8 +579,8 @@
                                     </div>
                                 </div>
                             </div>
-                            <button class="bills-page left"></button>
-                            <button class="bills-page right"></button>
+                            <button class="bills-page left" @click="leftMove($event)"></button>
+                            <button class="bills-page right" @click="rightMove($event)"></button>
                         </td>
                     </tr>
                     <tr></tr>
@@ -584,7 +591,7 @@
                     </tr>
                     <tr>
                         <td>金额合计（元）</td>
-                        <td colspan="3" class="money-input">
+                        <td colspan="4" class="money-input">
                             <span>￥</span>
                             <input type="text" @blur="setMoney" v-model="billData.total_amount">
                             <span>(大写)</span>
@@ -597,7 +604,7 @@
                     </tr>
                     <tr>
                         <td class="set-space">摘要</td>
-                        <td class="empty-input" colspan="5">
+                        <td class="empty-input" colspan="6">
                             <input type="text" placeholder="请在此处填写摘要" v-model="billData.payment_summary">
                         </td>
                     </tr>
@@ -936,16 +943,6 @@
                     })
                 }
             },
-            //清空
-            clearBill: function(){
-                var billData = this.billData;
-                for(var k in billData){
-                    billData[k] = "";
-                }
-                this.moneyText = "";
-                this.allotType = "";
-                this.emptyFileList = [];
-            },
             //更多单据
             goMoreBills: function(){
                 this.$router.push("/allot/lot-more-bills");
@@ -1059,7 +1056,6 @@
             },
             //amount小数位
             tansitionAmount: function (val) {
-                debugger
                 if(val){
                     if(Number.isNaN(Number(val))){
                         return val;
@@ -1218,7 +1214,6 @@
                         this.billData.total_num = data.total_num;
                         this.billData.total_amount = this.$common.transitSeparator(data.total_amount);
                         this.moneyText = this.$common.transitText(data.total_amount);
-
                         this.$message({
                             type: "success",
                             message: "删除附件成功",
@@ -1240,6 +1235,8 @@
                 this.moneyText = "";
                 this.emptyFileList = [];
                 this.saveParams.uuid = JSON.parse(window.sessionStorage.getItem("uuid"));
+                var box = document.getElementById("billContainer");
+                var btn = box.parentNode.getElementsByClassName("bills-page");
             },
             //删除单据
             deleteBill: function () {
@@ -1374,6 +1371,7 @@
                     console.log(error);
                 })
             },
+            //模板下载
             templateDownLoad:function (){
                 this.$axios({
                     url: "/cfm/normal/excel/downExcel",
@@ -1408,6 +1406,74 @@
                     }
                 }).catch(function (error) {
                     console.log(error);
+                });
+            },
+            //左移
+            leftMove:function(event){
+                var box = document.getElementById("billContainer");
+                var moveWidth = box.offsetWidth;
+                var newWidth = 0;
+                var curMove = box.firstElementChild;
+                var curWidth = curMove.offsetWidth;
+                var hasMove = curMove.style.marginLeft;
+                hasMove = hasMove.split("p")[0]*1;
+                var num = Math.floor(curWidth / moveWidth);
+                if(hasMove < -moveWidth){
+                    newWidth = hasMove + moveWidth;
+                    curMove.style.marginLeft = newWidth + "px";
+                }else if(hasMove>-moveWidth && hasMove<0){
+                    curMove.style.marginLeft = "0px";
+                }else{
+                    return ;
+                }
+            },
+            //右移
+            rightMove:function(event){
+                var box = document.getElementById("billContainer");
+                var moveWidth = box.offsetWidth;
+                var newWidth = 0;
+                var curMove = box.firstElementChild;
+                var curWidth = curMove.offsetWidth;
+                var hasMove = curMove.style.marginLeft;
+                hasMove = hasMove.split("p")[0]*1;
+                var num = Math.floor(curWidth / moveWidth) - 1;
+                var rest = curWidth % moveWidth;
+                if(curWidth>moveWidth){
+                    if(Math.abs(hasMove)<num*moveWidth){
+                        newWidth = hasMove - moveWidth;
+                        curMove.style.marginLeft = newWidth + "px";
+                    }else if(Math.abs(hasMove)===num*moveWidth && rest){
+                        newWidth = hasMove - rest;
+                        curMove.style.marginLeft = newWidth + "px";
+                    }else{
+                        return ;
+                    }
+                }else{
+                    return ;
+                }
+            },
+        },
+        watch:{
+            fileModeList: function(old,val){
+                this.$nextTick(() => {
+                    var box = document.getElementById("billContainer");
+                    var curMove = box.firstElementChild;
+                    var btn = box.parentNode.getElementsByClassName("bills-page");
+                    var conDomW = box.offsetWidth;
+                    var scrDomW = curMove.offsetWidth;
+                    if(conDomW <= scrDomW){
+                        btn[0].classList.add("showBtn");
+                        btn[1].classList.add("showBtn");
+                    } else{
+                        btn[0].classList.remove("showBtn");
+                        btn[1].classList.remove("showBtn");  
+                    }
+                    var leftWidth = curMove.style.marginLeft.split("p")[0]*1;
+                    if(conDomW - scrDomW  < 0 && leftWidth <0){
+                        curMove.style.marginLeft = conDomW - scrDomW  +"px";
+                    }else{
+                        curMove.style.marginLeft = 0 +"px";
+                    }
                 });
             }
         }

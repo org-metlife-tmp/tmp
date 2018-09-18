@@ -209,7 +209,7 @@
             <div class="allData">
                 <div class="btn-left">
                     <el-button type="warning" plain size="mini" @click="goMakeBill">制单</el-button>
-                    <el-button type="warning" plain size="mini" @click="goPayment">支付处理</el-button>
+                    <!-- <el-button type="warning" plain size="mini" @click="goPayment">支付处理</el-button> -->
                 </div>
                 <span>总笔数：</span>
                 <span v-text="totalData.total_num" class="numText"></span>
@@ -279,7 +279,7 @@
     export default {
         name: "ReceiveLookOver",
         created: function () {
-            this.$emit("transmitTitle", "资金支付-查看");
+            this.$emit("transmitTitle", "收款-查看");
             this.$emit("getCommTable", this.routerMessage);
         },
         mounted: function () {
@@ -383,9 +383,9 @@
                 this.$router.push("/payment/pay-make-bill");
             },
             //支付处理
-            goPayment: function () {
-                this.$router.push("/payment/pay-payment");
-            },
+            // goPayment: function () {
+            //     this.$router.push("/payment/pay-payment");
+            // },
 
             //查看单据详情
             lookBill: function (row) {

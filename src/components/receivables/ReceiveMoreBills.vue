@@ -540,7 +540,7 @@
     export default {
         name: "ReceiveMoreBills",
         created: function () {
-            this.$emit("transmitTitle", "资金支付-更多单据");
+            this.$emit("transmitTitle", "收款-更多单据");
             this.$emit("getCommTable", this.routerMessage);
 
             //获取付款方账户列表

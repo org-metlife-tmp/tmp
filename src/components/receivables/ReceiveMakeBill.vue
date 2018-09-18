@@ -234,7 +234,7 @@
     <div id="receiveMakeBill">
         <!--顶部标题-按钮-->
         <header>
-            <h1>资金支付-制单</h1>
+            <h1>收款-制单</h1>
             <el-button type="warning" size="small">打印</el-button>
         </header>
         <!--表单部分-->
@@ -248,7 +248,7 @@
                         value-format="yyyy-MM-dd"
                         size="mini">
                 </el-date-picker>
-                <el-select v-model="billData.pay_account_id " placeholder="请选择付款方"
+                <el-select v-model="billData.pay_account_id " placeholder="请选择收款方"
                            filterable clearable size="mini">
                     <el-option v-for="item in accOptions"
                                :key="item.acc_id"
@@ -274,7 +274,7 @@
             <div class="bill-content">
                 <table>
                     <tr>
-                        <td rowspan="3" class="title-erect">收款人</td>
+                        <td rowspan="3" class="title-erect">付款人</td>
                         <td class="title-small">户名</td>
                         <td class="empty-input" colspan="4">
                             <el-select v-model="billData.recv_account_name"
@@ -784,7 +784,7 @@
             },
             //更多单据
             goMoreBills: function(){
-                this.$router.push("/payment/pay-more-bills");
+                this.$router.push("/receivables/receive-more-bills");
             },
             //修改户名和账号后改变对应的值
             setPayer: function(val,target){
