@@ -525,7 +525,7 @@
                                         v-for="tag in item.addUsers"
                                         closable
                                         :disable-transitions="false"
-                                        @close="deleteUser(tag.id,item)">
+                                        @close="deleteUser(tag.id,item,$event)">
                                         {{tag.name}}
                                     </el-tag>
                                 </div>
@@ -794,7 +794,8 @@ export default {
                         n_row:"1", 
                         isOrg:false,
                         curUser:"",
-                        push_org:""
+                        push_org:"",
+                        addUsers:[]
                     }
                     let obj_line ={
                         rule:""
@@ -1215,7 +1216,7 @@ export default {
             item.curUser = "";
         },
         //删除用户
-        deleteUser:function(tag,item) {
+        deleteUser:function(tag,item,event) {
             let list = item.addUsers;
             let len = list.length;
             for(let j=0;j<len;j++){
