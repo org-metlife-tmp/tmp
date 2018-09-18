@@ -865,6 +865,12 @@
                 //设置显示数据
                 if (!row.id) {
                     for (var k in row) {
+                        if (k == "bank_cnaps_code") {
+                            this.$set(this.bankList, 0, {
+                                cnaps_code: row.bank_cnaps_code,
+                                name: row.bank_name
+                            })
+                        }
                         this.dialogData[k] = row[k];
                     }
                 } else {
