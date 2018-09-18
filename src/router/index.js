@@ -101,6 +101,12 @@ import AllManageDetail from '@/components/fundAllocation/AllManageDetail'
 import AutoAllocationView from '@/components/fundAllocation/AutoAllocationView'
 import AutoAllocationMoreBills from '@/components/fundAllocation/AutoAllocationMoreBills'
 
+//收款通
+import ReceiveMakeBill from '@/components/receivables/ReceiveMakeBill'
+import ReceiveMoreBills from '@/components/receivables/ReceiveMoreBills'
+import ReceiveLookOver from '@/components/receivables/ReceiveLookOver'
+
+
 //电子回单
 import ElectronicReceipt from '@/components/electronicReceipt/ElectronicReceipt'
 
@@ -196,7 +202,9 @@ const router = new Router({
                         {path: '/examine-approve/permission-transfer', name: 'PermissionTransfer', component: PermissionTransfer, meta: {requireAuth: true}},
                         //电子回单
                         {path: '/electronicReceipt/electronic-receipt', name: 'ElectronicReceipt', component: ElectronicReceipt, meta: {requireAuth: true}},
-
+                        //收款通
+                        {path: '/receivables/receive-more-bills', name: 'ReceiveMoreBills', component: ReceiveMoreBills, meta: {requireAuth: true}},
+                        {path: '/receivables/receive-look-over', name: 'ReceiveLookOver', component: ReceiveLookOver, meta: {requireAuth: true}},
                     ]
                 },
                 //基础样式三（tab页）
@@ -244,6 +252,8 @@ const router = new Router({
                 //支付通
                 {path: '/payment/pay-make-bill', name: 'PayMakeBill', component: PayMakeBill, meta: {requireAuth: true}},
                 {path: '/payment/batch-make-bill', name: 'BatchMakeBill', component: BatchMakeBill, meta: {requireAuth: true}},
+                //收款通
+                {path: '/receivables/receive-make-bill', name: 'ReceiveMakeBill', component: ReceiveMakeBill, meta: {requireAuth: true}},
                 
             ]
         }

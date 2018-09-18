@@ -463,6 +463,17 @@
             <el-submenu index="14">
                 <template slot="title" height="200px">
                     <i class="icon-gjt"></i>
+                    <p>收款通</p>
+                </template>
+                <el-menu-item-group>
+                    <el-menu-item index="/receivables/receive-make-bill">收款-制单</el-menu-item>
+                    <el-menu-item index="/receivables/receive-look-over">收款-查看</el-menu-item>
+                    <el-menu-item index="/allot/allot-deal-check?bizType=13">交易核对</el-menu-item>
+                </el-menu-item-group>
+            </el-submenu>
+            <el-submenu index="15">
+                <template slot="title" height="200px">
+                    <i class="icon-gjt"></i>
                     <p>电子回单</p>
                 </template>
                 <el-menu-item-group>
