@@ -307,11 +307,11 @@
 
                             if (workDayValue == startValue) {
                                 this.$set(workDayItem, '$start', true);
-                                continue;
+                                break;
                             }
                             if (workDayValue == endValue) {
                                 this.$set(workDayItem, '$end', true);
-                                continue;
+                                break;
                             }
                         }
                     }

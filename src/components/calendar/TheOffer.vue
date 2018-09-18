@@ -287,7 +287,7 @@
                         for(var i = 0; i < bankAllList.length; i++){
                             if(bankAllList[i].name == data.bank_type){
                                 this.bankTypeCode = bankAllList[i].code;
-                                continue;
+                                break;
                             }
                         }
                     }
@@ -332,7 +332,7 @@
                     for(var i = 0; i < bankAllList.length; i++){
                         if(bankAllList[i].name == value){
                             this.bankTypeCode = bankAllList[i].code;
-                            continue;
+                            break;
                         }
                     }
                 }else{
