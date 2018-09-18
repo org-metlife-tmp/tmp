@@ -644,9 +644,6 @@
             <BusinessTracking 
                 :businessParams="businessParams"
             ></BusinessTracking>
-            <span slot="footer" class="dialog-footer">
-                <el-button type="warning" size="mini" @click="lookDialog=false">确 定</el-button>
-            </span>
         </el-dialog>
     </div>
 </template>

@@ -295,9 +295,9 @@
                 :businessParams="businessParams"
             ></BusinessTracking>
             <span slot="footer" class="dialog-footer">
-                <el-button type="warning" size="mini" @click="dialogVisible = false" :disabled="lookDisabled">取 消</el-button>
-                <el-button type="warning" size="mini" @click="saveFreeze" :disabled="lookDisabled">确 定</el-button>
-                <el-button type="warning" size="mini" @click="subFlow" :disabled="lookDisabled">提 交</el-button>
+                <el-button type="warning" size="mini" @click="dialogVisible = false" v-show="!lookDisabled">取 消</el-button>
+                <el-button type="warning" size="mini" @click="saveFreeze" v-show="!lookDisabled">确 定</el-button>
+                <el-button type="warning" size="mini" @click="subFlow" v-show="!lookDisabled">提 交</el-button>
             </span>
             <el-dialog :visible.sync="innerVisible"
                        width="50%" title="提交审批流程"
