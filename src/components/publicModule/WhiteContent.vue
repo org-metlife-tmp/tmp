@@ -31,20 +31,6 @@
             right: 0;
         }
 
-        .content .button-left-bottom {
-            z-index: 1;
-            width: 196px;
-            left: 266px;
-            width: 708px;
-
-            >div{
-                float: left;
-            }
-
-            >div:nth-child(2){
-                float: right;
-            }
-        }
         .content .display-none{
             display: none;
         }
@@ -122,16 +108,14 @@
                 <el-button type="primary" plain size="mini" @click="showDialog('accDialogVisible')">账户属性</el-button>
                 <el-button type="primary" plain size="mini" @click="showDialog('inactiveDialogVisible')">账户模式
                 </el-button>
+                <el-input v-model="accNo" placeholder="请输入账户号" size="mini"
+                          clearable style="width:150px;margin-bottom:4px"
+                          @blur="queryByNo" :class="{'display-none':showAccBank()}">
+                </el-input>
             </div>
             <div class="button-list-right">
-                <el-button type="warning" size="mini">打印</el-button>
-                <el-button type="warning" size="mini" @click="exportFun">导出</el-button>
-            </div>
-            <div class="button-left-bottom" :class="{'display-none':showAccBank()}">
-                <el-input v-model="accNo" placeholder="请输入账户号" size="mini"
-                          clearable style="width:193px;margin-bottom:4px"
-                          @blur="queryByNo"></el-input>
                 <el-select v-model="bankTypeName" placeholder="请选择银行大类"
+                           :class="{'display-none':showAccBank()}"
                            clearable filterable size="mini"
                            :filter-method="filterBankType"
                            @visible-change="clearSearch"
@@ -142,6 +126,8 @@
                                :value="bankType.code">
                     </el-option>
                 </el-select>
+                <el-button type="warning" size="mini">打印</el-button>
+                <el-button type="warning" size="mini" @click="exportFun">导出</el-button>
             </div>
             <router-view @transmitTitle="currentTitle= $event"
                          @getTableData="getRouterData"
@@ -239,7 +225,14 @@
             }
             this.modeList = modeArr;
 
-            let accAttrObj = JSON.parse(window.sessionStorage.getItem("catgList"))[0].items;
+            let catgList = JSON.parse(window.sessionStorage.getItem("catgList"));
+            let accAttrObj = {};
+            for(var i = 0; i < catgList.length; i++){
+                if(catgList[i].code == "acc_attr"){
+                    accAttrObj = catgList[i].items;
+                    continue;
+                }
+            }
             let accAttrArr = [];
             for (let i in accAttrObj) {
                 accAttrArr.push({
@@ -285,6 +278,8 @@
                         this.$refs.tree.setCheckedKeys([]);
                     this.checkAccAttrList = [];
                     this.checkModeList = [];
+                    this.accNo = "";
+                    this.bankTypeName = "";
                 }
 
 

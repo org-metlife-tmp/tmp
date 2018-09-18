@@ -282,7 +282,7 @@
                     </el-col>
                     <el-col :span="12" style="height:51px"></el-col>
                     <el-col :span="12">
-                        <el-form-item label="开户地址">
+                        <el-form-item label="地区">
                             <el-select v-model="dialogData.areaCode"
                                        filterable remote clearable
                                        placeholder="请输入地区关键字"
@@ -387,7 +387,7 @@
             </el-form>
             <span slot="footer" class="dialog-footer">
                 <el-button type="warning" size="mini" plain @click="dialogVisible = false">取 消</el-button>
-                <el-button type="warning" size="mini" @click="subCurrent">确 定</el-button>
+                <el-button type="warning" size="mini" @click="subCurrent">保 存</el-button>
                 <el-button type="warning" size="mini" @click="subFlow">提 交</el-button>
             </span>
             <el-dialog :visible.sync="innerVisible"
@@ -663,7 +663,7 @@
             if (constants.InactiveMode) {
                 this.interList = constants.InactiveMode;
             }
-            //存款类型 
+            //存款类型
             if (constants.DepositsMode) {
                 this.depositsList = constants.DepositsMode;
             }
@@ -1160,6 +1160,10 @@
             },
             //提交审批流程
             subFlow: function () {
+                var params = this.dialogData;
+                params.area_code = this.dialogData.areaCode;
+                params.bank_type = this.dialogData.bankType;
+
                 this.$axios({
                     url: "/cfm/normalProcess",
                     method: "post",

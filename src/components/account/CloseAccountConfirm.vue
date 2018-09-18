@@ -201,7 +201,7 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="账户性质">
+                        <el-form-item label="账户属性">
                             <el-input v-model="dialogData.acc_attr_name" :disabled="true"></el-input>
                         </el-form-item>
                     </el-col>
@@ -283,7 +283,7 @@
             if (constants.InactiveMode) {
                 this.interList = constants.InactiveMode;
             }
-            //存款类型 
+            //存款类型
             if (constants.DepositsMode) {
                 this.depositsList = constants.DepositsMode;
             }
@@ -439,7 +439,7 @@
                         duration: 2000
                     })
                 }
-                
+
             },
             //获取当前项数据
             getCurrentData: function(setData,row){
