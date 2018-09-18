@@ -185,7 +185,7 @@
                     layout="sizes, prev, pager, next, jumper"
                     :page-size="pagSize"
                     :total="pagTotal"
-                    :page-sizes="[10, 50, 100, 500]"
+                    :page-sizes="[7, 50, 100, 500]"
                     :pager-count="5"
                     :current-page="pagCurrent"
                     @current-change="getCurrentPage"

@@ -300,12 +300,12 @@
                    top="140px" :close-on-click-modal="false">
             <div class="set-date">
                 <h5>请选择日期</h5>
-                <ul class="month-day">
+                <ul class="month-day" v-show="allocationData.frequency == 3">
                     <li v-for="item in monthDay" :key="item.day"
                         :class="{active:item.isActive}"
                         @click="item.isActive = !item.isActive">{{ item.day }}</li>
                 </ul>
-                <el-checkbox-group v-model="dateObj.checkboxGroup2" size="small">
+                <el-checkbox-group v-model="dateObj.checkboxGroup2" size="small" v-show="allocationData.frequency == 1">
                     <el-checkbox-button v-for="(week,k) in weeks"
                                         :label="k"
                                         :key="k">
