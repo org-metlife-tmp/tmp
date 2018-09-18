@@ -185,6 +185,10 @@
     export default {
         name: "AllotDealCheck",
         created: function () {
+            //设置当前optype信息
+            var queryData = this.$router.currentRoute.query;
+            this.getRouterParamsChange(queryData.bizType);
+
             this.$emit("transmitTitle", "交易核对");
             this.$emit("tableText", {
                 leftTab: "未核对",
@@ -221,6 +225,9 @@
                 pagCurrent: 1,
                 selectionList: [],//选中的交易确认
                 currenrRow: {},//当前选中行
+                checkOptype: "",
+                confirmOptype: "",
+                validatedOptype: ""
             }
         },
         methods: {
@@ -263,7 +270,7 @@
                     url:"/cfm/normalProcess",
                     method:"post",
                     data:{
-                        optype:"dbttrad_tradingList",
+                        optype:this.checkOptype,
                         params:{
                             pay_account_no: row.pay_account_no,
                             recv_account_no: row.recv_account_no,
@@ -302,7 +309,7 @@
                         url:"/cfm/normalProcess",
                         method:"post",
                         data:{
-                            optype:"dbttrad_confirm",
+                            optype:this.confirmOptype,
                             params:{
                                 bill_no: row.id,
                                 trading_no: trading_no,
@@ -337,7 +344,7 @@
                         url:"/cfm/normalProcess",
                         method:"post",
                         data:{
-                            optype:"dbttrad_confirmTradingList",
+                            optype:this.validatedOptype,
                             params:{
                                 bill_no: row.id,
                             }
@@ -357,6 +364,24 @@
                         console.log(error);
                     })
                 }
+            },
+            //路由变化而导致的参数变化
+            getRouterParamsChange:function(type){
+                debugger
+                if(type == '13'){
+                    this.routerMessage.todo.optype = "pooltrad_billList";
+                    this.routerMessage.done.optype = "pooltrad_confirmbillList";
+                    this.checkOptype = "pooltrad_tradingList";
+                    this.confirmOptype = "pooltrad_confirm";
+                    this.validatedOptype = "pooltrad_confirmTradingList";
+                }else if(type == '8'){
+                    this.routerMessage.todo.optype = "dbttrad_billList";
+                    this.routerMessage.done.optype = "dbttrad_confirmbillList";
+                    this.checkOptype = "dbttrad_tradingList";
+                    this.confirmOptype = "dbttrad_confirm";
+                    this.validatedOptype = "dbttrad_confirmTradingList";
+                }
+                this.$emit("getTableData", this.routerMessage);
             }  
         },
         watch:{
@@ -368,6 +393,10 @@
                 this.pagTotal = val.total_line;
                 this.pagCurrent = val.page_num;
                 this.tableList = val.data;
+            },
+            '$route' (to, from) {
+                // 对路由变化作出响应...
+                this.getRouterParamsChange(to.query.bizType);
             }
         }
     }

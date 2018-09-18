@@ -185,6 +185,19 @@
     export default {
         name: "AllotDealCheck",
         created: function () {
+            // if (queryData.bizType == "8") { //调拨通
+            //     this.routerMessage.todo.optype = "dbttrad_billList";
+            //     this.routerMessage.done.optype = "dbttrad_confirmbillList";
+            //     this.checkOptype = "dbttrad_tradingList";
+            //     this.confirmOptype = "dbttrad_confirm";
+            //     this.validatedOptype = "dbttrad_confirmTradingList";
+            // }else if(queryData.bizType == "13"){
+            //     this.routerMessage.todo.optype = "pooltrad_billList";
+            //     this.routerMessage.done.optype = "pooltrad_confirmbillList";
+            //     this.checkOptype = "pooltrad_tradingList";
+            //     this.confirmOptype = "pooltrad_confirm";
+            //     this.validatedOptype = "pooltrad_confirmTradingList";
+            // }
             this.$emit("transmitTitle", "交易核对");
             this.$emit("tableText", {
                 leftTab: "未核对",
@@ -361,7 +374,10 @@
         },
         watch:{
             isPending:function(val,oldVal){
-                
+                var searchData = this.searchData;
+                for (var k in searchData) {
+                    searchData[k] = "";
+                }
             },
             tableData: function (val, oldVal) {
                 this.pagSize = val.page_size;

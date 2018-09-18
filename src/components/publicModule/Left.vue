@@ -403,7 +403,7 @@
                     <el-menu-item index="/allot/lot-make-bill" v-if="menuList.DbtBatchBill">批量调拨-制单</el-menu-item>
                     <el-menu-item index="/allot/lot-more-bills">批量调拨-查看</el-menu-item>
                     <!-- <el-menu-item index="/allot/lot-payment">批量调拨-支付</el-menu-item>-->
-                    <el-menu-item index="/allot/allot-deal-check" v-if="menuList.DbtCheck">交易核对</el-menu-item>
+                    <el-menu-item index="/allot/allot-deal-check?bizType=8" v-if="menuList.DbtCheck">交易核对</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
             <el-submenu index="10">
@@ -457,7 +457,7 @@
                     <el-menu-item index="/allocation/allocation-set">自动下拨设置</el-menu-item>
                     <el-menu-item index="/allocation/allocation-manage">自动下拨管理</el-menu-item>
                     <el-menu-item index="/allocation/allocation-view">自动下拨查看</el-menu-item>
-                    <el-menu-item index="/allocation/allocation-deal-check">交易核对</el-menu-item>
+                    <el-menu-item index="/allot/allot-deal-check?bizType=13">交易核对</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
             <el-submenu index="14">
