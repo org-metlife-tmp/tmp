@@ -495,6 +495,16 @@
             margin-bottom: 10px;
         }
     }
+    /*提示框样式*/
+    .el-tooltip__popper.is-light {
+        border: 1px solid orange;
+    }
+    .el-tooltip__popper.is-light[x-placement^=right] .popper__arrow {
+        border-right-color: orange!important;
+    }
+    .tipP{
+        line-height: 30px;
+    }
 </style>
 
 <template>
@@ -504,15 +514,20 @@
         <!-- 顶部按钮 下拉-->
         <div class="top-edit">
             <div class="head-select1">
-                <el-select v-model="billData.pay_account_id " placeholder="请选择付款方"
-                           filterable clearable size="mini">
+                <el-select v-model="billData.pay_account" placeholder="请选择付款方"
+                           filterable clearable size="mini" value-key="acc_id" @change="payAccChange(billData.pay_account)">
                     <el-option v-for="item in accOptions"
                                 :key="item.acc_id"
                                 :label="item.acc_no"
-                                :value="item.acc_id">
+                                :value="item">
                     </el-option>
                 </el-select>
-                <el-tooltip class="tip-box" effect="dark" content="Right Top 提示文字" placement="right-start">
+                <el-tooltip class="tip-box" type="warning" effect="light" placement="right-start" v-show="payAccDetail.acc_name">
+                    <div slot="content" >
+                        <p class="tipP">{{payAccDetail.acc_name}}</p>
+                        <p class="tipP">{{payAccDetail.acc_no}}</p>
+                        <p class="tipP">{{payAccDetail.bank_name}}</p>
+                    </div>
                     <div class="tipImg"></div>
                 </el-tooltip>
             </div>
@@ -732,69 +747,7 @@
             this.triggerFile = !this.triggerFile;
             params.uuid = JSON.parse(window.sessionStorage.getItem("uuid"));
             this.saveParams = params;
-            if(params.id){
-                this.$axios({
-                    url: "/cfm/normalProcess",
-                    method: "post",
-                    data: {
-                        optype: "dbtbatch_detail",
-                        params: {
-                            id: params.id,
-                            batchno: params.batchno
-                        }
-                    }
-                }).then((result) => {
-                    if (result.data.error_msg) {
-                        this.$message({
-                            type: "error",
-                            message: result.data.error_msg,
-                            duration: 2000
-                        })
-                    } else {
-                        var data = result.data.data;
-                        //设置数字加千分符和转汉字
-                        this.moneyText = this.$common.transitText(data.total_amount);
-                        data.total_amount = this.$common.transitSeparator(data.total_amount);
-                        data.pay_mode = data.pay_mode+"";
-                        data.bizObj ={
-                            biz_id: data.biz_id,
-                            biz_name: data.biz_name
-                        }
-                        this.billData = data;
-                        // //调拨类型
-                        // this.allotType = JSON.parse(window.sessionStorage.getItem("constants")).ZjdbType[data.payment_type];
-                        this.saveParams.persist_version = data.persist_version;
-                        //获取附件列表
-                        this.fileModeList = data.attach_info;
-                        
-                    }
-                }).catch(function (error) {
-                    console.log(error);
-                });
-                
-                
-                this.$axios({
-                    url: "/cfm/normalProcess",
-                    method: "post",
-                    data: {
-                        optype: "dbtbatch_initchgtemp",
-                        params: params
-                    }
-                }).then((result) => {
-                    if (result.data.error_msg) {
-                        this.$message({
-                            type: "error",
-                            message: result.data.error_msg,
-                            duration: 2000
-                        })
-                    } else {
-                        var data = result.data.data;
-                    }
-                }).catch(function (error) {
-                    console.log(error);
-                });
-            }
-            //获取付款方账户列表
+            //获取付款方账户列表(保证他先执行，tip才能带出来)
             this.$axios({
                 url:"/cfm/normalProcess",
                 method:"post",
@@ -807,6 +760,75 @@
                 }
             }).then((result) =>{
                 this.accOptions = result.data.data;
+                if(params.id){
+                    this.$axios({
+                        url: "/cfm/normalProcess",
+                        method: "post",
+                        data: {
+                            optype: "dbtbatch_detail",
+                            params: {
+                                id: params.id,
+                                batchno: params.batchno
+                            }
+                        }
+                    }).then((result) => {
+                        if (result.data.error_msg) {
+                            this.$message({
+                                type: "error",
+                                message: result.data.error_msg,
+                                duration: 2000
+                            })
+                        } else {
+                            var data = result.data.data;
+                            //设置数字加千分符和转汉字
+                            this.moneyText = this.$common.transitText(data.total_amount);
+                            data.total_amount = this.$common.transitSeparator(data.total_amount);
+                            data.pay_mode = data.pay_mode+"";
+                            data.pay_account = {
+                                acc_id:data.pay_account_id
+                            }
+                            data.bizObj ={
+                                biz_id: data.biz_id,
+                                biz_name: data.biz_name
+                            }
+                            this.billData = data;
+                            this.saveParams.persist_version = data.persist_version;
+                            //获取附件列表
+                            this.fileModeList = data.attach_info;
+                            var len = this.accOptions.length;
+                            for(var i = 0; i<len;i++){
+                                if(this.accOptions[i].acc_id === this.billData.pay_account_id) {
+                                    this.payAccDetail = this.accOptions[i];
+                                    break;
+                                }
+                            }
+                        }
+                    }).catch(function (error) {
+                        console.log(error);
+                    });
+                    
+                    
+                    this.$axios({
+                        url: "/cfm/normalProcess",
+                        method: "post",
+                        data: {
+                            optype: "dbtbatch_initchgtemp",
+                            params: params
+                        }
+                    }).then((result) => {
+                        if (result.data.error_msg) {
+                            this.$message({
+                                type: "error",
+                                message: result.data.error_msg,
+                                duration: 2000
+                            })
+                        } else {
+                            var data = result.data.data;
+                        }
+                    }).catch(function (error) {
+                        console.log(error);
+                    });
+                }
             });
             //业务类型
             this.$axios({
@@ -832,9 +854,10 @@
             }).catch(function (error) {
                 console.log(error);
             })
-        
+            
         },
         mounted:function(){
+            
         },
         components: {
             Upload: Upload
@@ -849,7 +872,7 @@
                     pay_account_id: "",
                     pay_account_bank: "",
                     payment_amount: "", //金额
-                    payment_summary: "" //摘要
+                    payment_summary: "", //摘要
                 },
                 moneyText: "", //金额-大写
                 fileMessage: { //附件
@@ -887,7 +910,7 @@
                 workflows: [],//审批流程级别
                 workflowData: {},
                 selectWorkflow: "", //流程选择
-                
+                payAccDetail: {},//付款方账户详情
             }
         },
         methods: {
@@ -954,7 +977,7 @@
                 //     return;
                 // }
                 var billData = this.billData;
-                this.saveParams.pay_account_id = billData.pay_account_id;
+                this.saveParams.pay_account_id = billData.pay_account.acc_id;
                 this.saveParams.biz_id = billData.bizObj.biz_id;
                 this.saveParams.biz_name = billData.bizObj.biz_name;
 
@@ -1234,6 +1257,7 @@
                 this.fileModeList = [];
                 this.moneyText = "";
                 this.emptyFileList = [];
+                this.payAccDetail = {};
                 this.saveParams.uuid = JSON.parse(window.sessionStorage.getItem("uuid"));
                 var box = document.getElementById("billContainer");
                 var btn = box.parentNode.getElementsByClassName("bills-page");
@@ -1280,7 +1304,7 @@
                 // }
                 var billData = this.billData;
                 var params = this.saveParams;
-                params.pay_account_id = billData.pay_account_id;
+                params.pay_account_id = billData.pay_account.acc_id;
                 params.biz_id = billData.bizObj.biz_id;
                 params.biz_name = billData.bizObj.biz_name;
                 params.pay_mode = billData.pay_mode;
@@ -1452,6 +1476,10 @@
                     return ;
                 }
             },
+            //修改付款方，tip文字变更
+            payAccChange:function(val){
+                this.payAccDetail = val;
+            }
         },
         watch:{
             fileModeList: function(old,val){
