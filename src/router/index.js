@@ -90,8 +90,7 @@ import CollectionSet from '@/components/collection/CollectionSet'
 import CollectionManage from '@/components/collection/CollectionManage'
 import CollectionLook from '@/components/collection/CollectionLook'
 import CollectionStatement from '@/components/collection/CollectionStatement'
-import ColleDealCheck from '@/components/collection/ColleDealCheck'
-
+import ColleMoreBills from '@/components/collection/ColleMoreBills'
 //资金下拨
 import FundPoolAccSet from '@/components/fundAllocation/FundPoolAccSet'
 import AutoAllocationSet from '@/components/fundAllocation/AutoAllocationSet'
@@ -100,13 +99,10 @@ import AllocationDealCheck from '@/components/fundAllocation/AllocationDealCheck
 import AllManageDetail from '@/components/fundAllocation/AllManageDetail'
 import AutoAllocationView from '@/components/fundAllocation/AutoAllocationView'
 import AutoAllocationMoreBills from '@/components/fundAllocation/AutoAllocationMoreBills'
-
 //收款通
 import ReceiveMakeBill from '@/components/receivables/ReceiveMakeBill'
 import ReceiveMoreBills from '@/components/receivables/ReceiveMoreBills'
 import ReceiveLookOver from '@/components/receivables/ReceiveLookOver'
-
-
 //电子回单
 import ElectronicReceipt from '@/components/electronicReceipt/ElectronicReceipt'
 
@@ -190,7 +186,7 @@ const router = new Router({
                         {path: '/collection/collection-manage', name: 'CollectionManage', component: CollectionManage, meta: {requireAuth: true}},
                         {path: '/collection/collection-look', name: 'CollectionLook', component: CollectionLook, meta: {requireAuth: true}},
                         {path: '/collection/collection-statement', name: 'CollectionStatement', component: CollectionStatement, meta: {requireAuth: true}},
-                        {path: '/collection/colle-deal-check', name: 'ColleDealCheck', component: ColleDealCheck, meta: {requireAuth: true}},
+                        {path: '/collection/colle-more-bills', name: 'ColleMoreBills', component: ColleMoreBills, meta: {requireAuth: true}},
                         //资金下拨
                         {path: '/allocation/fundpool-acc-set', name: 'FundPoolAccSet', component: FundPoolAccSet, meta: {requireAuth: true}},
                         {path: '/allocation/allocation-set', name: 'AutoAllocationSet', component: AutoAllocationSet, meta: {requireAuth: true}},
@@ -231,7 +227,7 @@ const router = new Router({
                         {path: '/balance/history-data', name: 'HistoryData', component: HistoryData, meta: {requireAuth: true}},
                         //交易通
                         {path: '/trade-links/history-data', name: 'HistoryDealData', component: HistoryDealData, meta: {requireAuth: true}}
-                        
+
                     ]
                 },
                 //基础样式五（可切换tab文字的tab页）
@@ -243,7 +239,7 @@ const router = new Router({
                         {path: '/allot/allot-deal-check', name: 'AllotDealCheck', component: AllotDealCheck, meta: {requireAuth: true}},
                         //资金下拨交易核对
                         {path: '/allocation/allocation-deal-check', name: 'AllocationDealCheck', component: AllocationDealCheck, meta: {requireAuth: true}},
-                        
+
                     ]
                 },
                 //调拨通
@@ -254,7 +250,7 @@ const router = new Router({
                 {path: '/payment/batch-make-bill', name: 'BatchMakeBill', component: BatchMakeBill, meta: {requireAuth: true}},
                 //收款通
                 {path: '/receivables/receive-make-bill', name: 'ReceiveMakeBill', component: ReceiveMakeBill, meta: {requireAuth: true}},
-                
+
             ]
         }
     ]

@@ -418,20 +418,20 @@
                     <el-menu-item index="/calendar/closing-day">结账日设置</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="11">
+            <el-submenu index="11" v-if="menuList.ZFT">
                 <template slot="title" height="200px">
                     <i class="icon-zft"></i>
                     <p class="mg-four">支付通</p>
                 </template>
                 <el-menu-item-group>
-                    <el-menu-item index="/payment/pay-make-bill">资金支付-制单</el-menu-item>
-                    <el-menu-item index="/payment/pay-payment">资金支付-支付</el-menu-item>
-                    <el-menu-item index="/payment/pay-look-over">资金支付-查看</el-menu-item>
-                    <el-menu-item index="/payment/batch-make-bill">批量支付-制单</el-menu-item>
+                    <el-menu-item index="/payment/pay-make-bill" v-if="menuList.ZFTMkBill">资金支付-制单</el-menu-item>
+                    <el-menu-item index="/payment/pay-payment" v-if="menuList.ZFTPayBill">资金支付-支付</el-menu-item>
+                    <el-menu-item index="/payment/pay-look-over" v-if="menuList.ZFTViewBill">资金支付-查看</el-menu-item>
+                    <el-menu-item index="/payment/batch-make-bill" v-if="menuList.ZFTBatchBill">批量支付-制单</el-menu-item>
                     <!--<el-menu-item index="/payment/batch-payment">批量支付-支付</el-menu-item>-->
-                    <el-menu-item index="/payment/batch-look-over">批量支付-查看</el-menu-item>
-                    <el-menu-item index="/payment/payee-message">收款方信息管理</el-menu-item>
-                    <el-menu-item index="/payment/deal-check?bizType=9">交易核对</el-menu-item>
+                    <el-menu-item index="/payment/batch-look-over" v-if="menuList.ZFTBatchView">批量支付-查看</el-menu-item>
+                    <el-menu-item index="/payment/payee-message" v-if="menuList.ZFTSuplierAcc">收款方信息管理</el-menu-item>
+                    <el-menu-item index="/payment/deal-check?bizType=9" v-if="menuList.ZFTCheck">交易核对</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
             <el-submenu index="12">
@@ -607,12 +607,21 @@
                     HisTransSummary: false, //历史交易汇总
                     HisTransWave: false, //历史交易波动
 
-                    DBT: false, //交易通
+                    DBT: false, //调拨通
                     DbtMkBill: false, //内部调拨-制单
                     DbtPayBill: false, //内部调拨-支付
                     DbtViewBill: false, //内部调拨-查看
                     DbtBatchBill: false, //批量调拨-制单
                     DbtCheck: false, //内部调拨-交易核对
+
+                    ZFT: false, //支付通
+                    ZFTMkBill: false, //资金支付-制单
+                    ZFTPayBill: false, //资金支付-支付
+                    ZFTViewBill: false, //资金支付-查看
+                    ZFTBatchBill: false, //资金支付-批量制单
+                    ZFTBatchView: false, //资金支付-批量查看
+                    ZFTCheck: false, //资金支付-交易核对
+                    ZFTSuplierAcc: false, //收款方账户维护
                 }
             }
         },

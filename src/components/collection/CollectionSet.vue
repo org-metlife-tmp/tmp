@@ -325,13 +325,13 @@
         </section>
         <!--底部按钮-->
         <div class="btn-bottom">
-            <el-button type="warning" plain size="mini" @click="">
+            <el-button type="warning" plain size="mini" @click="goMoreBills">
                 更多单据<span class="arrows">></span>
             </el-button>
             <div class="btnGroup">
                 <el-button type="warning" size="small" @click="clearAll">清空</el-button>
                 <el-button type="warning" size="small" @click="saveCollect">保存</el-button>
-                <el-button type="warning" size="small" @click="">提交</el-button>
+                <el-button type="warning" size="small" @click="submitBill">提交</el-button>
             </div>
         </div>
         <!--添加被归集账户弹框-->
@@ -435,6 +435,23 @@
                     <el-button type="warning" size="mini" @click="comfirmCurrDate">确 定</el-button>
                 </span>
         </el-dialog>
+        <!--提交弹框-->
+        <el-dialog :visible.sync="innerVisible"
+                   width="50%" title="提交审批流程"
+                   top="76px"
+                   :close-on-click-modal="false">
+            <el-radio-group v-model="selectWorkflow">
+                <el-radio v-for="workflow in workflows"
+                          :key="workflow.define_id"
+                          :label="workflow.define_id"
+                >{{ workflow.workflow_name }}
+                </el-radio>
+            </el-radio-group>
+            <span slot="footer" class="dialog-footer" style="text-align:center">
+                    <el-button type="warning" size="mini" plain @click="innerVisible = false">取 消</el-button>
+                    <el-button type="warning" size="mini" @click="submitFlow">确 定</el-button>
+                </span>
+        </el-dialog>
     </div>
 </template>
 
@@ -447,11 +464,12 @@
             this.$emit("transmitTitle", "自动归集设置");
 
             /*获取常量数据*/
-            //获取归集方式
+            //获取归集额度
             var constants = JSON.parse(window.sessionStorage.getItem("constants"));
             if (constants.CollOrPoolType) {
                 this.collTypeList = constants.CollOrPoolType;
             }
+            //归集频率
             if (constants.CollOrPoolFrequency) {
                 this.frequencyList = constants.CollOrPoolFrequency;
             }
@@ -470,9 +488,57 @@
                 }
             }
         },
+        mounted: function(){
+            //获取单据数据
+            var params = window.location.hash.split("?")[1];
+            if(params){
+                params = params.split("=");
+                this.$axios({
+                    url: "/cfm/normalProcess",
+                    method: "post",
+                    data: {
+                        optype: "collectsetting_detail",
+                        params: {
+                            id: params[1]
+                        }
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+
+                    } else {
+                        var data = result.data.data;
+
+                        var collectionData = this.collectionData;
+                        for (var k in collectionData) {
+                            if (k != "main_list" && k != "timesetting_list" && k != "files") {
+                                collectionData[k] = data[k];
+                            }
+                        }
+                        return;
+                        this.editableTabs.forEach((tabItem) => {
+                            this.clearCollect(tabItem);
+                            tabItem.main_acc_id = "";
+                        });
+                        this.clearDate();
+                        this.emptyFileList = [];
+
+
+                        console.log(data);
+
+                        this.fileMessage.bill_id = data.id;
+                        this.eidttrigFile = !this.eidttrigFile;
+                        console.log(billData);
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            }
+        },
         data: function () {
             return {
                 collectionData: { //表单数据
+                    id: "",
+                    persist_version: "",
                     topic: "",
                     collect_type: "",
                     collect_amount: "",
@@ -563,10 +629,13 @@
                 frequencyList: {},
                 fileMessage: { //附件
                     bill_id: "",
-                    biz_type: 1
+                    biz_type: 12
                 },
                 emptyFileList: [],
                 fileList: [],
+                innerVisible: false, //提交弹框
+                selectWorkflow: "",
+                workflows: [],
             }
         },
         components: {
@@ -818,13 +887,14 @@
             },
             //保存
             saveCollect: function () {
-                var params = this.seParams();
+                var params = this.setParams();
+                var collectionData = this.collectionData;
 
                 this.$axios({
                     url: "/cfm/normalProcess",
                     method: "post",
                     data: {
-                        optype: "collectsetting_add",
+                        optype: collectionData.id ? "collectsetting_chg" : "collectsetting_add",
                         params: params
                     }
                 }).then((result) => {
@@ -836,11 +906,13 @@
                         });
                     } else {
                         var data = result.data.data;
-                        console.log(data);
+                        var message = collectionData.id ? "修改成功" : "保存成功";
+                        this.collectionData.persist_version = data.persist_version;
+                        this.collectionData.id = data.id;
 
                         this.$message({
                             type: "success",
-                            message: "保存成功",
+                            message: message,
                             duration: 2000
                         });
                     }
@@ -849,7 +921,7 @@
                 });
             },
             //设置params
-            seParams: function () {
+            setParams: function () {
                 var collectionData = this.collectionData;
                 var editableTabs = this.editableTabs;
                 collectionData.main_list = editableTabs.filter((item) => {
@@ -883,7 +955,92 @@
                 });
                 this.clearDate();
                 this.emptyFileList = [];
-            }
+            },
+            //更多单据
+            goMoreBills: function(){
+                this.$router.push("/collection/colle-more-bills");
+            },
+            //提交
+            submitBill: function(){
+                var params = this.setParams();
+                if(!params){
+                    return;
+                }
+
+                this.$axios({
+                    url: "/cfm/normalProcess",
+                    method: "post",
+                    data: {
+                        optype: "collectsetting_presubmit",
+                        params: params
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        });
+                    } else {
+                        var data = result.data.data;
+
+                        var collectionData = this.collectionData;
+                        collectionData.id = data.id;
+                        collectionData.persist_version = data.persist_version;
+                        collectionData.service_status = data.service_status;
+                        collectionData.service_serial_number = data.service_serial_number;
+
+                        //设置弹框数据
+                        this.selectWorkflow = "";
+                        this.workflows = data.workflows;
+                        this.innerVisible = true;
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            },
+            //提交流程
+            submitFlow: function(){
+                var workflowData = this.collectionData;
+                var params = {
+                    define_id: this.selectWorkflow,
+                    id: workflowData.id,
+                    service_serial_number: workflowData.service_serial_number,
+                    service_status: workflowData.service_status,
+                    persist_version: workflowData.persist_version
+                };
+
+                this.$axios({
+                    url: "/cfm/normalProcess",
+                    method: "post",
+                    data: {
+                        optype: "collectsetting_submit",
+                        params: params
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                    } else {
+                        var data = result.data.data;
+                        this.innerVisible = false;
+                        this.$router.push({
+                            name: "CollectionSet"
+                        });
+                        this.clearAll();
+                        this.$message({
+                            type: "success",
+                            message: "提交成功",
+                            duration: 2000
+                        })
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                })
+            },
         },
         computed: {
             amountStatus: function () {
