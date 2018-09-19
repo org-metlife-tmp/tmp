@@ -71,6 +71,10 @@
                         }
                     }
                 }
+                /*被归集账户列表*/
+                .content-list {
+                    height: 151px;
+                }
             }
 
             /*下拨频率日期选择*/
@@ -112,54 +116,69 @@
             }
         }
         /*时间选择弹框*/
-        .set-date{
+        .set-date {
             text-align: center;
             margin-top: 10px;
             margin-bottom: 30px;
 
-            h5{
+            h5 {
                 width: 60%;
-                margin: 0 auto 10px;
+                margin: 0 auto 20px;
                 background: #3dbaf0;
                 color: #fff;
             }
 
-            .el-checkbox-group{
+            .el-checkbox-group {
                 margin-bottom: 30px;
             }
 
-            .month-day{
+            .month-day {
                 width: 60%;
                 height: 120px;
                 margin: 0 auto 30px;
 
-                li{
+                li {
                     float: left;
                     width: 14%;
                     cursor: pointer;
                 }
 
-                li:hover{
+                li:hover {
                     .active;
                 }
 
-                .active{
+                .active {
                     background-color: #3dbaf0;
                     border-radius: 6px;
                     color: #fff;
                 }
             }
         }
+        
     }
 </style>
 <style lang="less" type="text/less">
     #autoAllocationSet {
+        .el-table th {
+            text-align: left;
+        }
         .el-tabs__header {
             margin-bottom: 0;
         }
         .el-tabs__item {
             height: 32px;
             line-height: 32px;
+        }
+        .el-dialog__wrapper {
+            .el-dialog__body {
+                max-height: 400px;
+                overflow-y: auto;
+            }
+        }
+        /*弹框表格样式*/
+        .dialogTable{
+            // max-height: 200px;
+            margin-bottom: 20px;
         }
     }
 </style>
@@ -177,18 +196,18 @@
                 <el-row>
                     <el-col :span="14">
                         <el-form-item label="下拨主题">
-                            <el-input v-model="allocationData.acc_no" placeholder="请为本次下拨主题命名以方便识别"></el-input>
+                            <el-input v-model="allocationData.topic" placeholder="请为本次下拨主题命名以方便识别"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="24" style="text-align:left">
                         <el-form-item label="定额下拨">
-                            <el-input style="width:200px" v-model="allocationData.acc_name" placeholder="请填写下拨金额"></el-input>
+                            <el-input style="width:200px" v-model="allocationData.allocation_amount" placeholder="请填写下拨金额"></el-input>
                             <span style="color:#676767">（将下拨账户内所有余额转入下拨主账户）</span>
                         </el-form-item>
                     </el-col>
                     <el-col :span="20">
                         <el-form-item label="下拨关系">
-                            <el-tabs v-model="allocationData.activeName" type="card">
+                            <el-tabs v-model="tabActive" type="card">
                                 <el-tab-pane v-for="(item, index) in editableTabs"
                                              :key="item.name"
                                              :label="item.title"
@@ -196,17 +215,53 @@
                                     <div class="tab-content">
                                         <div class="account-select">
                                             下拨主账户
-                                            <el-input v-model="allocationData.acc_name"></el-input>
+                                            <!-- :remote-method="getMainAccListByKey" -->
+                                            <el-select v-model="item.main_acc_id" filterable remote clearable
+                                                        placeholder="请输入关键字"
+                                                        style="width:42%;margin-left:6px"
+                                                        @visible-change="getMainAccList"
+                                                        :loading="loading">
+                                                <el-option
+                                                        v-for="acc in mainAccOptions"
+                                                        :key="acc.acc_id"
+                                                        :label="acc.acc_name"
+                                                        :value="acc.acc_id">
+                                                </el-option>
+                                            </el-select>
                                         </div>
                                         <div class="tab-add-collect">
                                             <span>添加被下拨账户</span>
-                                            <i class="el-icon-circle-plus-outline" @click="addTheCollect"></i>
+                                            <i class="el-icon-circle-plus-outline"
+                                               @click="addTheAllocate(item,false)"></i>
                                             <div>
-                                                <span>全部清除</span>
+                                                <span @click="clearAllocate(item)">全部清除</span>
                                                 <span>被下拨账户：</span>
-                                                <span>0</span>
+                                                <span>{{ item.child_accounts.length }}</span>
                                                 <span>个</span>
                                             </div>
+                                        </div>
+                                        <div class="content-list">
+                                            <el-table :data="item.child_accounts"
+                                                      size="mini" height="100%"
+                                                      :show-header="false"
+                                                      :empty-text="' '"
+                                                      @selection-change="selectChange">
+                                                <el-table-column prop="acc_no" label="收款方账号"
+                                                                 :show-overflow-tooltip="true"></el-table-column>
+                                                <el-table-column prop="bank_name" label="收款方开户行"
+                                                                 :show-overflow-tooltip="true"></el-table-column>
+                                                <el-table-column
+                                                        label="操作" width="50"
+                                                        fixed="right">
+                                                    <template slot-scope="scope" class="operationBtn">
+                                                        <el-tooltip content="删除" placement="bottom" effect="light"
+                                                                    :enterable="false" :open-delay="500">
+                                                            <el-button type="danger" icon="el-icon-delete" size="mini"
+                                                                       @click="removeAllocate(scope.row,scope.$index,item.child_accounts)"></el-button>
+                                                        </el-tooltip>
+                                                    </template>
+                                                </el-table-column>
+                                            </el-table>
                                         </div>
                                     </div>
                                 </el-tab-pane>
@@ -215,34 +270,45 @@
                     </el-col>
                     <el-col :span="14">
                         <el-form-item label="下拨频率" style="text-align:left">
-                            <el-radio-group v-model="allocationData.frequency">
-                                <el-radio label="1">每日</el-radio>
-                                <el-radio label="2">每周</el-radio>
-                                <el-radio label="3">每月</el-radio>
+                            <el-radio-group v-model="allocationData.allocation_frequency"
+                                            @change="clearDate">
+                                <el-radio v-for="(frequency,key) in frequencyList"
+                                          :key="key" :label="key">{{ frequency }}
+                                </el-radio>
                             </el-radio-group>
                         </el-form-item>
                     </el-col>
                     <el-col :span="21" style="text-align:left">
                         <el-form-item label=" ">
                             <el-row>
-                                <el-col :span="6" class="date-select" v-for="item in datePickList" :key="item">
-                                    <el-input placeholder="请输入内容" prefix-icon="el-icon-date"
-                                              v-model="allocationData.input21"
-                                              @focus="selectDate">
+                                <el-col :span="6" class="date-select" v-for="datePicker in timesetting_list"
+                                        :key="datePicker.id">
+                                    <el-input placeholder="请选择时间" prefix-icon="el-icon-date"
+                                              v-model="datePicker.show" clearable
+                                              @focus="setCurrDate(datePicker)">
                                     </el-input>
                                 </el-col>
                                 <el-col :span="2" class="date-select">
                                     <i class="el-icon-circle-plus-outline" @click="addDatePicker"
-                                       v-show="datePickList.length < 3"></i>
+                                       v-show="timesetting_list.length < 3"></i>
                                     <i class="el-icon-remove-outline" @click="delDatePicker"
-                                       v-show="datePickList.length > 1"></i>
+                                       v-show="timesetting_list.length > 1"></i>
                                 </el-col>
                             </el-row>
                         </el-form-item>
                     </el-col>
                     <el-col :span="14">
                         <el-form-item label="摘要">
-                            <el-input v-model="allocationData.acc_no"></el-input>
+                            <el-input v-model="allocationData.summary"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="24">
+                        <el-form-item label="附件">
+                            <Upload @currentFielList="setFileList"
+                                    :fileMessage="fileMessage"
+                                    :emptyFileList="emptyFileList"
+                                    :isPending="true">
+                            </Upload>
                         </el-form-item>
                     </el-col>
                 </el-row>
@@ -254,58 +320,89 @@
                 更多单据<span class="arrows">></span>
             </el-button>
             <div class="btnGroup">
-                <el-button type="warning" size="small" @click="">清空</el-button>
-                <el-button type="warning" size="small" @click="">保存</el-button>
+                <el-button type="warning" size="small" @click="clearAll">清空</el-button>
+                <el-button type="warning" size="small" @click="saveAllocate">保存</el-button>
                 <el-button type="warning" size="small" @click="">提交</el-button>
             </div>
         </div>
-        <!--添加被归集账户弹框-->
+        <!--添加被下拨账户弹框-->
         <el-dialog :visible.sync="dialogVisible"
-                   width="860px" title="添加被归集账户"
-                   top="140px" :close-on-click-modal="false">
-
+                   width="860px" title="添加被下拨账户"
+                   top="76px" :close-on-click-modal="false">
             <el-form :inline="true" :model="searchData" size="mini">
                 <el-row>
                     <el-col :span="6">
                         <el-form-item>
-                            <el-input v-model="searchData.query_key" clearable placeholder="请输入账户号"></el-input>
+                            <el-input v-model="searchData.query_key" clearable placeholder="请输入收款方名称或账号"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="6">
                         <el-form-item>
-                            <el-input v-model="searchData.query_key" clearable placeholder="请输入账户号"></el-input>
+                            <el-select v-model="searchData.acc_attr" placeholder="请选择账户类型"
+                                       clearable filterable
+                                       style="width:100%">
+                                <el-option v-for="(purpose,key) in purposeList"
+                                           :key="key"
+                                           :label="purpose"
+                                           :value="key">
+                                </el-option>
+                            </el-select>
                         </el-form-item>
                     </el-col>
                     <el-col :span="6">
                         <el-form-item>
-                            <el-input v-model="searchData.query_key" clearable placeholder="请输入账户号"></el-input>
+                            <el-select v-model="searchData.bank_type" placeholder="请选择银行大类"
+                                       clearable filterable
+                                       style="width:100%"
+                                       :filter-method="filterBankType"
+                                       @visible-change="clearSearch">
+                                <el-option v-for="bankType in bankTypeList"
+                                           :key="bankType.name"
+                                           :label="bankType.name"
+                                           :value="bankType.code">
+                                </el-option>
+                            </el-select>
                         </el-form-item>
                     </el-col>
                     <el-col :span="2">
                         <el-form-item>
-                            <el-button type="primary" plain @click="" size="mini">搜索</el-button>
+                            <el-button type="primary" plain @click="queryDialogData" size="mini">搜索</el-button>
                         </el-form-item>
                     </el-col>
                 </el-row>
             </el-form>
-
+            <div class="dialog-content">
+                <template v-for="table in dialogTableList" >  
+                    <el-table :data="table.accounts" :key="table.org_id"
+                             size="mini" class="dialogTable"
+                             max-height="250"
+                            @selection-change="selectChange($event,table)">
+                        <el-table-column type="selection" width="38"></el-table-column>
+                        <el-table-column prop="acc_no" :label="table.org_name" :show-overflow-tooltip="true"></el-table-column>
+                        <el-table-column prop="bank_name" label=""
+                                        :show-overflow-tooltip="true"></el-table-column>
+                    </el-table>
+                </template> 
+            </div>
             <span slot="footer" class="dialog-footer" style="text-align:center">
-                    <el-button type="warning" size="mini" plain @click="dialogVisible = false">取 消</el-button>
-                    <el-button type="warning" size="mini" @click="">确 定</el-button>
-                </span>
+                <el-button type="warning" size="mini" plain @click="dialogVisible = false">取 消</el-button>
+                <el-button type="warning" size="mini" @click="addAllocate">确 定</el-button>
+            </span>
         </el-dialog>
         <!--选择时间弹框-->
         <el-dialog :visible.sync="dateDialog"
                    width="600px" title="归集时间选择"
                    top="140px" :close-on-click-modal="false">
             <div class="set-date">
-                <h5>请选择日期</h5>
-                <ul class="month-day" v-show="allocationData.frequency == 3">
+                <h5 v-show="allocationData.allocation_frequency == 3">请选择日期</h5>
+                <ul class="month-day" v-show="allocationData.allocation_frequency == 3">
                     <li v-for="item in monthDay" :key="item.day"
                         :class="{active:item.isActive}"
-                        @click="item.isActive = !item.isActive">{{ item.day }}</li>
+                        @click="item.isActive = !item.isActive">{{ item.day }}
+                    </li>
                 </ul>
-                <el-checkbox-group v-model="dateObj.checkboxGroup2" size="small" v-show="allocationData.frequency == 1">
+                <el-checkbox-group v-model="dateSelect.weekDate" size="small"
+                                   v-show="allocationData.allocation_frequency == 2">
                     <el-checkbox-button v-for="(week,k) in weeks"
                                         :label="k"
                                         :key="k">
@@ -313,39 +410,83 @@
                     </el-checkbox-button>
                 </el-checkbox-group>
                 <el-time-picker
-                        arrow-control
-                        v-model="dateObj.value3"
-                        :format="'HH:mm'"
-                        placeholder="请选择时间">
+                    arrow-control
+                    v-model="dateSelect.timeDate"
+                    :format="'HH:mm'"
+                    value-format="HH:mm"
+                    placeholder="请选择时间">
                 </el-time-picker>
             </div>
             <span slot="footer" class="dialog-footer" style="text-align:center">
                     <el-button type="warning" size="mini" plain @click="dateDialog = false">取 消</el-button>
-                    <el-button type="warning" size="mini" @click="">确 定</el-button>
+                    <el-button type="warning" size="mini" @click="comfirmCurrDate">确 定</el-button>
                 </span>
         </el-dialog>
     </div>
 </template>
 
 <script>
+    import Upload from "../publicModule/Upload.vue";
     export default {
         name: "AutoAllocationSet",
         created: function () {
             this.$emit("transmitTitle", "自动下拨设置");
-            // 
+
+            /*获取常量数据*/
+            //获取归集额度
+            var constants = JSON.parse(window.sessionStorage.getItem("constants"));
+            if (constants.CollOrPoolType) {
+                let poolType = constants.CollOrPoolType;
+                for(let i in poolType){
+                    if(poolType[i] == "定额"){
+                        this.allocation_type = i;
+                    }
+                }
+            }
+            //下拨频率
+            if (constants.CollOrPoolFrequency) {
+                this.frequencyList = constants.CollOrPoolFrequency;
+            }
+            //银行大类
+            var bankTypeList = JSON.parse(window.sessionStorage.getItem("bankTypeList"));
+            if (bankTypeList) {
+                this.bankAllList = bankTypeList;
+                this.bankTypeList = bankTypeList;
+            }
+            //账户类型
+            var catgList = JSON.parse(window.sessionStorage.getItem("catgList"));
+            for (var i = 0; i < catgList.length; i++) {
+                if (catgList[i].code == "acc_purpose") {
+                    this.purposeList = catgList[i].items;
+                    break;
+                }
+            }
         },
         data: function () {
             return {
                 allocationData: { //表单数据
-                    activeName: "1",
+                    allocation_frequency: "1"
                 },
+                tabActive: "1",
                 formLabelWidth: "100px",
                 editableTabs: [{ //控制标签页数据
                     title: '01',
-                    name: '1'
-                }],
-                dialogVisible: false, //弹框数据
-                searchData: {},
+                    name: '1',
+                    main_acc_id: "",
+                    child_accounts: [],
+                },
+                // { //控制标签页数据
+                //     title: '02',
+                //     name: '2',
+                //     main_acc_id: "",
+                //     child_accounts: []
+                // }
+                ],
+                searchData: {//子账户搜索条件
+                    query_key: "",
+                    bank_type: "",
+                    acc_attr: ""
+                },
                 dateDialog: false,
                 dialogVisible: false, //弹框数据
                 dateObj:{
@@ -393,33 +534,361 @@
                     {day:"30",isActive:false},
                     {day:"31",isActive:false}
                 ],
-                datePickList:[1]
+                frequencyList: [],//下拨频率
+                timesetting_list: [ //时间选择器内容
+                    {time: "", detail: [], show:""}
+                ],
+                dateSelect: {
+                    weekDate: [],
+                    timeDate: ""
+                },
+                currTimeSetting: {},
+                purposeList: [],//账户类型
+                bankTypeList: [],
+                dialogTableList: [], //弹框表格数据
+                loading: false, //主账户列表加载数据时状态显示
+                mainAccOptions:[],//主账户列表
+                selectList: [],//选择要添加的子账户
+                allocation_type:"",
+                fileMessage: { //附件
+                    bill_id: "",
+                    biz_type: 13
+                },
+                emptyFileList: []
             }
         },
+        components: {
+            Upload: Upload
+        },
         methods: {
-            //添加被归集账号
-            addTheCollect: function(){
-                this.dialogVisible = true;
+            //银行大类搜索筛选
+            filterBankType: function (value) {
+                if (value && value.trim()) {
+                    this.bankTypeList = this.bankAllList.filter(item => {
+                        var chineseReg = /^[\u0391-\uFFE5]+$/; //判断是否为中文
+                        var englishReg = /^[a-zA-Z]+$/; //判断是否为字母
+                        var quanpinReg = /(a[io]?|ou?|e[inr]?|ang?|ng|[bmp](a[io]?|[aei]ng?|ei|ie?|ia[no]|o|u)|pou|me|m[io]u|[fw](a|[ae]ng?|ei|o|u)|fou|wai|[dt](a[io]?|an|e|[aeio]ng|ie?|ia[no]|ou|u[ino]?|uan)|dei|diu|[nl][gh]ei|[jqx](i(ao?|ang?|e|ng?|ong|u)?|u[en]?|uan)|([csz]h?|r)([ae]ng?|ao|e|i|ou|u[ino]?|uan)|[csz](ai?|ong)|[csz]h(ai?|uai|uang)|zei|[sz]hua|([cz]h|r)ong|y(ao?|[ai]ng?|e|i|ong|ou|u[en]?|uan))/; //判断是否为全拼
+
+                        if (chineseReg.test(value)) {
+                            return item.name.toLowerCase().indexOf(value.toLowerCase()) > -1;
+                        } else if (englishReg.test(value)) {
+                            if (quanpinReg.test(value)) {
+                                return item.pinyin.toLowerCase().indexOf(value.toLowerCase()) > -1;
+                            } else {
+                                return item.jianpin.toLowerCase().indexOf(value.toLowerCase()) > -1;
+                            }
+                        }
+                    })
+                } else {
+                    this.bankTypeList = this.bankAllList;
+                }
+            },
+            //重置银行大类数据
+            clearSearch: function () {
+                if (this.bankTypeList != this.bankAllList) {
+                    this.bankTypeList = this.bankAllList;
+                }
+            },
+            //查询被归集子账户
+            queryDialogData: function () {
+                var tabActive = this.tabActive;
+                var tabList = this.editableTabs;
+                for (var i = 0; i < tabList.length; i++) {
+                    if (tabList[i].name == tabActive) {
+                        this.addTheAllocate(tabList[i], true);
+                        break;
+                    }
+                }
+            },
+            //点击添加被归集账号，查询子账户列表
+            addTheAllocate: function(currTab, addParams){
+                if (!currTab.main_acc_id) {
+                    this.$message({
+                        type: "warning",
+                        message: "请选择下拨主账户",
+                        duration: 2000
+                    });
+                    return;
+                }
+
+                //组织params
+                var params = {};
+                var searchData = this.searchData;
+                if (!addParams) {
+                    //清空查询条件，数据
+                    for (var k in searchData) {
+                        searchData[k] = "";
+                    }
+                    this.dialogTableList = [];
+                    this.dialogVisible = true;
+                } else {
+                    //点击弹框的搜索查询参数
+                    for (var k in searchData) {
+                        params[k] = searchData[k];
+                    }
+                }
+                var childList = currTab.child_accounts;//当前tab下选择过的账户
+                var excludeInstIds = [];
+                childList.forEach((childItem) => {
+                    excludeInstIds.push(childItem.acc_id);
+                });
+                params.excludeInstIds = excludeInstIds;
+                //查询子账户列表
+                this.$axios({
+                    url: "/cfm/normalProcess",
+                    method: "post",
+                    data: {
+                        optype: "allocset_childacclist",
+                        params: params
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                    } else {
+                        var data = result.data.data;
+                        this.dialogTableList = data;
+                        this.dialogVisible = true;
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            },
+            //选择被归集弹框选择列表后
+            selectChange: function (selectVal,curTable) {
+                curTable.selectList = selectVal;
+            },
+            //添加被下拨账户
+            addAllocate: function () {
+                var list = this.dialogTableList;
+                var hasSelList = [];
+                list.forEach(element => {
+                    var selList = element.selectList;
+                    if(selList && selList.length>0){
+                        hasSelList = hasSelList.concat(selList);
+                    }
+                });
+                if (hasSelList.length == 0) {
+                    this.$message({
+                        type: "warning",
+                        message: "请选择要添加的下拨账户",
+                        duration: 2000
+                    });
+                    return;
+                }
+                var tabActive = this.tabActive;
+                var tabList = this.editableTabs;
+                for (var i = 0; i < tabList.length; i++) {
+                    var tabItem = tabList[i];
+                    if (tabItem.name == tabActive) {
+                        tabItem.child_accounts = tabItem.child_accounts.concat(hasSelList);
+                        this.dialogVisible = false;
+                        break;
+                    }
+                }
+            },
+            //删除被归集账户
+            removeAllocate: function (row, index, rows) {
+                rows.splice(index, 1);
+            },
+            //清楚被归集账户
+            clearAllocate: function (currTab) {
+                currTab.child_accounts = [];
+            },
+            //确认设置时间
+            comfirmCurrDate: function () {
+                var frequency = this.allocationData.allocation_frequency;
+                var dateSelect = this.dateSelect;
+                if (frequency == 1) { //只设置时间
+                    this.currTimeSetting.show = dateSelect.timeDate;
+                } else if (frequency == 2) { //设置周
+                    var str = dateSelect.weekDate.join(",");
+                    this.currTimeSetting.show = str + "-" + dateSelect.timeDate;
+                    this.currTimeSetting.detail = str;
+                } else { //设置月
+                    var monthDay = this.monthDay;
+                    var activeDay = "";
+                    monthDay.forEach((dayItem) => {
+                        if (dayItem.isActive) {
+                            activeDay += dayItem.day + ",";
+                        }
+                    });
+                    var str = activeDay.slice(0, activeDay.length - 1);
+                    this.currTimeSetting.show = str + "-" + dateSelect.timeDate;
+                    this.currTimeSetting.detail = str;
+                }
+                this.currTimeSetting.time = dateSelect.timeDate;
+                this.dateDialog = false;
             },
             //添加时间选择器
-            addDatePicker: function(){
-                var datePickList = this.datePickList;
-                if(datePickList.length < 3){
-                    datePickList.push(datePickList[datePickList.length-1] + 1);
+            addDatePicker: function () {
+                var datePickList = this.timesetting_list;
+                if (datePickList.length < 3) {
+                    datePickList.push({time: "", detail: [], show:""});
                 }
             },
             //删除时间选择器
-            delDatePicker: function(){
-                var datePickList = this.datePickList;
-                if(datePickList.length > 1){
+            delDatePicker: function () {
+                var datePickList = this.timesetting_list;
+                if (datePickList.length > 1) {
                     datePickList.pop();
                 }
+            },
+            //设置时间
+            setCurrDate: function (currDate) {
+                //清空数据
+                var frequency = this.allocationData.allocation_frequency;
+                var dateSelect = this.dateSelect;
+                dateSelect.timeDate = "";
+                if (frequency == 2) { //周
+                    dateSelect.weekDate = [];
+                } else { //月
+                    this.monthDay.forEach((dayItem) => {
+                        if (dayItem.isActive) {
+                            dayItem.isActive = false;
+                        }
+                    });
+                }
+                //保存当前数据
+                this.currTimeSetting = currDate;
+                this.dateDialog = true;
+            },
+            //改变下拨频率后清空其时间选择
+            clearDate: function () {
+                this.timesetting_list = [{time: "", detail: [], show:""}];
             },
             gomoreBills: function(){
                 this.$router.push("/allocation/allocation-more-bills");
             },
             selectDate: function(){
                 this.dateDialog = true;
+            },
+            //设置当前项上传附件
+            setFileList: function ($event) {
+                this.fileList = [];
+                if ($event.length > 0) {
+                    $event.forEach((item) => {
+                        this.fileList.push(item.id);
+                    })
+                }
+            },
+            //下拉展开查询主账户列表方法
+            getMainAccList: function(query){
+                this.mainAccOptions = [];
+                var tabActive = this.tabActive;
+                var tabList = this.editableTabs;
+                var excludeInstIds = [];
+                tabList.forEach((tabItem) => {
+                    if (tabItem.name != tabActive && tabItem.main_acc_id) {
+                        excludeInstIds.push(tabItem.main_acc_id);
+                    }
+                });
+                this.$axios({
+                    url: "/cfm/normalProcess",
+                    method: "post",
+                    data: {
+                        optype: "allocset_mainacclist",
+                        params: {
+                            query_key: query,
+                            excludeInstIds:excludeInstIds
+                        }
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                    } else {
+                        this.loading = false;
+                        var data = result.data.data;
+                        this.mainAccOptions = data;
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            },
+            //关键字查询主账户列表
+            getMainAccListByKey: function(query){
+                if (query && query.trim()) {
+                    this.loading = true;
+                    this.getMainAccList(query);
+                } 
+            },
+            //组织保存参数
+            setParams: function(){
+                var data = this.allocationData;
+                data.frequency_detail = this.timesetting_list;
+                data.main_accounts = [];
+                var editableTabs = this.editableTabs;
+                editableTabs.forEach((tab)=>{
+                    var obj = {};
+                    obj.tab = tab.name
+                    obj.main_acc_id = tab.main_acc_id;
+                    obj.child_accounts = [];
+                    var list = tab.child_accounts;
+                    list.forEach((item)=>{
+                        obj.child_accounts.push(item.acc_id);
+                    })
+                    data.main_accounts.push(obj);
+                })
+                data.allocation_type = this.allocation_type;
+                data.files = this.fileList;
+                return data;
+            },
+            //清空
+            clearAll: function (clearAll) {
+                var data = this.allocationData;
+                for (var k in data) {
+                    if (k == "frequency_detail" && k == "files" && k == "main_accounts") {
+                        data[k] = [];
+                    }else{
+                        if (k == "allocation_frequency") {
+                            data[k] = "1";
+                        } else {
+                            data[k] = "";
+                        }
+                    }
+                }
+                this.editableTabs.forEach((tabItem) => {
+                    this.clearAllocate(tabItem);
+                    tabItem.main_acc_id = "";
+                });
+                this.clearDate();
+                this.emptyFileList = [];
+            },
+            //保存
+            saveAllocate:function (){
+                var params = this.setParams();
+                this.$axios({
+                    url: "/cfm/normalProcess",
+                    method: "post",
+                    data: {
+                        optype: "allocset_add",
+                        params: params
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                    } else {
+                        var data = result.data.data;
+                        this.$message({
+                            type: "success",
+                            message: "保存成功",
+                            duration: 2000
+                        });
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                });
             }
         }
     }
