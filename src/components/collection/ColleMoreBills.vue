@@ -160,13 +160,13 @@
                                     :enterable="false" :open-delay="500"
                                     v-if="scope.row.service_status != 1 && scope.row.service_status != 5">
                             <el-button type="primary" icon="el-icon-search" size="mini"
-                                       @click="lookBill(scope.row)"></el-button>
+                                       @click="lookCollect(scope.row)"></el-button>
                         </el-tooltip>
                         <el-tooltip content="编辑" placement="bottom" effect="light"
                                     :enterable="false" :open-delay="500"
                                     v-if="scope.row.service_status == 1 || scope.row.service_status == 5">
                             <el-button type="primary" icon="el-icon-edit" size="mini"
-                                       @click="editBill(scope.row)"></el-button>
+                                       @click="editCollect(scope.row)"></el-button>
                         </el-tooltip>
                         <el-tooltip content="复制" placement="bottom" effect="light"
                                     :enterable="false" :open-delay="500"
@@ -398,6 +398,24 @@
                     }
                 });
             },
+            //编辑
+            editCollect: function(row){
+                this.$router.push({
+                    name: "CollectionSet",
+                    query: {
+                        id: row.id
+                    }
+                });
+            },
+            //查看
+            lookCollect: function(row){
+                this.$router.push({
+                    name: "CollectionSet",
+                    query: {
+                        viewId: row.id
+                    }
+                });
+            }
         },
         computed: {
             showActivate: function(){

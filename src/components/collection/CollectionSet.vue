@@ -162,6 +162,21 @@
     .dialog-content {
         height: 360px;
         overflow-y: auto;
+
+        .list-org{
+            height: 30px;
+            background: #E9F2F9;
+            line-height: 30px;
+            padding-left: 10px;
+            border: 1px solid #ebeef5;
+            border-bottom: none;
+            box-sizing: border-box;
+            margin-top: 20px;
+        }
+        .list-org:nth-child(1){
+            margin-top: 0;
+        }
+
     }
 </style>
 <style lang="less" type="text/less">
@@ -185,24 +200,25 @@
                 <el-row>
                     <el-col :span="14">
                         <el-form-item label="归集主题">
-                            <el-input v-model="collectionData.topic" placeholder="请为本次归集主题命名以方便识别"></el-input>
+                            <el-input v-model="collectionData.topic" placeholder="请为本次归集主题命名以方便识别"
+                                      :readonly="isView"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="14" style="text-align:left">
                         <el-form-item label="归集额度">
-                            <el-radio-group v-model="collectionData.collect_type">
+                            <el-radio-group v-model="collectionData.collect_type" :disabled="isView">
                                 <el-radio v-for="(collType,key) in collTypeList"
                                           :key="key" :label="key">{{ collType }}
                                 </el-radio>
                             </el-radio-group>
                         </el-form-item>
                     </el-col>
-                    <el-col :span="14" style="text-align:left">
+                    <el-col :span="20" style="text-align:left">
                         <el-form-item label=" ">
                             <el-row>
-                                <el-col :span="6">
+                                <el-col :span="4">
                                     <el-input v-model="collectionData.collect_amount" placeholder="请填写归集金额"
-                                              :disabled="amountStatus"></el-input>
+                                              :disabled="amountStatus" :readonly="isView"></el-input>
                                 </el-col>
                                 <el-col :span="1" style="height:1px"></el-col>
                                 <el-col :span="16" style="color:#676767">
@@ -227,6 +243,7 @@
                                             <el-select v-model="item.main_acc_id" placeholder="请选择主账户"
                                                        style="width:42%;margin-left:6px"
                                                        filterable clearable size="mini"
+                                                       :disabled="isView"
                                                        @visible-change="getAccList"
                                                        @change="setMain($event,item)">
                                                 <el-option v-for="item in accOptions"
@@ -239,9 +256,9 @@
                                         <div class="tab-add-collect">
                                             <span>添加被归集账户</span>
                                             <i class="el-icon-circle-plus-outline"
-                                               @click="getTheCollect(item,false)"></i>
+                                               @click="getTheCollect(item,false)" v-show="!isView"></i>
                                             <div>
-                                                <span @click="clearCollect(item)">全部清除</span>
+                                                <span @click="clearCollect(item)" v-show="!isView">全部清除</span>
                                                 <span>被归集账户：</span>
                                                 <span>{{ item.child_list.length }}</span>
                                                 <span>个</span>
@@ -251,10 +268,7 @@
                                             <el-table :data="item.child_list"
                                                       size="mini" height="100%"
                                                       :show-header="false"
-                                                      :empty-text="' '"
-                                                      @selection-change="selectChange">
-                                                <el-table-column prop="child_acc_name" label="收款方名称"
-                                                                 :show-overflow-tooltip="true"></el-table-column>
+                                                      :empty-text="' '">
                                                 <el-table-column prop="child_acc_no" label="收款方账号"
                                                                  :show-overflow-tooltip="true"></el-table-column>
                                                 <el-table-column prop="child_acc_bank_name" label="收款方开户行"
@@ -264,7 +278,7 @@
                                                         fixed="right">
                                                     <template slot-scope="scope" class="operationBtn">
                                                         <el-tooltip content="删除" placement="bottom" effect="light"
-                                                                    :enterable="false" :open-delay="500">
+                                                                    :enterable="false" :open-delay="500" v-show="!isView">
                                                             <el-button type="danger" icon="el-icon-delete" size="mini"
                                                                        @click="removeCollect(scope.row,scope.$index,item.child_list)"></el-button>
                                                         </el-tooltip>
@@ -280,7 +294,7 @@
                     <el-col :span="14">
                         <el-form-item label="归集频率" style="text-align:left">
                             <el-radio-group v-model="collectionData.collect_frequency"
-                                            @change="clearDate">
+                                            @change="clearDate" :disabled="isView">
                                 <el-radio v-for="(frequency,key) in frequencyList"
                                           :key="key" :label="key">{{ frequency }}
                                 </el-radio>
@@ -294,10 +308,11 @@
                                         :key="datePicker.id">
                                     <el-input placeholder="请选择时间" prefix-icon="el-icon-date"
                                               v-model="datePicker.dateItem" clearable
+                                              :disabled="isView"
                                               @focus="setCurrDate(datePicker)">
                                     </el-input>
                                 </el-col>
-                                <el-col :span="2" class="date-select">
+                                <el-col :span="2" class="date-select" v-show="!isView">
                                     <i class="el-icon-circle-plus-outline" @click="addDatePicker"
                                        v-show="timesetting_list.length < 3"></i>
                                     <i class="el-icon-remove-outline" @click="delDatePicker"
@@ -308,7 +323,7 @@
                     </el-col>
                     <el-col :span="14">
                         <el-form-item label="摘要">
-                            <el-input v-model="collectionData.summary"></el-input>
+                            <el-input v-model="collectionData.summary" :readonly="isView"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="24">
@@ -316,7 +331,8 @@
                             <Upload @currentFielList="setFileList"
                                     :fileMessage="fileMessage"
                                     :emptyFileList="emptyFileList"
-                                    :isPending="true">
+                                    :triggerFile="eidttrigFile"
+                                    :isPending="!isView">
                             </Upload>
                         </el-form-item>
                     </el-col>
@@ -328,7 +344,7 @@
             <el-button type="warning" plain size="mini" @click="goMoreBills">
                 更多单据<span class="arrows">></span>
             </el-button>
-            <div class="btnGroup">
+            <div class="btnGroup" v-show="!isView">
                 <el-button type="warning" size="small" @click="clearAll">清空</el-button>
                 <el-button type="warning" size="small" @click="saveCollect">保存</el-button>
                 <el-button type="warning" size="small" @click="submitBill">提交</el-button>
@@ -382,16 +398,21 @@
                 </el-row>
             </el-form>
             <div class="dialog-content">
-                <el-table :data="dialogList"
-                          border size="mini"
-                          @selection-change="selectChange">
-                    <el-table-column type="selection" width="38"></el-table-column>
-                    <el-table-column prop="child_acc_name" label="收款方名称"
-                                     :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="child_acc_no" label="收款方账号" :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="child_acc_bank_name" label="收款方开户行"
-                                     :show-overflow-tooltip="true"></el-table-column>
-                </el-table>
+                <template v-for="org in dialogList">
+                    <div class="list-org">
+                        <el-checkbox v-model="org.$checked" @change="setThisList($event,org)">{{ org.org_name }}</el-checkbox>
+                    </div>
+                    <el-table :data="org.accounts"
+                              border size="mini"
+                              :show-header="false"
+                              :ref="'collect' + org.org_id"
+                              @selection-change="selectChange($event,org)">
+                        <el-table-column type="selection" width="38"></el-table-column>
+                        <el-table-column prop="child_acc_no" label="收款方账号" :show-overflow-tooltip="true"></el-table-column>
+                        <el-table-column prop="child_acc_bank_name" label="收款方开户行"
+                                         :show-overflow-tooltip="true"></el-table-column>
+                    </el-table>
+                </template>
             </div>
 
             <span slot="footer" class="dialog-footer" style="text-align:center">
@@ -507,27 +528,50 @@
 
                     } else {
                         var data = result.data.data;
-
+                        //设置基本数据
                         var collectionData = this.collectionData;
                         for (var k in collectionData) {
                             if (k != "main_list" && k != "timesetting_list" && k != "files") {
-                                collectionData[k] = data[k];
+                                if(k == "id" || k == "persist_version"){
+                                    if(params[0] == "copyId"){
+
+                                    }else{
+                                        collectionData[k] = data[k] + "";
+                                    }
+                                }else{
+                                    collectionData[k] = data[k] + "";
+                                }
                             }
                         }
-                        return;
-                        this.editableTabs.forEach((tabItem) => {
-                            this.clearCollect(tabItem);
-                            tabItem.main_acc_id = "";
+                        //设置归集关系
+                        data.main_acc_list.forEach((mainItem) => {
+                            mainItem.name = mainItem.tab.slice(1);
+                            this.accOptions.push({
+                                main_acc_id: mainItem.main_acc_id,
+                                main_acc_name: mainItem.main_acc_name
+                            })
                         });
-                        this.clearDate();
-                        this.emptyFileList = [];
-
-
-                        console.log(data);
-
+                        this.editableTabs = data.main_acc_list;
+                        if(data.main_acc_list.length < 3 && params[0] != "viewId"){
+                            this.editableTabs.push({
+                                tab: '+',
+                                name: data.main_acc_list.length + 1 + "",
+                                main_acc_id: "",
+                                child_list: []
+                            })
+                        }
+                        //设置时间值
+                        this.timesetting_list = [];
+                        data.time_setting_list.forEach((item) => {
+                            this.timesetting_list.push({dateItem:item.collect_time,id:item.id});
+                        });
+                        //附件
                         this.fileMessage.bill_id = data.id;
                         this.eidttrigFile = !this.eidttrigFile;
-                        console.log(billData);
+
+                        if(params[0] == "viewId"){
+                            this.isView = true;
+                        }
                     }
                 }).catch(function (error) {
                     console.log(error);
@@ -570,7 +614,6 @@
                     acc_type: ""
                 },
                 dialogList: [],
-                selectList: [],
                 dateDialog: false, //选择时间弹框
                 dateSelect: {
                     weekDate: [],
@@ -632,10 +675,12 @@
                     biz_type: 12
                 },
                 emptyFileList: [],
+                eidttrigFile: false,
                 fileList: [],
                 innerVisible: false, //提交弹框
                 selectWorkflow: "",
                 workflows: [],
+                isView: false, //查看页面时设置只读
             }
         },
         components: {
@@ -769,6 +814,7 @@
                         params: params
                     }
                 }).then((result) => {
+                    console.log(result.data.data);
                     this.dialogList = result.data.data;
                 });
                 this.dialogVisible = true;
@@ -784,13 +830,37 @@
                     }
                 }
             },
+            //当前被归集列表全选
+            setThisList: function(val,org){
+                if(val){
+                    org.accounts.forEach((accItem) => {
+                        this.$refs['collect' + org.org_id][0].toggleRowSelection(accItem,true);
+                    })
+                }else{
+                    this.$refs['collect' + org.org_id][0].clearSelection();
+                }
+            },
             //选择被归集弹框选择列表后
-            selectChange: function (val) {
-                this.selectList = val;
+            selectChange: function (val,org) {
+                if(val.length == org.accounts.length){
+                    this.$set(org,"$checked",true);
+                }else{
+                    this.$set(org,"$checked",false);
+                }
+                org.$selectList = val;
             },
             //添加被归集账户
             addCollect: function () {
-                if (this.selectList.length == 0) {
+                var dialogList = this.dialogList;
+                var slecetList = [];
+                dialogList.forEach((orgItem) => {
+                    if(orgItem.$selectList && orgItem.$selectList.length > 0){
+                        orgItem.$selectList.forEach((item) => {
+                            slecetList.push(item);
+                        })
+                    }
+                })
+                if (slecetList.length == 0) {
                     this.$message({
                         type: "warning",
                         message: "请选择归要添加的账户",
@@ -798,12 +868,13 @@
                     });
                     return;
                 }
+
                 var tabActive = this.tabActive;
                 var tabList = this.editableTabs;
                 for (var i = 0; i < tabList.length; i++) {
                     var tabItem = tabList[i];
                     if (tabItem.name == tabActive) {
-                        this.selectList.forEach((selectItem) => {
+                        slecetList.forEach((selectItem) => {
                             tabItem.child_list.push(selectItem);
                         })
                         this.dialogVisible = false;
@@ -932,7 +1003,6 @@
                     collectionData.timesetting_list.push(item.dateItem);
                 });
                 collectionData.files = this.fileList;
-                console.log(collectionData);
                 return collectionData;
             },
             //清空
