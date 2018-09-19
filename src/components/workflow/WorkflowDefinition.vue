@@ -1407,11 +1407,12 @@ export default {
                     return;
                 }else{
                     var data = result.data.data;
-                    if (this.tableList.length < this.routerMessage.params.page_size) {
-                        this.tableList.push(data);
+                    if(type !== 'edit'){
+                        if (this.tableList.length < this.routerMessage.params.page_size) {
+                            this.tableList.push(data);
+                        }
+                        this.pagTotal++;
                     }
-                    this.pagTotal++;
-
                     //清空工作流相关数据
                     this.jsplumb.empty("diagramContainer");
                     this.matrixArr = [];
