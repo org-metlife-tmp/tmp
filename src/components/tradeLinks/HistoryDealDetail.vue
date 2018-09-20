@@ -66,9 +66,11 @@
                       size="mini"
                       height="90%"
                       max-height="397px">
+                <el-table-column prop="org_name" label="公司名称" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="acc_no" label="账户号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="acc_name" label="账户名称" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="acc_attr_name" label="账户属性" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="bank_type_name" label="银行类型" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="bank_name" label="所属银行" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="direction" 
                                  label="收付方向"
@@ -152,8 +154,8 @@
             //展示格式转换-收付方向
             transitionDirection: function (row, column, cellValue, index) {
                 var constants = JSON.parse(window.sessionStorage.getItem("constants"));
-                if (constants.AccPayOrRecvAttr) {
-                    return constants.AccPayOrRecvAttr[cellValue];
+                if (constants.PayOrRecv) {
+                    return constants.PayOrRecv[cellValue];
                 }
             },
             //点击页数 获取当前页数据
