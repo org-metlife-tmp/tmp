@@ -353,7 +353,7 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="账户属性">
+                        <el-form-item label="账户性质">
                             <el-input v-model="dialogData.acc_attr_name" :readonly="true"></el-input>
                         </el-form-item>
                     </el-col>
@@ -576,8 +576,8 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="账户属性">
-                            <el-select v-model="lookDialogData.acc_attr" placeholder="请选择账户属性"
+                        <el-form-item label="账户性质">
+                            <el-select v-model="lookDialogData.acc_attr" placeholder="请选择账户性质"
                                        :disabled="true" filterable clearable>
                                 <el-option v-for="attr in attrList"
                                            :key="attr.key"
@@ -657,7 +657,7 @@
             this.$emit("transmitTitle", "开户信息补录");
             this.$emit("getTableData", this.routerMessage);
 
-            //获取账户属性下拉数据
+            //获取账户性质下拉数据
             this.$axios({
                 url: "/cfm/commProcess",
                 method: "post",
@@ -780,7 +780,7 @@
                 bankList: [], //银行
                 currencyList: [], //币种
                 interList: {}, //账户模式
-                attrList: [], //账户属性
+                attrList: [], //账户性质
                 purposeList: [], //账户用途
                 currentTodo: {},
                 lookDialog: false,

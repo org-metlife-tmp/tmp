@@ -105,7 +105,7 @@
             <div class="button-list-left">
                 <el-button type="primary" plain size="mini" @click="showDialog('dialogVisible')">全部公司</el-button>
                 <!-- <el-button type="primary" plain size="mini">全部银行</el-button> -->
-                <el-button type="primary" plain size="mini" @click="showDialog('accDialogVisible')">账户属性</el-button>
+                <el-button type="primary" plain size="mini" @click="showDialog('accDialogVisible')">账户性质</el-button>
                 <el-button type="primary" plain size="mini" @click="showDialog('inactiveDialogVisible')">账户模式
                 </el-button>
                 <el-input v-model="accNo" placeholder="请输入账户号" size="mini"
@@ -157,12 +157,12 @@
                 <el-button type="warning" size="mini" @click="queryByOrg">确 定</el-button>
             </span>
         </el-dialog>
-        <!--账户属性弹出框-->
+        <!--账户性质弹出框-->
         <el-dialog :visible.sync="accDialogVisible"
-                   width="600px" title="请选择账户属性"
+                   width="600px" title="请选择账户性质"
                    :close-on-click-modal="false"
                    top="56px">
-            <h1 slot="title" class="dialog-title">请选择账户属性</h1>
+            <h1 slot="title" class="dialog-title">请选择账户性质</h1>
             <el-checkbox-group v-model="checkAccAttrList">
                 <el-checkbox v-for="acc in accAttrList" :key="acc.id" :label="acc.id">{{acc.name}}</el-checkbox>
             </el-checkbox-group>

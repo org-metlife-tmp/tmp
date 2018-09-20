@@ -314,7 +314,7 @@
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="账户性质">
-                            <el-select v-model="dialogData.acc_attr" placeholder="请选择账户属性"
+                            <el-select v-model="dialogData.acc_attr" placeholder="请选择账户性质"
                                        clearable>
                                 <el-option v-for="(name,k) in attrList"
                                            :key="k"
@@ -649,7 +649,7 @@
             if (currencyList) {
                 this.currencyList = currencyList;
             }
-            //账户属性&账户用途
+            //账户性质&账户用途
             var catgList = JSON.parse(window.sessionStorage.getItem("catgList"));
             for (var i = 0; i < catgList.length; i++) {
                 if (catgList[i].code == "acc_attr") {
@@ -730,7 +730,7 @@
                 businessParams:{},//业务状态追踪参数
                 currencyList:[],//币种
                 interList:[],//账户模式
-                attrList:[],//账户属性
+                attrList:[],//账户性质
                 depositsList:[],//存款类型
                 bankAllList: [], //银行大类全部
                 bankTypeList: [], //银行大类

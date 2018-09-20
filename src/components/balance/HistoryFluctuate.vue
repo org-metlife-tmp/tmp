@@ -89,7 +89,7 @@
                 <el-table-column prop="acc_no" label="账户号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="acc_name" label="账户名称" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="org_name" label="公司" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="acc_attr_name" label="账户属性" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="acc_attr_name" label="账户性质" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="bank_type_name" label="银行类型" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="bank_name" label="所属银行" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="bal" label="日均余额" :show-overflow-tooltip="true"></el-table-column>

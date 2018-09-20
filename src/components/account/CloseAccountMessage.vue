@@ -273,7 +273,7 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="账户属性">
+                        <el-form-item label="账户性质">
                             <div class="height30">{{dialogData.acc_attr_name}}</div>
                         </el-form-item>
                     </el-col>

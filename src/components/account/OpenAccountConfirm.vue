@@ -82,7 +82,7 @@
                     </el-col>
                     <el-col :span="4">
                         <el-form-item>
-                            <el-select v-model="searchData.acc_attr" placeholder="请选择账户属性"
+                            <el-select v-model="searchData.acc_attr" placeholder="请选择账户性质"
                                        clearable>
                                 <el-option v-for="(name,k) in attrList"
                                            :key="k"
@@ -134,7 +134,7 @@
                 <el-table-column prop="acc_name" label="账户名称" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="curr_id" label="币种" :show-overflow-tooltip="true"
                                  :formatter="transitCurrency"></el-table-column>
-                <el-table-column prop="acc_attr_name" label="账户属性" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="acc_attr_name" label="账户性质" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="interactive_mode" label="账户模式" :show-overflow-tooltip="true"
                                  :formatter="transitInteract"></el-table-column>
                 <el-table-column prop="status" label="账户状态" :show-overflow-tooltip="true"
@@ -201,7 +201,7 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="账户属性">
+                        <el-form-item label="账户性质">
                             <el-input v-model="dialogData.acc_attr_name" :disabled="true"></el-input>
                         </el-form-item>
                     </el-col>
@@ -287,7 +287,7 @@
             if (constants.DepositsMode) {
                 this.depositsList = constants.DepositsMode;
             }
-            //账户属性&账户用途
+            //账户性质&账户用途
             var catgList = JSON.parse(window.sessionStorage.getItem("catgList"));
             var flag = 2;
             for(var i = 0; i < catgList.length; i++){
@@ -334,7 +334,7 @@
                 formLabelWidth: "120px",
                 /*下拉框数据*/
                 interList: {}, //账户模式
-                attrList: {}, //账户属性
+                attrList: {}, //账户性质
                 orgList: [], // 所属机构
                 purposeList: {}, //账户用途
                 depositsList:[],//存款类型

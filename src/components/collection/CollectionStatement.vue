@@ -273,7 +273,7 @@
         </el-dialog>
         <!--选择银行弹出框-->
         <el-dialog :visible.sync="bankDialogVisible"
-                   width="600px" title="请选择账户属性"
+                   width="600px" title="请选择账户性质"
                    :close-on-click-modal="false"
                    top="56px">
             <h1 slot="title" class="dialog-title">请选择银行</h1>

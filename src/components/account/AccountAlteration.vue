@@ -358,13 +358,13 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="账户属性">
+                        <el-form-item label="账户性质">
                             <el-input v-model="dialogData.acc_attr_name" :disabled="true"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="账户属性">
-                            <el-select v-model="dialogData.$6" placeholder="请选择账户属性"
+                        <el-form-item label="账户性质">
+                            <el-select v-model="dialogData.$6" placeholder="请选择账户性质"
                                        clearable>
                                 <el-option v-for="(name,k) in attrList"
                                            :key="k"
@@ -525,12 +525,12 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="账户属性">
+                        <el-form-item label="账户性质">
                             <el-input v-model="lookDialogData.old_6" :disabled="true"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="账户属性">
+                        <el-form-item label="账户性质">
                             <el-input v-model="lookDialogData.$6" :disabled="true"></el-input>
                         </el-form-item>
                     </el-col>
@@ -605,7 +605,7 @@
             if (currencyList) {
                 this.currencyList = currencyList;
             }
-            //账户属性&账户用途
+            //账户性质&账户用途
             var catgList = JSON.parse(window.sessionStorage.getItem("catgList"));
             for (var i = 0; i < catgList.length; i++) {
                 if (catgList[i].code == "acc_attr") {
@@ -704,7 +704,7 @@
                 accList: [], //账户号
                 orgList: [], //所属机构
                 currencyList: [], //币种
-                attrList: {}, //账户属性
+                attrList: {}, //账户性质
                 interList: {}, //账户模式
                 bankAllList: [], //银行大类全部
                 bankTypeList: [], //银行大类

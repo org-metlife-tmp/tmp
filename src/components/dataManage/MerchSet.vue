@@ -112,7 +112,7 @@
                 <el-table-column prop="acc_name" label="商户名称" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="channel_name" label="支付渠道" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="org_name" label="所属机构" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="pay_recv_attr" :formatter="setAccPay" label="账户属性"
+                <el-table-column prop="pay_recv_attr" :formatter="setAccPay" label="账户性质"
                                  :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="status" :formatter="setShowStatus" label="状态" width="80"></el-table-column>
                 <el-table-column
@@ -464,7 +464,7 @@
             }
         },
         methods: {
-            //展示格式转换-账户属性
+            //展示格式转换-账户性质
             setAccPay: function (row, column, cellValue, index) {
                 var constants = JSON.parse(window.sessionStorage.getItem("constants"));
                 if (constants.AccPayOrRecvAttr) {
