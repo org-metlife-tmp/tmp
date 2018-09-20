@@ -145,7 +145,7 @@
                 <el-table-column label="归集频率" :show-overflow-tooltip="true">
                     <template slot-scope="scope">
                         <span>{{ scope.row.collect_frequency }} - </span>
-                        <span>{{ scope.row.collect_frequenc_time }}</span>
+                        <span>{{ scope.row.collect_time }}</span>
                     </template>
                 </el-table-column>
                 <el-table-column prop="collect_main_account_count" label="归集集户(个)"

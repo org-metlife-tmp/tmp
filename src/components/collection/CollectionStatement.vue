@@ -151,7 +151,25 @@
 
         /*列表内容*/
         .list-content{
+            /*汇总数据*/
+            .allData {
+                height: 36px;
+                line-height: 36px;
+                width: 100%;
+                background-color: #F8F8F8;
+                border: 1px solid #ebeef5;
+                border-top: none;
+                box-sizing: border-box;
+                text-align: right;
+
+                /*汇总数字*/
+                .numText {
+                    color: #FF5800;
+                    margin-right: 10px;
+                }
+            }
         }
+
     }
 </style>
 
@@ -203,7 +221,9 @@
             <div class="img-left">
                 <h2>TOP5</h2>
                 <span>汇总金额</span>
-                <div>￥0.00</div>
+                <div>￥{{ totalAmount }}</div>
+                <!--饼图-->
+                <CakePicture :pieData="pieData"></CakePicture>
             </div>
             <div class="img-right"></div>
         </section>
@@ -211,23 +231,19 @@
         <section class="list-content" v-show="!showImg">
             <el-table :data="tableList"
                       border size="mini">
-                <el-table-column prop="pay_account_bank" label="归集主题" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="recv_account_no" label="归集额度" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="recv_account_name" label="归集频率" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="recv_account_name" label="归集集户(个)" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="recv_account_name" label="归集金额" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="recv_account_name" label="业务状态" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column
-                        label="操作" width="50"
-                        fixed="right">
-                    <template slot-scope="scope" class="operationBtn">
-                        <el-tooltip content="查看" placement="bottom" effect="light" :enterable="false" :open-delay="500">
-                            <el-button type="primary" icon="el-icon-search" size="mini"
-                                       @click=""></el-button>
-                        </el-tooltip>
-                    </template>
-                </el-table-column>
+                <el-table-column prop="pay_account_org_name" label="所属公司" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="pay_account_no" label="被归集账户" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="pay_account_bank" label="开户行" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="collect_amount" label="归集总金额" :show-overflow-tooltip="true"
+                                 :formatter="transitAmount"></el-table-column>
+                <el-table-column prop="amountRation" label="金额占比" :show-overflow-tooltip="true"></el-table-column>
             </el-table>
+            <div class="allData">
+                <span>总金额：</span>
+                <span v-text="totalAmount" class="numText"></span>
+                <span>总占比：</span>
+                <span class="numText">100%</span>
+            </div>
         </section>
         <!--选择公司弹出框-->
         <el-dialog :visible.sync="dialogVisible"
@@ -252,7 +268,7 @@
             </div>
             <span slot="footer" class="dialog-footer">
                 <el-button type="warning" size="mini" plain @click="dialogVisible=false">取 消</el-button>
-                <el-button type="warning" size="mini" @click="">确 定</el-button>
+                <el-button type="warning" size="mini" @click="queryByOrg">确 定</el-button>
             </span>
         </el-dialog>
         <!--选择银行弹出框-->
@@ -276,17 +292,20 @@
             </div>
             <span slot="footer" class="dialog-footer">
                 <el-button type="warning" size="mini" plain @click="bankDialogVisible=false">取 消</el-button>
-                <el-button type="warning" size="mini" @click="">确 定</el-button>
+                <el-button type="warning" size="mini" @click="queryByBank">确 定</el-button>
             </span>
         </el-dialog>
     </div>
 </template>
 
 <script>
+    import CakePicture from "../echarts/CakePicture.vue";
+
     export default {
         name: "CollectionStatement",
         created: function () {
             this.$emit("transmitTitle", "自动归集图表");
+            this.$emit("getCommTable", this.routerMessage);
 
             //机构树
             var orgTreeList = JSON.parse(window.sessionStorage.getItem("orgTreeList"));
@@ -299,9 +318,22 @@
                 this.bankTypeList = bankTypeList;
             }
         },
+        props: ["tableData"],
+        components: {
+            CakePicture: CakePicture
+        },
         data: function () {
             return {
+                routerMessage: {
+                    optype: "collectreport_reports",
+                    params: {
+                        query_key: 1,
+                        page_size: 7,
+                        page_num: 1
+                    }
+                },
                 tableList: [], //列表数据
+                totalAmount: "0.00",
                 dialogVisible: false, //弹框数据
                 orgTreeList: [],
                 expandData: [],
@@ -318,6 +350,7 @@
                     }
                 },
                 showImg: true, //图表/列表显示控制
+                pieData: [],
             }
         },
         methods: {
@@ -347,7 +380,9 @@
                 if(this.btActive){
                     return;
                 }else{
+                    this.routerMessage.params.query_key = 1;
                     this.btActive = true;
+                    this.$emit("getCommTable", this.routerMessage);
                 }
             },
             //切换到账号
@@ -355,13 +390,54 @@
                 if(!this.btActive){
                     return;
                 }else{
+                    this.routerMessage.params.query_key = 2;
                     this.btActive = false;
+                    this.$emit("getCommTable", this.routerMessage);
                 }
             },
             //选择时间后设置数据
             getDateData: function (val) {
                 this.routerMessage.params.start_date = val[0];
                 this.routerMessage.params.end_date = val[1];
+                this.$emit("getCommTable", this.routerMessage);
+            },
+            //展示格式转换-金额
+            transitAmount: function (row, column, cellValue, index) {
+                return this.$common.transitSeparator(cellValue);
+            },
+            //查询
+            queryByOrg: function () {
+                this.routerMessage.params.pay_account_org_id = this.$refs.orgTree.getCheckedKeys();
+                this.routerMessage.params.page_num = 1;
+                this.$emit("getCommTable", this.routerMessage);
+                this.dialogVisible = false;
+            },
+            queryByBank: function(){
+                this.routerMessage.params.pay_bank_cnaps = this.selectBank;
+                this.routerMessage.params.page_num = 1;
+                this.$emit("getCommTable", this.routerMessage);
+                this.bankDialogVisible = false;
+            },
+
+            //获取饼图数据
+            getPieData:function(){
+                var currentData = this.tableList;
+                var pieData = [];
+                for (var i = 0; i < currentData.length; i++) {
+                    var item = currentData[i];
+                    debugger;
+                    pieData.push({value: item.bal, name: item.acc_name, code: item.acc_no});
+                }
+                this.pieData = pieData;
+            }
+        },
+        watch: {
+            tableData: function (val, oldVal) {
+                if(val.ext.total_amount){
+                    this.totalAmount = this.$common.transitSeparator(val.ext.total_amount);
+                }
+                this.tableList = val.data;
+                this.getPieData();
             }
         }
     }

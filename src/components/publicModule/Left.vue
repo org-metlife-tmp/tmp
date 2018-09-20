@@ -444,7 +444,7 @@
                     <el-menu-item index="/collection/collection-manage">自动归集管理</el-menu-item>
                     <el-menu-item index="/collection/collection-look">自动归集查看</el-menu-item>
                     <el-menu-item index="/collection/collection-statement">自动归集报表</el-menu-item>
-                    <el-menu-item index="/collection/colle-deal-check">交易核对</el-menu-item>
+                    <el-menu-item index="/payment/deal-check?bizType=12">交易核对</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
             <el-submenu index="13">

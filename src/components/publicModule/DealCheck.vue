@@ -181,16 +181,13 @@
 <script>
     export default {
         name: "DealCheck",
+        beforeRouteUpdate (to, from, next) {
+            this.setOptypes(to.query);
+            next();
+        },
         created: function () {
-            //设置当前optype信息
             var queryData = this.$router.currentRoute.query;
-            if (queryData.bizType == "9") { //支付通
-                this.routerMessage.todo.optype = "zft_checkbillList";
-                this.routerMessage.done.optype = "zft_checkbillList";
-                this.checkOptype = "zft_checkTradeList";
-                this.confirmOptype = "zft_confirmCheck";
-                this.validatedOptype = "zft_checkAlreadyTradeList";
-            }
+            this.setOptypes(queryData);
 
             //设置当前页基本信息
             this.$emit("transmitTitle", "交易核对");
@@ -198,7 +195,6 @@
                 leftTab: "未核对",
                 rightTab: "已核对"
             });
-            this.$emit("getTableData", this.routerMessage);
         },
         mounted: function () {
         },
@@ -243,6 +239,25 @@
             }
         },
         methods: {
+            //设置页面相关optype
+            setOptypes: function(queryData){
+                //设置当前optype信息
+                if (queryData.bizType == "9") { //支付通
+                    this.routerMessage.todo.optype = "zft_checkbillList";
+                    this.routerMessage.done.optype = "zft_checkbillList";
+                    this.checkOptype = "zft_checkTradeList";
+                    this.confirmOptype = "zft_confirmCheck";
+                    this.validatedOptype = "zft_checkAlreadyTradeList";
+                }
+                if(queryData.bizType == "12"){
+                    this.routerMessage.todo.optype = "collectcheck_checkbillList";
+                    this.routerMessage.done.optype = "collectcheck_checkbillList";
+                    this.checkOptype = "collectcheck_checkNoCheckTradeList";
+                    this.confirmOptype = "collectcheck_confirmCheck";
+                    this.validatedOptype = "collectcheck_checkAlreadyTradeList";
+                }
+                this.$emit("getTableData", this.routerMessage);
+            },
             //展示格式转换-金额
             transitAmount: function (row, column, cellValue, index) {
                 return this.$common.transitSeparator(cellValue);

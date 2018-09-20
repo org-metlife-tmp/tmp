@@ -82,7 +82,7 @@ import BatchMakeBill from '@/components/payment/BatchMakeBill'
 import BatchPayment from '@/components/payment/BatchPayment'
 import BatchLookOver from '@/components/payment/BatchLookOver'
 import PayeeMessage from '@/components/payment/PayeeMessage'
-import DealCheck from '@/components/payment/DealCheck'
+import DealCheck from '@/components/publicModule/DealCheck'
 import PayMoreBills from '@/components/payment/PayMoreBills'
 import BatchMoreBills from '@/components/payment/BatchMoreBills'
 //归集通
