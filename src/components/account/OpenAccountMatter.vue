@@ -313,7 +313,7 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="账户基本性质">
+                        <el-form-item label="账户性质">
                             <el-select v-model="dialogData.acc_attr" placeholder="请选择账户属性"
                                        clearable>
                                 <el-option v-for="(name,k) in attrList"
@@ -477,7 +477,7 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="账户基本性质">
+                        <el-form-item label="账户性质">
                             <el-input v-model="lookDialogData.acc_attr_name" :readonly="true"></el-input>
                         </el-form-item>
                     </el-col>

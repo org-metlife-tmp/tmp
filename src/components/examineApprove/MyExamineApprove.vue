@@ -724,7 +724,7 @@
                     {id:"4", pspan:8, prop:"memo"},//事由说明字段显示特殊，未写在这里
                     {id:"5", lspan:4, label:"开户行"},
                     {id:"6", pspan:8, prop:"bank_name"},
-                    {id:"7", lspan:4, label:"账户基本性质"},
+                    {id:"7", lspan:4, label:"账户性质"},
                     {id:"8", pspan:8, prop:"acc_attr_name"},
                     {id:"9", lspan:4, label:"账户法人"},
                     {id:"10", pspan:8, prop:"lawfull_man"},
