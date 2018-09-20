@@ -126,7 +126,7 @@
                                :value="bankType.code">
                     </el-option>
                 </el-select>
-                <el-button type="warning" size="mini">打印</el-button>
+                <!-- <el-button type="warning" size="mini">打印</el-button> -->
                 <el-button type="warning" size="mini" @click="exportFun">导出</el-button>
             </div>
             <router-view @transmitTitle="currentTitle= $event"

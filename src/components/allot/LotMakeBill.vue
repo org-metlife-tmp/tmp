@@ -539,7 +539,7 @@
                             :value="k">
                 </el-option>
             </el-select>
-            <el-button type="warning" size="small">打印</el-button>
+            <!-- <el-button type="warning" size="small">打印</el-button> -->
         </div>
         <!--表单部分-->
         <section>

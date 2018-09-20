@@ -187,7 +187,7 @@
     <div id="autoAllocationSet">
         <!-- 顶部按钮-->
         <div class="button-list-right">
-            <el-button type="warning" size="mini" @click="">打印</el-button>
+            <!-- <el-button type="warning" size="mini" @click="">打印</el-button>-->
         </div>
         <!--中间内容-->
         <section class="table-content">
