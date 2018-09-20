@@ -1402,7 +1402,7 @@
                     method: "post",
                     data:{
                         params:{
-                            pk:'2'
+                            pk:'8'
                         }
                     },
                     responseType: 'blob'

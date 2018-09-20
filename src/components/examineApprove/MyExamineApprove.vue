@@ -355,7 +355,7 @@
                             >
                             </el-table-column>
                             <!-- 归集通归集额度 -->
-                            <el-table-column v-else-if="head.prop=='collect_type'"
+                            <el-table-column v-else-if="head.prop=='collect_type' || head.prop=='allocation_type'"
                                              :key="head.id"
                                              :prop="head.prop"
                                              :label="head.name"
@@ -364,7 +364,7 @@
                             >
                             </el-table-column>
                             <!-- 归集通归集频率 -->
-                            <el-table-column v-else-if="head.prop=='collect_frequency'"
+                            <el-table-column v-else-if="head.prop=='collect_frequency' || head.prop=='allocation_frequency'"
                                              :key="head.id"
                                              :prop="head.prop"
                                              :label="head.name"
@@ -452,6 +452,12 @@
                         <el-col v-else-if="detail.prop=='collect_frequency'"
                                 :key="detail.id"
                                 :span="detail.pspan">{{frequencyList[dialogData.collect_frequency]}}</el-col>
+                        <el-col v-else-if="detail.prop=='allocation_type'" 
+                                :key="detail.id"
+                                :span="detail.pspan">{{poolTypeList[dialogData.allocation_type]}}</el-col>
+                        <el-col v-else-if="detail.prop=='allocation_frequency'"
+                                :key="detail.id"
+                                :span="detail.pspan">{{frequencyList[dialogData.allocation_frequency]}}</el-col>
                         <el-col v-else-if="detail.prop=='deposits_mode'"
                                 :key="detail.id"
                                 :span="detail.pspan">{{depositsList[dialogData.deposits_mode]}}</el-col>
@@ -474,6 +480,12 @@
                     <el-col :span="20" class="mw167" :title="dialogData.detail">
                         <el-input v-model="dialogData.detail" readonly
                                     type="textarea" :rows="2"></el-input>
+                    </el-col>
+                </el-row>
+                <el-row class="enclosureUp" v-if="dialogData.biz_type=='13'">
+                    <el-col :span="4" class="left"><span>下拨时间</span></el-col>
+                    <el-col :span="20" class="mw167">
+                        <span v-html="translateFrequency(dialogData.frequency_detail)"></span>
                     </el-col>
                 </el-row>
                 <el-row>
@@ -713,6 +725,14 @@
                     addLots:"collectsetting_append",
                     agree:"collectsetting_agree",
                     reject:"collectsetting_reject"
+                },
+                {
+                    text:"资金下拨",
+                    detail:"allocset_detail",
+                    list:"allocset_pendingtasks",
+                    addLots:"allocset_append",
+                    agree:"allocset_agree",
+                    reject:"allocset_reject"
                 }
             ]
 
@@ -1014,6 +1034,20 @@
                     {id:"13", lspan:4, label:"业务状态"},
                     {id:"14", pspan:8, prop:"service_status"}
                 ],
+                "13":[
+                    {id:"1", lspan:4, label:"归集主题"},
+                    {id:"2",pspan:20, prop:"topic"},
+                    {id:"3", lspan:4, label:"归集额度"},
+                    {id:"4", pspan:8, prop:"allocation_type"},
+                    {id:"5", lspan:4, label:"归集金额"},
+                    {id:"6", pspan:8, prop:"allocation_amount"},
+                    {id:"7", lspan:4, label:"归集频率"},
+                    {id:"8", pspan:8, prop:"allocation_frequency"},
+                    {id:"9", lspan:4, label:"归集集户(个)"},
+                    {id:"10", pspan:8, prop:"allocation_child_account_count"},
+                    // {id:"11", lspan:4, label:"归集时间"},
+                    // {id:"12", pspan:20, prop:"frequency_detail"},
+                ],
             }
         },
         mounted:function(){
@@ -1175,6 +1209,14 @@
                         {id:'5',prop:"collect_time",name:'归集时间'},
                         {id:'6',prop:"collect_main_account_count",name:'归集集户(个)'},
                         {id:'7',prop:"service_status",name:'业务状态'}
+                    ],
+                    "13":[
+                        {id:'1',prop:"create_on",name:'申请日期'},
+                        {id:'2',prop:"topic",name:'下拨主题'},
+                        {id:'3',prop:"allocation_type",name:'下拨类型'},
+                        {id:'4',prop:"allocation_frequency",name:'下拨频率'},
+                        {id:'5',prop:"summary",name:'摘要'},
+                        {id:'6',prop:"allocation_child_account_count",name:'下拨集户(个)'}
                     ]
                 },
                 editableTabsList: [],
@@ -1367,7 +1409,6 @@
                 this.thirdFunVisible = true;
             },
             viewDetail:function(row,index){
-                debugger
                 this.businessParams = {};//清空数据
                 let bizType = row.biz_type;
                 this.dialogTitle = this.classParams[bizType].text;
@@ -1564,6 +1605,20 @@
                     return result;
                 }
 
+            },
+            //转换下拨时间
+            translateFrequency: function(list){
+                var str = "";
+                if(list && list.length>0){
+                    list.forEach(element => {
+                        if(element.allocation_frequency_detail){
+                            str = str + element.allocation_frequency_detail + "," + element.allocation_time +";<br/>";
+                        }else{
+                            str = str + element.allocation_time +";<br/>";
+                        }
+                    });
+                }
+                return str;
             }
         },
         watch: {

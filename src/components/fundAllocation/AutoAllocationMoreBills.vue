@@ -59,7 +59,7 @@
     <div id="autoAllocationMoreBills">
         <!-- 顶部按钮-->
         <div class="button-list-right">
-            <el-button type="warning" size="mini" @click="addCollect">新增</el-button>
+            <el-button type="warning" size="mini" @click="addAllocate">新增</el-button>
         </div>
         <!--搜索区-->
         <div class="search-setion">
@@ -384,9 +384,9 @@
                 });
             },
             //新增下拨单据
-            addCollect: function(){
+            addAllocate: function(){
                 this.$router.push({
-                    name: "CollectionSet"
+                    name: "AutoAllocationSet"
                 });
             },
             //复制
