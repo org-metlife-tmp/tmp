@@ -93,6 +93,9 @@
                                     background: url(../../assets/icon_common.png);
                                     background-position: -388px -308px;
                                 }
+                                .coll-active{
+                                    background-position: -292px -308px;
+                                }
                             }
                         }
                     }
@@ -100,8 +103,8 @@
                     .content-center{
                         height: 60px;
                         width: 90%;
-                        margin: 50px auto 10px;
-                        border-bottom: 1px solid #ccc;
+                        margin: 50px auto 20px;
+                        /*border-bottom: 1px solid #ccc;*/
 
                         span{
                             display: block;
@@ -150,32 +153,48 @@
                 <el-row>
                     <el-col :span="4">
                         <el-form-item>
-                            <el-input v-model="searchData.query_key" clearable placeholder="归集额度"></el-input>
+                            <el-select v-model="searchData.collect_type" placeholder="请选择归集额度"
+                                       clearable filterable
+                                       style="width:100%">
+                                <el-option v-for="(collType,key) in collTypeList"
+                                           :key="key"
+                                           :label="collType"
+                                           :value="key">
+                                </el-option>
+                            </el-select>
                         </el-form-item>
                     </el-col>
                     <el-col :span="4">
                         <el-form-item>
-                            <el-input v-model="searchData.query_key" clearable placeholder="归集频率"></el-input>
+                            <el-select v-model="searchData.collect_frequency" placeholder="请选择归集频率"
+                                       clearable filterable
+                                       style="width:100%">
+                                <el-option v-for="(frequency,key) in frequencyList"
+                                           :key="key"
+                                           :label="frequency"
+                                           :value="key">
+                                </el-option>
+                            </el-select>
                         </el-form-item>
                     </el-col>
                     <el-col :span="4">
                         <el-form-item>
-                            <el-input v-model="searchData.query_key" clearable placeholder="请输入归集关键字"></el-input>
+                            <el-input v-model="searchData.topic" clearable placeholder="请输入归集关键字"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="4">
                         <el-form-item>
-                            <el-input v-model="searchData.query_key" clearable placeholder="请输入归集主账号关键字"></el-input>
+                            <el-input v-model="searchData.main_acc_query_key" clearable placeholder="请输入归集主账号关键字"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="2">
                         <el-form-item>
-                            <el-button type="primary" plain @click="" size="mini">搜索</el-button>
+                            <el-button type="primary" plain @click="queryData" size="mini">搜索</el-button>
                         </el-form-item>
                     </el-col>
                     <el-col :span="24">
                         <el-form-item style="margin-bottom:0px">
-                            <el-checkbox-group v-model="searchData.service_status">
+                            <el-checkbox-group v-model="searchData.is_activity">
                                 <el-checkbox v-for="(name,k) in statusList"
                                              :label="k" name="type" :key="k">
                                     {{ name }}
@@ -191,34 +210,37 @@
         <!--数据展示区-->
         <section class="table-content">
             <el-row>
-                <el-col :span="6" v-for="card in tableList" :key="card.id">
+                <el-col :span="6" v-for="(card,index) in tableList" :key="card.id">
                     <el-card class="box-card">
                         <div slot="header">
-                            <span>{{ card.name }}</span>
+                            <span>{{ card.topic }}</span>
                             <div class="title-btn">
-                                <i class="icon-img" title="激活"></i>
-                                <i class="icon-img" title="暂停"></i>
-                                <i class="icon-img" title="作废"></i>
-                                <i class="icon-img" title="查看"></i>
+                                <i class="icon-img" title="激活" v-show="card.is_activity == 0"
+                                   @click="activeCollect(card)"></i>
+                                <i class="icon-img" title="暂停" v-show="card.is_activity == 1"
+                                   @click="activeCollect(card)"></i>
+                                <i class="icon-img" title="作废" v-show="card.is_activity == 0"
+                                   @click=removeCollect(card,index,tableList)></i>
+                                <i class="icon-img" title="查看" @click="lookCollect(card)"></i>
                             </div>
                         </div>
                         <div class="card-content">
                             <div class="content-top">
-                                <div class="collect-money">￥0.00</div>
-                                <div class="collect-way">全额归集</div>
+                                <div class="collect-money">￥{{ transitionMoney(card.collect_amount) }}</div>
+                                <div class="collect-way">{{ card.collect_type_name }}</div>
                                 <div class="collect-status">
                                     <div>
-                                        <i class="status-icon"></i>
+                                        <i class="status-icon" :class="{'coll-active':card.is_activity == 1}"></i>
                                     </div>
                                 </div>
                             </div>
                             <div class="content-center">
-                                <span>每天</span>
-                                <span>01:04</span>
+                                <span>{{ card.collect_frequency_name }}</span>
+                                <span>{{ card.collect_time }}</span>
                             </div>
-                            <div class="content-bottom">
+                            <!--<div class="content-bottom">
                                 11087363445533344 (子账户 1个)
-                            </div>
+                            </div>-->
                         </div>
                     </el-card>
                 </el-col>
@@ -232,44 +254,147 @@
         name: "CollectionManage",
         created: function () {
             this.$emit("transmitTitle", "自动归集管理");
+            this.$emit("getCommTable", this.routerMessage);
         },
+        mounted: function(){
+            /*获取常量数据*/
+            //获取归集额度
+            var constants = JSON.parse(window.sessionStorage.getItem("constants"));
+            if (constants.CollOrPoolType) {
+                this.collTypeList = constants.CollOrPoolType;
+            }
+            //归集频率
+            if (constants.CollOrPoolFrequency) {
+                this.frequencyList = constants.CollOrPoolFrequency;
+            }
+        },
+        props: ["tableData"],
         data:function(){
             return {
-                searchData:{ //搜索条件
+                routerMessage: {
+                    optype: "collectmanage_list",
+                    params: {
 
+                    }
+                },
+                searchData:{ //搜索条件
+                    collect_type: "",
+                    collect_frequency: "",
+                    topic: "",
+                    main_acc_query_key: "",
+                    is_activity: []
                 },
                 statusList: {
                     1: "已激活",
                     0: "未激活"
                 },
-                tableList: [
-                    {id:1,name:"lala"},
-                    {id:2,name:"lala"},
-                    {id:3,name:"lala"},
-                    {id:4,name:"lala"},
-                    {id:5,name:"lala"},
-                    {id:6,name:"lala"},
-                    {id:7,name:"lala"},
-                    {id:8,name:"lala"},
-                    {id:9,name:"lala"},
-                    {id:0,name:"lala"},
-                ], //列表数据
+                tableList: [], //列表数据
+                collTypeList: {}, //常量数据
+                frequencyList: {}
             }
         },
         methods: {
-            //换页后获取数据
-            getCurrentPage: function (currPage) {
-                this.routerMessage.params.page_num = currPage;
+            //根据条件查询数据
+            queryData: function () {
+                var searchData = this.searchData;
+
+                for (var k in searchData) {
+                    this.routerMessage.params[k] = searchData[k];
+                }
                 this.$emit("getCommTable", this.routerMessage);
             },
-            //当前页数据条数发生变化
-            sizeChange: function (val) {
-                this.routerMessage.params = {
-                    page_size: val,
-                    page_num: 1
-                };
-                this.$emit("getCommTable", this.routerMessage);
+            //展示格式转换-金额
+            transitionMoney: function(num){
+                return this.$common.transitSeparator(num);
             },
+            //查看
+            lookCollect: function(row){
+                this.$router.push({
+                    name: "CollectionSet",
+                    query: {
+                        viewId: row.id
+                    }
+                });
+            },
+            //激活
+            activeCollect: function(row){
+                this.$axios({
+                    url: "/cfm/normalProcess",
+                    method: "post",
+                    data: {
+                        optype: "collectmanage_setstate",
+                        params: {
+                            id: row.id,
+                            persist_version: row.persist_version
+                        }
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                        return;
+                    }
+                    var data = result.data.data;
+                    row.id = data.id;
+                    row.persist_version = data.persist_version;
+                    row.is_activity = data.is_activity;
+
+                    this.$message({
+                        type: "success",
+                        message: data.is_activity == "0" ? "已暂停" : "激活成功",
+                        duration: 2000
+                    })
+                }).catch(function (error) {
+                    console.log(error);
+                })
+            },
+            //作废
+            removeCollect: function (row, index, rows) {
+                this.$confirm('确认作废当前单据吗?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.$axios({
+                        url: "/cfm/normalProcess",
+                        method: "post",
+                        data: {
+                            optype: "collectmanage_cancel",
+                            params: {
+                                id: row.id,
+                                persist_version: row.persist_version
+                            }
+                        }
+                    }).then((result) => {
+                        if (result.data.error_msg) {
+                            this.$message({
+                                type: "error",
+                                message: result.data.error_msg,
+                                duration: 2000
+                            })
+                            return;
+                        }
+
+                        rows.splice(index, 1);
+                        this.$message({
+                            type: "success",
+                            message: "删除成功",
+                            duration: 2000
+                        })
+                    }).catch(function (error) {
+                        console.log(error);
+                    })
+                }).catch(() => {
+                });
+            },
+        },
+        watch: {
+            tableData: function (val, oldVal) {
+                this.tableList = val.data;
+            }
         }
     }
 </script>

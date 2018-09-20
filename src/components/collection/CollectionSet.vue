@@ -327,13 +327,18 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="24">
-                        <el-form-item label="附件">
+                        <el-form-item label="附件" style="text-align:left">
                             <Upload @currentFielList="setFileList"
                                     :fileMessage="fileMessage"
                                     :emptyFileList="emptyFileList"
                                     :triggerFile="eidttrigFile"
                                     :isPending="!isView">
                             </Upload>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="20" v-show="isView">
+                        <el-form-item label=" " style="text-align:left">
+                            <BusinessTracking :businessParams="businessParams"></BusinessTracking>
                         </el-form-item>
                     </el-col>
                 </el-row>
@@ -478,6 +483,7 @@
 
 <script>
     import Upload from "../publicModule/Upload.vue";
+    import BusinessTracking from "../publicModule/BusinessTracking.vue"
 
     export default {
         name: "CollectionSet",
@@ -571,6 +577,11 @@
 
                         if(params[0] == "viewId"){
                             this.isView = true;
+
+                            //业务状态跟踪
+                            this.businessParams = {};
+                            this.businessParams.biz_type = 12;
+                            this.businessParams.id = data.id;
                         }
                     }
                 }).catch(function (error) {
@@ -681,10 +692,13 @@
                 selectWorkflow: "",
                 workflows: [],
                 isView: false, //查看页面时设置只读
+                businessParams:{ //业务状态追踪参数
+                }
             }
         },
         components: {
-            Upload: Upload
+            Upload: Upload,
+            BusinessTracking:BusinessTracking
         },
         methods: {
             //银行大类搜索筛选

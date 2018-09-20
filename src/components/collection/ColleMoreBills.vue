@@ -115,8 +115,8 @@
                                 </el-checkbox>
                             </el-checkbox-group>
                         </el-form-item>
-                        <el-form-item style="margin-bottom:0px;margin-left:10px" v-show="showActivate">
-                            <el-checkbox-group v-model="searchData.is_activate">
+                        <el-form-item label="|" style="margin-bottom:0px;margin-left:10px" v-show="showActivate">
+                            <el-checkbox-group v-model="searchData.is_activity">
                                 <el-checkbox v-for="(name,k) in activatList"
                                              :label="k" name="type" :key="k">
                                     {{ name }}
@@ -241,7 +241,7 @@
                     topic: "",
                     main_acc_query_key: "",
                     service_status: [],
-                    is_activate: []
+                    is_activity: []
                 },
                 statusList: {
                     "1": "已保存",
@@ -323,8 +323,8 @@
                         if (this.pagCurrent < (this.pagTotal / this.pagSize)) { //存在下一页
                             this.$emit("getCommTable", this.routerMessage);
                         } else {
-                            if (rows.length == "1" && (this.routerMessage.todo.params.page_num != 1)) { //是当前页最后一条
-                                this.routerMessage.todo.params.page_num--;
+                            if (rows.length == "1" && (this.routerMessage.params.page_num != 1)) { //是当前页最后一条
+                                this.routerMessage.params.page_num--;
                                 this.$emit("getCommTable", this.routerMessage);
                             } else {
                                 rows.splice(index, 1);
@@ -419,6 +419,9 @@
         },
         computed: {
             showActivate: function(){
+                if(this.searchData.service_status.indexOf("4") == -1){
+                    this.searchData.is_activity = [];
+                }
                 return this.searchData.service_status.indexOf("4") != -1;
             }
         },
@@ -428,7 +431,6 @@
                 this.pagTotal = val.total_line;
                 this.tableList = val.data;
                 this.pagCurrent = val.page_num;
-                this.totalData = val.ext;
             }
         }
     }

@@ -354,6 +354,24 @@
                                 :show-overflow-tooltip="true"
                             >
                             </el-table-column>
+                            <!-- 归集通归集额度 -->
+                            <el-table-column v-else-if="head.prop=='collect_type'"
+                                             :key="head.id"
+                                             :prop="head.prop"
+                                             :label="head.name"
+                                             :formatter="collectType"
+                                             :show-overflow-tooltip="true"
+                            >
+                            </el-table-column>
+                            <!-- 归集通归集频率 -->
+                            <el-table-column v-else-if="head.prop=='collect_frequency'"
+                                             :key="head.id"
+                                             :prop="head.prop"
+                                             :label="head.name"
+                                             :formatter="collectFrequency"
+                                             :show-overflow-tooltip="true"
+                            >
+                            </el-table-column>
                             <!-- 公用列 -->
                             <el-table-column
                                 v-else
@@ -428,6 +446,12 @@
                         <el-col v-else-if="detail.prop=='interactive_mode'"
                                 :key="detail.id"
                                 :span="detail.pspan">{{interList[dialogData.interactive_mode]}}</el-col>
+                        <el-col v-else-if="detail.prop=='collect_type'"
+                                :key="detail.id"
+                                :span="detail.pspan">{{poolTypeList[dialogData.collect_type]}}</el-col>
+                        <el-col v-else-if="detail.prop=='collect_frequency'"
+                                :key="detail.id"
+                                :span="detail.pspan">{{frequencyList[dialogData.collect_frequency]}}</el-col>
                         <el-col v-else-if="detail.prop=='deposits_mode'"
                                 :key="detail.id"
                                 :span="detail.pspan">{{depositsList[dialogData.deposits_mode]}}</el-col>
@@ -682,6 +706,14 @@
                     agree:"zftbatch_agree",
                     reject:"zftbatch_reject"
                 },
+                {
+                    text:"归集通",
+                    detail:"collectsetting_detail",
+                    list:"collectsetting_pendingtasks",
+                    addLots:"collectsetting_append",
+                    agree:"collectsetting_agree",
+                    reject:"collectsetting_reject"
+                }
             ]
 
             this.detailDialog ={
@@ -966,7 +998,22 @@
                     {id:"17", lspan:4, label:"已成功金额"},
                     {id:"18", pspan:8, prop:"sucess_amount"},
                 ],
-
+                "12":[
+                    {id:"1", lspan:4, label:"归集主题"},
+                    {id:"2",pspan:20, prop:"topic"},
+                    {id:"3", lspan:4, label:"归集额度"},
+                    {id:"4", pspan:8, prop:"collect_type"},
+                    {id:"5", lspan:4, label:"归集金额"},
+                    {id:"6", pspan:8, prop:"collect_amount"},
+                    {id:"7", lspan:4, label:"归集频率"},
+                    {id:"8", pspan:8, prop:"collect_frequency"},
+                    {id:"9", lspan:4, label:"归集时间"},
+                    {id:"10", pspan:8, prop:"collect_time"},
+                    {id:"11", lspan:4, label:"归集集户(个)"},
+                    {id:"12", pspan:8, prop:"collect_main_account_count"},
+                    {id:"13", lspan:4, label:"业务状态"},
+                    {id:"14", pspan:8, prop:"service_status"}
+                ],
             }
         },
         mounted:function(){
@@ -982,6 +1029,14 @@
             //调拨类型
             if (constants.ZjdbType) {
                 this.dbtTypeList = constants.ZjdbType;
+            }
+            //归集额度
+            if(constants.CollOrPoolType){
+                this.poolTypeList = constants.CollOrPoolType;
+            }
+            //归集频率
+            if(constants.CollOrPoolFrequency){
+                this.frequencyList = constants.CollOrPoolFrequency;
             }
         },
         props: ["isPending", "tableData"],
@@ -1112,6 +1167,15 @@
                         {id:'5',prop:"sucess_amount",name:'成功金额'},
                         {id:'6',prop:"service_status",name:'批次状态'}
                     ],
+                    "12":[
+                        {id:'1',prop:"topic",name:'归集主题'},
+                        {id:'2',prop:"collect_type",name:'归集额度'},
+                        {id:'3',prop:"collect_amount",name:'归集金额'},
+                        {id:'4',prop:"collect_frequency",name:'归集频率'},
+                        {id:'5',prop:"collect_time",name:'归集时间'},
+                        {id:'6',prop:"collect_main_account_count",name:'归集集户(个)'},
+                        {id:'7',prop:"service_status",name:'业务状态'}
+                    ]
                 },
                 editableTabsList: [],
                 bizType:{},//业务种类
@@ -1148,6 +1212,8 @@
                 dbtTypeList:{},//调拨类型
                 payAmountUp:"",//查看详情金额大写
                 depositsList:[],//存款类型
+                poolTypeList: {}, //归集金额
+                frequencyList: {}, //归集频率
             }
         },
         methods:{
@@ -1216,6 +1282,20 @@
             changeThousandth: function (row, column, cellValue, index) {
                 if(cellValue){
                     return this.$common.transitSeparator(cellValue);
+                }
+            },
+            //展示格式转换-归集额度
+            collectType: function (row, column, cellValue, index) {
+                var constants = JSON.parse(window.sessionStorage.getItem("constants"));
+                if (constants.CollOrPoolType) {
+                    return constants.CollOrPoolType[cellValue];
+                }
+            },
+            //展示格式转换-归集频率
+            collectFrequency: function (row, column, cellValue, index) {
+                var constants = JSON.parse(window.sessionStorage.getItem("constants"));
+                if (constants.CollOrPoolFrequency) {
+                    return constants.CollOrPoolFrequency[cellValue];
                 }
             },
             //处理弹出表格的金额展示问题
