@@ -389,6 +389,12 @@
                 if(routerParams.optype == "yet_hiscollectlist"){ //历史余额汇总
                     return true;
                 }
+                if(routerParams.optype == "jyt_curcollectlist"){ //当日交易汇总
+                    return true;
+                }
+                if(routerParams.optype == "jyt_hiscollectlist"){ //历史交易汇总
+                    return true;
+                }
                 return false;
             },
             //查询

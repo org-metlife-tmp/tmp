@@ -86,11 +86,11 @@
             oldDate.setFullYear(curDate.getFullYear());
             oldDate.setMonth(curDate.getMonth());
             oldDate.setDate(curDate.getDate()-7);
-            
-            this.dateValue = [oldDate,curDate];
 
-            this.routerMessage.params.start_date = this.dateValue[0];
-            this.routerMessage.params.end_date = this.dateValue[1];
+            // this.dateValue = [oldDate,curDate];
+
+            // this.routerMessage.params.start_date = this.dateValue[0];
+            // this.routerMessage.params.end_date = this.dateValue[1];
             //向父组件发送自己的信息
             this.$emit('transmitTitle', '历史交易波动');
             this.$emit('getTableData', this.routerMessage);
