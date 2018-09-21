@@ -445,6 +445,20 @@
                 display: none;
             }
         }
+
+        .errorTip{
+            width: 100%;
+            display: inline-block;
+            text-align: center;
+            margin-top: 30px;
+            .error-name{
+                color: #fc6e21;
+                line-height: 25px;
+            }
+            .downLoad{
+                color: #00B4EC;
+            }
+        }
         
     }
 </style>
@@ -694,14 +708,21 @@
                    width="800px" title=""
                    top="76px" :close-on-click-modal="false">
             <h1 slot="title" class="dialog-title">批量上传</h1>
+            <div class="errorTip" v-show="currentUpload.errorTipShow">
+                <div class="error-name">文档内容不符合要求</div>
+                <a class="downLoad" href="javascript:;"
+                    @click = "downLoadExcel"
+                v-text="'/cfm/normal/excel/downExcel?object_id='+currentUpload.download_object_id"
+                ></a>
+            </div>
             <div class="modeUpload">
-            <div class="title-text">模板上传</div>
+                <div class="title-text">模板上传</div>
                 <el-input v-model="currentUpload.original_file_name" readonly>
                     <template slot="append">
                         <el-upload
                                 class="upload-demo"
                                 action="/cfm/normal/excel/upload"
-                                :headers="{pk:'2',Authorization:currToken}"
+                                :headers="{pk:'8 ',Authorization:currToken}"
                                 multiple
                                 accept=".xlsx,.xls"
                                 :on-success="uploadSuccess"
@@ -1143,11 +1164,19 @@
             uploadSuccess:function(response, file, fileList){
                 this.currentUpload = response;
                 this.addExcel = false;
+                var message = "";
+                var message  = response.success ? '上传成功' : response.error_message;
+                var type = response.success ? 'success' : 'warning';
                 this.$message({
-                    type: "success",
-                    message: "上传成功",
+                    type: type,
+                    message: message,
                     duration: 2000
                 });
+                if(!response.success && response.download_object_id){
+                    this.currentUpload.errorTipShow = true;
+                }else{
+                    this.currentUpload.errorTipShow = false;
+                }
             },
             beforeUpload: function(){
                 
@@ -1479,7 +1508,11 @@
             //修改付款方，tip文字变更
             payAccChange:function(val){
                 this.payAccDetail = val;
-            }
+            },
+            //下载正确excel文件
+            downLoadExcel:function(type){
+                this.templateDownLoad();
+            },
         },
         watch:{
             fileModeList: function(old,val){
