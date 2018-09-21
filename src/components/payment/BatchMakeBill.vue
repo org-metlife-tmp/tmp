@@ -506,7 +506,7 @@
         created: function () {
             //获取付款方账户列表
             this.$axios({
-                url: "/cfm/normalProcess",
+                url: "/cfm/commonProcess",
                 method: "post",
                 data: {
                     optype: "account_normallist",
