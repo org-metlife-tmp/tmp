@@ -172,8 +172,9 @@
                         formatter: function (params) {
                             var showData = "";
                             if(params.data.value){
-                                var showData = params.name + "<br/>" +
-                                        "归集金额：" + params.value + "(" + params.data.code + ")";
+                                var type = params.data.type ? '下拨' : '归集';
+                                var showData = params.name + "<br/>" + type +
+                                        "金额：" + params.value + "(" + params.data.code + ")";
                             }
                             return showData;
                         }
