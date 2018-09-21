@@ -1,5 +1,5 @@
 <style scoped lang="less" type="text/less">
-    #allManageDetail{
+    #allocationChart{
         width: 100%;
         height: 100%;
         box-sizing: border-box;
@@ -115,7 +115,7 @@
     }
 </style>
 <style lang="less">
-    #allManageDetail {
+    #allocationChart {
         .el-dialog__wrapper {
             .el-dialog__body {
                 height: 300px;
@@ -133,7 +133,7 @@
 </style>
 
 <template>
-    <div id="allManageDetail">
+    <div id="allocationChart">
         <div class="policyNo">
             <span>策略编号[</span>
             <span>GJT201809120000001</span>
@@ -239,9 +239,9 @@
 <script>
     import BusinessTracking from "../publicModule/BusinessTracking.vue"
     export default {
-        name: "AllManageDetail",
+        name: "AllocationChart",
         created: function () {
-            this.$emit("transmitTitle", "自动下拨管理-查看明细");
+            this.$emit("transmitTitle", "自动下拨报表");
         },
         mounted: function () {
             //下拨频率

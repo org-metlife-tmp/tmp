@@ -457,6 +457,7 @@
                     <el-menu-item index="/allocation/allocation-set">自动下拨设置</el-menu-item>
                     <el-menu-item index="/allocation/allocation-manage">自动下拨管理</el-menu-item>
                     <el-menu-item index="/allocation/allocation-view">自动下拨查看</el-menu-item>
+                    <el-menu-item index="/allocation/allocation-chart">自动下拨报表</el-menu-item>
                     <el-menu-item index="/allot/allot-deal-check?bizType=13">交易核对</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>

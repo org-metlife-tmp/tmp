@@ -96,7 +96,7 @@ import FundPoolAccSet from '@/components/fundAllocation/FundPoolAccSet'
 import AutoAllocationSet from '@/components/fundAllocation/AutoAllocationSet'
 import AutoAllocationManage from '@/components/fundAllocation/AutoAllocationManage'
 import AllocationDealCheck from '@/components/fundAllocation/AllocationDealCheck'
-import AllManageDetail from '@/components/fundAllocation/AllManageDetail'
+import AllocationChart from '@/components/fundAllocation/AllocationChart'
 import AutoAllocationView from '@/components/fundAllocation/AutoAllocationView'
 import AutoAllocationMoreBills from '@/components/fundAllocation/AutoAllocationMoreBills'
 //收款通
@@ -191,7 +191,7 @@ const router = new Router({
                         {path: '/allocation/fundpool-acc-set', name: 'FundPoolAccSet', component: FundPoolAccSet, meta: {requireAuth: true}},
                         {path: '/allocation/allocation-set', name: 'AutoAllocationSet', component: AutoAllocationSet, meta: {requireAuth: true}},
                         {path: '/allocation/allocation-manage', name: 'AutoAllocationManage', component: AutoAllocationManage, meta: {requireAuth: true}},
-                        {path: '/allocation/allocation-manage-detail', name: 'AllManageDetail', component: AllManageDetail, meta: {requireAuth: true}},
+                        {path: '/allocation/allocation-chart', name: 'AllocationChart', component: AllocationChart, meta: {requireAuth: true}},
                         {path: '/allocation/allocation-view', name: 'AutoAllocationView', component: AutoAllocationView, meta: {requireAuth: true}},
                         {path: '/allocation/allocation-more-bills', name: 'AutoAllocationMoreBills', component: AutoAllocationMoreBills, meta: {requireAuth: true}},
                         //审批转移
