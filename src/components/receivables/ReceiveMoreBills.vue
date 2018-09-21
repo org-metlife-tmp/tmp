@@ -545,7 +545,7 @@
 
             //获取付款方账户列表
             this.$axios({
-                url:"/cfm/commonProcess",
+                url:"/cfm/commProcess",
                 method:"post",
                 data:{
                     optype:"account_normallist",
