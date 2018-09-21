@@ -1425,14 +1425,19 @@
                 })
             },
             //模板下载
-            templateDownLoad:function (){
+            templateDownLoad:function (id){
+                debugger
+                var params = {};
+                if(id){
+                    params.object_id = id;
+                }else{
+                    params.pk = '8';
+                }
                 this.$axios({
                     url: "/cfm/normal/excel/downExcel",
                     method: "post",
                     data:{
-                        params:{
-                            pk:'8'
-                        }
+                        params:params
                     },
                     responseType: 'blob'
                 }).then((result) => {
@@ -1510,8 +1515,8 @@
                 this.payAccDetail = val;
             },
             //下载正确excel文件
-            downLoadExcel:function(type){
-                this.templateDownLoad();
+            downLoadExcel:function(){
+                this.templateDownLoad(this.currentUpload.download_object_id);
             },
         },
         watch:{
