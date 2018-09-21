@@ -13,7 +13,7 @@
         }
 
         /*弹框高度控制*/
-        .dialog-content{
+        .dialog-content {
             overflow-y: auto;
             max-height: 440px;
         }
@@ -86,6 +86,7 @@
             left: 10px;
             text-align: left;
             margin: -22px 0 20px 0;
+            z-index: 10;
 
             .el-button {
                 background-color: #fff;
@@ -121,36 +122,104 @@
         }
 
         /*图表内容*/
-        .img-content{
+        .img-content {
             width: 100%;
             height: 100%;
             border: 1px solid #f1f1f1;
 
-            .img-left{
-                float:left;
+            .img-left {
+                position: relative;
+                float: left;
                 height: 100%;
                 width: 30%;
                 background-color: #F7F7F6;
 
-                h2{
+                h2 {
                     color: #C0BBB5;
-                    margin-bottom: 120px;
+                    margin-bottom: 140px;
                 }
 
-                div{
+                .left-money {
                     font-size: 18px;
                     color: #FF4800;
                 }
+
+                .left-pie {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    overflow: hidden;
+
+                    > div {
+                        width: 100%;
+                        height: 600px;
+                        margin: 80px 0 0 2px;
+                    }
+                }
             }
-            .img-right{
-                float:right;
+            .img-right {
+                float: right;
                 height: 100%;
                 width: 70%;
+
+                ul {
+                    width: 100%;
+                    height: 100%;
+
+                    .pie-list {
+                        position: relative;
+                        box-sizing: border-box;
+                        width: 100%;
+                        height: 20%;
+                        border-top: 1px solid #ccc;
+
+                        /*序号*/
+                        .corner-mark {
+                            width: 0;
+                            height: 0;
+                            border: 25px solid #69DAFF;
+                            position: absolute;
+                            top: 0;
+                            left: 0px;
+                            border-right-color: rgba(0, 0, 0, 0);
+                            border-bottom-color: rgba(0, 0, 0, 0);
+                            color: #fff;
+                            text-indent: -24px;
+                            line-height: 0px;
+                        }
+
+                        /*名称和金额*/
+                        .left-text {
+                            float: left;
+                            width: 60%;
+                            height: 100%;
+                            text-align: left;
+                            padding: 20px 0 0 60px;
+                            box-sizing: border-box;
+
+                            span {
+                                display: inline-block;
+                                font-size: 18px;
+                                color: #FF4800;
+                                margin-top: 6px;
+                            }
+                        }
+
+                        /*饼图*/
+                        .right-echart {
+                            float: right;
+                            width: 40%;
+                            height: 100%;
+                        }
+                    }
+                }
             }
         }
 
         /*列表内容*/
-        .list-content{
+        .list-content {
             /*汇总数据*/
             .allData {
                 height: 36px;
@@ -176,16 +245,16 @@
 <template>
     <div id="collectionStatement">
         <el-date-picker v-show="!showImg" style="margin-bottom:10px"
-                v-model="dateValue"
-                type="daterange"
-                range-separator="至"
-                start-placeholder="开始日期"
-                end-placeholder="结束日期"
-                value-format="yyyy-MM-dd"
-                size="mini" clearable
-                unlink-panels
-                :picker-options="pickerOptions"
-                @change="getDateData">
+                        v-model="dateValue"
+                        type="daterange"
+                        range-separator="至"
+                        start-placeholder="开始日期"
+                        end-placeholder="结束日期"
+                        value-format="yyyy-MM-dd"
+                        size="mini" clearable
+                        unlink-panels
+                        :picker-options="pickerOptions"
+                        @change="getDateData">
         </el-date-picker>
         <!--顶部选择按钮-->
         <div class="button-list-left">
@@ -221,17 +290,37 @@
             <div class="img-left">
                 <h2>TOP5</h2>
                 <span>汇总金额</span>
-                <div>￥{{ totalAmount }}</div>
+                <div class="left-money">￥{{ pieTotalAmount }}</div>
                 <!--饼图-->
-                <CakePicture :pieData="pieData"></CakePicture>
+                <div class="left-pie">
+                    <div>
+                        <CakePicture :pieData="pieData"></CakePicture>
+                    </div>
+                </div>
             </div>
-            <div class="img-right"></div>
+            <div class="img-right">
+                <ul>
+                    <li v-for="(item,index) in pieList" :key="item.pay_account_org_id"
+                        class="pie-list">
+                        <span class="corner-mark">{{ index + 1 }}</span>
+                        <div class="left-text">
+                            <p v-show="btActive">{{ item.pay_account_org_name }}</p>
+                            <p v-show="!btActive">{{ item.pay_account_no }}({{ item.pay_account_name }})</p>
+                            <span>￥{{ transitionMoney(item.collect_amount) }}</span>
+                        </div>
+                        <div class="right-echart">
+                            <MoreCake :pieData="item.$pieData" :classIndex="index"></MoreCake>
+                        </div>
+                    </li>
+                </ul>
+            </div>
         </section>
         <!--列表内容-->
         <section class="list-content" v-show="!showImg">
             <el-table :data="tableList"
                       border size="mini">
-                <el-table-column prop="pay_account_org_name" label="所属公司" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="pay_account_org_name" label="所属公司"
+                                 :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="pay_account_no" label="被归集账户" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="pay_account_bank" label="开户行" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="collect_amount" label="归集总金额" :show-overflow-tooltip="true"
@@ -300,6 +389,7 @@
 
 <script>
     import CakePicture from "../echarts/CakePicture.vue";
+    import MoreCake from "../echarts/MoreCake.vue";
 
     export default {
         name: "CollectionStatement",
@@ -320,7 +410,8 @@
         },
         props: ["tableData"],
         components: {
-            CakePicture: CakePicture
+            CakePicture: CakePicture,
+            MoreCake: MoreCake
         },
         data: function () {
             return {
@@ -334,11 +425,12 @@
                 },
                 tableList: [], //列表数据
                 totalAmount: "0.00",
+                pieTotalAmount: "0.00",
                 dialogVisible: false, //弹框数据
                 orgTreeList: [],
                 expandData: [],
                 bankDialogVisible: false,
-                bankTypeList:[], //弹框-银行
+                bankTypeList: [], //弹框-银行
                 selectBank: [],
                 insureIndeter: false,
                 insureAll: false,
@@ -350,7 +442,9 @@
                     }
                 },
                 showImg: true, //图表/列表显示控制
-                pieData: [],
+                pieData: [], //饼图数据
+                pieList: [],
+                lala: false
             }
         },
         methods: {
@@ -376,20 +470,20 @@
                 this.insureIndeter = checkedCount > 0 && checkedCount < allLength;
             },
             //切换到公司
-            isCompany: function(){
-                if(this.btActive){
+            isCompany: function () {
+                if (this.btActive) {
                     return;
-                }else{
+                } else {
                     this.routerMessage.params.query_key = 1;
                     this.btActive = true;
                     this.$emit("getCommTable", this.routerMessage);
                 }
             },
             //切换到账号
-            isNumber: function(){
-                if(!this.btActive){
+            isNumber: function () {
+                if (!this.btActive) {
                     return;
-                }else{
+                } else {
                     this.routerMessage.params.query_key = 2;
                     this.btActive = false;
                     this.$emit("getCommTable", this.routerMessage);
@@ -405,6 +499,10 @@
             transitAmount: function (row, column, cellValue, index) {
                 return this.$common.transitSeparator(cellValue);
             },
+            //图表金额格式转换
+            transitionMoney: function (num) {
+                return this.$common.transitSeparator(num);
+            },
             //查询
             queryByOrg: function () {
                 this.routerMessage.params.pay_account_org_id = this.$refs.orgTree.getCheckedKeys();
@@ -412,7 +510,7 @@
                 this.$emit("getCommTable", this.routerMessage);
                 this.dialogVisible = false;
             },
-            queryByBank: function(){
+            queryByBank: function () {
                 this.routerMessage.params.pay_bank_cnaps = this.selectBank;
                 this.routerMessage.params.page_num = 1;
                 this.$emit("getCommTable", this.routerMessage);
@@ -420,20 +518,69 @@
             },
 
             //获取饼图数据
-            getPieData:function(){
-                var currentData = this.tableList;
-                var pieData = [];
-                for (var i = 0; i < currentData.length; i++) {
-                    var item = currentData[i];
-                    debugger;
-                    pieData.push({value: item.bal, name: item.acc_name, code: item.acc_no});
-                }
-                this.pieData = pieData;
+            getPieData: function () {
+                this.$axios({
+                    url: "/cfm/normalProcess",
+                    method: "post",
+                    data: {
+                        optype: "collectreport_reportsChart",
+                        params: this.routerMessage.params
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+
+                    } else {
+                        var data = result.data.data;
+                        //设置总金额
+                        if (data.total_amount) {
+                            this.pieTotalAmount = this.$common.transitSeparator(data.total_amount);
+                        }
+                        //设置左侧汇总饼图
+                        var pieData = [];
+                        data.list.forEach((item) => {
+                            var currPieItem = {
+                                value: item.collect_amount,
+                                code: item.amount_ration
+                            }
+                            if (this.btActive) {
+                                currPieItem.name = item.pay_account_org_name;
+                            } else {
+                                currPieItem.name = item.pay_account_name;
+                            }
+                            pieData.push(currPieItem);
+                        });
+                        this.pieData = {
+                            $noElse: true,
+                            pieData: pieData
+                        };
+                        //设置右侧饼图列表
+                        this.pieList = data.list;
+                        this.pieList.forEach((item) => {
+                            var currPieList = [
+                                {
+                                    value: item.collect_amount,
+                                    code: item.amount_ration,
+                                    name: this.btActive ? "本公司归集金额" : "当前账号归集金额"
+                                },
+                                {
+                                    value: item.collect_amount_else,
+                                    code: item.amount_ration_else,
+                                    name: "其它"
+                                }
+                            ];
+                            item.$pieData = currPieList;
+                        });
+                        //设置右侧饼图
+
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                });
             }
         },
         watch: {
             tableData: function (val, oldVal) {
-                if(val.ext.total_amount){
+                if (val.ext.total_amount) {
                     this.totalAmount = this.$common.transitSeparator(val.ext.total_amount);
                 }
                 this.tableList = val.data;

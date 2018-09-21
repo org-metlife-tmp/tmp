@@ -1,22 +1,22 @@
 <style>
-    #cake-picture {
+    .cake-picture {
         width: 100%;
-        height: 44%;
+        height: 100%;
         margin: 0 auto;
         text-align: left;
     }
 </style>
 
 <template>
-    <div id="cake-picture"></div>
+    <div :id="currId" class="cake-picture"></div>
 </template>
 
 <script>
     export default {
-        name: "CakePicture",
+        name: "MoreCake",
         mounted: function () {
             //创建饼图
-            this.myChart = this.$echarts.init(document.getElementById("cake-picture"));
+            this.myChart = this.$echarts.init(document.getElementById(this.currId));
             this.myChart.setOption({
                 //提示框组件
                 tooltip: {
@@ -102,10 +102,10 @@
                         }
                     },
                     center: ['36%', '50%'], //饼图的中心坐标
-                    radius: ['60%', '90%'], //饼图的半径  内/外
+                    radius: ['65%', '80%'], //饼图的半径  内/外
                     data: []
                 }],
-                color: ['#62AAFF', '#40B9FE', '#61CBF2', '#8CD7FF', '#6CDF39', '#8BE851', '#C0E74E', '#FED45B', '#F4BB47', '#EBEBED']
+                color: ['#62AAFF', '#ccc', '#61CBF2', '#8CD7FF', '#6CDF39', '#8BE851', '#C0E74E', '#FED45B', '#F4BB47', '#EBEBED']
             });
 
             //设置图标能根据页面大小变化
@@ -116,81 +116,51 @@
                     myChartDom.resize();
                 },200)
             };
+
+            this.myChart.setOption({
+                legend: {
+                    show: false
+                },
+                series: [{
+                    name: "饼图", //用于tooltip的显示，legend图例的筛选
+                    data: this.pieData,
+                    label: {
+                        emphasis:{
+                            show: false
+                        }
+                    },
+                }],
+                tooltip: {
+                    //触发类型
+                    trigger: "item", //数据项图形触发
+                    formatter: function (params) {
+                        var showData = "";
+                        if(params.data.value){
+                            var showData = params.name + "<br/>" +
+                                    "归集金额：" + params.value + "(" + params.data.code + ")";
+                        }
+                        return showData;
+                    }
+                },
+            });
+
+            this.myChart.dispatchAction({type: 'highlight',seriesIndex: 0,dataIndex: 0});
         },
-        props:["pieData"],
+        props:["pieData","classIndex"],
         data: function () {
             return {
-                myChart:""
+                myChart:"",
+                currId: "cake-picture" + this.classIndex
             }
         },
         methods: {
-            //带图例和中心内容的饼图
-            setNormal: function(val){
-                this.myChart.setOption({
-                    legend: {
-                        formatter: function (name) {
-                            if (name == "其它") {
-                                return name;
-                            }
-                            for (var i = 0; i < val.length; i++) {
-                                var entity = val[i]
-                                if (entity.name == name) {
-                                    if(entity.code){
-                                        return name + "[" + entity.code + "]";
-                                    }else{
-                                        return name;
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    series: [{
-                        name: "饼图", //用于tooltip的显示，legend图例的筛选
-                        data: val
-                    }],
-                });
-            },
-            //没有图例和中心内容的饼图
-            setNoEles: function(val){
-                this.myChart.setOption({
-                    legend: {
-                        show: false
-                    },
-                    series: [{
-                        name: "饼图", //用于tooltip的显示，legend图例的筛选
-                        data: val,
-                        label: {
-                            emphasis:{
-                                show: false
-                            }
-                        },
-                        center: ['50%', '50%'], //饼图的中心坐标
-                    }],
-                    tooltip: {
-                        //触发类型
-                        trigger: "item", //数据项图形触发
-                        formatter: function (params) {
-                            var showData = "";
-                            if(params.data.value){
-                                var showData = params.name + "<br/>" +
-                                        "归集金额：" + params.value + "(" + params.data.code + ")";
-                            }
-                            return showData;
-                        }
-                    },
-                });
-            }
+
         },
         watch:{
             //为饼图设置数据
             pieData: function (val,oldValue) {
-                // console.log(val);
-                if(val.$noElse){
-                    this.setNoEles(val.pieData);
-                }else {
-                    this.setNormal(val);
-                }
-                this.myChart.dispatchAction({type: 'highlight',seriesIndex: 0,dataIndex: 0});
+                console.log(val);
+
             }
         }
     }

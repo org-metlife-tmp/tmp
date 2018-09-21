@@ -91,6 +91,10 @@ import CollectionManage from '@/components/collection/CollectionManage'
 import CollectionLook from '@/components/collection/CollectionLook'
 import CollectionStatement from '@/components/collection/CollectionStatement'
 import ColleMoreBills from '@/components/collection/ColleMoreBills'
+//广银联备付金
+import StrategySet from '@/components/wideUnionpay/StrategySet'
+import UnionpayManage from '@/components/wideUnionpay/UnionpayManage'
+import TaskLook from '@/components/wideUnionpay/TaskLook'
 //资金下拨
 import FundPoolAccSet from '@/components/fundAllocation/FundPoolAccSet'
 import AutoAllocationSet from '@/components/fundAllocation/AutoAllocationSet'
@@ -187,6 +191,10 @@ const router = new Router({
                         {path: '/collection/collection-look', name: 'CollectionLook', component: CollectionLook, meta: {requireAuth: true}},
                         {path: '/collection/collection-statement', name: 'CollectionStatement', component: CollectionStatement, meta: {requireAuth: true}},
                         {path: '/collection/colle-more-bills', name: 'ColleMoreBills', component: ColleMoreBills, meta: {requireAuth: true}},
+                        //广银联备付金
+                        {path: '/wide-unionpay/strategy-set', name: 'StrategySet', component: StrategySet, meta: {requireAuth: true}},
+                        {path: '/wide-unionpay/unionpay-manage', name: 'UnionpayManage', component: UnionpayManage, meta: {requireAuth: true}},
+                        {path: '/wide-unionpay/task-look', name: 'TaskLook', component: TaskLook, meta: {requireAuth: true}},
                         //资金下拨
                         {path: '/allocation/fundpool-acc-set', name: 'FundPoolAccSet', component: FundPoolAccSet, meta: {requireAuth: true}},
                         {path: '/allocation/allocation-set', name: 'AutoAllocationSet', component: AutoAllocationSet, meta: {requireAuth: true}},
