@@ -461,7 +461,7 @@
                 url:"/cfm/normalProcess",
                 method:"post",
                 data:{
-                    optype:"account_accs",
+                    optype:"account_normallist",
                     params:{
                         status:1,
                         acc_id:""
