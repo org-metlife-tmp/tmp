@@ -249,7 +249,7 @@
                         height: 42px;
                         display: inline-block;
                         background-image: url("../../assets/icon_common.png");
-                        background-repeat:  no-repeat; 
+                        background-repeat:  no-repeat;
                         vertical-align: middle;
                     }
                     .txt{
@@ -331,7 +331,7 @@
                     color: #868686;
                 }
             }
-            
+
         }
         .bills-page {
             background-color: transparent;
@@ -348,7 +348,7 @@
         }
         .bills-page.left{
             left: 5px;
-            background-position: -185px -26px; 
+            background-position: -185px -26px;
         }
         .bills-page.right{
             right: 5px;
@@ -425,7 +425,7 @@
         }
         .modeUpload{
             width: 90%;
-            display: flex;/*设为伸缩容器*/  
+            display: flex;/*设为伸缩容器*/
             flex-flow: row;/*伸缩项目单行排列*/
             line-height: 40px;
             margin: 60px 0;
@@ -459,7 +459,7 @@
                 color: #00B4EC;
             }
         }
-        
+
     }
 </style>
 <style lang="less" type="text/less">
@@ -827,8 +827,8 @@
                     }).catch(function (error) {
                         console.log(error);
                     });
-                    
-                    
+
+
                     this.$axios({
                         url: "/cfm/normalProcess",
                         method: "post",
@@ -875,10 +875,10 @@
             }).catch(function (error) {
                 console.log(error);
             })
-            
+
         },
         mounted:function(){
-            
+
         },
         components: {
             Upload: Upload
@@ -1179,7 +1179,7 @@
                 }
             },
             beforeUpload: function(){
-                
+
             },
             //添加上传成功的文件
             addCurUpload: function () {
@@ -1210,7 +1210,7 @@
                             duration: 2000
                         })
                     } else {
-                        
+
                         var data = result.data.data;
                         //设置附件数据
                         var singleFile = data.files;
@@ -1532,7 +1532,7 @@
                         btn[1].classList.add("showBtn");
                     } else{
                         btn[0].classList.remove("showBtn");
-                        btn[1].classList.remove("showBtn");  
+                        btn[1].classList.remove("showBtn");
                     }
                     var leftWidth = curMove.style.marginLeft.split("p")[0]*1;
                     if(conDomW - scrDomW  < 0 && leftWidth <0){

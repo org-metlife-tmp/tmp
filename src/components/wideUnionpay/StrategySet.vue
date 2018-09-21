@@ -222,36 +222,38 @@
                                 </el-col>
                                 <el-col :span="1" style="height:1px"></el-col>
                                 <el-col :span="16" style="color:#676767">
-                                    <span v-show="collectionData.collect_type == 3">将下拨账户内所有余额转入下拨主账户</span>
-                                    <span v-show="collectionData.collect_type == 1">从每个被下拨账户内转出固定金额到下拨主账户</span>
-                                    <span v-show="collectionData.collect_type == 2">为每个被下拨账户保留一个固定金额后的剩余金额转入下拨主账户</span>
+                                    <span v-show="collectionData.gyl_allocation_type == 3">将下拨账户内所有余额转入下拨主账户</span>
+                                    <span v-show="collectionData.gyl_allocation_type == 1">从每个被下拨账户内转出固定金额到下拨主账户</span>
+                                    <span v-show="collectionData.gyl_allocation_type == 2">为每个被下拨账户保留一个固定金额后的剩余金额转入下拨主账户</span>
                                 </el-col>
                             </el-row>
                         </el-form-item>
                     </el-col>
                     <el-col :span="14">
                         <el-form-item label="下拨账户">
-                            <el-select v-model="collectionData.main_acc_id" placeholder="请选择主账户"
+                            <el-select v-model="collectionData.pay_acc_id" placeholder="请选择主账户"
                                        style="width:100%"
                                        filterable clearable size="mini"
-                                       :disabled="isView">
+                                       :disabled="isView"
+                                       @change="setMain($event,collectionData)">
                                 <el-option v-for="item in accOptions"
-                                           :key="item.main_acc_id"
-                                           :label="item.main_acc_name"
-                                           :value="item.main_acc_id">
+                                           :key="item.acc_id"
+                                           :label="item.acc_name"
+                                           :value="item.acc_id">
+                                    <span>{{ item.acc_name }} ( {{ item.acc_no }} )</span>
                                 </el-option>
                             </el-select>
                         </el-form-item>
                     </el-col>
                     <el-col :span="14">
                         <el-form-item label="被归集账户名">
-                            <el-input v-model="collectionData.topic" placeholder="请输入被归集账户名"
+                            <el-input v-model="collectionData.recv_acc_name" placeholder="请输入被归集账户名"
                                       :readonly="isView"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="14">
                         <el-form-item label="被归集账户号">
-                            <el-input v-model="collectionData.topic" placeholder="请输入被归集账户号"
+                            <el-input v-model="collectionData.recv_acc_no" placeholder="请输入被归集账户号"
                                       :readonly="isView"></el-input>
                         </el-form-item>
                     </el-col>
@@ -394,6 +396,20 @@
             if (constants.CollOrPoolFrequency) {
                 this.frequencyList = constants.CollOrPoolFrequency;
             }
+            //归集账户
+            this.$axios({
+                url: "/cfm/commProcess",
+                method: "post",
+                data: {
+                    optype: "account_normallist",
+                    params: {
+                        status: 1
+                    }
+                }
+            }).then((result) => {
+                var data = result.data.data;
+                this.accOptions = data;
+            });
         },
         mounted: function () {
             //获取单据数据
@@ -475,9 +491,11 @@
                     id: "",
                     persist_version: "",
                     topic: "",
-                    collect_type: "",
-                    collect_amount: "",
-                    main_list: [],
+                    gyl_allocation_type: "",
+                    gyl_allocation_amount: "",
+                    pay_acc_id: "",
+                    recv_acc_name: "",
+                    recv_acc_no: "",
                     collect_frequency: "1",
                     timesetting_list: [],
                     summary: "",
@@ -560,6 +578,24 @@
             BusinessTracking: BusinessTracking
         },
         methods: {
+            //选择下拨账户后将其相关数据进行保存
+            setMain: function (val, collectionData) {
+                var accOptions = this.accOptions;
+                for (var i = 0; i < accOptions.length; i++) {
+                    var accItem = accOptions[i];
+                    if (accItem.acc_id == val) {
+                        collectionData.pay_acc_org_id = accItem.org_id;
+                        collectionData.pay_acc_org_name = accItem.org_name;
+                        collectionData.pay_acc_id = accItem.acc_id;
+                        collectionData.pay_acc_no = accItem.acc_no;
+                        collectionData.pay_acc_name = accItem.acc_name;
+                        collectionData.pay_acc_bank_name = accItem.bank_name;
+                        collectionData.pay_acc_bank_cnaps_code = accItem.bank_cnaps_code;
+                        collectionData.pay_acc_cur = accItem.curr_code;
+                    }
+                }
+                console.log(collectionData);
+            },
             //改变归集频率后清空其时间选择
             clearDate: function () {
                 this.timesetting_list = [{dateItem: "", id: new Date().valueOf()}];
@@ -626,6 +662,24 @@
                     })
                 }
             },
+            //清空
+            clearAll: function () {
+                var collectionData = this.collectionData;
+                for (var k in collectionData) {
+                    if (k != "timesetting_list" && k != "files") {
+                        if (k == "collect_frequency") {
+                            collectionData[k] = "1";
+                        } else {
+                            collectionData[k] = "";
+                        }
+                    } else {
+                        collectionData[k] = [];
+                    }
+                }
+                this.clearDate();
+                this.emptyFileList = [];
+            },
+
             //保存
             saveCollect: function () {
                 var params = this.setParams();
@@ -674,27 +728,6 @@
                 });
                 collectionData.files = this.fileList;
                 return collectionData;
-            },
-            //清空
-            clearAll: function (clearAll) {
-                var collectionData = this.collectionData;
-                for (var k in collectionData) {
-                    if (k != "main_list" && k != "timesetting_list" && k != "files") {
-                        if (k == "collect_frequency") {
-                            collectionData[k] = "1";
-                        } else {
-                            collectionData[k] = "";
-                        }
-                    } else {
-                        collectionData[k] = [];
-                    }
-                }
-                this.editableTabs.forEach((tabItem) => {
-                    this.clearCollect(tabItem);
-                    tabItem.main_acc_id = "";
-                });
-                this.clearDate();
-                this.emptyFileList = [];
             },
             //更多单据
             goMoreBills: function () {

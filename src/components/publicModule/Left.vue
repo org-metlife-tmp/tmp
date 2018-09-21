@@ -434,17 +434,17 @@
                     <el-menu-item index="/payment/deal-check?bizType=9" v-if="menuList.ZFTCheck">交易核对</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="12">
+            <el-submenu index="12" v-if="menuList.GJT">
                 <template slot="title" height="200px">
                     <i class="icon-gjt"></i>
                     <p>归集通</p>
                 </template>
                 <el-menu-item-group>
-                    <el-menu-item index="/collection/collection-set">自动归集设置</el-menu-item>
-                    <el-menu-item index="/collection/collection-manage">自动归集管理</el-menu-item>
-                    <el-menu-item index="/collection/collection-look">自动归集查看</el-menu-item>
-                    <el-menu-item index="/collection/collection-statement">自动归集报表</el-menu-item>
-                    <el-menu-item index="/payment/deal-check?bizType=12">交易核对</el-menu-item>
+                    <el-menu-item index="/collection/collection-set" v-if="menuList.GJSetting">自动归集设置</el-menu-item>
+                    <el-menu-item index="/collection/collection-manage" v-if="menuList.GJMgr">自动归集管理</el-menu-item>
+                    <el-menu-item index="/collection/collection-look" v-if="menuList.GJView">自动归集查看</el-menu-item>
+                    <el-menu-item index="/collection/collection-statement" v-if="menuList.GJReport">自动归集报表</el-menu-item>
+                    <el-menu-item index="/payment/deal-check?bizType=12" v-if="menuList.GJCheck">交易核对</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
             <el-submenu index="13">
@@ -635,6 +635,13 @@
                     ZFTBatchView: false, //资金支付-批量查看
                     ZFTCheck: false, //资金支付-交易核对
                     ZFTSuplierAcc: false, //收款方账户维护
+
+                    GJT: false, //归集通
+                    GJSetting: false, //自动归集设置
+                    GJMgr: false, //自动归集管理
+                    GJView: false, //自动归集查看
+                    GJReport: false, //自动归集报表
+                    GJCheck: false, //自动归集核对
                 }
             }
         },
