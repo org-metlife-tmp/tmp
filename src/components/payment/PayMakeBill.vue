@@ -899,6 +899,7 @@
                         billData.id = data.id;
                         billData.persist_version = data.persist_version;
                         billData.service_status = data.service_status;
+                        billData.rev_persist_version = data.rev_persist_version;
                         billData.service_serial_number = data.service_serial_number;
                         this.getPayerSelect();
 

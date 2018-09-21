@@ -679,17 +679,29 @@
                 this.clearDate();
                 this.emptyFileList = [];
             },
-
+            //设置params
+            setParams: function () {
+                var collectionData = this.collectionData;
+                collectionData.timesetting_list = [];
+                this.timesetting_list.forEach((item) => {
+                    collectionData.timesetting_list.push(item.dateItem);
+                });
+                collectionData.files = this.fileList;
+                return collectionData;
+            },
             //保存
             saveCollect: function () {
                 var params = this.setParams();
+                if(!params){
+                    return;
+                }
                 var collectionData = this.collectionData;
 
                 this.$axios({
                     url: "/cfm/normalProcess",
                     method: "post",
                     data: {
-                        optype: collectionData.id ? "collectsetting_chg" : "collectsetting_add",
+                        optype: collectionData.id ? "gylsetting_chg" : "gylsetting_add",
                         params: params
                     }
                 }).then((result) => {
@@ -701,6 +713,7 @@
                         });
                     } else {
                         var data = result.data.data;
+                        debugger;
                         var message = collectionData.id ? "修改成功" : "保存成功";
                         this.collectionData.persist_version = data.persist_version;
                         this.collectionData.id = data.id;
@@ -715,20 +728,7 @@
                     console.log(error);
                 });
             },
-            //设置params
-            setParams: function () {
-                var collectionData = this.collectionData;
-                var editableTabs = this.editableTabs;
-                collectionData.main_list = editableTabs.filter((item) => {
-                    return item.main_acc_id;
-                });
-                collectionData.timesetting_list = [];
-                this.timesetting_list.forEach((item) => {
-                    collectionData.timesetting_list.push(item.dateItem);
-                });
-                collectionData.files = this.fileList;
-                return collectionData;
-            },
+
             //更多单据
             goMoreBills: function () {
                 this.$router.push("/collection/colle-more-bills");
