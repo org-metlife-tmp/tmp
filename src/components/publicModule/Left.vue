@@ -452,13 +452,13 @@
                     <i class="icon-gjt"></i>
                     <p>资金下拨</p>
                 </template>
-                <el-menu-item-group>
-                    <el-menu-item index="/allocation/fundpool-acc-set">资金池账户设置</el-menu-item>
-                    <el-menu-item index="/allocation/allocation-set">自动下拨设置</el-menu-item>
-                    <el-menu-item index="/allocation/allocation-manage">自动下拨管理</el-menu-item>
-                    <el-menu-item index="/allocation/allocation-view">自动下拨查看</el-menu-item>
-                    <el-menu-item index="/allocation/allocation-chart">自动下拨报表</el-menu-item>
-                    <el-menu-item index="/allot/allot-deal-check?bizType=13">交易核对</el-menu-item>
+                <el-menu-item-group v-if="menuList.ZJXB">
+                    <el-menu-item index="/allocation/fundpool-acc-set" v-if="menuList.ZJXBApSetting">资金池账户设置</el-menu-item>
+                    <el-menu-item index="/allocation/allocation-set" v-if="menuList.ZJXBSetting">自动下拨设置</el-menu-item>
+                    <el-menu-item index="/allocation/allocation-manage" v-if="menuList.ZJXBMgr">自动下拨管理</el-menu-item>
+                    <el-menu-item index="/allocation/allocation-view" v-if="menuList.ZJXBView">自动下拨查看</el-menu-item>
+                    <el-menu-item index="/allocation/allocation-chart" v-if="menuList.ZJXBReport">自动下拨报表</el-menu-item>
+                    <el-menu-item index="/allot/allot-deal-check?bizType=13" v-if="menuList.ZJXBChecked">交易核对</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
             <el-submenu index="14">
@@ -642,6 +642,14 @@
                     GJView: false, //自动归集查看
                     GJReport: false, //自动归集报表
                     GJCheck: false, //自动归集核对
+
+                    ZJXB: false, //资金下拨
+                    ZJXBApSetting: false, //资金下拨账户设置
+                    ZJXBSetting: false, //资金下拨设置
+                    ZJXBMgr: false, //资金下拨管理
+                    ZJXBView: false, //资金下拨查看
+                    ZJXBReport: false, //资金下拨报表
+                    ZJXBChecked: false, //资金下拨及交易核对
                 }
             }
         },

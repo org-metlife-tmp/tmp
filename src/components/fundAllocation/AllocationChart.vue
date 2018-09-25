@@ -86,7 +86,7 @@
             left: 10px;
             text-align: left;
             margin: -22px 0 20px 0;
-
+            z-index: 10;
             .el-button {
                 background-color: #fff;
                 border-color: #e8e8e8;
@@ -416,8 +416,8 @@
                     params: {
                         start_date:"",
                         end_date: "",  
-                        pay_account_org_id:"",
-                        pay_bank_cnaps:""
+                        pay_account_org_id:[],
+                        pay_bank_cnaps:[]
                     }
                 },
                 tableList: [], //列表数据
@@ -475,6 +475,7 @@
                     }else{
                         this.routerMessage.optype = "allocreport_orglist";
                         this.$emit("getCommTable", this.routerMessage);
+                        this.clearAll();
                     }
                     this.btActive = true;
                     
@@ -490,6 +491,7 @@
                     }else{
                         this.routerMessage.optype = "allocreport_acclist";
                         this.$emit("getCommTable", this.routerMessage);
+                        this.clearAll();
                     }
                     this.btActive = false;
                 }
@@ -513,13 +515,12 @@
                 this.routerMessage.params.pay_account_org_id = this.$refs.orgTree.getCheckedKeys();
                 if(this.showImg){//当前是图表
                     if(this.btActive){
-                        this.getChartAxios('org',this.routerMessage.params);
+                        this.getChartAxios('org');
                     }else{
-                        this.getChartAxios('acc',this.routerMessage.params);
+                        this.getChartAxios('acc');
                     }
                 }else{
                     this.routerMessage.optype = this.btActive ? "allocreport_orglist" : "allocreport_acclist";
-                    
                     this.$emit("getCommTable", this.routerMessage);
                 }
                 this.dialogVisible = false;
@@ -583,17 +584,14 @@
                 });
             },
             //获取图表请求
-            getChartAxios:function (type,params){
-                if(!params){
-                    params = this.routerMessage.params;
-                }
+            getChartAxios:function (type){
                 var optype = type === "org" ? 'allocreport_orgtopchar' : 'allocreport_acctopchar';
                 this.$axios({
                     url: "/cfm/normalProcess",
                     method: "post",
                     data:{
-                        optype:optype,
-                        params:params
+                        optype: optype,
+                        params: this.routerMessage.params
                     }
                 }).then((result) => {
                     if (result.data.error_msg) {
@@ -609,6 +607,7 @@
                         if (data.total_amount) {
                             this.pieTotalAmount = this.$common.transitSeparator(data.total_amount);
                         }
+                        this.clearAll();
                     }
                 }).catch(function (error) {
                     console.log(error);
@@ -618,6 +617,7 @@
                 if(this.showImg){//当前是图表
                     this.routerMessage.optype = this.btActive ? "allocreport_orglist" : "allocreport_acclist";
                     this.$emit("getCommTable", this.routerMessage);
+                    this.clearAll();
                 }else{
                     if(this.btActive){
                         this.getChartAxios('org');
@@ -636,8 +636,21 @@
                 obj.amount = ((money / (percentage / 100)) * (obj.percentage/100)).toFixed(2);
                 obj.percentage = obj.percentage + "%";
                 return obj;
+            },
+            //清除参数
+            clearAll:function(){
+                //清空参数
+                if (this.$refs.orgTree)
+                    this.$refs.orgTree.setCheckedKeys([]);
+                this.selectBank = [];
+                this.pieTotalAmount = "0.00";
+                this.routerMessage.params = {
+                    start_date:"",
+                    end_date: "",  
+                    pay_account_org_id:[],
+                    pay_bank_cnaps:[]
+                }
             }
-
         },
         watch: {
             tableData: function (val, oldVal) {
