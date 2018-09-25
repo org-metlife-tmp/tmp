@@ -406,16 +406,16 @@
                     <el-menu-item index="/allot/allot-deal-check?bizType=8" v-if="menuList.DbtCheck">交易核对</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="10">
+            <el-submenu index="10" v-if="menuList.WDATESET || menuList.WCALSET">
                 <template slot="title" height="200px">
                     <i class="icon-gzrl"></i>
                     <p>工作日历</p>
                 </template>
                 <el-menu-item-group>
-                    <el-menu-item index="/calendar/set-workday">工作日设置</el-menu-item>
-                    <el-menu-item index="/calendar/work-section">工作区间设置</el-menu-item>
-                    <el-menu-item index="/calendar/the-offer">报盘日设置</el-menu-item>
-                    <el-menu-item index="/calendar/closing-day">结账日设置</el-menu-item>
+                    <el-menu-item index="/calendar/set-workday" v-if="menuList.HolidaySet">工作日设置</el-menu-item>
+                    <el-menu-item index="/calendar/work-section" v-if="menuList.SectionSet">工作区间设置</el-menu-item>
+                    <el-menu-item index="/calendar/the-offer" v-if="menuList.OfferSet">报盘日设置</el-menu-item>
+                    <el-menu-item index="/calendar/closing-day" v-if="menuList.CheckoutSet">结账日设置</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
             <el-submenu index="11" v-if="menuList.ZFT">
@@ -490,7 +490,7 @@
                     <el-menu-item index="/wide-unionpay/strategy-set">策略设置</el-menu-item>
                     <el-menu-item index="/wide-unionpay/unionpay-manage">任务管理</el-menu-item>
                     <el-menu-item index="/wide-unionpay/task-look">任务查看</el-menu-item>
-                    <el-menu-item index="/allot/allot-deal-check?bizType=14">交易核对</el-menu-item>
+                    <el-menu-item index="/payment/deal-check?bizType=14">交易核对</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
             <!--
@@ -642,6 +642,13 @@
                     GJView: false, //自动归集查看
                     GJReport: false, //自动归集报表
                     GJCheck: false, //自动归集核对
+
+                    WDATESET: false, //工作日历
+                    WCALSET: false, //工作日历(管理员模块)
+                    HolidaySet: false, //自动归集设置
+                    SectionSet: false, //工作区间设置
+                    OfferSet: false, //报盘日设置
+                    CheckoutSet: false, //结账日设置
                 }
             }
         },

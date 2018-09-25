@@ -178,6 +178,18 @@
         }
 
     }
+
+    /*流程弹框*/
+    .el-dialog{
+        .el-radio-group {
+            s
+            .el-radio {
+                display: block;
+                margin-left: 30px;
+                margin-bottom: 10px;
+            }
+        }
+    }
 </style>
 <style lang="less" type="text/less">
     #collectionSet {

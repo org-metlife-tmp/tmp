@@ -95,6 +95,7 @@ import ColleMoreBills from '@/components/collection/ColleMoreBills'
 import StrategySet from '@/components/wideUnionpay/StrategySet'
 import UnionpayManage from '@/components/wideUnionpay/UnionpayManage'
 import TaskLook from '@/components/wideUnionpay/TaskLook'
+import MoreWide from '@/components/wideUnionpay/MoreWide'
 //资金下拨
 import FundPoolAccSet from '@/components/fundAllocation/FundPoolAccSet'
 import AutoAllocationSet from '@/components/fundAllocation/AutoAllocationSet'
@@ -195,6 +196,7 @@ const router = new Router({
                         {path: '/wide-unionpay/strategy-set', name: 'StrategySet', component: StrategySet, meta: {requireAuth: true}},
                         {path: '/wide-unionpay/unionpay-manage', name: 'UnionpayManage', component: UnionpayManage, meta: {requireAuth: true}},
                         {path: '/wide-unionpay/task-look', name: 'TaskLook', component: TaskLook, meta: {requireAuth: true}},
+                        {path: '/wide-unionpay/more-wide', name: 'MoreWide', component: MoreWide, meta: {requireAuth: true}},
                         //资金下拨
                         {path: '/allocation/fundpool-acc-set', name: 'FundPoolAccSet', component: FundPoolAccSet, meta: {requireAuth: true}},
                         {path: '/allocation/allocation-set', name: 'AutoAllocationSet', component: AutoAllocationSet, meta: {requireAuth: true}},

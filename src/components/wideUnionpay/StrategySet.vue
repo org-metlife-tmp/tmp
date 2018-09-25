@@ -178,6 +178,17 @@
         }
 
     }
+
+    /*流程弹框*/
+    .el-dialog{
+        .el-radio-group {
+            .el-radio {
+                display: block;
+                margin-left: 30px;
+                margin-bottom: 10px;
+            }
+        }
+    }
 </style>
 <style lang="less" type="text/less">
     #strategySet {
@@ -259,7 +270,7 @@
                     </el-col>
                     <el-col :span="14">
                         <el-form-item label="归集频率" style="text-align:left">
-                            <el-radio-group v-model="collectionData.collect_frequency"
+                            <el-radio-group v-model="collectionData.gyl_allocation_frequency"
                                             @change="clearDate" :disabled="isView">
                                 <el-radio v-for="(frequency,key) in frequencyList"
                                           :key="key" :label="key">{{ frequency }}
@@ -326,9 +337,9 @@
                    width="600px" title="归集时间选择"
                    top="140px" :close-on-click-modal="false">
             <div class="set-date">
-                <h5 v-show="collectionData.collect_frequency == 3">请选择日期</h5>
+                <h5 v-show="collectionData.gyl_allocation_frequency == 3">请选择日期</h5>
 
-                <ul class="month-day" v-show="collectionData.collect_frequency == 3">
+                <ul class="month-day" v-show="collectionData.gyl_allocation_frequency == 3">
                     <li v-for="item in monthDay" :key="item.day"
                         :class="{active:item.isActive}"
                         @click="item.isActive = !item.isActive">{{ item.day }}
@@ -336,7 +347,7 @@
                 </ul>
 
                 <el-checkbox-group v-model="dateSelect.weekDate" size="small"
-                                   v-show="collectionData.collect_frequency == 2">
+                                   v-show="collectionData.gyl_allocation_frequency == 2">
                     <el-checkbox-button v-for="(week,k) in weeks"
                                         :label="k"
                                         :key="k">
@@ -420,20 +431,24 @@
                     url: "/cfm/normalProcess",
                     method: "post",
                     data: {
-                        optype: "collectsetting_detail",
+                        optype: "gylsetting_detail",
                         params: {
                             id: params[1]
                         }
                     }
                 }).then((result) => {
                     if (result.data.error_msg) {
-
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        });
                     } else {
                         var data = result.data.data;
                         //设置基本数据
                         var collectionData = this.collectionData;
-                        for (var k in collectionData) {
-                            if (k != "main_list" && k != "timesetting_list" && k != "files") {
+                        for (var k in data) {
+                            if (k != "timesetting_list" && k != "files") {
                                 if (k == "id" || k == "persist_version") {
                                     if (params[0] == "copyId") {
 
@@ -441,31 +456,18 @@
                                         collectionData[k] = data[k] + "";
                                     }
                                 } else {
-                                    collectionData[k] = data[k] + "";
+                                    if(k == "pay_acc_id"){
+                                        collectionData[k] = data[k];
+                                    }else{
+                                        collectionData[k] = data[k] + "";
+                                    }
                                 }
                             }
                         }
-                        //设置归集关系
-                        data.main_acc_list.forEach((mainItem) => {
-                            mainItem.name = mainItem.tab.slice(1);
-                            this.accOptions.push({
-                                main_acc_id: mainItem.main_acc_id,
-                                main_acc_name: mainItem.main_acc_name
-                            })
-                        });
-                        this.editableTabs = data.main_acc_list;
-                        if (data.main_acc_list.length < 3 && params[0] != "viewId") {
-                            this.editableTabs.push({
-                                tab: '+',
-                                name: data.main_acc_list.length + 1 + "",
-                                main_acc_id: "",
-                                child_list: []
-                            })
-                        }
                         //设置时间值
                         this.timesetting_list = [];
-                        data.time_setting_list.forEach((item) => {
-                            this.timesetting_list.push({dateItem: item.collect_time, id: item.id});
+                        data.timesetting_list.forEach((item) => {
+                            this.timesetting_list.push({dateItem: item.gyl_allocation_time, id: item.id});
                         });
                         //附件
                         this.fileMessage.bill_id = data.id;
@@ -476,7 +478,7 @@
 
                             //业务状态跟踪
                             this.businessParams = {};
-                            this.businessParams.biz_type = 12;
+                            this.businessParams.biz_type = 14;
                             this.businessParams.id = data.id;
                         }
                     }
@@ -496,7 +498,7 @@
                     pay_acc_id: "",
                     recv_acc_name: "",
                     recv_acc_no: "",
-                    collect_frequency: "1",
+                    gyl_allocation_frequency: "1",
                     timesetting_list: [],
                     summary: "",
                     files: []
@@ -560,7 +562,7 @@
                 frequencyList: {},
                 fileMessage: { //附件
                     bill_id: "",
-                    biz_type: 12
+                    biz_type: 14
                 },
                 emptyFileList: [],
                 eidttrigFile: false,
@@ -617,7 +619,7 @@
             //设置时间
             setCurrDate: function (currDate) {
                 //清空数据
-                var frequency = this.collectionData.collect_frequency;
+                var frequency = this.collectionData.gyl_allocation_frequency;
                 var dateSelect = this.dateSelect;
                 dateSelect.timeDate = "";
                 if (frequency == 2) { //周
@@ -635,7 +637,7 @@
             },
             //确认设置时间
             comfirmCurrDate: function () {
-                var frequency = this.collectionData.collect_frequency;
+                var frequency = this.collectionData.gyl_allocation_frequency;
                 var dateSelect = this.dateSelect;
                 if (frequency == 1) { //只设置时间
                     this.currTimeSetting.dateItem = dateSelect.timeDate;
@@ -667,7 +669,7 @@
                 var collectionData = this.collectionData;
                 for (var k in collectionData) {
                     if (k != "timesetting_list" && k != "files") {
-                        if (k == "collect_frequency") {
+                        if (k == "gyl_allocation_frequency") {
                             collectionData[k] = "1";
                         } else {
                             collectionData[k] = "";
@@ -713,10 +715,13 @@
                         });
                     } else {
                         var data = result.data.data;
-                        debugger;
                         var message = collectionData.id ? "修改成功" : "保存成功";
-                        this.collectionData.persist_version = data.persist_version;
-                        this.collectionData.id = data.id;
+                        for(var k in data){
+                            collectionData[k] = data[k] + "";
+                            if(k == "pay_acc_id"){
+                                collectionData[k] = data[k];
+                            }
+                        }
 
                         this.$message({
                             type: "success",
@@ -728,10 +733,9 @@
                     console.log(error);
                 });
             },
-
             //更多单据
             goMoreBills: function () {
-                this.$router.push("/collection/colle-more-bills");
+                this.$router.push("/wide-unionpay/more-wide");
             },
             //提交
             submitBill: function () {
@@ -744,7 +748,7 @@
                     url: "/cfm/normalProcess",
                     method: "post",
                     data: {
-                        optype: "collectsetting_presubmit",
+                        optype: "gylsetting_presubmit",
                         params: params
                     }
                 }).then((result) => {
@@ -758,10 +762,9 @@
                         var data = result.data.data;
 
                         var collectionData = this.collectionData;
-                        collectionData.id = data.id;
-                        collectionData.persist_version = data.persist_version;
-                        collectionData.service_status = data.service_status;
-                        collectionData.service_serial_number = data.service_serial_number;
+                        for(var k in data){
+                            collectionData[k] = data[k];
+                        }
 
                         //设置弹框数据
                         this.selectWorkflow = "";
@@ -787,7 +790,7 @@
                     url: "/cfm/normalProcess",
                     method: "post",
                     data: {
-                        optype: "collectsetting_submit",
+                        optype: "gylsetting_submit",
                         params: params
                     }
                 }).then((result) => {
@@ -798,10 +801,9 @@
                             duration: 2000
                         })
                     } else {
-                        var data = result.data.data;
                         this.innerVisible = false;
                         this.$router.push({
-                            name: "CollectionSet"
+                            name: "StrategySet"
                         });
                         this.clearAll();
                         this.$message({

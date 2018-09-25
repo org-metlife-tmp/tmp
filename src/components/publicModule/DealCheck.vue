@@ -256,6 +256,13 @@
                     this.confirmOptype = "collectcheck_confirmCheck";
                     this.validatedOptype = "collectcheck_checkAlreadyTradeList";
                 }
+                if(queryData.bizType == "14"){
+                    this.routerMessage.todo.optype = "gylcheck_checkbillList";
+                    this.routerMessage.done.optype = "gylcheck_checkbillList";
+                    this.checkOptype = "gylcheck_checkNoCheckTradeList";
+                    this.confirmOptype = "gylcheck_confirmCheck";
+                    this.validatedOptype = "gylcheck_checkAlreadyTradeList";
+                }
                 this.$emit("getTableData", this.routerMessage);
             },
             //展示格式转换-金额

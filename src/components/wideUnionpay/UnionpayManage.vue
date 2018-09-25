@@ -153,7 +153,7 @@
                 <el-row>
                     <el-col :span="4">
                         <el-form-item>
-                            <el-select v-model="searchData.collect_type" placeholder="请选择归集额度"
+                            <el-select v-model="searchData.gyl_allocation_type" placeholder="请选择归集额度"
                                        clearable filterable
                                        style="width:100%">
                                 <el-option v-for="(collType,key) in collTypeList"
@@ -166,7 +166,7 @@
                     </el-col>
                     <el-col :span="4">
                         <el-form-item>
-                            <el-select v-model="searchData.collect_frequency" placeholder="请选择归集频率"
+                            <el-select v-model="searchData.gyl_allocation_frequency" placeholder="请选择归集频率"
                                        clearable filterable
                                        style="width:100%">
                                 <el-option v-for="(frequency,key) in frequencyList"
@@ -184,7 +184,7 @@
                     </el-col>
                     <el-col :span="4">
                         <el-form-item>
-                            <el-input v-model="searchData.main_acc_query_key" clearable placeholder="请输入归集主账号关键字"></el-input>
+                            <el-input v-model="searchData.pay_acc_query_key" clearable placeholder="请输入归集主账号关键字"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="2">
@@ -226,8 +226,8 @@
                         </div>
                         <div class="card-content">
                             <div class="content-top">
-                                <div class="collect-money">￥{{ transitionMoney(card.collect_amount) }}</div>
-                                <div class="collect-way">{{ card.collect_type_name }}</div>
+                                <div class="collect-money">{{ card.gyl_allocation_amount_new }}</div>
+                                <div class="collect-way">{{ card.gyl_allocation_type_name }}</div>
                                 <div class="collect-status">
                                     <div>
                                         <i class="status-icon" :class="{'coll-active':card.is_activity == 1}"></i>
@@ -235,8 +235,8 @@
                                 </div>
                             </div>
                             <div class="content-center">
-                                <span>{{ card.collect_frequency_name }}</span>
-                                <span>{{ card.collect_time }}</span>
+                                <span>{{ card.gyl_allocation_frequency_name }}</span>
+                                <span>{{ card.gyl_allocation_time }}</span>
                             </div>
                             <!--<div class="content-bottom">
                                 11087363445533344 (子账户 1个)
@@ -272,16 +272,15 @@
         data:function(){
             return {
                 routerMessage: {
-                    optype: "collectmanage_list",
+                    optype: "gylmanage_list",
                     params: {
-
                     }
                 },
                 searchData:{ //搜索条件
-                    collect_type: "",
-                    collect_frequency: "",
+                    gyl_allocation_type: "",
+                    gyl_allocation_frequency: "",
                     topic: "",
-                    main_acc_query_key: "",
+                    pay_acc_query_key: "",
                     is_activity: []
                 },
                 statusList: {
@@ -303,14 +302,10 @@
                 }
                 this.$emit("getCommTable", this.routerMessage);
             },
-            //展示格式转换-金额
-            transitionMoney: function(num){
-                return this.$common.transitSeparator(num);
-            },
             //查看
             lookCollect: function(row){
                 this.$router.push({
-                    name: "CollectionSet",
+                    name: "StrategySet",
                     query: {
                         viewId: row.id
                     }
@@ -322,7 +317,7 @@
                     url: "/cfm/normalProcess",
                     method: "post",
                     data: {
-                        optype: "collectmanage_setstate",
+                        optype: "gylmanage_setstate",
                         params: {
                             id: row.id,
                             persist_version: row.persist_version
@@ -362,7 +357,7 @@
                         url: "/cfm/normalProcess",
                         method: "post",
                         data: {
-                            optype: "collectmanage_cancel",
+                            optype: "gylmanage_cancel",
                             params: {
                                 id: row.id,
                                 persist_version: row.persist_version

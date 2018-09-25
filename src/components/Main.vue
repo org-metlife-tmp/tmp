@@ -79,6 +79,10 @@
             /*border-left: none;*/
         }
 
+        .el-form-item .el-input input{
+            vertical-align: top;
+        }
+
         /**********
          修改框架样式-结束
          ***********/

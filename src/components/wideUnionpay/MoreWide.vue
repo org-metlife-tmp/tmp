@@ -1,5 +1,5 @@
 <style scoped lang="less" type="text/less">
-    #taskLook{
+    #moreWide{
         width: 100%;
         height: 100%;
         box-sizing: border-box;
@@ -53,10 +53,11 @@
         }
 
     }
+
 </style>
 
 <template>
-    <div id="taskLook">
+    <div id="moreWide">
         <!-- 顶部按钮-->
         <div class="button-list-right">
             <el-button type="warning" size="mini" @click="addCollect">新增</el-button>
@@ -67,7 +68,7 @@
                 <el-row>
                     <el-col :span="4">
                         <el-form-item>
-                            <el-select v-model="searchData.collect_type" placeholder="请选择归集额度"
+                            <el-select v-model="searchData.gyl_allocation_type" placeholder="请选择下拨额度"
                                        clearable filterable
                                        style="width:100%">
                                 <el-option v-for="(collType,key) in collTypeList"
@@ -80,7 +81,7 @@
                     </el-col>
                     <el-col :span="4">
                         <el-form-item>
-                            <el-select v-model="searchData.collect_frequency" placeholder="请选择归集频率"
+                            <el-select v-model="searchData.gyl_allocation_frequency" placeholder="请选择下拨频率"
                                        clearable filterable
                                        style="width:100%">
                                 <el-option v-for="(frequency,key) in frequencyList"
@@ -93,12 +94,12 @@
                     </el-col>
                     <el-col :span="4">
                         <el-form-item>
-                            <el-input v-model="searchData.topic" clearable placeholder="请输入归集关键字"></el-input>
+                            <el-input v-model="searchData.topic" clearable placeholder="请输入下拨关键字"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="4">
                         <el-form-item>
-                            <el-input v-model="searchData.main_acc_query_key" clearable placeholder="请输入归集主账号关键字"></el-input>
+                            <el-input v-model="searchData.pay_acc_query_key" clearable placeholder="请输入下拨主账号关键字"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="2">
@@ -134,32 +135,55 @@
         <section class="table-content">
             <el-table :data="tableList"
                       border size="mini">
-                <el-table-column prop="topic" label="归集主题" width="180px"
+                <el-table-column prop="topic" label="主题" width="180px"
                                  :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column label="归集额度" :show-overflow-tooltip="true" width="200px">
+                <el-table-column label="下拨额度" :show-overflow-tooltip="true" width="200px">
                     <template slot-scope="scope">
-                        <span>{{ scope.row.collect_type }}</span>
-                        <span style="margin-left: 10px;color:#fd7d2f">{{ transitNum(scope.row.collect_amount) }}</span>
+                        <span>{{ scope.row.gyl_allocation_type_name }}</span>
+                        <span style="margin-left: 10px;color:#fd7d2f">{{ scope.row.gyl_allocation_amount_new }}</span>
                     </template>
                 </el-table-column>
-                <el-table-column label="归集频率" :show-overflow-tooltip="true">
+                <el-table-column label="下拨频率" :show-overflow-tooltip="true">
                     <template slot-scope="scope">
-                        <span>{{ scope.row.collect_frequency }} - </span>
-                        <span>{{ scope.row.collect_time }}</span>
+                        <span>{{ scope.row.gyl_allocation_frequency_name }} - </span>
+                        <span>{{ scope.row.gyl_allocation_frequenc_time }}</span>
                     </template>
                 </el-table-column>
-                <el-table-column prop="collect_main_account_count" label="归集集户(个)"
-                                 :show-overflow-tooltip="true" width="110px"></el-table-column>
                 <el-table-column prop="service_status" label="业务状态" :show-overflow-tooltip="true"
                                  width="100px" :formatter="transitStatus"></el-table-column>
                 <el-table-column
-                        label="操作" width="50"
+                        label="操作" width="110"
                         fixed="right">
                     <template slot-scope="scope" class="operationBtn">
                         <el-tooltip content="查看" placement="bottom" effect="light"
-                                    :enterable="false" :open-delay="500">
+                                    :enterable="false" :open-delay="500"
+                                    v-if="scope.row.service_status != 1 && scope.row.service_status != 5">
                             <el-button type="primary" icon="el-icon-search" size="mini"
                                        @click="lookCollect(scope.row)"></el-button>
+                        </el-tooltip>
+                        <el-tooltip content="编辑" placement="bottom" effect="light"
+                                    :enterable="false" :open-delay="500"
+                                    v-if="scope.row.service_status == 1 || scope.row.service_status == 5">
+                            <el-button type="primary" icon="el-icon-edit" size="mini"
+                                       @click="editCollect(scope.row)"></el-button>
+                        </el-tooltip>
+                        <el-tooltip content="复制" placement="bottom" effect="light"
+                                    :enterable="false" :open-delay="500"
+                                    v-if="scope.row.service_status == 1 || scope.row.service_status == 5 || scope.row.service_status == 2">
+                            <el-button class="on-copy" size="mini"
+                                       @click="copyCollect(scope.row)"></el-button>
+                        </el-tooltip>
+                        <el-tooltip content="撤回" placement="bottom" effect="light"
+                                    :enterable="false" :open-delay="500"
+                                    v-if="scope.row.service_status == 2">
+                            <el-button size="mini" class="withdraw"
+                                       @click="withdrawBill(scope.row)"></el-button>
+                        </el-tooltip>
+                        <el-tooltip content="删除" placement="bottom" effect="light"
+                                    :enterable="false" :open-delay="500"
+                                    v-if="scope.row.service_status == 1">
+                            <el-button type="danger" icon="el-icon-delete" size="mini"
+                                       @click="removeBill(scope.row,scope.$index,tableList)"></el-button>
                         </el-tooltip>
                     </template>
                 </el-table-column>
@@ -184,9 +208,9 @@
 
 <script>
     export default {
-        name: "taskLook",
+        name: "MoreWide",
         created: function () {
-            this.$emit("transmitTitle", "任务查看");
+            this.$emit("transmitTitle", "广银联-更多单据");
             this.$emit("getCommTable", this.routerMessage);
 
             /*获取常量数据*/
@@ -204,25 +228,27 @@
         data:function(){
             return {
                 routerMessage: {
-                    optype: "gylview_collections",
+                    optype: "gylsetting_morebill",
                     params: {
                         page_size: 7,
                         page_num: 1
                     }
                 },
                 searchData:{ //搜索条件
-                    collect_type: "",
-                    collect_frequency: "",
+                    gyl_allocation_type: "",
+                    gyl_allocation_frequency: "",
                     topic: "",
-                    main_acc_query_key: "",
+                    pay_acc_query_key: "",
                     service_status: [],
                     is_activity: []
                 },
                 statusList: {
-                    2: "已提交",
-                    3: "审批中",
-                    4: "审批通过",
-                    9: "已作废"
+                    "1": "已保存",
+                    "2": "已提交",
+                    "3": "审批中",
+                    "5": "审批拒绝",
+                    "9": "已作废",
+                    "4": "审批通过",
                 },
                 activatList: {
                     0: "未激活",
@@ -266,14 +292,78 @@
                     return constants.BillStatus[cellValue];
                 }
             },
-            //展示格式转换-金额
-            transitNum: function(num){
-                return "￥" + this.$common.transitSeparator(num);
+            //删除
+            removeBill: function (row, index, rows) {
+                this.$confirm('确认删除当前单据吗?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.$axios({
+                        url: "/cfm/normalProcess",
+                        method: "post",
+                        data: {
+                            optype: "gylsetting_del",
+                            params: {
+                                id: row.id,
+                                persist_version: row.persist_version
+                            }
+                        }
+                    }).then((result) => {
+                        if (result.data.error_msg) {
+                            this.$message({
+                                type: "error",
+                                message: result.data.error_msg,
+                                duration: 2000
+                            })
+                            return;
+                        }
+
+                        if (this.pagCurrent < (this.pagTotal / this.pagSize)) { //存在下一页
+                            this.$emit("getCommTable", this.routerMessage);
+                        } else {
+                            if (rows.length == "1" && (this.routerMessage.params.page_num != 1)) { //是当前页最后一条
+                                this.routerMessage.params.page_num--;
+                                this.$emit("getCommTable", this.routerMessage);
+                            } else {
+                                rows.splice(index, 1);
+                                this.pagTotal--;
+                            }
+                        }
+
+                        this.$message({
+                            type: "success",
+                            message: "删除成功",
+                            duration: 2000
+                        })
+                    }).catch(function (error) {
+                        console.log(error);
+                    })
+                }).catch(() => {
+                });
             },
-            //新增归集单据
+            //新增
             addCollect: function(){
                 this.$router.push({
                     name: "StrategySet"
+                });
+            },
+            //复制
+            copyCollect: function(row){
+                this.$router.push({
+                    name: "StrategySet",
+                    query: {
+                        copyId: row.id
+                    }
+                });
+            },
+            //编辑
+            editCollect: function(row){
+                this.$router.push({
+                    name: "StrategySet",
+                    query: {
+                        id: row.id
+                    }
                 });
             },
             //查看
@@ -284,7 +374,47 @@
                         viewId: row.id
                     }
                 });
-            }
+            },
+            //撤回
+            withdrawBill: function (row) {
+                this.$confirm('确认撤回当前单据吗?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.$axios({
+                        url: "/cfm/normalProcess",
+                        method: "post",
+                        data: {
+                            optype: "gylsetting_revoke",
+                            params: {
+                                id: row.id,
+                                persist_version: row.persist_version,
+                                service_status: row.service_status
+                            }
+                        }
+                    }).then((result) => {
+                        if (result.data.error_msg) {
+                            this.$message({
+                                type: "error",
+                                message: result.data.error_msg,
+                                duration: 2000
+                            })
+                            return;
+                        } else {
+                            this.$message({
+                                type: "success",
+                                message: "撤回成功",
+                                duration: 2000
+                            });
+                            this.$emit("getCommTable", this.routerMessage);
+                        }
+                    }).catch(function (error) {
+                        console.log(error);
+                    })
+                }).catch(() => {
+                });
+            },
         },
         computed: {
             showActivate: function(){
@@ -304,6 +434,4 @@
         }
     }
 </script>
-
-
 
