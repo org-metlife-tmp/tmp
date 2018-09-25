@@ -234,7 +234,7 @@
     <div id="receiveMakeBill">
         <!--顶部标题-按钮-->
         <header>
-            <h1>收款-制单</h1>
+            <h1>资金收款-制单</h1>
             <!-- <el-button type="warning" size="small">打印</el-button>-->
         </header>
         <!--表单部分-->
@@ -248,7 +248,7 @@
                         value-format="yyyy-MM-dd"
                         size="mini">
                 </el-date-picker>
-                <el-select v-model="billData.pay_account_id " placeholder="请选择收款方"
+                <el-select v-model="billData.recv_account_id " placeholder="请选择收款方"
                            filterable clearable size="mini">
                     <el-option v-for="item in accOptions"
                                :key="item.acc_id"
@@ -277,7 +277,7 @@
                         <td rowspan="3" class="title-erect">付款人</td>
                         <td class="title-small">户名</td>
                         <td class="empty-input" colspan="4">
-                            <el-select v-model="billData.recv_account_name"
+                            <el-select v-model="billData.pay_account_name"
                                        filterable allow-create default-first-option
                                        placeholder="请输入或选择户名"
                                        @change="setPayer($event,'acc_no')">
@@ -293,7 +293,7 @@
                     <tr>
                         <td class="title-small">账号</td>
                         <td class="empty-input" colspan="4">
-                            <el-select v-model="billData.recv_account_no"
+                            <el-select v-model="billData.pay_account_no"
                                        filterable allow-create
                                        default-first-option
                                        placeholder="请输入或选择账号"
@@ -323,7 +323,7 @@
                         <td colspan="2">金额（元）</td>
                         <td colspan="4" class="money-input">
                             <span>￥</span>
-                            <input type="text" @blur="setMoney" v-model="billData.payment_amount">
+                            <input type="text" @blur="setMoney" v-model="billData.receipts_amount">
                             <span>(大写)</span>
                             <span v-text="moneyText"></span>
                         </td>
@@ -331,7 +331,7 @@
                     <tr>
                         <td colspan="2" class="set-space">摘要</td>
                         <td class="empty-input">
-                            <input type="text" placeholder="请在此处填写摘要" v-model="billData.payment_summary">
+                            <input type="text" placeholder="请在此处填写摘要" v-model="billData.receipts_summary">
                         </td>
                     </tr>
                     <tr>
@@ -484,7 +484,7 @@
                     url: "/cfm/normalProcess",
                     method: "post",
                     data: {
-                        optype: "zft_billdetail",
+                        optype: "skt_billdetail",
                         params: {
                             id: params[1]
                         }
@@ -494,6 +494,8 @@
 
                     } else {
                         var data = result.data.data;
+                        data.id = "";
+                        data.persist_version = "";
                         var billData = this.billData;
                         for(var k in billData){
                             if(k == "bank_name"){
@@ -503,8 +505,8 @@
                             }
                         }
                         //设置数字加千分符和转汉字
-                        this.moneyText = this.$common.transitText(data.payment_amount);
-                        billData.payment_amount = this.$common.transitSeparator(data.payment_amount);
+                        this.moneyText = this.$common.transitText(data.receipts_amount);
+                        billData.receipts_amount = this.$common.transitSeparator(data.receipts_amount);
                         //附件数据
                         this.fileMessage.bill_id = data.id;
                         this.eidttrigFile = !this.eidttrigFile;
@@ -522,7 +524,7 @@
                 data:{
                     optype:"biztype_biztypes",
                     params: {
-                        p_id: 9
+                        p_id: 15
                     }
                 }
             }).then((result) =>{
@@ -558,14 +560,14 @@
                 billData: {
                     id:"",
                     persist_version: "",
-                    rev_persist_version: "",
+                    pay_persist_version: "",
                     pay_account_id: "",
                     recv_account_id: "",
-                    recv_account_no: "",
-                    recv_account_name: "",
-                    recv_bank_cnaps: "",
-                    payment_amount: "",
-                    payment_summary: "",
+                    pay_account_no: "",
+                    pay_account_name: "",
+                    pay_bank_cnaps: "",
+                    receipts_amount: "",
+                    receipts_summary: "",
                     service_serial_number: "",
                     bank_name: "",
                     biz_id: "",
@@ -574,7 +576,7 @@
                 moneyText: "", //金额-大写
                 fileMessage: { //附件
                     bill_id: "",
-                    biz_type: 9
+                    biz_type: 15
                 },
                 eidttrigFile: false,
                 emptyFileList: [],
@@ -726,7 +728,7 @@
             },
             //输入金额后进行格式化
             setMoney: function () {
-                var moneyNum = this.billData.payment_amount.replace(/,/gi, "").trim();
+                var moneyNum = this.billData.receipts_amount.replace(/,/gi, "").trim();
                 /*校验数据格式是否正确*/
                 if (moneyNum == "") {
                     return;
@@ -737,7 +739,7 @@
                         message: "请输入正确的金额",
                         duration: 2000
                     });
-                    this.billData.payment_amount = "";
+                    this.billData.receipts_amount = "";
                     return;
                 }
                 var verify = moneyNum.split(".");
@@ -761,7 +763,7 @@
                 }
 
                 //设置数字部分格式
-                this.billData.payment_amount = this.$common.transitSeparator(moneyNum);
+                this.billData.receipts_amount = this.$common.transitSeparator(moneyNum);
                 //设置汉字
                 this.moneyText = this.$common.transitText(moneyNum);
             },
@@ -778,7 +780,7 @@
             },
             //设置开户行
             confirmBank: function(){
-                this.billData.recv_bank_cnaps = this.dialogData.cnaps_code;
+                this.billData.pay_bank_cnaps = this.dialogData.cnaps_code;
                 this.billData.bank_name = this.dialogData.bank_name;
                 this.dialogVisible = false;
             },
@@ -794,25 +796,25 @@
 
                 for(var i = 0; i < payerList.length; i++){
                     if(payerList[i][key] == val){
-                        this.billData.recv_account_id = payerList[i].id;
-                        this.billData.recv_bank_cnaps = payerList[i].cnaps_code;
-                        this.billData.rev_persist_version = payerList[i].persist_version;
+                        this.billData.pay_account_id = payerList[i].id;
+                        this.billData.pay_bank_cnaps = payerList[i].cnaps_code;
+                        this.billData.pay_persist_version = payerList[i].persist_version;
                         if(target == "acc_no"){
-                            this.billData.recv_account_no = payerList[i][target];
+                            this.billData.pay_account_no = payerList[i][target];
                         }else{
-                            this.billData.recv_account_name = payerList[i][target];
+                            this.billData.pay_account_name = payerList[i][target];
                         }
                         this.billData.bank_name = payerList[i].bank_name;
                         flag = false;
                         continue;
                     }
-                    if(this.billData.recv_account_no == payerList[i].acc_no){
+                    if(this.billData.pay_account_no == payerList[i].acc_no){
                         flag = false;
                     }
                 }
                 if(flag){
-                    this.billData.recv_account_id = "";
-                    this.billData.rev_persist_version = "";
+                    this.billData.pay_account_id = "";
+                    this.billData.pay_persist_version = "";
                 }
             },
             //清空
@@ -827,7 +829,7 @@
             //设置params
             setParams: function(){
                 var billData = this.billData;
-                billData.payment_amount = billData.payment_amount.split(",").join("");
+                billData.receipts_amount = billData.receipts_amount.split(",").join("");
                 billData.files= this.fileList;
                 return billData;
             },
@@ -837,12 +839,11 @@
                 if(!params){
                     return;
                 }
-
                 this.$axios({
                     url: "/cfm/normalProcess",
                     method: "post",
                     data: {
-                        optype: params.id ? "zft_chgbill" : "zft_addbill",
+                        optype: params.id ? "skt_chgbill" : "skt_addbill",
                         params: params
                     }
                 }).then((result) => {
@@ -863,8 +864,8 @@
                         billData.id = data.id;
                         billData.persist_version = data.persist_version;
                         billData.service_serial_number = data.service_serial_number;
-                        billData.rev_persist_version = data.rev_persist_version;
-                        billData.recv_account_id = data.recv_account_id;
+                        billData.pay_persist_version = data.pay_persist_version;
+                        billData.pay_account_id = data.pay_account_id;
                         this.getPayerSelect();
                     }
                 }).catch(function (error) {
@@ -882,7 +883,7 @@
                     url: "/cfm/normalProcess",
                     method: "post",
                     data: {
-                        optype: "zft_presubmit",
+                        optype: "skt_presubmit",
                         params: params
                     }
                 }).then((result) => {
@@ -926,7 +927,7 @@
                     url: "/cfm/normalProcess",
                     method: "post",
                     data: {
-                        optype: "zft_submit",
+                        optype: "skt_submit",
                         params: params
                     }
                 }).then((result) => {
@@ -940,7 +941,7 @@
                         var data = result.data.data;
                         this.innerVisible = false;
                         this.$router.push({
-                            name: "PayMakeBill"
+                            name: "ReceiveMakeBill"
                         });
                         this.clearBill();
                         this.$message({
