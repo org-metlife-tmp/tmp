@@ -461,7 +461,7 @@
                     <el-menu-item index="/allot/allot-deal-check?bizType=13" v-if="menuList.ZJXBChecked">交易核对</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="14"  v-if="menuList.SKT"> 
+            <el-submenu index="14"  v-if="menuList.SKT">
                 <template slot="title" height="200px">
                     <i class="icon-gjt"></i>
                     <p>收款通</p>
@@ -649,6 +649,7 @@
                     SectionSet: false, //工作区间设置
                     OfferSet: false, //报盘日设置
                     CheckoutSet: false, //结账日设置
+                    
                     ZJXB: false, //资金下拨
                     ZJXBApSetting: false, //资金下拨账户设置
                     ZJXBSetting: false, //资金下拨设置
