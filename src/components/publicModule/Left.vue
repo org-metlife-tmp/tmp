@@ -447,12 +447,12 @@
                     <el-menu-item index="/payment/deal-check?bizType=12" v-if="menuList.GJCheck">交易核对</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="13">
+            <el-submenu index="13"  v-if="menuList.ZJXB">
                 <template slot="title" height="200px">
                     <i class="icon-gjt"></i>
                     <p>资金下拨</p>
                 </template>
-                <el-menu-item-group v-if="menuList.ZJXB">
+                <el-menu-item-group>
                     <el-menu-item index="/allocation/fundpool-acc-set" v-if="menuList.ZJXBApSetting">资金池账户设置</el-menu-item>
                     <el-menu-item index="/allocation/allocation-set" v-if="menuList.ZJXBSetting">自动下拨设置</el-menu-item>
                     <el-menu-item index="/allocation/allocation-manage" v-if="menuList.ZJXBMgr">自动下拨管理</el-menu-item>
@@ -461,15 +461,15 @@
                     <el-menu-item index="/allot/allot-deal-check?bizType=13" v-if="menuList.ZJXBChecked">交易核对</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="14">
+            <el-submenu index="14"  v-if="menuList.SKT"> 
                 <template slot="title" height="200px">
                     <i class="icon-gjt"></i>
                     <p>收款通</p>
                 </template>
                 <el-menu-item-group>
-                    <el-menu-item index="/receivables/receive-make-bill">收款-制单</el-menu-item>
-                    <el-menu-item index="/receivables/receive-look-over">收款-查看</el-menu-item>
-                    <el-menu-item index="/allot/allot-deal-check?bizType=13">交易核对</el-menu-item>
+                    <el-menu-item index="/receivables/receive-make-bill" v-if="menuList.SKTMkBill">收款-制单</el-menu-item>
+                    <el-menu-item index="/receivables/receive-look-over" v-if="menuList.SKTViewBill">收款-查看</el-menu-item>
+                    <el-menu-item index="/allot/allot-deal-check?bizType=14" v-if="menuList.SKTCheck">交易核对</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
             <el-submenu index="15">
@@ -650,6 +650,11 @@
                     ZJXBView: false, //资金下拨查看
                     ZJXBReport: false, //资金下拨报表
                     ZJXBChecked: false, //资金下拨及交易核对
+
+                    SKT: false, //收款通
+                    SKTMkBill: false, //收款通账户设置
+                    SKTViewBill: false, //收款通设置
+                    SKTCheck: false, //收款通交易核对
                 }
             }
         },
