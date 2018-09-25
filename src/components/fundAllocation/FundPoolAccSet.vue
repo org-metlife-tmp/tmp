@@ -179,7 +179,7 @@
         data: function () {
             return {
                 routerMessage: {
-                    optype: "poolacc_accList",
+                    optype: "poolacc_acclist",
                     params: {
                         page_size: 11,
                         page_num: 1
@@ -232,7 +232,7 @@
                     url:"/cfm/normalProcess",
                     method:"post",
                     data:{
-                        optype:"poolacc_defaultSet",
+                        optype:"poolacc_defaultset",
                         params:{
                             id:row.id
                         }
@@ -290,7 +290,7 @@
                     url:"/cfm/normalProcess",
                     method:"post",
                     data:{
-                        optype:"poolacc_getAccByBank",
+                        optype:"poolacc_getaccbybank",
                         params:{
                             bank_type:val
                         }
