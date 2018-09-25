@@ -19,6 +19,10 @@
             }
         }
 
+        .table-content{
+            height: 279px;
+        }
+
         /*分隔栏*/
         .split-bar {
             width: 106%;
@@ -103,6 +107,9 @@
             .table-li-content {
                 width: 38%;
                 padding-left: 10px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
             }
 
             .table-two-row {
@@ -186,12 +193,13 @@
         <!--数据展示区-->
         <section class="table-content">
             <el-table :data="tableList"
-                      border size="mini">
-                <el-table-column prop="pay_account_bank" label="收款方名称" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="recv_account_no" label="收款方账号" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="recv_account_name" label="收款方银行"
+                      border size="mini"
+                      height="100%">
+                <el-table-column prop="pay_account_bank" label="付款方名称" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="pay_account_no" label="付款方账号" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="pay_account_name" label="付款方银行"
                                  :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="payment_amount" label="金额" :show-overflow-tooltip="true"
+                <el-table-column prop="receipts_amount" label="金额" :show-overflow-tooltip="true"
                                  :formatter="transitAmount"></el-table-column>
                 <el-table-column prop="service_status" label="处理状态" :show-overflow-tooltip="true"
                                  :formatter="transitStatus"></el-table-column>
@@ -232,7 +240,7 @@
             </el-pagination>
         </div>
         <!--查看弹出框-->
-        <el-dialog title="调拨单信息"
+        <el-dialog title="收款单信息"
                    :visible.sync="dialogVisible"
                    width="900px" top="76px"
                    :close-on-click-modal="false">
@@ -242,21 +250,21 @@
                 ]
             </div>
             <ul class="dialog-talbe">
-                <li class="table-li-title">付款账号</li>
-                <li class="table-li-content table-two-row" v-text="dialogData.pay_account_no"></li>
+                <li class="table-li-title">收款账号</li>
+                <li class="table-li-content table-two-row" v-text="dialogData.recv_account_no"></li>
 
-                <li class="table-li-title">收款人户名</li>
-                <li class="table-li-content" v-text="dialogData.recv_account_name"></li>
-                <li class="table-li-title">收款人账号</li>
-                <li class="table-li-content" v-text="dialogData.recv_account_no"></li>
+                <li class="table-li-title">付款人户名</li>
+                <li class="table-li-content" v-text="dialogData.pay_account_name"></li>
+                <li class="table-li-title">付款人账号</li>
+                <li class="table-li-content" v-text="dialogData.pay_account_no"></li>
 
                 <li class="table-li-title">开户行</li>
-                <li class="table-li-content" v-text="dialogData.recv_account_bank"></li>
+                <li class="table-li-content" v-text="dialogData.pay_account_bank"></li>
                 <li class="table-li-title">金额</li>
-                <li class="table-li-content" v-text="dialogData.payment_amount" style="color:#fd7d2f"></li>
+                <li class="table-li-content" v-text="dialogData.receipts_amount" style="color:#fd7d2f"></li>
 
                 <li class="table-li-title">摘要</li>
-                <li class="table-li-content table-two-row" v-text="dialogData.payment_summary"></li>
+                <li class="table-li-content table-two-row" v-text="dialogData.receipts_summary"></li>
 
                 <li class="table-li-title" style="height:60px;line-height:60px">附件</li>
                 <li class="table-li-content table-two-row" style="height:60px;padding-top:6px;overflow-y:auto">
@@ -279,7 +287,7 @@
     export default {
         name: "ReceiveLookOver",
         created: function () {
-            this.$emit("transmitTitle", "收款-查看");
+            this.$emit("transmitTitle", "资金收款-查看");
             this.$emit("getCommTable", this.routerMessage);
         },
         mounted: function () {
@@ -293,7 +301,7 @@
         data: function () {
             return {
                 routerMessage: {
-                    optype: "zft_bills",
+                    optype: "skt_bills",
                     params: {
                         page_size: 7,
                         page_num: 1
@@ -336,7 +344,7 @@
                 emptyFileList: [], //附件
                 fileMessage: {
                     bill_id: "",
-                    biz_type: 9
+                    biz_type: 15
                 },
                 triggerFile: false,
                 businessParams:{ //业务状态追踪参数
@@ -380,17 +388,12 @@
             },
             //制单
             goMakeBill: function () {
-                this.$router.push("/payment/pay-make-bill");
+                this.$router.push("/receivables/receive-make-bill");
             },
-            //支付处理
-            // goPayment: function () {
-            //     this.$router.push("/payment/pay-payment");
-            // },
-
             //查看单据详情
             lookBill: function (row) {
                 for (var k in row) {
-                    if(k == "payment_amount"){
+                    if(k == "receipts_amount"){
                         this.dialogData[k] = "￥" + this.$common.transitSeparator(row[k]);
                     }else{
                         this.dialogData[k] = row[k];
@@ -405,7 +408,7 @@
 
                 //业务状态跟踪
                 this.businessParams = {};
-                this.businessParams.biz_type = 9;
+                this.businessParams.biz_type = 15;
                 this.businessParams.id = row.id;
             },
         },

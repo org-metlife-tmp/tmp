@@ -30,7 +30,7 @@
 
         /*列表数据*/
         .table-content{
-            height: 289px;
+            height: 279px;
         }
 
         /*分页部分*/
@@ -126,6 +126,9 @@
             .table-li-content {
                 width: 38%;
                 padding-left: 10px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
             }
 
             .table-two-row {
@@ -251,10 +254,10 @@
             <el-table :data="tableList"
                       border size="mini"
                       height="100%">
-                <el-table-column prop="recv_account_name" label="收款方名称" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="recv_account_no" label="收款方账号" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="recv_account_bank" label="收款方银行" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="payment_amount" label="金额" :show-overflow-tooltip="true"
+                <el-table-column prop="pay_account_name" label="付款方名称" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="pay_account_no" label="付款方账号" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="pay_account_bank" label="付款方银行" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="receipts_amount" label="金额" :show-overflow-tooltip="true"
                                  :formatter="transitAmount"></el-table-column>
                 <el-table-column prop="service_status" label="业务状态" :show-overflow-tooltip="true"
                                  :formatter="transitStatus"></el-table-column>
@@ -296,9 +299,8 @@
                 </el-table-column>
             </el-table>
             <div class="allData">
-                <div class="btn-left">
+                <div class="btn-left">   
                     <el-button type="warning" plain size="mini" @click="goMakeBill">制单</el-button>
-                    <el-button type="warning" plain size="mini" @click="goPayment">支付处理</el-button>
                 </div>
                 <span>总笔数：</span>
                 <span v-text="totalData.total_num" class="numText"></span>
@@ -321,7 +323,7 @@
             </el-pagination>
         </div>
         <!--查看弹出框-->
-        <el-dialog title="调拨单信息"
+        <el-dialog title="收款单信息"
                    :visible.sync="dialogVisible"
                    width="900px" top="76px"
                    :close-on-click-modal="false">
@@ -331,21 +333,21 @@
                 ]
             </div>
             <ul class="dialog-talbe">
-                <li class="table-li-title">付款账号</li>
-                <li class="table-li-content table-two-row" v-text="dialogData.pay_account_no"></li>
+                <li class="table-li-title">收款账号</li>
+                <li class="table-li-content table-two-row" v-text="dialogData.recv_account_no"></li>
 
-                <li class="table-li-title">收款人户名</li>
-                <li class="table-li-content" v-text="dialogData.recv_account_name"></li>
-                <li class="table-li-title">收款人账号</li>
-                <li class="table-li-content" v-text="dialogData.recv_account_no"></li>
+                <li class="table-li-title">付款人户名</li>
+                <li class="table-li-content" v-text="dialogData.pay_account_name"></li>
+                <li class="table-li-title">付款人账号</li>
+                <li class="table-li-content" v-text="dialogData.pay_account_no"></li>
 
                 <li class="table-li-title">开户行</li>
-                <li class="table-li-content" v-text="dialogData.recv_account_bank"></li>
+                <li class="table-li-content" v-text="dialogData.pay_account_bank"></li>
                 <li class="table-li-title">金额</li>
-                <li class="table-li-content" v-text="dialogData.payment_amount" style="color:#fd7d2f"></li>
+                <li class="table-li-content" v-text="dialogData.receipts_amount" style="color:#fd7d2f"></li>
 
                 <li class="table-li-title">摘要</li>
-                <li class="table-li-content table-two-row" v-text="dialogData.payment_summary"></li>
+                <li class="table-li-content table-two-row" v-text="dialogData.receipts_summary"></li>
 
                 <li class="table-li-title" style="height:60px;line-height:60px">附件</li>
                 <li class="table-li-content table-two-row" style="height:60px;padding-top:6px;overflow-y:auto">
@@ -358,7 +360,7 @@
             <BusinessTracking :businessParams="businessParams"></BusinessTracking>
         </el-dialog>
         <!--编辑弹出框-->
-        <el-dialog title="编辑调拨单"
+        <el-dialog title="编辑收款单"
                    :visible.sync="editVisible"
                    width="900px" top="76px"
                    :close-on-click-modal="false">
@@ -368,9 +370,9 @@
                 ]
             </div>
             <ul class="dialog-talbe">
-                <li class="table-li-title">付款账号</li>
+                <li class="table-li-title">收款账号</li>
                 <li class="table-li-content table-select table-two-row">
-                    <el-select v-model="editDialogData.pay_account_id" placeholder="请选择付款方"
+                    <el-select v-model="editDialogData.recv_account_id" placeholder="请选择收款方"
                                filterable clearable size="mini">
                         <el-option v-for="item in accOptions"
                                    :key="item.acc_id"
@@ -380,9 +382,9 @@
                     </el-select>
                 </li>
 
-                <li class="table-li-title">收款人户名</li>
+                <li class="table-li-title">付款人户名</li>
                 <li class="table-li-content table-select">
-                    <el-select v-model="editDialogData.recv_account_name"
+                    <el-select v-model="editDialogData.pay_account_name"
                                filterable allow-create default-first-option
                                placeholder="请输入或选择户名"
                                @change="setPayer($event,'acc_no')">
@@ -394,9 +396,9 @@
                         </el-option>
                     </el-select>
                 </li>
-                <li class="table-li-title">收款人账号</li>
+                <li class="table-li-title">付款人账号</li>
                 <li class="table-li-content table-select">
-                    <el-select v-model="editDialogData.recv_account_no"
+                    <el-select v-model="editDialogData.pay_account_no"
                                filterable allow-create
                                default-first-option
                                placeholder="请输入或选择账号"
@@ -413,21 +415,21 @@
                 <li class="table-li-title">开户行</li>
                 <li class="table-li-content table-two-row">
                     <input type="text" placeholder="请选择开户行" class="table-input"
-                           v-model="editDialogData.bank_name"
+                           v-model="editDialogData.pay_account_bank"
                            @focus="bankVisible = true">
                 </li>
 
                 <li class="table-li-title">金额</li>
                 <li class="table-li-content">
                     <input type="text" @blur="setMoney" class="table-input" style="color:#fd7d2f"
-                           v-model="editDialogData.payment_amount">
+                           v-model="editDialogData.receipts_amount">
                 </li>
                 <li class="table-li-title">大写</li>
                 <li class="table-li-content" v-text="editDialogData.numText"></li>
 
                 <li class="table-li-title">摘要</li>
                 <li class="table-li-content table-two-row">
-                    <input type="text" class="table-input" v-model="editDialogData.payment_summary">
+                    <input type="text" class="table-input" v-model="editDialogData.receipts_summary">
                 </li>
 
                 <li class="table-li-title" style="height:60px;line-height:60px">附件</li>
@@ -540,7 +542,7 @@
     export default {
         name: "ReceiveMoreBills",
         created: function () {
-            this.$emit("transmitTitle", "收款-更多单据");
+            this.$emit("transmitTitle", "资金收款-更多单据");
             this.$emit("getCommTable", this.routerMessage);
 
             //获取付款方账户列表
@@ -577,7 +579,7 @@
         data: function () {
             return {
                 routerMessage: {
-                    optype: "zft_morebills",
+                    optype: "skt_morebills",
                     params: {
                         page_size: 7,
                         page_num: 1
@@ -622,23 +624,23 @@
                 emptyFileList: [], //附件
                 fileMessage: {
                     bill_id: "",
-                    biz_type: 9
+                    biz_type: 15
                 },
                 triggerFile: false,
                 editVisible: false, //编辑弹框数据
                 editDialogData: {
                     id:"",
                     persist_version: "",
-                    rev_persist_version: "",
-                    pay_account_id: "",
+                    pay_persist_version: "",
                     recv_account_id: "",
-                    recv_account_no: "",
-                    recv_account_name: "",
-                    recv_bank_cnaps: "",
-                    payment_amount: "",
-                    payment_summary: "",
+                    pay_account_id: "",
+                    pay_account_name: "",
+                    pay_account_no: "",
+                    pay_account_bank: "",
+                    pay_bank_cnaps: "",
+                    receipts_amount: "",
+                    receipts_summary: "",
                     service_serial_number: "",
-                    bank_name: "",
                     numText: ""
                 },
                 currentBill: {},
@@ -727,16 +729,12 @@
             },
             //制单
             goMakeBill: function () {
-                this.$router.push("/payment/pay-make-bill");
-            },
-            //支付处理
-            goPayment: function () {
-                this.$router.push("/payment/pay-payment");
+                this.$router.push("/receivables/receive-make-bill");
             },
             //复制
             copyMakeBill: function (current) {
                 this.$router.push({
-                    name: "PayMakeBill",
+                    name: "ReceiveMakeBill",
                     query: {
                         id: current.id
                     }
@@ -745,8 +743,8 @@
             //查看
             lookBill: function (row) {
                 for (var k in row) {
-                    if(k == "payment_amount"){
-                        this.dialogData[k] = "￥" + this.$common.transitSeparator(row.payment_amount);
+                    if(k == "receipts_amount"){
+                        this.dialogData[k] = "￥" + this.$common.transitSeparator(row.receipts_amount);
                     }else{
                         this.dialogData[k] = row[k];
                     }
@@ -759,7 +757,7 @@
                 this.triggerFile = !this.triggerFile;
                 //业务状态跟踪
                 this.businessParams = {};
-                this.businessParams.biz_type = 9;
+                this.businessParams.biz_type = 15;
                 this.businessParams.id = row.id;
             },
             //删除
@@ -773,7 +771,7 @@
                         url: "/cfm/normalProcess",
                         method: "post",
                         data: {
-                            optype: "zft_delbill",
+                            optype: "skt_delbill",
                             params: {
                                 id: row.id,
                                 persist_version: row.persist_version
@@ -792,8 +790,8 @@
                         if (this.pagCurrent < (this.pagTotal / this.pagSize)) { //存在下一页
                             this.$emit("getCommTable", this.routerMessage);
                         } else {
-                            if (rows.length == "1" && (this.routerMessage.todo.params.page_num != 1)) { //是当前页最后一条
-                                this.routerMessage.todo.params.page_num--;
+                            if (rows.length == "1" && (this.routerMessage.params.page_num != 1)) { //是当前页最后一条
+                                this.routerMessage.params.page_num--;
                                 this.$emit("getCommTable", this.routerMessage);
                             } else {
                                 rows.splice(index, 1);
@@ -823,7 +821,7 @@
                         url: "/cfm/normalProcess",
                         method: "post",
                         data: {
-                            optype: "zft_revoke",
+                            optype: "skt_revoke",
                             params: {
                                 id: row.id,
                                 persist_version: row.persist_version,
@@ -866,8 +864,8 @@
                     }
                 }
                 //设置数字加千分符和转汉字
-                editDialogData.numText = this.$common.transitText(row.payment_amount);
-                editDialogData.payment_amount = this.$common.transitSeparator(row.payment_amount);
+                editDialogData.numText = this.$common.transitText(row.receipts_amount);
+                editDialogData.receipts_amount = this.$common.transitSeparator(row.receipts_amount);
                 //附件数据
                 this.editEmptyFile = [];
                 this.fileMessage.bill_id = row.id;
@@ -885,15 +883,15 @@
 
                 for(var i = 0; i < payerList.length; i++){
                     if(payerList[i][key] == val){
-                        editDialogData.recv_account_id = payerList[i].id;
-                        editDialogData.recv_bank_cnaps = payerList[i].cnaps_code;
-                        editDialogData.rev_persist_version = payerList[i].persist_version;
+                        editDialogData.pay_account_id = payerList[i].id;
+                        editDialogData.pay_bank_cnaps = payerList[i].cnaps_code;
+                        editDialogData.pay_persist_version = payerList[i].persist_version;
                         if(target == "acc_no"){
-                            editDialogData.recv_account_no = payerList[i][target];
+                            editDialogData.pay_account_no = payerList[i][target];
                         }else{
-                            editDialogData.recv_account_name = payerList[i][target];
+                            editDialogData.pay_account_name = payerList[i][target];
                         }
-                        editDialogData.bank_name = payerList[i].bank_name;
+                        editDialogData.pay_account_bank = payerList[i].bank_name;
                         flag = false;
                         continue;
                     }
@@ -902,8 +900,8 @@
                     }
                 }
                 if(flag){
-                    editDialogData.recv_account_id = "";
-                    editDialogData.rev_persist_version = "";
+                    editDialogData.pay_account_id = "";
+                    editDialogData.pay_persist_version = "";
                 }
             },
             //银行大类搜索筛选
@@ -1008,13 +1006,13 @@
             },
             //设置开户行
             confirmBank: function(){
-                this.editDialogData.recv_bank_cnaps = this.bankDialogData.cnaps_code;
+                this.editDialogData.pay_bank_cnaps = this.bankDialogData.cnaps_code;
                 this.editDialogData.bank_name = this.bankDialogData.bank_name;
                 this.bankVisible = false;
             },
             //输入金额后进行格式化
             setMoney: function () {
-                var moneyNum = this.editDialogData.payment_amount.replace(/,/gi, "").trim();
+                var moneyNum = this.editDialogData.receipts_amount.replace(/,/gi, "").trim();
                 /*校验数据格式是否正确*/
                 if (moneyNum == "") {
                     return;
@@ -1025,7 +1023,7 @@
                         message: "请输入正确的金额",
                         duration: 2000
                     });
-                    this.editDialogData.payment_amount = "";
+                    this.editDialogData.receipts_amount = "";
                     return;
                 }
                 var verify = moneyNum.split(".");
@@ -1049,7 +1047,7 @@
                 }
 
                 //设置数字部分格式
-                this.editDialogData.payment_amount = this.$common.transitSeparator(moneyNum);
+                this.editDialogData.receipts_amount = this.$common.transitSeparator(moneyNum);
                 //设置汉字
                 this.editDialogData.numText = this.$common.transitText(moneyNum);
             },
@@ -1066,6 +1064,7 @@
             setParams: function () {
                 //校验数据是否完善 并设置发送给后台的数据
                 var params = this.editDialogData;
+                params.receipts_amount = params.receipts_amount.split(",").join("");
                 params.files = this.fileList;
 
                 return params;
@@ -1081,7 +1080,7 @@
                     url: "/cfm/normalProcess",
                     method: "post",
                     data: {
-                        optype: "zft_chgbill",
+                        optype: "skt_chgbill",
                         params: params
                     }
                 }).then((result) => {
@@ -1119,7 +1118,7 @@
                     url: "/cfm/normalProcess",
                     method: "post",
                     data: {
-                        optype: "zft_presubmit",
+                        optype: "skt_presubmit",
                         params: params
                     }
                 }).then((result) => {
@@ -1161,7 +1160,7 @@
                     url: "/cfm/normalProcess",
                     method: "post",
                     data: {
-                        optype: "zft_submit",
+                        optype: "skt_submit",
                         params: params
                     }
                 }).then((result) => {
