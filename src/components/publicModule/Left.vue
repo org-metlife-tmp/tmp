@@ -469,7 +469,7 @@
                 <el-menu-item-group>
                     <el-menu-item index="/receivables/receive-make-bill" v-if="menuList.SKTMkBill">资金收款-制单</el-menu-item>
                     <el-menu-item index="/receivables/receive-look-over" v-if="menuList.SKTViewBill">资金收款-查看</el-menu-item>
-                    <el-menu-item index="/allot/allot-deal-check?bizType=14" v-if="menuList.SKTCheck">交易核对</el-menu-item>
+                    <el-menu-item index="/allot/allot-deal-check?bizType=15" v-if="menuList.SKTCheck">交易核对</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
             <el-submenu index="15">

@@ -386,6 +386,12 @@
                     this.checkOptype = "dbttrad_tradingList";
                     this.confirmOptype = "dbttrad_confirm";
                     this.validatedOptype = "dbttrad_confirmTradingList";
+                }else if(type == '15'){
+                    this.routerMessage.todo.optype = "skttrad_billList";
+                    this.routerMessage.done.optype = "skttrad_confirmbillList";
+                    this.checkOptype = "skttrad_tradingList";
+                    this.confirmOptype = "skttrad_confirm";
+                    this.validatedOptype = "skttrad_confirmTradingList";
                 }
                 this.$emit("getTableData", this.routerMessage);
             }  
