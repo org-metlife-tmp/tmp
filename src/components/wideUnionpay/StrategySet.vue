@@ -257,19 +257,19 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="14">
-                        <el-form-item label="被归集账户名">
-                            <el-input v-model="collectionData.recv_acc_name" placeholder="请输入被归集账户名"
+                        <el-form-item label="被下拨账户名">
+                            <el-input v-model="collectionData.recv_acc_name" placeholder="请输入被下拨账户名"
                                       :readonly="isView"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="14">
-                        <el-form-item label="被归集账户号">
-                            <el-input v-model="collectionData.recv_acc_no" placeholder="请输入被归集账户号"
+                        <el-form-item label="被下拨账户号">
+                            <el-input v-model="collectionData.recv_acc_no" placeholder="请输入被下拨账户号"
                                       :readonly="isView"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="14">
-                        <el-form-item label="归集频率" style="text-align:left">
+                        <el-form-item label="下拨频率" style="text-align:left">
                             <el-radio-group v-model="collectionData.gyl_allocation_frequency"
                                             @change="clearDate" :disabled="isView">
                                 <el-radio v-for="(frequency,key) in frequencyList"

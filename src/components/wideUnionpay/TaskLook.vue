@@ -67,7 +67,7 @@
                 <el-row>
                     <el-col :span="4">
                         <el-form-item>
-                            <el-select v-model="searchData.collect_type" placeholder="请选择归集额度"
+                            <el-select v-model="searchData.collect_type" placeholder="请选择下拨额度"
                                        clearable filterable
                                        style="width:100%">
                                 <el-option v-for="(collType,key) in collTypeList"
@@ -80,7 +80,7 @@
                     </el-col>
                     <el-col :span="4">
                         <el-form-item>
-                            <el-select v-model="searchData.collect_frequency" placeholder="请选择归集频率"
+                            <el-select v-model="searchData.collect_frequency" placeholder="请选择下拨频率"
                                        clearable filterable
                                        style="width:100%">
                                 <el-option v-for="(frequency,key) in frequencyList"
@@ -93,12 +93,12 @@
                     </el-col>
                     <el-col :span="4">
                         <el-form-item>
-                            <el-input v-model="searchData.topic" clearable placeholder="请输入归集关键字"></el-input>
+                            <el-input v-model="searchData.topic" clearable placeholder="请输入下拨关键字"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="4">
                         <el-form-item>
-                            <el-input v-model="searchData.main_acc_query_key" clearable placeholder="请输入归集主账号关键字"></el-input>
+                            <el-input v-model="searchData.main_acc_query_key" clearable placeholder="请输入下拨主账号关键字"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="2">

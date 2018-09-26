@@ -72,6 +72,18 @@
                 background-position: -103px -116px;
             }
 
+            .icon-zjxb{
+                background-position: -92px -254px;
+            }
+
+            .icon-skt{
+                background-position: -152px -254px;
+            }
+
+            .icon-gyl{
+                background-position: -212px -254px;
+            }
+
             .icon-ywfk {
                 background-position: -31px -219px;
             }
@@ -130,6 +142,15 @@
             .icon-gjt {
                 background-position: -69px -116px;
             }
+            .icon-zjxb{
+                background-position: -62px -254px;
+            }
+            .icon-skt{
+                background-position: -122px -254px;
+            }
+            .icon-gyl{
+                background-position: -182px -254px;
+            }
             .icon-ywfk {
                 background-position: 0px -219px;
             }
@@ -187,6 +208,18 @@
 
             .el-submenu__title:hover .icon-gjt {
                 background-position: -103px -116px;
+            }
+
+            .el-submenu__title:hover .icon-zjxb{
+                background-position: -92px -254px;
+            }
+
+            .el-submenu__title:hover .icon-skt{
+                background-position: -152px -254px;
+            }
+
+            .el-submenu__title:hover .icon-gyl{
+                background-position: -212px -254px;
             }
 
             .el-submenu__title:hover .icon-ywfk {
@@ -449,7 +482,7 @@
             </el-submenu>
             <el-submenu index="13"  v-if="menuList.ZJXB">
                 <template slot="title" height="200px">
-                    <i class="icon-gjt"></i>
+                    <i class="icon-zjxb"></i>
                     <p>资金下拨</p>
                 </template>
                 <el-menu-item-group>
@@ -463,7 +496,7 @@
             </el-submenu>
             <el-submenu index="14"  v-if="menuList.SKT">
                 <template slot="title" height="200px">
-                    <i class="icon-gjt"></i>
+                    <i class="icon-skt"></i>
                     <p>收款通</p>
                 </template>
                 <el-menu-item-group>
@@ -483,7 +516,7 @@
             </el-submenu>
             <el-submenu index="16">
                 <template slot="title" height="200px">
-                    <i class="icon-gjt"></i>
+                    <i class="icon-gyl"></i>
                     <p>广银联</p>
                 </template>
                 <el-menu-item-group>
