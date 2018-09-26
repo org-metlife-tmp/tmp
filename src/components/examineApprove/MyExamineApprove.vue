@@ -355,7 +355,7 @@
                             >
                             </el-table-column>
                             <!-- 归集通归集额度 -->
-                            <el-table-column v-else-if="head.prop=='collect_type' || head.prop=='allocation_type'"
+                            <el-table-column v-else-if="head.prop=='collect_type' || head.prop=='allocation_type' || head.prop=='gyl_allocation_type'"
                                              :key="head.id"
                                              :prop="head.prop"
                                              :label="head.name"
@@ -364,7 +364,7 @@
                             >
                             </el-table-column>
                             <!-- 归集通归集频率 -->
-                            <el-table-column v-else-if="head.prop=='collect_frequency' || head.prop=='allocation_frequency'"
+                            <el-table-column v-else-if="head.prop=='collect_frequency' || head.prop=='gyl_allocation_frequency' || head.prop=='allocation_frequency'"
                                              :key="head.id"
                                              :prop="head.prop"
                                              :label="head.name"
@@ -446,18 +446,12 @@
                         <el-col v-else-if="detail.prop=='interactive_mode'"
                                 :key="detail.id"
                                 :span="detail.pspan">{{interList[dialogData.interactive_mode]}}</el-col>
-                        <el-col v-else-if="detail.prop=='collect_type'"
+                        <el-col v-else-if="detail.prop=='collect_type' || detail.prop=='gyl_allocation_type'"
                                 :key="detail.id"
-                                :span="detail.pspan">{{poolTypeList[dialogData.collect_type]}}</el-col>
-                        <el-col v-else-if="detail.prop=='gyl_allocation_type'"
+                                :span="detail.pspan">{{poolTypeList[dialogData[detail.prop]]}}</el-col>
+                        <el-col v-else-if="detail.prop=='collect_frequency' || detail.prop=='gyl_allocation_frequency'"
                                 :key="detail.id"
-                                :span="detail.pspan">{{poolTypeList[dialogData.gyl_allocation_type]}}</el-col>
-                        <el-col v-else-if="detail.prop=='collect_frequency'"
-                                :key="detail.id"
-                                :span="detail.pspan">{{frequencyList[dialogData.collect_frequency]}}</el-col>
-                        <el-col v-else-if="detail.prop=='gyl_allocation_frequency'"
-                                :key="detail.id"
-                                :span="detail.pspan">{{frequencyList[dialogData.gyl_allocation_frequency]}}</el-col>
+                                :span="detail.pspan">{{frequencyList[dialogData[detail.prop]]}}</el-col>
                         <el-col v-else-if="detail.prop=='allocation_type'"
                                 :key="detail.id"
                                 :span="detail.pspan">{{poolTypeList[dialogData.allocation_type]}}</el-col>
@@ -1050,7 +1044,7 @@
                     {id:"7", lspan:4, label:"归集频率"},
                     {id:"8", pspan:8, prop:"collect_frequency"},
                     {id:"9", lspan:4, label:"归集时间"},
-                    {id:"10", pspan:8, prop:"collect_time"},
+                    {id:"10", pspan:8, prop:"time_settings"},
                     {id:"11", lspan:4, label:"归集集户(个)"},
                     {id:"12", pspan:8, prop:"collect_main_account_count"},
                     {id:"13", lspan:4, label:"业务状态"},
@@ -1080,7 +1074,7 @@
                     {id:"7", lspan:4, label:"下拨频率"},
                     {id:"8", pspan:8, prop:"gyl_allocation_frequency"},
                     {id:"9", lspan:4, label:"下拨时间"},
-                    {id:"10", pspan:8, prop:"collect_time"},
+                    {id:"10", pspan:8, prop:"time_settings"},
                     {id:"11", lspan:4, label:"业务状态"},
                     {id:"12", pspan:8, prop:"service_status"}
                 ],
@@ -1272,10 +1266,10 @@
                     ],
                     "14":[
                         {id:'1',prop:"topic",name:'主题'},
-                        {id:'2',prop:"collect_type",name:'下拨额度'},
-                        {id:'3',prop:"collect_amount",name:'下拨金额'},
-                        {id:'4',prop:"collect_frequency",name:'下拨频率'},
-                        {id:'5',prop:"collect_time",name:'下拨时间'},
+                        {id:'2',prop:"gyl_allocation_type",name:'下拨额度'},
+                        {id:'3',prop:"gyl_allocation_amount",name:'下拨金额'},
+                        {id:'4',prop:"gyl_allocation_frequency",name:'下拨频率'},
+                        {id:'5',prop:"gyl_allocation_time",name:'下拨时间'},
                         {id:'6',prop:"service_status",name:'业务状态'}
                     ],
                     "15":[

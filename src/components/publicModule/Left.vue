@@ -649,7 +649,7 @@
                     SectionSet: false, //工作区间设置
                     OfferSet: false, //报盘日设置
                     CheckoutSet: false, //结账日设置
-                    
+
                     ZJXB: false, //资金下拨
                     ZJXBApSetting: false, //资金下拨账户设置
                     ZJXBSetting: false, //资金下拨设置
