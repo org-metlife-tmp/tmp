@@ -134,22 +134,20 @@
         <section class="table-content">
             <el-table :data="tableList"
                       border size="mini">
-                <el-table-column prop="topic" label="归集主题" width="180px"
+                <el-table-column prop="topic" label="主题" width="180px"
                                  :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column label="归集额度" :show-overflow-tooltip="true" width="200px">
+                <el-table-column label="下拨额度" :show-overflow-tooltip="true" width="200px">
                     <template slot-scope="scope">
-                        <span>{{ scope.row.collect_type }}</span>
-                        <span style="margin-left: 10px;color:#fd7d2f">{{ transitNum(scope.row.collect_amount) }}</span>
+                        <span>{{ scope.row.gyl_allocation_type }}</span>
+                        <span style="margin-left: 10px;color:#fd7d2f">{{ transitNum(scope.row.gyl_allocation_amount) }}</span>
                     </template>
                 </el-table-column>
-                <el-table-column label="归集频率" :show-overflow-tooltip="true">
+                <el-table-column label="下拨频率" :show-overflow-tooltip="true">
                     <template slot-scope="scope">
-                        <span>{{ scope.row.collect_frequency }} - </span>
-                        <span>{{ scope.row.collect_time }}</span>
+                        <span>{{ scope.row.gyl_allocation_frequency }} - </span>
+                        <span>{{ scope.row.gyl_allocation_time }}</span>
                     </template>
                 </el-table-column>
-                <el-table-column prop="collect_main_account_count" label="归集集户(个)"
-                                 :show-overflow-tooltip="true" width="110px"></el-table-column>
                 <el-table-column prop="service_status" label="业务状态" :show-overflow-tooltip="true"
                                  width="100px" :formatter="transitStatus"></el-table-column>
                 <el-table-column
