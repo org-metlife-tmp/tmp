@@ -346,7 +346,7 @@
                             >
                             </el-table-column>
                             <!-- 调拨通金额处理千分位 -->
-                            <el-table-column v-else-if="head.prop=='payment_amount' || head.prop== 'total_amount'"
+                            <el-table-column v-else-if="head.prop=='payment_amount' || head.prop== 'total_amount' || head.prop== 'receipts_amount'"
                                 :key="head.id"
                                 :prop="head.prop"
                                 :label="head.name"
@@ -747,6 +747,14 @@
                     addLots:"gylsetting_append",
                     agree:"gylsetting_agree",
                     reject:"gylsetting_reject"
+                },
+                {
+                    text:"收款通",
+                    detail:"skt_billdetail",
+                    list:"skt_pendingtasks",
+                    addLots:"skt_append",
+                    agree:"skt_agree",
+                    reject:"skt_reject"
                 }
             ]
 
@@ -1076,6 +1084,22 @@
                     {id:"11", lspan:4, label:"业务状态"},
                     {id:"12", pspan:8, prop:"service_status"}
                 ],
+                "15":[
+                    {id:"1", lspan:4, label:"编号"},
+                    {id:"2",pspan:20, prop:"service_serial_number"},
+                    {id:"3", lspan:4, label:"收款账号"},
+                    {id:"4", pspan:8, prop:"recv_account_no"},
+                    {id:"5", lspan:4, label:"付款人户名"},
+                    {id:"6", pspan:8, prop:"pay_account_name"},
+                    {id:"7", lspan:4, label:"付款人账号"},
+                    {id:"8", pspan:8, prop:"pay_account_no"},
+                    {id:"9", lspan:4, label:"开户行"},
+                    {id:"10", pspan:8, prop:"pay_account_bank"},
+                    {id:"11", lspan:4, label:"金额"},
+                    {id:"12", pspan:8, prop:"receipts_amount"},
+                    {id:"13", lspan:4, label:"摘要"},
+                    {id:"14", pspan:8, prop:"receipts_summary"}
+                ],
             }
         },
         mounted:function(){
@@ -1253,6 +1277,13 @@
                         {id:'4',prop:"collect_frequency",name:'下拨频率'},
                         {id:'5',prop:"collect_time",name:'下拨时间'},
                         {id:'6',prop:"service_status",name:'业务状态'}
+                    ],
+                    "15":[
+                        {id:'1',prop:"recv_account_bank",name:'收款方名称'},
+                        {id:'2',prop:"pay_account_no",name:'付款方账号'},
+                        {id:'3',prop:"pay_account_name",name:'付款方银行'},
+                        {id:'4',prop:"receipts_amount",name:'金额'},
+                        {id:'5',prop:"service_status",name:'处理状态'}
                     ],
                 },
                 editableTabsList: [],
