@@ -277,9 +277,9 @@
                             </el-select>
                         </el-form-item>
                     </el-col>
-                    <el-col :span="12" style="height:51px"></el-col>
+                    <el-col :span="12" style="height:50px"></el-col>
                     <el-col :span="12">
-                        <el-form-item label="开户行">
+                        <el-form-item label="银行大类">
                             <el-select v-model="dialogData.bankTypeName" placeholder="请选择银行大类"
                                        clearable filterable
                                        :filter-method="filterBankType"
@@ -293,7 +293,7 @@
                             </el-select>
                         </el-form-item>
                     </el-col>
-                    <el-col :span="12" style="height:51px"></el-col>
+                    <el-col :span="12" style="height:50px"></el-col>
                     <el-col :span="12">
                         <el-form-item label="开户地址">
                             <el-select v-model="dialogData.area"
@@ -1273,7 +1273,7 @@
                         //         }
                         //     }
                         // }
-                        
+
                         this.$message({
                             type: "success",
                             message: "操作成功",

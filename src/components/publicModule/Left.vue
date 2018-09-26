@@ -170,7 +170,7 @@
                 background-position: 0 -55px;
             }
             .icon-oa {
-                background-position: -506px -158px;
+                background-position: -506px -160px;
             }
             .icon-gzrl{
                 background-position: -1px -252px;
@@ -526,6 +526,17 @@
                     <el-menu-item index="/payment/deal-check?bizType=14">交易核对</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
+            <el-submenu index="17">
+                <template slot="title" height="200px">
+                    <i class="icon-oa"></i>
+                    <p class="mg-four">OA数据</p>
+                </template>
+                <el-menu-item-group>
+                    <el-menu-item index="1-1">OA数据管理</el-menu-item>
+                    <el-menu-item index="1-2">OA费用支付</el-menu-item>
+                    <el-menu-item index="1-3">交易核对</el-menu-item>
+                </el-menu-item-group>
+            </el-submenu>
             <!--
 
             <el-submenu index="10">
@@ -553,18 +564,7 @@
                     <el-menu-item index="1-3">选项3</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="13">
-                <template slot="title" height="200px">
-                    <i class="icon-oa"></i>
-
-                    <p class="mg-four">OA审批</p>
-                </template>
-                <el-menu-item-group>
-                    <el-menu-item index="1-1">选项1</el-menu-item>
-                    <el-menu-item index="1-2">选项2</el-menu-item>
-                    <el-menu-item index="1-3">选项3</el-menu-item>
-                </el-menu-item-group>
-            </el-submenu>-->
+            -->
         </el-menu>
     </div>
 </template>

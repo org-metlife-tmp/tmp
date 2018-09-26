@@ -110,6 +110,11 @@ import ReceiveMoreBills from '@/components/receivables/ReceiveMoreBills'
 import ReceiveLookOver from '@/components/receivables/ReceiveLookOver'
 //电子回单
 import ElectronicReceipt from '@/components/electronicReceipt/ElectronicReceipt'
+//OA数据
+import DataManage from '@/components/OAData/DataManage'
+import PamentCharges from '@/components/OAData/PamentCharges'
+
+
 
 Vue.use(Router)
 
