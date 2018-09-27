@@ -79,7 +79,9 @@
             .icon-skt{
                 background-position: -152px -254px;
             }
-
+            .icon-electb{
+                background-position: -321px -194px;
+            }
             .icon-gyl{
                 background-position: -212px -254px;
             }
@@ -147,6 +149,9 @@
             }
             .icon-skt{
                 background-position: -122px -254px;
+            }
+            .icon-electb{
+                background-position: -287px -194px;
             }
             .icon-gyl{
                 background-position: -182px -254px;
@@ -217,7 +222,9 @@
             .el-submenu__title:hover .icon-skt{
                 background-position: -152px -254px;
             }
-
+            .el-submenu__title:hover .icon-electb{
+                background-position: -321px -194px;
+            }
             .el-submenu__title:hover .icon-gyl{
                 background-position: -212px -254px;
             }
@@ -505,13 +512,13 @@
                     <el-menu-item index="/allot/allot-deal-check?bizType=15" v-if="menuList.SKTCheck">交易核对</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="15">
+            <el-submenu index="15" v-if="menuList.ELECTB">
                 <template slot="title" height="200px">
-                    <i class="icon-gjt"></i>
+                    <i class="icon-electb"></i>
                     <p>电子回单</p>
                 </template>
                 <el-menu-item-group>
-                    <el-menu-item index="/electronicReceipt/electronic-receipt">电子回单</el-menu-item>
+                    <el-menu-item index="/electronicReceipt/electronic-receipt" v-if="menuList.ElectronicBillMgr">电子回单</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
             <el-submenu index="16">
@@ -695,6 +702,9 @@
                     SKTMkBill: false, //收款通账户设置
                     SKTViewBill: false, //收款通设置
                     SKTCheck: false, //收款通交易核对
+
+                    ELECTB: false, //电子回单
+                    ElectronicBillMgr: false, //电子回单
                 }
             }
         },
