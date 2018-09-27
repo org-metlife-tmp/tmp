@@ -739,7 +739,6 @@
                 bankList: [], //银行
                 bankSelect: true, //银行可选控制
                 purposeList:[],//账户用途
-                curBank:{},
             }
         },
         methods: {
@@ -826,8 +825,6 @@
                         if (data.area_code && data.bank_type) {
                             this.bankSelect = false;
                         }
-                        this.curBank.areaCode = data.area_code;
-                        this.curBank.bankType = data.bank_type;
                         //添加开户行下拉数据
                         if(row.bank_cnaps_code){
                             this.$set(this.bankList, 0, {
@@ -851,10 +848,9 @@
                     params.bank_type = this.dialogData.bankType;
                 } else {
                     optype = "openintent_chg";
-                    params.area_code = this.curBank.areaCode;
-                    params.bank_type = this.curBank.bankType;
+                    params.area_code = this.dialogData.areaCode ? this.dialogData.areaCode : this.dialogData.area_code;
+                    params.bank_type = this.dialogData.bankType ? this.dialogData.bankType : this.dialogData.bank_type;
                 }
-
                 this.$axios({
                     url: "/cfm/normalProcess",
                     method: "post",
@@ -1161,15 +1157,15 @@
             //提交审批流程
             subFlow: function () {
                 var params = this.dialogData;
-                params.area_code = this.dialogData.areaCode;
-                params.bank_type = this.dialogData.bankType;
+                params.area_code = this.dialogData.areaCode ? this.dialogData.areaCode : this.dialogData.area_code;
+                params.bank_type = this.dialogData.bankType ? this.dialogData.bankType : this.dialogData.bank_type;
 
                 this.$axios({
                     url: "/cfm/normalProcess",
                     method: "post",
                     data: {
                         optype: "openintent_presubmit",
-                        params: this.dialogData
+                        params: params
                     }
                 }).then((result) => {
                     if (result.data.error_msg) {
@@ -1283,6 +1279,7 @@
             //银行大类/地址变化后判断银行是否可选
             bankIsSelect: function (value) {
                 this.bankList = [];
+                this.dialogData.bank_cnaps_code = "";
                 if (this.dialogData.areaCode && this.dialogData.bankType) {
                     this.bankSelect = false;
                 } else {
