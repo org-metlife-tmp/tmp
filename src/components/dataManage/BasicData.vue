@@ -155,7 +155,7 @@
         <!--公司内容-->
         <div class="tree-content" v-if="btActive.company">
             <ul class="tree-title">
-                <li>公司内容</li>
+                <li>公司名称</li>
                 <li>公司编号</li>
                 <li>公司地址</li>
                 <li>地区（省）</li>

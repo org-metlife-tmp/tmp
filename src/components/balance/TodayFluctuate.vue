@@ -71,7 +71,7 @@
                 <el-table-column prop="acc_no" label="账户号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="acc_name" label="账户名称" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="acc_attr_name" label="账户性质" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="bank_type_name" label="银行类型" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="bank_type_name" label="银行大类" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="bank_name" label="所属银行" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="bal" label="当前余额" :show-overflow-tooltip="true" width="100px"></el-table-column>
                 <el-table-column prop="hisbal" label="期初余额" :show-overflow-tooltip="true" width="100px"></el-table-column>

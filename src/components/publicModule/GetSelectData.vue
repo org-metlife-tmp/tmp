@@ -311,6 +311,26 @@
                     console.log(error);
                 })
             }
+            //电子回单类型（普通用户）
+            if(!isAdmin && !window.sessionStorage.getItem("eleType")){
+                this.$axios({
+                    url: "/cfm/normalProcess",
+                    method: "post",
+                    data: {
+                        optype: "ele_type",
+                        params:{}
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        return;
+                    } else {
+                        var data = result.data.data;
+                        window.sessionStorage.setItem("eleType", JSON.stringify(data));
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                })
+            }
         },
         data: function () {
             return {}
