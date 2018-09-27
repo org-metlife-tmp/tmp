@@ -560,7 +560,7 @@
                     url: "/cfm/normalProcess",
                     method: "post",
                     data: {
-                        optype: "dbt_send",
+                        optype: "zft_sendPayList",
                         params: params
                     }
                 }).then((result) => {

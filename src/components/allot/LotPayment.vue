@@ -528,7 +528,7 @@
                     url: "/cfm/normalProcess",
                     method: "post",
                     data: {
-                        optype: "dbt_send",
+                        optype: "dbt_sendPayList",
                         params: params
                     }
                 }).then((result) => {
