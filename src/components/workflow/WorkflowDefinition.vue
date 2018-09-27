@@ -745,7 +745,8 @@ export default {
             flowBase:{},//代表是新增工作流还是修改工作流
             lookFlowDialogVisible:false,
             flowList:{},//查看详情的工作流数据
-            isEmptyFlow:false//是否清空子组件的数据
+            isEmptyFlow:false,//是否清空子组件的数据
+            curRow: {},//当前列表的一条数据
         }
     },
     methods:{
@@ -1422,7 +1423,7 @@ export default {
                     this.nextStepDialogVisible = false;
                     this.createDialogData.reject_strategy = "";
                     this.createDialogData.lanes = "";
-
+                    this.curRow.workflow_name = data.workflow_name;
                     this.$message({
                         type: "success",
                         message: message,
@@ -1435,6 +1436,7 @@ export default {
         //修改工作流(修改，复制)
         editFlow:function(row,type){
             if(row.id){
+                this.curRow = row;
                 this.$axios({
                     url:"/cfm/adminProcess",
                     method:"post",
