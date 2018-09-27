@@ -321,7 +321,7 @@
             </el-pagination>
         </div>
         <!--查看弹出框-->
-        <el-dialog title="调拨单信息"
+        <el-dialog title="支付单信息"
                    :visible.sync="dialogVisible"
                    width="900px" top="76px"
                    :close-on-click-modal="false">
@@ -358,7 +358,7 @@
             <BusinessTracking :businessParams="businessParams"></BusinessTracking>
         </el-dialog>
         <!--编辑弹出框-->
-        <el-dialog title="编辑调拨单"
+        <el-dialog title="编辑支付单"
                    :visible.sync="editVisible"
                    width="900px" top="76px"
                    :close-on-click-modal="false">
