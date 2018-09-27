@@ -21,7 +21,7 @@ require("echarts/lib/component/markLine");
 Vue.prototype.$echarts = echarts;
 
 /*ie兼容问题*/
-require("babel-polyfill");
+// require("babel-polyfill");
 
 /*引入axios*/
 import axios from 'axios';
