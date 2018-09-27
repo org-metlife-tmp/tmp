@@ -723,9 +723,9 @@ export default {
                 ]
             },
             org_options:[
-                {id:'3',name:'上三级'},
-                {id:'2',name:'上二级'},
-                {id:'1',name:'上一级'},
+                {id:'+3',name:'上三级'},
+                {id:'+2',name:'上二级'},
+                {id:'+1',name:'上一级'},
                 {id:'0',name:'本公司'},
                 {id:'-1',name:'下一级'},
                 {id:'-2',name:'下二级'},
