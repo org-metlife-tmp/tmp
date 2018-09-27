@@ -774,6 +774,7 @@ export default {
         },
         //新建流程
         createProcess:function(){
+            this.curRow = {};
             //清空流程名
             this.createDialogData.workflow_name = "";
             //设置默认值
@@ -1015,6 +1016,7 @@ export default {
                 }
             )
             setTimeout(() =>{
+                debugger
                 //初始化显示默认节点的位置
                 var newChild = document.getElementById(newId);
                 newChild.style.top = top + "px";
@@ -1063,7 +1065,7 @@ export default {
                     this.selectLineId = event.target.id;
                 }
                 this.jsplumb.draggable(newId);
-            })
+            },100)
         },
         //保存规则
         saveRules:function(curData){
@@ -1289,7 +1291,7 @@ export default {
             if(this.matrixArr[column+1]){
                 for (let i in this.matrixArr){
                     if(Number(i) > column){
-                        this.select_flow = this.select_flow.concat(this.matrixArr[i]); 
+                        this.select_flow = this.select_wflow.concat(this.matrixArr[i]); 
                     }
                 }
             }
@@ -1424,6 +1426,7 @@ export default {
                     this.createDialogData.reject_strategy = "";
                     this.createDialogData.lanes = "";
                     this.curRow.workflow_name = data.workflow_name;
+                    
                     this.$message({
                         type: "success",
                         message: message,
