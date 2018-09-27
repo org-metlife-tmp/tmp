@@ -134,9 +134,9 @@
                             },
                             formatter: function (params) {
                                 var data = params[0].data;
-                                if(data.direction == 1){
+                                if(data.direction == 2){
                                     var showText = "收入：";
-                                }else{
+                                }else if(data.direction == 1){
                                     var showText = "支出："
                                 }
                                 return showText + data.value
