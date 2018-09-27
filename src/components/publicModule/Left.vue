@@ -514,27 +514,27 @@
                     <el-menu-item index="/electronicReceipt/electronic-receipt">电子回单</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="16">
+            <el-submenu index="16" v-if="menuList.GYLBFJ">
                 <template slot="title" height="200px">
                     <i class="icon-gyl"></i>
                     <p>广银联</p>
                 </template>
                 <el-menu-item-group>
-                    <el-menu-item index="/wide-unionpay/strategy-set">策略设置</el-menu-item>
-                    <el-menu-item index="/wide-unionpay/unionpay-manage">任务管理</el-menu-item>
-                    <el-menu-item index="/wide-unionpay/task-look">任务查看</el-menu-item>
-                    <el-menu-item index="/payment/deal-check?bizType=14">交易核对</el-menu-item>
+                    <el-menu-item index="/wide-unionpay/strategy-set" v-if="menuList.GYLBFJSetting">策略设置</el-menu-item>
+                    <el-menu-item index="/wide-unionpay/unionpay-manage" v-if="menuList.GYLBFJMgr">任务管理</el-menu-item>
+                    <el-menu-item index="/wide-unionpay/task-look" v-if="menuList.GYLBFJView">任务查看</el-menu-item>
+                    <el-menu-item index="/payment/deal-check?bizType=14" v-if="menuList.GYLBFJCheck">交易核对</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="17">
+            <el-submenu index="17" v-if="menuList.OADATAMGT">
                 <template slot="title" height="200px">
                     <i class="icon-oa"></i>
                     <p class="mg-four">OA数据</p>
                 </template>
                 <el-menu-item-group>
-                    <el-menu-item index="1-1">OA数据管理</el-menu-item>
-                    <el-menu-item index="1-2">OA费用支付</el-menu-item>
-                    <el-menu-item index="1-3">交易核对</el-menu-item>
+                    <el-menu-item index="/OA-data/data-manage" v-if="menuList.DataMgt">接口数据管理</el-menu-item>
+                    <el-menu-item index="/OA-data/head-office-pay" v-if="menuList.OAHeadPay">总公司付款</el-menu-item>
+                    <el-menu-item index="/OA-data/filiale-payment" v-if="menuList.OABranchPay">分公司付款</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
             <!--
@@ -695,6 +695,17 @@
                     SKTMkBill: false, //收款通账户设置
                     SKTViewBill: false, //收款通设置
                     SKTCheck: false, //收款通交易核对
+
+                    GYLBFJ: false, //广银联备付金
+                    GYLBFJSetting: false, //广银联备付金设置
+                    GYLBFJMgr: false, //广银联备付金管理
+                    GYLBFJView: false, //广银联备付金查看
+                    GYLBFJCheck: false, //广银联备付金核对
+
+                    OADATAMGT: false, //OA数据管理
+                    DataMgt: false, //接口数据管理
+                    OAHeadPay: false, //总公司付款
+                    OABranchPay: false, //分公司付款
                 }
             }
         },

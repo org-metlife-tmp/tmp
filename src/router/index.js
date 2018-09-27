@@ -112,7 +112,8 @@ import ReceiveLookOver from '@/components/receivables/ReceiveLookOver'
 import ElectronicReceipt from '@/components/electronicReceipt/ElectronicReceipt'
 //OA数据
 import DataManage from '@/components/OAData/DataManage'
-import PamentCharges from '@/components/OAData/PamentCharges'
+import HeadOfficePay from '@/components/OAData/HeadOfficePay'
+import FilialePayment from '@/components/OAData/FilialePayment'
 
 
 
@@ -216,6 +217,8 @@ const router = new Router({
                         //收款通
                         {path: '/receivables/receive-more-bills', name: 'ReceiveMoreBills', component: ReceiveMoreBills, meta: {requireAuth: true}},
                         {path: '/receivables/receive-look-over', name: 'ReceiveLookOver', component: ReceiveLookOver, meta: {requireAuth: true}},
+                        //OA数据
+                        {path: '/OA-data/data-manage', name: 'DataManage', component: DataManage, meta: {requireAuth: true}},
                     ]
                 },
                 //基础样式三（tab页）
@@ -254,7 +257,9 @@ const router = new Router({
                         {path: '/allot/allot-deal-check', name: 'AllotDealCheck', component: AllotDealCheck, meta: {requireAuth: true}},
                         //资金下拨交易核对
                         {path: '/allocation/allocation-deal-check', name: 'AllocationDealCheck', component: AllocationDealCheck, meta: {requireAuth: true}},
-
+                        //OA数据
+                        {path: '/OA-data/head-office-pay', name: 'HeadOfficePay', component: HeadOfficePay, meta: {requireAuth: true}},
+                        {path: '/OA-data/filiale-payment', name: 'FilialePayment', component: FilialePayment, meta: {requireAuth: true}},
                     ]
                 },
                 //调拨通

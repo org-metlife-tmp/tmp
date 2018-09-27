@@ -496,6 +496,9 @@
                         var data = result.data.data;
                         var billData = this.billData;
                         for(var k in billData){
+                            if(k == "id"){
+                                continue;
+                            }
                             if(k == "bank_name"){
                                 billData[k] = data.recv_account_bank;
                             }else{

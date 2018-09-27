@@ -1,17 +1,17 @@
 <style scoped lang="less" type="text/less">
-    #PamentCharges {
+    #headOfficePay {
 
     }
 </style>
 
 <template>
-    <div id="PamentCharges">
+    <div id="headOfficePay">
 
     </div>
 </template>
 
 <script>
     export default {
-        name: "PamentCharges"
+        name: "HeadOfficePay"
     }
 </script>
