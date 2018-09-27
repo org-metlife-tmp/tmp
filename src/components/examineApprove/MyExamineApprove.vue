@@ -199,6 +199,14 @@
             border:none;
         }
     }
+    #myExamineApprove{
+        .el-dialog__wrapper {
+            .el-dialog__body {
+                height: 400px;
+                overflow-y: scroll;
+            }
+        }
+    }
 </style>
 
 <template>
