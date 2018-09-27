@@ -20,7 +20,7 @@
         }
 
         .table-content{
-            height: 339px;
+            height: 350px;
             transition: height 1s;
         }
         .is-small {
@@ -252,7 +252,7 @@
                     layout="sizes, prev, pager, next, jumper"
                     :page-size="pagSize"
                     :total="pagTotal"
-                    :page-sizes="[7, 50, 100, 500]"
+                    :page-sizes="[10, 50, 100, 500]"
                     :pager-count="5"
                     @current-change="getCurrentPage"
                     @size-change="sizeChange"
@@ -465,14 +465,14 @@
                 routerMessage: {
                     optype: "ele_list",
                     params: {
-                        page_size: 8,
+                        page_size: 10,
                         page_num: 1,
                         channel_code: "",
                         eb_type: ""
                     }
                 },
                 tableList: [],//列表数据
-                pagSize: 8, //分页数据
+                pagSize: 10, //分页数据
                 pagTotal: 1,
                 pagCurrent: 1,
                 dialogVisible: false,
@@ -498,10 +498,8 @@
             },
             //当前页数据条数发生变化
             sizeChange: function (val) {
-                this.routerMessage.params = {
-                    page_size: val,
-                    page_num: 1
-                };
+                this.routerMessage.params.page_size = val;
+                this.routerMessage.params.page_num = 1;
                 this.$emit("getCommTable", this.routerMessage);
             },
             //根据条件查询
@@ -531,6 +529,7 @@
             //处理弹出表格的金额展示问题
             tansss:function(value){
                 if(value){
+                    debugger
                     this.dialogData.payAmountUp = this.$common.transitSeparator(value);
                     return this.$common.transitText(value);
                 }
