@@ -380,6 +380,15 @@
                                              :show-overflow-tooltip="true"
                             >
                             </el-table-column>
+                            <!-- 下级审批人处理 -->
+                            <el-table-column v-else-if="head.prop=='nextUserList'"
+                                             :key="head.id"
+                                             :prop="head.prop"
+                                             :label="head.name"
+                                             :formatter="rename"
+                                             :show-overflow-tooltip="true"
+                            >
+                            </el-table-column>
                             <!-- 公用列 -->
                             <el-table-column
                                 v-else
@@ -1165,14 +1174,14 @@
                         {id:'4',prop:"init_user_name",name:'发起人'},
                         {id:'5',prop:"init_dept_name",name:'部门'},
                         {id:'6',prop:"history",name:'上级处理人'},
-                        {id:'7',prop:"nextUserList[0].name",name:'下级审批人'}
+                        {id:'7',prop:"nextUserList",name:'下级审批人'}
                     ],
                     "1":[
                         {id:'1',prop:"apply_on",name:'申请日期'},
                         {id:'2',prop:"init_dept_name",name:'申请部门'},
                         {id:'3',prop:"init_org_name",name:'公司'},
                         {id:'4',prop:"memo",name:'事由摘要'},
-                        {id:'5',prop:"nextUserList[0].name",name:'下级审批人'}
+                        {id:'5',prop:"nextUserList",name:'下级审批人'}
                     ],
                     "2":[
                         {id:'1',prop:"apply_on",name:'申请日期'},
@@ -1181,7 +1190,7 @@
                         {id:'4',prop:"curr_name",name:'币种'},
                         {id:'5',prop:"acc_attr",name:'账户性质'},
                         {id:'6',prop:"interactive_mode",name:'账户模式'},
-                        {id:'7',prop:"nextUserList[0].name",name:'下级审批人'}
+                        {id:'7',prop:"nextUserList",name:'下级审批人'}
                     ],
                     "3":[
                         {id:'1',prop:"apply_on",name:'申请日期'},
@@ -1190,27 +1199,27 @@
                         {id:'4',prop:"curr_name",name:'币种'},
                         {id:'5',prop:"acc_attr",name:'账户性质'},
                         {id:'6',prop:"interactive_mode",name:'账户模式'},
-                        {id:'7',prop:"nextUserList[0].name",name:'下级审批人'}
+                        {id:'7',prop:"nextUserList",name:'下级审批人'}
                     ],
                     "4":[
                         {id:'1',prop:"apply_on",name:'申请日期'},
                         {id:'2',prop:"acc_no",name:'账户号'},
                         {id:'3',prop:"acc_name",name:'账户名称'},
                         {id:'4',prop:"curr_name",name:'币种'},
-                        {id:'5',prop:"nextUserList[0].name",name:'下级审批人'}
+                        {id:'5',prop:"nextUserList",name:'下级审批人'}
                     ],
                     "5":[
                         {id:'1',prop:"apply_on",name:'申请日期'},
                         {id:'2',prop:"acc_no",name:'账户号'},
                         {id:'3',prop:"acc_name",name:'账户名称'},
                         {id:'4',prop:"curr_name",name:'币种'},
-                        {id:'5',prop:"nextUserList[0].name",name:'下级审批人'}
+                        {id:'5',prop:"nextUserList",name:'下级审批人'}
                     ],
                     "6":[
                         {id:'1',prop:"apply_on",name:'申请日期'},
                         {id:'2',prop:"init_org_name",name:'公司'},
                         {id:'4',prop:"memo",name:'事由摘要'},
-                        {id:'5',prop:"nextUserList[0].name",name:'下级审批人'}
+                        {id:'5',prop:"nextUserList",name:'下级审批人'}
                     ],
                     "7":[
                         {id:'1',prop:"apply_on",name:'申请日期'},
@@ -1219,7 +1228,7 @@
                         {id:'4',prop:"curr_name",name:'币种'},
                         {id:'5',prop:"acc_attr",name:'账户性质'},
                         {id:'6',prop:"interactive_mode",name:'账户模式'},
-                        {id:'7',prop:"nextUserList[0].name",name:'下级审批人'}
+                        {id:'7',prop:"nextUserList",name:'下级审批人'}
                     ],
                     "8":[
                         {id:'1',prop:"create_on",name:'申请日期'},
@@ -1227,7 +1236,7 @@
                         {id:'3',prop:"recv_account_name",name:'收款公司'},
                         {id:'4',prop:"recv_account_no",name:'收款账号'},
                         {id:'5',prop:"payment_amount",name:'金额'},
-                        {id:'6',prop:"nextUserList[0].name",name:'下级审批人'}
+                        {id:'6',prop:"nextUserList",name:'下级审批人'}
                     ],
                     "9":[
                         {id:'1',prop:"pay_account_bank",name:'收款方名称'},
@@ -1415,6 +1424,20 @@
                     this.dialogData.payAmountUp = this.$common.transitText(value);
                     return this.$common.transitSeparator(value);
                 }
+            },
+            //下级审批人的展示
+            rename: function(row, column, cellValue, index){
+                var new_name = "";
+                var len = cellValue.length;
+                if(len < 1){
+                    return "";
+                }
+                cellValue.forEach((element,index) =>{
+                    if(element.name){
+                        new_name = index===len-1 ? new_name + element.name : new_name + element.name + "|";
+                    }
+                })
+                return new_name;
             },
             //点击页数 获取当前页数据
             getCurrentPage: function (currPage) {
