@@ -733,7 +733,7 @@
                 </el-input>
             </div>
             <span slot="footer" class="dialog-footer">
-                <el-button type="warning" size="mini" plain @click="templateDownLoad">模板下载</el-button>
+                <el-button type="warning" size="mini" plain @click="templateDownLoad('')">模板下载</el-button>
                 <el-button type="warning" size="mini" plain @click="tempalteDailogVisible = false">取 消</el-button>
                 <el-button type="warning" size="mini" plain @click="addCurUpload" :disabled="addExcel">确 定</el-button>
             </span>
@@ -1425,11 +1425,10 @@
                 })
             },
             //模板下载
-            templateDownLoad:function (id){
-                debugger
+            templateDownLoad:function (curId){
                 var params = {};
-                if(id){
-                    params.object_id = id;
+                if(curId){
+                    params.object_id = curId;
                 }else{
                     params.pk = '8';
                 }
@@ -1516,6 +1515,7 @@
             },
             //下载正确excel文件
             downLoadExcel:function(){
+                debugger
                 this.templateDownLoad(this.currentUpload.download_object_id);
             },
         },

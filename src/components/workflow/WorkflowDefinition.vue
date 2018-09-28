@@ -1016,7 +1016,6 @@ export default {
                 }
             )
             setTimeout(() =>{
-                debugger
                 //初始化显示默认节点的位置
                 var newChild = document.getElementById(newId);
                 newChild.style.top = top + "px";
