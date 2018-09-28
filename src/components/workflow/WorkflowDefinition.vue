@@ -486,7 +486,7 @@
                     <div v-if="isFirstEnd(item)" :id="'item_'+item.item_id" draggable="true" class="child_item" :key="item.item_id">
                         <span class="child_no"><i class="child_num">{{item.item_id}}</i></span>
                         <div class="child_org" v-show="item.isOrg">
-                            <el-select v-model="item.push_org">
+                            <el-select v-model="item.push_org" @change="selectPushOrg(item)">
                                 <el-option
                                     v-for="org in org_options"
                                     :key="org.id"
@@ -1147,9 +1147,12 @@ export default {
                 return ;
             }
         },
+        //修改机构
+        selectPushOrg: function(item){
+            item.data.push_org = item.push_org;
+        },
         //选择用户or机构
         selectUsers:function(item,type){
-            
             let id = item.curUser;
             let obj = {};
             let arrList,key,index;

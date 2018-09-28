@@ -147,9 +147,13 @@
                                 :formatter="transitionStatus"
                                 :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="init_user_name" label="发起人" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="current[0].name" label="当前处理人" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="current" label="当前处理人"
+                                :formatter="rename" 
+                                :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="history_name" label="上级处理人" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="future[0].name" label="下级审批人" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="future" label="下级审批人"   
+                                :formatter="rename"
+                                :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column
                         label="操作" width="110"
                         fixed="right">
@@ -280,6 +284,20 @@ import BusinessTracking from "../publicModule/BusinessTracking.vue"
                         return this.bizType[cellValue];
                     }
                 }
+            },
+            //审批人的展示
+            rename: function(row, column, cellValue, index){
+                var new_name = "";
+                var len = cellValue.length;
+                if(len < 1){
+                    return "";
+                }
+                cellValue.forEach((element,index) =>{
+                    if(element.name){
+                        new_name = index===len-1 ? new_name + element.name : new_name + element.name + "|";
+                    }
+                })
+                return new_name;
             },
             //根据条件查询
             queryData:function(){
