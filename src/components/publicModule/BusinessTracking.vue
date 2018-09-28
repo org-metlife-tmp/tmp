@@ -45,6 +45,13 @@
                 >span{
                     display: inline-block;
                     width: 100%;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                }
+                >span.name{
+                    width: calc(100% - 40px);
+                    padding: 0 20px;
                 }
                 .pointCon{
                     width: 14px;
@@ -156,6 +163,10 @@
                         }
                     }
                     .main{
+                        width: 200px;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        white-space: nowrap;
                         float: left;
                         .name{
                             font-size: 14px;
@@ -217,7 +228,7 @@
 <style lang="less" type="text/less">
     /*进度条样式*/
     .slidersContainer{
-        top: 38px;
+        top: 44px;
         position: relative;
         .el-progress-bar{
             padding: 0;
@@ -252,13 +263,13 @@
                     <span class="time">{{history.start_time}}</span>
                 </el-col>
                 <el-col :span="divideCol" class="node-item" v-show="current.show">
-                    <span class="name">{{current.name}}</span>
+                    <span class="name" :title="current.name">{{current.name}}</span>
                     <span class="pointCon"><em class="pointer"></em></span>
                     <!-- <span class="node-name"><el-tag type="info" size="mini">当前节点</el-tag></span> -->
                     <!-- <span class="time">{{current.start_time}}</span> -->
                 </el-col>
                 <el-col :span="divideCol" class="node-item" v-show="future.show">
-                    <span class="name">{{future.name}}</span>
+                    <span class="name" :title="future.name">{{future.name}}</span>
                     <span class="pointCon"><em class="pointer"></em></span>
                     <!-- <span class="node-name"><el-tag type="info" size="mini">未来节点</el-tag></span> -->
                     <!-- <span class="time">{{future.start_time}}</span> -->
@@ -325,20 +336,20 @@
                                 <span class="name">{{current.name}}</span>
                             </div>
                         </el-col>
-                        <template v-for="future in futureList">
-                            <el-col :span="24" class="node-item" :key="future.id">
-                                <span class="time"></span>
-                                <div class="node"><span class="pointCon"><em class="pointer"></em></span></div>
-                                <div class="personImg">
-                                    <span class="img-box">
-                                        <em class="flowlinesV-img img1"></em>
-                                    </span>
-                                </div>
-                                <div class="main">
-                                    <span class="name">{{future.name}}</span>
-                                </div>
-                            </el-col>
-                        </template>
+                        <!-- <template v-for="future in futureList"> -->
+                        <el-col :span="24" class="node-item">
+                            <span class="time"></span>
+                            <div class="node"><span class="pointCon"><em class="pointer"></em></span></div>
+                            <div class="personImg">
+                                <span class="img-box">
+                                    <em class="flowlinesV-img img1"></em>
+                                </span>
+                            </div>
+                            <div class="main">
+                                <span class="name" :title="future.name">{{future.name}}</span>
+                            </div>
+                        </el-col>
+                        <!-- </template> -->
                     </el-row>
                 </div>
             </div>
@@ -417,11 +428,18 @@
                         let cL = data.current.length;
                         this.current = cL > 0 ? data.current[0] : {};
                         this.current.show = cL > 0 ? true : false;
+                        if(cL > 0){
+                            this.current.name = this.rename(data.current,cL);
+                        }
+                        //current,future的名字要显示所有的
                         //history,future取记录最后一条
                         let future = data.future;
                         let fL = future.length;
                         this.future = fL > 0 ? data.future[fL-1] : {} ;
                         this.future.show = fL > 0 ? true : false;
+                        if(fL > 0){
+                            this.future.name = this.rename(data.future,fL);
+                        }
                         let hL = data.history.length;
                         if(hL){
                             data.history.forEach(element => {
@@ -459,8 +477,9 @@
 
                         //组装右侧数据
                         this.historyList = history;
-                        this.futureList = future;
+                        // this.futureList = future;
                         cL = this.current.show ? 1 : 0;
+                        fL = this.future.show ? 1 : 0;
                         this.rightLinesHeight = (1 + cL + hL + fL -1) * 120;
                         if(cL === 0 && fL === 0)
                             this.rightFillsHeight = hL * 120;
@@ -482,6 +501,16 @@
             },
             transitionType:function(id){
                 return this.assigneeTypeList[id];
+            },
+            //current,future重新赋值名字
+            rename: function(list, len){
+                var new_name = "";
+                list.forEach((element,index) =>{
+                    if(element.name){
+                        new_name = index===len-1 ? new_name + element.name : new_name + element.name + "|";
+                    }
+                })
+                return new_name;
             }
         },
         watch:{
