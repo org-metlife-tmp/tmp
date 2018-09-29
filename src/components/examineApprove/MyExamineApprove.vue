@@ -25,6 +25,10 @@
                 vertical-align: top;
                 cursor: pointer;
                 position: relative;
+                .tab-num{
+                    font-style: normal;
+                    font-size: 12px;
+                }
             }
             .myTodo:after{
                 content: " ";
@@ -41,6 +45,11 @@
             width: 100%;
             text-align: inherit;
             height: 430px;
+            .tab-num{
+                color: #ccc;
+                font-style: normal;
+                font-size: 12px;
+            }
         }
         /*搜索区*/
         .search-setion {
@@ -265,10 +274,10 @@
                             <el-form-item>
                                 <el-select v-model="searchData.biz_type" placeholder="请选择业务种类" clearable >
                                     <el-option
-                                        v-for="item in businessType"
-                                        :key="item.id"
-                                        :label="item.name"
-                                        :value="item.id">
+                                        v-for="(item,k) in businessType"
+                                        :key="k"
+                                        :label="item"
+                                        :value="k">
                                     </el-option>
                                 </el-select>
                             </el-form-item>
@@ -314,15 +323,17 @@
             <div class="borderBom">
                 <div class="myTodo" @click="comeBack">
                     <span>我的待办</span>
+                    <i class="tab-num">[{{totalTabNum}}]</i>
                 </div>
             </div>
-            <el-tabs class="myTab" v-model="activeName" @tab-click="handleClick">
+            <el-tabs class="myTab" v-model="activeName" @tab-click="handleClick" id="myTab">
                 <el-tab-pane
-                    v-for="item in editableTabsList"
+                    v-for="(item) in editableTabsList"
                     :key="item.name"
-                    :label="item.title"
                     :name="item.name"
-                >
+                >   
+                    <!--tab标签-->
+                    <span slot="label">{{item.title}}<i class="tab-num">[{{item.num}}]</i></span>
                     <!--数据展示-->
                     <el-table :data="item.tableList"
                         border
@@ -619,10 +630,9 @@
         name: "MyExamineApprove",
         created: function () {
             this.$emit("transmitTitle", "我的审批平台");
-            this.$emit("getTableData", this.routerMessage);
+            // this.$emit("getTableData", this.routerMessage);
             //获取tab数据
-            this.editableTabsList = this.getTabList();
-
+            this.getTabList();
             //获取用户列表
             this.$axios({
                 url:"/cfm/commProcess",
@@ -642,13 +652,13 @@
                 }
 
             })
-            this.classParams = [
-                {//全部的开户详情
+            this.classParams = {
+                "0":{//全部的开户详情
                     text:"开户事项",
                     detail:"openintent_detail",
                     list:"wfquery_pendingtasksall"
                 },
-                {//开户列表的开户详情不调接口
+                "1":{//开户列表的开户详情不调接口
                     text:"开户事项",
                     detail:"openintent_detail",
                     list:"openintent_pendingtasks",
@@ -656,7 +666,7 @@
                     agree:"openintent_agree",
                     reject:"openintent_reject"
                 },
-                {
+                "2":{
                     text:"开户信息补录",
                     detail:"opencom_detail",
                     list:"opencom_pendingtasks",
@@ -664,7 +674,7 @@
                     agree:"opencom_agree",
                     reject:"opencom_reject"
                 },
-                {
+                "3":{
                     text:"账户变更",
                     detail:"openchg_detail",
                     list:"openchg_pendingtasks",
@@ -672,7 +682,7 @@
                     agree:"openchg_agree",
                     reject:"openchg_reject"
                 },
-                {
+                "4":{
                     text:"账户冻结",
                     detail:"accfreeze_detail",
                     list:"accfreeze_pendingtasks",
@@ -680,7 +690,7 @@
                     agree:"accfreeze_agree",
                     reject:"accfreeze_reject"
                 },
-                {
+                "5":{
                     text:"账户解冻",
                     detail:"accdefreeze_detail",
                     list:"accdefreeze_pendingtasks",
@@ -688,7 +698,7 @@
                     agree:"accdefreeze_agree",
                     reject:"accdefreeze_reject"
                 },
-                {
+                "6":{
                     text:"销户事项",
                     detail:"closeacc_detail",
                     list:"closeacc_pendingtasks",
@@ -696,7 +706,7 @@
                     agree:"closeacc_agree",
                     reject:"closeacc_reject"
                 },
-                {
+                "7":{
                     text:"销户信息补录",
                     detail:"closeacccomple_detail",
                     list:"closeacccomple_pendingtasks",
@@ -704,7 +714,7 @@
                     agree:"closeacccomple_agree",
                     reject:"closeacccomple_reject"
                 },
-                {
+                "8":{
                     text:"内部调拨",
                     detail:"dbt_detail",
                     list:"dbt_pendingtasks",
@@ -712,7 +722,7 @@
                     agree:"dbt_agree",
                     reject:"dbt_reject"
                 },
-                {
+                "9":{
                     text:"支付通",
                     detail:"zft_detail",
                     list:"zft_pendingtasks",
@@ -720,7 +730,7 @@
                     agree:"zft_agree",
                     reject:"zft_reject"
                 },
-                {
+                "10":{
                     text:"内部调拨-批量",
                     detail:"dbtbatch_detail",
                     list:"dbtbatch_pendingtasks",
@@ -728,7 +738,7 @@
                     agree:"dbtbatch_agree",
                     reject:"dbtbatch_reject"
                 },
-                {
+                "11":{
                     text:"支付通-批量",
                     detail:"zftbatch_detail",
                     list:"zftbatch_pendingtasks",
@@ -736,7 +746,7 @@
                     agree:"zftbatch_agree",
                     reject:"zftbatch_reject"
                 },
-                {
+                "12":{
                     text:"归集通",
                     detail:"collectsetting_detail",
                     list:"collectsetting_pendingtasks",
@@ -744,7 +754,7 @@
                     agree:"collectsetting_agree",
                     reject:"collectsetting_reject"
                 },
-                {
+                "13":{
                     text:"资金下拨",
                     detail:"allocset_detail",
                     list:"allocset_pendingtasks",
@@ -752,7 +762,7 @@
                     agree:"allocset_agree",
                     reject:"allocset_reject"
                 },
-                {
+                "14":{
                     text:"广银联备付金",
                     detail:"gylsetting_detail",
                     list:"gylsetting_pendingtasks",
@@ -760,7 +770,7 @@
                     agree:"gylsetting_agree",
                     reject:"gylsetting_reject"
                 },
-                {
+                "15":{
                     text:"收款通",
                     detail:"skt_billdetail",
                     list:"skt_pendingtasks",
@@ -768,7 +778,7 @@
                     agree:"skt_agree",
                     reject:"skt_reject"
                 }
-            ]
+            };
 
             this.detailDialog ={
                 "1":[
@@ -1298,7 +1308,8 @@
                         {id:'5',prop:"service_status",name:'处理状态'}
                     ],
                 },
-                editableTabsList: [],
+                editableTabsList: {},
+                totalTabNum: "",//我的待办条数
                 bizType:{},//业务种类
                 dialogVisible:false,
                 dialogTitle:"开户事项申请",
@@ -1326,7 +1337,7 @@
                 businessParams:{},//业务状态追踪参数
                 detailDialog:{},//详情弹出框
                 currentDetailDialog:[],//当前详情弹出框
-                classParams:[],// 待办列表optype
+                classParams:{},// 待办列表optype
                 interList:{},
                 enclosureLWidth:4,
                 enclosurePWidth:20,
@@ -1340,45 +1351,64 @@
         methods:{
             //获取tab集合
             getTabList:function(){
-                var constants = JSON.parse(window.sessionStorage.getItem("constants"));
-                this.bizType = constants.MajorBizType;
-                if (this.bizType) {
-                    let tableHead = this.tableHeadList;
-                    //加一个我的待办
-                    let arrList = [
-                        {
-                            title: '我的待办',
-                            name: '0',
-                            tableHead:tableHead['0'],
-                            tableList:[]
-                        }
-                    ];
-                    let length = Object.keys(this.bizType).length + 1;
-                    let businessTypeArr = [];
-                    for(let i = 1; i<length; i++){
-                        businessTypeArr.push({
-                            id:i,
-                            name:this.bizType[i]
-                        })
-                        arrList.push({
-                            title: this.bizType[i],
-                            name: i+"",
-                            tableHead:tableHead[i],
-                            tableList:[]
-                        })
+                var _this = this;
+                this.$axios({
+                    url:"/cfm/commProcess",
+                    method:"post",
+                    data:{
+                        optype: "wfquery_pendingtaskallnum"
                     }
-                    // this.editableTabsList = arrList;
-                    this.businessType = businessTypeArr;
-                    return arrList;
-                }else{
-                    return [];
-                }
+                }).then((result) =>{
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        });
+                    }else{
+                        var constantsBiz = JSON.parse(window.sessionStorage.getItem("constants")).MajorBizType;
+                        this.businessType = constantsBiz;//业务类型下拉
+                        var data = result.data.data;
+                        var list = data.pending_list;
+                        var tableHead = this.tableHeadList;
+                        this.totalTabNum = data.total_num;
+                        //默认我的待办
+                        var arrObject = {
+                            "0":{
+                                title: '我的待办',
+                                name: '0',
+                                tableHead:tableHead[0],
+                                tableList:[],
+                                num: data.total_num
+                            }
+                        };
+                        if (list.length>0) {
+                            list.forEach((element,index) =>{
+                                var type = element.biz_type;
+                                arrObject[type]={
+                                    title: constantsBiz[type],
+                                    name: type +"",
+                                    tableHead:tableHead[type],
+                                    tableList:[],
+                                    num: element.num,
+                                };
+                            })
+                        }else{
+                            document.getElementById("myTab").style.top = "70px";
+                            // _this.$refs.myTab.style.top = "70px";
+                        }
+                        if(!arrObject[this.activeName] || this.activeName == "0"){//如果没找到上次停留的tab，回到我的待办
+                            this.comeBack();
+                        }
+                        this.editableTabsList = arrObject;
+                    }
+                })
             },
             //展示格式转换
             transitionStatus: function (row, column, cellValue, index) {
                 if(column.property === "biz_type"){//转换业务种类
-                    if (this.bizType) {
-                        return this.bizType[cellValue];
+                    if (this.businessType) {
+                        return this.businessType[cellValue];
                     }
                 }
                 if(column.property === "service_status" || column.property === "status"){//转换业务状态
@@ -1483,6 +1513,7 @@
                     rowBar.style.display="inline-block";
                 //在这里tab.name就是biztype的值
                 //待办列表的optype参数
+                this.activeName = id;
                 this.routerMessage.todo.optype = this.classParams[id].list;
                 this.routerMessage.todo.params.page_num = 1;
                 this.routerMessage.todo.params.biz_type = id;
@@ -1668,6 +1699,7 @@
                         //同意，加签，拒绝后刷新列表
                         this.$emit("getTableData", this.routerMessage);
 
+                        this.getTabList();
                         this.dialogVisible = false;
                         this.thirdFunVisible = false;
                     }
@@ -1727,7 +1759,19 @@
                 this.pagTotal = val.total_line;
                 this.pagCurrent = val.page_num;
                 if(this.isPending){
-                    this.editableTabsList[this.activeName].tableList=val.data;
+                    var curTab = this.editableTabsList[this.activeName];
+                    curTab.tableList=val.data;
+                    // curTab.num = val.total_line;
+                    // if(val.total_line === 0){
+                    //     delete this.editableTabsList[this.activeName];
+                    //     this.activeName = "0";
+                    //     var keysLen = Object.keys(this.editableTabsList).length;
+                    //     if(keysLen === 1){
+                    //         this.editableTabsList[0].num = 0;
+                    //         this.editableTabsList[0].tableList = [];
+                    //         document.getElementById("myTab").style.top = "70px";
+                    //     }
+                    // }
                 }else{
                     this.doneTableList = val.data;
                 }

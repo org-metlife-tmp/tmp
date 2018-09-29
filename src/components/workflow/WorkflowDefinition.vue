@@ -1072,7 +1072,6 @@ export default {
         saveRules:function(curData){
             let min = Number(curData.min);
             let max = Number(curData.max);
-            debugger
             if(min && max && min < max){
                 var arrList = this.line_data;
                 var len = arrList.length;

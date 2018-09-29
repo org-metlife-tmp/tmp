@@ -337,7 +337,7 @@
                             </div>
                         </el-col>
                         <!-- <template v-for="future in futureList"> -->
-                        <el-col :span="24" class="node-item">
+                        <el-col :span="24" class="node-item" v-show="future.show">
                             <span class="time"></span>
                             <div class="node"><span class="pointCon"><em class="pointer"></em></span></div>
                             <div class="personImg">
@@ -421,6 +421,7 @@
                             duration: 2000
                         })
                     }else{
+                        debugger
                         let i = 4;
                         let data = result.data.data;
                         this.submiter = data.submiter[0];
