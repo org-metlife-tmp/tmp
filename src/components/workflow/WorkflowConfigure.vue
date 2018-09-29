@@ -54,35 +54,32 @@
 
     /*中间树内容*/
     .tree-content {
-        height: 350px;
+        height: 420px;
+        margin-bottom: 20px;
 
-        .el-row {
-            height: 100%;
-
-            .el-col {
-                height: 100%;
-            }
-
-            h4 {
-                margin: 0;
-                text-align: center;
-                font-weight: 100;
-            }
-
-            /*机构*/
-            .org-tree, .dept-list, .major-list {
-                width: 90%;
-                height: 88%;
-                border: 1px solid #eee;
-                margin-left: 20px;
-                overflow: auto;
-            }
-
-            .dept-list, .major-list {
-                box-sizing: border-box;
-                padding-left: 20px;
-            }
+        h4 {
+            margin: 0;
+            text-align: center;
+            font-weight: 100;
         }
+
+        /*机构*/
+        .org-tree, .dept-list, .major-list {
+            width: 90%;
+            height: 44%;
+            margin-bottom: 10px;
+            border: 1px solid #eee;
+            margin-left: 20px;
+            overflow: auto;
+        }
+
+        .dept-list {
+            padding-top: 10px;
+            height: 19%;
+            box-sizing: border-box;
+            padding-left: 20px;
+        }
+
     }
 
     /*弹框标题*/
@@ -91,11 +88,12 @@
         font-size: 18px;
         font-weight: 400;
     }
+
     /**/
-    .formflot{
+    .formflot {
         display: inline-block;
-        .el-input{
-            width:60%;
+        .el-input {
+            width: 60%;
         }
         .el-input__inner {
             height: 30px;
@@ -110,6 +108,13 @@
                 background-color: #409EFF;
                 color: #fff;
             }
+        }
+    }
+
+    .workflow-dialog {
+        .el-dialog__body {
+            height: 400px;
+            overflow-y: auto;
         }
     }
 </style>
@@ -208,75 +213,67 @@
             </span>
             <el-dialog :visible.sync="innerVisible"
                        width="800px"
+                       class="workflow-dialog"
                        append-to-body top="76px"
                        :close-on-click-modal="false">
                 <h1 slot="title" v-text="innerTitle" class="dialog-title"></h1>
                 <el-form :model="innerData" size="small" :label-width="formLabelWidth">
-                    <el-row>
-                        <el-col :span="12">
-                            <el-form-item label="关系名称">
-                                <el-input v-model="innerData.relationName" auto-complete="off"></el-input>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="12">
-                            <el-form-item label="流程名称">
-                                <el-input v-model="innerData.workflowName" auto-complete="off"
-                                          :disabled="true"></el-input>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="24" class="tree-content">
-                            <el-row>
-                                <el-col :span="10">
-                                    <h4 class="set-required">绑定公司</h4>
-                                    <div class="org-tree">
-                                        <el-tree :data="orgTreeList"
-                                                 node-key="org_id"
-                                                 :check-strictly="true"
-                                                 highlight-current
-                                                 accordion show-checkbox
-                                                 :expand-on-click-node="false"
-                                                 :default-expanded-keys="expandData"
-                                                 ref="orgTree">
+                    <el-col :span="12">
+                        <el-form-item label="关系名称">
+                            <el-input v-model="innerData.relationName" auto-complete="off"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="流程名称">
+                            <el-input v-model="innerData.workflowName" auto-complete="off"
+                                      :disabled="true"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="24" class="tree-content">
+                        <h4 class="set-required">绑定公司</h4>
+                        <div class="org-tree">
+                            <el-tree :data="orgTreeList"
+                                     node-key="org_id"
+                                     :check-strictly="true"
+                                     highlight-current
+                                     accordion show-checkbox
+                                     :expand-on-click-node="false"
+                                     :default-expanded-keys="expandData"
+                                     ref="orgTree">
                                         <span class="custom-tree-node" slot-scope="{ node, data }">
                                             <span>{{ node.data.name }}</span>
                                         </span>
-                                        </el-tree>
-                                    </div>
-                                </el-col>
-                                <el-col :span="7">
-                                    <h4 class="set-required">绑定部门</h4>
-                                    <div class="dept-list">
-                                        <el-checkbox :indeterminate="isIndeterminate" v-model="deptAll"
-                                                     @change="deptAllChange">全选
-                                        </el-checkbox>
-                                        <el-checkbox-group v-model="deptSelect" @change="deptChange">
-                                            <el-checkbox v-for="dept in deptList"
-                                                         :label="dept.dept_id"
-                                                         :key="dept.dept_id"
-                                                         style="display:block;margin-left:0">{{dept.name}}
-                                            </el-checkbox>
-                                        </el-checkbox-group>
-                                    </div>
-                                </el-col>
-                                <el-col :span="7">
-                                    <h4 class="set-required">绑定业务</h4>
-                                    <div class="org-tree">
-                                        <el-tree :data="majorList"
-                                                 node-key="biz_id"
-                                                 highlight-current
-                                                 accordion show-checkbox
-                                                 :expand-on-click-node="false"
-                                                 :default-expanded-keys="expandBizData"
-                                                 ref="bizTree">
+                            </el-tree>
+                        </div>
+
+                        <h4 class="set-required">绑定部门</h4>
+                        <div class="dept-list">
+                            <el-checkbox :indeterminate="isIndeterminate" v-model="deptAll"
+                                         @change="deptAllChange">全选
+                            </el-checkbox>
+                            <el-checkbox-group v-model="deptSelect" @change="deptChange">
+                                <el-checkbox v-for="dept in deptList"
+                                             :label="dept.dept_id"
+                                             :key="dept.dept_id">{{dept.name}}
+                                </el-checkbox>
+                            </el-checkbox-group>
+                        </div>
+
+                        <h4 class="set-required">绑定业务</h4>
+                        <div class="org-tree">
+                            <el-tree :data="majorList"
+                                     node-key="biz_id"
+                                     highlight-current
+                                     accordion show-checkbox
+                                     :expand-on-click-node="false"
+                                     :default-expanded-keys="expandBizData"
+                                     ref="bizTree">
                                         <span class="custom-tree-node" slot-scope="{ node, data }">
                                             <span>{{ node.data.biz_name }}</span>
                                         </span>
-                                        </el-tree>
-                                    </div>
-                                </el-col>
-                            </el-row>
-                        </el-col>
-                    </el-row>
+                            </el-tree>
+                        </div>
+                    </el-col>
                 </el-form>
                 <span slot="footer" class="dialog-footer" style="text-align:center">
                     <el-button type="warning" size="mini" plain @click="reset">重 置</el-button>
@@ -302,8 +299,8 @@
                 </div>
             </div>
             <WorkFlow
-                :flowList="flowList"
-                :isEmptyFlow="isEmptyFlow"
+                    :flowList="flowList"
+                    :isEmptyFlow="isEmptyFlow"
             ></WorkFlow>
             <span slot="footer" class="dialog-footer">
                 <el-button type="warning" size="mini" plain @click="cancelLookFlow">取 消</el-button>
@@ -313,7 +310,8 @@
 </template>
 
 <script>
-import WorkFlow from "../publicModule/WorkFlow.vue";
+    import WorkFlow from "../publicModule/WorkFlow.vue";
+
     export default {
         name: "WorkflowConfigure",
         created: function () {
@@ -333,12 +331,12 @@ import WorkFlow from "../publicModule/WorkFlow.vue";
             }
             //业务  biztype_list
             this.$axios({
-                url:"/cfm/adminProcess",
-                method:"post",
-                data:{
-                    optype:"biztype_list"
+                url: "/cfm/adminProcess",
+                method: "post",
+                data: {
+                    optype: "biztype_list"
                 }
-            }).then((result) =>{
+            }).then((result) => {
                 if (result.data.error_msg) {
                     this.$message({
                         type: "error",
@@ -350,8 +348,8 @@ import WorkFlow from "../publicModule/WorkFlow.vue";
                     data.forEach(element => {//一级菜单不能选
                         element.disabled = true;
                         let sec = element.children;
-                        if(sec.length>0){
-                            sec.forEach(secEle =>{//二级菜单有子项不让选
+                        if (sec.length > 0) {
+                            sec.forEach(secEle => {//二级菜单有子项不让选
                                 secEle.secFlag = true;//增加是否二级属性
                                 // if(secEle.children.length>0){
                                 //     secEle.disabled = true;
@@ -364,8 +362,8 @@ import WorkFlow from "../publicModule/WorkFlow.vue";
             })
         },
         props: ["tableData"],
-        components:{
-            WorkFlow:WorkFlow
+        components: {
+            WorkFlow: WorkFlow
         },
         data: function () {
             return {
@@ -402,14 +400,14 @@ import WorkFlow from "../publicModule/WorkFlow.vue";
                 isIndeterminate: false,
                 deptAll: false,
                 majorList: [], //弹框-业务
-                expandBizData:[],
+                expandBizData: [],
                 majorSelect: [],
                 majorIndeter: false,
                 majorAll: false,
-                lookFlowDialogVisible:false,
-                createDialogData:{},
-                flowList:{},
-                isEmptyFlow:false
+                lookFlowDialogVisible: false,
+                createDialogData: {},
+                flowList: {},
+                isEmptyFlow: false
             }
         },
         methods: {
@@ -511,7 +509,7 @@ import WorkFlow from "../publicModule/WorkFlow.vue";
                 })
             },
             //重置业务配置数据
-            reset:function(){
+            reset: function () {
                 //清空数据
                 var innerData = this.innerData;
                 for (var k in innerData) {
@@ -538,7 +536,7 @@ import WorkFlow from "../publicModule/WorkFlow.vue";
                 this.reset();
             },
             //编辑业务配置流程
-            editSetting: function(row){
+            editSetting: function (row) {
                 this.innerTitle = "编辑业务配置";
                 this.innerVisible = true;
                 this.currentInnerData = row;
@@ -594,9 +592,9 @@ import WorkFlow from "../publicModule/WorkFlow.vue";
                 }
             },
             //提交业务配置流程
-            subInnerWorkflow: function(){
+            subInnerWorkflow: function () {
                 var params = this.transitionData();
-                if(!params){
+                if (!params) {
                     return;
                 }
 
@@ -651,7 +649,7 @@ import WorkFlow from "../publicModule/WorkFlow.vue";
                 })
             },
             //转换提交数据格式
-            transitionData: function(){
+            transitionData: function () {
                 var params = {};
                 params.base_id = this.currentBaseId;
                 params.name = this.innerData.relationName;
@@ -672,10 +670,10 @@ import WorkFlow from "../publicModule/WorkFlow.vue";
                 if (major_exp.length) {
                     let biz_exp = "@";//存二级
                     let biz_setting_exp = "@";//存三级
-                    major_exp.forEach(element =>{
-                        if(element.secFlag){//如果是二级
+                    major_exp.forEach(element => {
+                        if (element.secFlag) {//如果是二级
                             biz_exp = biz_exp + element.biz_id + "@";
-                        }else{
+                        } else {
                             biz_setting_exp = biz_setting_exp + element.biz_id + "@";
                         }
                     })
@@ -712,13 +710,13 @@ import WorkFlow from "../publicModule/WorkFlow.vue";
                             return;
                         }
 
-                        if(this.settingCurPag < (this.settingTotal/10)){ //存在下一页
+                        if (this.settingCurPag < (this.settingTotal / 10)) { //存在下一页
                             this.getSettingData(this.settingCurPag);
-                        }else{
-                            if(rows.length == "1"){ //是当前页最后一条
+                        } else {
+                            if (rows.length == "1") { //是当前页最后一条
                                 this.settingCurPag--;
                                 this.getSettingData(this.settingCurPag);
-                            }else{
+                            } else {
                                 rows.splice(index, 1);
                                 this.settingTotal--;
                             }
@@ -751,18 +749,18 @@ import WorkFlow from "../publicModule/WorkFlow.vue";
                 this.isIndeterminate = checkedCount > 0 && checkedCount < allLength;
             },
             //查看工作流
-            lookFlow:function(row){
-                if(row.id){
-                this.$axios({
-                        url:"/cfm/adminProcess",
-                        method:"post",
-                        data:{
-                            optype:"wfdefine_detail",
-                            params:{
-                                id:row.id
+            lookFlow: function (row) {
+                if (row.id) {
+                    this.$axios({
+                        url: "/cfm/adminProcess",
+                        method: "post",
+                        data: {
+                            optype: "wfdefine_detail",
+                            params: {
+                                id: row.id
                             }
                         }
-                    }).then((result) =>{
+                    }).then((result) => {
                         if (result.data.error_msg) {
                             this.$message({
                                 type: "error",
@@ -770,7 +768,7 @@ import WorkFlow from "../publicModule/WorkFlow.vue";
                                 duration: 2000
                             })
                             return;
-                        }else{
+                        } else {
                             let getData = result.data.data;
                             let define = getData.define;
                             this.createDialogData.workflow_name = getData.workflow_name;
@@ -784,7 +782,7 @@ import WorkFlow from "../publicModule/WorkFlow.vue";
                 }
             },
             //关闭查看工作流弹框
-            cancelLookFlow:function(){
+            cancelLookFlow: function () {
                 this.isEmptyFlow = true;
                 this.lookFlowDialogVisible = false;
                 this.flowList = {};

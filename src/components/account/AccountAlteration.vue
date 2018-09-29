@@ -106,8 +106,8 @@
     #accountAlteration {
         .el-dialog__wrapper {
             .el-dialog__body {
-                height: 400px;
-                overflow-y: scroll;
+                max-height: 400px;
+                overflow-y: auto;
             }
         }
     }
@@ -277,40 +277,6 @@
                             </el-select>
                         </el-form-item>
                     </el-col>
-                    <el-col :span="12" style="height:50px"></el-col>
-                    <el-col :span="12">
-                        <el-form-item label="银行大类">
-                            <el-select v-model="dialogData.bankTypeName" placeholder="请选择银行大类"
-                                       clearable filterable
-                                       :filter-method="filterBankType"
-                                       @visible-change="clearSearch"
-                                       @change="bankIsSelect">
-                                <el-option v-for="bankType in bankTypeList"
-                                           :key="bankType.name"
-                                           :label="bankType.name"
-                                           :value="bankType.code">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12" style="height:50px"></el-col>
-                    <el-col :span="12">
-                        <el-form-item label="开户地址">
-                            <el-select v-model="dialogData.area"
-                                       filterable remote clearable
-                                       placeholder="请输入地区关键字"
-                                       :remote-method="getAreaList"
-                                       :loading="loading"
-                                       @change="bankIsSelect">
-                                <el-option
-                                        v-for="area in areaList"
-                                        :key="area.name"
-                                        :label="area.name"
-                                        :value="area.code">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
                     <el-col :span="12">
                         <el-form-item label="开户行">
                             <el-input v-model="dialogData.bank_name" :disabled="true"></el-input>
@@ -318,8 +284,9 @@
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="开户行">
-                            <el-select v-model="dialogData.$3" placeholder="请选择银行"
+                            <!--<el-select v-model="dialogData.$3" placeholder="请选择银行"
                                        clearable filterable
+                                       @focus="dialogVisible = true"
                                        @visible-change="getBankList"
                                        :disabled="bankSelect">
                                 <el-option v-for="bankType in bankList"
@@ -327,7 +294,10 @@
                                            :label="bankType.name"
                                            :value="bankType.cnaps_code">
                                 </el-option>
-                            </el-select>
+                            </el-select>-->
+                            <el-input v-model="dialogData.bankName" placeholder="请选择银行" clearable
+                                      @focus="clearBankDialog">
+                            </el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
@@ -576,6 +546,75 @@
                 :businessParams="businessParams"
             ></BusinessTracking>
         </el-dialog>
+        <!--开户行选择弹框-->
+        <el-dialog :visible.sync="bankDialogVisible"
+                   width="40%" title="选择开户行"
+                   top="140px" :close-on-click-modal="false">
+
+            <el-form :model="bankDialogData" size="small">
+                <el-row>
+                    <el-col :span="24">
+                        <el-form-item label="银行大类" :label-width="formLabelWidth">
+                            <el-select v-model="bankDialogData.bank_type" placeholder="请选择银行大类"
+                                       clearable filterable
+                                       style="width:100%"
+                                       :filter-method="filterBankType"
+                                       @visible-change="clearSearch"
+                                       @change="bankIsSelect">
+                                <el-option v-for="bankType in bankTypeList"
+                                           :key="bankType.name"
+                                           :label="bankType.display_name"
+                                           :value="bankType.code">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="24">
+                        <el-form-item label="地区" :label-width="formLabelWidth">
+                            <el-select v-model="bankDialogData.area"
+                                       filterable remote clearable
+                                       style="width:100%"
+                                       placeholder="请输入地区关键字"
+                                       :remote-method="getAreaList"
+                                       :loading="loading"
+                                       @change="bankIsSelect">
+                                <el-option
+                                        v-for="area in areaList"
+                                        :key="area.name + '-' + area.top_super"
+                                        :value="area.name + '-' + area.top_super">
+                                    <span>{{ area.name }}</span><span style="margin-left:10px;color:#bbb">{{ area.top_super }}</span>
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="24">
+                        <el-form-item label="开户行" :label-width="formLabelWidth">
+                            <el-select v-model="bankDialogData.bank_name" placeholder="请选择银行"
+                                       clearable filterable style="width:100%"
+                                       @visible-change="getBankList"
+                                       @change="setCNAPS"
+                                       :disabled="bankSelect">
+                                <el-option v-for="bankType in bankList"
+                                           :key="bankType.cnaps_code"
+                                           :label="bankType.name"
+                                           :value="bankType.name">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="24">
+                        <el-form-item label="CNAPS" :label-width="formLabelWidth">
+                            <el-input v-model="bankDialogData.cnaps_code" readonly></el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+            </el-form>
+
+            <span slot="footer" class="dialog-footer" style="text-align:center">
+                    <el-button type="warning" size="mini" plain @click="bankDialogVisible = false">取 消</el-button>
+                    <el-button type="warning" size="mini" @click="confirmBank">确 定</el-button>
+                </span>
+        </el-dialog>
     </div>
 </template>
 
@@ -594,6 +633,10 @@
             if (bankTypeList) {
                 this.bankAllList = bankTypeList;
                 this.bankTypeList = bankTypeList;
+            }
+            var bankAllTypeList = JSON.parse(window.sessionStorage.getItem("bankAllTypeList"));
+            if(bankAllTypeList){
+                this.bankAllTypeList = bankAllTypeList;
             }
             //所属机构
             var orgList = JSON.parse(window.sessionStorage.getItem("selectOrgList"));
@@ -699,6 +742,8 @@
                     bankTypeName: "",
                     area: ""
                 },
+                bankDialogVisible: false, //选择银行弹框
+                bankDialogData: {},
                 currentAltera: {}, //当前数据
                 /*下拉框数据*/
                 accList: [], //账户号
@@ -707,6 +752,7 @@
                 attrList: {}, //账户性质
                 interList: {}, //账户模式
                 bankAllList: [], //银行大类全部
+                bankAllTypeList: [], //银行大类全部(不重复)
                 bankTypeList: [], //银行大类
                 areaList: [], //地区
                 loading: false, //地区加载状态
@@ -816,10 +862,7 @@
                                     var current = item[i];
                                     //添加开户行下拉数据
                                     if(current.type == "3"){
-                                        this.$set(this.bankList, 0, {
-                                            cnaps_code: current.new_id,
-                                            name: current.new_value
-                                        })
+                                        this.dialogData.bankName = current.new_value;
                                     }
                                     //存在id时为下拉框数据 赋值为id
                                     if(current.new_id){
@@ -1088,21 +1131,29 @@
                                 return item.jianpin.toLowerCase().indexOf(value.toLowerCase()) > -1;
                             }
                         }
-                    })
+                    });
+                    this.bankTypeList = this.bankTypeList.filter((item,index,arr) => {
+                        for(var i = index+1; i < arr.length; i++){
+                            if(item.display_name == arr[i].display_name){
+                                return false;
+                            }
+                        }
+                        return true;
+                    });
                 } else {
-                    this.bankTypeList = this.bankAllList;
+                    this.bankTypeList = this.bankAllTypeList;
                 }
             },
             //银行大类展开时重置数据
-            clearSearch: function () {
-                if (this.bankTypeList != this.bankAllList) {
-                    this.bankTypeList = this.bankAllList;
+            clearSearch: function (val) {
+                if (this.bankTypeList != this.bankAllTypeList && val) {
+                    this.bankTypeList = this.bankAllTypeList;
                 }
             },
             //银行大类/地址变化后判断银行是否可选
             bankIsSelect: function (value) {
                 this.bankList = [];
-                if (this.dialogData.area && this.dialogData.bankTypeName) {
+                if (this.bankDialogData.area && this.bankDialogData.bank_type) {
                     this.bankSelect = false;
                 } else {
                     this.bankSelect = true;
@@ -1138,8 +1189,8 @@
             //获取银行列表
             getBankList: function (status) {
                 if (status) {
-                    var area_code = this.dialogData.area;
-                    var bank_type = this.dialogData.bankTypeName;
+                    var area_code = this.bankDialogData.area.split("-");
+                    var bank_type = this.bankDialogData.bank_type;
 
                     this.$axios({
                         url: "/cfm/commProcess",
@@ -1147,7 +1198,8 @@
                         data: {
                             optype: "bank_list",
                             params: {
-                                area_code: area_code,
+                                province: area_code[1],
+                                city: area_code[0],
                                 bank_type: bank_type
                             }
                         }
@@ -1160,6 +1212,31 @@
                         console.log(error);
                     })
                 }
+            },
+            //设置CNPAS
+            setCNAPS: function(value){
+                var bankList = this.bankList;
+                for(var i = 0; i < bankList.length; i++){
+                    if(bankList[i].name == value){
+                        this.bankDialogData.cnaps_code = bankList[i].cnaps_code;
+                        return;
+                    }
+                }
+            },
+            //清空开户行选择弹框数据
+            clearBankDialog: function(){
+                this.bankDialogVisible = true;
+                this.bankSelect = true;
+                var bankDialogData = this.bankDialogData;
+                for(var k in bankDialogData){
+                    bankDialogData[k] = "";
+                }
+            },
+            //设置开户行
+            confirmBank: function(){
+                this.dialogData.$3 = this.bankDialogData.cnaps_code;
+                this.dialogData.bankName = this.bankDialogData.bank_name;
+                this.bankDialogVisible = false;
             },
             //选择账户号带出相关数据
             changeAccId: function (val) {

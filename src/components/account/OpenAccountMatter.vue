@@ -267,14 +267,14 @@
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="银行大类">
-                            <el-select v-model="dialogData.bankType" placeholder="请选择银行大类"
+                            <el-select v-model="dialogData.bank_type" placeholder="请选择银行大类"
                                        clearable filterable
                                        :filter-method="filterBankType"
                                        @visible-change="clearSearch"
                                        @change="bankIsSelect">
                                 <el-option v-for="bankType in bankTypeList"
                                            :key="bankType.name"
-                                           :label="bankType.name"
+                                           :label="bankType.display_name"
                                            :value="bankType.code">
                                 </el-option>
                             </el-select>
@@ -291,9 +291,9 @@
                                        @change="bankIsSelect">
                                 <el-option
                                         v-for="area in areaList"
-                                        :key="area.name"
-                                        :label="area.name"
-                                        :value="area.code">
+                                        :key="area.name + '-' + area.top_super"
+                                        :value="area.name + '-' + area.top_super">
+                                    <span>{{ area.name }}</span><span style="margin-left:10px;color:#bbb">{{ area.top_super }}</span>
                                 </el-option>
                             </el-select>
                         </el-form-item>
@@ -644,6 +644,10 @@
                 this.bankAllList = bankTypeList;
                 this.bankTypeList = bankTypeList;
             }
+            var bankAllTypeList = JSON.parse(window.sessionStorage.getItem("bankAllTypeList"));
+            if(bankAllTypeList){
+                this.bankAllTypeList = bankAllTypeList;
+            }
             //币种
             var currencyList = JSON.parse(window.sessionStorage.getItem("selectCurrencyList"));
             if (currencyList) {
@@ -701,6 +705,14 @@
                 currentMatter: {},
                 dialogVisible: false, //待处理新增弹框数据
                 dialogData: {
+                    bank_type: "",
+                    areaCode: "",
+                    bank_cnaps_code: "",
+                    acc_attr: "",
+                    interactive_mode: "",
+                    acc_purpose: "",
+                    curr_id: "",
+                    deposits_mode: "",
                     files: []
                 },
                 formLabelWidth: "120px",
@@ -733,6 +745,7 @@
                 attrList:[],//账户性质
                 depositsList:[],//存款类型
                 bankAllList: [], //银行大类全部
+                bankAllTypeList: [], //银行大类全部(不重复)
                 bankTypeList: [], //银行大类
                 areaList: [], //地区
                 loading: false, //地区加载状态
@@ -781,6 +794,7 @@
             addAccountMatter: function () {
                 this.dialogTitle = "新增";
                 this.dialogVisible = true;
+                this.bankSelect = true;
                 //清空数据
                 for (var k in this.dialogData) {
                     if (k == "files") {
@@ -818,15 +832,24 @@
                             duration: 2000
                         })
                     } else {
-                        let data = result.data.data
+                        let data = result.data.data;
                         this.dialogData = data;
                         this.dialogData['deposits_mode'] = data['deposits_mode']+"";
                         this.dialogData['interactive_mode'] = data['interactive_mode']+"";
-                        if (data.area_code && data.bank_type) {
-                            this.bankSelect = false;
-                        }
+                        //设置银行大类和地区
+                        this.dialogData.areaCode = data.city + "-" + data.province;
+                        this.dialogData.area_code = data.area_code;
+                        this.areaList = [];
+                        this.areaList.push({
+                            name: data.city,
+                            top_super: data.province,
+                            code: data.area_code
+                        })
+                        this.bankSelect = false;
+
                         //添加开户行下拉数据
                         if(row.bank_cnaps_code){
+                            this.bankList = [];
                             this.$set(this.bankList, 0, {
                                 cnaps_code: data.bank_cnaps_code,
                                 name: data.bank_name
@@ -844,12 +867,15 @@
                 var optype = "";
                 if (!params.id) {
                     optype = "openintent_add";
-                    params.area_code = this.dialogData.areaCode;
-                    params.bank_type = this.dialogData.bankType;
+                    var area_code = this.dialogData.areaCode.split("-");
+                    var areaList = this.areaList;
+                    for(var i = 0; i < areaList.length; i++){
+                        if(areaList[i].name == area_code[0]){
+                            params.area_code = areaList[i].code;
+                        }
+                    }
                 } else {
                     optype = "openintent_chg";
-                    params.area_code = this.dialogData.areaCode ? this.dialogData.areaCode : this.dialogData.area_code;
-                    params.bank_type = this.dialogData.bankType ? this.dialogData.bankType : this.dialogData.bank_type;
                 }
                 this.$axios({
                     url: "/cfm/normalProcess",
@@ -1157,8 +1183,6 @@
             //提交审批流程
             subFlow: function () {
                 var params = this.dialogData;
-                params.area_code = this.dialogData.areaCode ? this.dialogData.areaCode : this.dialogData.area_code;
-                params.bank_type = this.dialogData.bankType ? this.dialogData.bankType : this.dialogData.bank_type;
 
                 this.$axios({
                     url: "/cfm/normalProcess",
@@ -1265,22 +1289,30 @@
                                 return item.jianpin.toLowerCase().indexOf(value.toLowerCase()) > -1;
                             }
                         }
+                    });
+                    this.bankTypeList = this.bankTypeList.filter((item,index,arr) => {
+                        for(var i = index+1; i < arr.length; i++){
+                            if(item.display_name == arr[i].display_name){
+                                return false;
+                            }
+                        }
+                        return true;
                     })
                 } else {
-                    this.bankTypeList = this.bankAllList;
+                    this.bankTypeList = this.bankAllTypeList;
                 }
             },
             //银行大类展开时重置数据
-            clearSearch: function () {
-                if (this.bankTypeList != this.bankAllList) {
-                    this.bankTypeList = this.bankAllList;
+            clearSearch: function (val) {
+                if (this.bankTypeList != this.bankAllList && val) {
+                    this.bankTypeList = this.bankAllTypeList;
                 }
             },
             //银行大类/地址变化后判断银行是否可选
             bankIsSelect: function (value) {
                 this.bankList = [];
                 this.dialogData.bank_cnaps_code = "";
-                if (this.dialogData.areaCode && this.dialogData.bankType) {
+                if (this.dialogData.areaCode && this.dialogData.bank_type) {
                     this.bankSelect = false;
                 } else {
                     this.bankSelect = true;
@@ -1316,8 +1348,8 @@
             //获取银行列表
             getBankList: function (status) {
                 if (status) {
-                    var area_code = this.dialogData.areaCode;
-                    var bank_type = this.dialogData.bankType;
+                    var area_code = this.dialogData.areaCode.split("-");
+                    var bank_type = this.dialogData.bank_type;
 
                     this.$axios({
                         url: "/cfm/commProcess",
@@ -1325,7 +1357,8 @@
                         data: {
                             optype: "bank_list",
                             params: {
-                                area_code: area_code,
+                                province: area_code[1],
+                                city: area_code[0],
                                 bank_type: bank_type
                             }
                         }

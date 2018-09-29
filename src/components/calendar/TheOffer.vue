@@ -104,7 +104,7 @@
                        @change="bankIsSelect">
                 <el-option v-for="bankType in bankTypeList"
                            :key="bankType.name"
-                           :label="bankType.name"
+                           :label="bankType.display_name"
                            :value="bankType.name">
                 </el-option>
             </el-select>
@@ -176,6 +176,10 @@
                 this.bankAllList = bankTypeList;
                 this.bankTypeList = bankTypeList;
             }
+            var bankAllTypeList = JSON.parse(window.sessionStorage.getItem("bankAllTypeList"));
+            if(bankAllTypeList){
+                this.bankAllTypeList = bankAllTypeList;
+            }
         },
         data: function () {
             return {
@@ -186,6 +190,7 @@
                 bankTypeCode: "",
                 bankAllList: [],
                 bankTypeList: [],
+                bankAllTypeList: [], //银行大类全部(不重复)
                 isActive: false //激活状态
             }
         },
@@ -312,9 +317,17 @@
                                 return item.jianpin.toLowerCase().indexOf(value.toLowerCase()) > -1;
                             }
                         }
-                    })
+                    });
+                    this.bankTypeList = this.bankTypeList.filter((item,index,arr) => {
+                        for(var i = index+1; i < arr.length; i++){
+                            if(item.display_name == arr[i].display_name){
+                                return false;
+                            }
+                        }
+                        return true;
+                    });
                 } else {
-                    this.bankTypeList = this.bankAllList;
+                    this.bankTypeList = this.bankAllTypeList;
                 }
             },
             //选择年份

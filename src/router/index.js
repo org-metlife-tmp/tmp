@@ -114,6 +114,7 @@ import ElectronicReceipt from '@/components/electronicReceipt/ElectronicReceipt'
 import DataManage from '@/components/OAData/DataManage'
 import HeadOfficePay from '@/components/OAData/HeadOfficePay'
 import FilialePayment from '@/components/OAData/FilialePayment'
+import OAMakeBill from '@/components/OAData/OAMakeBill'
 
 
 
@@ -270,6 +271,8 @@ const router = new Router({
                 {path: '/payment/batch-make-bill', name: 'BatchMakeBill', component: BatchMakeBill, meta: {requireAuth: true}},
                 //收款通
                 {path: '/receivables/receive-make-bill', name: 'ReceiveMakeBill', component: ReceiveMakeBill, meta: {requireAuth: true}},
+                //OA数据
+                {path: '/OA-data/OA-make-bill', name: 'OAMakeBill', component: OAMakeBill, meta: {requireAuth: true}},
 
             ]
         }

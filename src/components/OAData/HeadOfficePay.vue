@@ -37,6 +37,49 @@
             vertical-align: middle;
             background-position: -48px 0;
         }
+
+        /*查看弹框*/
+        .dialog-talbe {
+            width: 100%;
+            height: 320px;
+
+            li {
+                float: left;
+                box-sizing: border-box;
+                border: 1px solid #e2e2e2;
+                margin-left: -1px;
+                margin-top: -1px;
+                height: 30px;
+                line-height: 30px;
+            }
+
+            .table-li-title {
+                width: 12%;
+                text-align: right;
+                padding-right: 10px;
+                font-weight: bold;
+            }
+            .table-li-content {
+                width: 38%;
+                padding-left: 10px;
+            }
+
+            .table-two-row {
+                width: 88%;
+                margin-left: -3px;
+                border-left: none;
+            }
+        }
+    }
+</style>
+<style lang="less" type="text/less">
+    #headOfficePay {
+        .el-dialog__wrapper {
+            .el-dialog__body {
+                height: 480px;
+                overflow-y: scroll;
+            }
+        }
     }
 </style>
 
@@ -95,19 +138,19 @@
                                     :enterable="false" :open-delay="500"
                                     v-if="!isPending">
                             <el-button type="primary" icon="el-icon-search" size="mini"
-                                       @click="lookBill(scope.row)"></el-button>
+                                       @click="lookData(scope.row)"></el-button>
                         </el-tooltip>
                         <el-tooltip content="编辑" placement="bottom" effect="light"
                                     :enterable="false" :open-delay="500"
                                     v-if="isPending">
                             <el-button type="primary" icon="el-icon-edit" size="mini"
-                                       @click="editBill(scope.row)"></el-button>
+                                       @click="editData(scope.row)"></el-button>
                         </el-tooltip>
                         <el-tooltip content="撤回" placement="bottom" effect="light"
                                     :enterable="false" :open-delay="500"
                                     v-if="!isPending">
                             <el-button size="mini" class="withdraw"
-                                       @click="withdrawBill(scope.row)"></el-button>
+                                       @click="withdrawData(scope.row)"></el-button>
                         </el-tooltip>
                     </template>
                 </el-table-column>
@@ -127,10 +170,77 @@
                     :current-page="pagCurrent">
             </el-pagination>
         </div>
+        <!--查看弹出框-->
+        <el-dialog title="总公司付款信息"
+                   :visible.sync="dialogVisible"
+                   width="900px" top="76px"
+                   :close-on-click-modal="false">
+            <div class="serial-number">
+                [编号:
+                <span v-text="dialogData.service_serial_number"></span>
+                ]
+            </div>
+            <ul class="dialog-talbe">
+                <li class="table-li-title">付款账户号</li>
+                <li class="table-li-content" v-text="dialogData.pay_account_no"></li>
+                <li class="table-li-title">付款账户名称</li>
+                <li class="table-li-content" v-text="dialogData.pay_account_name"></li>
+
+                <li class="table-li-title">付款银行名称</li>
+                <li class="table-li-content" v-text="dialogData.pay_account_bank"></li>
+                <li class="table-li-title">CNAPS号</li>
+                <li class="table-li-content" v-text="dialogData.pay_bank_cnaps"></li>
+
+                <li class="table-li-title">银行所在省</li>
+                <li class="table-li-content" v-text="dialogData.pay_bank_prov"></li>
+                <li class="table-li-title">银行所在市</li>
+                <li class="table-li-content" v-text="dialogData.pay_bank_city"></li>
+
+                <li class="table-li-title">收款账户号</li>
+                <li class="table-li-content" v-text="dialogData.recv_account_no"></li>
+                <li class="table-li-title">收款账户名称</li>
+                <li class="table-li-content" v-text="dialogData.recv_account_name"></li>
+
+                <li class="table-li-title">收款银行名称</li>
+                <li class="table-li-content" v-text="dialogData.recv_account_bank"></li>
+                <li class="table-li-title">CNAPS号</li>
+                <li class="table-li-content" v-text="dialogData.recv_bank_cnaps"></li>
+
+                <li class="table-li-title">银行所在省</li>
+                <li class="table-li-content" v-text="dialogData.recv_bank_prov"></li>
+                <li class="table-li-title">银行所在市</li>
+                <li class="table-li-content" v-text="dialogData.recv_bank_city"></li>
+
+                <li class="table-li-title">付款方式</li>
+                <li class="table-li-content" v-text="dialogData.pay_mode"></li>
+                <li class="table-li-title">付款金额</li>
+                <li class="table-li-content" style="color:#fd7d2f">￥{{ dialogData.payment_amount }}</li>
+
+                <li class="table-li-title">单据状态</li>
+                <li class="table-li-content" v-text="statusList[dialogData.service_status]"></li>
+                <li class="table-li-title"></li>
+                <li class="table-li-content"></li>
+
+                <li class="table-li-title">摘要</li>
+                <li class="table-li-content table-two-row" v-text="dialogData.payment_summary"></li>
+
+                <li class="table-li-title" style="height:60px;line-height:60px">附件</li>
+                <li class="table-li-content table-two-row" style="height:60px;padding-top:6px;overflow-y:auto">
+                    <Upload :emptyFileList="emptyFileList"
+                            :fileMessage="fileMessage"
+                            :triggerFile="triggerFile"
+                            :isPending="false"></Upload>
+                </li>
+            </ul>
+            <BusinessTracking :businessParams="businessParams"></BusinessTracking>
+        </el-dialog>
     </div>
 </template>
 
 <script>
+    import Upload from "../publicModule/Upload.vue";
+    import BusinessTracking from "../publicModule/BusinessTracking.vue"
+
     export default {
         name: "HeadOfficePay",
         created: function () {
@@ -145,6 +255,10 @@
         },
         mounted: function () {
             var constants = JSON.parse(window.sessionStorage.getItem("constants"));
+        },
+        components: {
+            Upload: Upload,
+            BusinessTracking:BusinessTracking
         },
         props: ["isPending", "tableData"],
         data: function () {
@@ -177,6 +291,16 @@
                     1: "已保存",
                     5: "审批拒绝"
                 },
+                dialogVisible: false, //弹框数据
+                dialogData: {},
+                emptyFileList: [], //附件
+                fileMessage: {
+                    bill_id: "",
+                    biz_type: 9
+                },
+                triggerFile: false,
+                businessParams:{ //业务状态追踪参数
+                }
             }
         },
         methods: {
@@ -226,6 +350,68 @@
                 if (constants.BillStatus) {
                     return constants.BillStatus[cellValue];
                 }
+            },
+            //查看
+            lookData: function(row){
+                this.dialogVisible = true;
+                var dialogData = this.dialogData;
+                for(var k in row){
+                    if(k == "pay_mode"){
+                        var constants = JSON.parse(window.sessionStorage.getItem("constants"));
+                        dialogData[k] = constants.PayMode[row[k]];
+                    }else{
+                        dialogData[k] = row[k];
+                    }
+                }
+            },
+            //编辑
+            editData: function(row){
+                this.$router.push({
+                    name: "OAMakeBill",
+                    query: {
+                        id: row.id
+                    }
+                });
+            },
+            //撤回
+            withdrawData: function (row) {
+                this.$confirm('确认撤回当前单据吗?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.$axios({
+                        url: "/cfm/normalProcess",
+                        method: "post",
+                        data: {
+                            optype: "headorgoa_revoke",
+                            params: {
+                                id: row.id,
+                                persist_version: row.persist_version,
+                                service_status: row.service_status
+                            }
+                        }
+                    }).then((result) => {
+                        if (result.data.error_msg) {
+                            this.$message({
+                                type: "error",
+                                message: result.data.error_msg,
+                                duration: 2000
+                            })
+                            return;
+                        } else {
+                            this.$message({
+                                type: "success",
+                                message: "撤回成功",
+                                duration: 2000
+                            });
+                            this.$emit("getTableData", this.routerMessage);
+                        }
+                    }).catch(function (error) {
+                        console.log(error);
+                    })
+                }).catch(() => {
+                });
             },
         },
         watch: {

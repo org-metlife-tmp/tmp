@@ -84,11 +84,14 @@
                 color: #848484;
                 li {
                     float: left;
-                    width: 22.5%;
+                    width: 19%;
                     text-align: left;
                     padding-left: 30px;
                     box-sizing: border-box;
                     border-left: 1px solid #e2e2e2;
+                }
+                li:nth-child(1){
+                    width: 33%;
                 }
                 li:nth-child(5) {
                     width: 10%;
@@ -107,15 +110,24 @@
             padding-right: 8px;
             /*position: relative;*/
         }
+        .custom-tree-name, .custom-tree-city, .custom-tree-provice, .custom-tree-code{
+            text-align: left;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            width: 16%;
+        }
+        .custom-tree-name{
+            width: 30%;
+        }
         .custom-tree-city, .custom-tree-provice, .custom-tree-code {
             position: absolute;
-            left: 46%;
+            left: 53%;
         }
         .custom-tree-code{
-            left: 23%;
+            left: 34%;
         }
         .custom-tree-provice {
-            left: 68%;
+            left: 72%;
         }
 
         .el-tree .el-button {
@@ -168,7 +180,7 @@
                      accordion
                      :expand-on-click-node="false">
             <span class="custom-tree-node" slot-scope="{ node, data }">
-                <span>{{ node.data.name }}</span>
+                <span class="custom-tree-name" :title="node.data.name">{{ node.data.name }}</span>
                 <span class="custom-tree-code">{{ node.data.code }}</span>
                 <span class="custom-tree-city">{{ node.data.city }}</span>
                 <span class="custom-tree-provice">{{ node.data.province }}</span>

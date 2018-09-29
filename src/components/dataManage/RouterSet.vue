@@ -72,34 +72,34 @@
 
         /*中间树内容*/
         .tree-content {
-            height: 200px;
+            height: 400px;
+            margin-bottom: 20px;
 
-            .el-row {
+            .el-col {
                 height: 100%;
+            }
 
-                .el-col {
-                    height: 100%;
-                }
+            h4 {
+                margin: 0;
+                text-align: center;
+                font-weight: 100;
+            }
 
-                h4 {
-                    margin: 0;
-                    text-align: center;
-                    font-weight: 100;
-                }
+            /*机构*/
+            .org-tree, .biz-type-list, .insure-type-list {
+                width: 90%;
+                height: 44%;
+                margin-bottom: 10px;
+                border: 1px solid #eee;
+                margin-left: 20px;
+                overflow: auto;
+            }
 
-                /*机构*/
-                .org-tree, .biz-type-list, .insure-type-list {
-                    width: 90%;
-                    height: 88%;
-                    border: 1px solid #eee;
-                    margin-left: 20px;
-                    overflow: auto;
-                }
-
-                .biz-type-list, .insure-type-list {
-                    box-sizing: border-box;
-                    padding-left: 20px;
-                }
+            .biz-type-list , .insure-type-list{
+                padding-top: 10px;
+                height: 19%;
+                box-sizing: border-box;
+                padding-left: 20px;
             }
         }
 
@@ -120,9 +120,11 @@
                 text-align: left;
                 height: 64px;
             }
+
             .search-setion.show-more {
                 height: 150px;
             }
+
             .is-small {
                 height: 54%;
             }
@@ -174,7 +176,7 @@
                     <el-col :span="7">
                         <el-form-item label="支付方式">
                             <el-select v-model="serachData.pay_recv_mode" placeholder="请选择支付方式"
-                                       clearable  @change="searchPayChange">
+                                       clearable @change="searchPayChange">
                                 <el-option v-for="(name,k) in PayOrRecvMode"
                                            :key="k"
                                            :label="name"
@@ -239,7 +241,7 @@
             <el-table :data="tableList"
                       border height=100%
                       size="mini"
-            ref="lala">
+                      ref="lala">
                 <el-table-column prop="source_code" label="来源系统" :show-overflow-tooltip="true"
                                  :formatter="transiSource"></el-table-column>
                 <el-table-column prop="pay_recv_mode" label="支付方式"
@@ -333,56 +335,51 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="24" class="tree-content">
-                        <el-row>
-                            <el-col :span="10">
-                                <h4 class="set-required">机构</h4>
-                                <div class="org-tree">
-                                    <el-tree :data="orgTreeList"
-                                             node-key="org_id"
-                                             :check-strictly="true"
-                                             highlight-current
-                                             accordion show-checkbox
-                                             :expand-on-click-node="false"
-                                             :default-expanded-keys="expandData"
-                                             ref="orgTree">
+                        <el-col :span="24">
+                            <h4 class="set-required">机构</h4>
+                            <div class="org-tree">
+                                <el-tree :data="orgTreeList"
+                                         node-key="org_id"
+                                         :check-strictly="true"
+                                         highlight-current
+                                         accordion show-checkbox
+                                         :expand-on-click-node="false"
+                                         :default-expanded-keys="expandData"
+                                         ref="orgTree">
                                         <span class="custom-tree-node" slot-scope="{ node, data }">
                                             <span>{{ node.data.name }}</span>
                                         </span>
-                                    </el-tree>
-                                </div>
-                            </el-col>
-                            <el-col :span="7">
-                                <h4 class="set-required">业务类型</h4>
-                                <div class="biz-type-list">
-                                    <el-checkbox :indeterminate="isIndeterminate" v-model="biztypeAll"
-                                                 @change="biztypeAllChange">全选
+                                </el-tree>
+                            </div>
+
+                            <h4 class="set-required">业务类型</h4>
+                            <div class="biz-type-list">
+                                <el-checkbox :indeterminate="isIndeterminate" v-model="biztypeAll"
+                                             @change="biztypeAllChange">全选
+                                </el-checkbox>
+                                <el-checkbox-group v-model="biztypeSelect" @change="biztypeChange">
+                                    <el-checkbox v-for="(name,k) in bizTypeList"
+                                                 :label="k"
+                                                 :key="k">{{name}}
                                     </el-checkbox>
-                                    <el-checkbox-group v-model="biztypeSelect" @change="biztypeChange">
-                                        <el-checkbox v-for="(name,k) in bizTypeList"
-                                                     :label="k"
-                                                     :key="k"
-                                                     style="display:block;margin-left:0">{{name}}
-                                        </el-checkbox>
-                                    </el-checkbox-group>
-                                </div>
-                            </el-col>
-                            <el-col :span="7">
-                                <h4 class="set-required">险种大类</h4>
-                                <div class="insure-type-list">
-                                    <el-checkbox :indeterminate="insureIndeter" v-model="insureAll"
-                                                 @change="insureAllChange">全选
+                                </el-checkbox-group>
+                            </div>
+
+                            <h4 class="set-required">险种大类</h4>
+                            <div class="insure-type-list">
+                                <el-checkbox :indeterminate="insureIndeter" v-model="insureAll"
+                                             @change="insureAllChange">全选
+                                </el-checkbox>
+                                <el-checkbox-group v-model="insureSelect" @change="insureChange">
+                                    <el-checkbox v-for="(name,k) in insureTypeList"
+                                                 :label="k"
+                                                 :key="k">{{name}}
                                     </el-checkbox>
-                                    <el-checkbox-group v-model="insureSelect" @change="insureChange">
-                                        <el-checkbox v-for="(name,k) in insureTypeList"
-                                                     :label="k"
-                                                     :key="k"
-                                                     style="display:block;margin-left:0">{{name}}
-                                        </el-checkbox>
-                                    </el-checkbox-group>
-                                </div>
-                            </el-col>
-                        </el-row>
+                                </el-checkbox-group>
+                            </div>
+                        </el-col>
                     </el-col>
+
                     <el-col :span="24" style="position:relative">
                         <h4 class="small-title">渠道账户</h4>
                     </el-col>
@@ -779,13 +776,13 @@
                             return;
                         }
 
-                        if(this.pagCurrent < (this.pagTotal/this.pagSize)){ //存在下一页
+                        if (this.pagCurrent < (this.pagTotal / this.pagSize)) { //存在下一页
                             this.$emit('getTableData', this.routerMessage);
-                        }else{
-                            if(rows.length == "1"){ //是当前页最后一条
+                        } else {
+                            if (rows.length == "1") { //是当前页最后一条
                                 this.routerMessage.params.page_num--;
                                 this.$emit('getTableData', this.routerMessage);
-                            }else{
+                            } else {
                                 rows.splice(index, 1);
                                 this.pagTotal--;
                             }
@@ -906,7 +903,7 @@
             //提交数据
             subCurrent: function () {
                 var params = this.transitionData();
-                if(!params){
+                if (!params) {
                     return;
                 }
 
@@ -967,17 +964,17 @@
                 //输入部分
                 var flag = false;
                 this.$refs.dialogForm.validate((valid, object) => {
-                    if(valid){
+                    if (valid) {
 
-                    }else{
+                    } else {
                         flag = true;
                     }
                 });
-                if(flag){
+                if (flag) {
                     return false;
                 }
                 //校验-机构
-                if(!treeLength){
+                if (!treeLength) {
                     this.$message({
                         type: 'warning',
                         message: '请选择机构',
@@ -986,7 +983,7 @@
                     return false;
                 }
                 //校验-业务类型
-                if(!bizTypeLength){
+                if (!bizTypeLength) {
                     this.$message({
                         type: 'warning',
                         message: '请选择业务类型',
@@ -995,7 +992,7 @@
                     return false;
                 }
                 //校验-险种大类
-                if(!insureLength){
+                if (!insureLength) {
                     this.$message({
                         type: 'warning',
                         message: '请选择险种大类',
@@ -1004,10 +1001,10 @@
                     return false;
                 }
                 //校验-渠道账户
-                for(var i = 0; i < itemList.length; i++){
+                for (var i = 0; i < itemList.length; i++) {
                     var current = itemList[i];
-                    for(var k in current){
-                        if(!current[k]){
+                    for (var k in current) {
+                        if (!current[k]) {
                             this.$message({
                                 type: 'warning',
                                 message: '请完善渠道账户信息',
@@ -1094,10 +1091,10 @@
                 }
             },
             //搜索区选择支付方式
-            searchPayChange:function(value){
-                if(value == "3"){
+            searchPayChange: function (value) {
+                if (value == "3") {
                     this.hasSearchPay = false;
-                }else{
+                } else {
                     this.hasSearchPay = true;
                     this.serachData.pay_item = "";
                 }
@@ -1153,11 +1150,11 @@
                 })
             },
             //设置优先级输入范围
-            controlNum: function(item){
-                if(item.level<1 || item.level>9){
+            controlNum: function (item) {
+                if (item.level < 1 || item.level > 9) {
                     item.level = 1;
                     this.$message({
-                        type:"warning",
+                        type: "warning",
                         message: "请输入1-9的数字",
                         duration: 2000
                     })

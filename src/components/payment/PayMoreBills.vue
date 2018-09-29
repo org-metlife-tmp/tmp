@@ -106,6 +106,7 @@
         .dialog-talbe {
             width: 100%;
             height: 180px;
+            margin-bottom: 30px;
 
             li {
                 float: left;
@@ -414,7 +415,7 @@
                 <li class="table-li-content table-two-row">
                     <input type="text" placeholder="请选择开户行" class="table-input"
                            v-model="editDialogData.bank_name"
-                           @focus="bankVisible = true">
+                           @focus="clearBankDialog">
                 </li>
 
                 <li class="table-li-title">金额</li>
@@ -452,7 +453,7 @@
             <el-form :model="bankDialogData" size="small">
                 <el-row>
                     <el-col :span="24">
-                        <el-form-item label="银行名称" :label-width="formLabelWidth">
+                        <el-form-item label="银行大类" :label-width="formLabelWidth">
                             <el-select v-model="bankDialogData.bankTypeName" placeholder="请选择银行大类"
                                        clearable filterable
                                        style="width:100%"
@@ -461,14 +462,14 @@
                                        @change="bankIsSelect">
                                 <el-option v-for="bankType in bankTypeList"
                                            :key="bankType.name"
-                                           :label="bankType.name"
+                                           :label="bankType.display_name"
                                            :value="bankType.code">
                                 </el-option>
                             </el-select>
                         </el-form-item>
                     </el-col>
                     <el-col :span="24">
-                        <el-form-item label="开户地址" :label-width="formLabelWidth">
+                        <el-form-item label="地区" :label-width="formLabelWidth">
                             <el-select v-model="bankDialogData.area"
                                        filterable remote clearable
                                        style="width:100%"
@@ -478,9 +479,9 @@
                                        @change="bankIsSelect">
                                 <el-option
                                         v-for="area in areaList"
-                                        :key="area.name"
-                                        :label="area.name"
-                                        :value="area.code">
+                                        :key="area.name + '-' + area.top_super"
+                                        :value="area.name + '-' + area.top_super">
+                                    <span>{{ area.name }}</span><span style="margin-left:10px;color:#bbb">{{ area.top_super }}</span>
                                 </el-option>
                             </el-select>
                         </el-form-item>
@@ -502,7 +503,7 @@
                     </el-col>
                     <el-col :span="24">
                         <el-form-item label="CNAPS" :label-width="formLabelWidth">
-                            <el-input v-model="bankDialogData.cnaps_code"></el-input>
+                            <el-input v-model="bankDialogData.cnaps_code" readonly></el-input>
                         </el-form-item>
                     </el-col>
                 </el-row>
@@ -567,6 +568,10 @@
             if (bankTypeList) {
                 this.bankAllList = bankTypeList;
                 this.bankTypeList = bankTypeList;
+            }
+            var bankAllTypeList = JSON.parse(window.sessionStorage.getItem("bankAllTypeList"));
+            if(bankAllTypeList){
+                this.bankAllTypeList = bankAllTypeList;
             }
         },
         components: {
@@ -657,6 +662,7 @@
                 formLabelWidth: "100px",
                 bankAllList: [],
                 bankTypeList: [],
+                bankAllTypeList: [], //银行大类全部(不重复)
                 areaList: [],
                 loading: false,
                 bankList: [],
@@ -906,6 +912,15 @@
                     editDialogData.rev_persist_version = "";
                 }
             },
+            //清空开户行选择弹框数据
+            clearBankDialog: function(){
+                this.bankVisible = true;
+                this.bankSelect = true;
+                var bankDialogData = this.bankDialogData;
+                for(var k in bankDialogData){
+                    bankDialogData[k] = "";
+                }
+            },
             //银行大类搜索筛选
             filterBankType: function (value) {
                 if (value && value.trim()) {
@@ -923,15 +938,23 @@
                                 return item.jianpin.toLowerCase().indexOf(value.toLowerCase()) > -1;
                             }
                         }
-                    })
+                    });
+                    this.bankTypeList = this.bankTypeList.filter((item,index,arr) => {
+                        for(var i = index+1; i < arr.length; i++){
+                            if(item.display_name == arr[i].display_name){
+                                return false;
+                            }
+                        }
+                        return true;
+                    });
                 } else {
-                    this.bankTypeList = this.bankAllList;
+                    this.bankTypeList = this.bankAllTypeList;
                 }
             },
             //重置银行大类数据
-            clearSearch: function () {
-                if (this.bankTypeList != this.bankAllList) {
-                    this.bankTypeList = this.bankAllList;
+            clearSearch: function (val) {
+                if (this.bankTypeList != this.bankAllTypeList && val) {
+                    this.bankTypeList = this.bankAllTypeList;
                 }
             },
             //银行大类/地址变化后判断银行是否可选
@@ -973,7 +996,7 @@
             //获取银行列表
             getBankList: function (status) {
                 if (status) {
-                    var area_code = this.bankDialogData.area;
+                    var area_code = this.bankDialogData.area.split("-");
                     var bank_type = this.bankDialogData.bankTypeName;
 
                     this.$axios({
@@ -982,7 +1005,8 @@
                         data: {
                             optype: "bank_list",
                             params: {
-                                area_code: area_code,
+                                province: area_code[1],
+                                city: area_code[0],
                                 bank_type: bank_type
                             }
                         }
@@ -1065,7 +1089,15 @@
             //设置params
             setParams: function () {
                 //校验数据是否完善 并设置发送给后台的数据
-                var params = this.editDialogData;
+                var params = {};
+                var editDialogData = this.editDialogData;
+                for(var k in editDialogData){
+                    if(k == "payment_amount"){
+                        params[k] = editDialogData[k].split(",").join("");
+                    }else{
+                        params[k] = editDialogData[k];
+                    }
+                }
                 params.files = this.fileList;
 
                 return params;

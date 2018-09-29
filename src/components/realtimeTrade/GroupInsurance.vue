@@ -174,14 +174,14 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="7">
-                        <el-form-item label="开户银行">
+                        <el-form-item label="银行大类">
                             <el-select v-model="searchData.customer_bank" placeholder="请选择银行"
                                        clearable filterable
                                        :filter-method="filterBankType"
                                        @visible-change="clearSearch">
                                 <el-option v-for="bankType in bankTypeList"
                                            :key="bankType.name"
-                                           :label="bankType.name"
+                                           :label="bankType.display_name"
                                            :value="bankType.code">
                                 </el-option>
                             </el-select>
@@ -360,6 +360,10 @@
                 this.bankAllList = bankTypeList;
                 this.bankTypeList = bankTypeList;
             }
+            var bankAllTypeList = JSON.parse(window.sessionStorage.getItem("bankAllTypeList"));
+            if(bankAllTypeList){
+                this.bankAllTypeList = bankAllTypeList;
+            }
             //支付渠道
             var channelList = JSON.parse(window.sessionStorage.getItem("channelList"));
             if (channelList) {
@@ -393,6 +397,7 @@
                 tableList: [], //表格数据
                 bankAllList: [], //下拉框数据
                 bankTypeList: [],
+                bankAllTypeList: [], //银行大类全部(不重复)
                 channelList: [],
                 payStatList: {},
                 dialogVisible: false, //弹框数据
@@ -503,15 +508,23 @@
                                 return item.jianpin.toLowerCase().indexOf(value.toLowerCase()) > -1;
                             }
                         }
-                    })
+                    });
+                    this.bankTypeList = this.bankTypeList.filter((item,index,arr) => {
+                        for(var i = index+1; i < arr.length; i++){
+                            if(item.display_name == arr[i].display_name){
+                                return false;
+                            }
+                        }
+                        return true;
+                    });
                 } else {
-                    this.bankTypeList = this.bankAllList;
+                    this.bankTypeList = this.bankAllTypeList;
                 }
             },
             //银行大类展开时重置数据
-            clearSearch: function () {
-                if (this.bankTypeList != this.bankAllList) {
-                    this.bankTypeList = this.bankAllList;
+            clearSearch: function (val) {
+                if (this.bankTypeList != this.bankAllTypeList && val) {
+                    this.bankTypeList = this.bankAllTypeList;
                 }
             },
             /*弹框相关*/

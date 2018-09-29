@@ -426,35 +426,6 @@
                 }
                 this.$emit("downLoadData", params);
             },
-            /*下拉框相关设置*/
-            //银行大类搜索筛选
-            filterBankType: function (value) {
-                if (value && value.trim()) {
-                    this.bankTypeList = this.bankAllList.filter(item => {
-                        var chineseReg = /^[\u0391-\uFFE5]+$/; //判断是否为中文
-                        var englishReg = /^[a-zA-Z]+$/; //判断是否为字母
-                        var quanpinReg = /(a[io]?|ou?|e[inr]?|ang?|ng|[bmp](a[io]?|[aei]ng?|ei|ie?|ia[no]|o|u)|pou|me|m[io]u|[fw](a|[ae]ng?|ei|o|u)|fou|wai|[dt](a[io]?|an|e|[aeio]ng|ie?|ia[no]|ou|u[ino]?|uan)|dei|diu|[nl][gh]ei|[jqx](i(ao?|ang?|e|ng?|ong|u)?|u[en]?|uan)|([csz]h?|r)([ae]ng?|ao|e|i|ou|u[ino]?|uan)|[csz](ai?|ong)|[csz]h(ai?|uai|uang)|zei|[sz]hua|([cz]h|r)ong|y(ao?|[ai]ng?|e|i|ong|ou|u[en]?|uan))/; //判断是否为全拼
-
-                        if (chineseReg.test(value)) {
-                            return item.name.toLowerCase().indexOf(value.toLowerCase()) > -1;
-                        } else if (englishReg.test(value)) {
-                            if (quanpinReg.test(value)) {
-                                return item.pinyin.toLowerCase().indexOf(value.toLowerCase()) > -1;
-                            } else {
-                                return item.jianpin.toLowerCase().indexOf(value.toLowerCase()) > -1;
-                            }
-                        }
-                    })
-                } else {
-                    this.bankTypeList = this.bankAllList;
-                }
-            },
-            //银行大类展开时重置数据
-            clearSearch: function () {
-                if (this.bankTypeList != this.bankAllList) {
-                    this.bankTypeList = this.bankAllList;
-                }
-            },
             /*弹框相关*/
             //查看详细信息
             lookParticular: function(row){

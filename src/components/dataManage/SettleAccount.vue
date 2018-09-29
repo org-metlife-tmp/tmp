@@ -150,7 +150,7 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="18">
-                        <el-form-item label="开户行" :label-width="formLabelWidth">
+                        <el-form-item label="银行大类" :label-width="formLabelWidth">
                             <el-col :span="14">
                                 <el-select v-model="bankCorrelation.bankTypeName" placeholder="请选择银行大类"
                                            clearable filterable
@@ -159,7 +159,7 @@
                                            @change="bankIsSelect">
                                     <el-option v-for="bankType in bankTypeList"
                                                :key="bankType.name"
-                                               :label="bankType.name"
+                                               :label="bankType.display_name"
                                                :value="bankType.code">
                                     </el-option>
                                 </el-select>
@@ -174,9 +174,9 @@
                                            @change="bankIsSelect">
                                     <el-option
                                             v-for="area in areaList"
-                                            :key="area.name"
-                                            :label="area.name"
-                                            :value="area.code">
+                                            :key="area.name + '-' + area.top_super"
+                                            :value="area.name + '-' + area.top_super">
+                                        <span>{{ area.name }}</span><span style="margin-left:10px;color:#bbb">{{ area.top_super }}</span>
                                     </el-option>
                                 </el-select>
                             </el-col>
@@ -286,6 +286,10 @@
                 this.bankAllList = bankTypeList;
                 this.bankTypeList = bankTypeList;
             }
+            var bankAllTypeList = JSON.parse(window.sessionStorage.getItem("bankAllTypeList"));
+            if(bankAllTypeList){
+                this.bankAllTypeList = bankAllTypeList;
+            }
             //币种
             var currencyList = JSON.parse(window.sessionStorage.getItem("currencyList"));
             if (currencyList) {
@@ -332,12 +336,16 @@
                 /*下拉框数据*/
                 orgList: [], //机构
                 bankAllList: [], //银行大类全部
+                bankAllTypeList: [], //银行大类全部(不重复)
                 bankTypeList: [], //银行大类
                 areaList: [], //地区
                 bankList: [], //银行
                 currencyList: [], //币种
                 accOrRecvList: {}, //收付属性
-                bankCorrelation: {},
+                bankCorrelation: {
+                    bankTypeName: "",
+                    area: ""
+                },
                 loading: false, //地区加载数据时状态显示
                 bankSelect: true, //银行可选控制
                 //校验规则设置
@@ -465,7 +473,11 @@
                 this.dialogTitle = "新增";
                 this.dialogVisible = true;
 
-                this.bankCorrelation = {};
+                var bankCorrelation = this.bankCorrelation;
+                for(var k in bankCorrelation){
+                    bankCorrelation[k] = "";
+                }
+
                 this.bankList = [];
                 this.bankSelect = true;
                 var dialogData = this.dialogData;
@@ -484,7 +496,10 @@
                 this.dialogVisible = true;
                 this.currentSettle = row;
 
-                this.bankCorrelation = {};
+                var bankCorrelation = this.bankCorrelation;
+                for(var k in bankCorrelation){
+                    bankCorrelation[k] = "";
+                }
                 if (this.$refs.dialogForm) {
                     this.$refs.dialogForm.clearValidate();
                 }
@@ -494,13 +509,24 @@
                     dialogData[k] = "";
                 }
 
+                //设置银行大类和地区
+                this.bankCorrelation.bankTypeName = row.bank_type;
+                this.bankCorrelation.area = row.city + "-" + row.province;
+                this.areaList = [];
+                this.areaList.push({
+                    name: row.city,
+                    top_super: row.province,
+                    code: row.area_code
+                });
+                this.bankSelect = false;
+
+                //设置银行
                 if (row.cnaps_code) {
                     this.$set(this.bankList, 0, {
                         cnaps_code: row.cnaps_code,
                         name: row.bank_name
                     })
                 }
-                console.log(row);
                 for (var k in row) {
                     this.dialogData[k] = row[k];
                 }
@@ -650,15 +676,23 @@
                                 return item.jianpin.toLowerCase().indexOf(value.toLowerCase()) > -1;
                             }
                         }
+                    });
+                    this.bankTypeList = this.bankTypeList.filter((item,index,arr) => {
+                        for(var i = index+1; i < arr.length; i++){
+                            if(item.display_name == arr[i].display_name){
+                                return false;
+                            }
+                        }
+                        return true;
                     })
                 } else {
-                    this.bankTypeList = this.bankAllList;
+                    this.bankTypeList = this.bankAllTypeList;
                 }
             },
             //银行大类展开时重置数据
-            clearSearch: function () {
-                if (this.bankTypeList != this.bankAllList) {
-                    this.bankTypeList = this.bankAllList;
+            clearSearch: function (val) {
+                if (this.bankTypeList != this.bankAllTypeList && val) {
+                    this.bankTypeList = this.bankAllTypeList;
                 }
             },
             //地区数据
@@ -691,7 +725,7 @@
             //获取银行列表
             getBankList: function (status) {
                 if (status) {
-                    var area_code = this.bankCorrelation.area;
+                    var area_code = this.bankCorrelation.area.split("-");
                     var bank_type = this.bankCorrelation.bankTypeName;
 
                     this.$axios({
@@ -700,7 +734,8 @@
                         data: {
                             optype: "bank_list",
                             params: {
-                                area_code: area_code,
+                                province: area_code[1],
+                                city: area_code[0],
                                 bank_type: bank_type
                             }
                         }

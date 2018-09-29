@@ -161,7 +161,7 @@
             z-index: 999;
             transition: all 1.5s;
         }
-        
+
     }
 </style>
 <style lang="less" type="text/less">
@@ -242,7 +242,7 @@
                                                         placeholder="请输入关键字"
                                                         style="width:42%;margin-left:6px"
                                                         @visible-change="getMainAccList"
-                                                        :disabled="viewReadonly"  
+                                                        :disabled="viewReadonly"
                                                         :loading="loading">
                                                 <el-option
                                                         v-for="acc in mainAccOptions"
@@ -389,7 +389,7 @@
                                        @visible-change="clearSearch">
                                 <el-option v-for="bankType in bankTypeList"
                                            :key="bankType.name"
-                                           :label="bankType.name"
+                                           :label="bankType.display_name"
                                            :value="bankType.code">
                                 </el-option>
                             </el-select>
@@ -403,7 +403,7 @@
                 </el-row>
             </el-form>
             <div class="dialog-content">
-                <template v-for="table in dialogTableList" >  
+                <template v-for="table in dialogTableList" >
                     <el-table :data="table.accounts" :key="table.org_id"
                              size="mini" class="dialogTable"
                              max-height="250"
@@ -413,7 +413,7 @@
                         <el-table-column prop="child_acc_bank_name" label=""
                                         :show-overflow-tooltip="true"></el-table-column>
                     </el-table>
-                </template> 
+                </template>
             </div>
             <span slot="footer" class="dialog-footer" style="text-align:center">
                 <el-button type="warning" size="mini" plain @click="dialogVisible = false">取 消</el-button>
@@ -507,6 +507,10 @@
                 this.bankAllList = bankTypeList;
                 this.bankTypeList = bankTypeList;
             }
+            var bankAllTypeList = JSON.parse(window.sessionStorage.getItem("bankAllTypeList"));
+            if(bankAllTypeList){
+                this.bankAllTypeList = bankAllTypeList;
+            }
             //账户类型
             var catgList = JSON.parse(window.sessionStorage.getItem("catgList"));
             for (var i = 0; i < catgList.length; i++) {
@@ -562,7 +566,7 @@
                         }]
                         this.editableTabs = main_accounts;
                         data.allocation_frequency = data.allocation_frequency+"";
-                        
+
                         if(params.type==='copy'){
                             data.id = "";
                             data.persist_version = "";
@@ -570,7 +574,7 @@
                         }
 
                         this.allocationData = data;
-                        
+
                         //查询附件
                         this.fileMessage.bill_id = params.id;
                         this.eidttrigFile = !this.eidttrigFile;
@@ -663,6 +667,7 @@
                 currTimeSetting: {},
                 purposeList: [],//账户类型
                 bankTypeList: [],
+                bankAllTypeList: [], //银行大类全部(不重复)
                 dialogTableList: [], //弹框表格数据
                 loading: false, //主账户列表加载数据时状态显示
                 mainAccOptions:[],//主账户列表
@@ -704,15 +709,23 @@
                                 return item.jianpin.toLowerCase().indexOf(value.toLowerCase()) > -1;
                             }
                         }
-                    })
+                    });
+                    this.bankTypeList = this.bankTypeList.filter((item,index,arr) => {
+                        for(var i = index+1; i < arr.length; i++){
+                            if(item.display_name == arr[i].display_name){
+                                return false;
+                            }
+                        }
+                        return true;
+                    });
                 } else {
-                    this.bankTypeList = this.bankAllList;
+                    this.bankTypeList = this.bankAllTypeList;
                 }
             },
             //重置银行大类数据
-            clearSearch: function () {
-                if (this.bankTypeList != this.bankAllList) {
-                    this.bankTypeList = this.bankAllList;
+            clearSearch: function (val) {
+                if (this.bankTypeList != this.bankAllTypeList && val) {
+                    this.bankTypeList = this.bankAllTypeList;
                 }
             },
             //查询被下拨子账户
@@ -942,7 +955,7 @@
                 if (query && query.trim()) {
                     this.loading = true;
                     this.getMainAccList(query);
-                } 
+                }
             },
             //组织保存参数
             setParams: function(){

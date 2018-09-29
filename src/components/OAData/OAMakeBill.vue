@@ -1,5 +1,5 @@
 <style lang="less" type="text/less">
-    #receiveMakeBill{
+    #OAMakeBill{
         min-width: 980px;
         width: 80%;
         height: 100%;
@@ -231,40 +231,16 @@
 </style>
 
 <template>
-    <div id="receiveMakeBill">
+    <div id="OAMakeBill">
         <!--顶部标题-按钮-->
         <header>
-            <h1>资金收款-制单</h1>
-            <!-- <el-button type="warning" size="small">打印</el-button>-->
+            <h1>OA数据-编辑</h1>
+            <!--<el-button type="warning" size="small">打印</el-button>-->
         </header>
         <!--表单部分-->
         <section>
             <!--表单顶部-->
             <div class="title-date">
-                <el-date-picker
-                        v-model="dateValue"
-                        type="date" :readonly="true"
-                        placeholder="请选择申请日期"
-                        value-format="yyyy-MM-dd"
-                        size="mini">
-                </el-date-picker>
-                <el-select v-model="billData.recv_account_id " placeholder="请选择收款方"
-                           filterable clearable size="mini">
-                    <el-option v-for="item in accOptions"
-                               :key="item.acc_id"
-                               :label="item.acc_no"
-                               :value="item.acc_id">
-                    </el-option>
-                </el-select>
-                <el-select v-model="billData.biz_id" placeholder="请选择业务类型"
-                           filterable clearable size="mini"
-                           @change="setBizName">
-                    <el-option v-for="payItem in payStatList"
-                               :key="payItem.biz_id"
-                               :label="payItem.biz_name"
-                               :value="payItem.biz_id">
-                    </el-option>
-                </el-select>
                 <div class="serial-number">
                     <span>单据编号:</span>
                     <span v-text="billData.service_serial_number"></span>
@@ -274,26 +250,16 @@
             <div class="bill-content">
                 <table>
                     <tr>
-                        <td rowspan="3" class="title-erect">付款人</td>
+                        <td rowspan="3" class="title-erect">付款方</td>
                         <td class="title-small">户名</td>
                         <td class="empty-input" colspan="4">
-                            <el-select v-model="billData.pay_account_name"
-                                       filterable allow-create default-first-option
-                                       placeholder="请输入或选择户名"
-                                       @change="setPayer($event,'acc_no')">
-                                <el-option
-                                        v-for="item in payerList"
-                                        :key="item.id"
-                                        :label="item.acc_name"
-                                        :value="item.acc_name">
-                                </el-option>
-                            </el-select>
+                            <input type="text" v-model="billData.bank_name" readonly>
                         </td>
                     </tr>
                     <tr>
                         <td class="title-small">账号</td>
                         <td class="empty-input" colspan="4">
-                            <el-select v-model="billData.pay_account_no"
+                            <el-select v-model="billData.recv_account_no"
                                        filterable allow-create
                                        default-first-option
                                        placeholder="请输入或选择账号"
@@ -310,9 +276,7 @@
                     <tr>
                         <td>开户行</td>
                         <td class="empty-input" colspan="4">
-                            <input type="text" placeholder="请选择开户行"
-                                   v-model="billData.bank_name"
-                                   @focus="clearBankDialog">
+                            <input type="text" v-model="billData.bank_name" readonly>
                         </td>
                     </tr>
                     <tr>
@@ -323,7 +287,7 @@
                         <td colspan="2">金额（元）</td>
                         <td colspan="4" class="money-input">
                             <span>￥</span>
-                            <input type="text" @blur="setMoney" v-model="billData.receipts_amount">
+                            <input type="text" @blur="setMoney" v-model="billData.payment_amount" readonly>
                             <span>(大写)</span>
                             <span v-text="moneyText"></span>
                         </td>
@@ -331,7 +295,7 @@
                     <tr>
                         <td colspan="2" class="set-space">摘要</td>
                         <td class="empty-input">
-                            <input type="text" placeholder="请在此处填写摘要" v-model="billData.receipts_summary">
+                            <input type="text" placeholder="请在此处填写摘要" v-model="billData.payment_summary">
                         </td>
                     </tr>
                     <tr>
@@ -378,7 +342,7 @@
                                        @change="bankIsSelect">
                                 <el-option v-for="bankType in bankTypeList"
                                            :key="bankType.name"
-                                           :label="bankType.display_name"
+                                           :label="bankType.name"
                                            :value="bankType.code">
                                 </el-option>
                             </el-select>
@@ -395,9 +359,9 @@
                                        @change="bankIsSelect">
                                 <el-option
                                         v-for="area in areaList"
-                                        :key="area.name + '-' + area.top_super"
-                                        :value="area.name + '-' + area.top_super">
-                                    <span>{{ area.name }}</span><span style="margin-left:10px;color:#bbb">{{ area.top_super }}</span>
+                                        :key="area.name"
+                                        :label="area.name"
+                                        :value="area.code">
                                 </el-option>
                             </el-select>
                         </el-form-item>
@@ -454,14 +418,14 @@
     import Upload from "../publicModule/Upload.vue";
 
     export default {
-        name: "ReceiveMakeBill",
+        name: "OAMakeBill",
         created: function(){
             //获取付款方账户列表
             this.$axios({
                 url:"/cfm/commProcess",
                 method:"post",
                 data:{
-                    optype:"account_normallist",
+                    optype:"branchorgoa_poolAccListByBankType",
                     params:{
                         status:1,
                         acc_id:""
@@ -484,7 +448,7 @@
                     url: "/cfm/normalProcess",
                     method: "post",
                     data: {
-                        optype: "skt_billdetail",
+                        optype: "headorgoa_detail",
                         params: {
                             id: params[1]
                         }
@@ -494,10 +458,13 @@
 
                     } else {
                         var data = result.data.data;
-                        data.id = "";
-                        data.persist_version = "";
+                        console.log(data);
+                        return;
                         var billData = this.billData;
                         for(var k in billData){
+                            if(k == "id"){
+                                continue;
+                            }
                             if(k == "bank_name"){
                                 billData[k] = data.recv_account_bank;
                             }else{
@@ -505,8 +472,8 @@
                             }
                         }
                         //设置数字加千分符和转汉字
-                        this.moneyText = this.$common.transitText(data.receipts_amount);
-                        billData.receipts_amount = this.$common.transitSeparator(data.receipts_amount);
+                        this.moneyText = this.$common.transitText(data.payment_amount);
+                        billData.payment_amount = this.$common.transitSeparator(data.payment_amount);
                         //附件数据
                         this.fileMessage.bill_id = data.id;
                         this.eidttrigFile = !this.eidttrigFile;
@@ -516,31 +483,6 @@
                     console.log(error);
                 });
             }
-
-            //业务类型
-            this.$axios({
-                url:"/cfm/commProcess",
-                method:"post",
-                data:{
-                    optype:"biztype_biztypes",
-                    params: {
-                        p_id: 15
-                    }
-                }
-            }).then((result) =>{
-                if (result.data.error_msg) {
-                    this.$message({
-                        type: "error",
-                        message: result.data.error_msg,
-                        duration: 2000
-                    })
-                } else {
-                    var data = result.data.data;
-                    this.payStatList = data;
-                }
-            }).catch(function (error) {
-                console.log(error);
-            })
         },
         mounted: function(){
             /*获取下拉框数据*/
@@ -550,28 +492,23 @@
                 this.bankAllList = bankTypeList;
                 this.bankTypeList = bankTypeList;
             }
-            var bankAllTypeList = JSON.parse(window.sessionStorage.getItem("bankAllTypeList"));
-            if(bankAllTypeList){
-                this.bankAllTypeList = bankAllTypeList;
-            }
         },
         components: {
             Upload: Upload
         },
         data: function () {
             return {
-                dateValue: new Date(), //申请时间
                 billData: {
                     id:"",
                     persist_version: "",
-                    pay_persist_version: "",
+                    rev_persist_version: "",
                     pay_account_id: "",
                     recv_account_id: "",
-                    pay_account_no: "",
-                    pay_account_name: "",
-                    pay_bank_cnaps: "",
-                    receipts_amount: "",
-                    receipts_summary: "",
+                    recv_account_no: "",
+                    recv_account_name: "",
+                    recv_bank_cnaps: "",
+                    payment_amount: "",
+                    payment_summary: "",
                     service_serial_number: "",
                     bank_name: "",
                     biz_id: "",
@@ -580,7 +517,7 @@
                 moneyText: "", //金额-大写
                 fileMessage: { //附件
                     bill_id: "",
-                    biz_type: 15
+                    biz_type: 9
                 },
                 eidttrigFile: false,
                 emptyFileList: [],
@@ -599,26 +536,15 @@
                 workflows: [],
                 bankSelect: true, //银行可选控制
                 bankAllList: [], //弹框下拉框数据
-                bankAllTypeList: [], //银行大类全部(不重复)
                 bankTypeList: [],
                 areaList: [],
                 loading: false,
                 bankList: [],
-                accOptions: [],//下拉框数据
-                payerList: [],
-                payStatList: [],
+                payerList: [],//下拉框数据
+
             }
         },
         methods: {
-            //清空开户行选择弹框数据
-            clearBankDialog: function(){
-                this.dialogVisible = true;
-                this.bankSelect = true;
-                var dialogData = this.dialogData;
-                for(var k in dialogData){
-                    dialogData[k] = "";
-                }
-            },
             //获取户名和账号的下拉列表值
             getPayerSelect: function(){
                 //获取收款方户名列表
@@ -657,23 +583,15 @@
                                 return item.jianpin.toLowerCase().indexOf(value.toLowerCase()) > -1;
                             }
                         }
-                    });
-                    this.bankTypeList = this.bankTypeList.filter((item,index,arr) => {
-                        for(var i = index+1; i < arr.length; i++){
-                            if(item.display_name == arr[i].display_name){
-                                return false;
-                            }
-                        }
-                        return true;
-                    });
+                    })
                 } else {
-                    this.bankTypeList = this.bankAllTypeList;
+                    this.bankTypeList = this.bankAllList;
                 }
             },
             //重置银行大类数据
-            clearSearch: function (val) {
-                if (this.bankTypeList != this.bankAllTypeList && val) {
-                    this.bankTypeList = this.bankAllTypeList;
+            clearSearch: function () {
+                if (this.bankTypeList != this.bankAllList) {
+                    this.bankTypeList = this.bankAllList;
                 }
             },
             //银行大类/地址变化后判断银行是否可选
@@ -715,7 +633,7 @@
             //获取银行列表
             getBankList: function (status) {
                 if (status) {
-                    var area_code = this.dialogData.area.split("-");
+                    var area_code = this.dialogData.area;
                     var bank_type = this.dialogData.bankTypeName;
 
                     this.$axios({
@@ -724,8 +642,7 @@
                         data: {
                             optype: "bank_list",
                             params: {
-                                province: area_code[1],
-                                city: area_code[0],
+                                area_code: area_code,
                                 bank_type: bank_type
                             }
                         }
@@ -751,7 +668,7 @@
             },
             //输入金额后进行格式化
             setMoney: function () {
-                var moneyNum = this.billData.receipts_amount.replace(/,/gi, "").trim();
+                var moneyNum = this.billData.payment_amount.replace(/,/gi, "").trim();
                 /*校验数据格式是否正确*/
                 if (moneyNum == "") {
                     return;
@@ -762,7 +679,7 @@
                         message: "请输入正确的金额",
                         duration: 2000
                     });
-                    this.billData.receipts_amount = "";
+                    this.billData.payment_amount = "";
                     return;
                 }
                 var verify = moneyNum.split(".");
@@ -786,7 +703,7 @@
                 }
 
                 //设置数字部分格式
-                this.billData.receipts_amount = this.$common.transitSeparator(moneyNum);
+                this.billData.payment_amount = this.$common.transitSeparator(moneyNum);
                 //设置汉字
                 this.moneyText = this.$common.transitText(moneyNum);
             },
@@ -803,13 +720,13 @@
             },
             //设置开户行
             confirmBank: function(){
-                this.billData.pay_bank_cnaps = this.dialogData.cnaps_code;
+                this.billData.recv_bank_cnaps = this.dialogData.cnaps_code;
                 this.billData.bank_name = this.dialogData.bank_name;
                 this.dialogVisible = false;
             },
             //更多单据
             goMoreBills: function(){
-                this.$router.push("/receivables/receive-more-bills");
+                this.$router.push("/payment/pay-more-bills");
             },
             //修改户名和账号后改变对应的值
             setPayer: function(val,target){
@@ -819,25 +736,25 @@
 
                 for(var i = 0; i < payerList.length; i++){
                     if(payerList[i][key] == val){
-                        this.billData.pay_account_id = payerList[i].id;
-                        this.billData.pay_bank_cnaps = payerList[i].cnaps_code;
-                        this.billData.pay_persist_version = payerList[i].persist_version;
+                        this.billData.recv_account_id = payerList[i].id;
+                        this.billData.recv_bank_cnaps = payerList[i].cnaps_code;
+                        this.billData.rev_persist_version = payerList[i].persist_version;
                         if(target == "acc_no"){
-                            this.billData.pay_account_no = payerList[i][target];
+                            this.billData.recv_account_no = payerList[i][target];
                         }else{
-                            this.billData.pay_account_name = payerList[i][target];
+                            this.billData.recv_account_name = payerList[i][target];
                         }
                         this.billData.bank_name = payerList[i].bank_name;
                         flag = false;
                         continue;
                     }
-                    if(this.billData.pay_account_no == payerList[i].acc_no){
+                    if(this.billData.recv_account_no == payerList[i].acc_no){
                         flag = false;
                     }
                 }
                 if(flag){
-                    this.billData.pay_account_id = "";
-                    this.billData.pay_persist_version = "";
+                    this.billData.recv_account_id = "";
+                    this.billData.rev_persist_version = "";
                 }
             },
             //清空
@@ -852,7 +769,7 @@
             //设置params
             setParams: function(){
                 var billData = this.billData;
-                billData.receipts_amount = billData.receipts_amount.split(",").join("");
+                billData.payment_amount = billData.payment_amount.split(",").join("");
                 billData.files= this.fileList;
                 return billData;
             },
@@ -862,11 +779,12 @@
                 if(!params){
                     return;
                 }
+
                 this.$axios({
                     url: "/cfm/normalProcess",
                     method: "post",
                     data: {
-                        optype: params.id ? "skt_chgbill" : "skt_addbill",
+                        optype: params.id ? "zft_chgbill" : "zft_addbill",
                         params: params
                     }
                 }).then((result) => {
@@ -887,8 +805,8 @@
                         billData.id = data.id;
                         billData.persist_version = data.persist_version;
                         billData.service_serial_number = data.service_serial_number;
-                        billData.pay_persist_version = data.pay_persist_version;
-                        billData.pay_account_id = data.pay_account_id;
+                        billData.rev_persist_version = data.rev_persist_version;
+                        billData.recv_account_id = data.recv_account_id;
                         this.getPayerSelect();
                     }
                 }).catch(function (error) {
@@ -906,7 +824,7 @@
                     url: "/cfm/normalProcess",
                     method: "post",
                     data: {
-                        optype: "skt_presubmit",
+                        optype: "zft_presubmit",
                         params: params
                     }
                 }).then((result) => {
@@ -923,6 +841,7 @@
                         billData.id = data.id;
                         billData.persist_version = data.persist_version;
                         billData.service_status = data.service_status;
+                        billData.rev_persist_version = data.rev_persist_version;
                         billData.service_serial_number = data.service_serial_number;
                         this.getPayerSelect();
 
@@ -950,7 +869,7 @@
                     url: "/cfm/normalProcess",
                     method: "post",
                     data: {
-                        optype: "skt_submit",
+                        optype: "zft_submit",
                         params: params
                     }
                 }).then((result) => {
@@ -964,7 +883,7 @@
                         var data = result.data.data;
                         this.innerVisible = false;
                         this.$router.push({
-                            name: "ReceiveMakeBill"
+                            name: "PayMakeBill"
                         });
                         this.clearBill();
                         this.$message({
@@ -977,15 +896,7 @@
                     console.log(error);
                 })
             },
-            //同时保存biztype和name
-            setBizName: function(val){
-                var payStatList = this.payStatList;
-                for(var i = 0; i < payStatList.length; i++){
-                    if(payStatList[i].biz_id == val){
-                        this.billData.biz_name = payStatList[i].biz_name;
-                    }
-                }
-            }
         }
     }
 </script>
+

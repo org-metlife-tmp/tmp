@@ -54,15 +54,7 @@
                         return;
                     } else {
                         var data = result.data.data;
-                        var deptList = [];
-                        data.forEach(function (item) {
-                            var itemNeed = {};
-                            for (var k in item) {
-                                itemNeed[k] = item[k];
-                            }
-                            deptList.push(itemNeed);
-                        });
-                        window.sessionStorage.setItem("deptList", JSON.stringify(deptList));
+                        window.sessionStorage.setItem("deptList", JSON.stringify(data));
                     }
                 }).catch(function (error) {
                     console.log(error);
@@ -84,15 +76,7 @@
                         return;
                     } else {
                         var data = result.data.data;
-                        var usrgroupList = [];
-                        data.forEach(function (item) {
-                            var itemNeed = {};
-                            for (var k in item) {
-                                itemNeed[k] = item[k];
-                            }
-                            usrgroupList.push(itemNeed);
-                        });
-                        window.sessionStorage.setItem("usrgroupList", JSON.stringify(usrgroupList));
+                        window.sessionStorage.setItem("usrgroupList", JSON.stringify(data));
                     }
                 }).catch(function (error) {
                     console.log(error);
@@ -115,15 +99,7 @@
                             return;
                         } else {
                             var data = result.data.data;
-                            var currencyList = [];
-                            data.forEach(function (item) {
-                                var itemNeed = {};
-                                for (var k in item) {
-                                    itemNeed[k] = item[k];
-                                }
-                                currencyList.push(itemNeed);
-                            });
-                            window.sessionStorage.setItem("currencyList", JSON.stringify(currencyList));
+                            window.sessionStorage.setItem("currencyList", JSON.stringify(data));
                         }
                     }).catch(function (error) {
                         console.log(error);
@@ -170,15 +146,7 @@
                         return;
                     } else {
                         var data = result.data.data;
-                        var channelList = [];
-                        data.forEach(function (item) {
-                            var itemNeed = {};
-                            for (var k in item) {
-                                itemNeed[k] = item[k];
-                            }
-                            channelList.push(itemNeed);
-                        });
-                        window.sessionStorage.setItem("channelList", JSON.stringify(channelList));
+                        window.sessionStorage.setItem("channelList", JSON.stringify(data));
                     }
                 }).catch(function (error) {
                     console.log(error);
@@ -197,20 +165,29 @@
                         return;
                     } else {
                         var data = result.data.data;
-                        var bankTypeList = [];
-                        data.forEach(function (item) {
-                            var itemNeed = {};
-                            for (var k in item) {
-                                itemNeed[k] = item[k];
-                            }
-                            bankTypeList.push(itemNeed);
-                        });
-                        window.sessionStorage.setItem("bankTypeList", JSON.stringify(bankTypeList));
+                        window.sessionStorage.setItem("bankTypeList", JSON.stringify(data.alias));
+                        window.sessionStorage.setItem("bankAllTypeList", JSON.stringify(data.standard));
                     }
                 }).catch(function (error) {
                     console.log(error);
                 })
             }
+            this.$axios({
+                url: "/cfm/commProcess",
+                method: "post",
+                data: {
+                    optype: "area_list"
+                }
+            }).then((result) => {
+                if (result.data.error_msg) {
+                    return;
+                } else {
+                    var data = result.data.data;
+                    window.sessionStorage.setItem("areaList", JSON.stringify(data));
+                }
+            }).catch(function (error) {
+                console.log(error);
+            })
             //系统常量
             if (!window.sessionStorage.getItem("catgList")) {
                 this.$axios({
@@ -266,15 +243,7 @@
                         return;
                     } else {
                         var data = result.data.data;
-                        var currencyList = [];
-                        data.forEach(function (item) {
-                            var itemNeed = {};
-                            for (var k in item) {
-                                itemNeed[k] = item[k];
-                            }
-                            currencyList.push(itemNeed);
-                        });
-                        window.sessionStorage.setItem("selectCurrencyList", JSON.stringify(currencyList));
+                        window.sessionStorage.setItem("selectCurrencyList", JSON.stringify(data));
                     }
                 }).catch(function (error) {
                     console.log(error);
@@ -297,15 +266,7 @@
                         return;
                     } else {
                         var data = result.data.data;
-                        var orgList = [];
-                        data.forEach(function (item) {
-                            var itemNeed = {};
-                            for (var k in item) {
-                                itemNeed[k] = item[k];
-                            }
-                            orgList.push(itemNeed);
-                        });
-                        window.sessionStorage.setItem("selectOrgList", JSON.stringify(orgList));
+                        window.sessionStorage.setItem("selectOrgList", JSON.stringify(data));
                     }
                 }).catch(function (error) {
                     console.log(error);

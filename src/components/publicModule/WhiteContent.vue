@@ -122,7 +122,7 @@
                            @change="queryByBank">
                     <el-option v-for="bankType in bankTypeList"
                                :key="bankType.name"
-                               :label="bankType.name"
+                               :label="bankType.display_name"
                                :value="bankType.code">
                     </el-option>
                 </el-select>
@@ -248,6 +248,10 @@
                 this.bankAllList = bankTypeList;
                 this.bankTypeList = bankTypeList;
             }
+            var bankAllTypeList = JSON.parse(window.sessionStorage.getItem("bankAllTypeList"));
+            if(bankAllTypeList){
+                this.bankAllTypeList = bankAllTypeList;
+            }
         },
         data: function () {
             return {
@@ -264,6 +268,7 @@
                 accAttrList: [],
                 checkAccAttrList: [],
                 bankTypeName: "", //银行大类
+                bankAllTypeList: [], //银行大类全部(不重复)
                 bankAllList: [],
                 bankTypeList: [],
                 accNo: "" ,//账户号
@@ -440,20 +445,27 @@
                                 return item.jianpin.toLowerCase().indexOf(value.toLowerCase()) > -1;
                             }
                         }
-                    })
+                    });
+                    this.bankTypeList = this.bankTypeList.filter((item,index,arr) => {
+                        for(var i = index+1; i < arr.length; i++){
+                            if(item.display_name == arr[i].display_name){
+                                return false;
+                            }
+                        }
+                        return true;
+                    });
                 } else {
-                    this.bankTypeList = this.bankAllList;
+                    this.bankTypeList = this.bankAllTypeList;
                 }
             },
             //银行大类展开时重置数据
-            clearSearch: function () {
-                if (this.bankTypeList != this.bankAllList) {
-                    this.bankTypeList = this.bankAllList;
+            clearSearch: function (val) {
+                if (this.bankTypeList != this.bankAllTypeList && val) {
+                    this.bankTypeList = this.bankAllTypeList;
                 }
             },
             //导出
             exportFun:function () {
-                debugger
                 var user = JSON.parse(window.sessionStorage.getItem("user"));
                 var params = this.curRouterParam.params;
                 params.org_id = user.curUodp.org_id;
