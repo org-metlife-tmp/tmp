@@ -251,10 +251,8 @@
                             <el-select v-model="billData.pay_account_id"
                                        clearable filterable remote
                                        placeholder="请选择账号"
-                                       :loading="payLoading"
-                                       :remote-method="getPayList"
-                                       @change="selectNumber($event,'payNumber')"
-                                       @clear="clearSelect('payNumber')">
+                                       @change="selectNumber"
+                                       @clear="clearSelect">
                                 <el-option
                                         v-for="payItem in payList"
                                         :key="payItem.acc_id"
@@ -264,7 +262,7 @@
                             </el-select>
                         </td>
                         <td class="title-small">账号</td>
-                        <td v-text="billData.recv_account_bank" style="width:37%" class="text-left"></td>
+                        <td v-text="billData.recv_account_no" style="width:37%" class="text-left"></td>
                     </tr>
                     <tr>
                         <td>开户行</td>
@@ -299,6 +297,7 @@
                             <Upload @currentFielList="setFileList"
                                     :fileMessage="fileMessage"
                                     :emptyFileList="emptyFileList"
+                                    :triggerFile="eidttrigFile"
                                     :isPending="true">
                             </Upload>
                         </td>
@@ -311,7 +310,6 @@
                     更多单据<span class="arrows">></span>
                 </el-button>
                 <div class="btnGroup">
-                    <el-button type="warning" size="small" @click="clearBill">清空</el-button>
                     <el-button type="warning" size="small" @click="saveBill">保存</el-button>
                     <el-button type="warning" size="small" @click="submitBill">提交</el-button>
                 </div>
@@ -366,6 +364,18 @@
                     } else {
                         var data = result.data.data;
 
+                        var billData = this.billData;
+                        for (var k in billData) {
+                            billData[k] = data[k];
+                        }
+                        //设置数字加千分符和转汉字
+                        this.moneyText = this.$common.transitText(data.payment_amount);
+                        billData.payment_amount = this.$common.transitSeparator(data.payment_amount);
+
+                        //附件数据
+                        this.fileMessage.bill_id = data.id;
+                        this.eidttrigFile = !this.eidttrigFile;
+
                         //获取付款方账号
                         this.$axios({
                             url: "/cfm/normalProcess",
@@ -384,20 +394,6 @@
                                 this.payList = data;
                             }
                         });
-
-
-                        var billData = this.billData;
-                        for (var k in billData) {
-                            billData[k] = data[k];
-                        }
-                        return;
-                        //设置数字加千分符和转汉字
-                        this.moneyText = this.$common.transitText(data.payment_amount);
-                        billData.payment_amount = this.$common.transitSeparator(data.payment_amount);
-                        //附件数据
-                        this.fileMessage.bill_id = data.id;
-                        this.eidttrigFile = !this.eidttrigFile;
-                        console.log(billData);
                     }
                 }).catch(function (error) {
                     console.log(error);
@@ -409,197 +405,55 @@
         },
         data: function () {
             return {
-                dateValue: new Date(), //申请时间
                 billData: {
-                    biz_id: "", //业务类型
-                    pay_mode: "", //付款方式
                     service_serial_number: "", //单据编号
                     pay_account_name: "", //付款方
                     pay_account_id: "",
                     pay_account_bank: "",
                     recv_account_name: "", //收款方
-                    recv_account_id: "",
+                    recv_account_no: "",
                     recv_account_bank: "",
                     payment_amount: "", //金额
                     payment_summary: "" //摘要
                 },
-                payLoading: false, //付款方数据
                 payList: [],
-                gatherLoading: false, //收款方数据
-                gatherList: [],
                 moneyText: "", //金额-大写
-                allotType: "", //调拨类型
                 fileMessage: { //附件
                     bill_id: "",
                     biz_type: 16
                 },
+                eidttrigFile: false,
                 emptyFileList: [],
                 fileList: [],
                 fileLength: "",
                 innerVisible: false, //弹框数据
                 selectWorkflow: "",
-                workflows: [],
-
-                payModeList: {}, //下拉框数据
-                payStatList: [],
+                workflows: []
             }
         },
         methods: {
-            //获取付款方账号
-            getPayList: function (value) {
-                this.payLoading = true;
-                var billData = this.billData;
-
-                this.$axios({
-                    url: "/cfm/normalProcess",
-                    method: "post",
-                    data: {
-                        optype: "dbt_payacclist",
-                        params: {
-                            query_key: value.trim(),
-                            exclude_ids: billData.recv_account_id,
-                            page_size: 10000,
-                            page_num: 1
-                        }
-                    }
-                }).then((result) => {
-                    if (result.data.error_msg) {
-
-                    } else {
-                        this.payLoading = false;
-                        this.payList = result.data.data;
-                    }
-                }).catch(function (error) {
-                    console.log(error);
-                });
-            },
-            //获取收款方账号
-            getGatherList: function (value) {
-                this.gatherLoading = true;
-                var billData = this.billData;
-
-                this.$axios({
-                    url: "/cfm/normalProcess",
-                    method: "post",
-                    data: {
-                        optype: "dbt_recvacclist",
-                        params: {
-                            query_key: value.trim(),
-                            exclude_ids: billData.pay_account_id,
-                            page_size: 10000,
-                            page_num: 1
-                        }
-                    }
-                }).then((result) => {
-                    if (result.data.error_msg) {
-
-                    } else {
-                        this.gatherLoading = false;
-                        this.gatherList = result.data.data;
-                    }
-                }).catch(function (error) {
-                    console.log(error);
-                });
-            },
             //选择账号时设置户名和开户行
-            selectNumber: function (value, target) {
+            selectNumber: function (value) {
                 var payList = this.payList;
-                var gatherList = this.gatherList;
-                var billData = this.billData;
-
-                if (target == "payNumber") {
-                    for (var i = 0; i < payList.length; i++) {
-                        if (payList[i].acc_id == value) {
-                            billData.pay_account_name = payList[i].acc_name;
-                            billData.pay_account_bank = payList[i].bank_name;
-
-                            if (billData.recv_account_id) {
-                                for (var j = 0; j < gatherList.length; j++) {
-                                    if (gatherList[j].acc_id == billData.recv_account_id) {
-                                        var payLevel = payList[j].level_num;
-                                        var gatherLevel = gatherList[j].level_num;
-                                    }
-                                }
-                            }
+                var params = {
+                    pay_account_id: "acc_id",
+                    pay_account_no: "acc_no",
+                    pay_account_name: "acc_name",
+                    pay_account_cur: "curr_id",
+                    pay_account_bank: "bank_name",
+                    pay_bank_cnaps: "bank_cnaps_code",
+                    pay_bank_prov: "",
+                    pay_bank_city: "city",
+                    pay_modepay_mode: ""
+                }
+                for(var i = 0; i < payList.length; i++){
+                    if(payList[i].acc_id == value){
+                        var item = payList[i];
+                        for(var k in params){
+                            this.billData[k] = item[params[k]];
                         }
                     }
                 }
-                if (target == "gatherNumber") {
-                    for (var i = 0; i < gatherList.length; i++) {
-                        if (gatherList[i].acc_id == value) {
-                            billData.recv_account_name = gatherList[i].acc_name;
-                            billData.recv_account_bank = gatherList[i].bank_name;
-
-                            if (billData.pay_account_id) {
-                                for (var j = 0; j < payList.length; j++) {
-                                    if (payList[j].acc_id == billData.pay_account_id) {
-                                        var payLevel = payList[j].level_num;
-                                        var gatherLevel = gatherList[j].level_num;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
-                if (payLevel && gatherLevel) {
-                    this.allotType = payLevel == gatherLevel ? "本公司内部账户调拨" : (payLevel > gatherLevel ? "本公司拨给下级公司" : "本公司拨给上级公司");
-                }
-            },
-
-            //清空账号时清空户名和开户行
-            clearSelect: function (target) {
-                var billData = this.billData;
-                if (target == "payNumber") {
-                    billData.pay_account_name = "";
-                    billData.pay_account_bank = "";
-                }
-                if (target == "gatherNumber") {
-                    billData.recv_account_name = "";
-                    billData.recv_account_bank = "";
-                }
-                this.allotType = "";
-            },
-            //输入金额后进行格式化
-            setMoney: function () {
-                var moneyNum = this.billData.payment_amount.replace(/,/gi, "").trim();
-                /*校验数据格式是否正确*/
-                if (moneyNum == "") {
-                    return;
-                }
-                if (isNaN(moneyNum)) {
-                    this.$message({
-                        type: "warning",
-                        message: "请输入正确的金额",
-                        duration: 2000
-                    });
-                    this.billData.payment_amount = "";
-                    return;
-                }
-                var verify = moneyNum.split(".");
-                if (verify[0].length > 10) {
-                    this.$message({
-                        type: "warning",
-                        message: "整数位不能超过10位数",
-                        duration: 2000
-                    });
-                    verify[0] = verify[0].slice(0, 10);
-                    moneyNum = verify.join(".");
-                }
-                if (verify[1] && verify[1].length > 2) {
-                    this.$message({
-                        type: "warning",
-                        message: "小数点后只能保留两位小数",
-                        duration: 2000
-                    });
-                    verify[1] = verify[1].slice(0, 2);
-                    moneyNum = verify.join(".");
-                }
-
-                //设置数字部分格式
-                this.billData.payment_amount = this.$common.transitSeparator(moneyNum);
-                //设置汉字
-                this.moneyText = this.$common.transitText(moneyNum);
             },
             //设置当前项上传附件
             setFileList: function ($event) {
@@ -612,34 +466,20 @@
                     })
                 }
             },
-            //清空
-            clearBill: function () {
-                var billData = this.billData;
-                for (var k in billData) {
-                    billData[k] = "";
-                }
-                this.moneyText = "";
-                this.allotType = "";
-                this.emptyFileList = [];
-            },
             //更多单据
             goMoreBills: function () {
-                this.$router.push("/allot/more-bills");
+                this.$router.push("/OA-data/head-office-pay");
             },
+
             //保存
             saveBill: function () {
-                var params = this.setParams();
-                if (!params) {
-                    return;
-                }
-
-                var billData = this.billData;
+                var params = this.billData;
 
                 this.$axios({
                     url: "/cfm/normalProcess",
                     method: "post",
                     data: {
-                        optype: billData.id ? "dbt_chg" : "dbt_add",
+                        optype: "headorgoa_chg",
                         params: params
                     }
                 }).then((result) => {
@@ -651,10 +491,7 @@
                         });
                     } else {
                         var data = result.data.data;
-                        data.payment_amount = this.$common.transitSeparator(data.payment_amount);
-                        data.pay_mode += "";
-
-                        this.billData = data;
+                        debugger;
                         this.$message({
                             type: "success",
                             message: "保存成功",
@@ -667,16 +504,13 @@
             },
             //提交
             submitBill: function () {
-                var params = this.setParams();
-                if (!params) {
-                    return;
-                }
+                var params = this.billData;
 
                 this.$axios({
                     url: "/cfm/normalProcess",
                     method: "post",
                     data: {
-                        optype: "dbt_presubmit",
+                        optype: "headorgoa_presubmit",
                         params: params
                     }
                 }).then((result) => {
@@ -701,50 +535,6 @@
                     console.log(error);
                 });
             },
-            //设置params
-            setParams: function () {
-                //校验数据是否完善 并设置发送给后台的数据
-                var billData = this.billData;
-                var params = {
-                    pay_account_id: "",
-                    recv_account_id: "",
-                    payment_amount: "",
-                    pay_mode: "",
-                    payment_summary: "",
-                    files: [],
-                    biz_id: ""
-                }
-                for (var k in params) {
-                    if (k != "payment_summary" && k != "files" && !billData[k]) {
-                        this.$message({
-                            type: "warning",
-                            message: "请完善单据信息",
-                            duration: 2000
-                        });
-                        return false;
-                    }
-                    if (k == "payment_amount") {  //金额
-                        params[k] = billData[k].split(",").join("");
-                    } else if (k == "files") {  //附件
-                        params[k] = this.fileList;
-                    } else if (k == "biz_id") {
-                        params[k] = billData[k];
-                        var payStatList = this.payStatList;
-                        for (var i = 0; i < payStatList.length; i++) {
-                            if (billData[k] == payStatList[i].biz_id) {
-                                params.biz_name = payStatList[i].biz_name;
-                            }
-                        }
-                    } else {
-                        params[k] = billData[k];
-                    }
-                }
-                if (billData.id) {
-                    params.id = billData.id;
-                    params.persist_version = billData.persist_version;
-                }
-                return params;
-            },
             //提交流程
             submitFlow: function () {
                 var workflowData = this.billData;
@@ -760,7 +550,7 @@
                     url: "/cfm/normalProcess",
                     method: "post",
                     data: {
-                        optype: "dbt_submit",
+                        optype: "headorgoa_submit",
                         params: params
                     }
                 }).then((result) => {
