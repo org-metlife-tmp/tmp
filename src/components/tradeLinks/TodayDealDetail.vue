@@ -148,8 +148,8 @@
                 var barData = [];
                 for(var i = 0; i < currentData.length; i++){
                     var item = currentData[i];
-                    var barColor = item.direction == "付"? "#A1D331" : "#33B2F2";
-                    var currentValue = item.direction == "付"? item.amount * -1 : item.amount * 1;
+                    var barColor = item.direction == "收"? "#A1D331" : "#33B2F2";
+                    var currentValue = item.direction == "收"? item.amount * 1 : item.amount * -1;
 
                     barData.push({
                         direction : item.direction,

@@ -69,7 +69,8 @@
                 <el-table-column prop="acc_attr_name" label="账户性质" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="bank_type_name" label="银行大类" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="bank_name" label="所属银行" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="bal" label="当前余额" :show-overflow-tooltip="true" width="100px"></el-table-column>
+                <el-table-column prop="bal" label="余额" :show-overflow-tooltip="true" width="100px"></el-table-column>
+                <el-table-column prop="bal_date" label="余额日期" :show-overflow-tooltip="true" width="100px"></el-table-column>
                 <el-table-column prop="import_time" label="同步时间" :show-overflow-tooltip="true"></el-table-column>
             </el-table>
             <div class="allData">
