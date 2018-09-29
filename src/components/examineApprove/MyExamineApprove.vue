@@ -200,7 +200,7 @@
         }
     }
     #myExamineApprove{
-        .el-dialog__wrapper {
+        .detailDialog.el-dialog__wrapper {
             .el-dialog__body {
                 height: 400px;
                 overflow-y: scroll;
@@ -445,6 +445,7 @@
         <!-- 开户事项申请详情查看 -->
         <el-dialog :visible.sync="dialogVisible"
                    width="860px"
+                   class="detailDialog"
                    :close-on-click-modal="false"
                    top="56px">
             <h1 slot="title" v-text="dialogTitle" class="dialog-title"></h1>
