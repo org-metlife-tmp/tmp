@@ -866,6 +866,7 @@
                 var params = this.dialogData;
                 var optype = "";
                 if (!params.id) {
+                    debugger;
                     optype = "openintent_add";
                     var area_code = this.dialogData.areaCode.split("-");
                     var areaList = this.areaList;
@@ -1183,6 +1184,13 @@
             //提交审批流程
             subFlow: function () {
                 var params = this.dialogData;
+                var area_code = this.dialogData.areaCode.split("-");
+                var areaList = this.areaList;
+                for(var i = 0; i < areaList.length; i++){
+                    if(areaList[i].name == area_code[0]){
+                        params.area_code = areaList[i].code;
+                    }
+                }
 
                 this.$axios({
                     url: "/cfm/normalProcess",

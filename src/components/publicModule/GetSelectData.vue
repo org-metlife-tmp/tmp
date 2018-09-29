@@ -172,22 +172,6 @@
                     console.log(error);
                 })
             }
-            this.$axios({
-                url: "/cfm/commProcess",
-                method: "post",
-                data: {
-                    optype: "area_list"
-                }
-            }).then((result) => {
-                if (result.data.error_msg) {
-                    return;
-                } else {
-                    var data = result.data.data;
-                    window.sessionStorage.setItem("areaList", JSON.stringify(data));
-                }
-            }).catch(function (error) {
-                console.log(error);
-            })
             //系统常量
             if (!window.sessionStorage.getItem("catgList")) {
                 this.$axios({
