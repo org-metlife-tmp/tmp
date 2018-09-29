@@ -91,7 +91,7 @@
                 <el-table-column prop="org_name" label="公司" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="acc_attr_name" label="账户性质" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="bank_type_name" label="银行大类" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="bank_name" label="所属银行" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="bank_name" label="开户行" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="bal" label="日均余额" :show-overflow-tooltip="true"></el-table-column>
             </el-table>
         </div>
@@ -118,12 +118,16 @@
         name: "HistoryFluctuate",
         created: function () {
             let curDate = new Date();
+	    let yesterDay = new Date();
             let oldDate = new Date();
+	    yesterDay.setFullYear(curDate.getFullYear());
+	    yesterDay.setMonth(curDate.getMonth());
+	    yesterDay.setDate(curDate.getDate()-1);
             oldDate.setFullYear(curDate.getFullYear());
             oldDate.setMonth(curDate.getMonth());
-            oldDate.setDate(curDate.getDate()-7);
+            oldDate.setDate(curDate.getDate()-8);
 
-            this.dateValue = [oldDate,curDate];
+            this.dateValue = [oldDate,yesterDay];
 
             this.routerMessage.params.start_date = this.dateValue[0];
             this.routerMessage.params.end_date = this.dateValue[1];

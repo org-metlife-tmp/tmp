@@ -71,7 +71,7 @@
                 <el-table-column prop="acc_name" label="账户名称" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="acc_attr_name" label="账户性质" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="bank_type_name" label="银行大类" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="bank_name" label="所属银行" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="bank_name" label="开户行" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="direction" label="收付方向" :show-overflow-tooltip="true">
                 </el-table-column>
                 <el-table-column prop="opp_acc_no" label="对方账户号" :show-overflow-tooltip="true"></el-table-column>
@@ -114,15 +114,20 @@
         name: "HistoryDealDetail",
         created: function () {
             let curDate = new Date();
+	    let yesterDay = new Date();
             let oldDate = new Date();
+	    yesterDay.setFullYear(curDate.getFullYear());
+	    yesterDay.setMonth(curDate.getMonth());
+	    yesterDay.setDate(curDate.getDate()-1);
             oldDate.setFullYear(curDate.getFullYear());
             oldDate.setMonth(curDate.getMonth());
-            oldDate.setDate(curDate.getDate()-7);
+            oldDate.setDate(curDate.getDate()-8);
 
-            this.dateValue = [oldDate,curDate];
+            this.dateValue = [oldDate,yesterDay];
 
             this.routerMessage.params.start_date = this.dateValue[0];
             this.routerMessage.params.end_date = this.dateValue[1];
+
             //向父组件发送自己的信息
             this.$emit('transmitTitle', '历史交易明细');
             this.$emit('getTableData', this.routerMessage);
@@ -185,8 +190,8 @@
                 var barData = [];
                 for(var i = 0; i < currentData.length; i++){
                     var item = currentData[i];
-                    var barColor = item.direction == "付"? "#A1D331" : "#33B2F2";
-                    var currentValue = item.direction == "付"? item.amount * -1 : item.amount * 1;
+                    var barColor = item.direction == "收"? "#A1D331" : "#33B2F2";
+                    var currentValue = item.direction == "收"? item.amount * 1 : item.amount * -1;
 
                     barData.push({
                         direction : item.direction,

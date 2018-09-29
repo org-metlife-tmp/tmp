@@ -122,7 +122,7 @@
                             <el-table-column prop="acc_no" label="账户号" :show-overflow-tooltip="true"></el-table-column>
                             <el-table-column prop="acc_name" label="账户名称"
                                              :show-overflow-tooltip="true"></el-table-column>
-                            <el-table-column prop="bank_name" label="所属银行"
+                            <el-table-column prop="bank_name" label="开户行"
                                              :show-overflow-tooltip="true"></el-table-column>
                             <el-table-column prop="direction" label="收付方向"
                                              :show-overflow-tooltip="true"></el-table-column>
@@ -167,7 +167,7 @@
                 <el-table-column type="selection" width="38"></el-table-column>
                 <el-table-column prop="acc_no" label="账户号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="acc_name" label="账户名称" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="bank_name" label="所属银行" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="bank_name" label="开户行" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="direction" label="收付方向" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="opp_acc_no" label="对方账户号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="opp_acc_name" label="对方账户名称" :show-overflow-tooltip="true"></el-table-column>
