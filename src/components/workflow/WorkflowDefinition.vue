@@ -495,7 +495,7 @@
                                 </el-option>
                             </el-select>
                         </div>
-                        <span class="child_delete iconBg" @click="deleteNode(design_data,item,index)"></span>
+                        <span class="child_delete iconBg" @click="deleteNode(design_data,item,index,$event)"></span>
                         <div class="child_user">
                             <el-select v-model="item['curUser']" @change="selectUsers(item,'user')" v-show="!item.isOrg">
                                 <el-option
@@ -891,6 +891,7 @@ export default {
                         //     console.log(event.target.offsetLeft,event.target.offsetTop);
                         // }
                         this.jsplumb.draggable(targetId);
+                        this.jsplumb.draggable("end_box");
                     }
                 },0) 
             }else{
@@ -978,7 +979,6 @@ export default {
                     this.selectLineId = event.target.id;
                 }
                 this.jsplumb.draggable(newId);
-                
             },0)
         },
         //添加其他列的节点
@@ -1070,8 +1070,9 @@ export default {
         },
         //保存规则
         saveRules:function(curData){
-            let min = curData.min;
-            let max = curData.max;
+            let min = Number(curData.min);
+            let max = Number(curData.max);
+            debugger
             if(min && max && min < max){
                 var arrList = this.line_data;
                 var len = arrList.length;
@@ -1090,10 +1091,10 @@ export default {
                 if(!curData.isEdit){//新建工作流时，添加新规则时，要隐藏加号，显示规则，修改的时候如果原来有规则则不需要
                     curShowEle.style.display = "inline-block";
                     curShowEle.previousElementSibling.className = "";
-                    curShowEle.onclick = ()=>{
+                    curShowEle.onclick = (event)=>{
                         this.addRuleDialogVisible = true;
                         this.addRuleCurData.item_id =  curData.item_id;
-                        this.addRuleCurData.source_id = curData.d_source_id;
+                        this.addRuleCurData.source_id = curData.source_id;
                         this.addRuleCurData.min =  min;
                         this.addRuleCurData.max =  max;
                         this.selectLineId = event.target.id;
@@ -1267,7 +1268,7 @@ export default {
             }  
         },
         //删除节点
-        deleteNode:function(list,item,index){
+        deleteNode:function(list,item,index,event){
             //删除后重组点数据
             list.splice(index,1);
             //删除后重组点数据
@@ -1295,7 +1296,7 @@ export default {
             if(this.matrixArr[column+1]){
                 for (let i in this.matrixArr){
                     if(Number(i) > column){
-                        this.select_flow = this.select_wflow.concat(this.matrixArr[i]); 
+                        this.select_flow = this.select_flow.concat(this.matrixArr[i]); 
                     }
                 }
             }
