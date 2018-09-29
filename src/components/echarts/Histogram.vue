@@ -134,9 +134,10 @@
                             },
                             formatter: function (params) {
                                 var data = params[0].data;
-                                if(data.direction == 2){
+				debugger;
+                                if(data.direction == "收"){
                                     var showText = "收入：";
-                                }else if(data.direction == 1){
+                                }else if(data.direction == "付"){
                                     var showText = "支出："
                                 }
                                 return showText + data.value
