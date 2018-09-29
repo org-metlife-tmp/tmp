@@ -103,6 +103,9 @@
             .table-li-content {
                 width: 38%;
                 padding-left: 10px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
             }
 
             .table-two-row {
