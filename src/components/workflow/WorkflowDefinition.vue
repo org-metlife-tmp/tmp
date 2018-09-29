@@ -921,7 +921,8 @@ export default {
                 item_id: item_id + "",
                 isOrg:false,
                 curUser:"",
-                push_org:""
+                push_org:"",
+                addUsers:[]
             });
             //组织线数据
             this.line_data.push(
@@ -1003,9 +1004,10 @@ export default {
                 n_column: column + 1,			
                 n_row: this.matrixArr[column+1].length,			
                 item_id: item_id + "",
-                isOrg:false,
-                curUser:"",
-                push_org:""
+                isOrg: false,
+                curUser: "",
+                push_org: "",
+                addUsers: []
             });
             //组织线数据
             this.line_data.push(
@@ -1226,7 +1228,7 @@ export default {
             let len = list.length;
             for(let j=0;j<len;j++){
                 if(list[j].id === tag){
-                   list.splice(j,1);
+                   item.addUsers.splice(j,1);
                    break;
                 }
             }
