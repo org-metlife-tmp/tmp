@@ -95,7 +95,7 @@
                     //设置支出、收入、净收支数据
                     if(item.name){
                         totalrecvList.push(item.totalrecv);
-                        totalpayList.push(item.totalpay);
+                        totalpayList.push(-item.totalpay);
                         totalnetrecvList.push(item.totalnetrecv);
                     }
                 };

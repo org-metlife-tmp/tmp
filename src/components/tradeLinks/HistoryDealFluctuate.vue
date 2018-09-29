@@ -53,8 +53,8 @@
                       max-height="397px">
                 <el-table-column prop="acc_no" label="账户号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="org_name" label="公司名称" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="pay" label="收入" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="recv" label="支出" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="recv" label="收入" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="pay" label="支出" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="netrecv" label="净收支" :show-overflow-tooltip="true"></el-table-column>
             </el-table>
         </div>
