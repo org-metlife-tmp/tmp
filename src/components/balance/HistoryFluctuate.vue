@@ -184,6 +184,7 @@
             getCurLineData: function (row, event, column) {
                 let acc_id;
                 if(this.tableList.length <= 0){
+                    this.lineData = [];
                     return false;
                 }
                 if( row === 'all'){
