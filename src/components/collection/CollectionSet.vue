@@ -605,6 +605,11 @@
                 });
             }
         },
+        beforeRouteUpdate (to, from, next) {
+            this.clearAll();
+            this.isView = false;
+            next();
+        },
         data: function () {
             return {
                 collectionData: { //表单数据

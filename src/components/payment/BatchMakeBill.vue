@@ -616,6 +616,10 @@
         components: {
             Upload: Upload
         },
+        beforeRouteUpdate (to, from, next) {
+            this.clearBill();
+            next();
+        },
         data: function () {
             return {
                 dateValue: new Date(), //申请时间
