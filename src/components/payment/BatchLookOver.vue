@@ -147,6 +147,9 @@
             .table-li-content {
                 width: 38%;
                 padding-left: 10px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
             }
 
             .small-title {
@@ -316,7 +319,7 @@
                     <li class="table-li-title">付款账号</li>
                     <li class="table-li-content" v-text="dialogData.pay_account_no"></li>
                     <li class="table-li-title">开户行</li>
-                    <li class="table-li-content" v-text="dialogData.pay_account_bank"></li>
+                    <li class="table-li-content" :title="dialogData.pay_account_bank" v-text="dialogData.pay_account_bank"></li>
 
                     <li class="table-li-title small-title">支付结果</li>
                     <li class="table-li-content table-two-row"></li>

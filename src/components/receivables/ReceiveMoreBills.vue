@@ -342,7 +342,7 @@
                 <li class="table-li-content" v-text="dialogData.pay_account_no"></li>
 
                 <li class="table-li-title">开户行</li>
-                <li class="table-li-content" v-text="dialogData.pay_account_bank"></li>
+                <li class="table-li-content" :title="dialogData.pay_account_bank" v-text="dialogData.pay_account_bank"></li>
                 <li class="table-li-title">金额</li>
                 <li class="table-li-content" v-text="dialogData.receipts_amount" style="color:#fd7d2f"></li>
 
