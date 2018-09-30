@@ -49,7 +49,7 @@
                 color: #00B4EC;
             }
         }
-        
+
     }
 </style>
 <style lang="less">
@@ -123,7 +123,6 @@
         methods: {
             //上传成功
             uploadSuccess:function(response, file, fileList){
-                debugger
                 this.currentUpload = response;
                 // this.addExcel = false;
                 var message = "";

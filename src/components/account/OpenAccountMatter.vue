@@ -866,7 +866,6 @@
                 var params = this.dialogData;
                 var optype = "";
                 if (!params.id) {
-                    debugger;
                     optype = "openintent_add";
                     var area_code = this.dialogData.areaCode.split("-");
                     var areaList = this.areaList;

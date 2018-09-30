@@ -387,7 +387,6 @@
             },
             //编辑确定
             subEdit:function(){
-                debugger
                 var row = this.dialogData;
                 if(row.acc_id && row.subject_code){
                     this.$axios({
@@ -443,7 +442,6 @@
             },
             //获取当前项数据
             getCurrentData: function(setData,row){
-                debugger
                 var dialogData = this.dialogData;
                 this.dialogVisible = true;
                 for(var k in dialogData){

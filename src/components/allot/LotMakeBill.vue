@@ -1515,7 +1515,6 @@
             },
             //下载正确excel文件
             downLoadExcel:function(){
-                debugger
                 this.templateDownLoad(this.currentUpload.download_object_id);
             },
         },

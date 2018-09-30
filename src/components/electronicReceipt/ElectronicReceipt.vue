@@ -105,7 +105,7 @@
 <template>
     <div id="electronicReceipt">
         <div class="btn-list-left">
-            <el-select v-model="channel_code" 
+            <el-select v-model="channel_code"
                         placeholder="渠道编码" size="mini"
                         clearable>
                 <el-option v-for="channel in channelList"
@@ -529,7 +529,6 @@
             //处理弹出表格的金额展示问题
             tansss:function(value){
                 if(value){
-                    debugger
                     this.dialogData.payAmountUp = this.$common.transitSeparator(value);
                     return this.$common.transitText(value);
                 }

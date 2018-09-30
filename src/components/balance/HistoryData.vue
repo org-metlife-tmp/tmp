@@ -123,7 +123,6 @@
         methods: {
             //上传成功
             uploadSuccess:function(response, file, fileList){
-                debugger
                 this.currentUpload = response;
                 // this.addExcel = false;
                 var message = "";

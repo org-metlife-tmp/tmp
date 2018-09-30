@@ -331,6 +331,7 @@
                 dialogVisible: false, //弹框数据
                 dialogData: {
                 },
+                currentData: {},
                 formLabelWidth: "120px",
                 /*下拉框数据*/
                 interList: {}, //账户模式
@@ -388,7 +389,6 @@
             },
             //编辑确定
             subEdit:function(){
-                debugger
                 var row = this.dialogData;
                 if(row.acc_id && row.subject_code){
                     this.$axios({
@@ -412,7 +412,7 @@
                             var data = result.data.data;
                             this.dialogVisible = false;
                             var rows = this.tableList;
-                            var index = rows.indexOf(row);
+                            var index = rows.indexOf(this.currentData);
                             if (this.pagCurrent < (this.pagTotal / this.pagSize)) { //存在下一页
                                 this.$emit('getTableData', this.routerMessage);
                             } else {
@@ -444,7 +444,6 @@
             },
             //获取当前项数据
             getCurrentData: function(setData,row){
-                debugger
                 var dialogData = this.dialogData;
                 this.dialogVisible = true;
                 for(var k in dialogData){
@@ -453,6 +452,7 @@
                 for(var i in row){
                     dialogData[i] = row[i];
                 }
+                this.currentData = row;
             },
         },
         watch: {

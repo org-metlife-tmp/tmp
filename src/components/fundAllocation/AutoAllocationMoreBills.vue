@@ -270,7 +270,6 @@
                 for (var k in searchData) {
                     this.routerMessage.params[k] = searchData[k];
                 }
-                debugger
                 this.$emit("getCommTable", this.routerMessage);
             },
             //换页后获取数据
