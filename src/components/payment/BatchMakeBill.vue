@@ -253,6 +253,21 @@
             text-indent: 0;
             padding-left: 15px;
         }
+
+        /*上传错误信息*/
+        .errorTip{
+            width: 100%;
+            display: inline-block;
+            text-align: center;
+            margin-bottom: 20px;
+            .error-name{
+                color: #fc6e21;
+                line-height: 25px;
+            }
+            .downLoad{
+                color: #00B4EC;
+            }
+        }
     }
 
     /*设置弹出框样式*/
@@ -457,6 +472,13 @@
         <el-dialog :visible.sync="dialogVisible"
                    width="800px" title="批量上传"
                    top="140px" :close-on-click-modal="false">
+            <div class="errorTip" v-show="errorTipShow">
+                <div class="error-name">文档内容不符合要求</div>
+                <a class="downLoad" href="javascript:;"
+                   @click = "templateDownLoad(currentUpload.download_object_id)"
+                   v-text="'/cfm/normal/excel/downExcel?object_id='+currentUpload.download_object_id"
+                ></a>
+            </div>
             <div class="dialog-upload-input">
                 模板上传
                 <el-input size="small" readonly v-model="currentUpload.original_file_name">
@@ -473,7 +495,7 @@
                 </el-input>
             </div>
             <span slot="footer" class="dialog-footer" style="text-align:center">
-                    <el-button type="warning" size="mini" plain @click="templateDownLoad">模板下载</el-button>
+                    <el-button type="warning" size="mini" plain @click="templateDownLoad(false)">模板下载</el-button>
                     <el-button type="warning" size="mini" plain @click="dialogVisible = false">取 消</el-button>
                     <el-button type="warning" size="mini" @click="addCurUpload" :disabled="addExcel">确 定</el-button>
                 </span>
@@ -630,6 +652,7 @@
                 currentUpload: {},
                 saveUploadList: [],
                 currToken: "", //token信息
+                errorTipShow: false
             }
         },
         methods: {
@@ -649,6 +672,7 @@
                 this.currentUpload = {};
                 this.addExcel = true;
                 this.dialogVisible = true;
+                this.errorTipShow = false;
             },
             //上传成功
             uploadSuccess: function (response, file, fileList) {
@@ -658,15 +682,18 @@
                         message: response.error_message,
                         duration: 2000
                     });
+                    this.currentUpload.download_object_id = response.download_object_id;
+                    this.errorTipShow = true;
                     return;
+                }else{
+                    this.currentUpload = response;
+                    this.addExcel = false;
+                    this.$message({
+                        type: "success",
+                        message: "上传成功",
+                        duration: 2000
+                    });
                 }
-                this.currentUpload = response;
-                this.addExcel = false;
-                this.$message({
-                    type: "success",
-                    message: "上传成功",
-                    duration: 2000
-                });
             },
             //添加上传成功的文件
             addCurUpload: function () {
@@ -906,14 +933,19 @@
                 }
             },
             //模板下载
-            templateDownLoad:function (){
+            templateDownLoad:function (val){
+                var params = {};
+                if(val){
+                    params.object_id = val;
+                }else{
+                    params.pk = "2";
+                }
+
                 this.$axios({
                     url: "/cfm/normal/excel/downExcel",
                     method: "post",
                     data:{
-                        params:{
-                            pk: "2"
-                        }
+                        params:params
                     },
                     responseType: 'blob'
                 }).then((result) => {
