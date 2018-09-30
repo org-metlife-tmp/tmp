@@ -421,7 +421,6 @@
                             duration: 2000
                         })
                     }else{
-                        debugger
                         let i = 4;
                         let data = result.data.data;
                         this.submiter = data.submiter[0];

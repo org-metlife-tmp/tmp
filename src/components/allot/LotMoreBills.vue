@@ -654,9 +654,9 @@
                 </li>
 
                 <li class="table-li-title">开户行</li>
-                <li class="table-li-content" v-text="editDialogData.pay_account_bank"></li>
+                <li class="table-li-content" :title="editDialogData.pay_account_bank" v-text="editDialogData.pay_account_bank"></li>
                 <li class="table-li-title">开户行</li>
-                <li class="table-li-content" v-text="editDialogData.recv_account_bank"></li>
+                <li class="table-li-content" :title="editDialogData.recv_account_bank" v-text="editDialogData.recv_account_bank"></li>
 
                 <li class="table-li-title">调拨金额</li>
                 <li class="table-li-content">

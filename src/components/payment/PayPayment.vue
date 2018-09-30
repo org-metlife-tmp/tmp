@@ -130,6 +130,9 @@
             .table-li-content {
                 width: 38%;
                 padding-left: 10px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
             }
 
             .table-two-row {
@@ -304,7 +307,7 @@
                 <li class="table-li-content" v-text="dialogData.recv_account_no"></li>
 
                 <li class="table-li-title">开户行</li>
-                <li class="table-li-content" v-text="dialogData.recv_account_bank"></li>
+                <li class="table-li-content" :title="dialogData.recv_account_bank" v-text="dialogData.recv_account_bank"></li>
                 <li class="table-li-title">金额</li>
                 <li class="table-li-content" v-text="dialogData.payment_amount" style="color:#fd7d2f"></li>
 
