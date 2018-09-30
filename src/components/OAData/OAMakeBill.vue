@@ -229,6 +229,14 @@
         <section>
             <!--表单顶部-->
             <div class="title-date">
+                <el-select v-model="billData.pay_mode" placeholder="请选择付款方式"
+                           filterable clearable size="mini">
+                    <el-option v-for="(item,key) in payModeList"
+                               :key="key"
+                               :label="item"
+                               :value="key">
+                    </el-option>
+                </el-select>
                 <div class="serial-number">
                     <span>单据编号:</span>
                     <span v-text="billData.service_serial_number"></span>
@@ -252,7 +260,7 @@
                                        clearable filterable remote
                                        placeholder="请选择账号"
                                        @change="selectNumber"
-                                       @clear="clearSelect">
+                                       @clear="selectNumber">
                                 <el-option
                                         v-for="payItem in payList"
                                         :key="payItem.acc_id"
@@ -365,8 +373,8 @@
                         var data = result.data.data;
 
                         var billData = this.billData;
-                        for (var k in billData) {
-                            billData[k] = data[k];
+                        for (var k in data) {
+                            billData[k] = data[k] + "";
                         }
                         //设置数字加千分符和转汉字
                         this.moneyText = this.$common.transitText(data.payment_amount);
@@ -400,12 +408,19 @@
                 });
             }
         },
+        mounted: function(){
+            var constants = JSON.parse(window.sessionStorage.getItem("constants"));
+            if(constants.PayMode){
+                this.payModeList = constants.PayMode;
+            }
+        },
         components: {
             Upload: Upload
         },
         data: function () {
             return {
                 billData: {
+                    pay_mode: "",
                     service_serial_number: "", //单据编号
                     pay_account_name: "", //付款方
                     pay_account_id: "",
@@ -416,7 +431,8 @@
                     payment_amount: "", //金额
                     payment_summary: "" //摘要
                 },
-                payList: [],
+                payList: [], //下拉框数据
+                payModeList: {},
                 moneyText: "", //金额-大写
                 fileMessage: { //附件
                     bill_id: "",
@@ -432,28 +448,34 @@
             }
         },
         methods: {
-            //选择账号时设置户名和开户行
+            //选择账号时设置户名等数据
             selectNumber: function (value) {
                 var payList = this.payList;
                 var params = {
                     pay_account_id: "acc_id",
                     pay_account_no: "acc_no",
                     pay_account_name: "acc_name",
-                    pay_account_cur: "curr_id",
+                    pay_account_cur: "iso_code",
                     pay_account_bank: "bank_name",
                     pay_bank_cnaps: "bank_cnaps_code",
-                    pay_bank_prov: "",
-                    pay_bank_city: "city",
-                    pay_modepay_mode: ""
+                    pay_bank_prov: "province",
+                    pay_bank_city: "city"
                 }
-                for(var i = 0; i < payList.length; i++){
-                    if(payList[i].acc_id == value){
-                        var item = payList[i];
-                        for(var k in params){
-                            this.billData[k] = item[params[k]];
+                if(value){
+                    for(var i = 0; i < payList.length; i++){
+                        if(payList[i].acc_id == value){
+                            var item = payList[i];
+                            for(var k in params){
+                                this.billData[k] = item[params[k]];
+                            }
                         }
                     }
+                }else{
+                    for(var k in params){
+                        this.billData[k] = "";
+                    }
                 }
+
             },
             //设置当前项上传附件
             setFileList: function ($event) {
@@ -474,6 +496,7 @@
             //保存
             saveBill: function () {
                 var params = this.billData;
+                params.files = this.fileList;
 
                 this.$axios({
                     url: "/cfm/normalProcess",
@@ -491,10 +514,16 @@
                         });
                     } else {
                         var data = result.data.data;
-                        debugger;
+
+                        var billData = this.billData;
+                        for (var k in data) {
+                            billData[k] = data[k] + "";
+                        }
+                        //设置数字加千分符和转汉字
+                        billData.payment_amount = this.$common.transitSeparator(data.payment_amount);
                         this.$message({
                             type: "success",
-                            message: "保存成功",
+                            message: "修改成功",
                             duration: 2000
                         });
                     }
@@ -523,9 +552,12 @@
                     } else {
                         var data = result.data.data;
                         //设置表单数据
-                        data.payment_amount = this.$common.transitSeparator(data.payment_amount);
-                        data.pay_mode += "";
-                        this.billData = data;
+                        var billData = this.billData;
+                        for (var k in data) {
+                            billData[k] = data[k] + "";
+                        }
+                        //设置数字加千分符和转汉字
+                        billData.payment_amount = this.$common.transitSeparator(data.payment_amount);
                         //设置弹框数据
                         this.selectWorkflow = "";
                         this.workflows = data.workflows;
@@ -563,7 +595,7 @@
                     } else {
                         var data = result.data.data;
                         this.innerVisible = false;
-                        this.clearBill();
+                        this.goMoreBills();
                         this.$message({
                             type: "success",
                             message: "提交成功",
