@@ -288,7 +288,7 @@
                             </el-select>
                         </td>
                         <td class="title-small">账号</td>
-                        <td>
+                        <td style="width:36%">
                             <el-select v-model="billData.recv_account_id"
                                        clearable filterable remote
                                        placeholder="请选择账号"
