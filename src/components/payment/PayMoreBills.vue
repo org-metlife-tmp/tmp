@@ -370,13 +370,24 @@
             </div>
             <ul class="dialog-talbe">
                 <li class="table-li-title">付款账号</li>
-                <li class="table-li-content table-select table-two-row">
+                <li class="table-li-content table-select">
                     <el-select v-model="editDialogData.pay_account_id" placeholder="请选择付款方"
                                filterable clearable size="mini">
                         <el-option v-for="item in accOptions"
                                    :key="item.acc_id"
                                    :label="item.acc_no"
                                    :value="item.acc_id">
+                        </el-option>
+                    </el-select>
+                </li>
+                <li class="table-li-title">业务类型</li>
+                <li class="table-li-content table-select">
+                    <el-select v-model="editDialogData.biz_id" placeholder="请选择业务类型"
+                               filterable clearable size="mini">
+                        <el-option v-for="payItem in payStatList"
+                                   :key="payItem.biz_id"
+                                   :label="payItem.biz_name"
+                                   :value="payItem.biz_id">
                         </el-option>
                     </el-select>
                 </li>
@@ -563,6 +574,31 @@
                 }
             });
 
+            //业务类型
+            this.$axios({
+                url:"/cfm/commProcess",
+                method:"post",
+                data:{
+                    optype:"biztype_biztypes",
+                    params: {
+                        p_id: 9
+                    }
+                }
+            }).then((result) =>{
+                if (result.data.error_msg) {
+                    this.$message({
+                        type: "error",
+                        message: result.data.error_msg,
+                        duration: 2000
+                    })
+                } else {
+                    var data = result.data.data;
+                    this.payStatList = data;
+                }
+            }).catch(function (error) {
+                console.log(error);
+            })
+
             //银行大类
             var bankTypeList = JSON.parse(window.sessionStorage.getItem("bankTypeList"));
             if (bankTypeList) {
@@ -633,6 +669,7 @@
                 editVisible: false, //编辑弹框数据
                 editDialogData: {
                     id:"",
+                    biz_id: "",
                     persist_version: "",
                     rev_persist_version: "",
                     pay_account_id: "",
@@ -651,6 +688,7 @@
                 eidttrigFile: false,
                 fileList: [],
                 accOptions: [],//编辑弹框下拉框数据
+                payStatList: [],
                 payerList: [],
                 bankVisible: false, //银行选择弹框
                 bankDialogData: {
@@ -860,6 +898,7 @@
             },
             //编辑
             editBill: function (row) {
+                console.log(row);
                 this.getPayerSelect();
                 this.currentBill = row;
 
