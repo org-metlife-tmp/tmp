@@ -781,6 +781,7 @@
                 }
             }).then((result) =>{
                 this.accOptions = result.data.data;
+                console.log(this.accOptions);
                 if(params.id){
                     this.$axios({
                         url: "/cfm/normalProcess",
@@ -998,9 +999,9 @@
                 //     return;
                 // }
                 var billData = this.billData;
-                this.saveParams.pay_account_id = billData.pay_account.acc_id;
-                this.saveParams.biz_id = billData.bizObj.biz_id;
-                this.saveParams.biz_name = billData.bizObj.biz_name;
+                this.saveParams.pay_account_id = billData.pay_account? billData.pay_account.acc_id : "";
+                this.saveParams.biz_id = billData.bizObj ? billData.bizObj.biz_id : "";
+                this.saveParams.biz_name = billData.bizObj ? billData.bizObj.biz_name : "";
 
                 this.saveParams.pay_mode = billData.pay_mode;
                 this.saveParams.payment_summary = billData.payment_summary;
@@ -1333,9 +1334,9 @@
                 // }
                 var billData = this.billData;
                 var params = this.saveParams;
-                params.pay_account_id = billData.pay_account.acc_id;
-                params.biz_id = billData.bizObj.biz_id;
-                params.biz_name = billData.bizObj.biz_name;
+                params.pay_account_id = billData.pay_account ? billData.pay_account.acc_id :"";
+                params.biz_id = billData.bizObj ? billData.bizObj.biz_id : "";
+                params.biz_name = billData.bizObj ? billData.bizObj.biz_name : "";
                 params.pay_mode = billData.pay_mode;
                 params.payment_summary = billData.payment_summary;
                 params.files = this.fileList;
