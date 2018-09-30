@@ -583,9 +583,9 @@
                     <el-select v-model="selectFlowData.target_id">
                         <el-option
                             v-for="item in select_flow"
-                            :key="item"
-                            :label="item"
-                            :value="item">
+                            :key="item.id"
+                            :label="item.name"
+                            :value="item.id">
                         </el-option>
                     </el-select>
             </el-form>
@@ -684,8 +684,8 @@ export default {
                 workflow_name:""
             },
             back_options:[
-                {id:1,name:'初始提交人'},
-                {id:2,name:'上级审批人'},
+                // {id:2,name:'初始提交人'},
+                {id:1,name:'上级审批人'},
                 {id:3,name:'自定义'}
             ],
             gradation_options:[
@@ -1281,7 +1281,7 @@ export default {
             }
 
             let column = item.n_column * 1;
-            this.matrixArr[column].splice(this.matrixArr[column].indexOf(item.item_id), 1);
+            this.matrixArr[column].splice(this.matrixArr[column].indexOf(Number(item.item_id)), 1);
             //当前删除元素id
             let id = event.currentTarget.parentNode.getAttribute("id");
             this.jsplumb.remove(id);
@@ -1295,15 +1295,28 @@ export default {
             if(this.matrixArr[column+1]){
                 for (let i in this.matrixArr){
                     if(Number(i) > column){
-                        this.select_flow = this.select_flow.concat(this.matrixArr[i]); 
+                        let arr = [];
+                        this.matrixArr[i].forEach(element => {
+                            arr.push({id:element,name:element});
+                        });
+                        // this.select_flow = this.select_flow.concat(this.matrixArr[i]); 
+                        this.select_flow = this.select_flow.concat(arr); 
                     }
                 }
             }
-            this.select_flow.push("-2");
+            this.select_flow.push({id:"-2",name:"结束节点"});
             this.selectFlowDialogVisible = true;
         },
         //连线后续流程走向(添加连线，)
         connectFlow:function(){
+            if(!this.selectFlowData.target_id){
+                this.$message({
+                    type: "warning",
+                    message: "请选择后续流程",
+                    duration: 2000
+                })
+                return ;
+            }
             var curId = "item_" + this.selectFlowData.item_id;
             var targetId ;
             if(this.selectFlowData.target_id === "-2"){
