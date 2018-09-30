@@ -331,7 +331,7 @@
                     v-for="(item) in editableTabsList"
                     :key="item.name"
                     :name="item.name"
-                >   
+                >
                     <!--tab标签-->
                     <span slot="label">{{item.title}}<i class="tab-num">[{{item.num}}]</i></span>
                     <!--数据展示-->
@@ -399,6 +399,14 @@
                                              :formatter="rename"
                                              :show-overflow-tooltip="true"
                             >
+                            </el-table-column>
+                            <!--付款方式-->
+                            <el-table-column v-else-if="head.prop=='pay_mode'"
+                                             :key="head.id"
+                                             :prop="head.prop"
+                                             :label="head.name"
+                                             :formatter="payMode"
+                                             :show-overflow-tooltip="true">
                             </el-table-column>
                             <!-- 公用列 -->
                             <el-table-column
@@ -493,6 +501,13 @@
                         <el-col v-else-if="detail.prop=='payment_type'"
                                 :key="detail.id"
                                 :span="detail.pspan">{{dbtTypeList[dialogData.payment_type]}}</el-col>
+                        <el-col v-else-if="detail.prop=='service_status'"
+                                :key="detail.id"
+                                :span="detail.pspan">{{billStatusList[dialogData.service_status]}}</el-col>
+                        <el-col v-else-if="detail.prop=='pay_mode'"
+                                :key="detail.id"
+                                :span="detail.pspan">{{PayModeList[dialogData.pay_mode]}}</el-col>
+
                         <el-col v-else-if="detail.prop=='payment_amount' || detail.prop=='total_amount'"
                                 :key="detail.id"
                                 :span="detail.pspan">
@@ -777,6 +792,14 @@
                     addLots:"skt_append",
                     agree:"skt_agree",
                     reject:"skt_reject"
+                },
+                "16":{
+                    text:"OA数据",
+                    detail:"headorgoa_detail",
+                    list:"headorgoa_pendingtasks",
+                    addLots:"headorgoa_append",
+                    agree:"headorgoa_agree",
+                    reject:"headorgoa_reject"
                 }
             };
 
@@ -1122,6 +1145,28 @@
                     {id:"13", lspan:4, label:"摘要"},
                     {id:"14", pspan:8, prop:"receipts_summary"}
                 ],
+                "16":[
+                    {id:"1", lspan:4, label:"付款账户号"},
+                    {id:"2",pspan:20, prop:"pay_account_no"},
+                    {id:"3", lspan:4, label:"付款账户名称"},
+                    {id:"4", pspan:8, prop:"pay_account_name"},
+                    {id:"5", lspan:4, label:"付款银行名称"},
+                    {id:"6", pspan:8, prop:"pay_account_bank"},
+                    {id:"7", lspan:4, label:"收款账户号"},
+                    {id:"8", pspan:8, prop:"recv_account_no"},
+                    {id:"9", lspan:4, label:"收款账户名称"},
+                    {id:"10", pspan:8, prop:"recv_account_name"},
+                    {id:"11", lspan:4, label:"收款银行名称"},
+                    {id:"12", pspan:8, prop:"recv_account_bank"},
+                    {id:"13", lspan:4, label:"付款方式"},
+                    {id:"14", pspan:8, prop:"pay_mode"},
+                    {id:"15", lspan:4, label:"付款金额"},
+                    {id:"16", pspan:8, prop:"payment_amount"},
+                    {id:"17", lspan:4, label:"单据状态"},
+                    {id:"18", pspan:8, prop:"service_status"},
+                    {id:"19", lspan:4, label:"摘要"},
+                    {id:"20", pspan:8, prop:"payment_summary"}
+                ],
             }
         },
         mounted:function(){
@@ -1145,6 +1190,14 @@
             //归集频率
             if(constants.CollOrPoolFrequency){
                 this.frequencyList = constants.CollOrPoolFrequency;
+            }
+            //状态
+            if (constants.BillStatus) {
+                this.billStatusList = constants.BillStatus;
+            }
+            //付款方式
+            if (constants.PayMode) {
+                this.PayModeList = constants.PayMode;
             }
         },
         props: ["isPending", "tableData"],
@@ -1307,6 +1360,15 @@
                         {id:'4',prop:"receipts_amount",name:'金额'},
                         {id:'5',prop:"service_status",name:'处理状态'}
                     ],
+                    "16":[
+                        {id:'1',prop:"pay_account_no",name:'付款方账号'},
+                        {id:'2',prop:"pay_account_bank",name:'付款方银行'},
+                        {id:'3',prop:"recv_account_no",name:'收款方账号'},
+                        {id:'4',prop:"recv_account_bank",name:'收款方银行'},
+                        {id:'5',prop:"payment_amount",name:'收款金额'},
+                        {id:'6',prop:"pay_mode",name:'付款方式'},
+                        {id:'7',prop:"service_status",name:'状态'}
+                    ],
                 },
                 editableTabsList: {},
                 totalTabNum: "",//我的待办条数
@@ -1346,6 +1408,8 @@
                 depositsList:[],//存款类型
                 poolTypeList: {}, //归集金额
                 frequencyList: {}, //归集频率
+                billStatusList: {}, //状态
+                PayModeList: {}, //付款方式
             }
         },
         methods:{
@@ -1469,6 +1533,13 @@
                     }
                 })
                 return new_name;
+            },
+            //付款方式展示
+            payMode: function (row, column, cellValue, index) {
+                var constants = JSON.parse(window.sessionStorage.getItem("constants"));
+                if (constants.PayMode) {
+                    return constants.PayMode[cellValue];
+                }
             },
             //点击页数 获取当前页数据
             getCurrentPage: function (currPage) {
