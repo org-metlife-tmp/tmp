@@ -153,7 +153,7 @@
                 <el-table-column prop="service_status" label="业务状态" :show-overflow-tooltip="true"
                                  width="100px" :formatter="transitStatus"></el-table-column>
                 <el-table-column
-                        label="操作" width="110"
+                        label="操作" width="80"
                         fixed="right">
                     <template slot-scope="scope" class="operationBtn">
                         <el-tooltip content="查看" placement="bottom" effect="light"
@@ -168,12 +168,12 @@
                             <el-button type="primary" icon="el-icon-edit" size="mini"
                                        @click="editCollect(scope.row)"></el-button>
                         </el-tooltip>
-                        <el-tooltip content="复制" placement="bottom" effect="light"
+                        <!-- <el-tooltip content="复制" placement="bottom" effect="light"
                                     :enterable="false" :open-delay="500"
                                     v-if="scope.row.service_status == 1 || scope.row.service_status == 5 || scope.row.service_status == 2">
                             <el-button class="on-copy" size="mini"
                                        @click="copyCollect(scope.row)"></el-button>
-                        </el-tooltip>
+                        </el-tooltip> -->
                         <el-tooltip content="撤回" placement="bottom" effect="light"
                                     :enterable="false" :open-delay="500"
                                     v-if="scope.row.service_status == 2">
