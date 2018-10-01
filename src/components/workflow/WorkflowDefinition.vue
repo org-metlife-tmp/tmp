@@ -684,9 +684,9 @@ export default {
                 workflow_name:""
             },
             back_options:[
-                // {id:2,name:'初始提交人'},
-                {id:1,name:'上级审批人'},
-                {id:3,name:'自定义'}
+                {id:1,name:'初始提交人'},
+                {id:2,name:'上级审批人'},
+                //{id:3,name:'自定义'}
             ],
             gradation_options:[
                 {id:1,name:'1'},
