@@ -644,6 +644,12 @@
     export default {
         name: "MyExamineApprove",
         created: function () {
+            var params = this.$route.params;
+            if(params.biz_type){
+                var curTab = this.$route.params.biz_type;
+                this.activeName = curTab+"";
+                this.isFromHome = true;
+            }
             this.$emit("transmitTitle", "我的审批平台");
             // this.$emit("getTableData", this.routerMessage);
             //获取tab数据
@@ -1410,6 +1416,7 @@
                 frequencyList: {}, //归集频率
                 billStatusList: {}, //状态
                 PayModeList: {}, //付款方式
+                isFromHome: false,//是否从首页进入
             }
         },
         methods:{
@@ -1461,10 +1468,16 @@
                             document.getElementById("myTab").style.top = "70px";
                             // _this.$refs.myTab.style.top = "70px";
                         }
-                        if(!arrObject[this.activeName] || this.activeName == "0"){//如果没找到上次停留的tab，回到我的待办
+                        if(this.isFromHome){//从home页跳过了
+                            this.routerMessage.todo.params.page_num = 1;
+                            this.routerMessage.todo.optype = this.classParams[this.activeName].list;
+                            this.routerMessage.todo.params.biz_type = this.activeName;
+                            this.$emit("getTableData", this.routerMessage);
+                        }else if(!arrObject[this.activeName] || this.activeName == "0"){//如果没找到上次停留的tab，回到我的待办
                             this.comeBack();
                         }
                         this.editableTabsList = arrObject;
+                        console.log(this.activeName)
                     }
                 })
             },
@@ -1832,17 +1845,9 @@
                 if(this.isPending){
                     var curTab = this.editableTabsList[this.activeName];
                     curTab.tableList=val.data;
-                    // curTab.num = val.total_line;
-                    // if(val.total_line === 0){
-                    //     delete this.editableTabsList[this.activeName];
-                    //     this.activeName = "0";
-                    //     var keysLen = Object.keys(this.editableTabsList).length;
-                    //     if(keysLen === 1){
-                    //         this.editableTabsList[0].num = 0;
-                    //         this.editableTabsList[0].tableList = [];
-                    //         document.getElementById("myTab").style.top = "70px";
-                    //     }
-                    // }
+                    if(this.isFromHome){
+                        this.isFromHome = false;
+                    }
                 }else{
                     this.doneTableList = val.data;
                 }
