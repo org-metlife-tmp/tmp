@@ -51,6 +51,47 @@
             .backlog-content {
                 position: relative;
                 height: 110px;
+                line-height: 20px;
+
+                .my-todo {
+                    width: 100%;
+                    box-sizing: border-box;
+                    height: 100%;
+                    overflow: hidden;
+                    padding-left: 20px;
+                    padding-right: 20px;
+
+                    ul {
+                        width: 100%;
+                        transition: margin-top 2s linear;
+
+                        li {
+                            height: 20px;
+                            cursor: pointer;
+
+                            span{
+                                display: inline-block;
+                            }
+
+                            .todo-text{
+                                width: 80%;
+                                overflow: hidden;
+                                text-overflow: ellipsis;
+                                white-space: nowrap;
+                            }
+
+                            .todo-num{
+                                float: right;
+                                width: 23px;
+                                height: 18px;
+                                line-height: 18px;
+                                border-radius: 9px;
+                                background-color: rgba(255,255,255,0.5);
+                                text-align: center;
+                            }
+                        }
+                    }
+                }
             }
 
             .backlog-content, .backlog-content:after, .backlog-content:before {
@@ -170,7 +211,17 @@
 
             <div>您的待办事项如下:</div>
             <article>
-                <div class="backlog-content"></div>
+                <div class="backlog-content">
+                    <div class="my-todo">
+                        <ul :style="{'margin-top':todoLocation + 'px'}"
+                            @mouseenter="clearInter" @mouseleave="setInter">
+                            <li v-for="item in todoList" :key="item.id" @click="goApprove(item)">
+                                <span class="todo-text">{{ item.text }}</span>
+                                <span class="todo-num">{{ item.num }}</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
             </article>
         </div>
         <!-- 快捷面板-->
@@ -192,15 +243,91 @@
         created: function () {
             var user = this.$store.state.user;
             this.userName = user.name;
+
+            //获取待办列表数据
+            this.$axios({
+                url: "/cfm/commProcess",
+                method: "post",
+                data: {
+                    optype: "wfquery_pendingtaskallnum",
+                    params: {
+                    }
+                }
+            }).then((result) => {
+                if (result.data.error_msg) {
+                    this.$message({
+                        type: "error",
+                        message: result.data.error_msg,
+                        duration: 2000
+                    })
+                } else {
+                    var data = result.data.data.pending_list;
+                    if(data.length > 0){
+                        var constants = JSON.parse(window.sessionStorage.getItem("constants"));
+                        var typeName = constants.MajorBizType;
+                        data.forEach((item) => {
+                            item.text = typeName[item.biz_type];
+                            item.id = item.biz_type;
+                        });
+                        this.todoList = data;
+
+                        this.setInter();
+                    }
+                }
+            }).catch(function (error) {
+                console.log(error);
+            });
+        },
+        destroyed: function(){
+            this.clearInter();
         },
         data: function () {
             return {
                 currentAddress: "",
                 userName: "",
-                currentDate: new Date()
+                currentDate: new Date(),
+                todoList: [
+                ],
+                todoLocation: 0,
+                interTime: "",
             }
         },
-        methods: {},
+        methods: {
+            //设置待办事项列表滚动
+            setInter: function() {
+                var todoLength = this.todoList.length;
+                if(todoLength*20 > 110){
+                    this.interTime = window.setInterval(() => {
+                        var todoLocation = this.todoLocation;
+                        this.todoLocation = todoLocation - 20;
+                        var currIndex = todoLocation*-1/20;
+                        var todoItem = this.todoList.slice(currIndex,currIndex+1)[0];
+                        var pushItem = {};
+                        for(var k in todoItem){
+                            if(k == "id"){
+                                pushItem[k] = new Date().valueOf();
+                            }else{
+                                pushItem[k] = todoItem[k];
+                            }
+                        }
+                        this.todoList.push(pushItem);
+                    }, 2000);
+                }
+            },
+            //清除待办列表的滚动
+            clearInter: function () {
+                window.clearInterval(this.interTime);
+            },
+            //我的待办详细列表
+            goApprove: function(item){
+                this.$router.push({
+                    name:"MyExamineApprove",
+                    params:{
+                        biz_type: item.biz_type
+                    }
+                });
+            }
+        },
         computed: {
             //获取具体时间
             getDate: function () {
