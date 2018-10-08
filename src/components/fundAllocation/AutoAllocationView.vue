@@ -124,7 +124,7 @@
         data:function(){
             return {
                 searchData:{ //搜索条件
-
+                    service_status: [],
                 },
                 statusList: {
                     1:"已保存",
