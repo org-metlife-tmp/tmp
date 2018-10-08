@@ -24,12 +24,12 @@
             position: absolute;
             width: 100%;
             height: 8%;
-            bottom: -6px;
+            bottom: 8px;
         }
 
         /*数据展示区*/
         .table-content {
-            height: 289px;
+            height: 362px;
         }
         /*按钮-复制*/
         .on-copy {
@@ -560,7 +560,7 @@
                     <span class="rule-source">{{addRuleCurData.item_id}}</span>
                     <el-input class="ruler-input" v-model="addRuleCurData.min" placeholder="大于等于" oninput="javascript:this.value=this.value.replace(/[^\d]/g,'')"></el-input>
                     -
-                    <el-input class="ruler-input" v-model="addRuleCurData.max" placeholder="小于" oninput="javascript:this.value=this.value.replace(/[^\d]/g,'')"></el-input>
+                    <el-input class="ruler-input" v-model="addRuleCurData.max" placeholder="小于等于" oninput="javascript:this.value=this.value.replace(/[^\d]/g,'')"></el-input>
             </el-form>
             <span slot="footer" class="dialog-footer">
                 <el-button type="warning" size="mini" @click="saveRules(addRuleCurData)">确 定</el-button>
@@ -1070,16 +1070,24 @@ export default {
         },
         //保存规则
         saveRules:function(curData){
-            let min = Number(curData.min);
-            let max = Number(curData.max);
-            if(min && max && min < max){
+            let min = curData.min;
+            let max = curData.max;
+            if((min || min === '0') || (max || max ==='0')){
+                if((min || min === '0') && (max || max ==='0') && Number(max)<Number(min)){
+                    this.$message({
+                        message: '最大金额不能小于最小金额！',
+                        type: 'warning'
+                    });
+                    return ;
+                }
                 var arrList = this.line_data;
                 var len = arrList.length;
                 var str = "";
+                var dealMoney = this.dealRuleMoney(min,max);
                 for(var i = 0; i<len;i++){
                     if(arrList[i].d_target_id === curData.item_id && arrList[i].d_source_id === curData.source_id){
-                        str = min + "~" + max;
-                        arrList[i].rule = str;
+                        str = dealMoney.showStr;
+                        arrList[i].rule = dealMoney.saveStr;
                         break;
                     }
                 }
@@ -1094,18 +1102,64 @@ export default {
                         this.addRuleDialogVisible = true;
                         this.addRuleCurData.item_id =  curData.item_id;
                         this.addRuleCurData.source_id = curData.source_id;
-                        this.addRuleCurData.min =  min;
-                        this.addRuleCurData.max =  max;
+                        this.addRuleCurData.min =  min ? min : '';
+                        this.addRuleCurData.max =  max ? max : '';
                         this.selectLineId = event.target.id;
                     }
                 }
             }else{
                 this.$message({
-                    message: '请输入正确的数字！',
+                    message: '至少填写一个正确的金额！',
                     type: 'warning'
                 });
                 return;
             }
+        },
+        //处理保存金额规则
+        dealRuleMoney:function(min,max){
+            let obj = {};
+            if((min || min === 0) && (max || max === 0)){
+                obj.showStr = min + '~' + max;
+                obj.saveStr = '${AMOUNT}~${'+ min + ',' + max + '}';
+            }else if(min || min === 0){
+                obj.showStr = '>=' + min;
+                obj.saveStr = '${AMOUNT}>=${'+ min + '}';
+            }else{
+                obj.showStr = '<=' + max;
+                obj.saveStr = '${AMOUNT}<=${' + max + '}';
+            }
+            // ${AMOUNT}~${0,10000}
+            // ${AMOUNT}>=${1000}
+            // ${AMOUNT}<=${100}
+            return obj;
+        },
+        //反显金额规则
+        translateRuleMoney:function(str){
+            let result = {};
+            if(str){
+                let f_index = str.lastIndexOf('{') + 1;
+                let e_index = str.lastIndexOf('}');
+                let str_re= str.substring(f_index, e_index);
+                if(str.indexOf('~') > 0){
+                    let arr = str_re.split(',');
+                    result.str = arr[0] + '~' + arr[1];
+                    result.min = arr[0];
+                    result.max = arr[1];
+                }else if(str.indexOf('>') > 0){
+                    result.str = '>=' + str_re;
+                    result.min = str_re;
+                    result.max = "";
+                }else{
+                    result.str = '<=' + str_re;
+                    result.max = str_re;
+                    result.min = "";
+                }
+            }else{
+                result.str = "";
+                result.min = "";
+                result.max = "";
+            }
+            return result;
         },
         //左移
         leftMove:function(event){
@@ -1566,6 +1620,7 @@ export default {
                                     }else{
                                         targetId = "item_" + oldTId;
                                     }
+                                    var ruleMoney = this.translateRuleMoney(this.line_data[q].rule);
                                     this.jsplumb.connect({
                                         source: sourceId,
                                         target: targetId,
@@ -1589,7 +1644,7 @@ export default {
                                                         clickObjId = 'addRule_' + newLength;
                                                     }else{
                                                         elementChildSe.className = "rule-hasValue";
-                                                        elementChildSe.innerText = this.line_data[q].rule;
+                                                        elementChildSe.innerText = ruleMoney.str;
                                                         clickObjId = 'ruleChange_' + newLength;
                                                     }
                                                     elementChildSe.setAttribute("id",'ruleChange_' + newLength);
@@ -1607,9 +1662,9 @@ export default {
                                         this.addRuleCurData.source_id = this.line_data[q].d_source_id;
                                         this.addRuleCurData.item_id = this.line_data[q].d_target_id;
                                         if(this.line_data[q].rule){//非加号时
-                                            let rules = this.line_data[q].rule.split("~");
-                                            this.addRuleCurData.min = rules[0];
-                                            this.addRuleCurData.max = rules[1];
+                                            var money = this.translateRuleMoney(this.line_data[q].rule);
+                                            this.addRuleCurData.min = money.min;
+                                            this.addRuleCurData.max = money.max;
                                             this.addRuleCurData.isEdit = true;
                                         }
                                         this.selectLineId = event.target.id;
