@@ -857,7 +857,7 @@
                 return billData;
             },
             //保存
-            saveBill: function(){
+            saveBill: function(type){
                 var params = this.setParams();
                 if(!params){
                     return;
@@ -890,6 +890,9 @@
                         billData.pay_persist_version = data.pay_persist_version;
                         billData.pay_account_id = data.pay_account_id;
                         this.getPayerSelect();
+                        if(type == 'submit'){
+                            this.submitBill();
+                        }
                     }
                 }).catch(function (error) {
                     console.log(error);
@@ -897,43 +900,66 @@
             },
             //提交
             submitBill: function(){
-                var params = this.setParams();
-                if(!params){
-                    return;
-                }
-
-                this.$axios({
-                    url: "/cfm/normalProcess",
-                    method: "post",
-                    data: {
-                        optype: "skt_presubmit",
-                        params: params
-                    }
-                }).then((result) => {
-                    if (result.data.error_msg) {
+                if(this.billData.id){
+                    this.$axios({
+                        url: "/cfm/normalProcess",
+                        method: "post",
+                        data: {
+                            optype: "skt_chgservicestatus",
+                            params: {
+                                id: this.billData.id,
+                                persist_version: this.billData.persist_version
+                            }
+                        }
+                    }).then((result) => {
+                        this.clearBill();
                         this.$message({
-                            type: "error",
-                            message: result.data.error_msg,
+                            type: "success",
+                            message: "提交成功",
                             duration: 2000
-                        });
-                    } else {
-                        var data = result.data.data;
+                        })
+                    }).catch(function (error) {
+                        console.log(error);
+                    });
+                }else{
+                    this.saveBill('submit');
+                }
+                // var params = this.setParams();
+                // if(!params){
+                //     return;
+                // }
+                // this.$axios({
+                //     url: "/cfm/normalProcess",
+                //     method: "post",
+                //     data: {
+                //         optype: "skt_presubmit",
+                //         params: params
+                //     }
+                // }).then((result) => {
+                //     if (result.data.error_msg) {
+                //         this.$message({
+                //             type: "error",
+                //             message: result.data.error_msg,
+                //             duration: 2000
+                //         });
+                //     } else {
+                //         var data = result.data.data;
 
-                        var billData = this.billData;
-                        billData.id = data.id;
-                        billData.persist_version = data.persist_version;
-                        billData.service_status = data.service_status;
-                        billData.service_serial_number = data.service_serial_number;
-                        this.getPayerSelect();
+                //         var billData = this.billData;
+                //         billData.id = data.id;
+                //         billData.persist_version = data.persist_version;
+                //         billData.service_status = data.service_status;
+                //         billData.service_serial_number = data.service_serial_number;
+                //         this.getPayerSelect();
 
-                        //设置弹框数据
-                        this.selectWorkflow = "";
-                        this.workflows = data.workflows;
-                        this.innerVisible = true;
-                    }
-                }).catch(function (error) {
-                    console.log(error);
-                });
+                //         //设置弹框数据
+                //         this.selectWorkflow = "";
+                //         this.workflows = data.workflows;
+                //         this.innerVisible = true;
+                //     }
+                // }).catch(function (error) {
+                //     console.log(error);
+                // });
             },
             //提交流程
             submitFlow: function(){

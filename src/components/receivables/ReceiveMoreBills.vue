@@ -1170,41 +1170,62 @@
             },
             //提交
             submitBill: function () {
-                var params = this.setParams();
-                if (!params) {
-                    return;
-                }
-
                 this.$axios({
                     url: "/cfm/normalProcess",
                     method: "post",
                     data: {
-                        optype: "skt_presubmit",
-                        params: params
+                        optype: "skt_chgservicestatus",
+                        params: {
+                            id: this.editDialogData.id,
+                            persist_version: this.editDialogData.persist_version
+                        }
                     }
                 }).then((result) => {
-                    if (result.data.error_msg) {
-                        this.$message({
-                            type: "error",
-                            message: result.data.error_msg,
-                            duration: 2000
-                        });
-                    } else {
-                        var data = result.data.data;
-                        //设置表单数据
-                        for (var k in data) {
-                            this.currentBill[k] = data[k];
-                        }
-                        //设置弹框数据
-                        this.selectWorkflow = "";
-                        this.workflows = data.workflows;
-
-                        this.innerVisible = true;
-                        this.editVisible = false;
-                    }
+                    this.editVisible = false;
+                    this.$message({
+                        type: "success",
+                        message: "提交成功",
+                        duration: 2000
+                    });
+                    this.$emit("getCommTable", this.routerMessage);
                 }).catch(function (error) {
                     console.log(error);
                 });
+                // var params = this.setParams();
+                // if (!params) {
+                //     return;
+                // }
+
+                // this.$axios({
+                //     url: "/cfm/normalProcess",
+                //     method: "post",
+                //     data: {
+                //         optype: "skt_presubmit",
+                //         params: params
+                //     }
+                // }).then((result) => {
+                //     if (result.data.error_msg) {
+                //         this.$message({
+                //             type: "error",
+                //             message: result.data.error_msg,
+                //             duration: 2000
+                //         });
+                //     } else {
+                //         var data = result.data.data;
+                //         //设置表单数据
+                //         for (var k in data) {
+                //             this.currentBill[k] = data[k];
+                //         }
+                //         //设置弹框数据
+                //         this.selectWorkflow = "";
+                //         this.workflows = data.workflows;
+
+                //         this.innerVisible = true;
+                //         this.editVisible = false;
+                //     }
+                // }).catch(function (error) {
+                //     console.log(error);
+                // });
             },
             //提交流程
             submitFlow: function () {
