@@ -182,6 +182,12 @@
                 }
             }
         }
+        .el-dialog__wrapper {
+            .el-dialog__body {
+                height:300px;
+                overflow-y: scroll;
+            }
+        }
     }
 </style>
 
@@ -360,7 +366,7 @@
                             :isPending="false"></Upload>
                 </li>
             </ul>
-            <BusinessTracking :businessParams="businessParams"></BusinessTracking>
+            <!-- <BusinessTracking :businessParams="businessParams"></BusinessTracking> -->
         </el-dialog>
         <!--编辑弹出框-->
         <el-dialog title="编辑收款单"
@@ -550,7 +556,7 @@
 
 <script>
     import Upload from "../publicModule/Upload.vue";
-    import BusinessTracking from "../publicModule/BusinessTracking.vue"
+    // import BusinessTracking from "../publicModule/BusinessTracking.vue"
 
     export default {
         name: "ReceiveMoreBills",
@@ -613,7 +619,7 @@
         },
         components: {
             Upload: Upload,
-            BusinessTracking:BusinessTracking
+            // BusinessTracking:BusinessTracking
         },
         props: ["tableData"],
         data: function () {
@@ -709,8 +715,8 @@
                 innerVisible: false, //提交弹框
                 selectWorkflow: "",
                 workflows: [],
-                businessParams:{ //业务状态追踪参数
-                }
+                // businessParams:{ //业务状态追踪参数
+                // }
             }
         },
         methods: {
@@ -807,10 +813,10 @@
                 this.emptyFileList = [];
                 this.fileMessage.bill_id = row.id;
                 this.triggerFile = !this.triggerFile;
-                //业务状态跟踪
-                this.businessParams = {};
-                this.businessParams.biz_type = 15;
-                this.businessParams.id = row.id;
+                // //业务状态跟踪
+                // this.businessParams = {};
+                // this.businessParams.biz_type = 15;
+                // this.businessParams.id = row.id;
             },
             //删除
             removeBill: function (row, index, rows) {
