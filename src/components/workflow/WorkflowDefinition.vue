@@ -1351,7 +1351,7 @@ export default {
                     if(Number(i) > column){
                         let arr = [];
                         this.matrixArr[i].forEach(element => {
-                            arr.push({id:element,name:element});
+                            arr.push({id:element+"",name:element});
                         });
                         // this.select_flow = this.select_flow.concat(this.matrixArr[i]); 
                         this.select_flow = this.select_flow.concat(arr); 
@@ -1388,7 +1388,6 @@ export default {
                     rule:""
                 }
             )
-
             var newLength = 0;
             this.jsplumb.connect({
                 source: curId,
@@ -1397,21 +1396,23 @@ export default {
                     ["Custom", {
                         create: (component) => {
                             var element = document.createElement("div");
-                            var elementChild = document.createElement("span");
-                            var elementChildSe = document.createElement("div");
-                            var svg = document.getElementById("diagramContainer").getElementsByTagName("svg");
-                            var length = svg.length;
-                            for(var n = 0 ;n < length ;n ++){
-                                if( svg[n].parentNode.id === "diagramContainer"){
-                                    newLength ++;
+                            if(newId !== 'end_box'){
+                                var elementChild = document.createElement("span");
+                                var elementChildSe = document.createElement("div");
+                                var svg = document.getElementById("diagramContainer").getElementsByTagName("svg");
+                                var length = svg.length;
+                                for(var n = 0 ;n < length ;n ++){
+                                    if( svg[n].parentNode.id === "diagramContainer"){
+                                        newLength ++;
+                                    }
                                 }
+                                elementChild.className = "iconBg rule-icon";
+                                elementChild.setAttribute("id",'addRule_'+newLength);
+                                elementChildSe.setAttribute("id",'ruleChange_'+newLength);
+                                elementChildSe.className = "rule-div";
+                                element.appendChild(elementChild);
+                                element.appendChild(elementChildSe);
                             }
-                            elementChild.className = "iconBg rule-icon";
-                            elementChild.setAttribute("id",'addRule_'+newLength);
-                            elementChildSe.setAttribute("id",'ruleChange_'+newLength);
-                            elementChildSe.className = "rule-div";
-                            element.appendChild(elementChild);
-                            element.appendChild(elementChildSe);
                             return element;
                         },
                         location: 0.5,
@@ -1419,14 +1420,16 @@ export default {
                     }]
                 ]
             })
-            document.getElementById("addRule_"+newLength).onclick=(event) =>{
-                //清空弹出框数据
-                this.addRuleCurData = {};
+            if(newId !== 'end_box'){
+                document.getElementById("addRule_"+newLength).onclick=(event) =>{
+                    //清空弹出框数据
+                    this.addRuleCurData = {};
 
-                this.addRuleDialogVisible = true;
-                this.addRuleCurData.source_id = this.selectFlowData.item_id;
-                this.addRuleCurData.item_id = this.selectFlowData.target_id+"";
-                this.selectLineId = event.target.id;
+                    this.addRuleDialogVisible = true;
+                    this.addRuleCurData.source_id = this.selectFlowData.item_id;
+                    this.addRuleCurData.item_id = this.selectFlowData.target_id+"";
+                    this.selectLineId = event.target.id;
+                }
             }
             // jsPlumb.draggable(newId);
             this.selectFlowDialogVisible = false;
@@ -1628,27 +1631,29 @@ export default {
                                             ["Custom", {
                                                 create:  (component)=> {
                                                     var element = document.createElement("div");
-                                                    var elementChild = document.createElement("span");//加号
-                                                    var elementChildSe = document.createElement("div");
-                                                    var svg = document.getElementById("diagramContainer").getElementsByTagName("svg");
-                                                    var length = svg.length;
-                                                    for(var n = 0 ;n < length ;n ++){
-                                                        if( svg[n].parentNode.id === "diagramContainer"){
-                                                            newLength ++;
+                                                    if(targetId !=='end_box'){
+                                                        var elementChild = document.createElement("span");//加号
+                                                        var elementChildSe = document.createElement("div");
+                                                        var svg = document.getElementById("diagramContainer").getElementsByTagName("svg");
+                                                        var length = svg.length;
+                                                        for(var n = 0 ;n < length ;n ++){
+                                                            if( svg[n].parentNode.id === "diagramContainer"){
+                                                                newLength ++;
+                                                            }
                                                         }
+                                                        if(!this.line_data[q].rule){//没有规则时要创建加号
+                                                            elementChild.className = "iconBg rule-icon";
+                                                            elementChild.setAttribute("id",'addRule_' + newLength);
+                                                            element.appendChild(elementChild);
+                                                            clickObjId = 'addRule_' + newLength;
+                                                        }else{
+                                                            elementChildSe.className = "rule-hasValue";
+                                                            elementChildSe.innerText = ruleMoney.str;
+                                                            clickObjId = 'ruleChange_' + newLength;
+                                                        }
+                                                        elementChildSe.setAttribute("id",'ruleChange_' + newLength);
+                                                        element.appendChild(elementChildSe);
                                                     }
-                                                    if(!this.line_data[q].rule){//没有规则时要创建加号
-                                                        elementChild.className = "iconBg rule-icon";
-                                                        elementChild.setAttribute("id",'addRule_' + newLength);
-                                                        element.appendChild(elementChild);
-                                                        clickObjId = 'addRule_' + newLength;
-                                                    }else{
-                                                        elementChildSe.className = "rule-hasValue";
-                                                        elementChildSe.innerText = ruleMoney.str;
-                                                        clickObjId = 'ruleChange_' + newLength;
-                                                    }
-                                                    elementChildSe.setAttribute("id",'ruleChange_' + newLength);
-                                                    element.appendChild(elementChildSe);
                                                     return element;
                                                 },
                                                 location: 0.5,
@@ -1656,19 +1661,21 @@ export default {
                                             }]
                                         ]
                                     })
-                                    document.getElementById(clickObjId).onclick=(event)=>{
-                                        //清空弹出框数据
-                                        this.addRuleCurData = {};
-                                        this.addRuleCurData.source_id = this.line_data[q].d_source_id;
-                                        this.addRuleCurData.item_id = this.line_data[q].d_target_id;
-                                        if(this.line_data[q].rule){//非加号时
-                                            var money = this.translateRuleMoney(this.line_data[q].rule);
-                                            this.addRuleCurData.min = money.min;
-                                            this.addRuleCurData.max = money.max;
-                                            this.addRuleCurData.isEdit = true;
+                                    if(targetId !=='end_box'){
+                                        document.getElementById(clickObjId).onclick=(event)=>{
+                                            //清空弹出框数据
+                                            this.addRuleCurData = {};
+                                            this.addRuleCurData.source_id = this.line_data[q].d_source_id;
+                                            this.addRuleCurData.item_id = this.line_data[q].d_target_id;
+                                            if(this.line_data[q].rule){//非加号时
+                                                var money = this.translateRuleMoney(this.line_data[q].rule);
+                                                this.addRuleCurData.min = money.min;
+                                                this.addRuleCurData.max = money.max;
+                                                this.addRuleCurData.isEdit = true;
+                                            }
+                                            this.selectLineId = event.target.id;
+                                            this.addRuleDialogVisible = true;
                                         }
-                                        this.selectLineId = event.target.id;
-                                        this.addRuleDialogVisible = true;
                                     }
                                     this.jsplumb.draggable(targetId);
                                 }

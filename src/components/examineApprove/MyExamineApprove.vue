@@ -1443,6 +1443,7 @@
                         var list = data.pending_list;
                         var tableHead = this.tableHeadList;
                         this.totalTabNum = data.total_num;
+                        var _tab_index = "";//为了tab样式做处理
                         //默认我的待办
                         var arrObject = {
                             "0":{
@@ -1456,6 +1457,9 @@
                         if (list.length>0) {
                             list.forEach((element,index) =>{
                                 var type = element.biz_type;
+                                if(type == this.activeName){
+                                    _tab_index = index + 1;
+                                }
                                 arrObject[type]={
                                     title: constantsBiz[type],
                                     name: type +"",
@@ -1469,6 +1473,10 @@
                             // _this.$refs.myTab.style.top = "70px";
                         }
                         if(this.isFromHome){//从home页跳过了
+                            let rowBar = document.getElementsByClassName("el-tabs__active-bar")[0];
+                            if(_tab_index==1){
+                                rowBar.style.left = "20px";
+                            }
                             this.routerMessage.todo.params.page_num = 1;
                             this.routerMessage.todo.optype = this.classParams[this.activeName].list;
                             this.routerMessage.todo.params.biz_type = this.activeName;
@@ -1588,7 +1596,7 @@
                 //由于将我的待办写入了tab里，却又要隐藏掉，所以处理一下横线样式
                 let id = tab.name;
                 let rowBar = document.getElementsByClassName("el-tabs__active-bar")[0];
-                if(id == "1"){
+                if(tab.index == "1"){
                     rowBar.style.left = "20px";
                 }else if(rowBar.style.left != "0px"){
                     rowBar.style.left="0px";
