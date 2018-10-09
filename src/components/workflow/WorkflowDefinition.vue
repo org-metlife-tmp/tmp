@@ -558,9 +558,9 @@
                         <path d="M50 5 L 42 0 L 42 10 L 50 5 z" fill="#ccc"></path>
                     </svg>
                     <span class="rule-source">{{addRuleCurData.item_id}}</span>
-                    <el-input class="ruler-input" v-model="addRuleCurData.min" placeholder="大于等于" oninput="javascript:this.value=this.value.replace(/[^\d]/g,'')"></el-input>
+                    <el-input class="ruler-input" v-model="addRuleCurData.min" placeholder="大于等于" @blur="validateNum(addRuleCurData.min,'min')" clearable></el-input>
                     -
-                    <el-input class="ruler-input" v-model="addRuleCurData.max" placeholder="小于等于" oninput="javascript:this.value=this.value.replace(/[^\d]/g,'')"></el-input>
+                    <el-input class="ruler-input" v-model="addRuleCurData.max" placeholder="小于等于" @blur="validateNum(addRuleCurData.max,'max')" clearable></el-input>
             </el-form>
             <span slot="footer" class="dialog-footer">
                 <el-button type="warning" size="mini" @click="saveRules(addRuleCurData)">确 定</el-button>
@@ -747,6 +747,7 @@ export default {
             flowList:{},//查看详情的工作流数据
             isEmptyFlow:false,//是否清空子组件的数据
             curRow: {},//当前列表的一条数据
+            validateFlag:true
         }
     },
     methods:{
@@ -1070,8 +1071,14 @@ export default {
         },
         //保存规则
         saveRules:function(curData){
-            let min = curData.min;
-            let max = curData.max;
+            if(!this.validateFlag){
+                this.validateFlag = true;
+                return ;
+            }
+            var min = curData.min;
+            var max = curData.max;
+            var id = this.selectLineId.split("_")[1];
+            var curShowEle = document.getElementById("ruleChange_" + id);
             if((min || min === '0') || (max || max ==='0')){
                 if((min || min === '0') && (max || max ==='0') && Number(max)<Number(min)){
                     this.$message({
@@ -1092,8 +1099,6 @@ export default {
                     }
                 }
                 this.addRuleDialogVisible = false;
-                let id = this.selectLineId.split("_")[1];
-                var curShowEle = document.getElementById("ruleChange_" + id);
                 curShowEle.innerText = str;
                 if(!curData.isEdit){//新建工作流时，添加新规则时，要隐藏加号，显示规则，修改的时候如果原来有规则则不需要
                     curShowEle.style.display = "inline-block";
@@ -1108,10 +1113,17 @@ export default {
                     }
                 }
             }else{
-                this.$message({
-                    message: '至少填写一个正确的金额！',
-                    type: 'warning'
-                });
+                curShowEle.style.display = "none";
+                curShowEle.innerText = "";
+                curShowEle.previousElementSibling.className = "iconBg rule-icon";
+                curShowEle.previousElementSibling.onclick = (event)=>{
+                    this.addRuleCurData.min =  "";
+                    this.addRuleCurData.max =  "";
+                    this.selectLineId = event.target.id;
+                    this.addRuleCurData.isEdit = false;
+                    this.addRuleDialogVisible = true;
+                }
+                this.addRuleDialogVisible = false;
                 return;
             }
         },
@@ -1373,12 +1385,26 @@ export default {
             }
             var curId = "item_" + this.selectFlowData.item_id;
             var targetId ;
+            var isConnectFlag = true;
             if(this.selectFlowData.target_id === "-2"){
                 var newId = "end_box";
                 targetId = "-2";
             }else{
                 var newId = "item_" + this.selectFlowData.target_id;
                 targetId = this.selectFlowData.target_id;
+            }
+            this.line_data.forEach(element => {
+                if(element.d_source_id == this.selectFlowData.item_id && element.d_target_id == targetId){
+                    isConnectFlag = false;
+                }
+            });
+            if(!isConnectFlag){
+                this.$message({
+                    type: "warning",
+                    message: "不允许重复连接！",
+                    duration: 2000
+                });
+                return ;
             }
             //组织线数据
             this.line_data.push(
@@ -1424,7 +1450,6 @@ export default {
                 document.getElementById("addRule_"+newLength).onclick=(event) =>{
                     //清空弹出框数据
                     this.addRuleCurData = {};
-
                     this.addRuleDialogVisible = true;
                     this.addRuleCurData.source_id = this.selectFlowData.item_id;
                     this.addRuleCurData.item_id = this.selectFlowData.target_id+"";
@@ -1811,6 +1836,24 @@ export default {
             this.isEmptyFlow = true;
             this.lookFlowDialogVisible = false;
             this.flowList = {};
+        },
+        validateNum:function(val,type){
+            if(/^\d+(\.\d{1,2})?$/.test(val) || !val){
+                this.validateFlag = true;
+                return ;
+            }else{
+                this.validateFlag = false;
+                if(type =='min'){
+                    this.addRuleCurData.min = "";
+                }else{
+                    this.addRuleCurData.max = "";
+                }
+                this.$message({
+                    type: "warning",
+                    message: "请输入小数位2位以内的数字！",
+                    duration: 2000
+                })
+            }
         }
     },
     computed: {
