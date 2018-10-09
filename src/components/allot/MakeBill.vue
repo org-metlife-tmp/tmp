@@ -209,7 +209,7 @@
         }
     }
     .el-radio-group {
-        margin-top: -16px;
+        // margin-top: -16px;
         .el-radio {
             display: block;
             margin-left: 30px;
@@ -217,7 +217,16 @@
         }
     }
 </style>
-
+<style lang="less" type="text/less">
+    #makeBill {
+        .el-dialog__wrapper {
+            .el-dialog__body {
+                max-height: 400px;
+                overflow-y: auto;
+            }
+        }
+    }
+</style>
 <template>
     <div id="makeBill">
         <!--顶部标题-按钮-->
