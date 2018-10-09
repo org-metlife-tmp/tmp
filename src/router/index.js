@@ -91,6 +91,9 @@ import CollectionManage from '@/components/collection/CollectionManage'
 import CollectionLook from '@/components/collection/CollectionLook'
 import CollectionStatement from '@/components/collection/CollectionStatement'
 import ColleMoreBills from '@/components/collection/ColleMoreBills'
+import NotDirectlySet from '@/components/collection/NotDirectlySet'
+import NoDirectlyLook from '@/components/collection/NoDirectlyLook'
+import NotDirectlyMore from '@/components/collection/NotDirectlyMore'
 //广银联备付金
 import StrategySet from '@/components/wideUnionpay/StrategySet'
 import UnionpayManage from '@/components/wideUnionpay/UnionpayManage'
@@ -199,6 +202,8 @@ const router = new Router({
                         {path: '/collection/collection-look', name: 'CollectionLook', component: CollectionLook, meta: {requireAuth: true}},
                         {path: '/collection/collection-statement', name: 'CollectionStatement', component: CollectionStatement, meta: {requireAuth: true}},
                         {path: '/collection/colle-more-bills', name: 'ColleMoreBills', component: ColleMoreBills, meta: {requireAuth: true}},
+                        {path: '/collection/no-directly-look', name: 'NoDirectlyLook', component: NoDirectlyLook, meta: {requireAuth: true}},
+                        {path: '/collection/no-directly-more', name: 'NotDirectlyMore', component: NotDirectlyMore, meta: {requireAuth: true}},
                         //广银联备付金
                         {path: '/wide-unionpay/strategy-set', name: 'StrategySet', component: StrategySet, meta: {requireAuth: true}},
                         {path: '/wide-unionpay/unionpay-manage', name: 'UnionpayManage', component: UnionpayManage, meta: {requireAuth: true}},
@@ -269,6 +274,8 @@ const router = new Router({
                 //支付通
                 {path: '/payment/pay-make-bill', name: 'PayMakeBill', component: PayMakeBill, meta: {requireAuth: true}},
                 {path: '/payment/batch-make-bill', name: 'BatchMakeBill', component: BatchMakeBill, meta: {requireAuth: true}},
+                //归集通
+                {path: '/collection/not-directly-set', name: 'NotDirectlySet', component: NotDirectlySet, meta: {requireAuth: true}},
                 //收款通
                 {path: '/receivables/receive-make-bill', name: 'ReceiveMakeBill', component: ReceiveMakeBill, meta: {requireAuth: true}},
                 //OA数据
