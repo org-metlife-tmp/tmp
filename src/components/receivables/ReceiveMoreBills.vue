@@ -342,8 +342,8 @@
                 <li class="table-li-title">收款账号</li>
                 <li class="table-li-content table-two-row" v-text="dialogData.recv_account_no"></li>
 
-                <li class="table-li-title">收款账号</li>
-                <li class="table-li-content table-two-row" v-text="dialogData.recv_account_no"></li>
+                <li class="table-li-title">收款人户名</li>
+                <li class="table-li-content table-two-row" v-text="dialogData.recv_account_name"></li>
 
                 <li class="table-li-title">付款人户名</li>
                 <li class="table-li-content" v-text="dialogData.pay_account_name"></li>

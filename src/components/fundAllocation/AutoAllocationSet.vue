@@ -224,7 +224,7 @@
                     <el-col :span="24" style="text-align:left">
                         <el-form-item label="定额下拨">
                             <el-input style="width:200px" :disabled="viewReadonly" v-model="allocationData.allocation_amount" placeholder="请填写下拨金额"></el-input>
-                            <span style="color:#676767">（将下拨账户内所有余额转入下拨主账户）</span>
+                            <span style="color:#676767">（从每个被下拨账户内转出固定金额到下拨主账户）</span>
                         </el-form-item>
                     </el-col>
                     <el-col :span="20">
