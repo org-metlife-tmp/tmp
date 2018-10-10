@@ -22,7 +22,7 @@
 
             /*时间控件*/
             .el-date-editor {
-                width: 100%;
+                width: 210px;
             }
         }
 
@@ -124,14 +124,14 @@
                     .content-box:first-child{
                         border-bottom: 1px dotted #dbdbdb;
                     }
-                    
+
                 }
             }
         }
 
         /*弹框表格-分页部分*/
         .inner-botton-pag {
-            
+
             width: 100%;
             height: 8%;
             margin: 15px 0;
@@ -400,7 +400,7 @@
                     if(element.batchno !== row.batchno){
                         element.checked = false;
                     }
-                    
+
                 })
                 // row.checked = val;
             },

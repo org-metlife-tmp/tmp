@@ -144,6 +144,7 @@
                         input {
                             height: 100%;
                             padding-left: 0;
+                            line-height: 22px;
                         }
                     }
                 }
