@@ -560,7 +560,7 @@
                     <span class="rule-source">{{addRuleCurData.item_id}}</span>
                     <el-input class="ruler-input" v-model="addRuleCurData.min" placeholder="大于等于" @blur="validateNum(addRuleCurData.min,'min')" clearable></el-input>
                     -
-                    <el-input class="ruler-input" v-model="addRuleCurData.max" placeholder="小于等于" @blur="validateNum(addRuleCurData.max,'max')" clearable></el-input>
+                    <el-input class="ruler-input" v-model="addRuleCurData.max" placeholder="小于" @blur="validateNum(addRuleCurData.max,'max')" clearable></el-input>
             </el-form>
             <span slot="footer" class="dialog-footer">
                 <el-button type="warning" size="mini" @click="saveRules(addRuleCurData)">确 定</el-button>
@@ -1137,12 +1137,12 @@ export default {
                 obj.showStr = '>=' + min;
                 obj.saveStr = '${AMOUNT}>=${'+ min + '}';
             }else{
-                obj.showStr = '<=' + max;
-                obj.saveStr = '${AMOUNT}<=${' + max + '}';
+                obj.showStr = '<' + max;
+                obj.saveStr = '${AMOUNT}<${' + max + '}';
             }
             // ${AMOUNT}~${0,10000}
             // ${AMOUNT}>=${1000}
-            // ${AMOUNT}<=${100}
+            // ${AMOUNT}<${100}
             return obj;
         },
         //反显金额规则
@@ -1162,7 +1162,7 @@ export default {
                     result.min = str_re;
                     result.max = "";
                 }else{
-                    result.str = '<=' + str_re;
+                    result.str = '<' + str_re;
                     result.max = str_re;
                     result.min = "";
                 }
@@ -1666,11 +1666,12 @@ export default {
                                                                 newLength ++;
                                                             }
                                                         }
+                                                        elementChild.className = "";
+                                                        elementChild.setAttribute("id",'addRule_' + newLength);
+                                                        element.appendChild(elementChild);
+                                                        clickObjId = 'addRule_' + newLength;
                                                         if(!this.line_data[q].rule){//没有规则时要创建加号
                                                             elementChild.className = "iconBg rule-icon";
-                                                            elementChild.setAttribute("id",'addRule_' + newLength);
-                                                            element.appendChild(elementChild);
-                                                            clickObjId = 'addRule_' + newLength;
                                                         }else{
                                                             elementChildSe.className = "rule-hasValue";
                                                             elementChildSe.innerText = ruleMoney.str;
