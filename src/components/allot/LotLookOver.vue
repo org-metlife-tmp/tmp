@@ -379,7 +379,7 @@
             <div class="allData">
                 <div class="btn-left">
                     <el-button type="warning" plain size="mini" @click="goMakeBill">制单</el-button>
-                    <!-- <el-button type="warning" plain size="mini" @click="goPayment">支付处理</el-button> -->
+                    <el-button type="warning" plain size="mini" @click="goPayment">支付处理</el-button>
                 </div>
                 <span>总金额：</span>
                 <span v-text="total_amount" class="numText"></span>
@@ -725,9 +725,16 @@
             //展示格式转换-处理状态
             transitStatus: function (row, column, cellValue, index) {
                 var constants = JSON.parse(window.sessionStorage.getItem("constants"));
-                if (constants.BillStatus) {
-                    return constants.BillStatus[cellValue];
+                if(column.property == 'pay_status'){
+                    if (constants.PayStatus) {
+                        return constants.PayStatus[cellValue];
+                    }
+                }else{
+                    if (constants.BillStatus) {
+                        return constants.BillStatus[cellValue];
+                    }
                 }
+                
             },
             //展示格式转换-金额
             transitAmount: function (row, column, cellValue, index) {
@@ -738,9 +745,9 @@
                 this.$router.push("/allot/lot-make-bill");
             },
             //支付处理
-            // goPayment: function () {
-            //     this.$router.push("/allot/payment");
-            // },
+            goPayment: function () {
+                this.$router.push("/allot/lot-payment");
+            },
             getDetailTable: function (params) {
                 params.page_size = params.page_size ? params.page_size : 7;
                 params.page_num = params.page_num ? params.page_num : 1;

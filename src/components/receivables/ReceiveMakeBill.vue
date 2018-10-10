@@ -70,6 +70,11 @@
                 letter-spacing: 1em;
                 text-indent: 1em;
                 text-align: center;
+                span{
+                    display: inline-block;
+                    height: 30px;
+                    line-height: 30px;
+                }
             }
 
             .title-space {
@@ -136,7 +141,7 @@
                 padding-left: 16px;
 
                 .el-select{
-                    height: 22px;
+                    height: 30px;
 
                     .el-input{
                         height: 100%;
@@ -276,7 +281,7 @@
                 <table>
                     <tr>
                         <td rowspan="3" class="title-erect">付款人</td>
-                        <td class="title-small">户名</td>
+                        <td class="title-small"><span>户名</span></td>
                         <td class="empty-input" colspan="4">
                             <el-select v-model="billData.pay_account_name"
                                        filterable allow-create default-first-option
@@ -292,7 +297,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <td class="title-small">账号</td>
+                        <td class="title-small"><span>账号</span></td>
                         <td class="empty-input" colspan="4">
                             <el-select v-model="billData.pay_account_no"
                                        filterable allow-create
