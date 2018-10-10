@@ -596,9 +596,6 @@
                             this.selectData = [];
                             var detail_ids= this.paymentData.detail_ids;
                             if(detail_ids.length === this.pagDeTotal){//批量全部作废
-                                this.pagCurrent = 1;
-                                this.routerMessage.params.page_size = 9;
-                                this.$emit("getCommTable", this.routerMessage);
                                 this.dialogVisible = false;
                                 this.paymentData = [];
                             }else{
@@ -619,6 +616,9 @@
             },
             //查看弹框关闭
             closeLookDialog: function(){
+                this.pagCurrent = 1;
+                this.routerMessage.params.page_size = 9;
+                this.$emit("getCommTable", this.routerMessage);
                 this.paymentData = [];
                 this.searchDetailData = {};
             },

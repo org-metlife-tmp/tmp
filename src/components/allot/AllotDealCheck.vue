@@ -8,6 +8,13 @@
         /*搜索区*/
         .search-setion{
             text-align: left;
+            .line {
+                text-align: center;
+            }
+            /*时间控件*/
+            .el-date-editor {
+                width: 210px;
+            }
         }
 
         /*分隔栏*/
@@ -79,6 +86,22 @@
         <div class="search-setion">
             <el-form :inline="true" :model="searchData" size="mini">
                 <el-row>
+                    <el-col :span="5">
+                        <el-form-item>
+                            <el-date-picker
+                                    v-model="dateValue"
+                                    type="daterange"
+                                    range-separator="至"
+                                    start-placeholder="开始日期"
+                                    end-placeholder="结束日期"
+                                    value-format="yyyy-MM-dd"
+                                    size="mini" clearable
+                                    unlink-panels
+                                    :picker-options="pickerOptions"
+                                    @change="">
+                            </el-date-picker>
+                        </el-form-item>
+                    </el-col>
                     <el-col :span="4">
                         <el-form-item>
                             <el-input v-model="searchData.pay_query_key" placeholder="请输入付款方账号" clearable></el-input>
@@ -128,6 +151,7 @@
                                     size="mini">
                                 <el-table-column prop="acc_no" label="账户号" :show-overflow-tooltip="true"></el-table-column>
                                 <el-table-column prop="acc_name" label="账户名称" :show-overflow-tooltip="true"></el-table-column>
+                                <el-table-column prop="bank_name" label="开户行" :show-overflow-tooltip="true"></el-table-column>
                                 <el-table-column prop="direction" label="收付方向" :show-overflow-tooltip="true" width="80"></el-table-column>
                                 <el-table-column prop="opp_acc_no" label="对方账户号" :show-overflow-tooltip="true"></el-table-column>
                                 <el-table-column prop="opp_acc_name" label="对方账户号名称" :show-overflow-tooltip="true"></el-table-column>
@@ -145,6 +169,7 @@
                 <el-table-column prop="recv_account_name" label="收款方公司名称" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="payment_amount" label="金额" :show-overflow-tooltip="true"
                                 :formatter="transitAmount"></el-table-column>
+                <el-table-column prop="create_on" label="日期" :show-overflow-tooltip="true"></el-table-column>         
             </el-table>
         </section>
         <!--分页部分-->
@@ -172,6 +197,7 @@
                 <el-table-column type="selection" width="38"></el-table-column>
                 <el-table-column prop="acc_no" label="账户号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="acc_name" label="账户名称" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="bank_name" label="开户行" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="direction" label="收付方向" :show-overflow-tooltip="true" width="80"></el-table-column>
                 <el-table-column prop="opp_acc_no" label="对方账户号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="opp_acc_name" label="对方账户号名称" :show-overflow-tooltip="true"></el-table-column>
@@ -230,7 +256,13 @@
                 currenrRow: {},//当前选中行
                 checkOptype: "",
                 confirmOptype: "",
-                validatedOptype: ""
+                validatedOptype: "",
+                dateValue: "", //时间选择
+                pickerOptions: {
+                    disabledDate(time) {
+                        return time.getTime() > Date.now();
+                    }
+                },
             }
         },
         methods: {
@@ -241,6 +273,8 @@
             //根据条件查询数据
             queryData:function(){
                 var searchData = this.searchData;
+                searchData.start_date = this.dateValue ? this.dateValue[0] : "";
+                searchData.end_date = this.dateValue ? this.dateValue[1] : "";
                 for(var k in searchData){
                     if(this.isPending){
                         this.routerMessage.todo.params[k] = searchData[k];
@@ -248,6 +282,7 @@
                         this.routerMessage.done.params[k] = searchData[k];
                     }
                 }
+                this.childList = [];
                 this.$emit("getTableData", this.routerMessage);
             },
             //点击页数获取当前页数据
@@ -281,7 +316,8 @@
                         params:{
                             pay_account_no: row.pay_account_no,
                             recv_account_no: row.recv_account_no,
-                            payment_amount: row.payment_amount
+                            payment_amount: row.payment_amount,
+                            create_on: row.create_on
                         }
                     }
                 }).then((result) => {

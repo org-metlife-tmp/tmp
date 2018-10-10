@@ -563,7 +563,7 @@
                         //查询主账户列表
                         this.mainAccOptions = [{
                             acc_id: main_accounts[0].main_acc_id,
-                            acc_name: main_accounts[0].main_acc_name
+                            acc_no: main_accounts[0].main_acc_no
                         }]
                         this.editableTabs = main_accounts;
                         data.allocation_frequency = data.allocation_frequency+"";

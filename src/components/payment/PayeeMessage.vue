@@ -445,7 +445,7 @@
                 var dialogData = this.dialogData;
                 for(var k in dialogData){
                     if(k == "type"){
-                        dialogData[k] = row[k] + "";
+                        dialogData[k] = row[k] ? row[k] + "" : "";
                     }else if(k == "cnaps_code"){
                         dialogData[k] = row[k];
                         this.bankList = [];

@@ -1113,6 +1113,14 @@ export default {
                     }
                 }
             }else{
+                var arrList = this.line_data;
+                var len = arrList.length;
+                for(var i = 0; i<len;i++){
+                    if(arrList[i].d_target_id === curData.item_id && arrList[i].d_source_id === curData.source_id){
+                        arrList[i].rule = "";
+                        break;
+                    }
+                }
                 curShowEle.style.display = "none";
                 curShowEle.innerText = "";
                 curShowEle.previousElementSibling.className = "iconBg rule-icon";
