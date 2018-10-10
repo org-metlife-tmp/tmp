@@ -195,9 +195,9 @@
             <el-table :data="tableList"
                       border size="mini"
                       height="100%">
-                <el-table-column prop="pay_account_bank" label="付款方名称" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="pay_account_name" label="付款方名称" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="pay_account_no" label="付款方账号" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="pay_account_name" label="付款方银行"
+                <el-table-column prop="pay_account_bank" label="付款方银行"
                                  :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="receipts_amount" label="金额" :show-overflow-tooltip="true"
                                  :formatter="transitAmount"></el-table-column>

@@ -242,12 +242,13 @@
                                                         placeholder="请输入关键字"
                                                         style="width:42%;margin-left:6px"
                                                         @visible-change="getMainAccList"
+                                                        @change="changeMainAcc($event,item)"
                                                         :disabled="viewReadonly"
                                                         :loading="loading">
                                                 <el-option
                                                         v-for="acc in mainAccOptions"
                                                         :key="acc.acc_id"
-                                                        :label="acc.acc_name"
+                                                        :label="acc.acc_no"
                                                         :value="acc.acc_id">
                                                 </el-option>
                                             </el-select>
@@ -950,6 +951,10 @@
                     console.log(error);
                 });
             },
+            //修改主账户
+            changeMainAcc:function (val,item){
+                item.child_accounts = [];
+            },
             //关键字查询主账户列表
             getMainAccListByKey: function(query){
                 if (query && query.trim()) {
@@ -970,7 +975,7 @@
                     obj.child_accounts = [];
                     var list = tab.child_accounts;
                     list.forEach((item)=>{
-                        obj.child_accounts.push(item.acc_id);
+                        obj.child_accounts.push(item.child_acc_id);
                     })
                     data.main_accounts.push(obj);
                 })

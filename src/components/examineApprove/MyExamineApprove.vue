@@ -199,7 +199,9 @@
             // padding-left:0px;
         }
     }
-
+    .myTab.isTop{
+        top:70px!important;
+    }
     .enclosureUp {
         .file-list li{
             margin-bottom: 0!important;
@@ -326,7 +328,7 @@
                     <i class="tab-num">[{{totalTabNum}}]</i>
                 </div>
             </div>
-            <el-tabs class="myTab" v-model="activeName" @tab-click="handleClick" id="myTab">
+            <el-tabs class="myTab" :class="classObject" v-model="activeName" @tab-click="handleClick" id="myTab">
                 <el-tab-pane
                     v-for="(item) in editableTabsList"
                     :key="item.name"
@@ -1453,6 +1455,7 @@
                 billStatusList: {}, //状态
                 PayModeList: {}, //付款方式
                 isFromHome: false,//是否从首页进入
+                isTop:false,//只有一个tab加样式
             }
         },
         methods:{
@@ -1504,9 +1507,6 @@
                                     num: element.num,
                                 };
                             })
-                        }else{
-                            document.getElementById("myTab").style.top = "70px";
-                            // _this.$refs.myTab.style.top = "70px";
                         }
                         if(this.isFromHome){//从home页跳过了
                             let rowBar = document.getElementsByClassName("el-tabs__active-bar")[0];
@@ -1874,6 +1874,13 @@
                 return str;
             }
         },
+        computed:{
+            classObject:function (){
+                return{
+                    isTop: Object.keys(this.editableTabsList).length ==1? true : false
+                }
+            }
+        },
         watch: {
             isPending: function (val, oldVal) {
                 if(val){//已办
@@ -1891,7 +1898,7 @@
                     curTab.tableList=val.data;
                     if(this.isFromHome){
                         this.isFromHome = false;
-                    }
+                    } 
                 }else{
                     this.doneTableList = val.data;
                 }
