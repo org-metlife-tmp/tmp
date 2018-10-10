@@ -215,7 +215,8 @@
                    top="56px">
             <h1 slot="title" class="dialog-title">开户信息补录申请</h1>
             <el-form :model="dialogData" size="small"
-                     :label-width="formLabelWidth">
+                     :label-width="formLabelWidth"
+                     :rules="rules" ref="dialogForm">
                 <el-row>
                     <el-col :span="24" class="form-small-title">
                         <span></span>
@@ -254,12 +255,12 @@
                         <span>信息补录</span>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="账户号">
+                        <el-form-item label="账户号" prop="acc_no">
                             <el-input v-model="dialogData.acc_no"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="账户名称">
+                        <el-form-item label="账户名称" prop="acc_name">
                             <el-input v-model="dialogData.acc_name"></el-input>
                         </el-form-item>
                     </el-col>
@@ -270,7 +271,7 @@
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="账户法人">
-                            <el-input v-model="dialogData.lawfull_man" :readonly="true"></el-input>
+                            <el-input v-model="dialogData.lawfull_man" :disabled="true"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="18">
@@ -303,11 +304,11 @@
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="币种">
-                            <el-input v-model="dialogData.curr_name" :readonly="true"></el-input>
+                            <el-input v-model="dialogData.curr_name" :disabled="true"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="开户日期">
+                        <el-form-item label="开户日期" prop="open_date">
                             <el-date-picker
                                     v-model="dialogData.open_date"
                                     placeholder="请选择日期"
@@ -320,26 +321,26 @@
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="账户性质">
-                            <el-input v-model="dialogData.acc_attr_name" :readonly="true"></el-input>
+                            <el-input v-model="dialogData.acc_attr_name" :disabled="true"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="账户用途">
-                            <el-input v-model="dialogData.acc_purpose_name" :readonly="true"></el-input>
+                            <el-input v-model="dialogData.acc_purpose_name" :disabled="true"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="账户模式">
-                            <el-input v-model="interList[dialogData.interactive_mode]" :readonly="true"></el-input>
+                            <el-input v-model="interList[dialogData.interactive_mode]" :disabled="true"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="存款类型">
-                            <el-input v-model="depositsList[dialogData.deposits_mode]" :readonly="true"></el-input>
+                            <el-input v-model="depositsList[dialogData.deposits_mode]" :disabled="true"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="预留印鉴">
+                        <el-form-item label="预留印鉴" prop="reserved_seal">
                             <el-input v-model="dialogData.reserved_seal"></el-input>
                         </el-form-item>
                     </el-col>
@@ -348,7 +349,7 @@
                         <span>备注与附件</span>
                     </el-col>
                     <el-col :span="24">
-                        <el-form-item label="备注">
+                        <el-form-item label="备注" prop="memo">
                             <el-input type="textarea" v-model="dialogData.memo"></el-input>
                         </el-form-item>
                     </el-col>
@@ -571,7 +572,7 @@
                     </el-col>
                 </el-row>
             </el-form>
-            <BusinessTracking 
+            <BusinessTracking
                 :businessParams="businessParams"
             ></BusinessTracking>
         </el-dialog>
@@ -648,7 +649,7 @@
             if (constants.InactiveMode) {
                 this.interList = constants.InactiveMode;
             }
-            //存款类型 
+            //存款类型
             if (constants.DepositsMode) {
                 this.depositsList = constants.DepositsMode;
             }
@@ -693,6 +694,34 @@
                     acc_purpose: "",
                     interactive_mode: "",
                     files: []
+                },
+                //校验规则设置
+                rules: {
+                    acc_no: {
+                        required: true,
+                        message: "请输入账户号",
+                        trigger: "blur"
+                    },
+                    acc_name: {
+                        required: true,
+                        message: "请输入账户名称",
+                        trigger: "blur"
+                    },
+                    open_date: {
+                        required: true,
+                        message: "请选择开户日期",
+                        trigger: "change"
+                    },
+                    reserved_seal: {
+                        required: true,
+                        message: "请输入预留印鉴",
+                        trigger: "blur"
+                    },
+                    memo: {
+                        required: true,
+                        message: "请输入备注",
+                        trigger: "blur"
+                    }
                 },
                 formLabelWidth: "120px",
                 bankList: [], //银行
@@ -773,6 +802,11 @@
                 this.fileLength = 0;
                 this.showRelationFile = false;
 
+                //清空校验信息
+                if (this.$refs.dialogForm) {
+                    this.$refs.dialogForm.clearValidate();
+                }
+
                 //获取其事项申请的附件
                 this.relationFile.bill_id = row.relation_id;
                 this.relationTrigger = !this.relationTrigger;
@@ -834,42 +868,48 @@
             },
             //代办修改-提交
             subTodoChange: function () {
-                var dialogData = this.dialogData;
-                var optype = "";
-                if (dialogData.id) {
-                    optype = "opencom_chg"
-                } else {
-                    optype = "opencom_add"
-                }
-                this.$axios({
-                    url: "/cfm/normalProcess",
-                    method: "post",
-                    data: {
-                        optype: optype,
-                        params: dialogData
-                    }
-                }).then((result) => {
-                    if (result.data.error_msg) {
-                        this.$message({
-                            type: "error",
-                            message: result.data.error_msg,
-                            duration: 2000
+                this.$refs.dialogForm.validate((valid, object) => {
+                    if (valid) {
+                        var dialogData = this.dialogData;
+                        var optype = "";
+                        if (dialogData.id) {
+                            optype = "opencom_chg"
+                        } else {
+                            optype = "opencom_add"
+                        }
+                        this.$axios({
+                            url: "/cfm/normalProcess",
+                            method: "post",
+                            data: {
+                                optype: optype,
+                                params: dialogData
+                            }
+                        }).then((result) => {
+                            if (result.data.error_msg) {
+                                this.$message({
+                                    type: "error",
+                                    message: result.data.error_msg,
+                                    duration: 2000
+                                })
+                            } else {
+                                var data = result.data.data;
+                                for(var k in data){
+                                    this.currentTodo[k] = data[k];
+                                }
+                                this.dialogVisible = false;
+                                this.$message({
+                                    type: "success",
+                                    message: "修改成功",
+                                    duration: 2000
+                                })
+                            }
+                        }).catch(function (error) {
+                            console.log(error);
                         })
                     } else {
-                        var data = result.data.data;
-                        for(var k in data){
-                            this.currentTodo[k] = data[k];
-                        }
-                        this.dialogVisible = false;
-                        this.$message({
-                            type: "success",
-                            message: "修改成功",
-                            duration: 2000
-                        })
+                        return false;
                     }
-                }).catch(function (error) {
-                    console.log(error);
-                })
+                });
             },
             //删除当前信息补录
             removeMessage:function (row, index, rows) {
@@ -1004,32 +1044,38 @@
             },
             //提交审批流程
             subFlow: function () {
-                this.$axios({
-                    url: "/cfm/normalProcess",
-                    method: "post",
-                    data: {
-                        optype: "opencom_presubmit",
-                        params: this.dialogData
-                    }
-                }).then((result) => {
-                    if (result.data.error_msg) {
-                        this.$message({
-                            type: "error",
-                            message: result.data.error_msg,
-                            duration: 2000
+                this.$refs.dialogForm.validate((valid, object) => {
+                    if (valid) {
+                        this.$axios({
+                            url: "/cfm/normalProcess",
+                            method: "post",
+                            data: {
+                                optype: "opencom_presubmit",
+                                params: this.dialogData
+                            }
+                        }).then((result) => {
+                            if (result.data.error_msg) {
+                                this.$message({
+                                    type: "error",
+                                    message: result.data.error_msg,
+                                    duration: 2000
+                                })
+                            } else {
+                                var data = result.data.data;
+                                this.selectWorkflow = "";
+                                this.workflowData = data;
+                                this.workflows = data.workflows;
+                                this.dialogData.persist_version = data.persist_version;
+                                this.dialogData.id = data.id;
+                                this.innerVisible = true;
+                            }
+                        }).catch(function (error) {
+                            console.log(error);
                         })
                     } else {
-                        var data = result.data.data;
-                        this.selectWorkflow = "";
-                        this.workflowData = data;
-                        this.workflows = data.workflows;
-                        this.dialogData.persist_version = data.persist_version;
-                        this.dialogData.id = data.id;
-                        this.innerVisible = true;
+                        return false;
                     }
-                }).catch(function (error) {
-                    console.log(error);
-                })
+                });
             },
              //审批流程弹框-确定
             confirmWorkflow: function(){
@@ -1073,7 +1119,7 @@
                         //         this.pagTotal--;
                         //     }
                         // }
-                        
+
                         this.$message({
                             type: "success",
                             message: "操作成功",

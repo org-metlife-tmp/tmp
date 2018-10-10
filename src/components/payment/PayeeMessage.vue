@@ -301,7 +301,7 @@
             //点击页数 获取当前页数据
             getCurrentPage: function (currPage) {
                 this.routerMessage.params.page_num = currPage;
-                this.$emit("getTableData", this.routerMessage);
+                this.$emit("getCommTable", this.routerMessage);
             },
             //当前页数据条数发生变化
             sizeChange: function (val) {
@@ -309,7 +309,7 @@
                     page_size: val,
                     page_num: "1"
                 };
-                this.$emit("getTableData", this.routerMessage);
+                this.$emit("getCommTable", this.routerMessage);
             },
             //展示格式转换-金额
             transitType: function (row, column, cellValue, index) {

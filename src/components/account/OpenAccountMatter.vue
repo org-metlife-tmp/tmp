@@ -235,7 +235,8 @@
                    top="56px">
             <h1 slot="title" v-text="dialogTitle" class="dialog-title"></h1>
             <el-form :model="dialogData" size="small"
-                     :label-width="formLabelWidth">
+                     :label-width="formLabelWidth"
+                     :rules="rules" ref="dialogForm">
                 <el-row>
                     <el-col :span="12">
                         <el-form-item label="申请日期">
@@ -254,19 +255,19 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="24">
-                        <el-form-item label="事由摘要">
+                        <el-form-item label="事由摘要" prop="memo">
                             <el-input v-model="dialogData.memo" placeholder="请输入事由摘要(15字以内)"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="24">
-                        <el-form-item label="事由说明">
+                        <el-form-item label="事由说明" prop="detail">
                             <el-input v-model="dialogData.detail"
                                       type="textarea" :rows="3"
                                       placeholder="请输入事由说明(100字以内)"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="银行大类">
+                        <el-form-item label="银行大类" prop="bank_type">
                             <el-select v-model="dialogData.bank_type" placeholder="请选择银行大类"
                                        clearable filterable
                                        :filter-method="filterBankType"
@@ -282,7 +283,7 @@
                     </el-col>
                     <el-col :span="12" style="height:51px"></el-col>
                     <el-col :span="12">
-                        <el-form-item label="地区">
+                        <el-form-item label="地区" prop="areaCode">
                             <el-select v-model="dialogData.areaCode"
                                        filterable remote clearable
                                        placeholder="请输入地区关键字"
@@ -299,7 +300,7 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="开户行">
+                        <el-form-item label="开户行" prop="bank_cnaps_code">
                             <el-select v-model="dialogData.bank_cnaps_code" placeholder="请选择银行"
                                        clearable filterable
                                        @visible-change="getBankList"
@@ -313,7 +314,7 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="账户性质">
+                        <el-form-item label="账户性质" prop="acc_attr">
                             <el-select v-model="dialogData.acc_attr" placeholder="请选择账户性质"
                                        clearable>
                                 <el-option v-for="(name,k) in attrList"
@@ -330,8 +331,8 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="账户模式">
-                            <el-select v-model="dialogData.interactive_mode" placeholder="请选择账户模式">
+                        <el-form-item label="账户模式" prop="interactive_mode">
+                            <el-select v-model="dialogData.interactive_mode" placeholder="请选择账户模式" clearable>
                                 <el-option v-for="(name,k) in interList"
                                            :key="k"
                                            :label="name"
@@ -341,8 +342,8 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="账户用途">
-                            <el-select v-model="dialogData.acc_purpose" placeholder="请选择账户用途">
+                        <el-form-item label="账户用途" prop="acc_purpose">
+                            <el-select v-model="dialogData.acc_purpose" placeholder="请选择账户用途" clearable>
                                 <el-option v-for="(name,k) in purposeList"
                                            :key="k"
                                            :label="name"
@@ -352,9 +353,9 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="币种">
+                        <el-form-item label="币种" prop="curr_id">
                             <el-select v-model="dialogData.curr_id" placeholder="请选择币种"
-                                       filterable>
+                                       filterable clearable>
                                 <el-option v-for="currency in currencyList"
                                            :key="currency.id"
                                            :label="currency.name"
@@ -364,8 +365,8 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="存款类型">
-                            <el-select v-model="dialogData.deposits_mode" filterable>
+                        <el-form-item label="存款类型" prop="deposits_mode">
+                            <el-select v-model="dialogData.deposits_mode" filterable clearable>
                                 <el-option v-for="(name,k) in depositsList"
                                            :key="k"
                                            :label="name"
@@ -715,6 +716,59 @@
                     deposits_mode: "",
                     files: []
                 },
+                //校验规则设置
+                rules: {
+                    memo: {
+                        required: true,
+                        message: "请输入事由摘要",
+                        trigger: "blur"
+                    },
+                    detail: {
+                        required: true,
+                        message: "请输入事由说明",
+                        trigger: "blur"
+                    },
+                    bank_type: {
+                        required: true,
+                        message: "请选择银行大类",
+                        trigger: "change"
+                    },
+                    areaCode: {
+                        required: true,
+                        message: "请选择地区",
+                        trigger: "change"
+                    },
+                    bank_cnaps_code: {
+                        required: true,
+                        message: "请选择开户行",
+                        trigger: "change"
+                    },
+                    acc_attr: {
+                        required: true,
+                        message: "请选择账户性质",
+                        trigger: "change"
+                    },
+                    acc_purpose: {
+                        required: true,
+                        message: "请选择账户用途",
+                        trigger: "change"
+                    },
+                    interactive_mode: {
+                        required: true,
+                        message: "请选择账户模式",
+                        trigger: "change"
+                    },
+                    curr_id: {
+                        required: true,
+                        message: "请选择币种",
+                        trigger: "change"
+                    },
+                    deposits_mode: {
+                        required: true,
+                        message: "请选择存款类型",
+                        trigger: "change"
+                    }
+                },
                 formLabelWidth: "120px",
                 dialogTitle: "新增",
                 innerVisible: false, //提交弹出框
@@ -805,6 +859,10 @@
                 }
                 this.fileMessage.bill_id = "";
                 this.emptyFileList = [];
+                //清空校验信息
+                if (this.$refs.dialogForm) {
+                    this.$refs.dialogForm.clearValidate();
+                }
                 //设置当前用户的部门和公司
                 this.getDeptOrg();
             },
@@ -863,60 +921,65 @@
             },
             //提交当前修改或新增
             subCurrent: function () {
-                var params = this.dialogData;
-                var optype = "";
-                if (!params.id) {
-                    optype = "openintent_add";
-                    var area_code = this.dialogData.areaCode.split("-");
-                    var areaList = this.areaList;
-                    for(var i = 0; i < areaList.length; i++){
-                        if(areaList[i].name == area_code[0]){
-                            params.area_code = areaList[i].code;
+                this.$refs.dialogForm.validate((valid, object) => {
+                    if (valid) {
+                        var params = this.dialogData;
+                        var optype = "";
+                        if (!params.id) {
+                            optype = "openintent_add";
+                            var area_code = this.dialogData.areaCode.split("-");
+                            var areaList = this.areaList;
+                            for(var i = 0; i < areaList.length; i++){
+                                if(areaList[i].name == area_code[0]){
+                                    params.area_code = areaList[i].code;
+                                }
+                            }
+                        } else {
+                            optype = "openintent_chg";
                         }
-                    }
-                } else {
-                    optype = "openintent_chg";
-                }
-                this.$axios({
-                    url: "/cfm/normalProcess",
-                    method: "post",
-                    data: {
-                        optype: optype,
-                        params: params
-                    }
-                }).then((result) => {
-                    if (result.data.error_msg) {
-                        this.$message({
-                            type: "error",
-                            message: result.data.error_msg,
-                            duration: 2000
+                        this.$axios({
+                            url: "/cfm/normalProcess",
+                            method: "post",
+                            data: {
+                                optype: optype,
+                                params: params
+                            }
+                        }).then((result) => {
+                            if (result.data.error_msg) {
+                                this.$message({
+                                    type: "error",
+                                    message: result.data.error_msg,
+                                    duration: 2000
+                                })
+                            } else {
+                                var data = result.data.data;
+                                if (!params.id) {
+                                    // if (this.tableList.length < this.routerMessage.todo.params.page_size) {
+                                    //     this.tableList.push(data);
+                                    // }
+                                    // this.pagTotal++;
+                                    var message = "新增成功";
+                                } else {
+                                    // for (var k in data) {
+                                    //     this.currentMatter[k] = data[k];
+                                    // }
+                                    var message = "修改成功";
+                                }
+                                this.$emit('getTableData', this.routerMessage);
+                                this.dialogVisible = false;
+                                this.$message({
+                                    type: 'success',
+                                    message: message,
+                                    duration: 2000
+                                });
+                            }
+                        }).catch(function (error) {
+                            console.log(error);
                         })
                     } else {
-                        var data = result.data.data;
-                        if (!params.id) {
-                            // if (this.tableList.length < this.routerMessage.todo.params.page_size) {
-                            //     this.tableList.push(data);
-                            // }
-                            // this.pagTotal++;
-                            var message = "新增成功";
-                        } else {
-                            // for (var k in data) {
-                            //     this.currentMatter[k] = data[k];
-                            // }
-                            var message = "修改成功";
-                        }
-                        this.$emit('getTableData', this.routerMessage);
-                        this.dialogVisible = false;
-                        this.$message({
-                            type: 'success',
-                            message: message,
-                            duration: 2000
-                        });
+                        return false;
                     }
-                }).catch(function (error) {
-                    console.log(error);
-                })
-
+                });
             },
             //删除当前事项申请
             removeMatter: function (row, index, rows) {
@@ -1182,42 +1245,48 @@
             },
             //提交审批流程
             subFlow: function () {
-                var params = this.dialogData;
-                var area_code = this.dialogData.areaCode.split("-");
-                var areaList = this.areaList;
-                for(var i = 0; i < areaList.length; i++){
-                    if(areaList[i].name == area_code[0]){
-                        params.area_code = areaList[i].code;
-                    }
-                }
+                this.$refs.dialogForm.validate((valid, object) => {
+                    if (valid) {
+                        var params = this.dialogData;
+                        var area_code = this.dialogData.areaCode.split("-");
+                        var areaList = this.areaList;
+                        for(var i = 0; i < areaList.length; i++){
+                            if(areaList[i].name == area_code[0]){
+                                params.area_code = areaList[i].code;
+                            }
+                        }
 
-                this.$axios({
-                    url: "/cfm/normalProcess",
-                    method: "post",
-                    data: {
-                        optype: "openintent_presubmit",
-                        params: params
-                    }
-                }).then((result) => {
-                    if (result.data.error_msg) {
-                        this.$message({
-                            type: "error",
-                            message: result.data.error_msg,
-                            duration: 2000
-                        })
+                        this.$axios({
+                            url: "/cfm/normalProcess",
+                            method: "post",
+                            data: {
+                                optype: "openintent_presubmit",
+                                params: params
+                            }
+                        }).then((result) => {
+                            if (result.data.error_msg) {
+                                this.$message({
+                                    type: "error",
+                                    message: result.data.error_msg,
+                                    duration: 2000
+                                })
+                            } else {
+                                var data = result.data.data;
+                                this.selectWorkflow = "";
+                                this.workflowData = data;
+                                this.workflows = data.workflows;
+                                this.dialogData.persist_version = data.persist_version;
+                                this.dialogData.apply_on = data.apply_on;
+                                this.dialogData.id = data.id;
+                                this.innerVisible = true;
+                            }
+                        }).catch(function (error) {
+                            console.log(error);
+                        });
                     } else {
-                        var data = result.data.data;
-                        this.selectWorkflow = "";
-                        this.workflowData = data;
-                        this.workflows = data.workflows;
-                        this.dialogData.persist_version = data.persist_version;
-                        this.dialogData.apply_on = data.apply_on;
-                        this.dialogData.id = data.id;
-                        this.innerVisible = true;
+                        return false;
                     }
-                }).catch(function (error) {
-                    console.log(error);
-                })
+                });
             },
             //审批流程弹框-确定
             confirmWorkflow: function(){

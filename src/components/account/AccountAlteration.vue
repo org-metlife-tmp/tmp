@@ -226,11 +226,12 @@
                    top="56px">
             <h1 slot="title" v-text="dialogTitle" class="dialog-title"></h1>
             <el-form :model="dialogData" size="small"
-                     :label-width="formLabelWidth">
+                     :label-width="formLabelWidth"
+                     :rules="rules" ref="dialogForm">
                 <el-row>
                     <el-col :span="24" class="form-small-title"><span></span>申请日期</el-col>
                     <el-col :span="12">
-                        <el-form-item label="账户号">
+                        <el-form-item label="账户号" prop="acc_id">
                             <el-select v-model="dialogData.acc_id" @change="changeAccId" clearable filterable>
                                 <el-option
                                         v-for="item in accList"
@@ -256,7 +257,7 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="账户名称">
+                        <el-form-item label="账户名称" prop="$1">
                             <el-input v-model="dialogData.$1" clearable></el-input>
                         </el-form-item>
                     </el-col>
@@ -266,7 +267,7 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="所属机构">
+                        <el-form-item label="所属机构" prop="$2">
                             <el-select v-model="dialogData.$2" placeholder="请选择所属机构"
                                        filterable clearable>
                                 <el-option v-for="org in orgList"
@@ -283,18 +284,7 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="开户行">
-                            <!--<el-select v-model="dialogData.$3" placeholder="请选择银行"
-                                       clearable filterable
-                                       @focus="dialogVisible = true"
-                                       @visible-change="getBankList"
-                                       :disabled="bankSelect">
-                                <el-option v-for="bankType in bankList"
-                                           :key="bankType.cnaps_code"
-                                           :label="bankType.name"
-                                           :value="bankType.cnaps_code">
-                                </el-option>
-                            </el-select>-->
+                        <el-form-item label="开户行" prop="bankName">
                             <el-input v-model="dialogData.bankName" placeholder="请选择银行" clearable
                                       @focus="clearBankDialog">
                             </el-input>
@@ -306,7 +296,7 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="账户法人">
+                        <el-form-item label="账户法人" prop="$4">
                             <el-input v-model="dialogData.$4" clearable></el-input>
                         </el-form-item>
                     </el-col>
@@ -316,7 +306,7 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="币种">
+                        <el-form-item label="币种" prop="$5">
                             <el-select v-model="dialogData.$5" placeholder="请选择币种"
                                        filterable clearable>
                                 <el-option v-for="currency in currencyList"
@@ -333,7 +323,7 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="账户性质">
+                        <el-form-item label="账户性质" prop="$6">
                             <el-select v-model="dialogData.$6" placeholder="请选择账户性质"
                                        clearable>
                                 <el-option v-for="(name,k) in attrList"
@@ -350,7 +340,7 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="账户模式">
+                        <el-form-item label="账户模式"  prop="$7">
                             <el-select v-model="dialogData.$7" placeholder="请选择账户模式"
                                        clearable>
                                 <el-option v-for="(name,k) in interList"
@@ -367,8 +357,8 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="账户用途">
-                            <el-select v-model="dialogData.$8" placeholder="请选择账户模式"
+                        <el-form-item label="账户用途"  prop="$8">
+                            <el-select v-model="dialogData.$8" placeholder="请选择账户用途"
                                        clearable>
                                 <el-option v-for="(name,k) in purposeList"
                                            :key="k"
@@ -717,6 +707,54 @@
                     area: "",
                     files: []
                 },
+                //校验规则设置
+                rules: {
+                    acc_id: {
+                        required: true,
+                        message: "请选择账户号",
+                        trigger: "change"
+                    },
+                    $1: {
+                        required: true,
+                        message: "请输入账户名称",
+                        trigger: "blur"
+                    },
+                    $2: {
+                        required: true,
+                        message: "请选择所属机构",
+                        trigger: "change"
+                    },
+                    bankName: {
+                        required: true,
+                        message: "请选择开户行",
+                        trigger: "blur"
+                    },
+                    $4: {
+                        required: true,
+                        message: "请输入账户法人",
+                        trigger: "blur"
+                    },
+                    $5: {
+                        required: true,
+                        message: "请选择币种",
+                        trigger: "change"
+                    },
+                    $6: {
+                        required: true,
+                        message: "请选择账户性质",
+                        trigger: "change"
+                    },
+                    $7: {
+                        required: true,
+                        message: "请选择账户模式",
+                        trigger: "change"
+                    },
+                    $8: {
+                        required: true,
+                        message: "请选择账户用途",
+                        trigger: "change"
+                    }
+                },
                 formLabelWidth: "120px",
                 dialogTitle: "新增",
                 lookDialogVisible: false,
@@ -813,6 +851,10 @@
                         dialogData[k] = "";
                     }
                 }
+                //清空校验信息
+                if (this.$refs.dialogForm) {
+                    this.$refs.dialogForm.clearValidate();
+                }
                 this.fileMessage.bill_id = "";
                 this.emptyFileList = [];
                 this.setAccsList({acc_id:""});
@@ -828,6 +870,10 @@
                     }else{
                         dialogData[k] = "";
                     }
+                }
+                //清空校验信息
+                if (this.$refs.dialogForm) {
+                    this.$refs.dialogForm.clearValidate();
                 }
 
                 this.currentAltera = row;
@@ -886,73 +932,80 @@
             },
             //提交当前新增或修改
             subCurrent: function () {
-                var dialogData = this.dialogData;
-                //设置传递参数
-                var reg = /^\$.*/;
-                var paramsData = [];
-                for (var k in dialogData) {
-                    if (reg.test(k)) {
-                        var item = {
-                            type: k.slice(1, k.length),
-                            value: dialogData[k]
+                this.$refs.dialogForm.validate((valid, object) => {
+                    if (valid) {
+                        var dialogData = this.dialogData;
+                        //设置传递参数
+                        var reg = /^\$.*/;
+                        var paramsData = [];
+                        for (var k in dialogData) {
+                            if (reg.test(k)) {
+                                var item = {
+                                    type: k.slice(1, k.length),
+                                    value: dialogData[k]
+                                };
+                                paramsData.push(item);
+                            }
+                        }
+                        var optype = "";
+                        var params = {
+                            acc_id: dialogData.acc_id,
+                            memo: dialogData.memo,
+                            files: dialogData.files,
+                            change_content: paramsData
                         };
-                        paramsData.push(item);
-                    }
-                }
-                var optype = "";
-                var params = {
-                    acc_id: dialogData.acc_id,
-                    memo: dialogData.memo,
-                    files: dialogData.files,
-                    change_content: paramsData
-                };
-                if (!dialogData.id) {
-                    optype = "openchg_add";
-                } else {
-                    optype = "openchg_chg";
-                    params.id = dialogData.id;
-                    params.persist_version = dialogData.persist_version;
-                }
 
-                this.$axios({
-                    url: "/cfm/normalProcess",
-                    method: "post",
-                    data: {
-                        optype: optype,
-                        params: params
-                    }
-                }).then((result) => {
-                    if (result.data.error_msg) {
-                        this.$message({
-                            type: "error",
-                            message: result.data.error_msg,
-                            duration: 2000
+                        if (!dialogData.id) {
+                            optype = "openchg_add";
+                        } else {
+                            optype = "openchg_chg";
+                            params.id = dialogData.id;
+                            params.persist_version = dialogData.persist_version;
+                        }
+
+                        this.$axios({
+                            url: "/cfm/normalProcess",
+                            method: "post",
+                            data: {
+                                optype: optype,
+                                params: params
+                            }
+                        }).then((result) => {
+                            if (result.data.error_msg) {
+                                this.$message({
+                                    type: "error",
+                                    message: result.data.error_msg,
+                                    duration: 2000
+                                })
+                            } else {
+                                var data = result.data.data;
+                                if(!dialogData.id){
+                                    // if (this.tableList.length < this.routerMessage.todo.params.page_size) {
+                                    //     this.tableList.push(data);
+                                    // }
+                                    // this.pagTotal++;
+                                    var message = "新增成功"
+                                }else{
+                                    // for (var k in data) {
+                                    //     this.currentAltera[k] = data[k];
+                                    // }
+                                    var message = "修改成功"
+                                }
+                                this.$emit('getTableData', this.routerMessage);
+                                this.dialogVisible = false;
+                                this.$message({
+                                    type: 'success',
+                                    message: message,
+                                    duration: 2000
+                                });
+                            }
+                        }).catch(function (error) {
+                            console.log(error);
                         })
                     } else {
-                        var data = result.data.data;
-                        if(!dialogData.id){
-                            // if (this.tableList.length < this.routerMessage.todo.params.page_size) {
-                            //     this.tableList.push(data);
-                            // }
-                            // this.pagTotal++;
-                            var message = "新增成功"
-                        }else{
-                            // for (var k in data) {
-                            //     this.currentAltera[k] = data[k];
-                            // }
-                            var message = "修改成功"
-                        }
-                        this.$emit('getTableData', this.routerMessage);
-                        this.dialogVisible = false;
-                        this.$message({
-                            type: 'success',
-                            message: message,
-                            duration: 2000
-                        });
+                        return false;
                     }
-                }).catch(function (error) {
-                    console.log(error);
-                })
+                });
             },
             //删除当前变更
             removeAlterat: function (row, index, rows) {
@@ -1237,10 +1290,10 @@
                 this.dialogData.$3 = this.bankDialogData.cnaps_code;
                 this.dialogData.bankName = this.bankDialogData.bank_name;
                 this.bankDialogVisible = false;
+                this.$refs.dialogForm.validateField("bankName");
             },
             //选择账户号带出相关数据
             changeAccId: function (val) {
-                console.log(val);
                 var accList = this.accList;
                 for (var i = 0; i < accList.length; i++) {
                     var item = accList[i];
@@ -1266,45 +1319,51 @@
             },
             //提交审批流程
             subFlow: function () {
-                var reg = /^\$.*/;
-                var params = this.dialogData;
-                var paramsData = [];
-                for (var k in params) {
-                    if (reg.test(k)) {
-                        var item = {
-                            type: k.slice(1, k.length),
-                            value: params[k]
-                        };
-                        paramsData.push(item);
-                    }
-                }
-                params.change_content = paramsData;
-                this.$axios({
-                    url: "/cfm/normalProcess",
-                    method: "post",
-                    data: {
-                        optype: "openchg_presubmit",
-                        params: params
-                    }
-                }).then((result) => {
-                    if (result.data.error_msg) {
-                        this.$message({
-                            type: "error",
-                            message: result.data.error_msg,
-                            duration: 2000
-                        })
+                this.$refs.dialogForm.validate((valid, object) => {
+                    if (valid) {
+                        var reg = /^\$.*/;
+                        var params = this.dialogData;
+                        var paramsData = [];
+                        for (var k in params) {
+                            if (reg.test(k)) {
+                                var item = {
+                                    type: k.slice(1, k.length),
+                                    value: params[k]
+                                };
+                                paramsData.push(item);
+                            }
+                        }
+                        params.change_content = paramsData;
+                        this.$axios({
+                            url: "/cfm/normalProcess",
+                            method: "post",
+                            data: {
+                                optype: "openchg_presubmit",
+                                params: params
+                            }
+                        }).then((result) => {
+                            if (result.data.error_msg) {
+                                this.$message({
+                                    type: "error",
+                                    message: result.data.error_msg,
+                                    duration: 2000
+                                })
+                            } else {
+                                var data = result.data.data;
+                                this.selectWorkflow = "";
+                                this.workflowData = data;
+                                this.workflows = data.workflows;
+                                this.dialogData.persist_version = data.persist_version;
+                                this.dialogData.id = data.id;
+                                this.innerVisible = true;
+                            }
+                        }).catch(function (error) {
+                            console.log(error);
+                        });
                     } else {
-                        var data = result.data.data;
-                        this.selectWorkflow = "";
-                        this.workflowData = data;
-                        this.workflows = data.workflows;
-                        this.dialogData.persist_version = data.persist_version;
-                        this.dialogData.id = data.id;
-                        this.innerVisible = true;
+                        return false;
                     }
-                }).catch(function (error) {
-                    console.log(error);
-                })
+                });
             },
              //审批流程弹框-确定
             confirmWorkflow: function(){

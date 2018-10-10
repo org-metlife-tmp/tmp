@@ -1059,6 +1059,7 @@
                 for (var k in dialogData) {
                     dialogData[k] = "";
                 }
+                //清空校验信息
                 if (this.$refs.dialogForm) {
                     this.$refs.dialogForm.clearValidate();
                 }
