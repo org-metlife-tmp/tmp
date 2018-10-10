@@ -17,6 +17,10 @@
             text-align: left;
         }
 
+        .table-content{
+            height: 305px;
+        }
+
         /*分隔栏*/
         .split-bar {
             width: 106%;
@@ -133,7 +137,8 @@
         <!--数据展示区-->
         <section class="table-content">
             <el-table :data="tableList"
-                      border size="mini">
+                      border size="mini"
+                      height="100%">
                 <el-table-column prop="topic" label="下拨主题" width="180px"
                                  :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column label="下拨额度" :show-overflow-tooltip="true" width="200px">
@@ -419,9 +424,11 @@
             },
             translateFrequency: function(list){
                 var str = "";
-                list.forEach(element => {
-                    str = str + this.frequencyList[element['allocation_frequency']] + element.allocation_frequency_detail + "," + element.allocation_time +";<br/>";
-                });
+                if(list){
+                    list.forEach(element => {
+                        str = str + this.frequencyList[element['allocation_frequency']] + element.allocation_frequency_detail + "," + element.allocation_time +";<br/>";
+                    });
+                }
                 return str;
             }
         },
