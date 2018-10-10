@@ -365,7 +365,7 @@
                             >
                             </el-table-column>
                             <!-- 调拨通金额处理千分位 -->
-                            <el-table-column v-else-if="head.prop=='payment_amount' || head.prop== 'total_amount' || head.prop== 'receipts_amount'"
+                            <el-table-column v-else-if="head.prop=='payment_amount' || head.prop== 'total_amount' || head.prop== 'receipts_amount' || head.prop== 'sucess_amount'"
                                 :key="head.id"
                                 :prop="head.prop"
                                 :label="head.name"
@@ -800,12 +800,20 @@
                     reject:"skt_reject"
                 },
                 "16":{
-                    text:"OA数据",
+                    text:"OA数据总公司付款",
                     detail:"headorgoa_detail",
                     list:"headorgoa_pendingtasks",
                     addLots:"headorgoa_append",
                     agree:"headorgoa_agree",
                     reject:"headorgoa_reject"
+                },
+                "19":{
+                    text:"非直连归集",
+                    detail:"ndc_detail",
+                    list:"ndc_pendingtasks",
+                    addLots:"ndc_append",
+                    agree:"ndc_agree",
+                    reject:"ndc_reject"
                 }
             };
 
@@ -1173,6 +1181,26 @@
                     {id:"19", lspan:4, label:"摘要"},
                     {id:"20", pspan:8, prop:"payment_summary"}
                 ],
+                "19":[
+                    {id:"1", lspan:4, label:"批次号"},
+                    {id:"2",pspan:20, prop:"batchno"},
+                    {id:"3", lspan:4, label:"总笔数"},
+                    {id:"4", pspan:8, prop:"total_num"},
+                    {id:"5", lspan:4, label:"总金额"},
+                    {id:"6", pspan:8, prop:"total_amount"},
+                    {id:"7", lspan:4, label:"收款账号"},
+                    {id:"8", pspan:8, prop:"recv_account_no"},
+                    {id:"9", lspan:4, label:"开户行"},
+                    {id:"10", pspan:8, prop:"recv_account_bank"},
+                    {id:"11", lspan:4, label:"已失败笔数"},
+                    {id:"12", pspan:8, prop:"failed_num"},
+                    {id:"13", lspan:4, label:"已失败金额"},
+                    {id:"14", pspan:8, prop:"failed_amount"},
+                    {id:"15", lspan:4, label:"已成功笔数"},
+                    {id:"16", pspan:8, prop:"sucess_num"},
+                    {id:"17", lspan:4, label:"已成功金额"},
+                    {id:"18", pspan:8, prop:"sucess_amount"}
+                ],
             }
         },
         mounted:function(){
@@ -1374,6 +1402,14 @@
                         {id:'5',prop:"payment_amount",name:'收款金额'},
                         {id:'6',prop:"pay_mode",name:'付款方式'},
                         {id:'7',prop:"service_status",name:'状态'}
+                    ],
+                    "19":[
+                        {id:'1',prop:"batchno",name:'批次号'},
+                        {id:'2',prop:"total_num",name:'总笔数'},
+                        {id:'3',prop:"total_amount",name:'总金额'},
+                        {id:'4',prop:"sucess_num",name:'成功笔数'},
+                        {id:'5',prop:"sucess_amount",name:'成功金额'},
+                        {id:'6',prop:"service_status",name:'批次状态'}
                     ],
                 },
                 editableTabsList: {},

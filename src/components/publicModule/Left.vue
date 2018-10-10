@@ -485,6 +485,8 @@
                     <el-menu-item index="/collection/collection-look" v-if="menuList.GJView">自动归集查看</el-menu-item>
                     <el-menu-item index="/collection/collection-statement" v-if="menuList.GJReport">自动归集报表</el-menu-item>
                     <el-menu-item index="/payment/deal-check?bizType=12" v-if="menuList.GJCheck">交易核对</el-menu-item>
+                    <el-menu-item index="/collection/not-directly-set" v-if="menuList.GJBatchBill">非直连归集-制单</el-menu-item>
+                    <el-menu-item index="/collection/no-directly-look" v-if="menuList.GJBatchView">非直连归集-查看</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
             <el-submenu index="13"  v-if="menuList.ZJXB">
@@ -684,6 +686,8 @@
                     GJView: false, //自动归集查看
                     GJReport: false, //自动归集报表
                     GJCheck: false, //自动归集核对
+                    GJBatchBill: false, //自动归集核对
+                    GJBatchView: false, //自动归集核对
 
                     WDATESET: false, //工作日历
                     WCALSET: false, //工作日历(管理员模块)
