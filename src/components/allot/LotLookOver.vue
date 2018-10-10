@@ -22,7 +22,7 @@
 
             /*时间控件*/
             .el-date-editor {
-                width: 100%;
+                width: 210px;
             }
         }
 
@@ -106,13 +106,13 @@
             padding: 0;
             vertical-align: middle;
         }
-        
+
         /*撤回按钮*/
         .withdraw {
             background-position: -48px 0;
         }
 
-        
+
 
         .serial-number {
             color: #ccc;
@@ -184,8 +184,8 @@
                 height: 30px;
                 line-height: 30px;
                 width: 50%;
-                display:flex;/*设为伸缩容器*/  
-                flex-flow:row;/*伸缩项目单行排列*/  
+                display:flex;/*设为伸缩容器*/
+                flex-flow:row;/*伸缩项目单行排列*/
                 span{
                     display: inline-block;
                     padding: 0 5px;
@@ -206,8 +206,8 @@
                 }
                 .money-box{
                     flex: 1;
-                    display:flex;/*设为伸缩容器*/  
-                    flex-flow:row;/*伸缩项目单行排列*/  
+                    display:flex;/*设为伸缩容器*/
+                    flex-flow:row;/*伸缩项目单行排列*/
                     .num{
                         width: 100px;
                         text-align:right;;
@@ -557,7 +557,7 @@
                     </el-pagination>
                 </div>
             </section>
-            
+
         </el-dialog>
     </div>
 </template>
@@ -578,7 +578,7 @@
                 this.payModeList = constants.PayMode;
             }
 
-            
+
         },
         components: {
             Upload: Upload,
@@ -826,7 +826,7 @@
                         data.total_amount = this.$common.transitSeparator(data.total_amount);
                         this.dialogData = data;
                         this.dialogVisible = true;
-                        
+
                         this.getDetailTable({batchno:row.batchno});
                     }
                 }).catch(function (error) {

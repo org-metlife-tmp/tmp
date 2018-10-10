@@ -15,7 +15,7 @@
 
             /*时间控件*/
             .el-date-editor {
-                width: 100%;
+                width: 210px;
             }
         }
 
@@ -190,9 +190,9 @@
         <section class="table-content">
             <el-table :data="tableList"
                       border size="mini">
-                <el-table-column prop="pay_account_bank" label="收款方名称" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="recv_account_name" label="收款方名称" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="recv_account_no" label="收款方账号" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="recv_account_name" label="收款方银行"
+                <el-table-column prop="pay_account_bank" label="收款方银行"
                                  :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="payment_amount" label="金额" :show-overflow-tooltip="true"
                                  :formatter="transitAmount"></el-table-column>

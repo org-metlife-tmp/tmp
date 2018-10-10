@@ -15,7 +15,7 @@
 
             /*时间控件*/
             .el-date-editor {
-                width: 100%;
+                width: 210px;
             }
         }
 
