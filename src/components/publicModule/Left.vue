@@ -441,8 +441,8 @@
                     <el-menu-item index="/allot/payment" v-if="menuList.DbtPayBill">内部调拨-支付</el-menu-item>
                     <el-menu-item index="/allot/look-over" v-if="menuList.DbtViewBill">内部调拨-查看</el-menu-item>
                     <el-menu-item index="/allot/lot-make-bill" v-if="menuList.DbtBatchBill">批量调拨-制单</el-menu-item>
-                    <el-menu-item index="/allot/lot-look-over">批量调拨-查看</el-menu-item>
-                    <!-- <el-menu-item index="/allot/lot-payment">批量调拨-支付</el-menu-item>-->
+                    <el-menu-item index="/allot/lot-look-over" v-if="menuList.DbtBatchView">批量调拨-查看</el-menu-item>
+                    <el-menu-item index="/allot/lot-payment" v-if="menuList.DbtBatchPay">批量调拨-支付</el-menu-item>
                     <el-menu-item index="/allot/allot-deal-check?bizType=8" v-if="menuList.DbtCheck">交易核对</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
@@ -665,6 +665,8 @@
                     DbtPayBill: false, //内部调拨-支付
                     DbtViewBill: false, //内部调拨-查看
                     DbtBatchBill: false, //批量调拨-制单
+                    DbtBatchView: false, //批量调拨-查看
+                    DbtBatchPay: false, //批量调拨-支付
                     DbtCheck: false, //内部调拨-交易核对
 
                     ZFT: false, //支付通
