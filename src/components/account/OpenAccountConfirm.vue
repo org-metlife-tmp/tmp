@@ -173,7 +173,8 @@
                    width="860px" top="76px"
                    :close-on-click-modal="false">
             <el-form :model="dialogData" size="mini"
-                     :label-width="formLabelWidth">
+                     :label-width="formLabelWidth"
+                     :rules="rules" ref="dialogForm">
                 <el-row>
                     <el-col :span="12">
                         <el-form-item label="申请公司">
@@ -256,7 +257,7 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="会计科目代码">
+                        <el-form-item label="会计科目代码" prop="subject_code">
                             <el-input v-model="dialogData.subject_code"></el-input>
                         </el-form-item>
                     </el-col>
@@ -331,6 +332,14 @@
                 dialogVisible: false, //弹框数据
                 dialogData: {
                 },
+                //校验规则设置
+                rules: {
+                    subject_code: {
+                        required: true,
+                        message: "请输入会计科目代码",
+                        trigger: "blur"
+                    }
+                },
                 currentData: {},
                 formLabelWidth: "120px",
                 /*下拉框数据*/
@@ -389,58 +398,63 @@
             },
             //编辑确定
             subEdit:function(){
-                var row = this.dialogData;
-                if(row.acc_id && row.subject_code){
-                    this.$axios({
-                        url:"/cfm/normalProcess",
-                        method: "post",
-                        data:{
-                            optype: "accconfirm_setstatus",
-                            params: {
-                                acc_id:row.acc_id,
-                                subject_code:row.subject_code
-                            }
-                        }
-                    }).then((result) => {
-                        if (result.data.error_msg) {
-                            this.$message({
-                                type: "error",
-                                message: result.data.error_msg,
-                                duration: 2000
+                this.$refs.dialogForm.validate((valid, object) => {
+                    if (valid) {
+                        var row = this.dialogData;
+                        if(row.acc_id){
+                            this.$axios({
+                                url:"/cfm/normalProcess",
+                                method: "post",
+                                data:{
+                                    optype: "accconfirm_setstatus",
+                                    params: {
+                                        acc_id:row.acc_id,
+                                        subject_code:row.subject_code
+                                    }
+                                }
+                            }).then((result) => {
+                                if (result.data.error_msg) {
+                                    this.$message({
+                                        type: "error",
+                                        message: result.data.error_msg,
+                                        duration: 2000
+                                    })
+                                }else{
+                                    var data = result.data.data;
+                                    this.dialogVisible = false;
+                                    var rows = this.tableList;
+                                    var index = rows.indexOf(this.currentData);
+                                    if (this.pagCurrent < (this.pagTotal / this.pagSize)) { //存在下一页
+                                        this.$emit('getTableData', this.routerMessage);
+                                    } else {
+                                        if (rows.length == "1" && (this.routerMessage.params.page_num != 1)) { //是当前页最后一条
+                                            this.routerMessage.params.page_num--;
+                                            this.$emit('getTableData', this.routerMessage);
+                                        } else {
+                                            rows.splice(index, 1);
+                                            this.pagTotal--;
+                                        }
+                                    }
+                                    this.$message({
+                                        type: "success",
+                                        message: "确认成功",
+                                        duration: 2000
+                                    })
+                                }
+                            }).catch(function (error) {
+                                console.log(error);
                             })
                         }else{
-                            var data = result.data.data;
-                            this.dialogVisible = false;
-                            var rows = this.tableList;
-                            var index = rows.indexOf(this.currentData);
-                            if (this.pagCurrent < (this.pagTotal / this.pagSize)) { //存在下一页
-                                this.$emit('getTableData', this.routerMessage);
-                            } else {
-                                if (rows.length == "1" && (this.routerMessage.params.page_num != 1)) { //是当前页最后一条
-                                    this.routerMessage.params.page_num--;
-                                    this.$emit('getTableData', this.routerMessage);
-                                } else {
-                                    rows.splice(index, 1);
-                                    this.pagTotal--;
-                                }
-                            }
                             this.$message({
-                                type: "success",
-                                message: "确认成功",
+                                type: "warning",
+                                message: "会计科目代码不能为空！",
                                 duration: 2000
                             })
                         }
-                    }).catch(function (error) {
-                        console.log(error);
-                    })
-                }else{
-                    this.$message({
-                        type: "warning",
-                        message: "会计科目代码不能为空！",
-                        duration: 2000
-                    })
-                }
-
+                    } else {
+                        return false;
+                    }
+                });
             },
             //获取当前项数据
             getCurrentData: function(setData,row){
@@ -448,6 +462,10 @@
                 this.dialogVisible = true;
                 for(var k in dialogData){
                     dialogData[k] = "";
+                }
+                //清空校验信息
+                if (this.$refs.dialogForm) {
+                    this.$refs.dialogForm.clearValidate();
                 }
                 for(var i in row){
                     dialogData[i] = row[i];

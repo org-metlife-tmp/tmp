@@ -214,7 +214,8 @@
                    top="56px">
             <h1 slot="title" v-text="dialogTitle" class="dialog-title"></h1>
             <el-form :model="dialogData" size="small"
-                     :label-width="formLabelWidth">
+                     :label-width="formLabelWidth"
+                     :rules="rules" ref="dialogForm">
                 <el-row>
                     <el-col :span="12">
                         <el-form-item label="申请日期">
@@ -233,19 +234,19 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="24">
-                        <el-form-item label="事由摘要">
+                        <el-form-item label="事由摘要" prop="memo">
                             <el-input v-model="dialogData.memo" placeholder="请输入事由摘要(15字以内)"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="24">
-                        <el-form-item label="事由说明">
+                        <el-form-item label="事由说明" prop="detail">
                             <el-input v-model="dialogData.detail"
                                       type="textarea" :rows="3"
                                       placeholder="请输入事由说明(100字以内)"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="账户号">
+                        <el-form-item label="账户号" prop="acc_id">
                             <el-select v-model="dialogData.acc_id" @change="changeAccount" clearable>
                                 <el-option
                                 v-for="item in accOptions"
@@ -459,7 +460,7 @@
                     </el-form-item>
                 </el-row>
             </el-form>
-            <BusinessTracking 
+            <BusinessTracking
                 :businessParams="businessParams"
             ></BusinessTracking>
         </el-dialog>
@@ -599,7 +600,7 @@
             if (constants.InactiveMode) {
                 this.interList = constants.InactiveMode;
             }
-            //存款类型 
+            //存款类型
             if (constants.DepositsMode) {
                 this.depositsList = constants.DepositsMode;
             }
@@ -643,6 +644,24 @@
                 dialogData: {
                     files: [],
                     account_info:{}
+                },
+                //校验规则设置
+                rules: {
+                    memo: {
+                        required: true,
+                        message: "请输入事由摘要",
+                        trigger: "blur"
+                    },
+                    detail: {
+                        required: true,
+                        message: "请输入事由说明",
+                        trigger: "blur"
+                    },
+                    acc_id: {
+                        required: true,
+                        message: "请选择账户号",
+                        trigger: "change"
+                    }
                 },
                 formLabelWidth: "120px",
                 dialogTitle: "新增",
@@ -719,6 +738,10 @@
                         dialogData[k] = "";
                     }
                 }
+                //清空校验信息
+                if (this.$refs.dialogForm) {
+                    this.$refs.dialogForm.clearValidate();
+                }
                 this.fileMessage.bill_id = ""; //清空附件
                 this.emptyFileList = [];
                 //设置当前用户的公司和部门
@@ -742,7 +765,7 @@
             editMerch:function(row){
                 this.dialogTitle = "编辑";
                 this.accOptions = [];
-                
+
                 //清空数据和校验信息
                 var dialogData = this.dialogData;
                 for(var k in dialogData){
@@ -751,6 +774,9 @@
                     }else{
                         dialogData[k] = "";
                     }
+                }
+                if (this.$refs.dialogForm) {
+                    this.$refs.dialogForm.clearValidate();
                 }
                 this.currentMatter = row;//保存当前数据
                 //设置当前用户的部门和公司
@@ -780,7 +806,7 @@
                         this.dialogVisible = true;
                     }
                 })
-                
+
                 //获取附件列表
                 this.fileMessage.bill_id = row.id;
                 this.triggerFile = !this.triggerFile;
@@ -800,46 +826,52 @@
             },
             //提交当前修改或新增
             subCurrent:function(){
-                var params = this.dialogData;
-                var optype = "";
-                optype = params.id ? "closeacc_todochg" : "closeacc_todoadd";
-                this.$axios({
-                    url:"/cfm/normalProcess",
-                    method:"post",
-                    data: {
-                        optype: optype,
-                        params: params
-                    }
-                }).then((result) => {
-                    if(result.data.error_msg){
-                        this.$message({
-                            type: "error",
-                            message: result.data.error_msg,
-                            duration: 2000
-                        })
-                    }else{
-                        var data = result.data.data;
-                        if(!params.id){
-                            // if (this.tableList.length < this.routerMessage.todo.params.page_size) {
-                            //     this.tableList.push(data);
-                            // }
-                            // this.pagTotal++;
-                            var message = "新增成功";
-                        }else{
-                            // for (var k in data) {
-                            //     this.currentMatter[k] = data[k];
-                            // }
-                            var message = "修改成功";
-                        }
-                        this.$emit('getTableData', this.routerMessage);
-                        this.dialogVisible = false;
-                        this.$message({
-                            type: 'success',
-                            message: message,
-                            duration: 2000
+                this.$refs.dialogForm.validate((valid, object) => {
+                    if (valid) {
+                        var params = this.dialogData;
+                        var optype = "";
+                        optype = params.id ? "closeacc_todochg" : "closeacc_todoadd";
+                        this.$axios({
+                            url:"/cfm/normalProcess",
+                            method:"post",
+                            data: {
+                                optype: optype,
+                                params: params
+                            }
+                        }).then((result) => {
+                            if(result.data.error_msg){
+                                this.$message({
+                                    type: "error",
+                                    message: result.data.error_msg,
+                                    duration: 2000
+                                })
+                            }else{
+                                var data = result.data.data;
+                                if(!params.id){
+                                    // if (this.tableList.length < this.routerMessage.todo.params.page_size) {
+                                    //     this.tableList.push(data);
+                                    // }
+                                    // this.pagTotal++;
+                                    var message = "新增成功";
+                                }else{
+                                    // for (var k in data) {
+                                    //     this.currentMatter[k] = data[k];
+                                    // }
+                                    var message = "修改成功";
+                                }
+                                this.$emit('getTableData', this.routerMessage);
+                                this.dialogVisible = false;
+                                this.$message({
+                                    type: 'success',
+                                    message: message,
+                                    duration: 2000
+                                });
+                            }
                         });
+                    } else {
+                        return false;
                     }
-                })
+                });
             },
             //删除当前事项申请
             removeMatter:function(row,index,rows){
@@ -1000,7 +1032,7 @@
                 this.businessParams = {};//清空数据
                 this.businessParams.biz_type = 6;
                 this.businessParams.id = row.id;
-               
+
                 for(var k in this.lookDialogData){
                     this.lookDialogData[k] = "";
                 }
@@ -1054,32 +1086,38 @@
             },
             //提交审批流程
             subFlow: function () {
-                this.$axios({
-                    url: "/cfm/normalProcess",
-                    method: "post",
-                    data: {
-                        optype: "closeacc_presubmit",
-                        params: this.dialogData
-                    }
-                }).then((result) => {
-                    if (result.data.error_msg) {
-                        this.$message({
-                            type: "error",
-                            message: result.data.error_msg,
-                            duration: 2000
-                        })
+                this.$refs.dialogForm.validate((valid, object) => {
+                    if (valid) {
+                        this.$axios({
+                            url: "/cfm/normalProcess",
+                            method: "post",
+                            data: {
+                                optype: "closeacc_presubmit",
+                                params: this.dialogData
+                            }
+                        }).then((result) => {
+                            if (result.data.error_msg) {
+                                this.$message({
+                                    type: "error",
+                                    message: result.data.error_msg,
+                                    duration: 2000
+                                })
+                            } else {
+                                var data = result.data.data;
+                                this.selectWorkflow = "";
+                                this.workflowData = data;
+                                this.workflows = data.workflows;
+                                this.dialogData.persist_version = data.persist_version;
+                                this.dialogData.id = data.id;
+                                this.innerVisible = true;
+                            }
+                        }).catch(function (error) {
+                            console.log(error);
+                        });
                     } else {
-                        var data = result.data.data;
-                        this.selectWorkflow = "";
-                        this.workflowData = data;
-                        this.workflows = data.workflows;
-                        this.dialogData.persist_version = data.persist_version;
-                        this.dialogData.id = data.id;
-                        this.innerVisible = true;
+                        return false;
                     }
-                }).catch(function (error) {
-                    console.log(error);
-                })
+                });
             },
              //审批流程弹框-确定
             confirmWorkflow: function(){
@@ -1125,7 +1163,7 @@
                         //         }
                         //     }
                         // }
-                        
+
                         this.$message({
                             type: "success",
                             message: "操作成功",

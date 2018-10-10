@@ -325,7 +325,7 @@
                     </el-col>
                 </el-row>
             </el-form>
-            <BusinessTracking 
+            <BusinessTracking
                 v-show="businessTrack"
                 :businessParams="businessParams"
             ></BusinessTracking>
@@ -371,7 +371,7 @@
             if (constants.InactiveMode) {
                 this.interList = constants.InactiveMode;
             }
-            //存款类型 
+            //存款类型
             if (constants.DepositsMode) {
                 this.depositsList = constants.DepositsMode;
             }
@@ -700,7 +700,7 @@
                         var data = result.data.data;
                         this.innerVisible = false;
                         this.dialogVisible = false;
-                        
+
                         // var rows = this.tableList;
                         // var index = this.tableList.indexOf(this.currentMessage);
                         // if (this.pagCurrent < (this.pagTotal / this.pagSize)) { //存在下一页
