@@ -524,7 +524,9 @@
                     method: "post",
                     data: {
                         optype: "collectreport_reportsChart",
-                        params: this.routerMessage.params
+                        params: {
+                            query_key: this.routerMessage.params.query_key
+                        }
                     }
                 }).then((result) => {
                     if (result.data.error_msg) {

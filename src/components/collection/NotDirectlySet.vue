@@ -810,6 +810,21 @@
             setParams: function () {
                 //校验数据是否完善 并设置发送给后台的数据
                 var params = this.billData;
+                var validater = {
+                    recv_account_id: "请选择收款方",
+                    batchno: "请上传付款方信息"
+                }
+                for(var k in validater){
+                    if(!params[k]){
+                        this.$message({
+                            type: "warning",
+                            message: validater[k],
+                            duration: 2000
+                        });
+                        return false;
+                    }
+                }
+
                 params.files = this.fileList;
                 params.pay_mode = 8;
                 params.uuid = JSON.parse(window.sessionStorage.getItem("uuid"));
