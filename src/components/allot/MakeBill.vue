@@ -509,7 +509,7 @@
 
                 payModeList:{}, //下拉框数据
                 payStatList: [],
-                messageTips: {},//
+                messageTips: {},//校验提示信息
             }
         },
         methods: {

@@ -309,7 +309,7 @@
                                 <el-col :span="6" class="date-select" v-for="datePicker in timesetting_list"
                                         :key="datePicker.id">
                                     <el-input placeholder="请选择时间" prefix-icon="el-icon-date"
-                                              v-model="datePicker.show" clearable
+                                              v-model="datePicker.show"
                                               :disabled="viewReadonly"
                                               @focus="setCurrDate(datePicker)">
                                     </el-input>
@@ -520,6 +520,14 @@
                     break;
                 }
             }
+            this.messageTips = {
+                topic: "请填写下拨主题！",
+                allocation_amount: "请填写下拨金额！",
+                main_acc_id: "请选择主账户！",
+                child_accounts: "请添加子账户！",
+                timeShow: "请填写时间！",
+                summary: "请填写摘要！"
+            }
         },
         mounted: function(){
             var params = this.$route.params;
@@ -686,6 +694,7 @@
                 selectWorkflow: "", //流程选择
                 viewReadonly: false,//查看只读
                 businessParams: {},//业务追踪
+                messageTips: {},//校验提示信息
             }
         },
         components: {
@@ -841,9 +850,25 @@
             comfirmCurrDate: function () {
                 var frequency = this.allocationData.allocation_frequency;
                 var dateSelect = this.dateSelect;
+                if(!dateSelect.timeDate){
+                    this.$message({
+                        type: "warning",
+                        message: "请选择时间！",
+                        duration: 2000
+                    });
+                    return false;
+                }
                 if (frequency == 1) { //只设置时间
                     this.currTimeSetting.show = dateSelect.timeDate;
                 } else if (frequency == 2) { //设置周
+                    if(dateSelect.weekDate.length==0){
+                        this.$message({
+                            type: "warning",
+                            message: "请选择星期！",
+                            duration: 2000
+                        });
+                        return false;
+                    }
                     var str = dateSelect.weekDate.join(",");
                     this.currTimeSetting.show = str + "-" + dateSelect.timeDate;
                     this.currTimeSetting.allocation_frequency_detail = str;
@@ -855,6 +880,14 @@
                             activeDay += dayItem.day + ",";
                         }
                     });
+                    if(!activeDay){
+                        this.$message({
+                            type: "warning",
+                            message: "请选择日期！",
+                            duration: 2000
+                        });
+                        return false;
+                    }
                     var str = activeDay.slice(0, activeDay.length - 1);
                     this.currTimeSetting.show = str + "-" + dateSelect.timeDate;
                     this.currTimeSetting.allocation_frequency_detail = str;
@@ -965,20 +998,64 @@
             //组织保存参数
             setParams: function(){
                 var data = this.allocationData;
-                data.frequency_detail = this.timesetting_list;
+                var validateObj = {
+                    main_acc_id: true,
+                    child_accounts: true,
+                    timeShow: true
+                };
                 data.main_accounts = [];
                 var editableTabs = this.editableTabs;
-                editableTabs.forEach((tab)=>{
+                var len = editableTabs.length;
+                for(var i=0; i<len; i++){
+                    var tab = editableTabs[i];
                     var obj = {};
                     obj.tab = tab.name
                     obj.main_acc_id = tab.main_acc_id;
+                    if(!tab.main_acc_id){
+                        validateObj.main_acc_id = false;
+                        break;
+                    }
                     obj.child_accounts = [];
                     var list = tab.child_accounts;
+                    if(list.length<1){
+                        validateObj.child_accounts = false;
+                        break;
+                    }
                     list.forEach((item)=>{
                         obj.child_accounts.push(item.child_acc_id);
                     })
                     data.main_accounts.push(obj);
+                }
+                data.frequency_detail = this.timesetting_list;
+                data.frequency_detail.forEach(ele=>{
+                    if(!ele.show){
+                        validateObj.timeShow = false;
+                        return ;
+                    }
                 })
+                
+                var params = this.messageTips;
+                for(var k in params){
+                    if( k == 'main_acc_id' || k == 'child_accounts' || k == 'timeShow'){
+                        if(!validateObj[k]){
+                            var message = params[k];
+                            this.$message({
+                                type: "warning",
+                                message: message,
+                                duration: 2000
+                            });
+                            return ;
+                        }
+                    }else if(!data[k]){
+                        var message = params[k];
+                        this.$message({
+                            type: "warning",
+                            message: message,
+                            duration: 2000
+                        });
+                        return ;
+                    }
+                }
                 data.allocation_type = this.allocation_type;
                 data.files = this.fileList;
                 return data;
@@ -1041,6 +1118,9 @@
             saveAllocate:function (){
                 // var query = this.$route.params;
                 var params = this.setParams();
+                if(!params){
+                    return;
+                }
                 var optype = params.id ? 'allocset_chg' : 'allocset_add';
                 var message = params.id ? '修改成功' : '保存成功';
                 this.$axios({
@@ -1074,6 +1154,9 @@
             //提交
             submitBill: function(){
                 var params = this.setParams();
+                if(!params){
+                    return;
+                }
                 this.$axios({
                     url: "/cfm/normalProcess",
                     method: "post",

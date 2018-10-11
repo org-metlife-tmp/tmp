@@ -541,7 +541,12 @@
                 }
             }).catch(function (error) {
                 console.log(error);
-            })
+            });
+            this.messageTips = {
+                recv_account_id: "请选择收款方！",
+                pay_account_no: "请选择付款方账号！",
+                receipts_amount: "请填写金额！",
+            }
         },
         mounted: function(){
             /*获取下拉框数据*/
@@ -608,6 +613,7 @@
                 accOptions: [],//下拉框数据
                 payerList: [],
                 payStatList: [],
+                messageTips: {},//校验提示信息
             }
         },
         methods: {
@@ -853,6 +859,18 @@
             //设置params
             setParams: function(){
                 var billData = this.billData;
+                var validatePar = this.messageTips;
+                for(var k in validatePar){
+                    if(!billData[k]){
+                        var message = validatePar[k];
+                        this.$message({
+                            type: "warning",
+                            message: message,
+                            duration: 2000
+                        });
+                        return;
+                    }
+                }
                 billData.receipts_amount = billData.receipts_amount.split(",").join("");
                 billData.files= this.fileList;
                 return billData;

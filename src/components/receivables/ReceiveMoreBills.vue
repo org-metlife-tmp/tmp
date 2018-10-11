@@ -624,6 +624,11 @@
             if(bankAllTypeList){
                 this.bankAllTypeList = bankAllTypeList;
             }
+            this.messageTips = {
+                recv_account_id: "请选择收款方！",
+                pay_account_no: "请选择付款方账号！",
+                receipts_amount: "请填写金额！",
+            }
         },
         components: {
             Upload: Upload,
@@ -724,7 +729,8 @@
                 selectWorkflow: "",
                 workflows: [],
                 // businessParams:{ //业务状态追踪参数
-                // }
+                // },
+                messageTips: {},//校验提示信息
             }
         },
         methods: {
@@ -1139,6 +1145,18 @@
             setParams: function () {
                 //校验数据是否完善 并设置发送给后台的数据
                 var params = this.editDialogData;
+                var validatePar = this.messageTips;
+                for(var k in validatePar){
+                    if(!params[k]){
+                        var message = validatePar[k];
+                        this.$message({
+                            type: "warning",
+                            message: message,
+                            duration: 2000
+                        });
+                        return;
+                    }
+                }
                 params.receipts_amount = params.receipts_amount.split(",").join("");
                 params.files = this.fileList;
 

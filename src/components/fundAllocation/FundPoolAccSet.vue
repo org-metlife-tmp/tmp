@@ -166,6 +166,11 @@
         created: function () {
             this.$emit("transmitTitle", "资金池账户设置");
             this.$emit("getCommTable", this.routerMessage);
+
+            this.messageTips = {
+                bank_type: "请选择银行大类！",
+                acc_id: "请选择账户号！"
+            }
         },
         mounted: function () {
             //银行大类
@@ -203,6 +208,7 @@
                 bankAllTypeList: [], //银行大类全部(不重复)
                 bankTypeList: [], //银行大类
                 accOptions:[],//账户号下拉数据,
+                messageTips: {},//错误提示
             }
         },
         methods: {
@@ -320,6 +326,20 @@
             },
             //确认提交
             subAdd: function () {
+                var params = {
+                    bank_type:"",
+                    acc_id:""
+                };
+                for(var k in params){
+                    if(!this.dialogData[k]){
+                        this.$message({
+                            type: "warning",
+                            message: this.messageTips[k],
+                            duration: 2000
+                        });
+                        return false;
+                    }
+                }
                 this.$axios({
                     url:"/cfm/normalProcess",
                     method:"post",
