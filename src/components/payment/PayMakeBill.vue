@@ -221,14 +221,16 @@
                 width: 100%;
             }
         }
-    }
-    .el-radio-group {
-        .el-radio {
-            display: block;
-            margin-left: 30px;
-            margin-bottom: 10px;
+
+        .el-radio-group {
+            .el-radio {
+                display: block;
+                margin-left: 30px;
+                margin-bottom: 10px;
+            }
         }
     }
+
 </style>
 
 <template>

@@ -182,7 +182,6 @@
     /*流程弹框*/
     .el-dialog{
         .el-radio-group {
-            s
             .el-radio {
                 display: block;
                 margin-left: 30px;
