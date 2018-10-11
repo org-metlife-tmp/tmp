@@ -468,7 +468,7 @@
                     <el-menu-item index="/payment/pay-payment" v-if="menuList.ZFTPayBill">资金支付-支付</el-menu-item>
                     <el-menu-item index="/payment/pay-look-over" v-if="menuList.ZFTViewBill">资金支付-查看</el-menu-item>
                     <el-menu-item index="/payment/batch-make-bill" v-if="menuList.ZFTBatchBill">批量支付-制单</el-menu-item>
-                    <!--<el-menu-item index="/payment/batch-payment">批量支付-支付</el-menu-item>-->
+                    <el-menu-item index="/payment/batch-payment">批量支付-支付</el-menu-item>
                     <el-menu-item index="/payment/batch-look-over" v-if="menuList.ZFTBatchView">批量支付-查看</el-menu-item>
                     <el-menu-item index="/payment/payee-message" v-if="menuList.ZFTSuplierAcc">收款方信息管理</el-menu-item>
                     <el-menu-item index="/payment/deal-check?bizType=9" v-if="menuList.ZFTCheck">交易核对</el-menu-item>

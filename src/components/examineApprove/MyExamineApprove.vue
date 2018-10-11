@@ -1896,7 +1896,7 @@
                     curTab.tableList=val.data;
                     if(this.isFromHome){
                         this.isFromHome = false;
-                    } 
+                    }
                 }else{
                     this.doneTableList = val.data;
                 }

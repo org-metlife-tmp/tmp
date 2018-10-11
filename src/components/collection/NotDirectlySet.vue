@@ -268,88 +268,88 @@
                 color: #00B4EC;
             }
         }
-    }
 
-    /*设置弹出框样式*/
-    .el-dialog {
-        text-align: left;
-        margin-bottom: 10px;
-        /*设置标题*/
-        .dialog-title {
-            margin-bottom: 0;
-        }
-        .el-dialog__body {
-            padding-top: 10px;
-            padding-bottom: 0;
-        }
-        .el-form {
-            width: 94%;
-            .el-select {
-                width: 100%;
+        .el-radio-group {
+            .el-radio {
+                display: block;
+                margin-left: 30px;
+                margin-bottom: 10px;
             }
         }
-    }
 
-    .el-radio-group {
-        margin-top: -16px;
-        .el-radio {
-            display: block;
-            margin-left: 30px;
+        /*设置弹出框样式*/
+        .el-dialog {
+            text-align: left;
             margin-bottom: 10px;
-        }
-    }
-
-    .dialog-upload-input {
-        width: 90%;
-        margin: 10px auto 40px;
-
-        .el-input {
-            width: 80%;
-            vertical-align: middle;
-            margin-left: 10px;
-
-            input {
-                cursor: default;
+            /*设置标题*/
+            .dialog-title {
+                margin-bottom: 0;
             }
-
-            div {
-                cursor: pointer;
+            .el-dialog__body {
+                padding-top: 10px;
+                padding-bottom: 0;
+            }
+            .el-form {
+                width: 94%;
+                .el-select {
+                    width: 100%;
+                }
             }
         }
-    }
 
-    .upload-demo {
-        .el-upload-list {
-            display: none;
+
+        .dialog-upload-input {
+            width: 90%;
+            margin: 10px auto 40px;
+
+            .el-input {
+                width: 80%;
+                vertical-align: middle;
+                margin-left: 10px;
+
+                input {
+                    cursor: default;
+                }
+
+                div {
+                    cursor: pointer;
+                }
+            }
         }
-    }
 
-    .upload-input {
-        position: relative;
-
-        .el-input {
-            position: absolute;
-            top: 10px;
-            left: 90px;
-            width: 80%;
-
-            input {
-                border-radius: 16px 0 0 16px;
-                cursor: default;
+        .upload-demo {
+            .el-upload-list {
+                display: none;
             }
+        }
 
-            .el-input-group__append {
-                border-radius: 16px;
-                left: -16px;
-                background-color: #409EFF;
-                color: #fff;
-                width: 14px;
-            }
+        .upload-input {
+            position: relative;
 
-            .upload-button {
-                background: url(../../assets/icon_common.png) -307px 2px;
-                padding: 12px 18px;
-                height: 30px;
+            .el-input {
+                position: absolute;
+                top: 10px;
+                left: 90px;
+                width: 80%;
+
+                input {
+                    border-radius: 16px 0 0 16px;
+                    cursor: default;
+                }
+
+                .el-input-group__append {
+                    border-radius: 16px;
+                    left: -16px;
+                    background-color: #409EFF;
+                    color: #fff;
+                    width: 14px;
+                }
+
+                .upload-button {
+                    background: url(../../assets/icon_common.png) -307px 2px;
+                    padding: 12px 18px;
+                    height: 30px;
+                }
             }
         }
     }

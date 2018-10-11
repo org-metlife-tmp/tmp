@@ -500,24 +500,25 @@
                 overflow-y: auto;
             }
         }
-    }
-    .el-radio-group {
-        // margin-top: -16px;
-        .el-radio {
-            display: block;
-            margin-left: 30px;
-            margin-bottom: 10px;
+
+        .el-radio-group {
+
+            .el-radio {
+                display: block;
+                margin-left: 30px;
+                margin-bottom: 10px;
+            }
         }
-    }
-    /*提示框样式*/
-    .el-tooltip__popper.is-light {
-        border: 1px solid orange;
-    }
-    .el-tooltip__popper.is-light[x-placement^=right] .popper__arrow {
-        border-right-color: orange!important;
-    }
-    .tipP{
-        line-height: 30px;
+        /*提示框样式*/
+        .el-tooltip__popper.is-light {
+            border: 1px solid orange;
+        }
+        .el-tooltip__popper.is-light[x-placement^=right] .popper__arrow {
+            border-right-color: orange!important;
+        }
+        .tipP{
+            line-height: 30px;
+        }
     }
 </style>
 
