@@ -1460,7 +1460,7 @@
         },
         methods:{
             //获取tab集合
-            getTabList:function(){
+            getTabList:function(type){
                 var _this = this;
                 this.$axios({
                     url:"/cfm/commProcess",
@@ -1508,6 +1508,7 @@
                                 };
                             })
                         }
+                        this.editableTabsList = arrObject;
                         if(this.isFromHome){//从home页跳过了
                             let rowBar = document.getElementsByClassName("el-tabs__active-bar")[0];
                             if(_tab_index==1){
@@ -1519,9 +1520,10 @@
                             this.$emit("getTableData", this.routerMessage);
                         }else if(!arrObject[this.activeName] || this.activeName == "0"){//如果没找到上次停留的tab，回到我的待办
                             this.comeBack();
+                        }else if(type =='third'){
+                            //同意，加签，拒绝后刷新列表
+                            this.$emit("getTableData", this.routerMessage);
                         }
-                        this.editableTabsList = arrObject;
-                        console.log(this.activeName)
                     }
                 })
             },
@@ -1823,11 +1825,7 @@
                             message: message,
                             duration: 2000
                         });
-
-                        //同意，加签，拒绝后刷新列表
-                        this.$emit("getTableData", this.routerMessage);
-
-                        this.getTabList();
+                        this.getTabList('third');
                         this.dialogVisible = false;
                         this.thirdFunVisible = false;
                     }
