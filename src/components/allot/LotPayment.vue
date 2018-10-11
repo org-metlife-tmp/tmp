@@ -336,7 +336,7 @@
                             <el-button type="warning" plain size="mini" icon="el-icon-delete"
                                     @click="cancellation('more')">支付作废
                             </el-button>
-                            <el-button type="warning" size="mini" @click="">
+                            <el-button type="warning" size="mini" @click="sendlation('more')">
                                 <span class="transmit-icon"><i></i></span>发送
                             </el-button>
                         </div>
@@ -562,6 +562,54 @@
                 } 
                 this.payVisible = true;
             },
+
+            sendlation:function(number){
+                this.paymentData.detail_ids = [];
+                this.paymentData.feed_back = "";
+                if (number == "more") {
+                    var selData = this.selectData;
+                    if(selData.length<1){
+                        this.$message({
+                            type:"warning",
+                            message:"请选择要发送的数据！",
+                            duration:2000
+                        });
+                        return;
+                    }
+                    this.paymentData.id = this.currentData.id;
+                    this.paymentData.persist_version = this.currentData.persist_version;
+                    selData.forEach(element =>{
+                        this.paymentData.detail_ids.push(element.detail_id);
+                    });
+                    this.paymentData.number = "more";
+                }
+                var optype =  'dbtbatch_sendpaylist';
+                var lala = this.paymentData;
+                this.$axios({
+                    url: "/cfm/normalProcess",
+                    method: "post",
+                    data: {
+                        optype: optype,
+                        params: lala
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                    } else {
+			    console.log("123123123")
+                        
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                });
+
+            },
+
+
             //确认支付作废
             confirmcancell: function(){
                 if(!this.paymentData.feed_back){
