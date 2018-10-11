@@ -465,6 +465,12 @@
                 console.log(error);
             })
 
+            this.messageTips = {
+                pay_mode: "请选择付款方式！",
+                pay_account_id: "请选择付款方账号！",
+                recv_account_id: "请选择收款方账号！",
+                payment_amount: "请填写金额！"
+            }
         },
         components: {
             Upload: Upload
@@ -504,6 +510,7 @@
 
                 payModeList:{}, //下拉框数据
                 payStatList: [],
+                messageTips: {},//
             }
         },
         methods: {
@@ -777,19 +784,19 @@
                 //校验数据是否完善 并设置发送给后台的数据
                 var billData = this.billData;
                 var params = {
+                    biz_id: "",
+                    pay_mode: "",
                     pay_account_id: "",
                     recv_account_id: "",
                     payment_amount: "",
-                    pay_mode: "",
                     payment_summary: "",
                     files: [],
-                    biz_id: ""
                 }
                 for(var k in params){
-                    if(k != "payment_summary" && k != "files" && !billData[k]){
+                    if(k != "payment_summary" && k != "files" && !billData[k] && k != "biz_id"){
                         this.$message({
                             type: "warning",
-                            message: "请完善单据信息",
+                            message: this.messageTips[k],
                             duration: 2000
                         });
                         return false;

@@ -532,6 +532,7 @@
             },
             //支付作废
             cancellation:function(number){
+                debugger
                 this.paymentData.detail_ids = [];
                 this.paymentData.feed_back = "";
                 if (number == "more") {
@@ -573,12 +574,13 @@
                     return;
                 }
                 var optype = this.paymentData.number ? 'dbtbatch_cancelids' : 'dbtbatch_cancel';
+                var lala = this.paymentData;
                 this.$axios({
                     url: "/cfm/normalProcess",
                     method: "post",
                     data: {
                         optype: optype,
-                        params: this.paymentData
+                        params: lala
                     }
                 }).then((result) => {
                     if (result.data.error_msg) {
@@ -628,7 +630,7 @@
                 this.pagCurrent = 1;
                 this.routerMessage.params.page_size = 9;
                 this.$emit("getCommTable", this.routerMessage);
-                this.paymentData = [];
+                this.paymentData = {};
                 this.searchDetailData = {};
             },
             //更多单据
