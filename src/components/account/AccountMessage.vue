@@ -388,6 +388,11 @@
                             <el-input v-model="editDialogData.reserved_seal" :disabled="true"></el-input>
                         </el-form-item>
                     </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="会计科目代码">
+                            <el-input v-model="editDialogData.subject_code" :disabled="true"></el-input>
+                        </el-form-item>
+                    </el-col>
                 </el-row>
             </el-form>
             <span slot="footer" class="dialog-footer">
