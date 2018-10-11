@@ -118,15 +118,16 @@
                    :close-on-click-modal="false">
             <h1 slot="title" v-text="dialogTitle" class="dialog-title"></h1>
             <el-form :model="dialogData" size="small"
-                     :label-width="formLabelWidth">
+                     :label-width="formLabelWidth"
+                     :rules="rules" ref="dialogForm">
                 <el-row>
                     <el-col :span="24">
-                        <el-form-item label="收款方账号">
+                        <el-form-item label="收款方账号" prop="acc_no">
                             <el-input v-model="dialogData.acc_no" auto-complete="off"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="24">
-                        <el-form-item label="收款方名称">
+                        <el-form-item label="收款方名称" prop="acc_name">
                             <el-input v-model="dialogData.acc_name" auto-complete="off"></el-input>
                         </el-form-item>
                     </el-col>
@@ -164,7 +165,7 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="24">
-                        <el-form-item label=" ">
+                        <el-form-item label=" " prop="cnaps_code">
                             <el-select v-model="dialogData.cnaps_code" placeholder="请选择银行"
                                        clearable filterable
                                        @visible-change="getBankList"
@@ -178,7 +179,7 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="属性">
+                        <el-form-item label="属性" prop="type">
                             <el-select v-model="dialogData.type" placeholder="请选择属性"
                                        filterable clearable>
                                 <el-option value="1" label="公司"></el-option>
@@ -187,7 +188,7 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="币种">
+                        <el-form-item label="币种"  prop="curr_id">
                             <el-select v-model="dialogData.curr_id" placeholder="请选择币种"
                                        filterable clearable>
                                 <el-option v-for="currency in currencyList"
@@ -279,6 +280,34 @@
                     curr_id: "",
                     type: "",
                     cnaps_code: ""
+                },
+                //校验规则设置
+                rules: {
+                    acc_no: {
+                        required: true,
+                        message: "请输入收款方账号",
+                        trigger: "blur"
+                    },
+                    acc_name: {
+                        required: true,
+                        message: "请输入收款方名称",
+                        trigger: "blur"
+                    },
+                    cnaps_code: {
+                        required: true,
+                        message: "请选择开户行",
+                        trigger: "change"
+                    },
+                    type: {
+                        required: true,
+                        message: "请选择属性",
+                        trigger: "change"
+                    },
+                    curr_id: {
+                        required: true,
+                        message: "请选择币种",
+                        trigger: "change"
+                    },
                 },
                 formLabelWidth: "100px",
                 currPayee: {},
@@ -433,6 +462,10 @@
                 for(var key in bankCorrelation){
                     bankCorrelation[key] = "";
                 }
+                //清空校验信息
+                if (this.$refs.dialogForm) {
+                    this.$refs.dialogForm.clearValidate();
+                }
                 this.dialogTitle = "新增";
                 this.bankSelect = true;
                 this.dialogVisible = true;
@@ -469,53 +502,52 @@
             },
             //确认新增或修改
             confirm: function(){
-                console.log(this.dialogData);
-                var params = this.dialogData;
-                var optype = "";
-                if(this.dialogTitle == "新增"){
-                    optype = "supplier_add";
-                }else{
-                    optype = "supplier_chg";
-                }
+                this.$refs.dialogForm.validate((valid, object) => {
+                    if (valid) {
+                        var params = this.dialogData;
 
-                this.$axios({
-                    url: "/cfm/normalProcess",
-                    method: "post",
-                    data: {
-                        optype: optype,
-                        params: params
-                    }
-                }).then((result) => {
-                    if (result.data.error_msg) {
-                        this.$message({
-                            type: "error",
-                            message: result.data.error_msg,
-                            duration: 2000
-                        })
-                    } else {
-                        var data = result.data.data;
-                        if (this.dialogTitle == "新增") {
-                            if (this.tableList.length < this.routerMessage.params.page_size) {
-                                this.tableList.push(data);
+                        this.$axios({
+                            url: "/cfm/normalProcess",
+                            method: "post",
+                            data: {
+                                optype: this.dialogTitle == "新增" ? "supplier_add" : "supplier_chg",
+                                params: params
                             }
-                            this.pagTotal++;
-                            var message = "新增成功"
-                        } else {
-                            for (var k in data) {
-                                this.currPayee[k] = data[k];
+                        }).then((result) => {
+                            if (result.data.error_msg) {
+                                this.$message({
+                                    type: "error",
+                                    message: result.data.error_msg,
+                                    duration: 2000
+                                })
+                            } else {
+                                var data = result.data.data;
+                                if (this.dialogTitle == "新增") {
+                                    if (this.tableList.length < this.routerMessage.params.page_size) {
+                                        this.tableList.push(data);
+                                    }
+                                    this.pagTotal++;
+                                    var message = "新增成功"
+                                } else {
+                                    for (var k in data) {
+                                        this.currPayee[k] = data[k];
+                                    }
+                                    var message = "修改成功"
+                                }
+                                this.dialogVisible = false;
+                                this.$message({
+                                    type: 'success',
+                                    message: message,
+                                    duration: 2000
+                                });
                             }
-                            var message = "修改成功"
-                        }
-                        this.dialogVisible = false;
-                        this.$message({
-                            type: 'success',
-                            message: message,
-                            duration: 2000
+                        }).catch(function (error) {
+                            console.log(error);
                         });
+                    } else {
+                        return false;
                     }
-                }).catch(function (error) {
-                    console.log(error);
-                })
+                });
             },
             //删除
             removePayee: function (row, index, rows) {

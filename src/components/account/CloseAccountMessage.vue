@@ -205,7 +205,8 @@
                    top="56px">
             <h1 slot="title" class="dialog-title" v-text="dialogTitle"></h1>
             <el-form :model="dialogData" size="small"
-                     :label-width="formLabelWidth">
+                     :label-width="formLabelWidth"
+                     :rules="rules" ref="dialogForm">
                 <el-row>
                     <el-col :span="24" class="form-small-title">
                         <span></span>
@@ -294,7 +295,7 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="销户时间">
+                        <el-form-item label="销户时间"  prop="close_date">
                             <el-date-picker
                                 :disabled="lookDisabled"
                                 style="width:100%"
@@ -412,6 +413,14 @@
                 dialogData:{
                     files: []
                 },
+                //校验规则设置
+                rules: {
+                    close_date: {
+                        required: true,
+                        message: "请选择销户时间",
+                        trigger: "change"
+                    }
+                },
                 dialogTitle:"销户信息补录申请",
                 currentMessage:{},
                 accOptions:[],//账户号下拉数据,
@@ -482,6 +491,10 @@
                 this.salesList = [{comments:"",amount:""}];
                 this.accOptions = [];
                 this.emptyFileList = [];
+                //清空校验信息
+                if (this.$refs.dialogForm) {
+                    this.$refs.dialogForm.clearValidate();
+                }
                 //带出原有值
                 row.apply_on = row.apply_on?row.apply_on.split(" ")[0]:"";
                 this.currentMessage = row;
@@ -544,6 +557,18 @@
             },
             //保存或修改申请
             saveAppliation:function(){
+                var flag = false;
+                this.$refs.dialogForm.validate((valid, object) => {
+                    if (valid) {
+
+                    } else {
+                        flag = true;
+                    }
+                });
+                if (flag) {
+                    return false;
+                }
+
                 var data = {};
                 var optype = "";
                 if(this.dialogData.id){//修改
@@ -644,6 +669,18 @@
             },
             //提交审批流程
             subFlow: function () {
+                var flag = false;
+                this.$refs.dialogForm.validate((valid, object) => {
+                    if (valid) {
+
+                    } else {
+                        flag = true;
+                    }
+                });
+                if (flag) {
+                    return false;
+                }
+
                 this.dialogData.additionals = this.salesList;
                 this.$axios({
                     url: "/cfm/normalProcess",

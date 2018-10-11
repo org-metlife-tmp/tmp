@@ -566,7 +566,16 @@
                     ids: []
                 };
                 if (number == "more") { //发送多条
-                    params.ids = this.selectData;
+                    if(this.selectData.length > 0){
+                        params.ids = this.selectData;
+                    }else{
+                        this.$message({
+                            type: "warning",
+                            message: "请选择要发送的单据",
+                            duration: 2000
+                        });
+                        return;
+                    }
                 } else { //发送一条
                     params.ids.push(this.dialogData.id);
                 }

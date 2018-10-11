@@ -116,6 +116,13 @@
                 float: right;
             }
         }
+
+        /*必填样式*/
+        .set-required:before {
+            content: '*';
+            color: #f56c6c;
+            margin-right: 4px;
+        }
     }
 
     /*时间选择弹框*/
@@ -207,16 +214,17 @@
         <!--中间内容-->
         <section class="table-content">
             <el-form :model="collectionData" size="small"
-                     :label-width="formLabelWidth">
+                     :label-width="formLabelWidth"
+                     :rules="rules" ref="dialogForm">
                 <el-row>
                     <el-col :span="14">
-                        <el-form-item label="归集主题">
+                        <el-form-item label="归集主题"  prop="topic">
                             <el-input v-model="collectionData.topic" placeholder="请为本次归集主题命名以方便识别"
                                       :readonly="isView"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="14" style="text-align:left">
-                        <el-form-item label="归集额度">
+                        <el-form-item label="归集额度" prop="collect_type">
                             <el-radio-group v-model="collectionData.collect_type" :disabled="isView">
                                 <el-radio v-for="(collType,key) in collTypeList"
                                           :key="key" :label="key">{{ collType }}
@@ -225,7 +233,7 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="20" style="text-align:left">
-                        <el-form-item label=" ">
+                        <el-form-item label=" " prop="collect_amount">
                             <el-row>
                                 <el-col :span="4">
                                     <el-input v-model="collectionData.collect_amount" placeholder="请填写归集金额"
@@ -241,7 +249,8 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="20">
-                        <el-form-item label="归集关系">
+                        <el-form-item>
+                            <span slot="label" class="set-required">归集关系</span>
                             <el-tabs v-model="tabActive" type="card"
                                      @tab-click="handleClick">
                                 <el-tab-pane v-for="(item, index) in editableTabs"
@@ -303,7 +312,7 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="14">
-                        <el-form-item label="归集频率" style="text-align:left">
+                        <el-form-item label="归集频率" style="text-align:left" prop="collect_frequency">
                             <el-radio-group v-model="collectionData.collect_frequency"
                                             @change="clearDate" :disabled="isView">
                                 <el-radio v-for="(frequency,key) in frequencyList"
@@ -313,7 +322,8 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="21" style="text-align:left">
-                        <el-form-item label=" ">
+                        <el-form-item>
+                            <span slot="label" class="set-required"> </span>
                             <el-row>
                                 <el-col :span="6" class="date-select" v-for="datePicker in timesetting_list"
                                         :key="datePicker.id">
@@ -622,6 +632,37 @@
                     timesetting_list: [],
                     summary: "",
                     files: []
+                },
+                //校验规则设置
+                rules: {
+                    topic: {
+                        required: true,
+                        message: "请输入归集主题",
+                        trigger: "blur"
+                    },
+                    collect_type: {
+                        required: true,
+                        message: "请选择归集额度",
+                        trigger: "change"
+                    },
+                    collect_frequency: {
+                        required: true,
+                        message: "请选择归集频率",
+                        trigger: "change"
+                    },
+                    collect_amount: {
+                        validator: (rule, value, callback) => {
+                            var collect_type =  this.collectionData.collect_type;
+                            if(collect_type == "3"){
+                                callback();
+                            }else{
+                                if (value == "") {
+                                    callback(new Error('请填写归集金额'));
+                                }
+                            }
+                        },
+                        trigger: 'blur'
+                    }
                 },
                 editableTabs: [
                     { //控制标签页数据
@@ -974,10 +1015,19 @@
             comfirmCurrDate: function () {
                 var frequency = this.collectionData.collect_frequency;
                 var dateSelect = this.dateSelect;
+                var flag = false;
                 if (frequency == 1) { //只设置时间
-                    this.currTimeSetting.dateItem = dateSelect.timeDate;
+                    if(dateSelect.timeDate){
+                        this.currTimeSetting.dateItem = dateSelect.timeDate;
+                    }else{
+                        flag = true;
+                    }
                 } else if (frequency == 2) { //设置周
-                    this.currTimeSetting.dateItem = dateSelect.weekDate.join(",") + "-" + dateSelect.timeDate;
+                    if(dateSelect.weekDate.length == 0 || !dateSelect.timeDate){
+                        flag = true;
+                    }else{
+                        this.currTimeSetting.dateItem = dateSelect.weekDate.join(",") + "-" + dateSelect.timeDate;
+                    }
                 } else { //设置月
                     var monthDay = this.monthDay;
                     var activeDay = "";
@@ -986,7 +1036,19 @@
                             activeDay += dayItem.day + ",";
                         }
                     });
-                    this.currTimeSetting.dateItem = activeDay.slice(0, activeDay.length - 1) + "-" + dateSelect.timeDate;
+                    if(!activeDay || !dateSelect.timeDate){
+                        flag = true;
+                    }else{
+                        this.currTimeSetting.dateItem = activeDay.slice(0, activeDay.length - 1) + "-" + dateSelect.timeDate;
+                    }
+                }
+                if(flag){
+                    this.$message({
+                        type: "warning",
+                        message: "请选择时间",
+                        duration: 2000
+                    });
+                    return false;
                 }
                 this.dateDialog = false;
             },
@@ -1002,6 +1064,9 @@
             //保存
             saveCollect: function () {
                 var params = this.setParams();
+                if(!params){
+                    return;
+                }
                 var collectionData = this.collectionData;
 
                 this.$axios({
@@ -1036,17 +1101,44 @@
             },
             //设置params
             setParams: function () {
-                var collectionData = this.collectionData;
-                var editableTabs = this.editableTabs;
-                collectionData.main_list = editableTabs.filter((item) => {
-                    return item.main_acc_id;
+                var params = false;
+                this.$refs.dialogForm.validate((valid, object) => {
+                    if (valid) {
+                        var collectionData = this.collectionData;
+                        var editableTabs = this.editableTabs;
+                        collectionData.main_list = editableTabs.filter((item) => {
+                            return item.main_acc_id && item.child_list.length > 0;
+                        });
+                        collectionData.timesetting_list = [];
+                        this.timesetting_list.forEach((item) => {
+                            if(item.dateItem){
+                                collectionData.timesetting_list.push(item.dateItem);
+                            }
+                        });
+                        //校验归集关系&归集时间
+                        if(collectionData.main_list.length == 0){
+                            this.$message({
+                                type: "warning",
+                                message: "请完善归集关系",
+                                duration: 2000
+                            });
+                            return false;
+                        }
+                        if(collectionData.timesetting_list.length == 0){
+                            this.$message({
+                                type: "warning",
+                                message: "请选择归集时间",
+                                duration: 2000
+                            });
+                            return false;
+                        }
+                        collectionData.files = this.fileList;
+                        params =  collectionData;
+                    } else {
+                        return false;
+                    }
                 });
-                collectionData.timesetting_list = [];
-                this.timesetting_list.forEach((item) => {
-                    collectionData.timesetting_list.push(item.dateItem);
-                });
-                collectionData.files = this.fileList;
-                return collectionData;
+                return params;
             },
             //清空
             clearAll: function (clearAll) {
@@ -1062,6 +1154,9 @@
                         collectionData[k] = [];
                     }
                 }
+                //清空校验
+                this.$refs.dialogForm.clearValidate();
+
                 this.editableTabs.forEach((tabItem) => {
                     this.clearCollect(tabItem);
                     tabItem.main_acc_id = "";

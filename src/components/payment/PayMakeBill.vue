@@ -251,7 +251,7 @@
                         value-format="yyyy-MM-dd"
                         size="mini">
                 </el-date-picker>
-                <el-select v-model="billData.pay_account_id " placeholder="请选择付款方"
+                <el-select v-model="billData.pay_account_id" placeholder="请选择付款方"
                            filterable clearable size="mini">
                     <el-option v-for="item in accOptions"
                                :key="item.acc_id"
@@ -856,6 +856,25 @@
             //设置params
             setParams: function(){
                 var billData = this.billData;
+                //校验
+                var validater = {
+                    pay_account_id: "请选择付款方",
+                    recv_account_name: "请选择户名",
+                    recv_account_no: "请选择账号",
+                    bank_name: "请选择开户行",
+                    payment_amount: "请输入金额"
+                }
+                for(var k in validater){
+                    if(!billData[k]){
+                        this.$message({
+                            type: "warning",
+                            message: validater[k],
+                            duration: 2000
+                        });
+                        return false;
+                    }
+                }
+
                 billData.payment_amount = billData.payment_amount.split(",").join("");
                 billData.files= this.fileList;
                 return billData;

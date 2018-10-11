@@ -383,7 +383,7 @@
                 <li class="table-li-title">付款账号</li>
                 <li class="table-li-content table-select">
                     <el-select v-model="editDialogData.pay_account_id" placeholder="请选择付款方"
-                               filterable clearable size="mini">
+                               filterable size="mini">
                         <el-option v-for="item in accOptions"
                                    :key="item.acc_id"
                                    :label="item.acc_no"
@@ -1138,9 +1138,26 @@
             },
             //设置params
             setParams: function () {
-                //校验数据是否完善 并设置发送给后台的数据
                 var params = {};
                 var editDialogData = this.editDialogData;
+                //校验
+                var validater = {
+                    pay_account_id: "请选择付款方",
+                    recv_account_name: "请选择户名",
+                    recv_account_no: "请选择账号",
+                    bank_name: "请选择开户行",
+                    payment_amount: "请输入金额"
+                }
+                for(var k in validater){
+                    if(!editDialogData[k]){
+                        this.$message({
+                            type: "warning",
+                            message: validater[k],
+                            duration: 2000
+                        });
+                        return false;
+                    }
+                }
                 for(var k in editDialogData){
                     if(k == "payment_amount"){
                         params[k] = editDialogData[k].split(",").join("");
