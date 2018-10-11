@@ -22,7 +22,7 @@
 
             /*时间控件*/
             .el-date-editor {
-                width: 210px;
+                width: 100%;
             }
         }
 
@@ -183,6 +183,14 @@
                     }
                 }
             }
+        }
+        .el-form--inline .el-form-item{
+            width: calc(100% - 10px);
+            width: -moz-calc(100% - 10px);
+            width: -webkit-calc(100% - 10px);
+        }
+        .el-form--inline .el-form-item__content{
+            width: 100%;
         }
     }
 </style>

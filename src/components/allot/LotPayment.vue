@@ -22,7 +22,7 @@
 
             /*时间控件*/
             .el-date-editor {
-                width: 210px;
+                width: 100%;
             }
         }
 
@@ -178,6 +178,14 @@
             .el-card__body{
                 padding: 0;
             }
+        }
+        .el-form--inline .el-form-item{
+            width: calc(100% - 10px);
+            width: -moz-calc(100% - 10px);
+            width: -webkit-calc(100% - 10px);
+        }
+        .el-form--inline .el-form-item__content{
+            width: 100%;
         }
     }
 </style>
@@ -422,6 +430,7 @@
                 selectData: [], //要作废的数据
                 currentData:{},//当前选中的一条数据
                 pagCurrent:1,//当前列表页
+                pagTotal:"",//列表总数
             }
         },
         methods: {
@@ -629,32 +638,33 @@
             paperScroll: function(e){
                 var target = e.target;
                 if(target.scrollTop + target.offsetHeight >= target.scrollHeight){
-                    //滚动加搜索条件
-                    var searchData = this.searchData;
-                    searchData.start_date = this.dateValue ? this.dateValue[0] : "";
-                    searchData.end_date = this.dateValue ? this.dateValue[1] : "";
-                    for (var k in searchData) {
-                        this.routerMessage.params[k] = searchData[k];
-                    }
                     this.pagCurrent ++;
                     this.routerMessage.params.page_size = this.pagCurrent * 9;
-                    this.$emit("getCommTable", this.routerMessage);
+                    if(this.pagTotal >= this.pagCurrent * 9){//总数大于等于查询数，继续查询
+                        //滚动加搜索条件
+                        var searchData = this.searchData;
+                        searchData.start_date = this.dateValue ? this.dateValue[0] : "";
+                        searchData.end_date = this.dateValue ? this.dateValue[1] : "";
+                        for (var k in searchData) {
+                            this.routerMessage.params[k] = searchData[k];
+                        }
+                         this.$emit("getCommTable", this.routerMessage);
+                    }else{
+                        this.$message({
+                            type:"warning",
+                            message:"没有可加载的数据！",
+                            duration:2000
+                        });
+                        this.pagCurrent --;
+                    }
                 }
             }
         },
         watch: {
             tableData: function (val, oldVal) {
                 // this.pagSize = val.page_size;
-                // this.pagTotal = val.total_line;
+                this.pagTotal = val.total_line;
                 // this.pagCurrent = val.page_num;
-                if(val.total_line < val.page_size && this.pagCurrent>9){
-                    this.$message({
-                        type:"warning",
-                        message:"没有可加载的数据！",
-                        duration:2000
-                    });
-                    this.pagCurrent --;
-                }
                 this.tableList = val.data;
                 
             }
