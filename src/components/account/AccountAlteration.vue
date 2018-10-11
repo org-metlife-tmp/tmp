@@ -257,7 +257,7 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="账户名称" prop="$1">
+                        <el-form-item label="账户名称">
                             <el-input v-model="dialogData.$1" clearable></el-input>
                         </el-form-item>
                     </el-col>
@@ -267,7 +267,7 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="所属机构" prop="$2">
+                        <el-form-item label="所属机构">
                             <el-select v-model="dialogData.$2" placeholder="请选择所属机构"
                                        filterable clearable>
                                 <el-option v-for="org in orgList"
@@ -284,7 +284,7 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="开户行" prop="bankName">
+                        <el-form-item label="开户行">
                             <el-input v-model="dialogData.bankName" placeholder="请选择银行" clearable
                                       @focus="clearBankDialog">
                             </el-input>
@@ -296,7 +296,7 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="账户法人" prop="$4">
+                        <el-form-item label="账户法人">
                             <el-input v-model="dialogData.$4" clearable></el-input>
                         </el-form-item>
                     </el-col>
@@ -306,7 +306,7 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="币种" prop="$5">
+                        <el-form-item label="币种">
                             <el-select v-model="dialogData.$5" placeholder="请选择币种"
                                        filterable clearable>
                                 <el-option v-for="currency in currencyList"
@@ -323,7 +323,7 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="账户性质" prop="$6">
+                        <el-form-item label="账户性质">
                             <el-select v-model="dialogData.$6" placeholder="请选择账户性质"
                                        clearable>
                                 <el-option v-for="(name,k) in attrList"
@@ -340,7 +340,7 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="账户模式"  prop="$7">
+                        <el-form-item label="账户模式" >
                             <el-select v-model="dialogData.$7" placeholder="请选择账户模式"
                                        clearable>
                                 <el-option v-for="(name,k) in interList"
@@ -357,7 +357,7 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="账户用途"  prop="$8">
+                        <el-form-item label="账户用途">
                             <el-select v-model="dialogData.$8" placeholder="请选择账户用途"
                                        clearable>
                                 <el-option v-for="(name,k) in purposeList"
@@ -713,46 +713,6 @@
                         required: true,
                         message: "请选择账户号",
                         trigger: "change"
-                    },
-                    $1: {
-                        required: true,
-                        message: "请输入账户名称",
-                        trigger: "blur"
-                    },
-                    $2: {
-                        required: true,
-                        message: "请选择所属机构",
-                        trigger: "change"
-                    },
-                    bankName: {
-                        required: true,
-                        message: "请选择开户行",
-                        trigger: "blur"
-                    },
-                    $4: {
-                        required: true,
-                        message: "请输入账户法人",
-                        trigger: "blur"
-                    },
-                    $5: {
-                        required: true,
-                        message: "请选择币种",
-                        trigger: "change"
-                    },
-                    $6: {
-                        required: true,
-                        message: "请选择账户性质",
-                        trigger: "change"
-                    },
-                    $7: {
-                        required: true,
-                        message: "请选择账户模式",
-                        trigger: "change"
-                    },
-                    $8: {
-                        required: true,
-                        message: "请选择账户用途",
-                        trigger: "change"
                     }
                 },
                 formLabelWidth: "120px",
@@ -938,14 +898,26 @@
                         //设置传递参数
                         var reg = /^\$.*/;
                         var paramsData = [];
+                        var flag = false;
                         for (var k in dialogData) {
                             if (reg.test(k)) {
                                 var item = {
                                     type: k.slice(1, k.length),
                                     value: dialogData[k]
                                 };
+                                if(dialogData[k]){
+                                    flag = true;
+                                }
                                 paramsData.push(item);
                             }
+                        }
+                        if(!flag){
+                            this.$message({
+                                type: 'warning',
+                                message: "请至少填写一项变更信息",
+                                duration: 2000
+                            });
+                            return false;
                         }
                         var optype = "";
                         var params = {
@@ -954,6 +926,7 @@
                             files: dialogData.files,
                             change_content: paramsData
                         };
+                        debugger;
 
                         if (!dialogData.id) {
                             optype = "openchg_add";
