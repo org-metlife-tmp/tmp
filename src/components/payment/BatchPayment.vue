@@ -604,14 +604,14 @@
                             this.pagCurrent = 1;
                             this.routerMessage.params.page_size = 9;
                             this.$emit("getCommTable", this.routerMessage);
-                            this.paymentData = [];
+                            this.paymentData = {};
                         }
                         else{//批量作废
                             this.selectData = [];
                             var ids= this.paymentData.ids;
                             if(ids.length === this.pagDeTotal){//批量全部作废
                                 this.dialogVisible = false;
-                                this.paymentData = [];
+                                this.paymentData = {};
                             }else{
                                 this.getDetailTable(this.searchDetailData);
                                 this.paymentData.ids = [];
@@ -633,7 +633,7 @@
                 this.pagCurrent = 1;
                 this.routerMessage.params.page_size = 9;
                 this.$emit("getCommTable", this.routerMessage);
-                this.paymentData = [];
+                this.paymentData = {};
                 this.searchDetailData = {};
             },
             //更多单据
