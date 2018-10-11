@@ -569,6 +569,8 @@
                                     }else{
                                         collectionData[k] = data[k] + "";
                                     }
+                                }else if(k == "collect_amount" && !data[k]){
+                                    collectionData[k] = "";
                                 }else{
                                     collectionData[k] = data[k] + "";
                                 }
