@@ -256,6 +256,11 @@
                             <el-input v-model="dialogData.reserved_seal" :readonly="true"></el-input>
                         </el-form-item>
                     </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="会计科目代码">
+                            <el-input v-model="dialogData.subject_code" :readonly="true"></el-input>
+                        </el-form-item>
+                    </el-col>
                     <el-col :span="24" class="form-small-title"><span></span>账户开户</el-col>
                     <el-col :span="12">
                         <el-form-item label="摘要">

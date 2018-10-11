@@ -264,7 +264,7 @@
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="账户模式">
-                            <div class="height30">{{interList[dialogData.deposits_mode]}}</div>
+                            <div class="height30">{{interList[dialogData.interactive_mode]}}</div>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
