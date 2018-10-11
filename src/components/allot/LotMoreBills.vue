@@ -405,7 +405,7 @@
             <div class="allData">
                 <div class="btn-left">
                     <el-button type="warning" plain size="mini" @click="goMakeBill">制单</el-button>
-                    <!-- <el-button type="warning" plain size="mini" @click="goPayment">支付处理</el-button> -->
+                    <el-button type="warning" plain size="mini" @click="goPayment">支付处理</el-button>
                 </div>
                 <span>总金额：</span>
                 <span v-text="total_amount" class="numText"></span>
@@ -912,9 +912,9 @@
                 this.$router.push("/allot/lot-make-bill");
             },
             //支付处理
-            // goPayment: function () {
-            //     this.$router.push("/allot/payment");
-            // },
+            goPayment: function () {
+                this.$router.push("/allot/lot-payment");
+            },
             //查看
             lookBill: function (row) {
                 this.searchDetailData.batchno = row.batchno;

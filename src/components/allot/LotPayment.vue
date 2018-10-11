@@ -269,9 +269,9 @@
             </el-row>
         </section>
         <div class="edit-btn">
-            <el-button type="warning" size="mini" @click="">
+            <!-- <el-button type="warning" size="mini" @click="">
                 <span class="transmit-icon"><i></i></span>发送
-            </el-button>
+            </el-button> -->
             <el-button type="warning" plain size="mini" icon="el-icon-delete"
                            @click="cancellation">支付作废
             </el-button>
@@ -532,7 +532,6 @@
             },
             //支付作废
             cancellation:function(number){
-                debugger
                 this.paymentData.detail_ids = [];
                 this.paymentData.feed_back = "";
                 if (number == "more") {

@@ -623,7 +623,7 @@
                         <td>金额合计（元）</td>
                         <td colspan="4" class="money-input">
                             <span>￥</span>
-                            <input type="text" @blur="setMoney" v-model="billData.total_amount">
+                            <input type="text" v-model="billData.total_amount" :readonly="true">
                             <span>(大写)</span>
                             <span v-text="moneyText"></span>
                         </td>
@@ -782,7 +782,6 @@
                 }
             }).then((result) =>{
                 this.accOptions = result.data.data;
-                console.log(this.accOptions);
                 if(params.id){
                     this.$axios({
                         url: "/cfm/normalProcess",
@@ -876,7 +875,13 @@
                 }
             }).catch(function (error) {
                 console.log(error);
-            })
+            });
+            this.messageTips = {
+                uuid: "没有uuid！",
+                total_amount: "请上传模板！",
+                pay_account_id: "请选择付款方！",
+                pay_mode: "请选择付款方式！"
+            }
 
         },
         mounted:function(){
@@ -896,6 +901,7 @@
                     pay_account_bank: "",
                     payment_amount: "", //金额
                     payment_summary: "", //摘要
+                    batchno:"",
                 },
                 moneyText: "", //金额-大写
                 fileMessage: { //附件
@@ -934,50 +940,10 @@
                 workflowData: {},
                 selectWorkflow: "", //流程选择
                 payAccDetail: {},//付款方账户详情
+                messageTips: {},
             }
         },
         methods: {
-            //输入金额后进行格式化
-            setMoney: function () {
-                var moneyNum = this.billData.total_amount.replace(/,/gi, "").trim();
-                /*校验数据格式是否正确*/
-                if (moneyNum == "") {
-                    return;
-                }
-                if (isNaN(moneyNum)) {
-                    this.$message({
-                        type: "warning",
-                        message: "请输入正确的金额",
-                        duration: 2000
-                    });
-                    this.billData.total_amount = "";
-                    return;
-                }
-                var verify = moneyNum.split(".");
-                if (verify[0].length > 10) {
-                    this.$message({
-                        type: "warning",
-                        message: "整数位不能超过10位数",
-                        duration: 2000
-                    });
-                    verify[0] = verify[0].slice(0, 10);
-                    moneyNum = verify.join(".");
-                }
-                if (verify[1] && verify[1].length > 2) {
-                    this.$message({
-                        type: "warning",
-                        message: "小数点后只能保留两位小数",
-                        duration: 2000
-                    });
-                    verify[1] = verify[1].slice(0, 2);
-                    moneyNum = verify.join(".");
-                }
-
-                //设置数字部分格式
-                this.billData.total_amount = this.$common.transitSeparator(moneyNum);
-                //设置汉字
-                this.moneyText = this.$common.transitText(moneyNum);
-            },
             //设置当前项上传附件
             setFileList: function ($event) {
                 this.fileLength = "";
@@ -995,10 +961,6 @@
             },
             //保存
             saveBill: function(){
-                // var params = this.setParams();
-                // if(!params){
-                //     return;
-                // }
                 var billData = this.billData;
                 this.saveParams.pay_account_id = billData.pay_account? billData.pay_account.acc_id : "";
                 this.saveParams.biz_id = billData.bizObj ? billData.bizObj.biz_id : "";
@@ -1007,6 +969,10 @@
                 this.saveParams.pay_mode = billData.pay_mode;
                 this.saveParams.payment_summary = billData.payment_summary;
                 this.saveParams.files = this.fileList;
+                var flag = this.setParams(this.saveParams);
+                if(!flag){
+                    return;
+                }
                 this.$axios({
                     url: "/cfm/normalProcess",
                     method: "post",
@@ -1025,6 +991,7 @@
                         var data = result.data.data;
                         this.saveParams.persist_version = data.persist_version;
                         this.saveParams.id = data.id;
+                        this.billData.batchno = data.batchno;
                         this.$message({
                             type: "success",
                             message: "保存成功",
@@ -1056,49 +1023,28 @@
                 });
             },
             //设置params
-            setParams: function(){
-                //校验数据是否完善 并设置发送给后台的数据
-                var billData = this.billData;
-
-                var params = {
+            setParams: function(params){
+                var hasParams = {
+                    uuid: "",
                     pay_account_id: "",
-                    recv_account_id: "",
-                    payment_amount: "",
                     pay_mode: "",
-                    payment_summary: "",
-                    files: [],
-                    biz_id: ""
+                    total_amount: ""
                 }
-                for(var k in params){
-                    if(k != "payment_summary" && k != "files" && !billData[k]){
+                params.total_amount = this.billData.total_amount == "0.00"? "" : this.billData.total_amount;
+                var flag = true;
+                //校验数据是否完善 并设置发送给后台的数据
+                for(var k in hasParams){
+                    if(!params[k]){
                         this.$message({
                             type: "warning",
-                            message: "请完善单据信息",
+                            message: this.messageTips[k],
                             duration: 2000
                         });
+                        flag = false;
                         return false;
                     }
-                    if(k == "payment_amount"){  //金额
-                        // params[k] = billData[k].split(",").join("");
-                    }else if(k == "files"){  //附件
-                        params[k] = this.fileList;
-                    }else if(k == "biz_id"){
-                        params[k] = billData[k];
-                        var payStatList = this.payStatList;
-                        for(var i = 0; i < payStatList.length; i++){
-                            if(billData[k] == payStatList[i].biz_id){
-                                params.biz_name = payStatList[i].biz_name;
-                            }
-                        }
-                    }else{
-                        params[k] = billData[k];
-                    }
                 }
-                if(billData.id){
-                    params.id = billData.id;
-                    params.persist_version = billData.persist_version;
-                }
-                return params;
+                return flag;
             },
             //amount小数位
             tansitionAmount: function (val) {
@@ -1329,10 +1275,6 @@
             },
             //提交
             submitBill: function(){
-                // var params = this.setParams();
-                // if(!params){
-                //     return;
-                // }
                 var billData = this.billData;
                 var params = this.saveParams;
                 params.pay_account_id = billData.pay_account ? billData.pay_account.acc_id :"";
@@ -1341,6 +1283,10 @@
                 params.pay_mode = billData.pay_mode;
                 params.payment_summary = billData.payment_summary;
                 params.files = this.fileList;
+                var flag = this.setParams(params);
+                if(!flag){
+                    return;
+                }
                 this.$axios({
                     url: "/cfm/normalProcess",
                     method: "post",
@@ -1362,6 +1308,7 @@
                         this.workflows = data.workflows;
                         this.saveParams.persist_version = data.persist_version;
                         this.saveParams.id = data.id;
+                        this.billData.batchno = data.batchno;
                         this.commitVisible = true;
                         this.$axios({
                             url: "/cfm/normalProcess",

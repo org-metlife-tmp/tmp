@@ -572,18 +572,33 @@
             },
             //支付作废
             cancellation: function (number) {
-                this.innerVisible = true;
                 this.paymentData.ids = [];
                 this.paymentData.feed_back = "";
                 if (number == "more") {
+                    if(this.selectData.length<=0){
+                        this.$message({
+                            type:"warning",
+                            message:"请选择要作废的数据！",
+                            duration:2000
+                        });
+                        return ;
+                    }
                     this.paymentData.ids = this.selectData;
                 } else {
-                    this.dialogVisible = false;
                     this.paymentData.ids.push(this.dialogData.id);
                 }
+                this.innerVisible = true;
             },
             //确定作废
             confirmcancell: function () {
+                if(!this.paymentData.feed_back){
+                    this.$message({
+                        type:"warning",
+                        message:"请输入作废原因！",
+                        duration:2000
+                    });
+                    return;
+                }
                 this.$axios({
                     url: "/cfm/normalProcess",
                     method: "post",
@@ -605,6 +620,9 @@
                             duration: 2000
                         });
                         this.innerVisible = false;
+                        if(this.dialogVisible){
+                            this.dialogVisible = false;
+                        }
                         this.$emit("getCommTable", this.routerMessage);
                     }
                 }).catch(function (error) {
