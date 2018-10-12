@@ -11,6 +11,12 @@
             margin-top: -40px;
         }
 
+        /*顶部按钮*/
+        .button-list-left {
+            position: absolute;
+            top: 8px;
+        }
+
         /*内容*/
         section {
             width: 100%;
@@ -358,6 +364,16 @@
 <template>
     <div id="batchMakeBill">
         <!--顶部标题-按钮-->
+        <!--顶部按钮-->
+        <div class="button-list-left">
+            <el-date-picker
+                    v-model="dateValue"
+                    type="date" :readonly="true"
+                    placeholder="请选择申请日期"
+                    value-format="yyyy-MM-dd"
+                    size="mini">
+            </el-date-picker>
+        </div>
         <header>
             <h1>批量支付-制单</h1>
             <!-- <el-button type="warning" size="small">打印</el-button>-->
@@ -366,13 +382,6 @@
         <section>
             <!--表单顶部-->
             <div class="title-date">
-                <el-date-picker
-                        v-model="dateValue"
-                        type="date" :readonly="true"
-                        placeholder="请选择申请日期"
-                        value-format="yyyy-MM-dd"
-                        size="mini">
-                </el-date-picker>
                 <el-select v-model="billData.pay_acc_id" placeholder="请选择付款方"
                            filterable clearable size="mini">
                     <el-option v-for="item in accOptions"
@@ -388,6 +397,15 @@
                                :key="payItem.biz_id"
                                :label="payItem.biz_name"
                                :value="payItem.biz_id">
+                    </el-option>
+                </el-select>
+                <el-select v-model="billData.pay_mode" placeholder="请选择付款方式"
+                           filterable clearable size="mini"
+                           @change="setBizName">
+                    <el-option v-for="(item,k) in payModeList"
+                               :key="k"
+                               :label="item"
+                               :value="k">
                     </el-option>
                 </el-select>
                 <div class="serial-number">
@@ -612,6 +630,10 @@
 
             //设置token数据
             this.currToken = this.$store.state.token;
+            var constants = JSON.parse(window.sessionStorage.getItem("constants"));
+            if(constants.PayMode){
+                this.payModeList = constants.PayMode;
+            }
         },
         components: {
             Upload: Upload
@@ -631,7 +653,7 @@
                     memo: "",
                     files: [],
                     batchno: "",
-                    pay_mode: 8,
+                    pay_mode: "",
                     version: "",
                     id: "",
                     biz_id: "",
@@ -648,6 +670,7 @@
                 fileLength: "",
                 accOptions: {}, //下拉框数据
                 payStatList: [],
+                payModeList: {},
                 dialogVisible: false, //弹框数据
                 innerVisible: false, //提交弹框
                 selectWorkflow: "",
@@ -813,6 +836,7 @@
                 //校验
                 var validater = {
                     pay_acc_id: "请选择付款方",
+                    pay_mode: "请选择付款方式",
                     batchno: "请上传收款方数据"
                 }
                 for(var k in validater){
@@ -826,7 +850,6 @@
                     }
                 }
                 params.files = this.fileList;
-                params.pay_mode = 8;
                 params.uuid = JSON.parse(window.sessionStorage.getItem("uuid"));
                 return params;
             },

@@ -150,13 +150,13 @@
     }
 </style>
 <style lang="less">
-    #payPayment{
-        .el-form--inline .el-form-item{
+    #payPayment {
+        .el-form--inline .el-form-item {
             width: calc(100% - 10px);
             width: -moz-calc(100% - 10px);
             width: -webkit-calc(100% - 10px);
         }
-        .el-form--inline .el-form-item__content{
+        .el-form--inline .el-form-item__content {
             width: 100%;
         }
     }
@@ -214,7 +214,7 @@
 
                     <el-col :span="5">
                         <el-select v-model="searchData.pay_mode" placeholder="请选择付款方式"
-                                   filterable size="mini">
+                                   filterable size="mini" @change="queryData">
                             <el-option value="1" label="直联"></el-option>
                             <el-option value="2" label="网银"></el-option>
                             <!--<el-option v-for="(item,k) in payModeList"
@@ -245,7 +245,8 @@
                 <el-table-column type="selection" width="38"></el-table-column>
                 <el-table-column prop="recv_account_name" label="收款方名称" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="recv_account_no" label="收款方账号" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="recv_account_bank" label="收款方开户行" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="recv_account_bank" label="收款方开户行"
+                                 :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="payment_amount" label="金额" :show-overflow-tooltip="true"
                                  :formatter="transitAmount"></el-table-column>
                 <el-table-column prop="service_status" label="处理状态" :show-overflow-tooltip="true"
@@ -269,8 +270,11 @@
                     <el-button type="warning" plain size="mini" icon="el-icon-delete"
                                @click="cancellation('more')">支付作废
                     </el-button>
-                    <el-button type="warning" size="mini" @click="sendBill('more')">
+                    <el-button type="warning" size="mini" @click="sendBill('more')" v-show="searchData.pay_mode == '1'">
                         <span class="transmit-icon"><i></i></span>发送
+                    </el-button>
+                    <el-button type="warning" size="mini" @click="affirmBill" v-show="searchData.pay_mode == '2'">
+                        <span class="transmit-icon"><i></i></span>确认
                     </el-button>
                 </div>
                 <span>总笔数：</span>
@@ -331,7 +335,8 @@
                 <li class="table-li-content" v-text="dialogData.recv_account_no"></li>
 
                 <li class="table-li-title">开户行</li>
-                <li class="table-li-content" :title="dialogData.recv_account_bank" v-text="dialogData.recv_account_bank"></li>
+                <li class="table-li-content" :title="dialogData.recv_account_bank"
+                    v-text="dialogData.recv_account_bank"></li>
                 <li class="table-li-title">金额</li>
                 <li class="table-li-content" v-text="dialogData.payment_amount" style="color:#fd7d2f"></li>
 
@@ -381,11 +386,11 @@
         },
         components: {
             Upload: Upload,
-            BusinessTracking:BusinessTracking
+            BusinessTracking: BusinessTracking
         },
         mounted: function () {
             var constants = JSON.parse(window.sessionStorage.getItem("constants"));
-            if(constants.PayMode){
+            if (constants.PayMode) {
                 this.payModeList = constants.PayMode;
             }
         },
@@ -443,7 +448,7 @@
                     biz_type: 9
                 },
                 triggerFile: false,
-                businessParams:{ //业务状态追踪参数
+                businessParams: { //业务状态追踪参数
                 },
             }
         },
@@ -523,10 +528,10 @@
                 this.paymentData.feed_back = "";
 
                 if (number == "more") {
-                    if(this.selectData.length > 0){
+                    if (this.selectData.length > 0) {
                         this.paymentData.ids = this.selectData;
                         this.paymentData.persist_version = this.selectVersion;
-                    }else{
+                    } else {
                         this.$message({
                             type: "warning",
                             message: "请选择要作废的单据",
@@ -543,11 +548,11 @@
             },
             //确定作废
             confirmcancell: function () {
-                if(!this.paymentData.feed_back){
+                if (!this.paymentData.feed_back) {
                     this.$message({
-                        type:"warning",
-                        message:"请输入作废原因",
-                        duration:2000
+                        type: "warning",
+                        message: "请输入作废原因",
+                        duration: 2000
                     });
                     return;
                 }
@@ -585,9 +590,9 @@
                     ids: []
                 };
                 if (number == "more") { //发送多条
-                    if(this.selectData.length > 0){
+                    if (this.selectData.length > 0) {
                         params.ids = this.selectData;
-                    }else{
+                    } else {
                         this.$message({
                             type: "warning",
                             message: "请选择要发送的单据",
@@ -628,6 +633,55 @@
                     console.log(error);
                 });
             },
+            //确认
+            affirmBill: function () {
+                var params = {
+                    ids: []
+                };
+                var selectVersion = this.selectVersion;
+                var selectData = this.selectData;
+                if (selectData.length > 0) {
+                    selectData.forEach((item,index) => {
+                        params.ids.push({
+                            id: item,
+                            persist_version: selectVersion[index]
+                        })
+                    })
+                } else {
+                    this.$message({
+                        type: "warning",
+                        message: "请选择要确认的单据",
+                        duration: 2000
+                    });
+                    return;
+                }
+
+                this.$axios({
+                    url: "/cfm/normalProcess",
+                    method: "post",
+                    data: {
+                        optype: "zft_payok",
+                        params: params
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                    } else {
+                        this.$message({
+                            type: "success",
+                            message: "确认成功",
+                            duration: 2000
+                        });
+                        this.$emit("getCommTable", this.routerMessage);
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            }
         },
         computed: {},
         watch: {

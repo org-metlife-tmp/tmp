@@ -161,6 +161,24 @@
             }
         }
 
+        .transmit-icon {
+            position: relative;
+            display: inline-block;
+            width: 16px;
+            height: 10px;
+            vertical-align: middle;
+            margin-right: 4px;
+
+            i {
+                position: absolute;
+                top: -5px;
+                left: -3px;
+                width: 18px;
+                height: 18px;
+                background: url(../../assets/icon_common.png) no-repeat;
+                background-position: -49px -80px;
+            }
+        }
     }
 </style>
 <style lang="less" type="text/less">
@@ -227,7 +245,19 @@
                                       placeholder="请输入收款方名称或账号"></el-input>
                         </el-form-item>
                     </el-col>
-                    <el-col :span="6">
+                    <el-col :span="4">
+                        <el-select v-model="searchData.pay_mode" placeholder="请选择付款方式"
+                                   filterable size="mini" style="width:90%" @change="queryData">
+                            <el-option value="1" label="直联"></el-option>
+                            <el-option value="2" label="网银"></el-option>
+                            <!--<el-option v-for="(item,k) in payModeList"
+                                       :key="k"
+                                       :label="item"
+                                       :value="k">
+                            </el-option>-->
+                        </el-select>
+                    </el-col>
+                    <el-col :span="5">
                         <el-form-item>
                             <el-col :span="11">
                                 <el-input v-model="searchData.min" clearable placeholder="最小金额"></el-input>
@@ -276,6 +306,9 @@
             <!--<el-button type="warning" size="mini" @click="">
                 <span class="transmit-icon"><i></i></span>发送
             </el-button>-->
+            <el-button type="warning" size="mini" @click="affirmBill" v-show="searchData.pay_mode == '2'">
+                <span class="transmit-icon"><i></i></span>确认
+            </el-button>
             <el-button type="warning" plain size="mini" icon="el-icon-delete"
                        @click="cancellation">支付作废
             </el-button>
@@ -340,8 +373,11 @@
                             <el-button type="warning" plain size="mini" icon="el-icon-delete"
                                        @click="cancellation('more')">支付作废
                             </el-button>
-                            <el-button type="warning" size="mini" @click="">
+                            <el-button type="warning" size="mini" @click="" v-show="searchData.pay_mode == '1'">
                                 <span class="transmit-icon"><i></i></span>发送
+                            </el-button>
+                            <el-button type="warning" size="mini" @click="affirmBill('more')" v-show="searchData.pay_mode == '2'">
+                                <span class="transmit-icon"><i></i></span>确认
                             </el-button>
                         </div>
                     </div>
@@ -404,10 +440,12 @@
                     optype: "zftbatch_payList",
                     params: {
                         page_size: 9,
-                        page_num: 1
+                        page_num: 1,
+                        pay_mode: "1"
                     }
                 },
                 searchData: { //搜索条件
+                    pay_mode: "1",
                     pay_query_key: "",
                     recv_query_key: "",
                     min: "",
@@ -499,6 +537,7 @@
                     });
                     this.paymentData.id = row.id;
                     this.paymentData.persist_version = row.persist_version;
+                    this.paymentData.batchno = row.batchno;
                 }else{
                     this.paymentData.id = "";
                     this.paymentData.persist_version = "";
@@ -533,6 +572,7 @@
                 this.searchDetailData.page_num = 1;
                 this.getDetailTable(this.searchDetailData);
             },
+
             //支付作废
             cancellation:function(number){
                 this.paymentData.ids = [];
@@ -628,6 +668,87 @@
             selectChange: function (selectVal) {
                 this.selectData = selectVal;
             },
+
+            //确认
+            affirmBill: function(number){
+                var optype = "";
+                var params = {
+                    ids: []
+                }
+                if (number == "more") {
+                    var selData = this.selectData;
+                    if(selData.length<1){
+                        this.$message({
+                            type:"warning",
+                            message:"请选择要作废的数据！",
+                            duration:2000
+                        });
+                        return;
+                    }
+                    // this.paymentData.id = this.currentData.id;
+                    params.batchno = selData[0].batchno;
+                    params.persist_version = this.currentData.persist_version;
+                    selData.forEach(element =>{
+                        params.ids.push(element.detail_id);
+                    });
+                    optype = "zftbatch_payokbyids";
+                }else{
+                    if(!this.paymentData.id){
+                        this.$message({
+                            type:"warning",
+                            message:"请选择一条作废数据！",
+                            duration:2000
+                        });
+                        return;
+                    }
+                    var paymentData = this.paymentData;
+                    optype = "zftbatch_payok";
+                    params = paymentData;
+                }
+
+                this.$axios({
+                    url: "/cfm/normalProcess",
+                    method: "post",
+                    data: {
+                        optype: optype,
+                        params: params
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                    } else {
+                        var data = result.data.data;
+                        this.$message({
+                            type: "success",
+                            message: "确认成功",
+                            duration: 2000
+                        });
+                        this.dialogVisible = false;
+                        this.pagCurrent = 1;
+                        this.routerMessage.params.page_size = 9;
+                        this.$emit("getCommTable", this.routerMessage);
+                        this.paymentData = {};
+                        if(optype=='zftbatch_payok'){//批次确认
+                        } else{//批量确认
+                            this.selectData = [];
+                            var ids= params.ids;
+                            if(ids.length === this.pagDeTotal){
+                            }else{
+                                this.paymentData.ids = [];
+                                this.currentData.persist_version = data.persist_version;
+                            }
+                        }
+
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            },
+
             //查看弹框关闭
             closeLookDialog: function(){
                 this.pagCurrent = 1;
