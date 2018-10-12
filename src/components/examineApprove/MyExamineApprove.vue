@@ -801,14 +801,6 @@
                     agree:"skt_agree",
                     reject:"skt_reject"
                 },
-                "16":{
-                    text:"OA数据总公司付款",
-                    detail:"headorgoa_detail",
-                    list:"headorgoa_pendingtasks",
-                    addLots:"headorgoa_append",
-                    agree:"headorgoa_agree",
-                    reject:"headorgoa_reject"
-                },
                 "19":{
                     text:"非直连归集",
                     detail:"ndc_detail",
@@ -816,7 +808,23 @@
                     addLots:"ndc_append",
                     agree:"ndc_agree",
                     reject:"ndc_reject"
-                }
+                },
+                "20":{
+                    text:"OA数据总公司付款",
+                    detail:"headorgoa_detail",
+                    list:"headorgoa_pendingtasks",
+                    addLots:"headorgoa_append",
+                    agree:"headorgoa_agree",
+                    reject:"headorgoa_reject"
+                },
+                "21":{
+                    text:"OA数据分公司付款",
+                    detail:"branchorgoa_detail",
+                    list:"branchorgoa_pendingtasks",
+                    addLots:"branchorgoa_append",
+                    agree:"branchorgoa_agree",
+                    reject:"branchorgoa_reject"
+                },
             };
 
             this.detailDialog ={
@@ -1161,7 +1169,27 @@
                     {id:"13", lspan:4, label:"摘要"},
                     {id:"14", pspan:8, prop:"receipts_summary"}
                 ],
-                "16":[
+                "19":[
+                    {id:"1", lspan:4, label:"批次号"},
+                    {id:"2",pspan:20, prop:"batchno"},
+                    {id:"3", lspan:4, label:"总笔数"},
+                    {id:"4", pspan:8, prop:"total_num"},
+                    {id:"5", lspan:4, label:"总金额"},
+                    {id:"6", pspan:8, prop:"total_amount"},
+                    {id:"7", lspan:4, label:"收款账号"},
+                    {id:"8", pspan:8, prop:"recv_account_no"},
+                    {id:"9", lspan:4, label:"开户行"},
+                    {id:"10", pspan:8, prop:"recv_account_bank"},
+                    {id:"11", lspan:4, label:"已失败笔数"},
+                    {id:"12", pspan:8, prop:"failed_num"},
+                    {id:"13", lspan:4, label:"已失败金额"},
+                    {id:"14", pspan:8, prop:"failed_amount"},
+                    {id:"15", lspan:4, label:"已成功笔数"},
+                    {id:"16", pspan:8, prop:"sucess_num"},
+                    {id:"17", lspan:4, label:"已成功金额"},
+                    {id:"18", pspan:8, prop:"sucess_amount"}
+                ],
+                "20":[
                     {id:"1", lspan:4, label:"付款账户号"},
                     {id:"2",pspan:20, prop:"pay_account_no"},
                     {id:"3", lspan:4, label:"付款账户名称"},
@@ -1183,25 +1211,21 @@
                     {id:"19", lspan:4, label:"摘要"},
                     {id:"20", pspan:8, prop:"payment_summary"}
                 ],
-                "19":[
-                    {id:"1", lspan:4, label:"批次号"},
-                    {id:"2",pspan:20, prop:"batchno"},
-                    {id:"3", lspan:4, label:"总笔数"},
-                    {id:"4", pspan:8, prop:"total_num"},
-                    {id:"5", lspan:4, label:"总金额"},
-                    {id:"6", pspan:8, prop:"total_amount"},
-                    {id:"7", lspan:4, label:"收款账号"},
-                    {id:"8", pspan:8, prop:"recv_account_no"},
-                    {id:"9", lspan:4, label:"开户行"},
-                    {id:"10", pspan:8, prop:"recv_account_bank"},
-                    {id:"11", lspan:4, label:"已失败笔数"},
-                    {id:"12", pspan:8, prop:"failed_num"},
-                    {id:"13", lspan:4, label:"已失败金额"},
-                    {id:"14", pspan:8, prop:"failed_amount"},
-                    {id:"15", lspan:4, label:"已成功笔数"},
-                    {id:"16", pspan:8, prop:"sucess_num"},
-                    {id:"17", lspan:4, label:"已成功金额"},
-                    {id:"18", pspan:8, prop:"sucess_amount"}
+                "21":[
+                    {id:"1", lspan:4, label:"资金池账户"},
+                    {id:"2",pspan:20, prop:"pool_account_no"},
+                    {id:"3", lspan:4, label:"付款方账号"},
+                    {id:"4", pspan:8, prop:"pay_account_no"},
+                    {id:"5", lspan:4, label:"收款方账号"},
+                    {id:"6", pspan:8, prop:"recv_account_no"},
+                    {id:"7", lspan:4, label:"收款方银行"},
+                    {id:"8", pspan:8, prop:"recv_account_bank"},
+                    {id:"9", lspan:4, label:"收款金额"},
+                    {id:"10", pspan:8, prop:"payment_amount"},
+                    {id:"11", lspan:4, label:"付款方式"},
+                    {id:"12", pspan:8, prop:"pay_mode"},
+                    {id:"13", lspan:4, label:"状态"},
+                    {id:"14", pspan:8, prop:"service_status"}
                 ],
             }
         },
@@ -1396,7 +1420,15 @@
                         {id:'4',prop:"receipts_amount",name:'金额'},
                         {id:'5',prop:"service_status",name:'处理状态'}
                     ],
-                    "16":[
+                    "19":[
+                        {id:'1',prop:"batchno",name:'批次号'},
+                        {id:'2',prop:"total_num",name:'总笔数'},
+                        {id:'3',prop:"total_amount",name:'总金额'},
+                        {id:'4',prop:"sucess_num",name:'成功笔数'},
+                        {id:'5',prop:"sucess_amount",name:'成功金额'},
+                        {id:'6',prop:"service_status",name:'批次状态'}
+                    ],
+                    "20":[
                         {id:'1',prop:"pay_account_no",name:'付款方账号'},
                         {id:'2',prop:"pay_account_bank",name:'付款方银行'},
                         {id:'3',prop:"recv_account_no",name:'收款方账号'},
@@ -1405,13 +1437,14 @@
                         {id:'6',prop:"pay_mode",name:'付款方式'},
                         {id:'7',prop:"service_status",name:'状态'}
                     ],
-                    "19":[
-                        {id:'1',prop:"batchno",name:'批次号'},
-                        {id:'2',prop:"total_num",name:'总笔数'},
-                        {id:'3',prop:"total_amount",name:'总金额'},
-                        {id:'4',prop:"sucess_num",name:'成功笔数'},
-                        {id:'5',prop:"sucess_amount",name:'成功金额'},
-                        {id:'6',prop:"service_status",name:'批次状态'}
+                    "21":[
+                        {id:'1',prop:"pay_account_no",name:'付款方账号'},
+                        {id:'2',prop:"pay_account_name",name:'付款方银行'},
+                        {id:'3',prop:"recv_account_no",name:'收款方账号'},
+                        {id:'4',prop:"recv_account_bank",name:'收款方银行'},
+                        {id:'5',prop:"payment_amount",name:'收款金额'},
+                        {id:'6',prop:"pay_mode",name:'付款方式'},
+                        {id:'7',prop:"service_status",name:'状态'}
                     ],
                 },
                 editableTabsList: {},

@@ -480,9 +480,7 @@
                 statusList: {
                     2: "已提交",
                     3: "审批中",
-                    4: "审批通过",
-                    10: "未完结",
-                    11: "已完结"
+                    10: "未完结"
                 },
                 pickerOptions: {
                     disabledDate(time) {

@@ -436,7 +436,7 @@
                 moneyText: "", //金额-大写
                 fileMessage: { //附件
                     bill_id: "",
-                    biz_type: 16
+                    biz_type: 20
                 },
                 eidttrigFile: false,
                 emptyFileList: [],
