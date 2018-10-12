@@ -672,6 +672,9 @@
                             message: "数据已确认！",
                             duration: 2000
                         });
+                        if (number != "more") {
+                            this.dialogVisible = false;
+                        }
                         this.$emit("getCommTable", this.routerMessage);
                     }
                 }).catch(function (error) {
