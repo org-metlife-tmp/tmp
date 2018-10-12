@@ -298,7 +298,7 @@
         <!--顶部按钮-->
         <div class="button-list-left">
             <el-select v-model="searchData.pay_mode" placeholder="请选择付款方式"
-                    filterable clearable size="mini">
+                    filterable clearable size="mini" @change="queryByPayMode">
                 <el-option v-for="(name,k) in payModeList"
                         :key="k"
                         :label="name"
@@ -874,6 +874,21 @@
                 for (var k in searchData) {
                     this.routerMessage.params[k] = searchData[k];
                 }
+                this.$emit("getCommTable", this.routerMessage);
+            },
+            //根据付款方式查询
+            queryByPayMode:function(val){
+                var searchData = this.searchData;
+                searchData.start_date = this.dateValue ? this.dateValue[0] : "";
+                searchData.end_date = this.dateValue ? this.dateValue[1] : "";
+                for (var k in searchData) {
+                    if(k=='pay_mode'){
+                        this.routerMessage.params[k] = val;
+                    }else{
+                         this.routerMessage.params[k] = searchData[k];
+                    }
+                }
+                this.routerMessage.params.page_num = 1;
                 this.$emit("getCommTable", this.routerMessage);
             },
             //换页后获取数据
