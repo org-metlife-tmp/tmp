@@ -258,6 +258,8 @@
                 <el-table-column prop="total_num" label="总笔数" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="total_amount" label="总金额" :show-overflow-tooltip="true"
                                  :formatter="transitAmount"></el-table-column>
+                <el-table-column prop="pay_mode" label="付款方式" :show-overflow-tooltip="true"
+                                 :formatter="transitPayMode"></el-table-column>
                 <el-table-column prop="sucess_num" label="成功笔数" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="sucess_amount" label="成功金额" :show-overflow-tooltip="true"
                                  :formatter="transitAmount"></el-table-column>
@@ -547,6 +549,13 @@
                     page_num: 1
                 };
                 this.$emit("getCommTable", this.routerMessage);
+            },
+            //展示格式转换-付款方式
+            transitPayMode: function (row, column, cellValue, index) {
+                var constants = JSON.parse(window.sessionStorage.getItem("constants"));
+                if (constants.PayMode) {
+                    return constants.PayMode[cellValue];
+                }
             },
             //展示格式转换-金额
             transitAmount: function (row, column, cellValue, index) {
