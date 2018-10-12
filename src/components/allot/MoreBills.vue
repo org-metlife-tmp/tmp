@@ -26,6 +26,10 @@
             }
         }
 
+        /*数据展示部分*/
+        .table-content{
+            height: 279px;
+        }
         /*分隔栏*/
         .split-bar {
             width: 106%;
@@ -207,6 +211,14 @@
                            :value="k">
                 </el-option>
             </el-select>
+            <el-select v-model="searchData.pay_mode" placeholder="请选择付款方式"
+                    filterable clearable size="mini">
+                <el-option v-for="(name,k) in payModeList"
+                        :key="k"
+                        :label="name"
+                        :value="k">
+                </el-option>
+            </el-select>
         </div>
         <!--搜索区-->
         <div class="search-setion">
@@ -273,7 +285,10 @@
         <!--数据展示区-->
         <section class="table-content">
             <el-table :data="tableList"
+                       height="100%"
                       border size="mini">
+                <el-table-column prop="pay_mode" label="付款方式" :show-overflow-tooltip="true"
+                                 :formatter="transitPayMode"></el-table-column>
                 <el-table-column prop="pay_account_no" label="付款方账号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="pay_account_bank" label="付款银行" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="recv_account_no" label="收款方账号" :show-overflow-tooltip="true"></el-table-column>
@@ -531,13 +546,6 @@
         created: function () {
             this.$emit("transmitTitle", "内部调拨-更多单据");
             this.$emit("getCommTable", this.routerMessage);
-
-            //付款方式
-            var constants = JSON.parse(window.sessionStorage.getItem("constants"));
-            if(constants.PayMode){
-                this.payModeList = constants.PayMode;
-            }
-
             //业务类型
             this.$axios({
                 url:"/cfm/commProcess",
@@ -579,6 +587,10 @@
             if (constants.ZjdbType) {
                 this.paymentTypeList = constants.ZjdbType;
             }
+            //付款方式
+            if(constants.PayMode){
+                this.payModeList = constants.PayMode;
+            }
         },
         props: ["tableData"],
         data: function () {
@@ -591,6 +603,7 @@
                     }
                 },
                 searchData: { //搜索条件
+                    pay_mode: "",
                     payment_type: "",
                     pay_query_key: "",
                     recv_query_key: "",
@@ -678,6 +691,7 @@
                 for (var k in searchData) {
                     this.routerMessage.params[k] = searchData[k];
                 }
+                this.routerMessage.params.page_num = 1;
                 this.$emit("getCommTable", this.routerMessage);
             },
             //换页后获取数据
@@ -703,6 +717,10 @@
             //展示格式转换-金额
             transitAmount: function (row, column, cellValue, index) {
                 return this.$common.transitSeparator(cellValue);
+            },
+            //展示格式转换-付款方式
+            transitPayMode: function (row, column, cellValue, index){
+                return this.payModeList[cellValue];
             },
             //制单
             goMakeBill: function () {

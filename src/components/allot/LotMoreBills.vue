@@ -295,6 +295,17 @@
 
 <template>
     <div id="lotMoreBills">
+        <!--顶部按钮-->
+        <div class="button-list-left">
+            <el-select v-model="searchData.pay_mode" placeholder="请选择付款方式"
+                    filterable clearable size="mini">
+                <el-option v-for="(name,k) in payModeList"
+                        :key="k"
+                        :label="name"
+                        :value="k">
+                </el-option>
+            </el-select>
+        </div>
         <!--搜索区-->
         <div class="search-setion">
             <el-form :inline="true" :model="searchData" size="mini">
@@ -362,6 +373,8 @@
             <el-table :data="tableList"
                       height="100%"
                       border size="mini">
+                <el-table-column prop="pay_mode" label="付款方式" :show-overflow-tooltip="true"
+                                 :formatter="transitPayMode"></el-table-column>
                 <el-table-column prop="batchno" label="批次号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="total_num" label="总笔数" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="total_amount" label="总金额" :show-overflow-tooltip="true"></el-table-column>
@@ -723,12 +736,6 @@
             this.$emit("transmitTitle", "批量调拨制单-更多单据");
             this.$emit("getCommTable", this.routerMessage);
 
-            //付款方式
-            var constants = JSON.parse(window.sessionStorage.getItem("constants"));
-            if(constants.PayMode){
-                this.payModeList = constants.PayMode;
-            }
-
             //业务类型
             this.$axios({
                 url:"/cfm/commProcess",
@@ -759,10 +766,10 @@
             BusinessTracking:BusinessTracking
         },
         mounted: function () {
-            //调拨类型
+            //付款方式
             var constants = JSON.parse(window.sessionStorage.getItem("constants"));
-            if (constants.ZjdbType) {
-                this.paymentTypeList = constants.ZjdbType;
+            if(constants.PayMode){
+                this.payModeList = constants.PayMode;
             }
         },
         props: ["tableData"],
@@ -776,6 +783,7 @@
                     }
                 },
                 searchData: { //搜索条件
+                    pay_mode: "",
                     pay_query_key: "",
                     recv_query_key: "",
                     min: "",
@@ -806,10 +814,11 @@
                     3: "审批中",
                     4: "审批通过",
                     5: "审批拒绝",
+                    7: "已成功",
+                    8: "已失败",
                     10: "未完结",
                     11: "已完结"
                 },
-                paymentTypeList: {}, //下拉框数据
                 dialogVisible: false, //弹框数据
                 dialogData: {},
                 currentBill: {},
@@ -847,7 +856,6 @@
                 fileList: [],
                 businessParams:{ //业务状态追踪参数
                 },
-                payModeList:{}, //下拉框数据
                 payStatList: [],
                 dialogTitle:"批次汇总查看",
                 curTab: true,//当前显示的tab
@@ -899,13 +907,23 @@
             //展示格式转换-处理状态
             transitStatus: function (row, column, cellValue, index) {
                 var constants = JSON.parse(window.sessionStorage.getItem("constants"));
-                if (constants.BillStatus) {
-                    return constants.BillStatus[cellValue];
+                if(column.property == 'pay_status'){
+                    if (constants.PayStatus) {
+                        return constants.PayStatus[cellValue];
+                    }
+                }else{
+                    if (constants.BillStatus) {
+                        return constants.BillStatus[cellValue];
+                    }
                 }
             },
             //展示格式转换-金额
             transitAmount: function (row, column, cellValue, index) {
                 return this.$common.transitSeparator(cellValue);
+            },
+            //展示格式转换-付款方式
+            transitPayMode: function (row, column, cellValue, index){
+                return this.payModeList[cellValue];
             },
             //制单
             goMakeBill: function () {

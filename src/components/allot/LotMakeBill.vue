@@ -885,7 +885,11 @@
 
         },
         mounted:function(){
-
+            //付款方式
+            var constants = JSON.parse(window.sessionStorage.getItem("constants"));
+            if(constants.PayMode){
+                this.payModeList = constants.PayMode;
+            }
         },
         components: {
             Upload: Upload
@@ -894,7 +898,7 @@
             return {
                 dateValue: new Date(), //申请时间
                 billData: {
-                    pay_mode: "8", //付款方式
+                    pay_mode: "1", //付款方式
                     service_serial_number: "", //单据编号
                     pay_account_name: "", //付款方
                     pay_account_id: "",
@@ -915,7 +919,7 @@
                 dialogData: {},
                 formLabelWidth: "100px",
                 loading: false,
-                payModeList:{ 8:"线下补录"}, //下拉框数据
+                payModeList:{}, //下拉框数据
                 accOptions: [], //付款方账号列表
                 saveParams:{},
                 payStatList: [],
