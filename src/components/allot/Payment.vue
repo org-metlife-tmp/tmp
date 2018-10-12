@@ -66,7 +66,7 @@
                 margin-right: 10px;
             }
         }
-
+        //发送
         .transmit-icon {
             position: relative;
             display: inline-block;
@@ -154,6 +154,10 @@
             margin-bottom: 2px;
             margin-top: -15px;
         }
+        /*数据展示部分*/
+        .table-content{
+            height: 279px;
+        }
     }
 </style>
 <style lang="less">
@@ -174,11 +178,19 @@
         <!--顶部按钮-->
         <div class="button-list-left">
             <el-select v-model="searchData.payment_type" placeholder="请选择调拨类型"
-                       filterable clearable size="mini">
+                       filterable clearable size="mini" @change="queryByPayType">
                 <el-option v-for="(name,k) in paymentTypeList"
                            :key="k"
                            :label="name"
                            :value="k">
+                </el-option>
+            </el-select>
+            <el-select v-model="searchData.pay_mode" placeholder="请选择付款方式"
+                    filterable size="mini" @change="queryByPayMode">
+                <el-option v-for="(name,k) in payModeList"
+                        :key="k"
+                        :label="name"
+                        :value="k">
                 </el-option>
             </el-select>
         </div>
@@ -247,8 +259,11 @@
         <section class="table-content">
             <el-table :data="tableList"
                       border size="mini"
+                      height="100%"
                       @selection-change="selectChange">
                 <el-table-column type="selection" width="38"></el-table-column>
+                <el-table-column prop="pay_mode" label="付款方式" :show-overflow-tooltip="true"
+                                 :formatter="transitPayMode"></el-table-column>
                 <el-table-column prop="pay_account_no" label="付款方账号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="pay_account_bank" label="付款银行" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="recv_account_no" label="收款方账号" :show-overflow-tooltip="true"></el-table-column>
@@ -274,10 +289,13 @@
                     <el-button type="warning" plain size="mini" @click="goLookOver">
                         更多单据<i class="el-icon-arrow-right el-icon--right"></i>
                     </el-button>
-                    <el-button type="warning" plain size="mini" icon="el-icon-delete"
+                    <el-button type="warning" plain size="mini" icon="el-icon-delete"  v-show="searchData.pay_mode==1"
                                @click="cancellation('more')">支付作废
                     </el-button>
-                    <el-button type="warning" size="mini" @click="sendBill('more')">
+                    <el-button type="warning" size="mini" @click="confirmPay()" v-show="searchData.pay_mode==2">
+                        <span class="transmit-icon"><i></i></span>支付确认
+                    </el-button>
+                    <el-button type="warning" size="mini" @click="sendBill('more')" v-show="searchData.pay_mode==1">
                         <span class="transmit-icon"><i></i></span>发送
                     </el-button>
                 </div>
@@ -406,6 +424,12 @@
             if (constants.ZjdbType) {
                 this.paymentTypeList = constants.ZjdbType;
             }
+            //付款方式
+            if(constants.PayMode){
+                var data = constants.PayMode;
+                delete data['8'];//删除线下补录
+                this.payModeList = data;
+            }
         },
         props: ["tableData"],
         data: function () {
@@ -414,10 +438,12 @@
                     optype: "dbt_paylist",
                     params: {
                         page_size: 7,
-                        page_num: 1
+                        page_num: 1,
+                        pay_mode: 1
                     }
                 },
                 searchData: { //搜索条件
+                    pay_mode: "1",
                     payment_type: "",
                     pay_query_key: "",
                     recv_query_key: "",
@@ -459,6 +485,7 @@
                 triggerFile: false,
                 businessParams:{ //业务状态追踪参数
                 },
+                payModeList: {},//付款方式
             }
         },
         methods: {
@@ -471,6 +498,37 @@
                 for (var k in searchData) {
                     this.routerMessage.params[k] = searchData[k];
                 }
+                this.routerMessage.params.page_num = 1;
+                this.$emit("getCommTable", this.routerMessage);
+            },
+            //根据调拨类型查询
+            queryByPayType:function(val){
+                var searchData = this.searchData;
+                searchData.start_date = this.dateValue ? this.dateValue[0] : "";
+                searchData.end_date = this.dateValue ? this.dateValue[1] : "";
+                for (var k in searchData) {
+                    if(k=='payment_type'){
+                        this.routerMessage.params[k] = val;
+                    }else{
+                         this.routerMessage.params[k] = searchData[k];
+                    }
+                }
+                this.routerMessage.params.page_num = 1;
+                this.$emit("getCommTable", this.routerMessage);
+            },
+            //根据付款方式查询
+            queryByPayMode:function(val){
+                var searchData = this.searchData;
+                searchData.start_date = this.dateValue ? this.dateValue[0] : "";
+                searchData.end_date = this.dateValue ? this.dateValue[1] : "";
+                for (var k in searchData) {
+                    if(k=='pay_mode'){
+                        this.routerMessage.params[k] = val;
+                    }else{
+                         this.routerMessage.params[k] = searchData[k];
+                    }
+                }
+                this.routerMessage.params.page_num = 1;
                 this.$emit("getCommTable", this.routerMessage);
             },
             //列表选择框改变后
@@ -487,19 +545,22 @@
             },
             //当前页数据条数发生变化
             sizeChange: function (val) {
-                this.routerMessage.params = {
-                    page_size: val,
-                    page_num: 1
-                };
+                this.routerMessage.params.page_size = val;
+                this.routerMessage.params.page_num = 1;
+                this.routerMessage.params.pay_mode = 1;
                 this.$emit("getCommTable", this.routerMessage);
             },
             //展示格式转换-金额
             transitAmount: function (row, column, cellValue, index) {
                 return this.$common.transitSeparator(cellValue);
             },
+            //展示格式转换-付款方式
+            transitPayMode: function (row, column, cellValue, index){
+                return this.payModeList[cellValue];
+            },
             //更多单据
             goLookOver: function () {
-                this.$router.push("/allot/look-over");
+                this.$router.push("/allot/more-bills");
             },
             //展示格式转换-处理状态
             transitStatus: function (row, column, cellValue, index) {
@@ -564,6 +625,45 @@
                         if (number != "more") {
                             this.dialogVisible = false;
                         }
+                        this.$emit("getCommTable", this.routerMessage);
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            },
+            //支付确认
+            confirmPay: function(){
+               if(this.selectData.length<=0){
+                    this.$message({
+                        type:"warning",
+                        message:"请选择要确认的数据！",
+                        duration:2000
+                    });
+                    return ;
+                }
+                var ids = this.selectData;
+                this.$axios({
+                    url: "/cfm/normalProcess",
+                    method: "post",
+                    data: {
+                        optype: "dbt_payconfirm",
+                        params: {
+                            ids:ids
+                        }
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                    } else {
+                        this.$message({
+                            type: "success",
+                            message: "数据已确认！",
+                            duration: 2000
+                        });
                         this.$emit("getCommTable", this.routerMessage);
                     }
                 }).catch(function (error) {

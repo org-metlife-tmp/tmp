@@ -54,6 +54,11 @@
         .table-content{
             height: 350px;
             overflow-y: auto;
+            .active-card{
+                .el-card{
+                    border-color: #409EFF;
+                }
+            }
             .el-card:hover{
                 border-color: #409EFF;
                 .right-btn{
@@ -88,6 +93,7 @@
                     margin-top: 4px;
                 }
                 .content-check-box{
+                    color: #409EFF;
                     position: absolute;
                     bottom: 10px;
                     right: 10px;
@@ -160,7 +166,25 @@
                 } 
             }
         }
-        
+        //支付确认按钮
+        .transmit-icon {
+            position: relative;
+            display: inline-block;
+            width: 16px;
+            height: 10px;
+            vertical-align: middle;
+            margin-right: 4px;
+
+            i {
+                position: absolute;
+                top: -5px;
+                left: -3px;
+                width: 18px;
+                height: 18px;
+                background: url(../../assets/icon_common.png) no-repeat;
+                background-position: -49px -80px;
+            }
+        }
     }
 </style>
 <style lang="less" type="text/less">
@@ -192,6 +216,17 @@
 
 <template>
     <div id="lotPayment">
+        <!--顶部按钮-->
+        <div class="button-list-left">
+            <el-select v-model="searchData.pay_mode" placeholder="请选择付款方式"
+                    filterable size="mini" @change="queryByPayMode">
+                <el-option v-for="(name,k) in payModeList"
+                        :key="k"
+                        :label="name"
+                        :value="k">
+                </el-option>
+            </el-select>
+        </div>
         <!--搜索区-->
         <div class="search-setion">
             <el-form :inline="true" :model="searchData" size="mini">
@@ -247,7 +282,8 @@
         <!--数据展示区-->
         <section class="table-content" @scroll="paperScroll($event)">
             <el-row>
-                <el-col :span="8" v-for="(card,index) in tableList" :key="card.batchno">
+                 <!-- @click.native="selectCard($event,card)" :class="{'active-card':card.isChecked}" -->
+                <el-col :span="8" v-for="card in tableList" :key="card.batchno">
                     <el-card class="box-card">
                         <div slot="header" class="head-box">
                             <span class="headline" :title="card.batchno">{{card.batchno}}</span>
@@ -262,6 +298,7 @@
                                 <div class="numBox"><span>{{card.total_num}}</span><p>总笔数</p></div>
                                 <div class="amountBox"><span>{{transitionMoney(card.total_amount)}}</span><p>总金额</p></div>
                             </div>
+                            <!-- <i class="el-icon-success content-check-box" v-show="card.isChecked"></i> -->
                             <el-checkbox class="content-check-box" @change="setCurrentCard($event,card)" v-model="card.isChecked"></el-checkbox>
                         </div>
                     </el-card>
@@ -272,8 +309,11 @@
             <!-- <el-button type="warning" size="mini" @click="">
                 <span class="transmit-icon"><i></i></span>发送
             </el-button> -->
-            <el-button type="warning" plain size="mini" icon="el-icon-delete"
+            <el-button type="warning" plain size="mini" icon="el-icon-delete" v-show="searchData.pay_mode==1"
                            @click="cancellation">支付作废
+            </el-button>
+            <el-button type="warning" size="mini" @click="confirmPay" v-show="searchData.pay_mode==2">
+                <span class="transmit-icon"><i></i></span>支付确认
             </el-button>
             <el-button type="warning" plain size="mini" @click="goMoreBills">
                 更多单据<span class="arrows">></span>
@@ -333,10 +373,13 @@
                     </el-table>
                     <div class="allData">
                         <div class="btn-left">
-                            <el-button type="warning" plain size="mini" icon="el-icon-delete"
+                            <el-button type="warning" plain size="mini" icon="el-icon-delete" v-show="searchData.pay_mode==1"
                                     @click="cancellation('more')">支付作废
                             </el-button>
-                            <el-button type="warning" size="mini" @click="sendlation('more')">
+                            <el-button type="warning" size="mini" @click="confirmPay('more')" v-show="searchData.pay_mode==2">
+                                <span class="transmit-icon"><i></i></span>支付确认
+                            </el-button>
+                            <el-button type="warning" size="mini" @click="sendlation('more')" v-show="searchData.pay_mode==1"> 
                                 <span class="transmit-icon"><i></i></span>发送
                             </el-button>
                         </div>
@@ -388,6 +431,13 @@
             this.$emit("getCommTable", this.routerMessage);
         },
         mounted: function () {
+            //付款方式
+            var constants = JSON.parse(window.sessionStorage.getItem("constants"));
+            if(constants.PayMode){
+                var data = constants.PayMode;
+                delete data['8'];
+                this.payModeList = data;
+            }
         },
         components: {
             Upload: Upload,
@@ -400,10 +450,12 @@
                     optype: "dbtbatch_paylist",
                     params: {
                         page_size: 9,
-                        page_num: 1
+                        page_num: 1,
+                        pay_mode: 1
                     }
                 },
                 searchData: { //搜索条件
+                    pay_mode: "1",
                     pay_query_key: "",
                     recv_query_key: "",
                     min: "",
@@ -431,6 +483,7 @@
                 currentData:{},//当前选中的一条数据
                 pagCurrent:1,//当前列表页
                 pagTotal:"",//列表总数
+                payModeList: {}, //付款方式下拉框数据
             }
         },
         methods: {
@@ -441,6 +494,22 @@
                 searchData.end_date = this.dateValue ? this.dateValue[1] : "";
                 for (var k in searchData) {
                     this.routerMessage.params[k] = searchData[k];
+                }
+                this.pagCurrent = 1;
+                this.routerMessage.params.page_size = 9;
+                this.$emit("getCommTable", this.routerMessage);
+            },
+            //根据付款方式查询
+            queryByPayMode:function(val){
+                var searchData = this.searchData;
+                searchData.start_date = this.dateValue ? this.dateValue[0] : "";
+                searchData.end_date = this.dateValue ? this.dateValue[1] : "";
+                for (var k in searchData) {
+                    if(k=='pay_mode'){
+                        this.routerMessage.params[k] = val;
+                    }else{
+                         this.routerMessage.params[k] = searchData[k];
+                    }
                 }
                 this.pagCurrent = 1;
                 this.routerMessage.params.page_size = 9;
@@ -562,10 +631,9 @@
                 } 
                 this.payVisible = true;
             },
-
+            //发送
             sendlation:function(number){
                 this.paymentData.detail_ids = [];
-                this.paymentData.feed_back = "";
                 if (number == "more") {
                     var selData = this.selectData;
                     if(selData.length<1){
@@ -584,13 +652,12 @@
                     this.paymentData.number = "more";
                 }
                 var optype =  'dbtbatch_sendpaylist';
-                var lala = this.paymentData;
                 this.$axios({
                     url: "/cfm/normalProcess",
                     method: "post",
                     data: {
                         optype: optype,
-                        params: lala
+                        params: this.paymentData
                     }
                 }).then((result) => {
                     if (result.data.error_msg) {
@@ -600,16 +667,29 @@
                             duration: 2000
                         })
                     } else {
-			    console.log("123123123")
-                        
+                        var data = result.data.data;
+                        this.$message({
+                            type: "success",
+                            message: "数据已发送！",
+                            duration: 2000
+                        });
+                        this.selectData = [];
+                        var detail_ids= this.paymentData.detail_ids;
+                        if(detail_ids.length === this.pagDeTotal){//批量全部发送
+                            this.dialogVisible = false;
+                            this.paymentData = [];
+                        }else{
+                            this.searchDetailData.page_num = 1;
+                            this.getDetailTable(this.searchDetailData);
+                            this.paymentData.detail_ids = [];
+                            this.currentData.persist_version = data.persist_version;
+                        }
                     }
                 }).catch(function (error) {
                     console.log(error);
                 });
 
             },
-
-
             //确认支付作废
             confirmcancell: function(){
                 if(!this.paymentData.feed_back){
@@ -657,12 +737,12 @@
                                 this.dialogVisible = false;
                                 this.paymentData = [];
                             }else{
+                                this.searchDetailData.page_num = 1;
                                 this.getDetailTable(this.searchDetailData);
                                 this.paymentData.detail_ids = [];
                                 this.currentData.persist_version = data.persist_version;
                             }
                         }
-                        
                     }
                 }).catch(function (error) {
                     console.log(error);
@@ -707,7 +787,103 @@
                         this.pagCurrent --;
                     }
                 }
-            }
+            },
+            //支付确认
+            confirmPay: function(number){
+                this.paymentData.detail_ids = [];
+                if (number == "more") {
+                    var selData = this.selectData;
+                    if(selData.length<1){
+                        this.$message({
+                            type:"warning",
+                            message:"请选择要确认的数据！",
+                            duration:2000
+                        });
+                        return;
+                    }
+                    this.paymentData.id = this.currentData.id;
+                    this.paymentData.persist_version = this.currentData.persist_version;
+                    selData.forEach(element =>{
+                        this.paymentData.detail_ids.push(element.detail_id);
+                    });
+                    this.paymentData.number = "more";
+                }else{
+                    if(!this.paymentData.id){
+                        this.$message({
+                            type:"warning",
+                            message:"请选择要确认的数据！",
+                            duration:2000
+                        });
+                        return;
+                    }
+                } 
+                var optype = this.paymentData.number ? 'dbtbatch_payconfirm' : 'dbtbatch_paybatchconfirm';
+                this.$axios({
+                    url: "/cfm/normalProcess",
+                    method: "post",
+                    data: {
+                        optype: optype,
+                        params: this.paymentData
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                    } else {
+                        var data = result.data.data;
+                        this.$message({
+                            type: "success",
+                            message: "数据已确认",
+                            duration: 2000
+                        });
+                        if(optype=='dbtbatch_paybatchconfirm'){//批次确认
+                            this.pagCurrent = 1;
+                            this.routerMessage.params.page_size = 9;
+                            this.$emit("getCommTable", this.routerMessage);
+                            this.paymentData = [];
+                        } 
+                        else{//批量确认
+                            this.selectData = [];
+                            var detail_ids= this.paymentData.detail_ids;
+                            if(detail_ids.length === this.pagDeTotal){//批量全部确认
+                                this.dialogVisible = false;
+                                this.paymentData = [];
+                            }else{
+                                this.searchDetailData.page_num = 1;
+                                this.getDetailTable(this.searchDetailData);
+                                this.paymentData.detail_ids = [];
+                                this.currentData.persist_version = data.persist_version;
+                            }
+                        }
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            },
+            // selectCard: function(event,row){
+            //     debugger
+                
+            //     if(!row.isChecked){//即将选中
+            //         // event.currentTarget.classList.add("active-card");
+            //         this.tableList.forEach(element=>{
+            //             if(element.batchno !== row.batchno){
+            //                 element.isChecked = false;
+            //             }
+            //         });
+            //         this.paymentData.id = row.id;
+            //         this.paymentData.persist_version = row.persist_version;
+            //     }else{
+            //         // event.currentTarget.classList.remove("active-card");
+            //         this.paymentData.id = "";
+            //         this.paymentData.persist_version = "";
+            //     }
+            //     //解决响应式问题
+            //     // var index = this.tableList.indexOf(row);
+            //     // this.$set(this.tableList,index,row);
+            // }
         },
         watch: {
             tableData: function (val, oldVal) {
