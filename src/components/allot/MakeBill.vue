@@ -245,7 +245,7 @@
                         size="mini">
                 </el-date-picker>
                 <el-select v-model="billData.biz_id" placeholder="请选择业务类型"
-                           filterable clearable size="mini">
+                           filterable clearable size="mini" >
                     <el-option v-for="payItem in payStatList"
                                :key="payItem.biz_id"
                                :label="payItem.biz_name"
@@ -253,7 +253,7 @@
                     </el-option>
                 </el-select>
                 <el-select v-model="billData.pay_mode" placeholder="请选择付款方式"
-                           filterable clearable size="mini">
+                           filterable size="mini" @change="changePayMode">
                     <el-option v-for="(name,k) in payModeList"
                                :key="k"
                                :label="name"
@@ -513,11 +513,17 @@
             }
         },
         methods: {
+            //切换付款方式
+            changePayMode: function(val){
+                this.billData.pay_account_name = "";
+                this.billData.pay_account_id = "";
+                this.billData.pay_account_bank = "";
+            },
             //获取付款方账号
             getPayList: function (value) {
                 this.payLoading = true;
                 var billData = this.billData;
-
+                var interactive_mode = billData.pay_mode !='1' ? '2' : '1';
                 this.$axios({
                     url: "/cfm/normalProcess",
                     method: "post",
@@ -527,7 +533,8 @@
                             query_key: value.trim(),
                             exclude_ids: billData.recv_account_id,
                             page_size: 10000,
-                            page_num: 1
+                            page_num: 1,
+                            interactive_mode: interactive_mode
                         }
                     }
                 }).then((result) => {
@@ -618,9 +625,28 @@
             selectVisible: function (curStatus, target) {
                 if (curStatus) {
                     if (target == "payNumber") {
+                        if(!this.billData.pay_mode){
+                            this.$message({
+                                type:"warning",
+                                message:"请先选择付款方式！",
+                                duration:2000
+                            });
+                            return;
+                        }
                         this.getPayList("");
                     } else {
                         this.getGatherList("");
+                    }
+                }else{
+                    if (target == "payNumber") {
+                        if(!this.billData.pay_mode){
+                            this.$message({
+                                type:"warning",
+                                message:"请先选择付款方式！",
+                                duration:2000
+                            });
+                            return;
+                        }
                     }
                 }
             },

@@ -292,7 +292,7 @@
                     <el-button type="warning" plain size="mini" icon="el-icon-delete"  v-show="searchData.pay_mode==1"
                                @click="cancellation('more')">支付作废
                     </el-button>
-                    <el-button type="warning" size="mini" @click="confirmPay()" v-show="searchData.pay_mode==2">
+                    <el-button type="warning" size="mini" @click="confirmPay('more')" v-show="searchData.pay_mode==2">
                         <span class="transmit-icon"><i></i></span>支付确认
                     </el-button>
                     <el-button type="warning" size="mini" @click="sendBill('more')" v-show="searchData.pay_mode==1">
@@ -333,11 +333,14 @@
                 <span v-text="currentStatus"
                       :class="{'success-color':dialogData.service_status == 4,'defeated-color':dialogData.service_status != 4}"></span>
                 <span v-text="dialogData.create_on"></span>
-                <el-button type="warning" plain size="mini" icon="el-icon-delete"
+                <el-button type="warning" plain size="mini" icon="el-icon-delete" v-show="searchData.pay_mode==1"
                            @click="cancellation">支付作废
                 </el-button>
-                <el-button type="warning" size="mini" @click="sendBill">
+                <el-button type="warning" size="mini" @click="sendBill" v-show="searchData.pay_mode==1">
                     <span class="transmit-icon"><i></i></span>发送
+                </el-button>
+                <el-button type="warning" size="mini" @click="confirmPay" v-show="searchData.pay_mode==2">
+                    <span class="transmit-icon"><i></i></span>支付确认
                 </el-button>
             </div>
             <div class="serial-number">
@@ -632,16 +635,21 @@
                 });
             },
             //支付确认
-            confirmPay: function(){
-               if(this.selectData.length<=0){
-                    this.$message({
-                        type:"warning",
-                        message:"请选择要确认的数据！",
-                        duration:2000
-                    });
-                    return ;
+            confirmPay: function(number){
+                var ids = [];
+                if(number == 'more'){
+                    if(this.selectData.length<=0){
+                            this.$message({
+                                type:"warning",
+                                message:"请选择要确认的数据！",
+                                duration:2000
+                            });
+                            return ;
+                        }
+                        ids= this.selectData;
+                }else{
+                    ids.push(this.dialogData.id);
                 }
-                var ids = this.selectData;
                 this.$axios({
                     url: "/cfm/normalProcess",
                     method: "post",

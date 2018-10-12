@@ -282,12 +282,11 @@
         <!--数据展示区-->
         <section class="table-content" @scroll="paperScroll($event)">
             <el-row>
-                 <!-- @click.native="selectCard($event,card)" :class="{'active-card':card.isChecked}" -->
-                <el-col :span="8" v-for="card in tableList" :key="card.batchno">
+                <el-col :span="8" v-for="card in tableList" :key="card.batchno" @click.native="selectCard($event,card)" :class="{'active-card':card.isChecked}">
                     <el-card class="box-card">
                         <div slot="header" class="head-box">
                             <span class="headline" :title="card.batchno">{{card.batchno}}</span>
-                            <el-button class="right-btn" type="primary" icon="el-icon-view" size="small" @click="lookCard(card)">查看</el-button>
+                            <el-button class="right-btn" type="primary" icon="el-icon-view" size="small" @click.stop="lookCard(card)">查看</el-button>
                         </div>
                         <div class="card-content">
                             <div class="content-box">
@@ -298,8 +297,7 @@
                                 <div class="numBox"><span>{{card.total_num}}</span><p>总笔数</p></div>
                                 <div class="amountBox"><span>{{transitionMoney(card.total_amount)}}</span><p>总金额</p></div>
                             </div>
-                            <!-- <i class="el-icon-success content-check-box" v-show="card.isChecked"></i> -->
-                            <el-checkbox class="content-check-box" @change="setCurrentCard($event,card)" v-model="card.isChecked"></el-checkbox>
+                            <i class="el-icon-success content-check-box" v-show="card.isChecked"></i>
                         </div>
                     </el-card>
                 </el-col>
@@ -555,23 +553,6 @@
                 }).catch(function (error) {
                     console.log(error);
                 });
-            },
-            setCurrentCard: function(val,row){
-                if(val){
-                    this.tableList.forEach(element=>{
-                        if(element.batchno !== row.batchno){
-                            element.isChecked = false;
-                        }
-                    });
-                    this.paymentData.id = row.id;
-                    this.paymentData.persist_version = row.persist_version;
-                }else{
-                    this.paymentData.id = "";
-                    this.paymentData.persist_version = "";
-                }
-                //解决响应式问题
-                var index = this.tableList.indexOf(row);
-                this.$set(this.tableList,index,row);
             },
             //展示格式转换-处理状态
             transitStatus: function (row, column, cellValue, index) {
@@ -863,27 +844,27 @@
                     console.log(error);
                 });
             },
-            // selectCard: function(event,row){
-            //     debugger
-                
-            //     if(!row.isChecked){//即将选中
-            //         // event.currentTarget.classList.add("active-card");
-            //         this.tableList.forEach(element=>{
-            //             if(element.batchno !== row.batchno){
-            //                 element.isChecked = false;
-            //             }
-            //         });
-            //         this.paymentData.id = row.id;
-            //         this.paymentData.persist_version = row.persist_version;
-            //     }else{
-            //         // event.currentTarget.classList.remove("active-card");
-            //         this.paymentData.id = "";
-            //         this.paymentData.persist_version = "";
-            //     }
-            //     //解决响应式问题
-            //     // var index = this.tableList.indexOf(row);
-            //     // this.$set(this.tableList,index,row);
-            // }
+            //选择当前card
+            selectCard: function(event,row){
+                console.log(1111);
+                if(!row.isChecked){//即将选中
+                    this.tableList.forEach(element=>{
+                        if(element.batchno !== row.batchno){
+                            element.isChecked = false;
+                        }
+                    });
+                    this.paymentData.id = row.id;
+                    this.paymentData.persist_version = row.persist_version;
+                    row.isChecked = true;
+                }else{
+                    this.paymentData.id = "";
+                    this.paymentData.persist_version = "";
+                    row.isChecked = false;
+                }
+                //解决响应式问题
+                var index = this.tableList.indexOf(row);
+                this.$set(this.tableList,index,row);
+            }
         },
         watch: {
             tableData: function (val, oldVal) {

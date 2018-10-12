@@ -434,7 +434,7 @@
                 <li class="table-li-title">付款方式</li>
                 <li class="table-li-content table-select">
                     <el-select v-model="editDialogData.pay_mode" placeholder="请选择付款方式"
-                               filterable clearable size="mini">
+                               filterable size="mini" @change="changePayMode">
                         <el-option v-for="(name,k) in payModeList"
                                    :key="k"
                                    :label="name"
@@ -701,10 +701,8 @@
             },
             //当前页数据条数发生变化
             sizeChange: function (val) {
-                this.routerMessage.params = {
-                    page_size: val,
-                    page_num: 1
-                };
+                this.routerMessage.params.page_size = val;
+                this.routerMessage.params.page_num = 1;
                 this.$emit("getCommTable", this.routerMessage);
             },
             //展示格式转换-处理状态
@@ -759,6 +757,12 @@
                 this.businessParams = {};
                 this.businessParams.biz_type = 8;
                 this.businessParams.id = row.id;
+            },
+            //切换付款方式
+            changePayMode: function(val){
+                this.editDialogData.pay_account_name = "";
+                this.editDialogData.pay_account_id = "";
+                this.editDialogData.pay_account_bank = "";
             },
             //编辑
             editBill: function (row) {
@@ -884,7 +888,7 @@
             getPayList: function (value) {
                 this.payLoading = true;
                 var billData = this.editDialogData;
-
+                var interactive_mode = billData.pay_mode !='1' ? '2' : '1';
                 this.$axios({
                     url: "/cfm/normalProcess",
                     method: "post",
@@ -894,7 +898,8 @@
                             query_key: value.trim(),
                             exclude_ids: billData.recv_account_id,
                             page_size: 10000,
-                            page_num: 1
+                            page_num: 1,
+                            interactive_mode: interactive_mode
                         }
                     }
                 }).then((result) => {
@@ -963,9 +968,28 @@
             selectVisible: function (curStatus, target) {
                 if (curStatus) {
                     if (target == "payNumber") {
+                        if(!this.editDialogData.pay_mode){
+                            this.$message({
+                                type:"warning",
+                                message:"请先选择付款方式！",
+                                duration:2000
+                            });
+                            return;
+                        }
                         this.getPayList("");
                     } else {
                         this.getGatherList("");
+                    }
+                }else{
+                    if (target == "payNumber") {
+                        if(!this.editDialogData.pay_mode){
+                            this.$message({
+                                type:"warning",
+                                message:"请先选择付款方式！",
+                                duration:2000
+                            });
+                            return;
+                        }
                     }
                 }
             },
