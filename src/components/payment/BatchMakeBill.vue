@@ -468,7 +468,7 @@
                 </div>
             </div>
         </section>
-        <!--开户行选择弹框-->
+        <!--上传文件弹框-->
         <el-dialog :visible.sync="dialogVisible"
                    width="800px" title="批量上传"
                    top="140px" :close-on-click-modal="false">
@@ -697,6 +697,7 @@
                         message: "上传成功",
                         duration: 2000
                     });
+                    this.errorTipShow = false;
                 }
             },
             //添加上传成功的文件

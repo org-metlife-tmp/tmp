@@ -76,8 +76,8 @@
     #filialePayment {
         .el-dialog__wrapper {
             .el-dialog__body {
-                height: 480px;
-                overflow-y: scroll;
+                max-height: 480px;
+                overflow-y: auto;
             }
         }
     }
@@ -121,7 +121,9 @@
             <el-table :data="tableList" border
                       size="mini"
                       highlight-current-row>
-                <el-table-column prop="pay_account_no" label="付款方账号" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="pool_account_no" label="资金池账户" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="pay_pay_account_no" label="付款方账号"
+                                 :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="recv_account_no" label="收款方账号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="recv_account_bank" label="收款方银行" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="payment_amount" label="收款金额" :show-overflow-tooltip="true"></el-table-column>
@@ -170,7 +172,7 @@
             </el-pagination>
         </div>
         <!--查看弹出框-->
-        <el-dialog title="总公司付款信息"
+        <el-dialog title="分公司付款信息"
                    :visible.sync="dialogVisible"
                    width="900px" top="76px"
                    :close-on-click-modal="false">
@@ -233,6 +235,105 @@
             </ul>
             <BusinessTracking :businessParams="businessParams"></BusinessTracking>
         </el-dialog>
+        <!--编辑弹出框-->
+        <el-dialog title="分公司付款编辑"
+                   :visible.sync="editVisible"
+                   width="900px" top="76px"
+                   :close-on-click-modal="false">
+            <el-form :model="eidtData" size="small"
+                     :label-width="formLabelWidth">
+                <el-row>
+                    <el-col :span="12" v-show="eidtData.pay_account_id">
+                        <el-form-item label="下拨账号">
+                            <el-input v-model="eidtData.pool_account_no" disabled></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12" v-show="eidtData.pay_account_id">
+                        <el-form-item label="下拨金额">
+                            <el-input v-model="eidtData.payment_amount" disabled></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="付款账号">
+                            <el-select v-model="eidtData.pay_account_id" placeholder="请选择付款账号"
+                                       filterable @change="setPayInfo">
+                                <el-option v-for="payItem in payList"
+                                           :key="payItem.acc_id"
+                                           :label="payItem.acc_no"
+                                           :value="payItem.acc_id">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="收款账号">
+                            <el-input v-model="eidtData.recv_account_no" disabled></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="付款方">
+                            <el-input v-model="eidtData.pay_account_name" disabled></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="收款方">
+                            <el-input v-model="eidtData.recv_account_name" disabled></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="开户行">
+                            <el-input v-model="eidtData.pay_account_bank" disabled></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="开户行">
+                            <el-input v-model="eidtData.recv_account_bank" disabled></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="24">
+                        <el-form-item label="金额">
+                            <el-input v-model="eidtData.payment_amount" placeholder="" disabled></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="24">
+                        <el-form-item label="摘要">
+                            <el-input v-model="eidtData.payment_summary" placeholder="" disabled></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="24">
+                        <el-form-item label="附件">
+                            <Upload :emptyFileList="emptyFileList"
+                                    :fileMessage="fileMessage"
+                                    :triggerFile="triggerFile"
+                                    @currentFielList="setFileList"
+                                    :isPending="true"></Upload>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button type="warning" size="mini" plain @click="editVisible = false">取 消</el-button>
+                <el-button type="warning" size="mini" @click="subCurrent">保 存</el-button>
+                <el-button type="warning" size="mini" @click="subFlow">提 交</el-button>
+            </span>
+        </el-dialog>
+        <!--提交弹框-->
+        <el-dialog :visible.sync="innerVisible"
+                   width="50%" title="提交审批流程"
+                   top="76px"
+                   :close-on-click-modal="false">
+            <el-radio-group v-model="selectWorkflow">
+                <el-radio v-for="workflow in workflows"
+                          :key="workflow.define_id"
+                          :label="workflow.define_id"
+                >{{ workflow.workflow_name }}
+                </el-radio>
+            </el-radio-group>
+            <span slot="footer" class="dialog-footer" style="text-align:center">
+                    <el-button type="warning" size="mini" plain @click="innerVisible = false">取 消</el-button>
+                    <el-button type="warning" size="mini" @click="submitFlow">确 定</el-button>
+                </span>
+        </el-dialog>
     </div>
 </template>
 
@@ -251,13 +352,38 @@
             });
 
             this.$emit("getTableData", this.routerMessage);
+
+            //获取付款账号列表
+            this.$axios({
+                url: "/cfm/normalProcess",
+                method: "post",
+                data: {
+                    optype: "branchorgoa_accListByOrg",
+                    params: {}
+                }
+            }).then((result) => {
+                if (result.data.error_msg) {
+                    this.$message({
+                        type: "error",
+                        message: result.data.error_msg,
+                        duration: 2000
+                    });
+                    return;
+                } else {
+                    var data = result.data.data;
+                    this.payList = data;
+                }
+            }).catch(function (error) {
+                console.log(error);
+            })
         },
         mounted: function () {
             var constants = JSON.parse(window.sessionStorage.getItem("constants"));
+
         },
         components: {
             Upload: Upload,
-            BusinessTracking:BusinessTracking
+            BusinessTracking: BusinessTracking
         },
         props: ["isPending", "tableData"],
         data: function () {
@@ -291,15 +417,53 @@
                     5: "审批拒绝"
                 },
                 dialogVisible: false, //弹框数据
-                dialogData: {},
+                dialogData: {
+                    pay_account_no: "",
+                    pay_account_name: "",
+                    pay_account_bank: "",
+                    pay_bank_cnaps: "",
+                    pay_bank_prov: "",
+                    pay_bank_city: "",
+                    recv_account_no: "",
+                    recv_account_name: "",
+                    recv_account_bank: "",
+                    recv_bank_cnaps: "",
+                    recv_bank_prov: "",
+                    recv_bank_city: "",
+                    pay_mode: "",
+                    payment_amount: "",
+                    service_status: "",
+                    payment_summary: ""
+                },
+                editVisible: false,
+                eidtData: {
+                    pool_account_no: "",
+                    payment_amount: "",
+                    pay_account_id: "",
+                    recv_account_no: "",
+                    pay_account_name: "",
+                    recv_account_name: "",
+                    pay_account_bank: "",
+                    recv_account_bank: "",
+                    payment_summary: "",
+                    poll_acc_id: "",
+                    files: []
+                },
+                attrList: {},
+                innerVisible: false, //提交弹框
+                selectWorkflow: "",
+                workflows: [],
+                formLabelWidth: "120px",
+                payList: [], // 下拉框数据
                 emptyFileList: [], //附件
                 fileMessage: {
                     bill_id: "",
-                    biz_type: 9
+                    biz_type: 21
                 },
                 triggerFile: false,
-                businessParams:{ //业务状态追踪参数
-                }
+                businessParams: { //业务状态追踪参数
+                },
+                currData: {}, //
             }
         },
         methods: {
@@ -390,29 +554,238 @@
                 }).catch(() => {
                 });
             },
-
             //查看
-            lookData: function(row){
-                this.dialogVisible = true;
-                var dialogData = this.dialogData;
-                for(var k in row){
-                    if(k == "pay_mode"){
-                        var constants = JSON.parse(window.sessionStorage.getItem("constants"));
-                        dialogData[k] = constants.PayMode[row[k]];
-                    }else{
-                        dialogData[k] = row[k];
+            lookData: function (row) {
+                this.$axios({
+                    url: "/cfm/normalProcess",
+                    method: "post",
+                    data: {
+                        optype: "branchorgoa_detail",
+                        params: {
+                            id: row.id
+                        }
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        });
+                        return;
+                    } else {
+                        var data = result.data.data;
+                        var dialogData = this.dialogData;
+                        for (var k in data) {
+                            if (k == "pay_mode") {
+                                var constants = JSON.parse(window.sessionStorage.getItem("constants"));
+                                dialogData[k] = constants.PayMode[row[k]];
+                            } else {
+                                dialogData[k] = data[k];
+                            }
+                        }
+                        this.dialogVisible = true;
+                        //获取附件列表
+                        this.emptyFileList = [];
+                        this.fileMessage.bill_id = row.id;
+                        this.triggerFile = !this.triggerFile;
+
+                        //业务状态跟踪
+                        this.businessParams = {};
+                        this.businessParams.biz_type = 21;
+                        this.businessParams.id = row.id;
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            },
+            //编辑
+            editData: function (row) {
+                this.$axios({
+                    url: "/cfm/normalProcess",
+                    method: "post",
+                    data: {
+                        optype: "branchorgoa_detail",
+                        params: {
+                            id: row.id
+                        }
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        });
+                        return;
+                    } else {
+                        var data = result.data.data;
+                        this.editVisible = true;
+                        var dialogData = this.eidtData;
+                        for (var k in data) {
+                            dialogData[k] = data[k];
+                        }
+                        //获取附件列表
+                        this.emptyFileList = [];
+                        this.fileMessage.bill_id = row.id;
+                        this.triggerFile = !this.triggerFile;
+
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                })
+            },
+            //选择账号后设置其对应信息
+            setPayInfo: function (payId) {
+                if (payId) {
+                    var payList = this.payList;
+                    for (var i = 0; i < payList.length; i++) {
+                        var item = payList[i];
+                        if (item.acc_id == payId) {
+                            this.$axios({
+                                url: "/cfm/normalProcess",
+                                method: "post",
+                                data: {
+                                    optype: "branchorgoa_poolAccListByBankType",
+                                    params: {
+                                        bank_type: item.bank_type
+                                    }
+                                }
+                            }).then((result) => {
+                                if (result.data.error_msg) {
+                                    this.$message({
+                                        type: "error",
+                                        message: result.data.error_msg,
+                                        duration: 2000
+                                    });
+                                    return;
+                                } else {
+                                    var data = result.data.data;
+                                    this.eidtData.pool_account_no = data.acc_no;
+                                    this.eidtData.pool_account_id = data.acc_id;
+                                }
+                            }).catch(function (error) {
+                                console.log(error);
+                            });
+                            this.eidtData.pay_account_name = item.acc_name;
+                            this.eidtData.pay_account_bank = item.bank_name;
+                            return false;
+                        }
                     }
                 }
             },
-            //编辑
-            editData: function(row){
-                return;
-                this.$router.push({
-                    name: "OAMakeBill",
-                    query: {
-                        id: row.id
+            //保存
+            subCurrent: function () {
+                var params = this.eidtData;
+                this.$axios({
+                    url: "/cfm/normalProcess",
+                    method: "post",
+                    data: {
+                        optype: "branchorgoa_chgBranchPayment",
+                        params: params
                     }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        });
+                        return;
+                    } else {
+                        var data = result.data.data;
+                        this.$message({
+                            type: "success",
+                            message: "保存成功",
+                            duration: 2000
+                        });
+                        this.editVisible = false;
+                        this.$emit("getTableData", this.routerMessage);
+                    }
+                }).catch(function (error) {
+                    console.log(error);
                 });
+            },
+            //提交
+            subFlow: function () {
+                var params = this.eidtData;
+                this.$axios({
+                    url: "/cfm/normalProcess",
+                    method: "post",
+                    data: {
+                        optype: "branchorgoa_presubmit",
+                        params: params
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        });
+                    } else {
+                        var data = result.data.data;
+                        this.eidtData.id = data.brand_payment.id;
+                        this.eidtData.service_status = data.brand_payment.service_status;
+                        this.eidtData.persist_version = data.brand_payment.persist_version;
+                        //设置流程数据
+                        this.selectWorkflow = "";
+                        this.workflows = data.workflows;
+                        this.innerVisible = true;
+                        this.editVisible = false;
+                        this.$emit("getTableData", this.routerMessage);
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            },
+            //提交流程
+            submitFlow: function () {
+                var workflowData = this.eidtData;
+                var params = {
+                    define_id: this.selectWorkflow,
+                    id: workflowData.id,
+                    service_serial_number : workflowData.service_serial_number,
+                    service_status: workflowData.service_status,
+                    persist_version: workflowData.persist_version
+                };
+
+                this.$axios({
+                    url: "/cfm/normalProcess",
+                    method: "post",
+                    data: {
+                        optype: "branchorgoa_submit",
+                        params: params
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                    } else {
+                        var data = result.data.data;
+                        this.innerVisible = false;
+                        this.$message({
+                            type: "success",
+                            message: "提交成功",
+                            duration: 2000
+                        });
+                        this.$emit("getTableData", this.routerMessage);
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                })
+            },
+            //设置当前项上传附件
+            setFileList: function ($event) {
+                this.eidtData.files = [];
+                if ($event.length > 0) {
+                    $event.forEach((item) => {
+                        this.eidtData.files.push(item.id);
+                    })
+                }
             },
         },
         watch: {

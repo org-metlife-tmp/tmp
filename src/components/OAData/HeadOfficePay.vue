@@ -296,7 +296,7 @@
                 emptyFileList: [], //附件
                 fileMessage: {
                     bill_id: "",
-                    biz_type: 9
+                    biz_type: 20
                 },
                 triggerFile: false,
                 businessParams:{ //业务状态追踪参数
