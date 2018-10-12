@@ -479,7 +479,7 @@
                 dateValue: new Date(), //申请时间
                 billData: {
                     biz_id: "", //业务类型
-                    pay_mode: "", //付款方式
+                    pay_mode: "1", //付款方式
                     service_serial_number: "", //单据编号
                     pay_account_name: "", //付款方
                     pay_account_id: "",

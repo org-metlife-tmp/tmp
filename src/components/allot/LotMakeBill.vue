@@ -25,15 +25,16 @@
             .head-select1{
                 position: absolute;
                 top: -38px;
-                left: 0;
+                left: 200px;
                 >*{
                     float: left;
                 }
             }
             .head-select2{
+                widows: 180px;
                 position: absolute;
                 top: -38px;
-                right: 76px;
+                left: 0;
             }
         }
 
@@ -530,7 +531,7 @@
         <div class="top-edit">
             <div class="head-select1">
                 <el-select v-model="billData.pay_account" placeholder="请选择付款方"
-                           filterable clearable size="mini" value-key="acc_id" @change="payAccChange(billData.pay_account)">
+                           filterable size="mini" value-key="acc_id"  @change="payAccChange(billData.pay_account)">
                     <el-option v-for="item in accOptions"
                                 :key="item.acc_id"
                                 :label="item.acc_no"
@@ -547,7 +548,7 @@
                 </el-tooltip>
             </div>
             <el-select class="head-select2" v-model="billData.pay_mode" placeholder="请选择付款方式"
-                           filterable clearable size="mini">
+                           filterable size="mini" @change="changePayMode"> 
                 <el-option v-for="(name,k) in payModeList"
                             :key="k"
                             :label="name"
@@ -769,89 +770,110 @@
             this.triggerFile = !this.triggerFile;
             params.uuid = JSON.parse(window.sessionStorage.getItem("uuid"));
             this.saveParams = params;
-            //获取付款方账户列表(保证他先执行，tip才能带出来)
-            this.$axios({
-                url:"/cfm/commProcess",
-                method:"post",
-                data:{
-                    optype:"account_normallist",
-                    params:{
-                        status:1,
-                        acc_id:""
-                    }
-                }
-            }).then((result) =>{
-                this.accOptions = result.data.data;
-                if(params.id){
-                    this.$axios({
-                        url: "/cfm/normalProcess",
-                        method: "post",
-                        data: {
-                            optype: "dbtbatch_detail",
-                            params: {
-                                id: params.id,
-                                batchno: params.batchno
-                            }
+            if(params.id){
+                this.$axios({
+                    url: "/cfm/normalProcess",
+                    method: "post",
+                    data: {
+                        optype: "dbtbatch_detail",
+                        params: {
+                            id: params.id,
+                            batchno: params.batchno
                         }
-                    }).then((result) => {
-                        if (result.data.error_msg) {
-                            this.$message({
-                                type: "error",
-                                message: result.data.error_msg,
-                                duration: 2000
-                            })
-                        } else {
-                            var data = result.data.data;
-                            //设置数字加千分符和转汉字
-                            this.moneyText = this.$common.transitText(data.total_amount);
-                            data.total_amount = this.$common.transitSeparator(data.total_amount);
-                            data.pay_mode = data.pay_mode+"";
-                            data.pay_account = {
-                                acc_id:data.pay_account_id
-                            }
-                            data.bizObj ={
-                                biz_id: data.biz_id,
-                                biz_name: data.biz_name
-                            }
-                            this.billData = data;
-                            this.saveParams.persist_version = data.persist_version;
-                            //获取附件列表
-                            this.fileModeList = data.attach_info;
-                            var len = this.accOptions.length;
-                            for(var i = 0; i<len;i++){
-                                if(this.accOptions[i].acc_id === this.billData.pay_account_id) {
-                                    this.payAccDetail = this.accOptions[i];
-                                    break;
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                    } else {
+                        var data = result.data.data;
+                        //设置数字加千分符和转汉字
+                        this.moneyText = this.$common.transitText(data.total_amount);
+                        data.total_amount = this.$common.transitSeparator(data.total_amount);
+                        data.pay_mode = data.pay_mode+"";
+                        data.pay_account = {
+                            acc_id:data.pay_account_id,
+                            acc_no:data.pay_account_no
+                        }   
+                        data.bizObj ={
+                            biz_id: data.biz_id,
+                            biz_name: data.biz_name
+                        }
+                        this.billData = data;
+                        this.saveParams.persist_version = data.persist_version;
+                        //获取附件列表
+                        this.fileModeList = data.attach_info;
+                        var len = this.accOptions.length;
+
+                        this.payAccDetail.acc_name = data.pay_account_name;
+                        this.payAccDetail.acc_no = data.pay_account_no;
+                        this.payAccDetail.bank_name = data.pay_account_bank;
+
+                        var interactive_mode = data.pay_mode !='1' ? '2' : '1';
+                        //获取付款方账户列表(保证他先执行，tip才能带出来)
+                        this.$axios({
+                            url:"/cfm/commProcess",
+                            method:"post",
+                            data:{
+                                optype:"account_normallist",
+                                params:{
+                                    status: 1,
+                                    acc_id: "",
+                                    interactive_mode: interactive_mode
                                 }
                             }
-                        }
-                    }).catch(function (error) {
-                        console.log(error);
-                    });
+                        }).then((result) =>{
+                            this.accOptions = result.data.data;
+                            
+                        });
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                });
 
 
-                    this.$axios({
-                        url: "/cfm/normalProcess",
-                        method: "post",
-                        data: {
-                            optype: "dbtbatch_initchgtemp",
-                            params: params
+                this.$axios({
+                    url: "/cfm/normalProcess",
+                    method: "post",
+                    data: {
+                        optype: "dbtbatch_initchgtemp",
+                        params: params
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                    } else {
+                        var data = result.data.data;
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            }else{
+                //获取付款方账户列表(保证他先执行，tip才能带出来)
+                this.$axios({
+                    url:"/cfm/commProcess",
+                    method:"post",
+                    data:{
+                        optype:"account_normallist",
+                        params:{
+                            status: 1,
+                            acc_id: "",
+                            interactive_mode: "1"
                         }
-                    }).then((result) => {
-                        if (result.data.error_msg) {
-                            this.$message({
-                                type: "error",
-                                message: result.data.error_msg,
-                                duration: 2000
-                            })
-                        } else {
-                            var data = result.data.data;
-                        }
-                    }).catch(function (error) {
-                        console.log(error);
-                    });
-                }
-            });
+                    }
+                }).then((result) =>{
+                    this.accOptions = result.data.data;
+                    
+                });
+            }
+            
             //业务类型
             this.$axios({
                 url:"/cfm/commProcess",
@@ -1470,6 +1492,31 @@
             downLoadExcel:function(){
                 this.templateDownLoad(this.currentUpload.download_object_id);
             },
+            //修改付款方式
+            changePayMode: function(val){
+                this.accOptions = [];
+                this.billData.pay_account = "";
+                this.payAccDetail.acc_name = "";
+                this.payAccDetail.acc_no = "";
+                this.payAccDetail.bank_name = "";
+                 var interactive_mode = val !='1' ? '2' : '1';
+                //获取付款方账户列表(保证他先执行，tip才能带出来)
+                this.$axios({
+                    url:"/cfm/commProcess",
+                    method:"post",
+                    data:{
+                        optype:"account_normallist",
+                        params:{
+                            status: 1,
+                            acc_id: "",
+                            interactive_mode: interactive_mode
+                        }
+                    }
+                }).then((result) =>{
+                    this.accOptions = result.data.data;
+                    
+                });
+            }
         },
         watch:{
             fileModeList: function(old,val){
