@@ -118,6 +118,8 @@ import DataManage from '@/components/OAData/DataManage'
 import HeadOfficePay from '@/components/OAData/HeadOfficePay'
 import FilialePayment from '@/components/OAData/FilialePayment'
 import OAMakeBill from '@/components/OAData/OAMakeBill'
+//退票管理
+import RefundDispose from '@/components/RefundTicket/RefundDispose'
 
 
 
@@ -225,6 +227,8 @@ const router = new Router({
                         {path: '/receivables/receive-look-over', name: 'ReceiveLookOver', component: ReceiveLookOver, meta: {requireAuth: true}},
                         //OA数据
                         {path: '/OA-data/data-manage', name: 'DataManage', component: DataManage, meta: {requireAuth: true}},
+                        //退票管理
+                        {path: '/refund-ticket/refund-dispose', name: 'RefundDispose', component: RefundDispose, meta: {requireAuth: true}},
                     ]
                 },
                 //基础样式三（tab页）
@@ -258,6 +262,7 @@ const router = new Router({
                 {
                     path:'/dynamic-tab',name:'DynamicTab',component:DynamicTab,
                     children:[
+                        //交易核对
                         {path: '/payment/deal-check', name: 'DealCheck', component: DealCheck, meta: {requireAuth: true}},
                         //调拨通交易核对
                         {path: '/allot/allot-deal-check', name: 'AllotDealCheck', component: AllotDealCheck, meta: {requireAuth: true}},

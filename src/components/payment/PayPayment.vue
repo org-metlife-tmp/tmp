@@ -212,7 +212,19 @@
                         </el-form-item>
                     </el-col>
 
-                    <el-col :span="24">
+                    <el-col :span="5">
+                        <el-select v-model="searchData.pay_mode" placeholder="请选择付款方式"
+                                   filterable size="mini">
+                            <el-option value="1" label="直联"></el-option>
+                            <el-option value="2" label="网银"></el-option>
+                            <!--<el-option v-for="(item,k) in payModeList"
+                                       :key="k"
+                                       :label="item"
+                                       :value="k">
+                            </el-option>-->
+                        </el-select>
+                    </el-col>
+                    <el-col :span="19">
                         <el-form-item style="margin-bottom:0px">
                             <el-checkbox-group v-model="searchData.service_status">
                                 <el-checkbox label="4" name="type">审批通过</el-checkbox>
@@ -372,6 +384,10 @@
             BusinessTracking:BusinessTracking
         },
         mounted: function () {
+            var constants = JSON.parse(window.sessionStorage.getItem("constants"));
+            if(constants.PayMode){
+                this.payModeList = constants.PayMode;
+            }
         },
         props: ["tableData"],
         data: function () {
@@ -380,7 +396,8 @@
                     optype: "zft_payList",
                     params: {
                         page_size: 7,
-                        page_num: 1
+                        page_num: 1,
+                        pay_mode: 1
                     }
                 },
                 tableList: [], //列表数据
@@ -392,6 +409,7 @@
                     total_num: ""
                 },
                 searchData: { //搜索条件
+                    pay_mode: "1",
                     pay_query_key: "",
                     recv_query_key: "",
                     min: "",
@@ -408,6 +426,7 @@
                 },
                 selectData: [], //列表选中数据
                 selectVersion: [],
+                payModeList: {},
                 dialogVisible: false, //查看弹框数据
                 dialogData: {},
                 currentStatus: "",
@@ -466,7 +485,7 @@
             },
             //更多单据
             goLookOver: function () {
-                this.$router.push("/payment/pay-look-over");
+                this.$router.push("/payment/pay-more-bills");
             },
             //列表选择框改变后
             selectChange: function (val) {

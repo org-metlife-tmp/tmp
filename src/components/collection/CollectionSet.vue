@@ -660,6 +660,8 @@
                             }else{
                                 if (value == "") {
                                     callback(new Error('请填写归集金额'));
+                                }else{
+                                    callback();
                                 }
                             }
                         },
