@@ -36,7 +36,7 @@
         }
 
         /*底部操作按钮*/
-        .edit-btn{
+        .edit-btn {
             text-align: left;
             position: absolute;
             z-index: 9;
@@ -51,29 +51,29 @@
                 margin-left: 10px;
             }
         }
-        .table-content{
+        .table-content {
             height: 350px;
             overflow-y: auto;
-            .el-card:hover{
+            .el-card:hover {
                 border-color: #409EFF;
-                .right-btn{
+                .right-btn {
                     display: inline-block;
                 }
-                .blue{
+                .blue {
                     color: #409EFF;
                 }
             }
-            .el-card{
+            .el-card {
                 width: 92%;
                 margin: 0 auto;
                 margin-bottom: 20px;
                 text-align: left;
                 //顶部
-                .head-box{
+                .head-box {
                     overflow: hidden;
                     line-height: 30px;
                 }
-                .headline{
+                .headline {
                     width: 65%;
                     float: left;
                     overflow: hidden;
@@ -82,65 +82,65 @@
                     text-align: left;
                     color: #8e8e8e;
                 }
-                .right-btn{
+                .right-btn {
                     display: none;
                     float: right;
                     margin-top: 4px;
                 }
-                .content-check-box{
+                .content-check-box {
                     position: absolute;
                     bottom: 10px;
                     right: 10px;
                 }
-                .right-btn.el-button--small{
+                .right-btn.el-button--small {
                     padding: 3px 8px;
                 }
                 //卡片内容
-                .card-content{
+                .card-content {
                     position: relative;
                     text-align: center;
                     padding: 0px 14px;
-                    .content-box{
+                    .content-box {
                         display: flex;
                         flex-flow: row;
                         color: #949494;
-                        >div{
+                        > div {
                             padding: 10px 0;
-                            span{
+                            span {
                                 font-size: 16px;
                                 line-height: 28px;
                             }
-                            p{
+                            p {
                                 font-size: 13px;
                             }
                         }
-                        .numBox{
+                        .numBox {
                             width: 88px;
                         }
-                        .amountBox{
+                        .amountBox {
                             flex: 1;
                         }
                     }
-                    .content-box:first-child{
+                    .content-box:first-child {
                         border-bottom: 1px dotted #dbdbdb;
                     }
 
                 }
             }
         }
-        .dialog-section{
+        .dialog-section {
             padding-bottom: 15px;
             /*弹框表格-分页部分*/
             .inner-botton-pag {
                 width: 100%;
                 height: 8%;
                 margin-top: 51px;
-                .el-pagination{
+                .el-pagination {
                     text-align: center;
                 }
             }
-            .tab-content{
-                height:292px;
+            .tab-content {
+                height: 292px;
             }
             /*汇总数据*/
             .allData {
@@ -189,24 +189,24 @@
                 overflow-y: auto;
             }
         }
-        .el-card{
-            .el-card__header{
+        .el-card {
+            .el-card__header {
                 padding: 0px 14px;
             }
-            .el-card__body{
+            .el-card__body {
                 padding: 0;
             }
         }
     }
 </style>
 <style lang="less">
-    #batchPayment{
-        .el-form--inline .el-form-item{
+    #batchPayment {
+        .el-form--inline .el-form-item {
             width: calc(100% - 10px);
             width: -moz-calc(100% - 10px);
             width: -webkit-calc(100% - 10px);
         }
-        .el-form--inline .el-form-item__content{
+        .el-form--inline .el-form-item__content {
             width: 100%;
         }
     }
@@ -285,18 +285,25 @@
                     <el-card class="box-card">
                         <div slot="header" class="head-box">
                             <span class="headline" :title="card.batchno">{{card.batchno}}</span>
-                            <el-button class="right-btn" type="primary" icon="el-icon-view" size="small" @click="lookCard(card)">查看</el-button>
+                            <el-button class="right-btn" type="primary" icon="el-icon-view" size="small"
+                                       @click="lookCard(card)">查看
+                            </el-button>
                         </div>
                         <div class="card-content">
                             <div class="content-box">
-                                <div class="numBox"><span class="blue">{{card.todo_num}}</span><p>待处理</p></div>
-                                <div class="amountBox"><span class="blue">{{transitionMoney(card.todo_sum)}}</span><p>待处理金额</p></div>
+                                <div class="numBox"><span class="blue">{{card.todo_num}}</span>
+                                    <p>待处理</p></div>
+                                <div class="amountBox"><span class="blue">{{transitionMoney(card.todo_sum)}}</span>
+                                    <p>待处理金额</p></div>
                             </div>
                             <div class="content-box">
-                                <div class="numBox"><span>{{card.total_num}}</span><p>总笔数</p></div>
-                                <div class="amountBox"><span>{{transitionMoney(card.total_amount)}}</span><p>总金额</p></div>
+                                <div class="numBox"><span>{{card.total_num}}</span>
+                                    <p>总笔数</p></div>
+                                <div class="amountBox"><span>{{transitionMoney(card.total_amount)}}</span>
+                                    <p>总金额</p></div>
                             </div>
-                            <el-checkbox class="content-check-box" @change="setCurrentCard($event,card)" v-model="card.isChecked"></el-checkbox>
+                            <el-checkbox class="content-check-box" @change="setCurrentCard($event,card)"
+                                         v-model="card.isChecked"></el-checkbox>
                         </div>
                     </el-card>
                 </el-col>
@@ -336,11 +343,13 @@
                             <el-col :span="8">
                                 <el-form-item>
                                     <el-col :span="11">
-                                        <el-input v-model="searchDetailData.min" clearable placeholder="最小金额"></el-input>
+                                        <el-input v-model="searchDetailData.min" clearable
+                                                  placeholder="最小金额"></el-input>
                                     </el-col>
                                     <el-col class="line" :span="2">-</el-col>
                                     <el-col :span="11">
-                                        <el-input v-model="searchDetailData.max" clearable placeholder="最大金额"></el-input>
+                                        <el-input v-model="searchDetailData.max" clearable
+                                                  placeholder="最大金额"></el-input>
                                     </el-col>
                                 </el-form-item>
                             </el-col>
@@ -358,9 +367,12 @@
                               border size="mini"
                               @selection-change="selectChange">
                         <el-table-column type="selection" width="38"></el-table-column>
-                        <el-table-column prop="recv_account_name" label="收款户名" :show-overflow-tooltip="true"></el-table-column>
-                        <el-table-column prop="recv_account_no" label="收款账号" :show-overflow-tooltip="true"></el-table-column>
-                        <el-table-column prop="recv_account_bank" label="收款行" :show-overflow-tooltip="true"></el-table-column>
+                        <el-table-column prop="recv_account_name" label="收款户名"
+                                         :show-overflow-tooltip="true"></el-table-column>
+                        <el-table-column prop="recv_account_no" label="收款账号"
+                                         :show-overflow-tooltip="true"></el-table-column>
+                        <el-table-column prop="recv_account_bank" label="收款行"
+                                         :show-overflow-tooltip="true"></el-table-column>
                         <el-table-column prop="payment_amount" label="金额" :show-overflow-tooltip="true"
                                          :formatter="transitAmount"></el-table-column>
                         <el-table-column prop="pay_status" label="业务状态" :show-overflow-tooltip="true"
@@ -373,10 +385,12 @@
                             <el-button type="warning" plain size="mini" icon="el-icon-delete"
                                        @click="cancellation('more')">支付作废
                             </el-button>
-                            <el-button type="warning" size="mini" @click="" v-show="searchData.pay_mode == '1'">
+                            <el-button type="warning" size="mini" @click="sendlation"
+                                       v-show="searchData.pay_mode == '1'">
                                 <span class="transmit-icon"><i></i></span>发送
                             </el-button>
-                            <el-button type="warning" size="mini" @click="affirmBill('more')" v-show="searchData.pay_mode == '2'">
+                            <el-button type="warning" size="mini" @click="affirmBill('more')"
+                                       v-show="searchData.pay_mode == '2'">
                                 <span class="transmit-icon"><i></i></span>确认
                             </el-button>
                         </div>
@@ -431,7 +445,7 @@
         },
         components: {
             Upload: Upload,
-            BusinessTracking:BusinessTracking
+            BusinessTracking: BusinessTracking
         },
         props: ["tableData"],
         data: function () {
@@ -462,7 +476,7 @@
                 },
                 tableList: [],
                 dialogVisible: false,
-                detailTableList:[],
+                detailTableList: [],
                 pagDeSize: 8, //弹窗分页数据
                 pagDeTotal: 1,
                 pagDeCurrent: 1,
@@ -470,8 +484,8 @@
                 payVisible: false,//支付作废
                 paymentData: {},
                 selectData: [], //要作废的数据
-                currentData:{},//当前选中的一条数据
-                pagCurrent:1,//当前列表页
+                currentData: {},//当前选中的一条数据
+                pagCurrent: 1,//当前列表页
             }
         },
         methods: {
@@ -488,11 +502,11 @@
                 this.$emit("getCommTable", this.routerMessage);
             },
             //展示格式转换-金额
-            transitionMoney: function(num){
+            transitionMoney: function (num) {
                 return this.$common.transitSeparator(num);
             },
             //查看
-            lookCard: function(row){
+            lookCard: function (row) {
                 this.searchDetailData.batchno = row.batchno;
                 this.getDetailTable(this.searchDetailData);
                 this.currentData = row;
@@ -501,7 +515,7 @@
             getDetailTable: function (params) {
                 params.page_size = params.page_size ? params.page_size : 7;
                 params.page_num = params.page_num ? params.page_num : 1;
-                params.pay_status = [0,2];
+                params.pay_status = [0, 2];
                 this.$axios({
                     url: "/cfm/normalProcess",
                     method: "post",
@@ -528,23 +542,23 @@
                     console.log(error);
                 });
             },
-            setCurrentCard: function(val,row){
-                if(val){
-                    this.tableList.forEach(element=>{
-                        if(element.batchno !== row.batchno){
+            setCurrentCard: function (val, row) {
+                if (val) {
+                    this.tableList.forEach(element => {
+                        if (element.batchno !== row.batchno) {
                             element.isChecked = false;
                         }
                     });
                     this.paymentData.id = row.id;
                     this.paymentData.persist_version = row.persist_version;
                     this.paymentData.batchno = row.batchno;
-                }else{
+                } else {
                     this.paymentData.id = "";
                     this.paymentData.persist_version = "";
                 }
                 //解决响应式问题
                 var index = this.tableList.indexOf(row);
-                this.$set(this.tableList,index,row);
+                this.$set(this.tableList, index, row);
             },
             //展示格式转换-处理状态
             transitStatus: function (row, column, cellValue, index) {
@@ -574,32 +588,32 @@
             },
 
             //支付作废
-            cancellation:function(number){
+            cancellation: function (number) {
                 this.paymentData.ids = [];
                 this.paymentData.feed_back = "";
                 if (number == "more") {
                     var selData = this.selectData;
-                    if(selData.length<1){
+                    if (selData.length < 1) {
                         this.$message({
-                            type:"warning",
-                            message:"请选择要作废的数据！",
-                            duration:2000
+                            type: "warning",
+                            message: "请选择要作废的数据！",
+                            duration: 2000
                         });
                         return;
                     }
                     this.paymentData.id = this.currentData.id;
                     this.paymentData.batchno = selData[0].batchno;
                     this.paymentData.persist_version = this.currentData.persist_version;
-                    selData.forEach(element =>{
+                    selData.forEach(element => {
                         this.paymentData.ids.push(element.detail_id);
                     });
                     this.paymentData.number = "more";
-                }else{
-                    if(!this.paymentData.id){
+                } else {
+                    if (!this.paymentData.id) {
                         this.$message({
-                            type:"warning",
-                            message:"请选择一条作废数据！",
-                            duration:2000
+                            type: "warning",
+                            message: "请选择一条作废数据！",
+                            duration: 2000
                         });
                         return;
                     }
@@ -607,12 +621,12 @@
                 this.payVisible = true;
             },
             //确认支付作废
-            confirmcancell: function(){
-                if(!this.paymentData.feed_back){
+            confirmcancell: function () {
+                if (!this.paymentData.feed_back) {
                     this.$message({
-                        type:"warning",
-                        message:"请输入作废原因！",
-                        duration:2000
+                        type: "warning",
+                        message: "请输入作废原因！",
+                        duration: 2000
                     });
                     return;
                 }
@@ -640,19 +654,19 @@
                             duration: 2000
                         });
                         this.payVisible = false;
-                        if(optype=='zftbatch_payOff'){//批次作废
+                        if (optype == 'zftbatch_payOff') {//批次作废
                             this.pagCurrent = 1;
                             this.routerMessage.params.page_size = 9;
                             this.$emit("getCommTable", this.routerMessage);
                             this.paymentData = {};
                         }
-                        else{//批量作废
+                        else {//批量作废
                             this.selectData = [];
-                            var ids= this.paymentData.ids;
-                            if(ids.length === this.pagDeTotal){//批量全部作废
+                            var ids = this.paymentData.ids;
+                            if (ids.length === this.pagDeTotal) {//批量全部作废
                                 this.dialogVisible = false;
                                 this.paymentData = {};
-                            }else{
+                            } else {
                                 this.getDetailTable(this.searchDetailData);
                                 this.paymentData.ids = [];
                                 this.currentData.persist_version = data.persist_version;
@@ -670,34 +684,34 @@
             },
 
             //确认
-            affirmBill: function(number){
+            affirmBill: function (number) {
                 var optype = "";
                 var params = {
                     ids: []
                 }
                 if (number == "more") {
                     var selData = this.selectData;
-                    if(selData.length<1){
+                    if (selData.length < 1) {
                         this.$message({
-                            type:"warning",
-                            message:"请选择要作废的数据！",
-                            duration:2000
+                            type: "warning",
+                            message: "请选择要作废的数据！",
+                            duration: 2000
                         });
                         return;
                     }
                     // this.paymentData.id = this.currentData.id;
                     params.batchno = selData[0].batchno;
                     params.persist_version = this.currentData.persist_version;
-                    selData.forEach(element =>{
+                    selData.forEach(element => {
                         params.ids.push(element.detail_id);
                     });
                     optype = "zftbatch_payokbyids";
-                }else{
-                    if(!this.paymentData.id){
+                } else {
+                    if (!this.paymentData.id) {
                         this.$message({
-                            type:"warning",
-                            message:"请选择一条作废数据！",
-                            duration:2000
+                            type: "warning",
+                            message: "请选择一条作废数据！",
+                            duration: 2000
                         });
                         return;
                     }
@@ -732,12 +746,12 @@
                         this.routerMessage.params.page_size = 9;
                         this.$emit("getCommTable", this.routerMessage);
                         this.paymentData = {};
-                        if(optype=='zftbatch_payok'){//批次确认
-                        } else{//批量确认
+                        if (optype == 'zftbatch_payok') {//批次确认
+                        } else {//批量确认
                             this.selectData = [];
-                            var ids= params.ids;
-                            if(ids.length === this.pagDeTotal){
-                            }else{
+                            var ids = params.ids;
+                            if (ids.length === this.pagDeTotal) {
+                            } else {
                                 this.paymentData.ids = [];
                                 this.currentData.persist_version = data.persist_version;
                             }
@@ -748,9 +762,66 @@
                     console.log(error);
                 });
             },
+            //发送
+            sendlation: function (number) {
+                this.paymentData.ids = [];
+                var selData = this.selectData;
+                if (selData.length < 1) {
+                    this.$message({
+                        type: "warning",
+                        message: "请选择要发送的数据！",
+                        duration: 2000
+                    });
+                    return;
+                }
+                this.paymentData.id = this.currentData.id;
+                this.paymentData.persist_version = this.currentData.persist_version;
+                selData.forEach(element => {
+                    this.paymentData.ids.push(element.detail_id);
+                });
+
+                var optype = 'zftbatch_sendpaylist';
+                this.$axios({
+                    url: "/cfm/normalProcess",
+                    method: "post",
+                    data: {
+                        optype: optype,
+                        params: this.paymentData
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                    } else {
+                        var data = result.data.data;
+                        this.$message({
+                            type: "success",
+                            message: "数据已发送！",
+                            duration: 2000
+                        });
+                        this.selectData = [];
+                        var detail_ids = this.paymentData.ids;
+                        if (detail_ids.length === this.pagDeTotal) {//批量全部发送
+                            this.dialogVisible = false;
+                            this.paymentData = [];
+                        } else {
+                            this.searchDetailData.page_num = 1;
+                            this.getDetailTable(this.searchDetailData);
+                            this.paymentData.detail_ids = [];
+                            this.currentData.persist_version = data.persist_version;
+                        }
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                });
+
+            },
 
             //查看弹框关闭
-            closeLookDialog: function(){
+            closeLookDialog: function () {
                 this.pagCurrent = 1;
                 this.routerMessage.params.page_size = 9;
                 this.$emit("getCommTable", this.routerMessage);
@@ -758,12 +829,12 @@
                 this.searchDetailData = {};
             },
             //更多单据
-            goMoreBills:function(){
+            goMoreBills: function () {
                 this.$router.push("/payment/batch-more-bills");
             },
-            paperScroll: function(e){
+            paperScroll: function (e) {
                 var target = e.target;
-                if(target.scrollTop + target.offsetHeight >= target.scrollHeight){
+                if (target.scrollTop + target.offsetHeight >= target.scrollHeight) {
                     //滚动加搜索条件
                     var searchData = this.searchData;
                     searchData.start_date = this.dateValue ? this.dateValue[0] : "";
@@ -771,7 +842,7 @@
                     for (var k in searchData) {
                         this.routerMessage.params[k] = searchData[k];
                     }
-                    this.pagCurrent ++;
+                    this.pagCurrent++;
                     this.routerMessage.params.page_size = this.pagCurrent * 9;
                     this.$emit("getCommTable", this.routerMessage);
                 }
@@ -782,13 +853,13 @@
                 // this.pagSize = val.page_size;
                 // this.pagTotal = val.total_line;
                 // this.pagCurrent = val.page_num;
-                if(val.total_line < val.page_size && this.pagCurrent>1){
+                if (val.total_line < val.page_size && this.pagCurrent > 1) {
                     this.$message({
-                        type:"warning",
-                        message:"没有可加载的数据！",
-                        duration:2000
+                        type: "warning",
+                        message: "没有可加载的数据！",
+                        duration: 2000
                     });
-                    this.pagCurrent --;
+                    this.pagCurrent--;
                 }
                 this.tableList = val.data;
 

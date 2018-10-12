@@ -147,6 +147,12 @@
                             <el-button type="primary" icon="el-icon-edit" size="mini"
                                        @click="editData(scope.row)"></el-button>
                         </el-tooltip>
+                        <el-tooltip content="作废" placement="bottom" effect="light"
+                                    :enterable="false" :open-delay="500"
+                                    v-if="isPending">
+                            <el-button type="primary" icon="el-icon-minus" size="mini"
+                                       @click="cancellationData(scope.row)"></el-button>
+                        </el-tooltip>
                         <el-tooltip content="撤回" placement="bottom" effect="light"
                                     :enterable="false" :open-delay="500"
                                     v-if="!isPending">
@@ -552,6 +558,55 @@
                         console.log(error);
                     })
                 }).catch(() => {
+                });
+            },
+            //作废
+            cancellationData: function (row) {
+                this.$prompt('请输入作废原因', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    title: "作废原因",
+                    inputValidator: function(value){
+                        if(!value){
+                            return false;
+                        }else{
+                            return true;
+                        }
+                    },
+                    inputErrorMessage: '请输入作废原因'
+                }).then(({ value }) => {
+                    this.$axios({
+                        url: "/cfm/normalProcess",
+                        method: "post",
+                        data: {
+                            optype: "branchorgoa_payOff",
+                            params: {
+                                ids: [row.id],
+                                persist_version: [row.persist_version],
+                                feed_back: value
+                            }
+                        }
+                    }).then((result) => {
+                        if (result.data.error_msg) {
+                            this.$message({
+                                type: "error",
+                                message: result.data.error_msg,
+                                duration: 2000
+                            });
+                            return;
+                        } else {
+                            this.$message({
+                                type: "success",
+                                message: "作废成功",
+                                duration: 2000
+                            });
+                            this.$emit("getTableData", this.routerMessage);
+                        }
+                    }).catch(function (error) {
+                        console.log(error);
+                    })
+                }).catch(() => {
+
                 });
             },
             //查看
