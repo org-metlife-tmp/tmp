@@ -11,6 +11,10 @@
             top: -56px;
             left: -21px;
         }
+        
+        .table-content{
+            height:273px;
+        }
 
         /*搜索区*/
         .search-setion {
@@ -229,7 +233,8 @@
         <!--数据展示区-->
         <section class="table-content">
             <el-table :data="tableList"
-                      border size="mini">
+                      border size="mini"
+                      height="100%">
                 <el-table-column prop="pay_mode" label="付款方式" :show-overflow-tooltip="true"
                                  :formatter="transitPayMode"></el-table-column>
                 <el-table-column prop="pay_account_no" label="付款方账号" :show-overflow-tooltip="true"></el-table-column>
