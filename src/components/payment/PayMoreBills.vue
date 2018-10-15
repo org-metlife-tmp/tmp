@@ -227,7 +227,19 @@
                                       placeholder="请输入收款方名称或账号"></el-input>
                         </el-form-item>
                     </el-col>
-                    <el-col :span="6">
+                    <el-col :span="4">
+                        <el-form-item>
+                            <el-select v-model="searchData.pay_mode" placeholder="请选择付款方式"
+                                       filterable size="mini">
+                                <el-option v-for="(item,k) in payModeList"
+                                           :key="k"
+                                           :label="item"
+                                           :value="k">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="5">
                         <el-form-item>
                             <el-col :span="11">
                                 <el-input v-model="searchData.min" clearable placeholder="最小金额"></el-input>
@@ -622,6 +634,10 @@
             if(bankAllTypeList){
                 this.bankAllTypeList = bankAllTypeList;
             }
+            var constants = JSON.parse(window.sessionStorage.getItem("constants"));
+            if (constants.PayMode) {
+                this.payModeList = constants.PayMode;
+            }
         },
         components: {
             Upload: Upload,
@@ -640,12 +656,14 @@
                 searchData: { //搜索条件
                     pay_query_key: "",
                     recv_query_key: "",
+                    pay_mode: "",
                     min: "",
                     max: "",
                     service_status: [],
                     start_date: "",
                     end_date: ""
                 },
+                payModeList: {}, //付款方式选择列表
                 tableList: [], //列表数据
                 pagSize: 8, //分页数据
                 pagTotal: 1,

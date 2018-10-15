@@ -1,5 +1,6 @@
 <style lang="less" type="text/less">
     #batchMakeBill {
+        position: relative;
         min-width: 980px;
         width: 80%;
         height: 100%;
@@ -383,7 +384,8 @@
             <!--表单顶部-->
             <div class="title-date">
                 <el-select v-model="billData.pay_acc_id" placeholder="请选择付款方"
-                           filterable clearable size="mini">
+                           filterable clearable size="mini"
+                           @visible-change="getOptions">
                     <el-option v-for="item in accOptions"
                                :key="item.acc_id"
                                :label="item.acc_no"
@@ -544,20 +546,6 @@
     export default {
         name: "PayMakeBill",
         created: function () {
-            //获取付款方账户列表
-            this.$axios({
-                url: "/cfm/commProcess",
-                method: "post",
-                data: {
-                    optype: "account_normallist",
-                    params: {
-                        status: 1,
-                        acc_id: ""
-                    }
-                }
-            }).then((result) => {
-                this.accOptions = result.data.data;
-            });
 
             //获取单据数据
             var hash = window.location.hash.split("?")[1];
@@ -683,6 +671,30 @@
             }
         },
         methods: {
+            //获取付款方账号列表
+            getOptions: function(status){
+                if(status){
+                    var pay_mode = this.billData.pay_mode;
+                    //获取付款方账户列表
+                    this.$axios({
+                        url:"/cfm/commProcess",
+                        method:"post",
+                        data:{
+                            optype:"account_normallist",
+                            params:{
+                                status:1,
+                                interactive_mode: pay_mode ? (pay_mode == "1" ? "1" : "2") : ""
+                            }
+                        }
+                    }).then((result) =>{
+                        if (result.data.error_msg) {
+
+                        } else {
+                            this.accOptions = result.data.data;
+                        }
+                    });
+                }
+            },
             //设置当前项上传附件
             setFileList: function ($event) {
                 this.fileLength = "";

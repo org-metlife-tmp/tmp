@@ -213,16 +213,18 @@
                     </el-col>
 
                     <el-col :span="5">
-                        <el-select v-model="searchData.pay_mode" placeholder="请选择付款方式"
-                                   filterable size="mini" @change="queryData">
-                            <el-option value="1" label="直联"></el-option>
-                            <el-option value="2" label="网银"></el-option>
-                            <!--<el-option v-for="(item,k) in payModeList"
-                                       :key="k"
-                                       :label="item"
-                                       :value="k">
-                            </el-option>-->
-                        </el-select>
+                        <el-form-item>
+                            <el-select v-model="searchData.pay_mode" placeholder="请选择付款方式"
+                                       filterable size="mini" @change="queryData">
+                                <el-option value="1" label="直联"></el-option>
+                                <el-option value="2" label="网银"></el-option>
+                                <!--<el-option v-for="(item,k) in payModeList"
+                                           :key="k"
+                                           :label="item"
+                                           :value="k">
+                                </el-option>-->
+                            </el-select>
+                        </el-form-item>
                     </el-col>
                     <el-col :span="19">
                         <el-form-item style="margin-bottom:0px">

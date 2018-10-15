@@ -167,7 +167,19 @@
                                       placeholder="请输入收款方名称或账号"></el-input>
                         </el-form-item>
                     </el-col>
-                    <el-col :span="6">
+                    <el-col :span="4">
+                        <el-form-item>
+                            <el-select v-model="searchData.pay_mode" placeholder="请选择付款方式"
+                                       filterable size="mini">
+                                <el-option v-for="(item,k) in payModeList"
+                                           :key="k"
+                                           :label="item"
+                                           :value="k">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="5">
                         <el-form-item>
                             <el-col :span="11">
                                 <el-input v-model="searchData.min" clearable placeholder="最小金额"></el-input>
@@ -299,7 +311,10 @@
             this.$emit("getCommTable", this.routerMessage);
         },
         mounted: function () {
-
+            var constants = JSON.parse(window.sessionStorage.getItem("constants"));
+            if (constants.PayMode) {
+                this.payModeList = constants.PayMode;
+            }
         },
         props: ["tableData"],
         components: {
@@ -324,6 +339,7 @@
                     start_date: "",
                     end_date: ""
                 },
+                payModeList: {}, //付款方式选择列表
                 tableList: [], //列表数据
                 pagSize: 8, //分页数据
                 pagTotal: 1,

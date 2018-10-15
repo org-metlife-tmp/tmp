@@ -262,7 +262,8 @@
             <!--表单顶部-->
             <div class="title-date">
                 <el-select v-model="billData.pay_account_id" placeholder="请选择付款方"
-                           filterable clearable size="mini">
+                           filterable clearable size="mini"
+                           @visible-change="getOptions">
                     <el-option v-for="item in accOptions"
                                :key="item.acc_id"
                                :label="item.acc_no"
@@ -478,24 +479,6 @@
     export default {
         name: "PayMakeBill",
         created: function(){
-            //获取付款方账户列表
-            this.$axios({
-                url:"/cfm/commProcess",
-                method:"post",
-                data:{
-                    optype:"account_normallist",
-                    params:{
-                        status:1,
-                        acc_id:""
-                    }
-                }
-            }).then((result) =>{
-                if (result.data.error_msg) {
-
-                } else {
-                    this.accOptions = result.data.data;
-                }
-            });
             //获取户名和账号的下拉列表值
             this.getPayerSelect();
             //获取单据数据
@@ -639,6 +622,30 @@
             }
         },
         methods: {
+            //获取付款方账号列表
+            getOptions: function(status){
+                if(status){
+                    var pay_mode = this.billData.pay_mode;
+                    //获取付款方账户列表
+                    this.$axios({
+                        url:"/cfm/commProcess",
+                        method:"post",
+                        data:{
+                            optype:"account_normallist",
+                            params:{
+                                status:1,
+                                interactive_mode: pay_mode ? (pay_mode == "1" ? "1" : "2") : ""
+                            }
+                        }
+                    }).then((result) =>{
+                        if (result.data.error_msg) {
+
+                        } else {
+                            this.accOptions = result.data.data;
+                        }
+                    });
+                }
+            },
             //获取户名和账号的下拉列表值
             getPayerSelect: function(){
                 //获取收款方户名列表
@@ -1036,7 +1043,8 @@
                         this.billData.biz_name = payStatList[i].biz_name;
                     }
                 }
-            }
+            },
+
         }
     }
 </script>
