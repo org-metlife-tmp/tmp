@@ -274,6 +274,16 @@
                             <el-button type="primary" plain @click="queryData" size="mini">搜索</el-button>
                         </el-form-item>
                     </el-col>
+                    <el-col :span="24">
+                        <el-form-item style="margin-bottom:0px">
+                            <el-checkbox-group v-model="searchData.service_status">
+                                <el-checkbox v-for="(name,k) in statusList"
+                                             :label="k" name="type" :key="k">
+                                    {{ name }}
+                                </el-checkbox>
+                            </el-checkbox-group>
+                        </el-form-item>
+                    </el-col>
                 </el-row>
             </el-form>
         </div>
@@ -482,6 +492,10 @@
                 pagCurrent:1,//当前列表页
                 pagTotal:"",//列表总数
                 payModeList: {}, //付款方式下拉框数据
+                statusList: {
+                    4: "审批通过",
+                    8: "已失败"
+                },
             }
         },
         methods: {
