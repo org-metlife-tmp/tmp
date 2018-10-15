@@ -214,6 +214,18 @@
 
 <template>
     <div id="batchPayment">
+        <div class="button-list-left">
+            <el-select v-model="searchData.pay_mode" placeholder="请选择付款方式"
+                       filterable size="mini" @change="queryData">
+                <el-option value="1" label="直联"></el-option>
+                <el-option value="2" label="网银"></el-option>
+                <!--<el-option v-for="(item,k) in payModeList"
+                           :key="k"
+                           :label="item"
+                           :value="k">
+                </el-option>-->
+            </el-select>
+        </div>
         <!--搜索区-->
         <div class="search-setion">
             <el-form :inline="true" :model="searchData" size="mini">
@@ -244,18 +256,6 @@
                             <el-input v-model="searchData.recv_query_key" clearable
                                       placeholder="请输入收款方名称或账号"></el-input>
                         </el-form-item>
-                    </el-col>
-                    <el-col :span="4">
-                        <el-select v-model="searchData.pay_mode" placeholder="请选择付款方式"
-                                   filterable size="mini" style="width:90%" @change="queryData">
-                            <el-option value="1" label="直联"></el-option>
-                            <el-option value="2" label="网银"></el-option>
-                            <!--<el-option v-for="(item,k) in payModeList"
-                                       :key="k"
-                                       :label="item"
-                                       :value="k">
-                            </el-option>-->
-                        </el-select>
                     </el-col>
                     <el-col :span="5">
                         <el-form-item>
@@ -314,9 +314,9 @@
                 <span class="transmit-icon"><i></i></span>发送
             </el-button>-->
             <el-button type="warning" size="mini" @click="affirmBill" v-show="searchData.pay_mode == '2'">
-                <span class="transmit-icon"><i></i></span>确认
+                <span class="transmit-icon"><i></i></span>支付确认
             </el-button>
-            <el-button type="warning" plain size="mini" icon="el-icon-delete"
+            <el-button type="warning" plain size="mini" icon="el-icon-delete" v-show="searchData.pay_mode == '1'"
                        @click="cancellation">支付作废
             </el-button>
             <el-button type="warning" plain size="mini" @click="goMoreBills">
@@ -382,7 +382,7 @@
                     </el-table>
                     <div class="allData">
                         <div class="btn-left">
-                            <el-button type="warning" plain size="mini" icon="el-icon-delete"
+                            <el-button type="warning" plain size="mini" icon="el-icon-delete" v-show="searchData.pay_mode == '1'"
                                        @click="cancellation('more')">支付作废
                             </el-button>
                             <el-button type="warning" size="mini" @click="sendlation"
@@ -391,7 +391,7 @@
                             </el-button>
                             <el-button type="warning" size="mini" @click="affirmBill('more')"
                                        v-show="searchData.pay_mode == '2'">
-                                <span class="transmit-icon"><i></i></span>确认
+                                <span class="transmit-icon"><i></i></span>支付确认
                             </el-button>
                         </div>
                     </div>
@@ -683,7 +683,7 @@
                 this.selectData = selectVal;
             },
 
-            //确认
+            //支付确认
             affirmBill: function (number) {
                 var optype = "";
                 var params = {

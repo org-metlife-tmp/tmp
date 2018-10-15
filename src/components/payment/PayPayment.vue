@@ -5,6 +5,13 @@
         box-sizing: border-box;
         position: relative;
 
+        /*顶部按钮*/
+        .button-list-left {
+            position: absolute;
+            top: -56px;
+            left: -21px;
+        }
+
         /*搜索区*/
         .search-setion {
             text-align: left;
@@ -164,6 +171,18 @@
 
 <template>
     <div id="payPayment">
+        <div class="button-list-left">
+            <el-select v-model="searchData.pay_mode" placeholder="请选择付款方式"
+                       filterable size="mini" @change="queryData">
+                <el-option value="1" label="直联"></el-option>
+                <el-option value="2" label="网银"></el-option>
+                <!--<el-option v-for="(item,k) in payModeList"
+                           :key="k"
+                           :label="item"
+                           :value="k">
+                </el-option>-->
+            </el-select>
+        </div>
         <!--搜索区-->
         <div class="search-setion">
             <el-form :inline="true" :model="searchData" size="mini">
@@ -211,22 +230,7 @@
                             <el-button type="primary" plain @click="queryData" size="mini">搜索</el-button>
                         </el-form-item>
                     </el-col>
-
-                    <el-col :span="5">
-                        <el-form-item>
-                            <el-select v-model="searchData.pay_mode" placeholder="请选择付款方式"
-                                       filterable size="mini" @change="queryData">
-                                <el-option value="1" label="直联"></el-option>
-                                <el-option value="2" label="网银"></el-option>
-                                <!--<el-option v-for="(item,k) in payModeList"
-                                           :key="k"
-                                           :label="item"
-                                           :value="k">
-                                </el-option>-->
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="19">
+                    <el-col :span="24">
                         <el-form-item style="margin-bottom:0px">
                             <el-checkbox-group v-model="searchData.service_status">
                                 <el-checkbox label="4" name="type">审批通过</el-checkbox>
@@ -269,14 +273,14 @@
                     <el-button type="warning" plain size="mini" @click="goLookOver">
                         更多单据<i class="el-icon-arrow-right el-icon--right"></i>
                     </el-button>
-                    <el-button type="warning" plain size="mini" icon="el-icon-delete"
+                    <el-button type="warning" plain size="mini" icon="el-icon-delete" v-show="searchData.pay_mode == '1'"
                                @click="cancellation('more')">支付作废
                     </el-button>
                     <el-button type="warning" size="mini" @click="sendBill('more')" v-show="searchData.pay_mode == '1'">
                         <span class="transmit-icon"><i></i></span>发送
                     </el-button>
                     <el-button type="warning" size="mini" @click="affirmBill" v-show="searchData.pay_mode == '2'">
-                        <span class="transmit-icon"><i></i></span>确认
+                        <span class="transmit-icon"><i></i></span>支付确认
                     </el-button>
                 </div>
                 <span>总笔数：</span>
@@ -315,11 +319,14 @@
                 <span v-text="currentStatus"
                       :class="{'success-color':dialogData.service_status == 4,'defeated-color':dialogData.service_status != 4}"></span>
                 <span v-text="dialogData.create_on"></span>
-                <el-button type="warning" plain size="mini" icon="el-icon-delete"
+                <el-button type="warning" plain size="mini" icon="el-icon-delete" v-show="searchData.pay_mode == '1'"
                            @click="cancellation">支付作废
                 </el-button>
-                <el-button type="warning" size="mini" @click="sendBill">
+                <el-button type="warning" size="mini" @click="sendBill" v-show="searchData.pay_mode == '1'">
                     <span class="transmit-icon"><i></i></span>发送
+                </el-button>
+                <el-button type="warning" size="mini" @click="affirmBill('one')" v-show="searchData.pay_mode == '2'">
+                    <span class="transmit-icon"><i></i></span>支付确认
                 </el-button>
             </div>
             <div class="serial-number">
@@ -635,27 +642,35 @@
                     console.log(error);
                 });
             },
-            //确认
-            affirmBill: function () {
+            //支付确认
+            affirmBill: function (number) {
                 var params = {
                     ids: []
                 };
                 var selectVersion = this.selectVersion;
                 var selectData = this.selectData;
-                if (selectData.length > 0) {
-                    selectData.forEach((item,index) => {
-                        params.ids.push({
-                            id: item,
-                            persist_version: selectVersion[index]
+
+                if (number != "one") { //发送多条
+                    if (selectData.length > 0) {
+                        selectData.forEach((item,index) => {
+                            params.ids.push({
+                                id: item,
+                                persist_version: selectVersion[index]
+                            })
                         })
-                    })
-                } else {
-                    this.$message({
-                        type: "warning",
-                        message: "请选择要确认的单据",
-                        duration: 2000
+                    } else {
+                        this.$message({
+                            type: "warning",
+                            message: "请选择要确认的单据",
+                            duration: 2000
+                        });
+                        return;
+                    }
+                } else { //发送一条
+                    params.ids.push({
+                        id:this.dialogData.id,
+                        persist_version:this.dialogData.persist_version,
                     });
-                    return;
                 }
 
                 this.$axios({
@@ -675,9 +690,12 @@
                     } else {
                         this.$message({
                             type: "success",
-                            message: "确认成功",
+                            message: "支付确认成功",
                             duration: 2000
                         });
+                        if (number == "one"){
+                            this.dialogVisible = false;
+                        }
                         this.$emit("getCommTable", this.routerMessage);
                     }
                 }).catch(function (error) {

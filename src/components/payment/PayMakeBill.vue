@@ -261,6 +261,15 @@
         <section>
             <!--表单顶部-->
             <div class="title-date">
+                <el-select v-model="billData.pay_mode" placeholder="请选择付款方式"
+                           filterable size="mini"
+                           @change="setBizName">
+                    <el-option v-for="(item,k) in payModeList"
+                               :key="k"
+                               :label="item"
+                               :value="k">
+                    </el-option>
+                </el-select>
                 <el-select v-model="billData.pay_account_id" placeholder="请选择付款方"
                            filterable clearable size="mini"
                            @visible-change="getOptions">
@@ -277,15 +286,6 @@
                                :key="payItem.biz_id"
                                :label="payItem.biz_name"
                                :value="payItem.biz_id">
-                    </el-option>
-                </el-select>
-                <el-select v-model="billData.pay_mode" placeholder="请选择付款方式"
-                           filterable clearable size="mini"
-                           @change="setBizName">
-                    <el-option v-for="(item,k) in payModeList"
-                               :key="k"
-                               :label="item"
-                               :value="k">
                     </el-option>
                 </el-select>
                 <div class="serial-number">
@@ -581,7 +581,7 @@
                     recv_account_name: "",
                     recv_bank_cnaps: "",
                     payment_amount: "",
-                    pay_mode: "",
+                    pay_mode: "1",
                     payment_summary: "",
                     service_serial_number: "",
                     bank_name: "",
