@@ -247,7 +247,8 @@
                    width="900px" top="76px"
                    :close-on-click-modal="false">
             <el-form :model="eidtData" size="small"
-                     :label-width="formLabelWidth">
+                     :label-width="formLabelWidth"
+                     :rules="rules" ref="dialogForm">
                 <el-row>
                     <el-col :span="12" v-show="eidtData.pay_account_id">
                         <el-form-item label="下拨账号">
@@ -260,7 +261,7 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="付款账号">
+                        <el-form-item label="付款账号"  prop="pay_account_id">
                             <el-select v-model="eidtData.pay_account_id" placeholder="请选择付款账号"
                                        filterable @change="setPayInfo">
                                 <el-option v-for="payItem in payList"
@@ -440,6 +441,14 @@
                     payment_amount: "",
                     service_status: "",
                     payment_summary: ""
+                },
+                //校验规则设置
+                rules: {
+                    pay_account_id: {
+                        required: true,
+                        message: "请选择付款账号",
+                        trigger: "change"
+                    }
                 },
                 editVisible: false,
                 eidtData: {
@@ -731,67 +740,79 @@
             },
             //保存
             subCurrent: function () {
-                var params = this.eidtData;
-                this.$axios({
-                    url: "/cfm/normalProcess",
-                    method: "post",
-                    data: {
-                        optype: "branchorgoa_chgBranchPayment",
-                        params: params
-                    }
-                }).then((result) => {
-                    if (result.data.error_msg) {
-                        this.$message({
-                            type: "error",
-                            message: result.data.error_msg,
-                            duration: 2000
+                this.$refs.dialogForm.validate((valid, object) => {
+                    if (valid) {
+                        var params = this.eidtData;
+                        this.$axios({
+                            url: "/cfm/normalProcess",
+                            method: "post",
+                            data: {
+                                optype: "branchorgoa_chgBranchPayment",
+                                params: params
+                            }
+                        }).then((result) => {
+                            if (result.data.error_msg) {
+                                this.$message({
+                                    type: "error",
+                                    message: result.data.error_msg,
+                                    duration: 2000
+                                });
+                                return;
+                            } else {
+                                var data = result.data.data;
+                                this.$message({
+                                    type: "success",
+                                    message: "保存成功",
+                                    duration: 2000
+                                });
+                                this.editVisible = false;
+                                this.$emit("getTableData", this.routerMessage);
+                            }
+                        }).catch(function (error) {
+                            console.log(error);
                         });
-                        return;
                     } else {
-                        var data = result.data.data;
-                        this.$message({
-                            type: "success",
-                            message: "保存成功",
-                            duration: 2000
-                        });
-                        this.editVisible = false;
-                        this.$emit("getTableData", this.routerMessage);
+                        return false;
                     }
-                }).catch(function (error) {
-                    console.log(error);
                 });
             },
             //提交
             subFlow: function () {
-                var params = this.eidtData;
-                this.$axios({
-                    url: "/cfm/normalProcess",
-                    method: "post",
-                    data: {
-                        optype: "branchorgoa_presubmit",
-                        params: params
-                    }
-                }).then((result) => {
-                    if (result.data.error_msg) {
-                        this.$message({
-                            type: "error",
-                            message: result.data.error_msg,
-                            duration: 2000
+                this.$refs.dialogForm.validate((valid, object) => {
+                    if (valid) {
+                        var params = this.eidtData;
+                        this.$axios({
+                            url: "/cfm/normalProcess",
+                            method: "post",
+                            data: {
+                                optype: "branchorgoa_presubmit",
+                                params: params
+                            }
+                        }).then((result) => {
+                            if (result.data.error_msg) {
+                                this.$message({
+                                    type: "error",
+                                    message: result.data.error_msg,
+                                    duration: 2000
+                                });
+                            } else {
+                                var data = result.data.data;
+                                this.eidtData.id = data.brand_payment.id;
+                                this.eidtData.service_status = data.brand_payment.service_status;
+                                this.eidtData.persist_version = data.brand_payment.persist_version;
+                                //设置流程数据
+                                this.selectWorkflow = "";
+                                this.workflows = data.workflows;
+                                this.innerVisible = true;
+                                this.editVisible = false;
+                                this.$emit("getTableData", this.routerMessage);
+                            }
+                        }).catch(function (error) {
+                            console.log(error);
                         });
                     } else {
-                        var data = result.data.data;
-                        this.eidtData.id = data.brand_payment.id;
-                        this.eidtData.service_status = data.brand_payment.service_status;
-                        this.eidtData.persist_version = data.brand_payment.persist_version;
-                        //设置流程数据
-                        this.selectWorkflow = "";
-                        this.workflows = data.workflows;
-                        this.innerVisible = true;
-                        this.editVisible = false;
-                        this.$emit("getTableData", this.routerMessage);
+                        return false;
                     }
-                }).catch(function (error) {
-                    console.log(error);
                 });
             },
             //提交流程

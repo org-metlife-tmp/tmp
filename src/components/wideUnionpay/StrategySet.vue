@@ -116,6 +116,13 @@
                 float: right;
             }
         }
+
+        /*必填样式*/
+        .set-required:before {
+            content: '*';
+            color: #f56c6c;
+            margin-right: 4px;
+        }
     }
 
     /*时间选择弹框*/
@@ -207,16 +214,17 @@
         <!--中间内容-->
         <section class="table-content">
             <el-form :model="collectionData" size="small"
-                     :label-width="formLabelWidth">
+                     :label-width="formLabelWidth"
+                     :rules="rules" ref="dialogForm">
                 <el-row>
                     <el-col :span="14">
-                        <el-form-item label="下拨主题">
+                        <el-form-item label="下拨主题" prop="topic">
                             <el-input v-model="collectionData.topic" placeholder="请为本次下拨主题命名以方便识别"
                                       :readonly="isView"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="14" style="text-align:left">
-                        <el-form-item label="下拨额度">
+                        <el-form-item label="下拨额度" prop="gyl_allocation_type">
                             <el-radio-group v-model="collectionData.gyl_allocation_type" :disabled="isView">
                                 <el-radio v-for="(collType,key) in collTypeList"
                                           :key="key" :label="key">{{ collType }}
@@ -225,7 +233,7 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="20" style="text-align:left">
-                        <el-form-item label=" ">
+                        <el-form-item label=" " prop="gyl_allocation_amount">
                             <el-row>
                                 <el-col :span="4">
                                     <el-input v-model="collectionData.gyl_allocation_amount" placeholder="请填写下拨金额"
@@ -241,7 +249,7 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="14">
-                        <el-form-item label="下拨账户">
+                        <el-form-item label="下拨账户" prop="pay_acc_id">
                             <el-select v-model="collectionData.pay_acc_id" placeholder="请选择主账户"
                                        style="width:100%"
                                        filterable clearable size="mini"
@@ -257,19 +265,19 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="14">
-                        <el-form-item label="被下拨账户名">
+                        <el-form-item label="被下拨账户名" prop="recv_acc_name">
                             <el-input v-model="collectionData.recv_acc_name" placeholder="请输入被下拨账户名"
                                       :readonly="isView"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="14">
-                        <el-form-item label="被下拨账户号">
+                        <el-form-item label="被下拨账户号" prop="recv_acc_no">
                             <el-input v-model="collectionData.recv_acc_no" placeholder="请输入被下拨账户号"
                                       :readonly="isView"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="14">
-                        <el-form-item label="下拨频率" style="text-align:left">
+                        <el-form-item label="下拨频率" style="text-align:left" prop="gyl_allocation_frequency">
                             <el-radio-group v-model="collectionData.gyl_allocation_frequency"
                                             @change="clearDate" :disabled="isView">
                                 <el-radio v-for="(frequency,key) in frequencyList"
@@ -279,7 +287,8 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="21" style="text-align:left">
-                        <el-form-item label=" ">
+                        <el-form-item>
+                            <span slot="label" class="set-required"> </span>
                             <el-row>
                                 <el-col :span="6" class="date-select" v-for="datePicker in timesetting_list"
                                         :key="datePicker.id">
@@ -299,7 +308,7 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="14">
-                        <el-form-item label="摘要">
+                        <el-form-item label="摘要" prop="summary">
                             <el-input v-model="collectionData.summary" :readonly="isView"></el-input>
                         </el-form-item>
                     </el-col>
@@ -503,7 +512,60 @@
                     summary: "",
                     files: []
                 },
-                formLabelWidth: "100px",
+                //校验规则设置
+                rules: {
+                    topic: {
+                        required: true,
+                        message: "请输入下拨主题",
+                        trigger: "blur"
+                    },
+                    gyl_allocation_type: {
+                        required: true,
+                        message: "请选择下拨额度",
+                        trigger: "change"
+                    },
+                    gyl_allocation_amount: {
+                        validator: (rule, value, callback) => {
+                            var collect_type =  this.collectionData.gyl_allocation_type;
+                            if(collect_type == "3"){
+                                callback();
+                            }else{
+                                if (value == "") {
+                                    callback(new Error('请填写下拨金额'));
+                                }else{
+                                    callback();
+                                }
+                            }
+                        },
+                        trigger: 'blur'
+                    },
+                    pay_acc_id: {
+                        required: true,
+                        message: "请选择下拨账户",
+                        trigger: "change"
+                    },
+                    recv_acc_name: {
+                        required: true,
+                        message: "请输入被下拨户名",
+                        trigger: "blur"
+                    },
+                    recv_acc_no: {
+                        required: true,
+                        message: "请输入被下拨账户号",
+                        trigger: "blur"
+                    },
+                    gyl_allocation_frequency: {
+                        required: true,
+                        message: "请输入被下拨账户号",
+                        trigger: "change"
+                    },
+                    summary: {
+                        required: true,
+                        message: "请输入摘要",
+                        trigger: "blur"
+                    },
+                },
+                formLabelWidth: "120px",
                 dateDialog: false, //选择时间弹框
                 dateSelect: {
                     weekDate: [],
@@ -639,10 +701,19 @@
             comfirmCurrDate: function () {
                 var frequency = this.collectionData.gyl_allocation_frequency;
                 var dateSelect = this.dateSelect;
+                var flag = false;
                 if (frequency == 1) { //只设置时间
-                    this.currTimeSetting.dateItem = dateSelect.timeDate;
+                    if(dateSelect.timeDate){
+                        this.currTimeSetting.dateItem = dateSelect.timeDate;
+                    }else{
+                        flag = true;
+                    }
                 } else if (frequency == 2) { //设置周
-                    this.currTimeSetting.dateItem = dateSelect.weekDate.join(",") + "-" + dateSelect.timeDate;
+                    if(dateSelect.weekDate.length == 0 || !dateSelect.timeDate){
+                        flag = true;
+                    }else{
+                        this.currTimeSetting.dateItem = dateSelect.weekDate.join(",") + "-" + dateSelect.timeDate;
+                    }
                 } else { //设置月
                     var monthDay = this.monthDay;
                     var activeDay = "";
@@ -651,7 +722,19 @@
                             activeDay += dayItem.day + ",";
                         }
                     });
-                    this.currTimeSetting.dateItem = activeDay.slice(0, activeDay.length - 1) + "-" + dateSelect.timeDate;
+                    if(!activeDay || !dateSelect.timeDate){
+                        flag = true;
+                    }else{
+                        this.currTimeSetting.dateItem = activeDay.slice(0, activeDay.length - 1) + "-" + dateSelect.timeDate;
+                    }
+                }
+                if(flag){
+                    this.$message({
+                        type: "warning",
+                        message: "请选择时间",
+                        duration: 2000
+                    });
+                    return false;
                 }
                 this.dateDialog = false;
             },
@@ -678,18 +761,39 @@
                         collectionData[k] = [];
                     }
                 }
+                //清空校验
+                this.$refs.dialogForm.clearValidate();
+
                 this.clearDate();
                 this.emptyFileList = [];
             },
             //设置params
             setParams: function () {
-                var collectionData = this.collectionData;
-                collectionData.timesetting_list = [];
-                this.timesetting_list.forEach((item) => {
-                    collectionData.timesetting_list.push(item.dateItem);
+                var params = false;
+                this.$refs.dialogForm.validate((valid, object) => {
+                    if (valid) {
+                        var collectionData = this.collectionData;
+                        collectionData.timesetting_list = [];
+                        this.timesetting_list.forEach((item) => {
+                            if(item.dateItem){
+                                collectionData.timesetting_list.push(item.dateItem);
+                            }
+                        });
+                        if(collectionData.timesetting_list.length == 0){
+                            this.$message({
+                                type: "warning",
+                                message: "请选择归集时间",
+                                duration: 2000
+                            });
+                            return false;
+                        }
+                        collectionData.files = this.fileList;
+                        params =  collectionData;
+                    } else {
+                        return false;
+                    }
                 });
-                collectionData.files = this.fileList;
-                return collectionData;
+                return params;
             },
             //保存
             saveCollect: function () {
@@ -819,7 +923,10 @@
         },
         computed: {
             amountStatus: function () {
-                return this.collectionData.collect_type == 3 ? true : false;
+                if(this.collectionData.gyl_allocation_type == 3){
+                    this.collectionData.gyl_allocation_amount = "";
+                }
+                return this.collectionData.gyl_allocation_type == 3 ? true : false;
             }
         }
     }

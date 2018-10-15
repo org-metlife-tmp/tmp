@@ -230,7 +230,7 @@
             <!--表单顶部-->
             <div class="title-date">
                 <el-select v-model="billData.pay_mode" placeholder="请选择付款方式"
-                           filterable clearable size="mini">
+                           filterable size="mini">
                     <el-option v-for="(item,key) in payModeList"
                                :key="key"
                                :label="item"
@@ -257,7 +257,7 @@
                         <td class="title-small">账号</td>
                         <td class="select-height">
                             <el-select v-model="billData.pay_account_id"
-                                       clearable filterable remote
+                                       filterable remote
                                        placeholder="请选择账号"
                                        @change="selectNumber"
                                        @clear="selectNumber">
@@ -496,6 +496,14 @@
             //保存
             saveBill: function () {
                 var params = this.billData;
+                if(!params.payment_summary){
+                    this.$message({
+                        type: "warning",
+                        message: "请填写摘要",
+                        duration: 2000
+                    });
+                    return;
+                }
                 params.files = this.fileList;
 
                 this.$axios({
