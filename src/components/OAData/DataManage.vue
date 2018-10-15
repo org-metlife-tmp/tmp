@@ -133,13 +133,16 @@
             <el-table :data="tableList"
                       border size="mini">
                 <el-table-column prop="bill_no" label="报销单申请号" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="pay_org_type" label="付款机构类型" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="pay_org_type" label="付款机构类型" :show-overflow-tooltip="true"
+                                 :formatter="transitPayType"></el-table-column>
                 <el-table-column prop="apply_user" label="申请用户" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="recv_acc_no" label="收款方账号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="recv_bank" label="收款方银行" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="amount" label="金额" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="status" label="状态" :show-overflow-tooltip="true"
+                <el-table-column prop="interface_status" label="接口状态" :show-overflow-tooltip="true"
                                  :formatter="transitStatus"></el-table-column>
+                <el-table-column prop="process_status" label="处理状态" :show-overflow-tooltip="true"
+                                 :formatter="transitProStatus"></el-table-column>
                 <el-table-column
                         label="操作" width="50"
                         fixed="right">
@@ -228,8 +231,8 @@
         },
         mounted: function(){
             var constants = JSON.parse(window.sessionStorage.getItem("constants"));
-            if(constants.OaPayOrgStatus){
-                this.statusList = constants.OaPayOrgStatus;
+            if(constants.OaInterfaceStatus){
+                this.statusList = constants.OaInterfaceStatus;
             }
             if(constants.OaPayOrgType){
                 this.payOrgList = constants.OaPayOrgType;
@@ -287,9 +290,19 @@
                 };
                 this.$emit("getCommTable", this.routerMessage);
             },
-            //展示格式转换-处理状态
+            //展示格式转换-接口状态
             transitStatus: function (row, column, cellValue, index) {
                 return this.statusList[cellValue];
+            },
+            //展示格式转换-处理状态
+            transitProStatus: function (row, column, cellValue, index) {
+                var constants = JSON.parse(window.sessionStorage.getItem("constants"));
+                return constants.OaProcessStatus[cellValue];
+            },
+            //展示格式转换
+            transitPayType: function (row, column, cellValue, index) {
+                var constants = JSON.parse(window.sessionStorage.getItem("constants"));
+                return constants.OaPayOrgType[cellValue];
             },
             //查看
             lookData: function(row){
