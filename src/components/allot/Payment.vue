@@ -245,8 +245,8 @@
                     <el-col :span="24">
                         <el-form-item style="margin-bottom:0px">
                             <el-checkbox-group v-model="searchData.service_status">
-                                <el-checkbox label="1" name="type">审批通过</el-checkbox>
-                                <el-checkbox label="3" name="type">已失败</el-checkbox>
+                                <el-checkbox label="4" name="type">审批通过</el-checkbox>
+                                <el-checkbox label="8" name="type">已失败</el-checkbox>
                             </el-checkbox-group>
                         </el-form-item>
                     </el-col>
