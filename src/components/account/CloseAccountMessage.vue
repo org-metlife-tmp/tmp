@@ -68,8 +68,18 @@
         }
         /*增加销户交易按钮*/
         .addSales{
-            padding: 5px;
             margin-left: 10px;
+            display: inline-block;
+            i {
+                font-size: 22px;
+                vertical-align: middle;
+                color: #00B3EC;
+                cursor: pointer;
+            }
+
+            i:nth-child(2) {
+                color: #F9B32C;
+            }
         }
         .width40{
             width: 40%;
@@ -285,9 +295,13 @@
                     </el-col>
                     <el-col :span="24">
                         <el-form-item label="销户交易">
-                            <el-button class="addSales" type="primary" icon="el-icon-plus" circle
+                            <div class="addSales" v-show="!lookDisabled">
+                                <i class="el-icon-circle-plus-outline" @click="addSales"></i>
+                                <i class="el-icon-remove-outline" @click="delSales" v-show="salesList.length > 1"></i>
+                            </div>
+                            <!-- <el-button  type="primary" icon="el-icon-circle-plus-outline" circle
                                        :disabled="lookDisabled"
-                                       @click="addSales(dialogData.additionals)"></el-button>
+                                       @click="addSales(dialogData.additionals)"></el-button> -->
                             <template v-for="item in salesList">
                                 <el-input class="width40" v-model="item.comments" :disabled="lookDisabled" placeholder="请输入交易摘要"></el-input>
                                 <el-input class="width40" v-model="item.amount" :disabled="lookDisabled" placeholder="请输入交易金额"></el-input>
@@ -539,7 +553,8 @@
                             var data = result.data.data;
                             Object.assign(this.dialogData,data);
                             //未刷新表格数据时，手动给当前数据赋值
-                            this.salesList = data.additionals;
+                            if(data.additionals.length > 0)
+                                this.salesList = data.additionals;
                             this.dialogVisible = true;
                         }
                     })
@@ -555,6 +570,11 @@
             addSales:function(){
                 this.salesList.push({comments:"",amount:""});
             },
+            //删除销户交易
+            delSales:function(){
+                if(this.salesList.length > 1)
+                    this.salesList.pop();
+            },
             //保存或修改申请
             saveAppliation:function(){
                 var flag = false;
@@ -565,6 +585,23 @@
                         flag = true;
                     }
                 });
+                //校验销户交易
+                var saleList = [];
+                this.salesList.forEach(element =>{
+                    if(!element.comments && !element.amount){
+                        
+                    }else if(!element.comments || !element.amount){
+                        this.$message({
+                            type: "warning",
+                            message: "请完善销户交易！",
+                            duration: 2000
+                        })
+                        flag = true;
+                        return ;
+                    }else{
+                        saleList.push(element);
+                    }
+                })
                 if (flag) {
                     return false;
                 }
@@ -579,7 +616,7 @@
                     optype = "closeacccomple_todoadd";
                 }
                 data.relation_id = this.dialogData.relation_id;
-                data.additionals = this.salesList;
+                data.additionals = saleList;
                 data.close_date = this.dialogData.close_date;
                 data.acc_id = this.dialogData.acc_id;
                 data.memo = this.dialogData.memo;
@@ -677,11 +714,28 @@
                         flag = true;
                     }
                 });
+                //校验销户交易
+                var saleList = [];
+                this.salesList.forEach(element =>{
+                    if(!element.comments && !element.amount){
+                        
+                    }else if(!element.comments || !element.amount){
+                        this.$message({
+                            type: "warning",
+                            message: "请完善销户交易！",
+                            duration: 2000
+                        })
+                        flag = true;
+                        return ;
+                    }else{
+                        saleList.push(element);
+                    }
+                })
                 if (flag) {
                     return false;
                 }
 
-                this.dialogData.additionals = this.salesList;
+                this.dialogData.additionals = saleList;
                 this.$axios({
                     url: "/cfm/normalProcess",
                     method: "post",
