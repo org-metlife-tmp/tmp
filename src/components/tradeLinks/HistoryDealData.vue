@@ -75,7 +75,8 @@
             ></a>
         </div>
         <div class="modeUpload">
-            <div class="title-text">当日交易数据文件上传</div>
+            <div class="title-text" v-show="isPending">当日交易数据文件上传</div>
+            <div class="title-text" v-show="!isPending">历史交易数据文件上传</div>
             <el-input v-model="currentUpload.original_file_name" readonly>
                 <template slot="append">
                     <el-upload

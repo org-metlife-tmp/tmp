@@ -441,8 +441,8 @@
                     <el-menu-item index="/allot/payment" v-if="menuList.DbtPayBill">内部调拨-支付</el-menu-item>
                     <el-menu-item index="/allot/look-over" v-if="menuList.DbtViewBill">内部调拨-查看</el-menu-item>
                     <el-menu-item index="/allot/lot-make-bill" v-if="menuList.DbtBatchBill">批量调拨-制单</el-menu-item>
-                    <el-menu-item index="/allot/lot-look-over" v-if="menuList.DbtBatchView">批量调拨-查看</el-menu-item>
                     <el-menu-item index="/allot/lot-payment" v-if="menuList.DbtBatchPay">批量调拨-支付</el-menu-item>
+                    <el-menu-item index="/allot/lot-look-over" v-if="menuList.DbtBatchView">批量调拨-查看</el-menu-item>
                     <el-menu-item index="/allot/allot-deal-check?bizType=8" v-if="menuList.DbtCheck">交易核对</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
@@ -529,10 +529,10 @@
                     <p>广银联</p>
                 </template>
                 <el-menu-item-group>
-                    <el-menu-item index="/wide-unionpay/strategy-set" v-if="menuList.GYLBFJSetting">策略设置</el-menu-item>
-                    <el-menu-item index="/wide-unionpay/unionpay-manage" v-if="menuList.GYLBFJMgr">任务管理</el-menu-item>
-                    <el-menu-item index="/wide-unionpay/task-look" v-if="menuList.GYLBFJView">任务查看</el-menu-item>
-                    <el-menu-item index="/payment/deal-check?bizType=14" v-if="menuList.GYLBFJCheck">交易核对</el-menu-item>
+                    <el-menu-item index="/wide-unionpay/strategy-set" v-if="menuList.GYLBFJSetting">广银联备付金设置</el-menu-item>
+                    <el-menu-item index="/wide-unionpay/unionpay-manage" v-if="menuList.GYLBFJMgr">广银联备付金管理</el-menu-item>
+                    <el-menu-item index="/wide-unionpay/task-look" v-if="menuList.GYLBFJView">广银联备付金查看</el-menu-item>
+                    <el-menu-item index="/payment/deal-check?bizType=14" v-if="menuList.GYLBFJCheck">广银联备付金核对</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
             <el-submenu index="17" v-if="menuList.OADATAMGT">

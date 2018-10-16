@@ -665,6 +665,15 @@
             },
             //编辑
             editData: function (row) {
+                //清空数据
+                var dialogData = this.eidtData;
+                for(var k in dialogData){
+                    if(k == "files"){
+                        dialogData[k]=[];
+                    }else{
+                        dialogData[k] = "";
+                    }
+                }
                 this.$axios({
                     url: "/cfm/normalProcess",
                     method: "post",
