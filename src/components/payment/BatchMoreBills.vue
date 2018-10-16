@@ -456,7 +456,7 @@
                     <el-table-column prop="payment_amount" label="金额" :show-overflow-tooltip="true"
                                      :formatter="transitAmount"></el-table-column>
                     <el-table-column prop="pay_status" label="业务状态" :show-overflow-tooltip="true"
-                                     :formatter="transitStatus"></el-table-column>
+                                     :formatter="transitDetailStatus"></el-table-column>
                     <el-table-column prop="feed_back" label="反馈信息" :show-overflow-tooltip="true"></el-table-column>
                 </el-table>
                 <div class="allData">
@@ -616,6 +616,12 @@
             transitStatus: function (row, column, cellValue, index) {
                 var constants = JSON.parse(window.sessionStorage.getItem("constants"));
                 if (constants.BillStatus) {
+                    return constants.BillStatus[cellValue];
+                }
+            },
+            transitDetailStatus: function (row, column, cellValue, index) {
+                var constants = JSON.parse(window.sessionStorage.getItem("constants"));
+                if (constants.PayStatus) {
                     return constants.PayStatus[cellValue];
                 }
             },
