@@ -321,11 +321,11 @@
             <div class="switchover">
                 <el-button-group>
                     <el-button type="primary" size="mini" :class="{active:showAll}"
-                               @click="showAll=!showAll">
+                               @click="showAll=true">
                         <i class="get-all"></i>
                     </el-button>
                     <el-button type="primary" size="mini" :class="{active:!showAll}"
-                               @click="showAll=!showAll">
+                               @click="showAll=false">
                         <i class="get-list"></i>
                     </el-button>
                 </el-button-group>
@@ -583,7 +583,7 @@
             transitStatus: function (row, column, cellValue, index) {
                 var constants = JSON.parse(window.sessionStorage.getItem("constants"));
                 if (constants.BillStatus) {
-                    return constants.BillStatus[cellValue];
+                    return constants.PayStatus[cellValue];
                 }
             },
             //制单
