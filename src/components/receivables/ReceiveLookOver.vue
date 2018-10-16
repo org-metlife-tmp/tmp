@@ -343,7 +343,6 @@
                     }
                 },
                 statusList: {
-                    1: "已保存",
                     7: "已成功"
                 },
                 dialogVisible: false, //弹框数据
