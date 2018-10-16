@@ -487,6 +487,7 @@
                     <el-menu-item index="/payment/deal-check?bizType=12" v-if="menuList.GJCheck">交易核对</el-menu-item>
                     <el-menu-item index="/collection/not-directly-set" v-if="menuList.GJBatchBill">非直连归集-制单</el-menu-item>
                     <el-menu-item index="/collection/no-directly-look" v-if="menuList.GJBatchView">非直连归集-查看</el-menu-item>
+                    <el-menu-item index="/payment/deal-check?bizType=5" v-if="menuList.ZFTCheck">交易核对</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
             <el-submenu index="13"  v-if="menuList.ZJXB">

@@ -105,10 +105,10 @@
                 <el-table-column prop="pay_account_no" label="付款方账号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="pay_account_bank" label="付款银行" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="recv_account_no" label="收款方账号" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="recv_account_name" label="收款方公司名称"
-                                 :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="recv_account_name" label="收款方公司名称" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="payment_amount" label="金额" :show-overflow-tooltip="true"
                                  :formatter="transitAmount"></el-table-column>
+                <el-table-column prop="create_on" label="日期" :show-overflow-tooltip="true"></el-table-column>
             </el-table>
         </section>
         <div class="validated-content" v-if="!isPending">
@@ -132,6 +132,7 @@
                                              :show-overflow-tooltip="true"></el-table-column>
                             <el-table-column prop="amount" label="交易金额" :show-overflow-tooltip="true"></el-table-column>
                             <el-table-column prop="summary" label="摘要" :show-overflow-tooltip="true"></el-table-column>
+                            <el-table-column prop="create_on" label="交易时间" :show-overflow-tooltip="true"></el-table-column>
                         </el-table>
                     </template>
                 </el-table-column>
@@ -243,10 +244,10 @@
             setOptypes: function(queryData){
                 //设置当前optype信息
                 if (queryData.bizType == "9") { //支付通
-                    this.routerMessage.todo.optype = "zft_checkbillList";
-                    this.routerMessage.done.optype = "zft_checkbillList";
-                    this.checkOptype = "zft_checkTradeList";
-                    this.confirmOptype = "zft_confirmCheck";
+                    this.routerMessage.todo.optype = "zft_checkbillList"; //未核对
+                    this.routerMessage.done.optype = "zft_checkbillList"; //已核对
+                    this.checkOptype = "zft_checkTradeList"; //获取对应的核对数据
+                    this.confirmOptype = "zft_confirmCheck"; //
                     this.validatedOptype = "zft_checkAlreadyTradeList";
                 }
                 if(queryData.bizType == "12"){
@@ -262,6 +263,13 @@
                     this.checkOptype = "gylcheck_checkNoCheckTradeList";
                     this.confirmOptype = "gylcheck_confirmCheck";
                     this.validatedOptype = "gylcheck_checkAlreadyTradeList";
+                }
+                if(queryData.bizType == "5"){ //归集通
+                    this.routerMessage.todo.optype = "collectcheck_checkbillList";
+                    this.routerMessage.done.optype = "collectcheck_checkbillList";
+                    this.checkOptype = "collectcheck_checkNoCheckTradeList";
+                    this.confirmOptype = "collectcheck_confirmCheck";
+                    this.validatedOptype = "collectcheck_checkAlreadyTradeList";
                 }
                 this.$emit("getTableData", this.routerMessage);
             },
