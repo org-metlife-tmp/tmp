@@ -394,14 +394,14 @@
                 ]
             </div>
             <ul class="dialog-talbe">
-                <li class="table-li-title">付款账号</li>
+                <li class="table-li-title">付款方式</li>
                 <li class="table-li-content table-select">
-                    <el-select v-model="editDialogData.pay_account_id" placeholder="请选择付款方"
+                    <el-select v-model="editDialogData.pay_mode" placeholder="请选择付款方式"
                                filterable size="mini">
-                        <el-option v-for="item in accOptions"
-                                   :key="item.acc_id"
-                                   :label="item.acc_no"
-                                   :value="item.acc_id">
+                        <el-option v-for="(item,k) in payModeList"
+                                   :key="k"
+                                   :label="item"
+                                   :value="k">
                         </el-option>
                     </el-select>
                 </li>
@@ -417,6 +417,17 @@
                     </el-select>
                 </li>
 
+                <li class="table-li-title">付款账号</li>
+                <li class="table-li-content table-select">
+                    <el-select v-model="editDialogData.pay_account_id" placeholder="请选择付款方"
+                               filterable size="mini">
+                        <el-option v-for="item in accOptions"
+                                   :key="item.acc_id"
+                                   :label="item.acc_no"
+                                   :value="item.acc_id">
+                        </el-option>
+                    </el-select>
+                </li>
                 <li class="table-li-title">收款人户名</li>
                 <li class="table-li-content table-select">
                     <el-select v-model="editDialogData.recv_account_name"
@@ -431,6 +442,7 @@
                         </el-option>
                     </el-select>
                 </li>
+
                 <li class="table-li-title">收款人账号</li>
                 <li class="table-li-content table-select">
                     <el-select v-model="editDialogData.recv_account_no"
@@ -446,9 +458,8 @@
                         </el-option>
                     </el-select>
                 </li>
-
                 <li class="table-li-title">开户行</li>
-                <li class="table-li-content table-two-row">
+                <li class="table-li-content">
                     <input type="text" placeholder="请选择开户行" class="table-input"
                            v-model="editDialogData.bank_name"
                            @focus="clearBankDialog">
@@ -701,6 +712,7 @@
                 editDialogData: {
                     id:"",
                     biz_id: "",
+                    pay_mode: "",
                     persist_version: "",
                     rev_persist_version: "",
                     pay_account_id: "",
@@ -936,7 +948,6 @@
             },
             //编辑
             editBill: function (row) {
-                console.log(row);
                 this.getPayerSelect();
                 this.currentBill = row;
 
@@ -944,7 +955,13 @@
                 for(var k in editDialogData){
                     if(k == "bank_name"){
                         editDialogData[k] = row.recv_account_bank;
-                    } else{
+                    } else if (k == "pay_mode"){
+                        if(row[k]){
+                            editDialogData[k] = row[k] + "";
+                        }else{
+                            editDialogData[k] = "";
+                        }
+                    } else {
                         editDialogData[k] = row[k];
                     }
                 }
@@ -1170,10 +1187,11 @@
                 //校验
                 var validater = {
                     pay_account_id: "请选择付款方",
+                    pay_mode: "请选择付款方式",
                     recv_account_name: "请选择户名",
                     recv_account_no: "请选择账号",
                     bank_name: "请选择开户行",
-                    payment_amount: "请输入金额"
+                    payment_amount: "请输入金额",
                 }
                 for(var k in validater){
                     if(!editDialogData[k]){
@@ -1223,6 +1241,14 @@
                             this.currentBill[k] = data[k];
                         }
                         this.editVisible = false;
+                        //更新版本号
+                        var tableList = this.tableList;
+                        tableList.forEach((item) => {
+                            if(item.recv_account_id == data.recv_account_id){
+                                item.rev_persist_version = data.rev_persist_version;
+                            }
+                        });
+
                         this.getPayerSelect();
                         this.$message({
                             type: "success",

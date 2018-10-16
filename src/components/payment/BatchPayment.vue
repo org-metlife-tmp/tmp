@@ -278,6 +278,7 @@
                             <el-checkbox-group v-model="searchData.service_status">
                                 <el-checkbox label="4" name="type">审批通过</el-checkbox>
                                 <el-checkbox label="8" name="type">已失败</el-checkbox>
+                                <el-checkbox label="10" name="type">未完结</el-checkbox>
                             </el-checkbox-group>
                         </el-form-item>
                     </el-col>
