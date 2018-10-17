@@ -574,9 +574,10 @@
                     } else {
                         var data = result.data.data;
                         var billData = this.billData;
-
+                        
                         billData.id = data.id;
                         billData.batchno = data.batchno;
+                        billData.biz_id = data.biz_id;
                         billData.pay_acc_id = data.pay_account_id;
                         billData.version = data.persist_version;
                         billData.memo = data.payment_summary;
