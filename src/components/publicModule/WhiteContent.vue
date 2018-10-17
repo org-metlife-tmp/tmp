@@ -147,6 +147,7 @@
                     show-checkbox
                     ref="tree"
                     default-expand-all
+                    :check-strictly="true"
                     :expand-on-click-node="false">
                 <span class="custom-tree-node" slot-scope="{ node, data }">
                     <span>{{ node.data.name }}</span>
