@@ -120,16 +120,11 @@
                         <el-table :data="validatedList" border
                                   size="mini">
                             <el-table-column prop="acc_no" label="账户号" :show-overflow-tooltip="true"></el-table-column>
-                            <el-table-column prop="acc_name" label="账户名称"
-                                             :show-overflow-tooltip="true"></el-table-column>
-                            <el-table-column prop="bank_name" label="开户行"
-                                             :show-overflow-tooltip="true"></el-table-column>
-                            <el-table-column prop="direction" label="收付方向"
-                                             :show-overflow-tooltip="true"></el-table-column>
-                            <el-table-column prop="opp_acc_no" label="对方账户号"
-                                             :show-overflow-tooltip="true"></el-table-column>
-                            <el-table-column prop="opp_acc_name" label="对方账户名称"
-                                             :show-overflow-tooltip="true"></el-table-column>
+                            <el-table-column prop="acc_name" label="账户名称" :show-overflow-tooltip="true"></el-table-column>
+                            <el-table-column prop="bank_name" label="开户行" :show-overflow-tooltip="true"></el-table-column>
+                            <el-table-column prop="direction" label="收付方向" :show-overflow-tooltip="true"></el-table-column>
+                            <el-table-column prop="opp_acc_no" label="对方账户号" :show-overflow-tooltip="true"></el-table-column>
+                            <el-table-column prop="opp_acc_name" label="对方账户名称" :show-overflow-tooltip="true"></el-table-column>
                             <el-table-column prop="amount" label="交易金额" :show-overflow-tooltip="true"></el-table-column>
                             <el-table-column prop="summary" label="摘要" :show-overflow-tooltip="true"></el-table-column>
                             <el-table-column prop="create_on" label="交易时间" :show-overflow-tooltip="true"></el-table-column>
@@ -143,6 +138,7 @@
                                  :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="payment_amount" label="金额" :show-overflow-tooltip="true"
                                  :formatter="transitAmount"></el-table-column>
+                <el-table-column prop="create_on" label="日期" :show-overflow-tooltip="true"></el-table-column>
             </el-table>
         </div>
         <!--分页部分-->
@@ -174,6 +170,7 @@
                 <el-table-column prop="opp_acc_name" label="对方账户名称" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="amount" label="交易金额" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="summary" label="摘要" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="create_on" label="交易时间" :show-overflow-tooltip="true"></el-table-column>
             </el-table>
         </section>
     </div>
