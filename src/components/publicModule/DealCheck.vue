@@ -247,26 +247,19 @@
                     this.confirmOptype = "zft_confirmCheck"; //
                     this.validatedOptype = "zft_checkAlreadyTradeList";
                 }
-                if(queryData.bizType == "12"){
+                if(queryData.bizType == "12"){ //归集通
                     this.routerMessage.todo.optype = "collectcheck_checkbillList";
                     this.routerMessage.done.optype = "collectcheck_checkbillList";
                     this.checkOptype = "collectcheck_checkNoCheckTradeList";
                     this.confirmOptype = "collectcheck_confirmCheck";
                     this.validatedOptype = "collectcheck_checkAlreadyTradeList";
                 }
-                if(queryData.bizType == "14"){
+                if(queryData.bizType == "14"){ //广银联
                     this.routerMessage.todo.optype = "gylcheck_checkbillList";
                     this.routerMessage.done.optype = "gylcheck_checkbillList";
                     this.checkOptype = "gylcheck_checkNoCheckTradeList";
                     this.confirmOptype = "gylcheck_confirmCheck";
                     this.validatedOptype = "gylcheck_checkAlreadyTradeList";
-                }
-                if(queryData.bizType == "5"){ //归集通
-                    this.routerMessage.todo.optype = "collectcheck_checkbillList";
-                    this.routerMessage.done.optype = "collectcheck_checkbillList";
-                    this.checkOptype = "collectcheck_checkNoCheckTradeList";
-                    this.confirmOptype = "collectcheck_confirmCheck";
-                    this.validatedOptype = "collectcheck_checkAlreadyTradeList";
                 }
                 this.$emit("getTableData", this.routerMessage);
             },

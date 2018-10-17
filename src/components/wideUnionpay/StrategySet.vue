@@ -257,9 +257,9 @@
                                        @change="setMain($event,collectionData)">
                                 <el-option v-for="item in accOptions"
                                            :key="item.acc_id"
-                                           :label="item.acc_name"
+                                           :label="item.acc_no"
                                            :value="item.acc_id">
-                                    <span>{{ item.acc_name }} ( {{ item.acc_no }} )</span>
+                                    <span>{{ item.acc_no }}</span><span style="margin-left:10px;color:#bbb">{{ item.acc_name }}</span>
                                 </el-option>
                             </el-select>
                         </el-form-item>

@@ -250,6 +250,7 @@
                                                         :key="acc.acc_id"
                                                         :label="acc.acc_no"
                                                         :value="acc.acc_id">
+                                                    <span>{{ acc.acc_no }}</span><span style="margin-left:10px;color:#bbb">{{ acc.acc_name }}</span>
                                                 </el-option>
                                             </el-select>
                                         </div>
@@ -1033,7 +1034,7 @@
                         return ;
                     }
                 })
-                
+
                 var params = this.messageTips;
                 for(var k in params){
                     if( k == 'main_acc_id' || k == 'child_accounts' || k == 'timeShow'){
