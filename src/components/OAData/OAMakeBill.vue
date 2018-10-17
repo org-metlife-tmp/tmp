@@ -187,34 +187,34 @@
             text-indent: 0;
             padding-left: 15px;
         }
-    }
 
-    /*设置弹出框公共样式*/
-    .el-dialog {
-        text-align: left;
-        margin-bottom: 10px;
-        /*设置标题*/
-        .dialog-title {
-            margin-bottom: 0;
-        }
-        .el-dialog__body {
-            padding-top: 10px;
-            padding-bottom: 0;
-        }
-        .el-form {
-            width: 94%;
-            .el-select {
-                width: 100%;
-            }
-        }
-    }
-
-    .el-radio-group {
-        // margin-top: -16px;
-        .el-radio {
-            display: block;
-            margin-left: 30px;
+        /*设置弹出框公共样式*/
+        .el-dialog {
+            text-align: left;
             margin-bottom: 10px;
+            /*设置标题*/
+            .dialog-title {
+                margin-bottom: 0;
+            }
+            .el-dialog__body {
+                padding-top: 10px;
+                padding-bottom: 0;
+            }
+            .el-form {
+                width: 94%;
+                .el-select {
+                    width: 100%;
+                }
+            }
+
+            .el-radio-group {
+
+                .el-radio {
+                    display: block;
+                    margin-left: 30px;
+                    margin-bottom: 10px;
+                }
+            }
         }
     }
 </style>
