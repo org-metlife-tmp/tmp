@@ -268,8 +268,9 @@
                                                        @change="setMain($event,item)">
                                                 <el-option v-for="item in accOptions"
                                                            :key="item.main_acc_id"
-                                                           :label="item.main_acc_name"
+                                                           :label="item.main_acc_no"
                                                            :value="item.main_acc_id">
+                                                    <span>{{ item.main_acc_no }}</span><span style="margin-left:10px;color:#bbb">{{ item.main_acc_name }}</span>
                                                 </el-option>
                                             </el-select>
                                         </div>
