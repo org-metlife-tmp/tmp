@@ -269,7 +269,8 @@
                                                 <el-option v-for="item in accOptions"
                                                            :key="item.main_acc_id"
                                                            :label="item.main_acc_no"
-                                                           :value="item.main_acc_id">
+                                                           :value="item.main_acc_id"
+                                                           :disabled="item.$disabled">
                                                     <span>{{ item.main_acc_no }}</span><span style="margin-left:10px;color:#bbb">{{ item.main_acc_name }}</span>
                                                 </el-option>
                                             </el-select>
@@ -540,6 +541,21 @@
                     break;
                 }
             }
+            //归集主账户列表
+            this.$axios({
+                url: "/cfm/normalProcess",
+                method: "post",
+                data: {
+                    optype: "collectsetting_accs",
+                    params: {
+                        status: 1,
+                        acc_id: "",
+                        exclude_ids: []
+                    }
+                }
+            }).then((result) => {
+                this.accOptions = result.data.data;
+            });
         },
         mounted: function(){
             //获取单据数据
@@ -580,10 +596,6 @@
                         //设置归集关系
                         data.main_acc_list.forEach((mainItem) => {
                             mainItem.name = mainItem.tab.slice(1);
-                            this.accOptions.push({
-                                main_acc_id: mainItem.main_acc_id,
-                                main_acc_name: mainItem.main_acc_name
-                            })
                         });
                         this.editableTabs = data.main_acc_list;
                         if(data.main_acc_list.length < 3 && params[0] != "viewId"){
@@ -599,8 +611,6 @@
                         data.time_setting_list.forEach((item) => {
                             this.timesetting_list.push({dateItem:item.collect_time,id:item.id});
                         });
-                        //获取归集主账户列表
-                        this.getAccList(true);
                         //附件
                         this.fileMessage.bill_id = data.id;
                         this.eidttrigFile = !this.eidttrigFile;
@@ -830,26 +840,22 @@
                 if (status) {
                     var tabActive = this.tabActive;
                     var tabList = this.editableTabs;
+                    var accOptions = this.accOptions;
+                    accOptions.forEach((item) => {
+                        this.$set(item,"$disabled",false);
+                    })
                     var exclude_ids = [];
                     tabList.forEach((tabItem) => {
                         if (tabItem.name != tabActive && tabItem.main_acc_id) {
+                            for(var i = 0; i < accOptions.length; i++){
+                                if(tabItem.main_acc_id == accOptions[i].main_acc_id){
+                                    this.$set(accOptions[i],"$disabled",true);
+                                }
+                            }
                             exclude_ids.push(tabItem.main_acc_id);
                         }
                     });
-                    this.$axios({
-                        url: "/cfm/normalProcess",
-                        method: "post",
-                        data: {
-                            optype: "collectsetting_accs",
-                            params: {
-                                status: 1,
-                                acc_id: "",
-                                exclude_ids: exclude_ids
-                            }
-                        }
-                    }).then((result) => {
-                        this.accOptions = result.data.data;
-                    });
+
                 }
             },
             //选择归集主账户
