@@ -546,6 +546,8 @@
     export default {
         name: "PayMakeBill",
         created: function () {
+            //付款方
+            this.getOptions(true);
 
             //获取单据数据
             var hash = window.location.hash.split("?")[1];
