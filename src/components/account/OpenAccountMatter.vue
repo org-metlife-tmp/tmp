@@ -1380,7 +1380,7 @@
             },
             //银行大类展开时重置数据
             clearSearch: function (val) {
-                if (this.bankTypeList != this.bankAllList && val) {
+                if (this.bankTypeList != this.bankAllTypeList && val) {
                     this.bankTypeList = this.bankAllTypeList;
                 }
             },
