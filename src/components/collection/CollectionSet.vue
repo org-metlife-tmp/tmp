@@ -599,6 +599,8 @@
                         data.time_setting_list.forEach((item) => {
                             this.timesetting_list.push({dateItem:item.collect_time,id:item.id});
                         });
+                        //获取归集主账户列表
+                        this.getAccList(true);
                         //附件
                         this.fileMessage.bill_id = data.id;
                         this.eidttrigFile = !this.eidttrigFile;

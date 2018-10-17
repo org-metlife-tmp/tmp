@@ -385,7 +385,7 @@
             <div class="title-date">
                 <el-select v-model="billData.pay_mode" placeholder="请选择付款方式"
                            filterable size="mini"
-                           @change="setBizName">
+                           @change="clearPayAcc">
                     <el-option v-for="(item,k) in payModeList"
                                :key="k"
                                :label="item"
@@ -546,9 +546,6 @@
     export default {
         name: "PayMakeBill",
         created: function () {
-            //付款方
-            this.getOptions(true);
-
             //获取单据数据
             var hash = window.location.hash.split("?")[1];
             if(hash){
@@ -574,20 +571,34 @@
                     } else {
                         var data = result.data.data;
                         var billData = this.billData;
-                        
-                        billData.id = data.id;
-                        billData.batchno = data.batchno;
-                        billData.biz_id = data.biz_id;
-                        billData.pay_acc_id = data.pay_account_id;
-                        billData.version = data.persist_version;
-                        billData.memo = data.payment_summary;
-                        billData.allList = data.total_num;
+                        var params = {
+                            id: "id",
+                            batchno: "batchno",
+                            pay_mode: "pay_mode",
+                            biz_id: "biz_id",
+                            pay_acc_id: "pay_account_id",
+                            version: "persist_version",
+                            memo: "payment_summary",
+                            allList: "total_num",
+                        }
+
+                        for(var k in params){
+                            if(k == "pay_mode"){
+                                billData[k] = data[params[k]] + "";
+                            }else{
+                                billData[k] = data[params[k]];
+                            }
+                        }
+
                         this.saveUploadList = data.obbaiTempList;
                         billData.payment_amount = this.$common.transitSeparator(data.total_amount);
                         this.moneyText = this.$common.transitText(data.total_amount);
                         //附件数据
                         this.fileMessage.bill_id = data.id;
                         this.eidttrigFile = !this.eidttrigFile;
+
+                        //付款方
+                        this.getOptions(true);
                     }
                 }).catch(function (error) {
                     console.log(error);
@@ -674,6 +685,10 @@
             }
         },
         methods: {
+            //清空付款方账号
+            clearPayAcc: function(){
+                this.billData.pay_acc_id = "";
+            },
             //获取付款方账号列表
             getOptions: function(status){
                 if(status){

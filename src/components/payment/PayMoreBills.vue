@@ -397,7 +397,8 @@
                 <li class="table-li-title">付款方式</li>
                 <li class="table-li-content table-select">
                     <el-select v-model="editDialogData.pay_mode" placeholder="请选择付款方式"
-                               filterable size="mini">
+                               filterable size="mini"
+                               @change="clearPayAcc">
                         <el-option v-for="(item,k) in payModeList"
                                    :key="k"
                                    :label="item"
@@ -420,7 +421,8 @@
                 <li class="table-li-title">付款账号</li>
                 <li class="table-li-content table-select">
                     <el-select v-model="editDialogData.pay_account_id" placeholder="请选择付款方"
-                               filterable size="mini">
+                               filterable size="mini"
+                               @visible-change="getOptions">
                         <el-option v-for="item in accOptions"
                                    :key="item.acc_id"
                                    :label="item.acc_no"
@@ -756,6 +758,34 @@
             }
         },
         methods: {
+            //清空付款方账号
+            clearPayAcc: function(){
+                this.editDialogData.pay_account_id = "";
+            },
+            //获取付款方账号列表
+            getOptions: function(status){
+                if(status){
+                    var pay_mode = this.editDialogData.pay_mode;
+                    //获取付款方账户列表
+                    this.$axios({
+                        url:"/cfm/commProcess",
+                        method:"post",
+                        data:{
+                            optype:"account_normallist",
+                            params:{
+                                status:1,
+                                interactive_mode: pay_mode ? (pay_mode == "1" ? "1" : "2") : ""
+                            }
+                        }
+                    }).then((result) =>{
+                        if (result.data.error_msg) {
+
+                        } else {
+                            this.accOptions = result.data.data;
+                        }
+                    });
+                }
+            },
             //获取户名和账号的下拉列表值
             getPayerSelect: function(){
                 //获取收款方户名列表
@@ -965,6 +995,7 @@
                         editDialogData[k] = row[k];
                     }
                 }
+                this.getOptions(true);
                 //设置数字加千分符和转汉字
                 editDialogData.numText = this.$common.transitText(row.payment_amount);
                 editDialogData.payment_amount = this.$common.transitSeparator(row.payment_amount);

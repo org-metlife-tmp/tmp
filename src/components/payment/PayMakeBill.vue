@@ -263,7 +263,7 @@
             <div class="title-date">
                 <el-select v-model="billData.pay_mode" placeholder="请选择付款方式"
                            filterable size="mini"
-                           @change="setBizName">
+                           @change="clearPayAcc">
                     <el-option v-for="(item,k) in payModeList"
                                :key="k"
                                :label="item"
@@ -622,6 +622,10 @@
             }
         },
         methods: {
+            //清空付款方账号
+            clearPayAcc: function(){
+                this.billData.pay_account_id = "";
+            },
             //获取付款方账号列表
             getOptions: function(status){
                 if(status){
