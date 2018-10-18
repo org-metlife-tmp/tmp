@@ -52,6 +52,27 @@
             background-position: -48px 0;
         }
 
+        /*日志弹框*/
+        .dialog-title{
+            border-bottom: 1px solid #ccc;
+            margin-bottom: 10px;
+
+            span{
+                margin-left: 10px;
+                color: #ccc;
+            }
+        }
+
+        .table-all-data{
+            border: 1px solid #ebeef5;
+            border-bottom: none;
+            padding: 0 6px;
+            box-sizing: border-box;
+
+            div{
+                float: right;
+            }
+        }
     }
 </style>
 
@@ -153,7 +174,7 @@
                 <el-table-column prop="service_status" label="业务状态" :show-overflow-tooltip="true"
                                  width="100px" :formatter="transitStatus"></el-table-column>
                 <el-table-column
-                        label="操作" width="80"
+                        label="操作" width="110"
                         fixed="right">
                     <template slot-scope="scope" class="operationBtn">
                         <el-tooltip content="查看" placement="bottom" effect="light"
@@ -168,12 +189,6 @@
                             <el-button type="primary" icon="el-icon-edit" size="mini"
                                        @click="editCollect(scope.row)"></el-button>
                         </el-tooltip>
-                        <!-- <el-tooltip content="复制" placement="bottom" effect="light"
-                                    :enterable="false" :open-delay="500"
-                                    v-if="scope.row.service_status == 1 || scope.row.service_status == 5 || scope.row.service_status == 2">
-                            <el-button class="on-copy" size="mini"
-                                       @click="copyCollect(scope.row)"></el-button>
-                        </el-tooltip> -->
                         <el-tooltip content="撤回" placement="bottom" effect="light"
                                     :enterable="false" :open-delay="500"
                                     v-if="scope.row.service_status == 2">
@@ -185,6 +200,11 @@
                                     v-if="scope.row.service_status == 1">
                             <el-button type="danger" icon="el-icon-delete" size="mini"
                                        @click="removeBill(scope.row,scope.$index,tableList)"></el-button>
+                        </el-tooltip>
+                        <el-tooltip content="日志" placement="bottom" effect="light"
+                                    :enterable="false" :open-delay="500">
+                            <el-button type="info" icon="el-icon-tickets" size="mini"
+                                       @click="lookLog(scope.row)"></el-button>
                         </el-tooltip>
                     </template>
                 </el-table-column>
@@ -204,6 +224,58 @@
                     :current-page="pagCurrent">
             </el-pagination>
         </div>
+        <!--日志 弹出框-->
+        <el-dialog :visible.sync="dialogVisible"
+                   width="1000px" top="76px"
+                   title="日志"
+                   :close-on-click-modal="false">
+            <div class="dialog-title">
+                {{ dialogData.topic }}
+                <span>[ {{ dialogData.service_serial_number }} ]</span>
+            </div>
+
+            <!--上半部分表格-->
+            <div class="table-all-data" v-show="topLogList.length > 0">
+                执行时间: <span>{{ topLogData.execute_time }}</span>
+                <div>
+                    共 <span style="color:#FF5800">{{ topLogData.total_num }}</span> 笔,
+                    成功 <span>{{ topLogData.success_count }}</span> 笔,
+                    归集总额 <span style="color:#FF5800">￥{{ $common.transitSeparator(topLogData.total_amount) }}</span>
+                </div>
+            </div>
+            <el-table :data="topLogList"
+                      border size="mini"
+                      highlight-current-row>
+                <el-table-column prop="recv_account_no" label="被归集账号" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="recv_account_bank" label="归集账号开户行" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="pay_account_no" label="归集主账号" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="collect_amount" label="归集金额" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="collect_status" label="状态" :show-overflow-tooltip="true"
+                                 :formatter="transitionStatus"></el-table-column>
+            </el-table>
+
+            <!--下半部分表格-->
+            <div class="table-all-data" style="margin-top:20px" v-show="bottomLogList.length > 0">
+                执行时间: <span>{{ bottomLogData.execute_time }}</span>
+                <div>
+                    共 <span style="color:#FF5800">{{ bottomLogData.total_num }}</span> 笔,
+                    成功 <span>{{ bottomLogData.success_count }}</span> 笔,
+                    归集总额 <span style="color:#FF5800">￥{{ $common.transitSeparator(bottomLogData.total_amount) }}</span>
+                </div>
+            </div>
+            <el-table :data="bottomLogList"
+                      border size="mini"
+                      v-show="bottomLogList.length > 0"
+                      highlight-current-row>
+                <el-table-column prop="recv_account_no" label="被归集账号" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="recv_account_bank" label="归集账号开户行" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="pay_account_no" label="归集主账号" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="collect_amount" label="归集金额" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="collect_status" label="状态" :show-overflow-tooltip="true"
+                                 :formatter="transitionStatus"></el-table-column>
+            </el-table>
+            <span slot="footer" class="dialog-footer" style="text-align:center"></span>
+        </el-dialog>
     </div>
 </template>
 
@@ -261,6 +333,23 @@
                 pagCurrent: 1,
                 collTypeList: {}, //常量数据
                 frequencyList: {},
+                dialogVisible: false, //日志弹框
+                dialogData: {},
+                topLogData: {
+                    execute_time: "",
+                    total_num: "",
+                    success_count: "",
+                    total_amount: ""
+                },
+                topLogList: [],
+                bottomLogData: {
+                    execute_time: "",
+                    total_num: "",
+                    success_count: "",
+                    total_amount: ""
+                },
+                bottomLogList: [],
+                formLabelWidth: "120px",
             }
         },
         methods: {
@@ -291,6 +380,13 @@
                 var constants = JSON.parse(window.sessionStorage.getItem("constants"));
                 if (constants.BillStatus) {
                     return constants.BillStatus[cellValue];
+                }
+            },
+            //展示格式转换-状态
+            transitionStatus:  function (row, column, cellValue, index) {
+                var constants = JSON.parse(window.sessionStorage.getItem("constants"));
+                if (constants.CollOrPoolRunStatus) {
+                    return constants.CollOrPoolRunStatus[cellValue];
                 }
             },
             //删除
@@ -415,6 +511,64 @@
                         viewId: row.id
                     }
                 });
+            },
+            //查看日志
+            lookLog: function(row){
+                //清空数据
+                var topLogData = this.topLogData;
+                for(var k in topLogData){
+                    topLogData[k] = "";
+                }
+                this.topLogList = [];
+                var bottomLogData = this.bottomLogData;
+                for(var k in bottomLogData){
+                    bottomLogData[k] = "";
+                }
+                this.bottomLogList = [];
+
+                //获取列表数据
+                this.dialogData = row;
+                //获取当前数据
+                this.dialogVisible = true;
+                this.$axios({
+                    url: "/cfm/normalProcess",
+                    method: "post",
+                    data: {
+                        optype: "collectmanage_instruction",
+                        params: {
+                            collect_id: row.id
+                        }
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        });
+                    }else{
+                        var data = result.data.data;
+                        if(data.length >= 1){
+                            var oneData = data[0];
+                            var topLogData = this.topLogData;
+                            for(var k in topLogData){
+                                topLogData[k] = oneData[k];
+                            }
+                            this.topLogList = oneData.detail;
+                        }
+                        if(data.length >= 2){
+                            var towData = data[1];
+                            var bottomLogData = this.bottomLogData;
+                            for(var k in bottomLogData){
+                                bottomLogData[k] = towData[k];
+                            }
+                            this.bottomLogList = towData.detail;
+                        }
+                    }
+
+                }).catch(function (error) {
+                    console.log(error);
+                })
             }
         },
         computed: {
