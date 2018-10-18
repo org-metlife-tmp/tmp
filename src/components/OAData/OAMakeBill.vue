@@ -374,7 +374,11 @@
 
                         var billData = this.billData;
                         for (var k in data) {
-                            billData[k] = data[k] + "";
+                            if(k == "pay_mode"){
+                                billData[k] = data[k] + "";
+                            }else{
+                                billData[k] = data[k];
+                            }
                         }
                         //设置数字加千分符和转汉字
                         this.moneyText = this.$common.transitText(data.payment_amount);
