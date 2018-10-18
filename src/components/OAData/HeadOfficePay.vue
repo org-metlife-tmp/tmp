@@ -149,7 +149,8 @@
                         <el-tooltip content="作废" placement="bottom" effect="light"
                                     :enterable="false" :open-delay="500"
                                     v-if="isPending">
-                            <el-button type="primary" icon="el-icon-minus" size="mini"
+                            <el-button size="mini" class="withdraw" icon="el-icon-circle-close-outline" type="danger"
+                                       style="font-size:16px;padding: 1px;vertical-align: bottom;line-height: 15px;"
                                        @click="cancellationData(scope.row)"></el-button>
                         </el-tooltip>
                         <el-tooltip content="撤回" placement="bottom" effect="light"
