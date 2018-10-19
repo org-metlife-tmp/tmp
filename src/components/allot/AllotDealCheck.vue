@@ -34,7 +34,8 @@
             height: 325px;
         }
         .childTable{
-            height: 109px;
+            // min-height: 96px;
+            // max-height: 192px;
         }
 
         /*分页部分*/
@@ -64,6 +65,13 @@
                 float: left;
             }
         }
+
+        /*顶部按钮*/
+        .button-list-right {
+            position: absolute;
+            top: -56px;
+            right: -21px;
+        }
     }
 </style>
 <style lang="less">
@@ -90,6 +98,18 @@
 
 <template>
     <div id="allotDealCheck">
+        <!--顶部按钮-->
+        <div class="button-list-right" v-show="isAllot">
+            <el-select v-model="searchData.payment_type" placeholder="请选择调拨类型"
+                       filterable clearable size="mini" 
+                       @change="queryByPayType">
+                <el-option v-for="(name,k) in paymentTypeList"
+                           :key="k"
+                           :label="name"
+                           :value="k">
+                </el-option>
+            </el-select>
+        </div>
         <!--搜索区-->
         <div class="search-setion">
             <el-form :inline="true" :model="searchData" size="mini">
@@ -155,7 +175,6 @@
                         <section class="childTable">
                             <el-table :data="props.row.list"
                                     border
-                                    height="100%"
                                     size="mini">
                                 <el-table-column prop="acc_no" label="账户号" :show-overflow-tooltip="true"></el-table-column>
                                 <el-table-column prop="acc_name" label="账户名称" :show-overflow-tooltip="true"></el-table-column>
@@ -234,6 +253,10 @@
             // this.$emit("getTableData", this.routerMessage);
         },
         mounted: function () {
+            this.paymentTypeList = {
+                8: '内部调拨',
+                10: '内部调拨批量'
+            }
         },
         props:["isPending","tableData"],
         data: function () {
@@ -254,7 +277,9 @@
                         }
                     }
                 },
-                searchData:{},
+                searchData:{
+                    payment_type: "8",
+                },
                 tableList:[],
                 childList: [],
                 pagSize: 8, //分页数据
@@ -271,6 +296,8 @@
                         return time.getTime() > Date.now();
                     }
                 },
+                paymentTypeList:{},//调拨类型
+                isAllot: false,//是否是调拨
             }
         },
         methods: {
@@ -424,18 +451,53 @@
                     this.checkOptype = "pooltrad_tradingList";
                     this.confirmOptype = "pooltrad_confirm";
                     this.validatedOptype = "pooltrad_confirmTradingList";
-                }else if(type == '8'){
+                    this.isAllot = false;
+                }else if(type == '8'){//内部调拨
                     this.routerMessage.todo.optype = "dbttrad_billList";
                     this.routerMessage.done.optype = "dbttrad_confirmbillList";
                     this.checkOptype = "dbttrad_tradingList";
                     this.confirmOptype = "dbttrad_confirm";
                     this.validatedOptype = "dbttrad_confirmTradingList";
+                    this.isAllot = true;
                 }else if(type == '15'){
                     this.routerMessage.todo.optype = "skttrad_billList";
                     this.routerMessage.done.optype = "skttrad_confirmbillList";
                     this.checkOptype = "skttrad_tradingList";
                     this.confirmOptype = "skttrad_confirm";
                     this.validatedOptype = "skttrad_confirmTradingList";
+                    this.isAllot = false;
+                }
+                this.$emit("getTableData", this.routerMessage);
+            },
+            //根据调拨类型查询
+            queryByPayType:function(val){
+                var searchData = this.searchData;
+                for (var k in searchData) {
+                    if(k!=='payment_type')
+                        searchData[k] = "";
+                }
+                this.tableList = [];
+                this.childList = [];
+                this.routerMessage.todo.params = {
+                    page_size: 7,
+                    page_num: 1
+                }
+                this.routerMessage.done.params = {
+                    page_size: 7,
+                    page_num: 1
+                }
+                if(val == '10'){
+                    this.routerMessage.todo.optype = "dbtbatchtrad_billList";
+                    this.routerMessage.done.optype = "dbtbatchtrad_confirmbillList";
+                    this.checkOptype = "dbtbatchtrad_tradingList";
+                    this.confirmOptype = "dbtbatchtrad_confirm";
+                    this.validatedOptype = "dbtbatchtrad_confirmTradingList";
+                }else{
+                    this.routerMessage.todo.optype = "dbttrad_billList";
+                    this.routerMessage.done.optype = "dbttrad_confirmbillList";
+                    this.checkOptype = "dbttrad_tradingList";
+                    this.confirmOptype = "dbttrad_confirm";
+                    this.validatedOptype = "dbttrad_confirmTradingList";
                 }
                 this.$emit("getTableData", this.routerMessage);
             }  
@@ -444,8 +506,10 @@
             isPending:function(val,oldVal){
                 var searchData = this.searchData;
                 for (var k in searchData) {
-                    searchData[k] = "";
+                    if(k!=='payment_type')
+                        searchData[k] = "";
                 }
+                this.childList = [];
             },
             tableData: function (val, oldVal) {
                 this.pagSize = val.page_size;
