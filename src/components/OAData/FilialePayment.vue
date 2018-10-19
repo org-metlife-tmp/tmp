@@ -360,30 +360,6 @@
             });
 
             this.$emit("getTableData", this.routerMessage);
-
-            //获取付款账号列表
-            this.$axios({
-                url: "/cfm/normalProcess",
-                method: "post",
-                data: {
-                    optype: "branchorgoa_accListByOrg",
-                    params: {}
-                }
-            }).then((result) => {
-                if (result.data.error_msg) {
-                    this.$message({
-                        type: "error",
-                        message: result.data.error_msg,
-                        duration: 2000
-                    });
-                    return;
-                } else {
-                    var data = result.data.data;
-                    this.payList = data;
-                }
-            }).catch(function (error) {
-                console.log(error);
-            })
         },
         mounted: function () {
             var constants = JSON.parse(window.sessionStorage.getItem("constants"));
@@ -675,6 +651,7 @@
                         dialogData[k] = "";
                     }
                 }
+                this.getPayList(row.id);
                 this.$axios({
                     url: "/cfm/normalProcess",
                     method: "post",
@@ -704,6 +681,34 @@
                         this.fileMessage.bill_id = row.id;
                         this.triggerFile = !this.triggerFile;
 
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                })
+            },
+            //获取付款账号列表
+            getPayList: function(rowId) {
+                //获取付款账号列表
+                this.$axios({
+                    url: "/cfm/normalProcess",
+                    method: "post",
+                    data: {
+                        optype: "branchorgoa_accListByOrg",
+                        params: {
+                            id: rowId
+                        }
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        });
+                        return;
+                    } else {
+                        var data = result.data.data;
+                        this.payList = data;
                     }
                 }).catch(function (error) {
                     console.log(error);
