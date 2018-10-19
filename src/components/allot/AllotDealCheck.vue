@@ -100,8 +100,7 @@
     <div id="allotDealCheck">
         <!--顶部按钮-->
         <div class="button-list-right" v-show="isAllot">
-            <el-select v-model="searchData.payment_type" placeholder="请选择调拨类型"
-                       filterable clearable size="mini" 
+            <el-select v-model="searchData.payment_type" placeholder="请选择调拨类型" size="mini" 
                        @change="queryByPayType">
                 <el-option v-for="(name,k) in paymentTypeList"
                            :key="k"
