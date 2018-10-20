@@ -314,7 +314,7 @@
         </div>
 
         <!--查看弹出框-->
-        <el-dialog title="调拨单信息"
+        <el-dialog title="支付单信息"
                    :visible.sync="dialogVisible"
                    width="900px" top="76px"
                    :close-on-click-modal="false">
