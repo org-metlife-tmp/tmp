@@ -132,7 +132,7 @@
                 <el-table-column prop="service_status" label="状态" :show-overflow-tooltip="true"
                                  :formatter="transitStatus"></el-table-column>
                 <el-table-column
-                        label="操作" width="80"
+                        label="操作" width="110"
                         fixed="right">
                     <template slot-scope="scope" class="operationBtn">
                         <el-tooltip content="查看" placement="bottom" effect="light"
@@ -149,7 +149,7 @@
                         </el-tooltip>
                         <el-tooltip content="作废" placement="bottom" effect="light"
                                     :enterable="false" :open-delay="500"
-                                    v-if="isPending">
+                                    v-if="isPending || (!isPending && scope.row.service_status == 8)">
                             <el-button size="mini" icon="el-icon-circle-close-outline" type="danger"
                                        style="font-size:16px;padding: 1px;vertical-align: bottom;line-height: 15px;"
                                        @click="cancellationData(scope.row)"></el-button>
