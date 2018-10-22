@@ -893,6 +893,7 @@
                                 })
                             } else {
                                 var data = result.data.data;
+                                data.apply_on = data.apply_on.split(" ")[0];
                                 for(var k in data){
                                     this.currentTodo[k] = data[k];
                                 }
