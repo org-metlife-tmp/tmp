@@ -292,6 +292,8 @@
                                         :key="payItem.acc_id"
                                         :label="payItem.acc_no"
                                         :value="payItem.acc_id">
+                                        <span>{{ payItem.acc_no }}</span>
+                                        <span style="margin-left:10px;color:#bbb">{{ payItem.acc_name }}</span>
                                 </el-option>
                             </el-select>
                         </td>
@@ -310,6 +312,8 @@
                                         :key="gatherItem.acc_id"
                                         :label="gatherItem.acc_no"
                                         :value="gatherItem.acc_id">
+                                        <span>{{ gatherItem.acc_no }}</span>
+                                        <span style="margin-left:10px;color:#bbb">{{ gatherItem.acc_name }}</span>
                                 </el-option>
                             </el-select>
                         </td>
