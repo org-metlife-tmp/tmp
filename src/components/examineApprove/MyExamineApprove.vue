@@ -1375,7 +1375,7 @@
                         {id:'2',prop:"recv_account_no",name:'收款方账号'},
                         {id:'3',prop:"recv_account_name",name:'收款方银行'},
                         {id:'4',prop:"payment_amount",name:'金额'},
-                        {id:'5',prop:"service_status",name:'处理状态'}
+                        {id:'5',prop:"nextUserList",name:'下级审批人'}
                     ],
                     "10":[//调拨通-批量
                         {id:'1',prop:"batchno",name:'批次号'},
@@ -1386,7 +1386,7 @@
                         {id:'6',prop:"total_amount",name:'总金额'},
                         // {id:'7',prop:"success_num",name:'成功笔数'},
                         // {id:'8',prop:"success_amount",name:'成功金额'},
-                        {id:'9',prop:"service_status",name:'批次状态'}
+                        {id:'9',prop:"nextUserList",name:'下级审批人'}
                     ],
                     "11":[
                         {id:'1',prop:"batchno",name:'批次号'},
@@ -1394,7 +1394,7 @@
                         {id:'3',prop:"total_amount",name:'总金额'},
                         {id:'4',prop:"sucess_num",name:'成功笔数'},
                         {id:'5',prop:"sucess_amount",name:'成功金额'},
-                        {id:'6',prop:"service_status",name:'批次状态'}
+                        {id:'6',prop:"nextUserList",name:'下级审批人'}
                     ],
                     "12":[
                         {id:'1',prop:"topic",name:'归集主题'},
@@ -1403,7 +1403,7 @@
                         {id:'4',prop:"collect_frequency",name:'归集频率'},
                         {id:'5',prop:"collect_time",name:'归集时间'},
                         {id:'6',prop:"collect_main_account_count",name:'归集集户(个)'},
-                        {id:'7',prop:"service_status",name:'业务状态'}
+                        {id:'7',prop:"nextUserList",name:'下级审批人'}
                     ],
                     "13":[
                         {id:'1',prop:"create_on",name:'申请日期'},
@@ -1411,7 +1411,8 @@
                         {id:'3',prop:"allocation_type",name:'下拨类型'},
                         {id:'4',prop:"allocation_frequency",name:'下拨频率'},
                         {id:'5',prop:"summary",name:'摘要'},
-                        {id:'6',prop:"allocation_child_account_count",name:'下拨集户(个)'}
+                        {id:'6',prop:"allocation_child_account_count",name:'下拨集户(个)'},
+                        {id:'7',prop:"nextUserList",name:'下级审批人'}
                     ],
                     "14":[
                         {id:'1',prop:"topic",name:'主题'},
@@ -1419,14 +1420,14 @@
                         {id:'3',prop:"gyl_allocation_amount",name:'下拨金额'},
                         {id:'4',prop:"gyl_allocation_frequency",name:'下拨频率'},
                         {id:'5',prop:"gyl_allocation_time",name:'下拨时间'},
-                        {id:'6',prop:"service_status",name:'业务状态'}
+                        {id:'6',prop:"nextUserList",name:'下级审批人'}
                     ],
                     "15":[
                         {id:'1',prop:"recv_account_bank",name:'收款方名称'},
                         {id:'2',prop:"pay_account_no",name:'付款方账号'},
                         {id:'3',prop:"pay_account_name",name:'付款方银行'},
                         {id:'4',prop:"receipts_amount",name:'金额'},
-                        {id:'5',prop:"service_status",name:'处理状态'}
+                        {id:'6',prop:"nextUserList",name:'下级审批人'}
                     ],
                     "19":[
                         {id:'1',prop:"batchno",name:'批次号'},
@@ -1434,7 +1435,7 @@
                         {id:'3',prop:"total_amount",name:'总金额'},
                         {id:'4',prop:"sucess_num",name:'成功笔数'},
                         {id:'5',prop:"sucess_amount",name:'成功金额'},
-                        {id:'6',prop:"service_status",name:'批次状态'}
+                        {id:'6',prop:"nextUserList",name:'下级审批人'}
                     ],
                     "20":[
                         {id:'1',prop:"service_serial_number",name:'单据号'},
@@ -1445,7 +1446,7 @@
                         {id:'6',prop:"recv_account_bank",name:'收款方银行'},
                         {id:'7',prop:"payment_amount",name:'收款金额'},
                         {id:'8',prop:"payment_summary",name:'摘要'},
-                        {id:'9',prop:"service_status",name:'状态'}
+                        {id:'9',prop:"nextUserList",name:'下级审批人'}
                     ],
                     "21":[
                         {id:'1',prop:"service_serial_number",name:'单据号'},
@@ -1456,7 +1457,7 @@
                         {id:'6',prop:"recv_account_bank",name:'收款方银行'},
                         {id:'7',prop:"payment_amount",name:'收款金额'},
                         {id:'8',prop:"payment_summary",name:'摘要'},
-                        {id:'9',prop:"service_status",name:'状态'}
+                        {id:'9',prop:"nextUserList",name:'下级审批人'}
                     ],
                 },
                 editableTabsList: {},
