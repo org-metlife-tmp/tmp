@@ -8,6 +8,11 @@
         /*搜索区*/
         .search-setion {
             text-align: left;
+
+            /*时间控件*/
+            .el-date-editor {
+                width: 100%;
+            }
         }
 
         /*分隔栏*/
@@ -56,15 +61,46 @@
                 float: left;
             }
         }
+
+        /*顶部按钮*/
+        .button-list-right {
+            position: absolute;
+            top: -60px;
+            right: -18px;
+        }
     }
 </style>
 
 <template>
     <div id="dealCheck">
+        <!-- 顶部按钮-->
+        <div class="button-list-right" v-show="showDataNum">
+            <el-select v-model="dataNum" filterable style="width:100%" size="mini"
+                       @change="setParams">
+                <el-option value="1" label="单笔支付"></el-option>
+                <el-option value="2" label="批量支付"></el-option>
+            </el-select>
+        </div>
         <!--搜索区-->
         <div class="search-setion">
             <el-form :inline="true" :model="searchData" size="mini">
                 <el-row>
+                    <el-col :span="5">
+                        <el-form-item>
+                            <el-date-picker
+                                    v-model="dateValue"
+                                    type="daterange"
+                                    range-separator="至"
+                                    start-placeholder="开始日期"
+                                    end-placeholder="结束日期"
+                                    value-format="yyyy-MM-dd"
+                                    clearable
+                                    unlink-panels
+                                    :picker-options="pickerOptions"
+                                    @change="">
+                            </el-date-picker>
+                        </el-form-item>
+                    </el-col>
                     <el-col :span="4">
                         <el-form-item>
                             <el-input v-model="searchData.pay_account_no" placeholder="请输入付款方账号"></el-input>
@@ -127,7 +163,7 @@
                             <el-table-column prop="opp_acc_name" label="对方账户名称" :show-overflow-tooltip="true"></el-table-column>
                             <el-table-column prop="amount" label="交易金额" :show-overflow-tooltip="true"></el-table-column>
                             <el-table-column prop="summary" label="摘要" :show-overflow-tooltip="true"></el-table-column>
-                            <el-table-column prop="create_on" label="交易时间" :show-overflow-tooltip="true"></el-table-column>
+                            <el-table-column prop="trans_date" label="交易时间" :show-overflow-tooltip="true"></el-table-column>
                         </el-table>
                     </template>
                 </el-table-column>
@@ -181,6 +217,8 @@
         name: "DealCheck",
         beforeRouteUpdate (to, from, next) {
             this.setOptypes(to.query);
+            this.childList = [];
+            this.dataNum = "1";
             next();
         },
         created: function () {
@@ -220,6 +258,12 @@
                 checkOptype:"",
                 confirmOptype: "",
                 validatedOptype: "",
+                dateValue: "", //时间选择
+                pickerOptions: {
+                    disabledDate(time) {
+                        return time.getTime() > Date.now();
+                    }
+                },
                 searchData: {
                     pay_account_no: "",
                     recv_account_no: "",
@@ -234,18 +278,21 @@
                 pagCurrent: 1,
                 currSelectData: {},
                 selectData: [], //待管理数据选中数据
+                dataNum: "1",
+                showDataNum: true
             }
         },
         methods: {
             //设置页面相关optype
             setOptypes: function(queryData){
+                this.showDataNum = true;
                 //设置当前optype信息
                 if (queryData.bizType == "9") { //支付通
                     this.routerMessage.todo.optype = "zft_checkbillList"; //未核对
                     this.routerMessage.done.optype = "zft_checkbillList"; //已核对
                     this.checkOptype = "zft_checkTradeList"; //获取对应的核对数据
-                    this.confirmOptype = "zft_confirmCheck"; //
-                    this.validatedOptype = "zft_checkAlreadyTradeList";
+                    this.confirmOptype = "zft_confirmCheck"; //确认核对
+                    this.validatedOptype = "zft_checkAlreadyTradeList"; //获取对应的已核对数据
                 }
                 if(queryData.bizType == "12"){ //归集通
                     this.routerMessage.todo.optype = "collectcheck_checkbillList";
@@ -260,8 +307,39 @@
                     this.checkOptype = "gylcheck_checkNoCheckTradeList";
                     this.confirmOptype = "gylcheck_confirmCheck";
                     this.validatedOptype = "gylcheck_checkAlreadyTradeList";
+                    this.showDataNum = false;
                 }
                 this.$emit("getTableData", this.routerMessage);
+            },
+            //设置批量相关optype
+            setBatchOptype: function(queryData){
+                this.showDataNum = true;
+                //设置当前optype信息
+                if (queryData.bizType == "9") { //支付通
+                    this.routerMessage.todo.optype = "zftbatchcheck_checkbillList"; //未核对
+                    this.routerMessage.done.optype = "zftbatchcheck_checkbillList"; //已核对
+                    this.checkOptype = "zftbatchcheck_checkNoCheckTradeList"; //获取对应的核对数据
+                    this.confirmOptype = "zftbatchcheck_confirmCheck"; //确认核对
+                    this.validatedOptype = "zftbatchcheck_checkAlreadyTradeList"; //获取对应的已核对数据
+                }
+                if(queryData.bizType == "12"){ //归集通
+                    this.routerMessage.todo.optype = "collectbatchcheck_checkbillList";
+                    this.routerMessage.done.optype = "collectbatchcheck_checkbillList";
+                    this.checkOptype = "collectbatchcheck_checkNoCheckTradeList";
+                    this.confirmOptype = "collectbatchcheck_confirmCheck";
+                    this.validatedOptype = "collectbatchcheck_checkAlreadyTradeList";
+                }
+                this.$emit("getTableData", this.routerMessage);
+            },
+            //选择操作类型后调整接口
+            setParams: function(val){
+                var queryData = this.$router.currentRoute.query;
+                if(val == "1"){
+                    this.setOptypes(queryData);
+                }else{
+                    this.setBatchOptype(queryData);
+                }
+                this.childList = [];
             },
             //展示格式转换-金额
             transitAmount: function (row, column, cellValue, index) {
@@ -270,6 +348,8 @@
             //根据条件查询数据
             queryData: function () {
                 var searchData = this.searchData;
+                searchData.start_date = this.dateValue ? this.dateValue[0] : "";
+                searchData.end_date = this.dateValue ? this.dateValue[1] : "";
                 for (var k in searchData) {
                     if (this.isPending) {
                         this.routerMessage.todo.params[k] = searchData[k];
@@ -278,6 +358,7 @@
                     }
                 }
                 this.$emit("getTableData", this.routerMessage);
+                this.childList = [];
             },
             //点击页数获取当前页数据
             getCurrentPage: function (currPage) {
