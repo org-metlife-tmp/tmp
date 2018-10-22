@@ -397,7 +397,7 @@
                 <el-menu-item-group>
                     <el-menu-item index="/examine-approve/my-examine-approve" v-if="menuList.MyWFPLAT">我的审批平台
                     </el-menu-item>
-                    <el-menu-item index="/examine-approve/permission-transfer">权限转移
+                    <el-menu-item index="/examine-approve/permission-transfer" v-if="menuList.ApproveTransfer">权限转移
                     </el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
@@ -468,7 +468,7 @@
                     <el-menu-item index="/payment/pay-payment" v-if="menuList.ZFTPayBill">资金支付-支付</el-menu-item>
                     <el-menu-item index="/payment/pay-look-over" v-if="menuList.ZFTViewBill">资金支付-查看</el-menu-item>
                     <el-menu-item index="/payment/batch-make-bill" v-if="menuList.ZFTBatchBill">批量支付-制单</el-menu-item>
-                    <el-menu-item index="/payment/batch-payment">批量支付-支付</el-menu-item>
+                    <el-menu-item index="/payment/batch-payment" v-if="menuList.ZFTBatchPay">批量支付-支付</el-menu-item>
                     <el-menu-item index="/payment/batch-look-over" v-if="menuList.ZFTBatchView">批量支付-查看</el-menu-item>
                     <el-menu-item index="/payment/payee-message" v-if="menuList.ZFTSuplierAcc">收款方信息管理</el-menu-item>
                     <el-menu-item index="/payment/deal-check?bizType=9" v-if="menuList.ZFTCheck">交易核对</el-menu-item>
@@ -654,6 +654,7 @@
 
                     WFPLAT: false, //审批平台
                     MyWFPLAT: false, //我的审批平台
+                    ApproveTransfer: false, //权限转移
 
                     YET: false, //余额通
                     CurBal: false, //当日余额明细
@@ -684,6 +685,7 @@
                     ZFTPayBill: false, //资金支付-支付
                     ZFTViewBill: false, //资金支付-查看
                     ZFTBatchBill: false, //资金支付-批量制单
+                    ZFTBatchPay: false, //资金支付-批量支付
                     ZFTBatchView: false, //资金支付-批量查看
                     ZFTCheck: false, //资金支付-交易核对
                     ZFTSuplierAcc: false, //收款方账户维护

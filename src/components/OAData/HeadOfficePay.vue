@@ -373,6 +373,16 @@
                         dialogData[k] = row[k];
                     }
                 }
+
+                //获取附件列表
+                this.emptyFileList = [];
+                this.fileMessage.bill_id = row.id;
+                this.triggerFile = !this.triggerFile;
+
+                //业务状态跟踪
+                this.businessParams = {};
+                this.businessParams.biz_type = 20;
+                this.businessParams.id = row.id;
             },
             //编辑
             editData: function(row){
