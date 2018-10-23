@@ -249,10 +249,12 @@
                         <el-form-item label="账户号" prop="acc_id">
                             <el-select v-model="dialogData.acc_id" @change="changeAccount" clearable>
                                 <el-option
-                                v-for="item in accOptions"
-                                :key="item.acc_no"
-                                :label="item.acc_no"
-                                :value="item.acc_id">
+                                    v-for="item in accOptions"
+                                    :key="item.acc_no"
+                                    :label="item.acc_no"
+                                    :value="item.acc_id">
+                                    <span>{{ item.acc_no }}</span>
+                                    <span style="margin-left:10px;color:#bbb">{{ item.acc_name }}</span>
                                 </el-option>
                             </el-select>
                         </el-form-item>

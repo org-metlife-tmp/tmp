@@ -136,6 +136,8 @@
                                     :key="item.acc_no"
                                     :label="item.acc_no"
                                     :value="item">
+                                    <span>{{ item.acc_no }}</span>
+                                    <span style="margin-left:10px;color:#bbb">{{ item.acc_name }}</span>
                                 </el-option>
                             </el-select>
                         </el-form-item>
