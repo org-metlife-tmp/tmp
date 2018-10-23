@@ -206,7 +206,7 @@
                 <el-table-column prop="opp_acc_name" label="对方账户名称" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="amount" label="交易金额" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="summary" label="摘要" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="create_on" label="交易时间" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="trans_date" label="交易时间" :show-overflow-tooltip="true"></el-table-column>
             </el-table>
         </section>
     </div>
