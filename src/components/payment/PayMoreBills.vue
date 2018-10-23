@@ -1219,6 +1219,7 @@
                 var validater = {
                     pay_account_id: "请选择付款方",
                     pay_mode: "请选择付款方式",
+                    biz_id: "请选择业务类型",
                     recv_account_name: "请选择户名",
                     recv_account_no: "请选择账号",
                     bank_name: "请选择开户行",

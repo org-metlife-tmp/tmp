@@ -159,7 +159,7 @@
                         </el-tooltip>
                         <el-tooltip content="撤回" placement="bottom" effect="light"
                                     :enterable="false" :open-delay="500"
-                                    v-if="!isPending">
+                                    v-if="!isPending && scope.row.service_status != 3 && scope.row.service_status != 9">
                             <el-button size="mini" class="withdraw"
                                        @click="withdrawData(scope.row)"></el-button>
                         </el-tooltip>

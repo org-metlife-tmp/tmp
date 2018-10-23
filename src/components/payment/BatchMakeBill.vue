@@ -867,6 +867,7 @@
                 var validater = {
                     pay_acc_id: "请选择付款方",
                     pay_mode: "请选择付款方式",
+                    biz_id: "请选择业务类型",
                     batchno: "请上传收款方数据"
                 }
                 for(var k in validater){
