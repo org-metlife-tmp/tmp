@@ -245,7 +245,7 @@
                         size="mini">
                 </el-date-picker>
                 <el-select v-model="billData.biz_id" placeholder="请选择业务类型"
-                           filterable clearable size="mini" >
+                           filterable size="mini" >
                     <el-option v-for="payItem in payStatList"
                                :key="payItem.biz_id"
                                :label="payItem.biz_name"
@@ -470,6 +470,7 @@
 
             this.messageTips = {
                 pay_mode: "请选择付款方式！",
+                biz_id: "请选择业务类型！",
                 pay_account_id: "请选择付款方账号！",
                 recv_account_id: "请选择收款方账号！",
                 payment_amount: "请填写金额！"
@@ -822,7 +823,7 @@
                     files: [],
                 }
                 for(var k in params){
-                    if(k != "payment_summary" && k != "files" && !billData[k] && k != "biz_id"){
+                    if(k != "payment_summary" && k != "files" && !billData[k]){
                         this.$message({
                             type: "warning",
                             message: this.messageTips[k],

@@ -501,9 +501,8 @@
                 overflow-y: auto;
             }
         }
-
         .el-radio-group {
-
+            text-align: left;
             .el-radio {
                 display: block;
                 margin-left: 30px;
@@ -569,7 +568,7 @@
                         size="mini">
                 </el-date-picker>
                 <el-select v-model="billData.bizObj" placeholder="请选择业务类型"
-                           filterable clearable size="mini" value-key="biz_id">
+                           filterable size="mini" value-key="biz_id">
                     <el-option v-for="payItem in payStatList"
                                :key="payItem.biz_id"
                                :label="payItem.biz_name"
@@ -741,6 +740,7 @@
             </span>
         </el-dialog>
         <el-dialog :visible.sync="commitVisible"
+                    class="commitDialog"
                     width="50%" title="提交审批流程" top="76px"
                     :close-on-click-modal="false">
             <h1 slot="title" class="dialog-title">提交审批流程</h1>
@@ -902,6 +902,7 @@
                 uuid: "没有uuid！",
                 total_amount: "请上传模板！",
                 pay_account_id: "请选择付款方！",
+                biz_id: "请选择业务类型！",
                 pay_mode: "请选择付款方式！"
             }
 
@@ -1053,6 +1054,7 @@
                 var hasParams = {
                     uuid: "",
                     pay_account_id: "",
+                    biz_id: "",
                     pay_mode: "",
                     total_amount: ""
                 }

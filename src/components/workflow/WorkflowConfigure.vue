@@ -752,10 +752,10 @@
             lookFlow: function (row) {
                 if (row.id) {
                     this.$axios({
-                        url: "/cfm/adminProcess",
+                        url: "/cfm/commProcess",
                         method: "post",
                         data: {
-                            optype: "wfdefine_detail",
+                            optype: "wfquery_wfdetail",
                             params: {
                                 id: row.id
                             }

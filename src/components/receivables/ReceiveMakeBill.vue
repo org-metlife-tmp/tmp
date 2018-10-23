@@ -244,7 +244,7 @@
                         size="mini">
                 </el-date-picker>
                 <el-select v-model="billData.recv_account_id " placeholder="请选择收款方"
-                           filterable clearable size="mini">
+                           filterable size="mini">
                     <el-option v-for="item in accOptions"
                                :key="item.acc_id"
                                :label="item.acc_no"
@@ -252,7 +252,7 @@
                     </el-option>
                 </el-select>
                 <el-select v-model="billData.biz_id" placeholder="请选择业务类型"
-                           filterable clearable size="mini"
+                           filterable size="mini"
                            @change="setBizName">
                     <el-option v-for="payItem in payStatList"
                                :key="payItem.biz_id"
@@ -538,6 +538,7 @@
             });
             this.messageTips = {
                 recv_account_id: "请选择收款方！",
+                biz_id: "请选择业务类型！",
                 pay_account_no: "请选择付款方账号！",
                 receipts_amount: "请填写金额！",
             }
