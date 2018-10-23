@@ -340,6 +340,7 @@
                     <el-table :data="item.tableList"
                         border
                         height="100%"
+                        @selection-change="handleSelectionChange"
                         size="mini">
                         <el-table-column
                             v-if="activeName!='0'"
@@ -437,18 +438,18 @@
             </el-tabs>
         </div>
         <!--加签同意功能-->
-        <!-- <div class="button-list" v-if="isPending" v-show="activeName!='0'">
+        <div class="button-list" v-if="isPending" v-show="activeName!='0'">
             <el-button type="primary"
                 plain
                 size="small"
-                @click=""
+                @click="showThirdDialog('addLots','more')"
                 icon="el-icon-circle-plus-outline">加签</el-button>
             <el-button type="warning"
                 plain
                 size="small"
-                @click=""
+                @click="showThirdDialog('agree','more')"
                 icon="el-icon-circle-check-outline">同意</el-button>
-        </div> -->
+        </div>
         <!--分页部分-->
         <div class="botton-pag">
             <el-pagination
@@ -687,7 +688,9 @@
                     list:"openintent_pendingtasks",
                     addLots:"openintent_append",
                     agree:"openintent_agree",
-                    reject:"openintent_reject"
+                    reject:"openintent_reject",
+                    'more-addLots':"openintent_batchappend",
+                    'more-agree':"openintent_batchagree"
                 },
                 "2":{
                     text:"开户信息补录",
@@ -695,7 +698,9 @@
                     list:"opencom_pendingtasks",
                     addLots:"opencom_append",
                     agree:"opencom_agree",
-                    reject:"opencom_reject"
+                    reject:"opencom_reject",
+                    'more-addLots':"opencom_batchappend",
+                    'more-agree':"opencom_batchagree"
                 },
                 "3":{
                     text:"账户变更",
@@ -703,7 +708,9 @@
                     list:"openchg_pendingtasks",
                     addLots:"openchg_append",
                     agree:"openchg_agree",
-                    reject:"openchg_reject"
+                    reject:"openchg_reject",
+                    'more-addLots':"openchg_batchappend",
+                    'more-agree':"openchg_batchagree"
                 },
                 "4":{
                     text:"账户冻结",
@@ -711,7 +718,9 @@
                     list:"accfreeze_pendingtasks",
                     addLots:"accfreeze_append",
                     agree:"accfreeze_agree",
-                    reject:"accfreeze_reject"
+                    reject:"accfreeze_reject",
+                    'more-addLots':"accfreeze_batchappend",
+                    'more-agree':"accfreeze_batchagree"
                 },
                 "5":{
                     text:"账户解冻",
@@ -719,7 +728,9 @@
                     list:"accdefreeze_pendingtasks",
                     addLots:"accdefreeze_append",
                     agree:"accdefreeze_agree",
-                    reject:"accdefreeze_reject"
+                    reject:"accdefreeze_reject",
+                    'more-addLots':"accdefreeze_batchappend",
+                    'more-agree':"accdefreeze_batchagree"
                 },
                 "6":{
                     text:"销户事项",
@@ -727,7 +738,9 @@
                     list:"closeacc_pendingtasks",
                     addLots:"closeacc_append",
                     agree:"closeacc_agree",
-                    reject:"closeacc_reject"
+                    reject:"closeacc_reject",
+                    'more-addLots':"closeacc_batchappend",
+                    'more-agree':"closeacc_batchagree"
                 },
                 "7":{
                     text:"销户信息补录",
@@ -735,7 +748,9 @@
                     list:"closeacccomple_pendingtasks",
                     addLots:"closeacccomple_append",
                     agree:"closeacccomple_agree",
-                    reject:"closeacccomple_reject"
+                    reject:"closeacccomple_reject",
+                    'more-addLots':"closeacccomple_batchappend",
+                    'more-agree':"closeacccomple_batchagree"
                 },
                 "8":{
                     text:"内部调拨",
@@ -743,7 +758,9 @@
                     list:"dbt_pendingtasks",
                     addLots:"dbt_append",
                     agree:"dbt_agree",
-                    reject:"dbt_reject"
+                    reject:"dbt_reject",
+                    'more-addLots':"dbt_batchappend",
+                    'more-agree':"dbt_batchagree"
                 },
                 "9":{
                     text:"支付通",
@@ -751,7 +768,9 @@
                     list:"zft_pendingtasks",
                     addLots:"zft_append",
                     agree:"zft_agree",
-                    reject:"zft_reject"
+                    reject:"zft_reject",
+                    'more-addLots':"zft_batchappend",
+                    'more-agree':"zft_batchagree"
                 },
                 "10":{
                     text:"内部调拨-批量",
@@ -759,7 +778,9 @@
                     list:"dbtbatch_pendingtasks",
                     addLots:"dbtbatch_append",
                     agree:"dbtbatch_agree",
-                    reject:"dbtbatch_reject"
+                    reject:"dbtbatch_reject",
+                    'more-addLots':"dbtbatch_batchappend",
+                    'more-agree':"dbtbatch_batchagree"
                 },
                 "11":{
                     text:"支付通-批量",
@@ -767,7 +788,9 @@
                     list:"zftbatch_pendingtasks",
                     addLots:"zftbatch_append",
                     agree:"zftbatch_agree",
-                    reject:"zftbatch_reject"
+                    reject:"zftbatch_reject",
+                    'more-addLots':"zftbatch_batchappend",
+                    'more-agree':"zftbatch_batchagree"
                 },
                 "12":{
                     text:"归集通",
@@ -775,7 +798,9 @@
                     list:"collectsetting_pendingtasks",
                     addLots:"collectsetting_append",
                     agree:"collectsetting_agree",
-                    reject:"collectsetting_reject"
+                    reject:"collectsetting_reject",
+                    'more-addLots':"collectsetting_batchappend",
+                    'more-agree':"collectsetting_batchagree"
                 },
                 "13":{
                     text:"资金下拨",
@@ -783,7 +808,9 @@
                     list:"allocset_pendingtasks",
                     addLots:"allocset_append",
                     agree:"allocset_agree",
-                    reject:"allocset_reject"
+                    reject:"allocset_reject",
+                    'more-addLots':"allocset_batchappend",
+                    'more-agree':"allocset_batchagree"
                 },
                 "14":{
                     text:"广银联备付金",
@@ -791,7 +818,9 @@
                     list:"gylsetting_pendingtasks",
                     addLots:"gylsetting_append",
                     agree:"gylsetting_agree",
-                    reject:"gylsetting_reject"
+                    reject:"gylsetting_reject",
+                    'more-addLots':"gylsetting_batchappend",
+                    'more-agree':"gylsetting_batchagree"
                 },
                 "15":{
                     text:"收款通",
@@ -799,7 +828,9 @@
                     list:"skt_pendingtasks",
                     addLots:"skt_append",
                     agree:"skt_agree",
-                    reject:"skt_reject"
+                    reject:"skt_reject",
+                    'more-addLots':"skt_batchappend",
+                    'more-agree':"skt_batchagree"
                 },
                 "19":{
                     text:"非直连归集",
@@ -807,7 +838,9 @@
                     list:"ndc_pendingtasks",
                     addLots:"ndc_append",
                     agree:"ndc_agree",
-                    reject:"ndc_reject"
+                    reject:"ndc_reject",
+                    'more-addLots':"ndc_batchappend",
+                    'more-agree':"ndc_batchagree"
                 },
                 "20":{
                     text:"OA数据总公司付款",
@@ -815,7 +848,9 @@
                     list:"headorgoa_pendingtasks",
                     addLots:"headorgoa_append",
                     agree:"headorgoa_agree",
-                    reject:"headorgoa_reject"
+                    reject:"headorgoa_reject",
+                    'more-addLots':"headorgoa_batchappend",
+                    'more-agree':"headorgoa_batchagree"
                 },
                 "21":{
                     text:"OA数据分公司付款",
@@ -823,7 +858,9 @@
                     list:"branchorgoa_pendingtasks",
                     addLots:"branchorgoa_append",
                     agree:"branchorgoa_agree",
-                    reject:"branchorgoa_reject"
+                    reject:"branchorgoa_reject",
+                    'more-addLots':"branchorgoa_batchappend",
+                    'more-agree':"branchorgoa_batchagree"
                 },
             };
 
@@ -1502,6 +1539,7 @@
                 PayModeList: {}, //付款方式
                 isFromHome: false,//是否从首页进入
                 isTop:false,//只有一个tab加样式
+                selectionData: [],//选择加签或者同意的数据
             }
         },
         methods:{
@@ -1696,8 +1734,9 @@
                 this.$emit("getTableData", this.routerMessage);
             },
             //加签
-            showThirdDialog:function(type){
+            showThirdDialog:function(type,number){
                 this.thirdFunData = {};
+                this.thirdFunData.number = number ? 'more' : '';
                 if(type == 'addLots'){
                     this.thirdFunTitle = "加签";
                 }else if(type == 'reject'){
@@ -1830,27 +1869,65 @@
             },
             //确认加签或同意或拒绝
             confirmThirdFun:function(){
-                let type = this.thirdFunData.type;
-                let _index = this.dialogData.biz_type;
+                let type = this.thirdFunData.type;//加签？拒绝？同意？
+                let number = this.thirdFunData.number;//批量？单笔？
+                let _index = this.activeName;
                 let message = "";
                 let optype = "";
+                let selData = this.selectionData;
+                let batch_list = [];
+                let memo = this.thirdFunData.assignee_memo;
+                var lotParams = {};
                 if(type == "addLots"){
-                    let user = this.thirdFunData.user;
                     //组装加签参数
-                    this.currentData.shadow_user_id = user.id;
-                    this.currentData.shadow_user_name = user.name;
-                    optype = this.classParams[_index].addLots;
+                    let user = this.thirdFunData.user;
+                    if(number){//批量同意参数
+                        selData.forEach(ele =>{
+                            let obj = {};
+                            obj.define_id = ele.define_id;
+                            obj.id= ele.bill_id;
+                            obj.persist_version = ele.persist_version;
+                            obj.service_status = ele.service_status;
+                            obj.wf_inst_id = ele.inst_id;
+                            obj.assignee_memo = memo;
+                            obj.shadow_user_id = user.id;
+                            obj.shadow_user_name = user.name;
+                            batch_list.push(obj);
+                        })
+                        lotParams.batch_list = batch_list;
+                        optype = this.classParams[_index]['more-addLots'];
+                    }else{
+                        this.currentData.shadow_user_id = user.id;
+                        this.currentData.shadow_user_name = user.name;
+                        this.currentData.assignee_memo = memo;
+                        optype = this.classParams[_index].addLots;
+                    }
                     message = "加签成功";
                 }else if(type == "reject"){
+                    this.currentData.assignee_memo = memo;
                     optype = this.classParams[_index].reject;
                     message = "拒绝成功";
                 }else{
-                     optype = this.classParams[_index].agree;
+                    if(number){//批量同意参数
+                        selData.forEach(ele =>{
+                            let obj = {};
+                            obj.define_id = ele.define_id;
+                            obj.id= ele.bill_id;
+                            obj.persist_version = ele.persist_version;
+                            obj.service_status = ele.service_status;
+                            obj.wf_inst_id = ele.inst_id;
+                            obj.assignee_memo = memo;
+                            batch_list.push(obj);
+                        })
+                        lotParams.batch_list = batch_list;
+                        optype = this.classParams[_index]['more-agree'];
+                    }else{
+                        this.currentData.assignee_memo = memo;
+                        optype = this.classParams[_index].agree;
+                    }
                     message = "同意成功";
                 }
-
-                this.currentData.assignee_memo = this.thirdFunData.assignee_memo;
-                let paramsObj = this.currentData;
+                let paramsObj = number ? lotParams : this.currentData;
                 this.$axios({
                     url:"/cfm/normalProcess",
                     method:"post",
@@ -1916,7 +1993,11 @@
                     });
                 }
                 return str;
-            }
+            },
+            //选择加签的或者同意的数据
+            handleSelectionChange: function (val) {
+                this.selectionData = val;
+            },
         },
         computed:{
             classObject:function (){
