@@ -74,6 +74,13 @@
 <template>
     <div id="dealCheck">
         <!-- 顶部按钮-->
+        <div class="button-list-right" v-show="oaControl">
+            <el-select v-model="dataNum" filterable style="width:100%" size="mini"
+                       @change="setParams">
+                <el-option value="1" label="总公司付款"></el-option>
+                <el-option value="2" label="分公司付款"></el-option>
+            </el-select>
+        </div>
         <div class="button-list-right" v-show="showDataNum">
             <el-select v-model="dataNum" filterable style="width:100%" size="mini"
                        @change="setParams">
@@ -142,6 +149,8 @@
                 <el-table-column prop="pay_account_bank" label="付款银行" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="recv_account_no" label="收款方账号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="recv_account_name" label="收款方公司名称" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="item_type" label="支付类型" :show-overflow-tooltip="true"
+                                 v-if="routerMessage.todo.optype == 'branchorgoacheck_checkbillList'"></el-table-column>
                 <el-table-column prop="payment_amount" label="金额" :show-overflow-tooltip="true"
                                  :formatter="transitAmount"></el-table-column>
                 <el-table-column prop="create_on" label="日期" :show-overflow-tooltip="true"></el-table-column>
@@ -279,13 +288,15 @@
                 currSelectData: {},
                 selectData: [], //待管理数据选中数据
                 dataNum: "1",
-                showDataNum: true
+                showDataNum: true,
+                oaControl: false
             }
         },
         methods: {
             //设置页面相关optype
             setOptypes: function(queryData){
                 this.showDataNum = true;
+                this.oaControl = false;
                 //设置当前optype信息
                 if (queryData.bizType == "9") { //支付通
                     this.routerMessage.todo.optype = "zft_checkbillList"; //未核对
@@ -309,11 +320,21 @@
                     this.validatedOptype = "gylcheck_checkAlreadyTradeList";
                     this.showDataNum = false;
                 }
+                if(queryData.bizType == "20"){ //总公司付款
+                    this.routerMessage.todo.optype = "headorgoacheck_checkbillList";
+                    this.routerMessage.done.optype = "headorgoacheck_checkbillList";
+                    this.checkOptype = "headorgoacheck_checkTradeList";
+                    this.confirmOptype = "headorgoacheck_confirmCheck";
+                    this.validatedOptype = "headorgoacheck_checkAlreadyTradeList";
+                    this.showDataNum = false;
+                    this.oaControl = true;
+                }
                 this.$emit("getTableData", this.routerMessage);
             },
             //设置批量相关optype
             setBatchOptype: function(queryData){
                 this.showDataNum = true;
+                this.oaControl = false;
                 //设置当前optype信息
                 if (queryData.bizType == "9") { //支付通
                     this.routerMessage.todo.optype = "zftbatchcheck_checkbillList"; //未核对
@@ -328,6 +349,15 @@
                     this.checkOptype = "collectbatchcheck_checkNoCheckTradeList";
                     this.confirmOptype = "collectbatchcheck_confirmCheck";
                     this.validatedOptype = "collectbatchcheck_checkAlreadyTradeList";
+                }
+                if(queryData.bizType == "20"){ //分公司付款
+                    this.routerMessage.todo.optype = "branchorgoacheck_checkbillList";
+                    this.routerMessage.done.optype = "branchorgoacheck_checkbillList";
+                    this.checkOptype = "branchorgoacheck_checkTradeList";
+                    this.confirmOptype = "branchorgoacheck_confirmCheck";
+                    this.validatedOptype = "branchorgoacheck_checkAlreadyTradeList";
+                    this.showDataNum = false;
+                    this.oaControl = true;
                 }
                 this.$emit("getTableData", this.routerMessage);
             },
