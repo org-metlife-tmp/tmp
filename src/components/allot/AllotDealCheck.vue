@@ -381,37 +381,45 @@
                     trading_no.push(element.id);
                 });
                 if(trading_no.length){
-                    var row = this.currenrRow;
-                    this.$axios({
-                        url:"/cfm/normalProcess",
-                        method:"post",
-                        data:{
-                            optype:this.confirmOptype,
-                            params:{
-                                bill_no: row.id,
-                                trading_no: trading_no,
-                                persist_version: row.persist_version
+                    this.$confirm('确认核对当前选择数据吗?', '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    }).then(() => {
+                        var row = this.currenrRow;
+                        this.$axios({
+                            url:"/cfm/normalProcess",
+                            method:"post",
+                            data:{
+                                optype:this.confirmOptype,
+                                params:{
+                                    bill_no: row.id,
+                                    trading_no: trading_no,
+                                    persist_version: row.persist_version
+                                }
                             }
-                        }
-                    }).then((result) => {
-                        if (result.data.error_msg) {
-                            this.$message({
-                                type: "error",
-                                message: result.data.error_msg,
-                                duration: 2000
-                            })
-                        } else {
-                            this.$emit("getTableData", this.routerMessage);
-                            this.childList = [];
-                            this.$message({
-                                type: "success",
-                                message: "交易成功！",
-                                duration: 2000
-                            })
-                        }
-                    }).catch(function (error) {
-                        console.log(error);
-                    })
+                        }).then((result) => {
+                            if (result.data.error_msg) {
+                                this.$message({
+                                    type: "error",
+                                    message: result.data.error_msg,
+                                    duration: 2000
+                                })
+                            } else {
+                                this.$emit("getTableData", this.routerMessage);
+                                this.childList = [];
+                                this.$message({
+                                    type: "success",
+                                    message: "交易成功！",
+                                    duration: 2000
+                                })
+                            }
+                        }).catch(function (error) {
+                            console.log(error);
+                        })
+                    }).catch(() => {
+                        
+                    });
                 }
             },
             //点击获取当前展开表格数据
