@@ -1871,7 +1871,7 @@
             confirmThirdFun:function(){
                 let type = this.thirdFunData.type;//加签？拒绝？同意？
                 let number = this.thirdFunData.number;//批量？单笔？
-                let _index = this.activeName;
+                let _index = this.activeName == '0'? this.dialogData.biz_type : this.activeName;
                 let message = "";
                 let optype = "";
                 let selData = this.selectionData;
