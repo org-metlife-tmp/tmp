@@ -471,8 +471,7 @@
                         :page-size="dialogPagSize"
                         :total="dialogPagTotal"
                         :pager-count="5"
-                        @current-change="diaCurrentPage"
-                        :current-page="dialogPagCurrent">
+                        @current-change="diaCurrentPage">
                 </el-pagination>
             </div>
         </el-dialog>
@@ -560,7 +559,6 @@
                 },
                 dialogPagSize: 10,
                 dialogPagTotal: 1,
-                dialogPagCurrent: 1,
                 dialogTotal: {
                     total_num: 0,
                     total_amount: 0
@@ -694,9 +692,7 @@
                         this.dialogPagSize = data.page_size;
                         this.dialogPagTotal = data.total_line;
                         this.dialogList = data.data;
-                        this.dialogPagCurrent = data.page_num;
                         this.dialogTotal = data.ext;
-                        console.log(data);
                     }
                 }).catch(function (error) {
                     console.log(error);

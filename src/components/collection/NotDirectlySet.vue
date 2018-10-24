@@ -144,12 +144,12 @@
                 }
             }
 
-            .pay-file-list{
+            .pay-file-list {
                 height: 50px;
                 width: 80%;
                 margin: 10px auto 0px;
 
-                li{
+                li {
                     float: left;
                     position: relative;
                     cursor: pointer;
@@ -157,7 +157,7 @@
                     border: 1px solid #ccc;
                     padding: 6px;
 
-                    span{
+                    > span {
                         width: 38px;
                         height: 42px;
                         display: inline-block;
@@ -165,20 +165,20 @@
                         background-position: -85px -103px;
                         vertical-align: middle;
                     }
-                    .txt{
+                    .txt {
                         background-position: -85px -103px;
                     }
-                    .doc,.docx{
+                    .doc, .docx {
                         background-position: 0px -103px;
                     }
-                    .xls,.xlsx{
+                    .xls, .xlsx {
                         background-position: -44px -103px;
                     }
-                    .png,.jpg{
+                    .png, .jpg {
                         background-position: -132px -103px;
                     }
 
-                    i{
+                    > i {
                         position: absolute;
                         width: 21px;
                         height: 21px;
@@ -187,25 +187,51 @@
                         top: -8px;
                         left: 40px;
                         display: none;
+                        z-index: 1;
                     }
 
-                    div{
+                    div {
                         position: absolute;
                         bottom: -22px;
                         width: 60px;
                         left: -6px;
                     }
 
-                    div:nth-child(4){
+                    div:nth-child(4) {
                         bottom: -42px;
                         width: 300px;
                         left: -124px;
                     }
+
+                    p {
+                        display: none;
+                        position: absolute;
+                        background: rgba(0, 0, 0, 0.5);
+                        width: 100%;
+                        height: 100%;
+                        top: 0;
+                        left: 0;
+                        color: #fff;
+
+                        i {
+                            background: url("../../assets/icon_common.png");
+                            background-position: -271px 0;
+                            width: 38px;
+                            height: 22px;
+                            display: block;
+                            background-repeat: no-repeat;
+                            margin: 6px auto;
+                            height: 20px;
+                        }
+                    }
                 }
 
-                li:hover{
-                    i{
+                li:hover {
+                    > i {
                         display: inline-block;
+                    }
+                    p {
+                        display: block;
                     }
                 }
             }
@@ -255,16 +281,16 @@
         }
 
         /*上传错误信息*/
-        .errorTip{
+        .errorTip {
             width: 100%;
             display: inline-block;
             text-align: center;
             margin-bottom: 20px;
-            .error-name{
+            .error-name {
                 color: #fc6e21;
                 line-height: 25px;
             }
-            .downLoad{
+            .downLoad {
                 color: #00B4EC;
             }
         }
@@ -296,7 +322,6 @@
                 }
             }
         }
-
 
         .dialog-upload-input {
             width: 90%;
@@ -353,7 +378,7 @@
             }
         }
         //提交流程查看按钮
-        .flow-tip-box{
+        .flow-tip-box {
             display: inline-block;
             width: 24px;
             height: 20px;
@@ -366,6 +391,48 @@
             background-color: #fff;
             border: 0;
             padding: 0;
+        }
+        /*汇总数据*/
+        .allData {
+            height: 36px;
+            line-height: 36px;
+            width: 100%;
+            background-color: #F8F8F8;
+            border: 1px solid #ebeef5;
+            border-top: none;
+            box-sizing: border-box;
+            text-align: right;
+
+            /*左侧按钮*/
+            .btn-left {
+                float: left;
+                margin-left: 16px;
+
+                .transmit-icon {
+                    position: relative;
+                    display: inline-block;
+                    width: 16px;
+                    height: 10px;
+                    vertical-align: middle;
+                    margin-right: 4px;
+
+                    i {
+                        position: absolute;
+                        top: -5px;
+                        left: -3px;
+                        width: 18px;
+                        height: 18px;
+                        background: url(../../assets/icon_common.png) no-repeat;
+                        background-position: -49px -80px;
+                    }
+                }
+            }
+
+            /*汇总数字*/
+            .numText {
+                color: #FF5800;
+                margin-right: 10px;
+            }
         }
     }
 </style>
@@ -418,6 +485,10 @@
                                     <i title="点击删除" @click="delUpFile(file)"></i>
                                     <div>{{ file.number }}笔</div>
                                     <div>{{ file.amount }}元</div>
+                                    <p v-show="billData.id" @click="lookList(file)">
+                                        <i class="bill-icon eyeicon"></i>
+                                        <span>查看</span>
+                                    </p>
                                 </li>
                             </ul>
                         </td>
@@ -481,7 +552,7 @@
             <div class="errorTip" v-show="errorTipShow">
                 <div class="error-name">文档内容不符合要求</div>
                 <a class="downLoad" href="javascript:;"
-                   @click = "templateDownLoad(currentUpload.download_object_id)"
+                   @click="templateDownLoad(currentUpload.download_object_id)"
                    v-text="'/cfm/normal/excel/downExcel?object_id='+currentUpload.download_object_id"
                 ></a>
             </div>
@@ -534,6 +605,45 @@
                     :flowList="flowList"
                     :isEmptyFlow="isEmptyFlow"
             ></WorkFlow>
+
+        </el-dialog>
+        <!--查看弹出框-->
+        <el-dialog title="详细信息"
+                   :visible.sync="listDialogVisible"
+                   width="900px" top="76px"
+                   :close-on-click-modal="false">
+            <div class="list-table">
+                <el-table :data="dialogList"
+                          border size="mini">
+                    <el-table-column prop="pay_account_name" label="付款户名"
+                                     :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column prop="pay_account_no" label="付款账号" :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column prop="pay_account_bank" label="付款行"
+                                     :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column prop="payment_amount" label="金额" :show-overflow-tooltip="true"
+                                     :formatter="transitAmount"></el-table-column>
+                    <el-table-column prop="pay_status" label="业务状态" :show-overflow-tooltip="true"
+                                     :formatter="transitStatus"></el-table-column>
+                    <el-table-column prop="feed_back" label="反馈信息" :show-overflow-tooltip="true"></el-table-column>
+                </el-table>
+                <div class="allData">
+                    <span>总笔数：</span>
+                    <span v-text="dialogTotal.total_num" class="numText"></span>
+                    <span>总金额：</span>
+                    <span v-text="dialogTotal.total_amount" class="numText"></span>
+                </div>
+                <el-pagination style="margin:16px 0 0 280px"
+                               background
+                               layout="prev, pager, next, jumper"
+                               :page-size="dialogPagSize"
+                               :total="dialogPagTotal"
+                               :pager-count="5"
+                               @current-change="diaCurrentPage">
+                </el-pagination>
+            </div>
+            <span slot="footer" class="dialog-footer">
+
+                </span>
         </el-dialog>
     </div>
 </template>
@@ -551,8 +661,7 @@
                 method: "post",
                 data: {
                     optype: "ndc_accs",
-                    params: {
-                    }
+                    params: {}
                 }
             }).then((result) => {
                 this.accOptions = result.data.data;
@@ -560,7 +669,7 @@
 
             //获取单据数据
             var hash = window.location.hash.split("?")[1];
-            if(hash){
+            if (hash) {
                 var paramsList = hash.split("&");
                 var params = {
                     uuid: JSON.parse(window.sessionStorage.getItem("uuid"))
@@ -609,7 +718,7 @@
             Upload: Upload,
             WorkFlow: WorkFlow
         },
-        beforeRouteUpdate (to, from, next) {
+        beforeRouteUpdate(to, from, next) {
             this.clearBill();
             next();
         },
@@ -653,7 +762,26 @@
                 flowList: {},//查看流程
                 isEmptyFlow: false,//
                 lookFlowDialogVisible: false,
+
+
+                listDialogVisible: false, //附件列表弹框
+                dialogTotal: {
+                    total_num: "",
+                    total_amount: "",
+                },
+                dialogList: [],
+                dialogPagSize: 10,
+                dialogPagTotal: 1,
+                dialogMessage: {
+                    page_num: 1,
+                    page_size: 8,
+                    id: "",
+                    batchno: ""
+                },
+
             }
+
+
         },
         methods: {
             //设置当前项上传附件
@@ -668,19 +796,19 @@
                 }
             },
             //模板下载
-            templateDownLoad:function (val){
+            templateDownLoad: function (val) {
                 var params = {};
-                if(val){
+                if (val) {
                     params.object_id = val;
-                }else{
+                } else {
                     params.pk = "9";
                 }
 
                 this.$axios({
                     url: "/cfm/normal/excel/downExcel",
                     method: "post",
-                    data:{
-                        params:params
+                    data: {
+                        params: params
                     },
                     responseType: 'blob'
                 }).then((result) => {
@@ -718,7 +846,7 @@
             },
             //上传成功
             uploadSuccess: function (response, file, fileList) {
-                if(response.error_message){
+                if (response.error_message) {
                     this.$message({
                         type: "error",
                         message: response.error_message,
@@ -727,7 +855,7 @@
                     this.currentUpload.download_object_id = response.download_object_id;
                     this.errorTipShow = true;
                     return;
-                }else{
+                } else {
                     this.currentUpload = response;
                     this.addExcel = false;
                     this.$message({
@@ -747,7 +875,7 @@
                     document_id: currentUpload.document_id,
                     origin_name: currentUpload.original_file_name
                 }
-                if(this.billData.batchno){
+                if (this.billData.batchno) {
                     params.batchno = this.billData.batchno;
                 }
 
@@ -787,7 +915,7 @@
                 });
             },
             //删除
-            delUpFile: function(file){
+            delUpFile: function (file) {
                 var params = {
                     batchno: file.batchno,
                     uuid: file.uuid,
@@ -846,8 +974,8 @@
                     recv_account_id: "请选择收款方",
                     batchno: "请上传付款方信息"
                 }
-                for(var k in validater){
-                    if(!params[k]){
+                for (var k in validater) {
+                    if (!params[k]) {
                         this.$message({
                             type: "warning",
                             message: validater[k],
@@ -939,7 +1067,7 @@
                 var params = {
                     define_id: this.selectWorkflow,
                     id: workflowData.id,
-                    service_serial_number : workflowData.batchno,
+                    service_serial_number: workflowData.batchno,
                     service_status: workflowData.service_status,
                     persist_version: workflowData.persist_version
                 };
@@ -979,8 +1107,9 @@
             goMoreBills: function () {
                 this.$router.push("/collection/no-directly-more");
             },
+
             //展示提交流程详情
-            showFlowDialog:function(workflow){
+            showFlowDialog: function (workflow) {
                 this.lookFlowDialogVisible = true;
                 this.$axios({
                     url: "/cfm/commProcess",
@@ -1005,11 +1134,74 @@
                         //将数据传递给子组件
                         this.flowList = define;
                         this.isEmptyFlow = false;
-                        
+
                     }
                 })
             },
-            cancelLookFlow:function(){
+
+            //获取附件数据列表
+            getDialogList: function (pageNum) {
+                var params = this.dialogMessage;
+                params.page_num = pageNum;
+
+                //获取汇总数据
+                this.$axios({
+                    url: "/cfm/normalProcess",
+                    method: "post",
+                    data: {
+                        optype: "ndc_batchbillattlist",
+                        params: params
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+
+                    } else {
+                        var data = result.data;
+                        this.dialogList = data.data;
+                        this.dialogPagSize = data.page_size;
+                        this.dialogPagTotal = data.total_line;
+                        this.dialogTotal = data.ext;
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            },
+            //查看附件数据列表
+            lookList: function (row) {
+                //清空数据
+                this.dialogList = [];
+                this.dialogPagSize = 1;
+                this.dialogPagTotal = 0;
+                this.dialogTotal.total_num = "";
+                this.dialogTotal.total_amount = "";
+
+                this.dialogMessage.id = row.id;
+                this.dialogMessage.batchno = row.batchno;
+                this.getDialogList(1);
+                this.listDialogVisible = true;
+            },
+            //查看-列表换页
+            diaCurrentPage: function (currPage) {
+                this.getDialogList(currPage);
+            },
+            //展示格式转换-金额
+            transitAmount: function (row, column, cellValue, index) {
+                return this.$common.transitSeparator(cellValue);
+            },
+            //展示格式转换-处理状态
+            transitStatus: function (row, column, cellValue, index) {
+                var constants = JSON.parse(window.sessionStorage.getItem("constants"));
+                if (constants.BillStatus) {
+                    return constants.BillStatus[cellValue];
+                }
+            },
+
+            cancelLookFlow: function () {
                 this.isEmptyFlow = true;
                 this.lookFlowDialogVisible = false;
                 this.flowList = {};
