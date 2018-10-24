@@ -121,7 +121,7 @@
             <el-table :data="tableList" border
                       size="mini"
                       highlight-current-row>
-                <el-table-column prop="service_serial_number" label="单据号" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="bill_no" label="报销单申请号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="pay_account_no" label="付款方账号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="pay_account_bank" label="付款方银行" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="recv_account_name" label="收款人姓名" :show-overflow-tooltip="true"></el-table-column>
@@ -191,6 +191,11 @@
                 ]
             </div>
             <ul class="dialog-talbe">
+                <li class="table-li-title">报销单申请号</li>
+                <li class="table-li-content" v-text="dialogData.bill_no"></li>
+                <li class="table-li-title">申请公司</li>
+                <li class="table-li-content" v-text="dialogData.org_name"></li>
+
                 <li class="table-li-title">付款账户号</li>
                 <li class="table-li-content" v-text="dialogData.pay_account_no"></li>
                 <li class="table-li-title">付款账户名称</li>

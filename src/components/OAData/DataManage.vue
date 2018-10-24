@@ -176,8 +176,10 @@
                    width="900px" top="76px"
                    :close-on-click-modal="false">
             <ul class="dialog-talbe">
-                <li class="table-li-title">报销申请编号</li>
-                <li class="table-li-content table-two-row" v-text="dialogData.bill_no"></li>
+                <li class="table-li-title">报销单申请号</li>
+                <li class="table-li-content" v-text="dialogData.bill_no"></li>
+                <li class="table-li-title">申请公司</li>
+                <li class="table-li-content" v-text="dialogData.org_name"></li>
 
                 <li class="table-li-title">申请部门</li>
                 <li class="table-li-content" v-text="dialogData.apply_dept"></li>
