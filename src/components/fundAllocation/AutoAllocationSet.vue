@@ -163,6 +163,21 @@
         }
 
     }
+    //提交流程查看按钮
+    .flow-tip-box{
+        display: inline-block;
+        width: 24px;
+        height: 20px;
+        vertical-align: middle;
+        background-image: url(../../assets/icon_common.png);
+        background-repeat: no-repeat;
+        background-position: -410px -166px;
+        cursor: pointer;
+        z-index: 5;
+        background-color: #fff;
+        border: 0;
+        padding: 0;
+    }
 </style>
 <style lang="less" type="text/less">
     #autoAllocationSet {
@@ -464,6 +479,7 @@
                             :key="workflow.define_id"
                             :label="workflow.define_id"
                 >{{ workflow.workflow_name }}
+                    <el-button class="flow-tip-box" @click="showFlowDialog(workflow)"></el-button>
                 </el-radio>
             </el-radio-group>
             <span slot="footer" class="dialog-footer" style="text-align:center">
@@ -478,12 +494,24 @@
                 @closeRightDialog="closeRightFlow"
             ></BusinessTracking>
         </div>
+        <!--查看工作流弹出框-->
+        <el-dialog :visible.sync="lookFlowDialogVisible"
+                   width="800px" title="查看流程"
+                   :close-on-click-modal="false"
+                   :before-close="cancelLookFlow"
+                   top="120px">
+            <WorkFlow
+                    :flowList="flowList"
+                    :isEmptyFlow="isEmptyFlow"
+            ></WorkFlow>
+        </el-dialog>
     </div>
 </template>
 
 <script>
     import Upload from "../publicModule/Upload.vue";
     import BusinessTracking from "../publicModule/BusinessTracking.vue";
+    import WorkFlow from "../publicModule/WorkFlow.vue";
     export default {
         name: "AutoAllocationSet",
         created: function () {
@@ -696,11 +724,15 @@
                 viewReadonly: false,//查看只读
                 businessParams: {},//业务追踪
                 messageTips: {},//校验提示信息
+                flowList: {},//查看流程
+                isEmptyFlow: false,//
+                lookFlowDialogVisible: false,
             }
         },
         components: {
             Upload: Upload,
-            BusinessTracking:BusinessTracking
+            BusinessTracking:BusinessTracking,
+            WorkFlow: WorkFlow
         },
         methods: {
             //银行大类搜索筛选
@@ -1234,6 +1266,41 @@
             closeRightFlow:function(){
                 this.businessParams = {};
                 document.getElementById("showbox").style.right="-500px";
+            },
+            //展示提交流程详情
+            showFlowDialog:function(workflow){
+                this.lookFlowDialogVisible = true;
+                this.$axios({
+                    url: "/cfm/commProcess",
+                    method: "post",
+                    data: {
+                        optype: "wfquery_wfdetail",
+                        params: {
+                            id: workflow.id
+                        }
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                        return;
+                    } else {
+                        let getData = result.data.data;
+                        let define = getData.define;
+                        //将数据传递给子组件
+                        this.flowList = define;
+                        this.isEmptyFlow = false;
+                        
+                    }
+                })
+            },
+            cancelLookFlow:function(){
+                this.isEmptyFlow = true;
+                this.lookFlowDialogVisible = false;
+                this.flowList = {};
             }
         }
     }

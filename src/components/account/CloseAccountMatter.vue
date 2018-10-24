@@ -83,13 +83,28 @@
             margin-bottom: 10px;
         }
     }
+    //提交流程查看按钮
+    .flow-tip-box{
+        display: inline-block;
+        width: 24px;
+        height: 20px;
+        vertical-align: middle;
+        background-image: url(../../assets/icon_common.png);
+        background-repeat: no-repeat;
+        background-position: -410px -166px;
+        cursor: pointer;
+        z-index: 5;
+        background-color: #fff;
+        border: 0;
+        padding: 0;
+    }
 </style>
 <style lang="less" type="text/less">
     #closeAccountMatter {
         .el-dialog__wrapper {
             .el-dialog__body {
-                height: 400px;
-                overflow-y: scroll;
+                max-height: 400px;
+                overflow-y: auto;
             }
         }
     }
@@ -331,6 +346,7 @@
                               :key="workflow.define_id"
                               :label="workflow.define_id"
                     >{{ workflow.workflow_name }}
+                        <el-button class="flow-tip-box" @click="showFlowDialog(workflow)"></el-button>
                     </el-radio>
                 </el-radio-group>
                 <span slot="footer" class="dialog-footer" style="text-align:center">
@@ -563,12 +579,24 @@
                 <el-button type="warning" size="mini" @click="handleConfirm">确 定</el-button>
             </span>
         </el-dialog>
+        <!--查看工作流弹出框-->
+        <el-dialog :visible.sync="lookFlowDialogVisible"
+                   width="800px" title="查看流程"
+                   :close-on-click-modal="false"
+                   :before-close="cancelLookFlow"
+                   top="120px">
+            <WorkFlow
+                    :flowList="flowList"
+                    :isEmptyFlow="isEmptyFlow"
+            ></WorkFlow>
+        </el-dialog>
     </div>
 </template>
 
 <script>
     import Upload from "../publicModule/Upload.vue";
-    import BusinessTracking from "../publicModule/BusinessTracking.vue"
+    import BusinessTracking from "../publicModule/BusinessTracking.vue";
+    import WorkFlow from "../publicModule/WorkFlow.vue";
     export default {
         name: "CloseAccountMatter",
         created: function () {
@@ -610,7 +638,8 @@
         props:["isPending","tableData"],
         components: {
             Upload: Upload,
-            BusinessTracking:BusinessTracking
+            BusinessTracking:BusinessTracking,
+            WorkFlow: WorkFlow
         },
         data: function () {
             return {
@@ -688,6 +717,9 @@
                 accOptions:[],//账户号下拉数据,
                 interList:[],//账户模式
                 depositsList:[],//存款类型
+                flowList: {},//查看流程
+                isEmptyFlow: false,//
+                lookFlowDialogVisible: false,
             }
         },
         methods: {
@@ -1248,6 +1280,41 @@
                     }
                 }
             },
+            //展示提交流程详情
+            showFlowDialog:function(workflow){
+                this.lookFlowDialogVisible = true;
+                this.$axios({
+                    url: "/cfm/commProcess",
+                    method: "post",
+                    data: {
+                        optype: "wfquery_wfdetail",
+                        params: {
+                            id: workflow.id
+                        }
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                        return;
+                    } else {
+                        let getData = result.data.data;
+                        let define = getData.define;
+                        //将数据传递给子组件
+                        this.flowList = define;
+                        this.isEmptyFlow = false;
+                        
+                    }
+                })
+            },
+            cancelLookFlow:function(){
+                this.isEmptyFlow = true;
+                this.lookFlowDialogVisible = false;
+                this.flowList = {};
+            }
         },
         watch:{
             isPending:function(val,oldVal){

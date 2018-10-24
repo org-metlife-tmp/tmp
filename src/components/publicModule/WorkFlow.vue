@@ -105,6 +105,9 @@
         methods:{
             //组装工作流数据
             assembleFlowData:function(val){
+                if(!val || !val.nodes ){
+                    return ;
+                }
                 let nodes = val.nodes;//这里不包括开始节点和结束节点
                 nodes.unshift({ 
                     text:"业务提交",
