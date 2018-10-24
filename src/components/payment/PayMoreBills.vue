@@ -409,7 +409,7 @@
                 <li class="table-li-title">业务类型</li>
                 <li class="table-li-content table-select">
                     <el-select v-model="editDialogData.biz_id" placeholder="请选择业务类型"
-                               filterable clearable size="mini">
+                               filterable clearable size="mini" @change="setBizName">
                         <el-option v-for="payItem in payStatList"
                                    :key="payItem.biz_id"
                                    :label="payItem.biz_name"
@@ -714,6 +714,7 @@
                 editDialogData: {
                     id:"",
                     biz_id: "",
+                    biz_name: "",
                     pay_mode: "",
                     persist_version: "",
                     rev_persist_version: "",
@@ -758,6 +759,15 @@
             }
         },
         methods: {
+            //同时保存biztype和name
+            setBizName: function(val){
+                var payStatList = this.payStatList;
+                for(var i = 0; i < payStatList.length; i++){
+                    if(payStatList[i].biz_id == val){
+                        this.billData.biz_name = payStatList[i].biz_name;
+                    }
+                }
+            },
             //清空付款方账号
             clearPayAcc: function(){
                 this.editDialogData.pay_account_id = "";
@@ -978,6 +988,7 @@
             },
             //编辑
             editBill: function (row) {
+                console.log(row);
                 this.getPayerSelect();
                 this.currentBill = row;
 
