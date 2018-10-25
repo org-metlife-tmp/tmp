@@ -365,6 +365,10 @@
                     </el-col>
                 </el-row>
             </el-form>
+            <BusinessTracking
+                v-show="eidtData.service_status==5"
+                :businessParams="businessParams"
+            ></BusinessTracking>
             <span slot="footer" class="dialog-footer">
                 <el-button type="warning" size="mini" plain @click="editVisible = false">取 消</el-button>
                 <el-button type="warning" size="mini" @click="subCurrent">保 存</el-button>
@@ -517,7 +521,8 @@
                     recv_account_bank: "",
                     payment_summary: "",
                     poll_acc_id: "",
-                    files: []
+                    files: [],
+                    service_status: ""
                 },
                 attrList: {},
                 innerVisible: false, //提交弹框
@@ -766,6 +771,12 @@
                 }).catch(function (error) {
                     console.log(error);
                 })
+                //审批拒绝显示业务追踪
+                if(row.service_status == 5){
+                    this.businessParams = {};//清空数据
+                    this.businessParams.biz_type = 21;
+                    this.businessParams.id = row.id;
+                }
             },
             //获取付款账号列表
             getPayList: function(rowId) {

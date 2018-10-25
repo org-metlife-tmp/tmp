@@ -1141,6 +1141,8 @@
                         var message = collectionData.id ? "修改成功" : "保存成功";
                         this.collectionData.persist_version = data.persist_version;
                         this.collectionData.id = data.id;
+                        this.collectionData.service_status = data.service_status;
+
 
                         this.$message({
                             type: "success",
