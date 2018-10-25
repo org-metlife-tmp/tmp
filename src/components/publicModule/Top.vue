@@ -394,7 +394,13 @@
                             user: data.menu_info,
                         }
                         this.$store.commit("set_token",userData);
-                        this.$router.push("/home");
+                        this.$router.push("/");
+                        this.$router.push({
+                            name:"Home",
+                            params:{
+                                refreshUser: true
+                            }
+                        });
                         this.$message({
                             type: 'success',
                             message: "修改成功",

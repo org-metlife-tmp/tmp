@@ -137,10 +137,11 @@
                       size="mini"
                       highlight-current-row>
                 <el-table-column prop="bill_no" label="报销单申请号" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="org_name" label="申请单位" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="pool_account_no" label="资金池账户" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="pay_pay_account_no" label="付款方账号"
                                  :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="recv_account_name" label="收款人姓名" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="recv_account_name" label="收款人" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="recv_account_no" label="收款方账号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="recv_account_bank" label="收款方银行" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="payment_amount" label="收款金额" :show-overflow-tooltip="true"></el-table-column>
@@ -394,6 +395,21 @@
                 leftTab: "未处理",
                 rightTab: "已处理"
             });
+
+            if(!this.isPending){
+                this.statusList = {
+                    2: "已提交",
+                    3: "审批中",
+                    4: "审批通过",
+                    6: "处理中",
+                    7: "已成功",
+                    8: "已失败",
+                    9: "已作废",
+                    10: "未完结",
+                    11: "已完结",
+                    12: "待处理"
+                }
+            }
 
             this.$emit("getTableData", this.routerMessage);
         },
@@ -944,7 +960,7 @@
                         //将数据传递给子组件
                         this.flowList = define;
                         this.isEmptyFlow = false;
-                        
+
                     }
                 })
             },

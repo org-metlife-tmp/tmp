@@ -591,28 +591,7 @@
     export default {
         name: "Left",
         created: function () {
-            var user = JSON.parse(window.sessionStorage.getItem("user"));
-            if (user) {
-                var menuList = user.menu_info;
-                for (var i = 0; i < menuList.length; i++) {
-                    var items = menuList[i].items;
-                    for (var j = 0; j < items.length; j++) {
-                        var item = items[j];
-                        for (var k in this.menuList) {
-                            if (item.code == k) {
-                                this.menuList[k] = true;
-                                break;
-                            }
-                        }
-                    }
-                    for (var key in this.menuList) {
-                        if (menuList[i].code == key) {
-                            this.menuList[key] = true;
-                            break;
-                        }
-                    }
-                }
-            }
+            this.setMenu();
         },
         data: function () {
             return {
@@ -736,10 +715,45 @@
                 }
             }
         },
-        methods: {},
+        methods: {
+            //根据权限设置菜单栏
+            setMenu: function(){
+                var user = JSON.parse(window.sessionStorage.getItem("user"));
+                var menuList = this.menuList;
+                for(var k in menuList){
+                    menuList[k] = false;
+                }
+
+                if (user.menu_info) {
+                    var menuList = user.menu_info;
+                    for (var i = 0; i < menuList.length; i++) {
+                        var items = menuList[i].items;
+                        for (var j = 0; j < items.length; j++) {
+                            var item = items[j];
+                            for (var k in this.menuList) {
+                                if (item.code == k) {
+                                    this.menuList[k] = true;
+                                    break;
+                                }
+                            }
+                        }
+                        for (var key in this.menuList) {
+                            if (menuList[i].code == key) {
+                                this.menuList[key] = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        },
         computed: {
             showBgc: function () {
                 var currentPath = this.$route.name;
+                if(currentPath == "Home" && this.$route.params.refreshUser){
+                    this.setMenu();
+                }
+                console.log(this.$route);
                 if (!currentPath || currentPath == "Home") {
                     return false;
                 } else {
