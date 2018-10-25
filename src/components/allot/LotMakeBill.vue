@@ -477,6 +477,12 @@
             padding: 0;
         }
 
+        #showbox{
+            position: fixed;
+            right: -500px;
+            z-index: 999;
+            transition: all 1.5s;
+        }
     }
 </style>
 <style lang="less" type="text/less">
@@ -670,6 +676,9 @@
             </div>
             <!--表单底部按钮-->
             <div class="bill-operation">
+                <el-button type="warning" plain size="medium" @click="showRightFlow" v-show="billData.service_status==5">
+                    审批记录<span class="arrows">></span>
+                </el-button>
                 <el-button type="warning" plain size="medium" @click="goMoreBills">
                     更多单据<span class="arrows">></span>
                 </el-button>
@@ -784,12 +793,20 @@
                     :isEmptyFlow="isEmptyFlow"
             ></WorkFlow>
         </el-dialog>
+        <!-- 右侧流程图 -->
+        <div id="showbox">
+            <BusinessTracking
+                :businessParams="businessParams"
+                @closeRightDialog="closeRightFlow"
+            ></BusinessTracking>
+        </div>
     </div>
 </template>
 
 <script>
     import Upload from "../publicModule/Upload.vue";
     import WorkFlow from "../publicModule/WorkFlow.vue";
+    import BusinessTracking from "../publicModule/BusinessTracking.vue";
     export default {
         name: "LotMakeBill",
         created: function(){
@@ -945,7 +962,8 @@
         },
         components: {
             Upload: Upload,
-            WorkFlow: WorkFlow
+            WorkFlow: WorkFlow,
+            BusinessTracking: BusinessTracking
         },
         data: function () {
             return {
@@ -959,6 +977,7 @@
                     payment_amount: "", //金额
                     payment_summary: "", //摘要
                     batchno:"",
+                    service_status:""
                 },
                 moneyText: "", //金额-大写
                 fileMessage: { //附件
@@ -1001,6 +1020,7 @@
                 flowList: {},//查看流程
                 isEmptyFlow: false,//
                 lookFlowDialogVisible: false,
+                businessParams: {},//业务追踪
             }
         },
         methods: {
@@ -1052,6 +1072,7 @@
                         this.saveParams.persist_version = data.persist_version;
                         this.saveParams.id = data.id;
                         this.billData.batchno = data.batchno;
+                        this.billData.service_status = data.service_status;
                         this.$message({
                             type: "success",
                             message: "保存成功",
@@ -1370,6 +1391,7 @@
                         this.saveParams.persist_version = data.persist_version;
                         this.saveParams.id = data.id;
                         this.billData.batchno = data.batchno;
+                        this.billData.service_status = data.service_status;
                         this.commitVisible = true;
                         this.$axios({
                             url: "/cfm/normalProcess",
@@ -1586,7 +1608,19 @@
                 this.isEmptyFlow = true;
                 this.lookFlowDialogVisible = false;
                 this.flowList = {};
-            }
+            },
+            //业务追踪显示
+            showRightFlow:function (row) {
+                this.businessParams = {};
+                this.businessParams.id = this.billData.id;
+                this.businessParams.biz_type = "10";
+                this.businessParams.type = 1;
+                document.getElementById("showbox").style.right="0px";
+            },
+            closeRightFlow:function(){
+                this.businessParams = {};
+                document.getElementById("showbox").style.right="-500px";
+            },
         },
         watch:{
             fileModeList: function(old,val){

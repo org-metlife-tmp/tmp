@@ -403,6 +403,10 @@
                     </el-col>
                 </el-row>
             </el-form>
+            <BusinessTracking
+                v-show="dialogData.service_status==5"
+                :businessParams="businessParams"
+            ></BusinessTracking>
             <span slot="footer" class="dialog-footer">
                 <el-button type="warning" size="mini" plain @click="dialogVisible = false">取 消</el-button>
                 <el-button type="warning" size="mini" @click="subCurrent">确 定</el-button>
@@ -922,6 +926,12 @@
                 }).catch(function (error) {
                     console.log(error);
                 })
+                //审批拒绝显示业务追踪
+                if(row.service_status == 5){
+                    this.businessParams = {};//清空数据
+                    this.businessParams.biz_type = 3;
+                    this.businessParams.id = row.id;
+                }
             },
             //提交当前新增或修改
             subCurrent: function () {

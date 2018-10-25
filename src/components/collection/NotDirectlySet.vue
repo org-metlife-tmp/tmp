@@ -434,6 +434,12 @@
                 margin-right: 10px;
             }
         }
+        #showbox{
+            position: fixed;
+            right: -500px;
+            z-index: 999;
+            transition: all 1.5s;
+        }
     }
 </style>
 
@@ -535,6 +541,9 @@
             </div>
             <!--表单底部按钮-->
             <div class="bill-operation">
+                <el-button type="warning" plain size="medium" @click="showRightFlow" v-show="billData.service_status==5">
+                    审批记录<span class="arrows">></span>
+                </el-button>
                 <el-button type="warning" plain size="medium" @click="goMoreBills">
                     更多单据<span class="arrows">></span>
                 </el-button>
@@ -645,13 +654,20 @@
 
                 </span>
         </el-dialog>
+        <!-- 右侧流程图 -->
+        <div id="showbox">
+            <BusinessTracking
+                :businessParams="businessParams"
+                @closeRightDialog="closeRightFlow"
+            ></BusinessTracking>
+        </div>
     </div>
 </template>
 
 <script>
     import Upload from "../publicModule/Upload.vue";
     import WorkFlow from "../publicModule/WorkFlow.vue";
-
+    import BusinessTracking from "../publicModule/BusinessTracking.vue";
     export default {
         name: "NotDirectlySet",
         created: function () {
@@ -699,6 +715,7 @@
                         billData.memo = data.payment_summary;
                         billData.allList = data.total_num;
                         billData.persist_version = data.persist_version;
+                        billData.service_status = data.service_status;
                         this.saveUploadList = data.obbaiTempList;
                         billData.payment_amount = this.$common.transitSeparator(data.total_amount);
                         this.moneyText = this.$common.transitText(data.total_amount);
@@ -716,7 +733,8 @@
         },
         components: {
             Upload: Upload,
-            WorkFlow: WorkFlow
+            WorkFlow: WorkFlow,
+            BusinessTracking: BusinessTracking
         },
         beforeRouteUpdate(to, from, next) {
             this.clearBill();
@@ -735,7 +753,7 @@
                     memo: "",
                     files: [],
                     batchno: "",
-
+                    service_status: "",
                     persist_version: "",
                     biz_id: "",
                     biz_name: ""
@@ -778,10 +796,8 @@
                     id: "",
                     batchno: ""
                 },
-
+                businessParams: {},//业务追踪
             }
-
-
         },
         methods: {
             //设置当前项上传附件
@@ -1021,6 +1037,7 @@
                         });
                         this.billData.id = data.id;
                         this.billData.persist_version = data.persist_version;
+                        this.billData.service_status = data.service_status;
                     }
                 }).catch(function (error) {
                     console.log(error);
@@ -1205,7 +1222,19 @@
                 this.isEmptyFlow = true;
                 this.lookFlowDialogVisible = false;
                 this.flowList = {};
-            }
+            },
+            //业务追踪显示
+            showRightFlow:function (row) {
+                this.businessParams = {};
+                this.businessParams.id = this.billData.id;
+                this.businessParams.biz_type = "19";
+                this.businessParams.type = 1;
+                document.getElementById("showbox").style.right="0px";
+            },
+            closeRightFlow:function(){
+                this.businessParams = {};
+                document.getElementById("showbox").style.right="-500px";
+            },
         }
     }
 </script>

@@ -123,6 +123,12 @@
             color: #f56c6c;
             margin-right: 4px;
         }
+        #showbox{
+            position: fixed;
+            right: -500px;
+            z-index: 999;
+            transition: all 1.5s;
+        }
     }
 
     /*时间选择弹框*/
@@ -337,16 +343,14 @@
                             </Upload>
                         </el-form-item>
                     </el-col>
-                    <el-col :span="20" v-show="isView">
-                        <el-form-item label=" " style="text-align:left">
-                            <BusinessTracking :businessParams="businessParams"></BusinessTracking>
-                        </el-form-item>
-                    </el-col>
                 </el-row>
             </el-form>
         </section>
         <!--底部按钮-->
         <div class="btn-bottom">
+            <el-button type="warning" plain size="mini" @click="showRightFlow" v-show="isView || collectionData.service_status==5">
+                审批记录<span class="arrows">></span>
+            </el-button>
             <el-button type="warning" plain size="mini" @click="goMoreBills">
                 更多单据<span class="arrows">></span>
             </el-button>
@@ -421,6 +425,13 @@
                     :isEmptyFlow="isEmptyFlow"
             ></WorkFlow>
         </el-dialog>
+        <!-- 右侧流程图 -->
+        <div id="showbox">
+            <BusinessTracking
+                :businessParams="businessParams"
+                @closeRightDialog="closeRightFlow"
+            ></BusinessTracking>
+        </div>
     </div>
 </template>
 
@@ -512,11 +523,6 @@
 
                         if (params[0] == "viewId") {
                             this.isView = true;
-
-                            //业务状态跟踪
-                            this.businessParams = {};
-                            this.businessParams.biz_type = 14;
-                            this.businessParams.id = data.id;
                         }
                     }
                 }).catch(function (error) {
@@ -538,7 +544,8 @@
                     gyl_allocation_frequency: "1",
                     timesetting_list: [],
                     summary: "",
-                    files: []
+                    files: [],
+                    service_status: ""
                 },
                 //校验规则设置
                 rules: {
@@ -986,7 +993,19 @@
                 this.isEmptyFlow = true;
                 this.lookFlowDialogVisible = false;
                 this.flowList = {};
-            }
+            },
+            //业务追踪显示
+            showRightFlow:function (row) {
+                this.businessParams = {};
+                this.businessParams.id = this.collectionData.id;
+                this.businessParams.biz_type = "14";
+                this.businessParams.type = 1;
+                document.getElementById("showbox").style.right="0px";
+            },
+            closeRightFlow:function(){
+                this.businessParams = {};
+                document.getElementById("showbox").style.right="-500px";
+            },
         },
         computed: {
             amountStatus: function () {

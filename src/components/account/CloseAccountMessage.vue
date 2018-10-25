@@ -553,7 +553,7 @@
                 // this.dialogData.service_serial_number = row.service_serial_number;
                 // this.dialogData.detail = row.detail;
                 // this.dialogData.id = row.id;
-                if(type){
+                if(type || row.service_status==5){
                     this.businessTrack = true;
                     this.businessParams = {};//清空数据
                     this.businessParams.biz_type = 7;

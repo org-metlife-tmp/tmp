@@ -504,6 +504,10 @@
                             :triggerFile="eidttrigFile"></Upload>
                 </li>
             </ul>
+            <BusinessTracking
+                v-show="editDialogData.service_status==5"
+                :businessParams="businessParams"
+            ></BusinessTracking>
             <span slot="footer" class="dialog-footer" style="text-align:center">
                     <el-button type="warning" size="mini" @click="saveBill">保 存</el-button>
                     <el-button type="warning" size="mini" @click="submitBill">提 交</el-button>
@@ -756,7 +760,8 @@
                     payment_summary: "",
                     service_serial_number: "",
                     bank_name: "",
-                    numText: ""
+                    numText: "",
+                    service_status: ""
                 },
                 currentBill: {},
                 editEmptyFile: [], //编辑附件
@@ -1020,7 +1025,6 @@
             },
             //编辑
             editBill: function (row) {
-                console.log(row);
                 this.getPayerSelect();
                 this.currentBill = row;
 
@@ -1047,6 +1051,12 @@
                 this.fileMessage.bill_id = row.id;
                 this.eidttrigFile = !this.eidttrigFile;
 
+                //审批拒绝显示业务追踪
+                if(row.service_status == 5){
+                    this.businessParams = {};//清空数据
+                    this.businessParams.biz_type = 9;
+                    this.businessParams.id = row.id;
+                }
                 this.editVisible = true;
             },
             /*编辑弹框内功能*/

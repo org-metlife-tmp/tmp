@@ -386,6 +386,7 @@
             }
         }
 
+        
         //提交流程查看按钮
         .flow-tip-box {
             display: inline-block;
@@ -443,6 +444,13 @@
                 color: #FF5800;
                 margin-right: 10px;
             }
+        }
+
+        #showbox{
+            position: fixed;
+            right: -500px;
+            z-index: 999;
+            transition: all 1.5s;
         }
     }
 </style>
@@ -567,6 +575,9 @@
             </div>
             <!--表单底部按钮-->
             <div class="bill-operation">
+                <el-button type="warning" plain size="medium" @click="showRightFlow" v-show="billData.service_status==5">
+                    审批记录<span class="arrows">></span>
+                </el-button>
                 <el-button type="warning" plain size="medium" @click="goMoreBills">
                     更多单据<span class="arrows">></span>
                 </el-button>
@@ -678,12 +689,20 @@
 
                 </span>
         </el-dialog>
+        <!-- 右侧流程图 -->
+        <div id="showbox">
+            <BusinessTracking
+                :businessParams="businessParams"
+                @closeRightDialog="closeRightFlow"
+            ></BusinessTracking>
+        </div>
     </div>
 </template>
 
 <script>
     import Upload from "../publicModule/Upload.vue";
     import WorkFlow from "../publicModule/WorkFlow.vue";
+    import BusinessTracking from "../publicModule/BusinessTracking.vue";
 
     export default {
         name: "PayMakeBill",
@@ -722,6 +741,7 @@
                             version: "persist_version",
                             memo: "payment_summary",
                             allList: "total_num",
+                            service_status: "service_status"
                         }
 
                         for (var k in params) {
@@ -781,7 +801,8 @@
         },
         components: {
             Upload: Upload,
-            WorkFlow: WorkFlow
+            WorkFlow: WorkFlow,
+            BusinessTracking: BusinessTracking
         },
         beforeRouteUpdate(to, from, next) {
             this.clearBill();
@@ -802,7 +823,8 @@
                     version: "",
                     id: "",
                     biz_id: "",
-                    biz_name: ""
+                    biz_name: "",
+                    service_status:""
                 },
                 moneyText: "", //金额-大写
                 fileMessage: { //附件
@@ -844,6 +866,7 @@
                 flowList: {},//查看流程
                 isEmptyFlow: false,//
                 lookFlowDialogVisible: false,
+                businessParams: {},//业务追踪
             }
         },
         methods: {
@@ -1048,6 +1071,7 @@
             },
             //保存
             saveBill: function () {
+                debugger
                 var params = this.setParams();
                 if (!params) {
                     return;
@@ -1076,7 +1100,9 @@
                             duration: 2000
                         });
                         this.billData.id = data.id;
+                        debugger
                         this.billData.version = data.persist_version;
+                        this.billData.service_status = data.service_status;
                     }
                 }).catch(function (error) {
                     console.log(error);
@@ -1306,7 +1332,19 @@
                 this.isEmptyFlow = true;
                 this.lookFlowDialogVisible = false;
                 this.flowList = {};
-            }
+            },
+            //业务追踪显示
+            showRightFlow:function (row) {
+                this.businessParams = {};
+                this.businessParams.id = this.billData.id;
+                this.businessParams.biz_type = "11";
+                this.businessParams.type = 1;
+                document.getElementById("showbox").style.right="0px";
+            },
+            closeRightFlow:function(){
+                this.businessParams = {};
+                document.getElementById("showbox").style.right="-500px";
+            },
 
         }
     }

@@ -359,7 +359,7 @@
         </section>
         <!--底部按钮-->
         <div class="btn-bottom">
-            <el-button type="warning" plain size="mini" @click="showRightFlow" v-show="viewReadonly">
+            <el-button type="warning" plain size="mini" @click="showRightFlow" v-show="viewReadonly || allocationData.service_status==5">
                 审批记录<span class="arrows">></span>
             </el-button>
             <el-button type="warning" plain size="mini" @click="gomoreBills">

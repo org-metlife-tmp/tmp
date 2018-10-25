@@ -110,7 +110,7 @@
         .el-dialog__wrapper {
             .el-dialog__body {
                 max-height: 400px;
-                overflow-y: scroll;
+                overflow-y: auto;
             }
         }
     }
@@ -401,6 +401,10 @@
                     </el-col>
                 </el-row>
             </el-form>
+            <BusinessTracking
+                v-show="dialogData.service_status==5"
+                :businessParams="businessParams"
+            ></BusinessTracking>
             <span slot="footer" class="dialog-footer">
                 <el-button type="warning" size="mini" plain @click="dialogVisible = false">取 消</el-button>
                 <el-button type="warning" size="mini" @click="subCurrent">保 存</el-button>
@@ -950,6 +954,12 @@
                 //获取附件列表
                 this.fileMessage.bill_id = row.id;
                 this.triggerFile = !this.triggerFile;
+                //审批拒绝显示业务追踪
+                if(row.service_status == 5){
+                    this.businessParams = {};//清空数据
+                    this.businessParams.biz_type = 1;
+                    this.businessParams.id = row.id;
+                }
             },
             //提交当前修改或新增
             subCurrent: function () {

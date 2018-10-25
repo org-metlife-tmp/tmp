@@ -512,7 +512,7 @@
             },
             //编辑
             editFreeze:function(row){
-                this.businessTrack = false;
+                this.businessTrack =  false;
                 //清空数据
                 this.dialogData = {};
                 this.accOptions = [];
@@ -557,7 +557,13 @@
                 }).then((result) =>{
                     this.accOptions = result.data.data;
                 });
-
+                //审批拒绝显示业务追踪
+                if(row.service_status == 5){
+                    this.businessTrack =  true;
+                    this.businessParams = {};//清空数据
+                    this.businessParams.biz_type = 4;
+                    this.businessParams.id = row.id;
+                }
             },
             //切换账户号
             changeAccount:function(cur){

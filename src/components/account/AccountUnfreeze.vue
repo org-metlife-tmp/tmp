@@ -560,6 +560,13 @@
                     this.accOptions = result.data.data;
                 });
 
+                //审批拒绝显示业务追踪
+                if(row.service_status == 5){
+                    this.businessTrack = true;
+                    this.businessParams = {};//清空数据
+                    this.businessParams.biz_type = 5;
+                    this.businessParams.id = row.id;
+                }
             },
             //切换账户号
             changeAccount:function(cur){
