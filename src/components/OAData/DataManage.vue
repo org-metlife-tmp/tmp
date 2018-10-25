@@ -135,7 +135,9 @@
                 <el-table-column prop="bill_no" label="报销单申请号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="pay_org_type" label="付款机构类型" :show-overflow-tooltip="true"
                                  :formatter="transitPayType"></el-table-column>
-                <el-table-column prop="apply_user" label="申请用户" :show-overflow-tooltip="true"></el-table-column>
+                <!-- <el-table-column prop="apply_user" label="申请用户" :show-overflow-tooltip="true"></el-table-column> -->
+                <el-table-column prop="org_name" label="申请单位" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="recv_acc_name" label="收款人" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="recv_acc_no" label="收款方账号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="recv_bank" label="收款方银行" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="amount" label="金额" :show-overflow-tooltip="true"></el-table-column>
