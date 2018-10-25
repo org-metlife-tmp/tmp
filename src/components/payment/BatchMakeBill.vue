@@ -386,7 +386,7 @@
             }
         }
 
-        
+
         //提交流程查看按钮
         .flow-tip-box {
             display: inline-block;
@@ -737,6 +737,7 @@
                             batchno: "batchno",
                             pay_mode: "pay_mode",
                             biz_id: "biz_id",
+                            biz_name: "biz_name",
                             pay_acc_id: "pay_account_id",
                             version: "persist_version",
                             memo: "payment_summary",
@@ -1071,7 +1072,6 @@
             },
             //保存
             saveBill: function () {
-                debugger
                 var params = this.setParams();
                 if (!params) {
                     return;
@@ -1100,7 +1100,6 @@
                             duration: 2000
                         });
                         this.billData.id = data.id;
-                        debugger
                         this.billData.version = data.persist_version;
                         this.billData.service_status = data.service_status;
                     }

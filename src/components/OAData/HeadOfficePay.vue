@@ -156,8 +156,15 @@
                                  width="100"></el-table-column>
                 <!--<el-table-column prop="pay_mode" label="付款方式" :show-overflow-tooltip="true"
                                  :formatter="transitPayMode"></el-table-column>-->
-                <el-table-column prop="service_status" label="状态" :show-overflow-tooltip="true"
-                                 :formatter="transitStatus" width="70"></el-table-column>
+                <!--<el-table-column prop="service_status" label="状态" :show-overflow-tooltip="true"
+                                 :formatter="transitStatus" width="70"></el-table-column>-->
+                <el-table-column label="状态" :show-overflow-tooltip="true" width="160">
+                    <template slot-scope="scope">
+                        <span>{{ constants[scope.row.service_status] }}</span>
+                        <span style="margin-left: 10px;color:#fd7d2f">{{ scope.row.feed_back }}</span>
+                    </template>
+                </el-table-column>
+
                 <el-table-column label="操作" width="110" fixed="right">
                     <template slot-scope="scope" class="operationBtn">
                         <el-tooltip content="查看" placement="bottom" effect="light"
@@ -307,6 +314,9 @@
         },
         mounted: function () {
             var constants = JSON.parse(window.sessionStorage.getItem("constants"));
+            if (constants.BillStatus) {
+                this.constants = constants.BillStatus;
+            }
         },
         components: {
             Upload: Upload,
@@ -346,6 +356,7 @@
                     1: "已保存",
                     5: "审批拒绝"
                 },
+                constants: {},
                 dialogVisible: false, //弹框数据
                 dialogData: {},
                 emptyFileList: [], //附件

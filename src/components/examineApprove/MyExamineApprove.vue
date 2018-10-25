@@ -411,14 +411,6 @@
                                              :formatter="payMode"
                                              :show-overflow-tooltip="true">
                             </el-table-column>
-                            <!--报销单申请号-->
-                            <el-table-column v-else-if="head.prop=='bill_no'"
-                                             :key="head.id"
-                                             :prop="head.prop"
-                                             :label="head.name"
-                                             width="110"
-                                             :show-overflow-tooltip="true">
-                            </el-table-column>
                             <!-- 公用列 -->
                             <el-table-column
                                 v-else
@@ -1187,8 +1179,6 @@
                     {id:"8", pspan:8, prop:"gyl_allocation_frequency"},
                     {id:"9", lspan:4, label:"下拨时间"},
                     {id:"10", pspan:8, prop:"time_settings"},
-                    {id:"11", lspan:4, label:"业务状态"},
-                    {id:"12", pspan:8, prop:"service_status"}
                 ],
                 "15":[
                     {id:"1", lspan:4, label:"编号"},
@@ -1427,12 +1417,12 @@
                     ],
                     "11":[
                         {id:'1',prop:"batchno",name:'批次号'},
-                        {id:'1',prop:"pay_account_no",name:'付款方账号'},
-                        {id:'1',prop:"pay_account_name",name:'付款方名称'},
-                        {id:'1',prop:"pay_account_bank",name:'付款方银行'},
-                        {id:'2',prop:"total_num",name:'总笔数'},
-                        {id:'3',prop:"total_amount",name:'总金额'},
-                        {id:'6',prop:"nextUserList",name:'下级审批人'}
+                        {id:'2',prop:"pay_account_no",name:'付款方账号'},
+                        {id:'3',prop:"pay_account_name",name:'付款方名称'},
+                        {id:'4',prop:"pay_account_bank",name:'付款方银行'},
+                        {id:'5',prop:"total_num",name:'总笔数'},
+                        {id:'6',prop:"total_amount",name:'总金额'},
+                        {id:'7',prop:"nextUserList",name:'下级审批人'}
                     ],
                     "12":[
                         {id:'1',prop:"topic",name:'归集主题'},
@@ -1596,6 +1586,7 @@
                             })
                         }
                         this.editableTabsList = arrObject;
+
                         if(this.isFromHome){//从home页跳过了
                             let rowBar = document.getElementsByClassName("el-tabs__active-bar")[0];
                             if(_tab_index==1){
@@ -1611,6 +1602,7 @@
                             //同意，加签，拒绝后刷新列表
                             this.$emit("getTableData", this.routerMessage);
                         }
+                        console.log(arrObject);
                     }
                 })
             },
