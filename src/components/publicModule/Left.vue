@@ -753,7 +753,6 @@
                 if(currentPath == "Home" && this.$route.params.refreshUser){
                     this.setMenu();
                 }
-                console.log(this.$route);
                 if (!currentPath || currentPath == "Home") {
                     return false;
                 } else {

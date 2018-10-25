@@ -695,8 +695,9 @@
                                 for (var key in item) {
                                     if (key == "id") {
                                         item.$id = item[key];
+                                    }else if(key == "channel_code" || key == "channel_interface_code" || key == "settle_or_merchant_acc_id" || key == "level"){
+                                        currentItem[key] = item[key];
                                     }
-                                    currentItem[key] = item[key];
                                 }
                                 row.items.push(currentItem);
                                 //判断商户号下拉数据中是否存有此条数据
@@ -1072,15 +1073,15 @@
                 this.insureSelect = [];
                 this.insureIndeter = false;
                 this.insureAll = false;
-                this.items.splice(1, this.items.length - 1);
-                var itemOne = this.items[0];
-                for (var key in itemOne) {
-                    if (key != "$id") {
-                        itemOne[key] = "";
-                    } else {
-                        itemOne[key] = "1"
+                this.items =  [
+                    {
+                        channel_code: "",
+                        channel_interface_code: "",
+                        settle_or_merchant_acc_id: "",
+                        level: "",
+                        $id: 1
                     }
-                }
+                ]
             },
             //选择支付方式
             payChange: function (value) {

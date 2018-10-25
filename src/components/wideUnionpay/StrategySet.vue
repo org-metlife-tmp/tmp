@@ -697,7 +697,6 @@
                         collectionData.pay_acc_cur = accItem.curr_code;
                     }
                 }
-                console.log(collectionData);
             },
             //改变归集频率后清空其时间选择
             clearDate: function () {
@@ -985,7 +984,7 @@
                         //将数据传递给子组件
                         this.flowList = define;
                         this.isEmptyFlow = false;
-                        
+
                     }
                 })
             },

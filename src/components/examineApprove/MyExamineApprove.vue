@@ -1145,14 +1145,6 @@
                     {id:"8", pspan:8, prop:"pay_account_no"},
                     {id:"9", lspan:4, label:"开户行"},
                     {id:"10", pspan:8, prop:"pay_account_bank"},
-                    {id:"11", lspan:4, label:"已失败笔数"},
-                    {id:"12", pspan:8, prop:"failed_num"},
-                    {id:"13", lspan:4, label:"已失败金额"},
-                    {id:"14", pspan:8, prop:"failed_amount"},
-                    {id:"15", lspan:4, label:"已成功笔数"},
-                    {id:"16", pspan:8, prop:"sucess_num"},
-                    {id:"17", lspan:4, label:"已成功金额"},
-                    {id:"18", pspan:8, prop:"sucess_amount"},
                 ],
                 "12":[
                     {id:"1", lspan:4, label:"归集主题"},
@@ -1435,10 +1427,11 @@
                     ],
                     "11":[
                         {id:'1',prop:"batchno",name:'批次号'},
+                        {id:'1',prop:"pay_account_no",name:'付款方账号'},
+                        {id:'1',prop:"pay_account_name",name:'付款方名称'},
+                        {id:'1',prop:"pay_account_bank",name:'付款方银行'},
                         {id:'2',prop:"total_num",name:'总笔数'},
                         {id:'3',prop:"total_amount",name:'总金额'},
-                        {id:'4',prop:"sucess_num",name:'成功笔数'},
-                        {id:'5',prop:"sucess_amount",name:'成功金额'},
                         {id:'6',prop:"nextUserList",name:'下级审批人'}
                     ],
                     "12":[
