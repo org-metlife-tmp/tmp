@@ -265,6 +265,20 @@
                 leftTab: "未处理",
                 rightTab: "已处理"
             });
+            if(!this.isPending){
+                this.statusList = {
+                    2: "已提交",
+                    3: "审批中",
+                    4: "审批通过",
+                    6: "处理中",
+                    7: "已成功",
+                    8: "已失败",
+                    9: "已作废",
+                    10: "未完结",
+                    11: "已完结",
+                    12: "待处理"
+                }
+            }
 
             this.$emit("getTableData", this.routerMessage);
         },
