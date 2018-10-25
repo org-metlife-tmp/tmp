@@ -411,6 +411,14 @@
                                              :formatter="payMode"
                                              :show-overflow-tooltip="true">
                             </el-table-column>
+                            <!--报销单申请号-->
+                            <el-table-column v-else-if="head.prop=='bill_no'"
+                                             :key="head.id"
+                                             :prop="head.prop"
+                                             :label="head.name"
+                                             width="110"
+                                             :show-overflow-tooltip="true">
+                            </el-table-column>
                             <!-- 公用列 -->
                             <el-table-column
                                 v-else
@@ -423,7 +431,7 @@
                         </template>
 
                         <el-table-column
-                                label="操作" width="110"
+                                label="操作" width="50"
                                 fixed="right">
                             <template slot-scope="scope" class="operationBtn">
                                 <el-tooltip content="查看" placement="bottom" effect="light"
@@ -1475,26 +1483,28 @@
                         {id:'6',prop:"nextUserList",name:'下级审批人'}
                     ],
                     "20":[
-                        {id:'1',prop:"service_serial_number",name:'单据号'},
-                        {id:'2',prop:"pay_account_no",name:'付款方账号'},
-                        {id:'3',prop:"pay_account_bank",name:'付款方银行'},
-                        {id:'4',prop:"recv_account_name",name:'收款人姓名'},
-                        {id:'5',prop:"recv_account_no",name:'收款方账号'},
-                        {id:'6',prop:"recv_account_bank",name:'收款方银行'},
-                        {id:'7',prop:"payment_amount",name:'收款金额'},
-                        {id:'8',prop:"payment_summary",name:'摘要'},
-                        {id:'9',prop:"nextUserList",name:'下级审批人'}
+                        {id:'1',prop:"bill_no",name:'报销单申请号'},
+                        {id:'2',prop:"org_name",name:'申请单位'},
+                        {id:'3',prop:"pay_account_no",name:'付款方账号'},
+                        {id:'4',prop:"pay_account_bank",name:'付款方银行'},
+                        {id:'5',prop:"recv_account_name",name:'收款人姓名'},
+                        {id:'6',prop:"recv_account_no",name:'收款方账号'},
+                        {id:'7',prop:"recv_account_bank",name:'收款方银行'},
+                        {id:'8',prop:"payment_amount",name:'收款金额'},
+                        {id:'9',prop:"payment_summary",name:'摘要'},
+                        {id:'10',prop:"nextUserList",name:'下级审批人'}
                     ],
                     "21":[
-                        {id:'1',prop:"service_serial_number",name:'单据号'},
-                        {id:'2',prop:"pay_account_no",name:'付款方账号'},
-                        {id:'3',prop:"pay_account_name",name:'付款方银行'},
-                        {id:'4',prop:"recv_account_name",name:'收款人姓名'},
-                        {id:'5',prop:"recv_account_no",name:'收款方账号'},
-                        {id:'6',prop:"recv_account_bank",name:'收款方银行'},
-                        {id:'7',prop:"payment_amount",name:'收款金额'},
-                        {id:'8',prop:"payment_summary",name:'摘要'},
-                        {id:'9',prop:"nextUserList",name:'下级审批人'}
+                        {id:'1',prop:"bill_no",name:'报销单申请号'},
+                        {id:'2',prop:"org_name",name:'申请单位'},
+                        {id:'3',prop:"pay_account_no",name:'付款方账号'},
+                        {id:'4',prop:"pay_account_name",name:'付款方银行'},
+                        {id:'5',prop:"recv_account_name",name:'收款人姓名'},
+                        {id:'6',prop:"recv_account_no",name:'收款方账号'},
+                        {id:'7',prop:"recv_account_bank",name:'收款方银行'},
+                        {id:'8',prop:"payment_amount",name:'收款金额'},
+                        {id:'9',prop:"payment_summary",name:'摘要'},
+                        {id:'10',prop:"nextUserList",name:'下级审批人'}
                     ],
                 },
                 editableTabsList: {},

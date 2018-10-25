@@ -75,7 +75,7 @@
                     </el-col>
                     <el-col :span="4">
                         <el-form-item>
-                            <el-input v-model="searchData.apply_user" clearable placeholder="请输入申请用户"></el-input>
+                            <el-input v-model="searchData.org_name" clearable placeholder="请输入申请单位"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="4">
@@ -257,7 +257,7 @@
                 pagCurrent: 1,
                 searchData:{ //搜索条件
                     bill_no: "",
-                    apply_user: "",
+                    org_name: "",
                     recv_acc_query_key: "",
                     pay_org_type: "",
                     min_amount: "",

@@ -89,10 +89,26 @@
         <div class="search-setion">
             <el-form :inline="true" :model="searchData" size="mini">
                 <el-row>
-                    <el-col :span="5">
+                    <el-col :span="4">
                         <el-form-item>
                             <el-input v-model="searchData.recv_account_query_key" clearable
                                       placeholder="请输入收款方账户号或名称"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="4">
+                        <el-form-item>
+                            <el-input v-model="searchData.org_name" clearable placeholder="请输入申请单位"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="6">
+                        <el-form-item>
+                            <el-col :span="11">
+                                <el-input v-model="searchData.min" clearable placeholder="最小金额"></el-input>
+                            </el-col>
+                            <el-col class="line" :span="1" style="text-align:center">-</el-col>
+                            <el-col :span="11">
+                                <el-input v-model="searchData.max" clearable placeholder="最大金额"></el-input>
+                            </el-col>
                         </el-form-item>
                     </el-col>
                     <el-col :span="2">
@@ -121,22 +137,28 @@
             <el-table :data="tableList" border
                       size="mini"
                       highlight-current-row>
-                <el-table-column prop="bill_no" label="报销单申请号" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="bill_no" label="报销单申请号" :show-overflow-tooltip="true"
+                                 width="120"></el-table-column>
                 <el-table-column prop="org_name" label="申请单位" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="pay_account_no" label="付款方账号" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="pay_account_bank" label="付款方银行" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="recv_account_name" label="收款人" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="recv_account_no" label="收款方账号" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="recv_account_bank" label="收款方银行" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="payment_amount" label="收款金额" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="payment_summary" label="摘要" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="pay_account_no" label="付款方账号" :show-overflow-tooltip="true"
+                                 width="120"></el-table-column>
+                <el-table-column prop="pay_account_bank" label="付款方银行" :show-overflow-tooltip="true"
+                                 width="120"></el-table-column>
+                <el-table-column prop="recv_account_name" label="收款人" :show-overflow-tooltip="true"
+                                 width="100"></el-table-column>
+                <el-table-column prop="recv_account_no" label="收款方账号" :show-overflow-tooltip="true"
+                                 width="120"></el-table-column>
+                <el-table-column prop="recv_account_bank" label="收款方银行" :show-overflow-tooltip="true"
+                                 width="120"></el-table-column>
+                <el-table-column prop="payment_amount" label="收款金额" :show-overflow-tooltip="true"
+                                 width="100"></el-table-column>
+                <el-table-column prop="payment_summary" label="摘要" :show-overflow-tooltip="true"
+                                 width="100"></el-table-column>
                 <!--<el-table-column prop="pay_mode" label="付款方式" :show-overflow-tooltip="true"
                                  :formatter="transitPayMode"></el-table-column>-->
                 <el-table-column prop="service_status" label="状态" :show-overflow-tooltip="true"
-                                 :formatter="transitStatus"></el-table-column>
-                <el-table-column
-                        label="操作" width="110"
-                        fixed="right">
+                                 :formatter="transitStatus" width="70"></el-table-column>
+                <el-table-column label="操作" width="110" fixed="right">
                     <template slot-scope="scope" class="operationBtn">
                         <el-tooltip content="查看" placement="bottom" effect="light"
                                     :enterable="false" :open-delay="500"
@@ -315,6 +337,9 @@
                 pagCurrent: 1,
                 searchData: { //搜索条件
                     recv_account_query_key: "",
+                    org_name: "",
+                    min: "",
+                    max: "",
                     service_status: []
                 },
                 statusList: { //常量数据
