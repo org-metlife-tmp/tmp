@@ -168,16 +168,16 @@
                                  width="120"></el-table-column>
                 <el-table-column prop="payment_amount" label="收款金额" :show-overflow-tooltip="true"
                                  width="100"></el-table-column>
-                <!--<el-table-column prop="pay_mode" label="付款方式" :show-overflow-tooltip="true"
-                                 :formatter="transitPayMode"></el-table-column>-->
                 <el-table-column prop="payment_summary" label="摘要" :show-overflow-tooltip="true"
                                  width="110"></el-table-column>
-                <!--<el-table-column prop="service_status" label="状态" :show-overflow-tooltip="true"
-                                 :formatter="transitStatus" width="70"></el-table-column>-->
-                <el-table-column label="状态" :show-overflow-tooltip="true" width="160">
+                <el-table-column label="状态" :show-overflow-tooltip="true" width="80">
                     <template slot-scope="scope">
-                        <span>{{ constants[scope.row.service_status] }}</span>
-                        <span style="margin-left: 10px;color:#fd7d2f">{{ scope.row.feed_back }}</span>
+                        <el-popover placement="top" title="失败原因"
+                                    width="200" trigger="hover"
+                                    :disabled="scope.row.service_status != 8"
+                                    :content="scope.row.feed_back">
+                            <span slot="reference" style="cursor:default">{{ constants[scope.row.service_status] }}</span>
+                        </el-popover>
                     </template>
                 </el-table-column>
                 <el-table-column label="操作" width="110" fixed="right">
