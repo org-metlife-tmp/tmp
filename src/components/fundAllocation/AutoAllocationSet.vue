@@ -1087,6 +1087,16 @@
                             duration: 2000
                         });
                         return ;
+                    }else if(k == 'allocation_amount'){
+                        let reg =/^\d+(\.\d{1,2})?$/.test(data[k]);
+                        if(!reg){
+                            this.$message({
+                                type: "warning",
+                                message: "请输入小数位2位以内的下拨金额！",
+                                duration: 2000
+                            });
+                            return ;
+                        }
                     }
                 }
                 data.allocation_type = this.allocation_type;

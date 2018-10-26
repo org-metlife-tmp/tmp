@@ -106,8 +106,7 @@
     <div id="electronicReceipt">
         <div class="btn-list-left">
             <el-select v-model="channel_code"
-                        placeholder="渠道编码" size="mini"
-                        clearable>
+                        placeholder="渠道编码" size="mini">
                 <el-option v-for="channel in channelList"
                             :key="channel.channel_code"
                             :label="channel.channel_code"
@@ -535,6 +534,8 @@
             },
             //请求模板和列表
             bankIsSelect: function (val){
+                //清空搜索条件
+                this.searchData = {};
                 //查询电子回单模板
                 this.$axios({
                     url: "/cfm/normalProcess",
@@ -577,8 +578,14 @@
                         //组织搜索条件下拉数据
                         this.searchOptionList = sOptionlist;
                         //查询电子回单列表
-                        this.routerMessage.params.channel_code = this.channel_code;
-                        this.routerMessage.params.eb_type = val.eb_type;
+                        var routerParam = this.routerMessage.params;
+                        for (let k in routerParam){
+                            if(k != "page_size" && k != "page_num"){
+                                routerParam[k] = "";
+                            }
+                        }
+                        routerParam.channel_code = this.channel_code;
+                        routerParam.eb_type = val.eb_type;
                         this.$emit("getCommTable", this.routerMessage);
                     }
                 })
