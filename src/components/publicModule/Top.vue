@@ -171,6 +171,40 @@
                 <el-button type="warning" size="mini" @click="subCurrent">确 定</el-button>
             </span>
         </el-dialog>
+        <!--修改密码 弹出框-->
+        <el-dialog :visible.sync="passdialogVisible"
+                   width="600px" top="76px" title="修改密码"
+                   :append-to-body="true"
+                   :close-on-click-modal="false">
+            <el-form :model="passDialogData" size="small"
+                     label-width="100px"
+                     :rules="passRules" ref="passDialogForm">
+                <el-row>
+                    <el-col :span="24">
+                        <el-form-item label="原密码" prop="old_password">
+                            <el-input v-model="passDialogData.old_password" placeholder="请输入原密码"
+                                      clearable type="password"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="24">
+                        <el-form-item label="新密码" prop="password">
+                            <el-input v-model="passDialogData.password" placeholder="请输入新密码"
+                                      clearable type="password"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="24">
+                        <el-form-item label="确认密码" prop="confirm_password">
+                            <el-input v-model="passDialogData.confirm_password" placeholder="请再次确认密码"
+                                      clearable type="password"></el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button type="warning" size="mini" @click="setPassword">确 定</el-button>
+            </span>
+        </el-dialog>
+
     </div>
 </template>
 
@@ -189,7 +223,7 @@
                 showCompany: true,
                 userOperation: [
                     {content: "个人设置", id: "1"},
-                    // {content:"修改登录密码",id:"2"},
+                    {content:"修改登录密码",id:"2"},
                     {content: "退出", id: "3"}
                 ],
                 userNeed: false,
@@ -203,6 +237,12 @@
                 },
                 udopsList: [],
                 formLabelWidth: "120px",
+                passdialogVisible: false, //密码修改弹框
+                passDialogData: {
+                    old_password: "",
+                    password: "",
+                    confirm_password: ""
+                },
                 emptyData: "", //为了展示数据为空
                 //校验规则设置
                 rules: {
@@ -227,6 +267,23 @@
                         trigger: "blur"
                     }
                 },
+                passRules: {
+                    old_password: {
+                        required: true,
+                        message: "请输入原密码",
+                        trigger: "blur",
+                    },
+                    password: {
+                        required: true,
+                        message: "请输入新密码",
+                        trigger: "blur",
+                    },
+                    confirm_password: {
+                        required: true,
+                        message: "请再次确认密码",
+                        trigger: "blur",
+                    }
+                }
             }
         },
         methods: {
@@ -234,12 +291,22 @@
             handleCommand: function (command) {
                 //个人设置
                 if (command == "1") {
+                    if(this.$refs.dialogForm){
+                        this.$refs.dialogForm.clearValidate();
+                    }
                     this.dialogVisible = true;
                     this.setUserInfo();
                 }
                 //修改登录密码
                 if (command == "2") {
-
+                    var passDialogData = this.passDialogData;
+                    for(var k in passDialogData){
+                        passDialogData[k] = "";
+                    }
+                    if(this.$refs.passDialogForm){
+                        this.$refs.passDialogForm.clearValidate();
+                    }
+                    this.passdialogVisible = true;
                 }
                 //帮助中心
                 if (command == "3") {
@@ -417,6 +484,37 @@
                     }
                 }).catch(function (error) {
                     console.log(error);
+                })
+            },
+            //保存密码
+            setPassword: function(){
+                this.$refs.passDialogForm.validate((valid, object) => {
+                    if (valid) {
+                        var passDialogData = this.passDialogData;
+                        this.$axios({
+                            url: "/cfm/commProcess",
+                            method: "post",
+                            data: {
+                                optype: "user_chgpwd",
+                                params: passDialogData
+                            }
+                        }).then((result) => {
+                            if (result.data.error_msg) {
+                                this.$message({
+                                    type: "error",
+                                    message: result.data.error_msg,
+                                    duration: 2000
+                                })
+                            } else {
+                                this.$store.commit("del_token");
+                                this.$router.push({name: "Login"});
+                            }
+                        }).catch(function (error) {
+                            console.log(error);
+                        })
+                    } else {
+                        return false;
+                    }
                 })
             }
         }
