@@ -709,6 +709,7 @@
                     DataMgt: false, //接口数据管理
                     OAHeadPay: false, //总公司付款
                     OABranchPay: false, //分公司付款
+                    OACheck: false, //交易核对
 
                     ELECTB: false, //电子回单
                     ElectronicBillMgr: false, //电子回单
