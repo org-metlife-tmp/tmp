@@ -180,19 +180,7 @@
     export default {
         name: 'Top',
         created: function () {
-            var user = this.$store.state.user;
-            this.userName = user.name;
-            if (user.is_admin) {
-                this.showCompany = false;
-            } else {
-                var uodps = user.uodp;
-                for (var i = 0; i < uodps.length; i++) {
-                    if (uodps[i].is_default == "1") {
-                        this.companyName = uodps[i].org_name;
-                        break;
-                    }
-                }
-            }
+            this.setUserText();
         },
         data: function () {
             return {
@@ -261,6 +249,23 @@
                 if (command == "3") {
                     this.$store.commit("del_token");
                     this.$router.push({name: "Login"});
+                }
+            },
+            //设置顶部个人信息
+            setUserText: function(){
+                var user = this.$store.state.user;
+                this.userName = user.name;
+                if (user.is_admin) {
+                    this.showCompany = false;
+                } else {
+                    var uodps = user.uodp;
+                    var curId = user.cur_uodp_Id;
+                    for (var i = 0; i < uodps.length; i++) {
+                        if (uodps[i].uodp_id == curId) {
+                            this.companyName = uodps[i].org_name;
+                            break;
+                        }
+                    }
                 }
             },
             //个人设置数据操作
@@ -395,12 +400,15 @@
                         }
                         this.$store.commit("set_token",userData);
                         this.$router.push("/");
-                        this.$router.push({
-                            name:"Home",
-                            params:{
-                                refreshUser: true
-                            }
-                        });
+                        window.setTimeout(() => {
+                            this.$router.push({
+                                name:"Home",
+                                params:{
+                                    refreshUser: true
+                                }
+                            });
+                        },0);
+                        this.setUserText();
                         this.$message({
                             type: 'success',
                             message: "修改成功",
