@@ -413,8 +413,7 @@
                     <el-menu-item index="/balance/history-detail" v-if="menuList.HisBal">历史余额明细</el-menu-item>
                     <el-menu-item index="/balance/history-all" v-if="menuList.HisBalSummary">历史余额汇总</el-menu-item>
                     <el-menu-item index="/balance/history-fluctuate" v-if="menuList.HisBalWave">历史余额波动</el-menu-item>
-                    <el-menu-item index="/balance/history-data">余额数据导入</el-menu-item>
-
+                    <el-menu-item index="/balance/history-data" v-if="menuList.BalImport">余额数据导入</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
             <el-submenu index="8" v-if="menuList.JYT">
@@ -428,7 +427,7 @@
                     <el-menu-item index="/trade-links/history-detail" v-if="menuList.HisTrans">历史交易明细</el-menu-item>
                     <el-menu-item index="/trade-links/history-all" v-if="menuList.HisTransSummary">历史交易汇总</el-menu-item>
                     <el-menu-item index="/trade-links/history-fluctuate" v-if="menuList.HisTransWave">历史交易波动</el-menu-item>
-                    <el-menu-item index="/trade-links/history-data">交易数据导入</el-menu-item>
+                    <el-menu-item index="/trade-links/history-data" v-if="menuList.TransImport">交易数据导入</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
             <el-submenu index="9" v-if="menuList.DBT">
@@ -643,6 +642,7 @@
                     HisBal: false, //历史余额明细
                     HisBalSummary: false, //历史余额汇总
                     HisBalWave: false, //历史余额波动
+                    BalImport: false, //历史余额波动
 
                     JYT: false, //交易通
                     CurTrans: false, //当日交易明细
@@ -650,6 +650,7 @@
                     HisTrans: false, //历史交易明细
                     HisTransSummary: false, //历史交易汇总
                     HisTransWave: false, //历史交易波动
+                    TransImport: false, //历史交易波动
 
                     DBT: false, //调拨通
                     DbtMkBill: false, //内部调拨-制单
