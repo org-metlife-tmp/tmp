@@ -118,6 +118,7 @@ import DataManage from '@/components/OAData/DataManage'
 import HeadOfficePay from '@/components/OAData/HeadOfficePay'
 import FilialePayment from '@/components/OAData/FilialePayment'
 import OAMakeBill from '@/components/OAData/OAMakeBill'
+import SuspiciousData from '@/components/OAData/SuspiciousData'
 //退票管理
 import RefundDispose from '@/components/RefundTicket/RefundDispose'
 
@@ -227,6 +228,7 @@ const router = new Router({
                         {path: '/receivables/receive-look-over', name: 'ReceiveLookOver', component: ReceiveLookOver, meta: {requireAuth: true}},
                         //OA数据
                         {path: '/OA-data/data-manage', name: 'DataManage', component: DataManage, meta: {requireAuth: true}},
+                        {path: '/OA-data/suspicious-data', name: 'SuspiciousData', component: SuspiciousData, meta: {requireAuth: true}},
                         //退票管理
                         {path: '/refund-ticket/refund-dispose', name: 'RefundDispose', component: RefundDispose, meta: {requireAuth: true}},
                     ]
