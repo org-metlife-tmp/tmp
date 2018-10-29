@@ -210,19 +210,19 @@
                     </el-col>
                     <el-col :span="4">
                         <el-form-item>
-                            <el-input v-model="searchData.pay_account_no" clearable placeholder="请输入付款方名称或账号"></el-input>
+                            <el-input v-model="searchData.pay_query_key" clearable placeholder="请输入付款方名称或账号"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="4">
                         <el-form-item>
-                            <el-input v-model="searchData.recv_account_no" clearable
+                            <el-input v-model="searchData.recv_query_key" clearable
                                       placeholder="请输入收款方名称或账号"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="4">
                         <el-form-item>
                             <el-select v-model="searchData.pay_mode" placeholder="请选择付款方式"
-                                       filterable size="mini">
+                                       filterable clearable size="mini">
                                 <el-option v-for="(item,k) in payModeList"
                                            :key="k"
                                            :label="item"
@@ -234,11 +234,11 @@
                     <el-col :span="5">
                         <el-form-item>
                             <el-col :span="11">
-                                <el-input v-model="searchData.min_amount" clearable placeholder="最小金额"></el-input>
+                                <el-input v-model="searchData.min" clearable placeholder="最小金额"></el-input>
                             </el-col>
                             <el-col class="line" :span="2">-</el-col>
                             <el-col :span="11">
-                                <el-input v-model="searchData.max_amount" clearable placeholder="最大金额"></el-input>
+                                <el-input v-model="searchData.max" clearable placeholder="最大金额"></el-input>
                             </el-col>
                         </el-form-item>
                     </el-col>
@@ -272,8 +272,8 @@
                                  :formatter="transitAmount"></el-table-column>
                 <el-table-column prop="pay_mode" label="付款方式" :show-overflow-tooltip="true"
                                  :formatter="transitPayMode"></el-table-column>
-                <el-table-column prop="sucess_num" label="成功笔数" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="sucess_amount" label="成功金额" :show-overflow-tooltip="true"
+                <el-table-column prop="success_num" label="成功笔数" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="success_amount" label="成功金额" :show-overflow-tooltip="true"
                                  :formatter="transitAmount"></el-table-column>
                 <el-table-column prop="service_status" label="批次状态" :show-overflow-tooltip="true"
                                  :formatter="transitStatus"></el-table-column>
@@ -295,7 +295,7 @@
                 <span>总金额：</span>
                 <span v-text="totalData.total_amount" class="numText"></span>
                 <span>成功金额：</span>
-                <span v-text="totalData.sucess_amount" class="numText"></span>
+                <span v-text="totalData.success_amount" class="numText"></span>
             </div>
         </section>
         <!--分页部分-->
@@ -479,10 +479,10 @@
                     }
                 },
                 searchData: { //搜索条件
-                    pay_account_no: "",
-                    recv_account_no: "",
-                    min_amount: "",
-                    max_amount: "",
+                    pay_query_key: "",
+                    recv_query_key: "",
+                    min: "",
+                    max: "",
                     service_status: [],
                     start_date: "",
                     end_date: ""
@@ -494,7 +494,7 @@
                 pagCurrent: 1,
                 totalData: { //汇总数据
                     total_amount: "",
-                    sucess_amount: ""
+                    success_amount: ""
                 },
                 dateValue: "", //时间选择
                 statusList: {
