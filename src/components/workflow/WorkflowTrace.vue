@@ -305,6 +305,7 @@ import BusinessTracking from "../publicModule/BusinessTracking.vue"
                 for(var k in searchData){
                     this.routerMessage.params[k] = searchData[k];
                 }
+                this.routerMessage.params.page_num = 1;
                 this.$emit("getTableData", this.routerMessage);
             },
             //点击页数获取当前页数据

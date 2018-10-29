@@ -214,18 +214,6 @@
             }
         },
         methods: {
-            //根据条件查询数据
-            queryData:function(){
-                var searchData = this.searchData;
-                for(var k in searchData){
-                    if(this.isPending){
-                        this.routerMessage.todo.params[k] = searchData[k];
-                    }else{
-                        this.routerMessage.done.params[k] = searchData[k];
-                    }
-                }
-                this.$emit("getCommTable", this.routerMessage);
-            },
             //点击页数获取当前页数据
             getCurrentPage:function(currPage){
                 this.routerMessage.params.page_num = currPage;

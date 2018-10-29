@@ -906,6 +906,7 @@
                 for (var k in searchData) {
                     this.routerMessage.params[k] = searchData[k];
                 }
+                this.routerMessage.params.page_num = 1;
                 this.$emit("getCommTable", this.routerMessage);
             },
             //根据付款方式查询
@@ -938,6 +939,7 @@
             },
             //根据条件查询数据(弹窗表格)
             queryDetailData: function () {
+                this.searchDetailData.page_num = 1;
                 this.getDetailTable(this.searchDetailData);
             },
             //换页后获取数据(弹窗表格)

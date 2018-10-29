@@ -505,6 +505,7 @@
             queryData:function (){
                 var searchData = this.searchData;
                 Object.assign(this.routerMessage.params,searchData);
+                this.routerMessage.params.page_num = 1;
                 this.$emit("getCommTable", this.routerMessage);
             },
             //增加搜索条件

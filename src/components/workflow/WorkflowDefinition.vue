@@ -770,6 +770,7 @@ export default {
         },
         //查询数据
         queryData:function(){
+            this.routerMessage.params.page_num = 1;
             this.routerMessage.params.query_key = this.searchData.query_key;
             this.$emit("getTableData", this.routerMessage);
         },

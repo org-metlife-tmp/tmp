@@ -316,6 +316,8 @@
                         this.routerMessage.done.params[k] = searchData[k];
                     }
                 }
+                this.routerMessage.todo.params.page_num = 1;
+                this.routerMessage.done.params.page_num = 1;
                 this.childList = [];
                 this.$emit("getTableData", this.routerMessage);
             },
