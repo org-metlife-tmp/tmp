@@ -150,6 +150,173 @@
             }
         }
 
+        /*----批量调拨，支付弹框样式*/
+        //批量调拨查看弹出框
+        .view-mode{
+            position: absolute;
+            margin: auto;
+            top: 15px;
+            left: 400px;
+            height: 30px;
+            line-height: 30px;
+            text-align: center;
+            .tabBtn{
+                width: 20px;
+                height: 20px;
+                background-image: url(../../assets/icon_common.png);
+                border: none;
+                padding: 0;
+                display: inline-block;
+                background-repeat: no-repeat;
+            }
+            .total{
+                background-position: -344px -2px
+            }
+            .detail{
+                background-position: -393px -2px;
+            }
+            .viewSelect{
+                .total{
+                    background-position: -366px -2px;
+                }
+                .detail{
+                    background-position: -420px -2px;
+                }
+            }
+        }
+        /*查看弹框*/
+        .dialog-talbe {
+            width: 100%;
+            overflow: hidden;
+            li {
+                float: left;
+                box-sizing: border-box;
+                border-top: 1px solid #e2e2e2;
+                height: 30px;
+                line-height: 30px;
+                width: 50%;
+                display:flex;/*设为伸缩容器*/
+                flex-flow:row;/*伸缩项目单行排列*/
+                span{
+                    display: inline-block;
+                    padding: 0 5px;
+                }
+                .table-title{
+                    width: 100px;
+                    text-align: right;
+                }
+                .tab-content{
+                    flex:1;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                }
+                .font-red{
+                    color: #fd7d2f;
+                    font-weight: bold;
+                }
+                .money-box{
+                    flex: 1;
+                    display:flex;/*设为伸缩容器*/
+                    flex-flow:row;/*伸缩项目单行排列*/
+                    .num{
+                        width: 100px;
+                        text-align:right;;
+                    }
+                    .amount{
+                        flex: 1;
+                        text-align: center;
+                    }
+                }
+            }
+            .font-red{
+                color: #fd7d2f;
+            }
+            .payTitle{
+                    width: 100%;
+                }
+            .borderRight{
+                border-right: 1px solid #e2e2e2;
+            }
+            .bgColor{
+                background-color: #fafafa;
+            }
+        }
+        .table-memo{
+            height: 30px;
+            line-height: 30px;
+        }
+        .memo-title{
+            width: 60px;
+            display: inline-block;
+            padding: 0 5px;
+            text-align: right;
+        }
+        .table-file{
+            >*{
+                float: left;
+            }
+        }
+        #batchDeatil{
+            .tab-content{
+                height: 292px;
+            }
+        }
+        /*弹框表格-分页部分*/
+        .inner-botton-pag {
+            // position: absolute;
+            width: 100%;
+            height: 8%;
+            // bottom: 56px;
+            margin-top: 56px;
+            left: 0;
+            .el-pagination{
+                text-align: center;
+            }
+        }
+        /*汇总数据*/
+        .allData {
+            height: 36px;
+            line-height: 36px;
+            width: 100%;
+            background-color: #F8F8F8;
+            border: 1px solid #ebeef5;
+            border-top: none;
+            box-sizing: border-box;
+            text-align: right;
+
+            /*左侧按钮*/
+            .btn-left {
+                float: left;
+                margin-left: 16px;
+
+                .transmit-icon {
+                    position: relative;
+                    display: inline-block;
+                    width: 16px;
+                    height: 10px;
+                    vertical-align: middle;
+                    margin-right: 4px;
+
+                    i {
+                        position: absolute;
+                        top: -5px;
+                        left: -3px;
+                        width: 18px;
+                        height: 18px;
+                        background: url(../../assets/icon_common.png) no-repeat;
+                        background-position: -49px -80px;
+                    }
+                }
+            }
+
+            /*汇总数字*/
+            .numText {
+                color: #FF5800;
+                margin-right: 10px;
+            }
+        }
+        /*----批量调拨，支付弹框样式*/
 
         .blue{
             color: #409EFF;
@@ -214,8 +381,11 @@
         .detailDialog.el-dialog__wrapper {
             .el-dialog__body {
                 height: 400px;
-                overflow-y: scroll;
+                overflow-y: auto;
             }
+        }
+        .el-button-group .el-button:last-child {
+            margin-left: -2px!important;
         }
     }
 </style>
@@ -368,7 +538,7 @@
                             >
                             </el-table-column>
                             <!-- 调拨通金额处理千分位 -->
-                            <el-table-column v-else-if="head.prop=='payment_amount' || head.prop== 'total_amount' || head.prop== 'receipts_amount' || head.prop== 'sucess_amount'"
+                            <el-table-column v-else-if="head.prop=='payment_amount' || head.prop== 'total_amount' || head.prop== 'receipts_amount' || head.prop== 'success_amount'"
                                 :key="head.id"
                                 :prop="head.prop"
                                 :label="head.name"
@@ -554,6 +724,164 @@
             <BusinessTracking
                 :businessParams="businessParams"
             ></BusinessTracking>
+            <span slot="footer" class="dialog-footer" v-if="isPending">
+                <el-button type="primary"
+                    size="mini"
+                    plain
+                    @click="showThirdDialog('addLots')"
+                    icon="el-icon-circle-plus-outline">加 签</el-button>
+                <el-button type="danger"
+                    size="mini"
+                    plain
+                    @click="showThirdDialog('reject')"
+                    icon="el-icon-circle-close-outline">拒 绝</el-button>
+                <el-button type="warning"
+                    size="mini"
+                    plain
+                    @click="showThirdDialog('agree')"
+                    icon="el-icon-circle-check-outline">同 意</el-button>
+            </span>
+        </el-dialog>
+        <!--批量调拨弹出框-->
+        <el-dialog title=""
+                   :visible.sync="batchAllotVisible"
+                   width="900px" top="76px"
+                   class="detailDialog"
+                   @close="closeLookDialog"
+                   :close-on-click-modal="false">
+            <h1 slot="title" v-text="dialogTitle" class="dialog-title"></h1>
+            <div class="view-mode">
+                <el-button-group>
+                    <el-button size="mini" :class="{viewSelect:curInnerTab}" round title="查看批次汇总" @click="changeTab(true)"><i class="tabBtn total"></i></el-button>
+                    <el-button size="mini" :class="{viewSelect:!curInnerTab}" round title="查看批次明细" @click="changeTab(false)"><i class="tabBtn detail"></i></el-button>
+                </el-button-group>
+            </div>
+            <!-- <div class="serial-number">
+                [编号:
+                <span v-text="dialogData.service_serial_number"></span>
+                ]
+            </div> -->
+            <section id="batchSummary" v-show="curInnerTab">
+                <ul class="dialog-talbe">
+                    <li class="borderRight bgColor">
+                        <span class="table-title">总笔数</span>
+                        <span class="tab-content">{{dialogData.total_num}}</span>
+                    </li>
+                    <li class="bgColor">
+                        <span class="table-title">总金额</span>
+                        <span class="tab-content font-red">{{dialogData.total_amount}}元</span>
+                    </li>
+                    <li v-if="curBiztype==19">
+                        <span class="table-title">收款账号</span>
+                        <span class="tab-content" :title="dialogData.recv_account_no">{{dialogData.recv_account_no}}</span>
+                    </li>
+                    <li v-if="curBiztype==19">
+                        <span class="table-title">开户行</span>
+                        <span class="tab-content" :title="dialogData.recv_account_bank">{{dialogData.recv_account_bank}}</span>
+                    </li>
+                    <li v-if="curBiztype!=19">
+                        <span class="table-title">付款账号</span>
+                        <span class="tab-content" :title="dialogData.pay_account_no">{{dialogData.pay_account_no}}</span>
+                    </li>
+                    <li v-if="curBiztype!=19">
+                        <span class="table-title">开户行</span>
+                        <span class="tab-content" :title="dialogData.pay_account_bank">{{dialogData.pay_account_bank}}</span>
+                    </li>
+                    <li class="payTitle">
+                        <span class="table-title">支付结果</span>
+                    </li>
+                    <li class="font-red">
+                        <span class="table-title">已失败</span>
+                        <div class="money-box">
+                            <span class="num">{{dialogData.failed_num}}笔</span>
+                            <span class="amount">{{dialogData.failed_amount}}元</span>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="table-title">处理中</span>
+                        <div class="money-box">
+                            <span class="num">{{dialogData.process_num}}笔</span>
+                            <span class="amount">{{dialogData.process_amount}}元</span>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="table-title">已保存</span>
+                        <div class="money-box">
+                            <span class="num">{{dialogData.saved_num}}笔</span>
+                            <span class="amount">{{dialogData.saved_amount}}元</span>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="table-title">已作废</span>
+                        <div class="money-box">
+                            <span class="num">{{dialogData.cancel_num}}笔</span>
+                            <span class="amount">{{dialogData.cancel_amount}}元</span>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="table-title">已成功</span>
+                        <div class="money-box">
+                            <span class="num">{{dialogData.success_num}}笔</span>
+                            <span class="amount">{{dialogData.success_amount}}元</span>
+                        </div>
+                    </li>
+                    <li></li>
+                </ul>
+                <div class="table-memo">
+                    <span class="memo-title">备注</span>
+                    <span class="memo-content">{{dialogData.payment_summary}}</span>
+                </div>
+                <div class="table-file">
+                    <span class="memo-title" style="height:60px;line-height:60px">附件</span>
+                    <span class="memo-content" style="height:60px;padding-top:6px;overflow-y:auto">
+                        <Upload :emptyFileList="emptyFileList"
+                            :fileMessage="fileMessage"
+                            :triggerFile="triggerFile"
+                            :isPending="false"></Upload>
+                    </span>
+                </div>
+                <BusinessTracking :businessParams="businessParams"></BusinessTracking>
+            </section>
+            <section id="batchDeatil" v-show="!curInnerTab">
+                <section class="tab-content">
+                    <el-table :data="detailTableList"
+                            height="100%"
+                            border size="mini">
+                        <el-table-column prop="pay_account_name" v-if="curBiztype==19" label="付款户名" :show-overflow-tooltip="true"></el-table-column>
+                        <el-table-column prop="pay_account_no" v-if="curBiztype==19" label="付款账号" :show-overflow-tooltip="true"></el-table-column>
+                        <el-table-column prop="pay_account_bank" v-if="curBiztype==19" label="付款行" :show-overflow-tooltip="true"></el-table-column>
+                        <el-table-column prop="recv_account_name" v-if="curBiztype!=19" label="收款户名" :show-overflow-tooltip="true"></el-table-column>
+                        <el-table-column prop="recv_account_no" v-if="curBiztype!=19" label="收款账号" :show-overflow-tooltip="true"></el-table-column>
+                        <el-table-column prop="recv_account_bank" v-if="curBiztype!=19" label="收款行" :show-overflow-tooltip="true"></el-table-column>
+                        <el-table-column prop="payment_amount" label="金额" :show-overflow-tooltip="true"
+                                        :formatter="changeThousandth"></el-table-column>
+                        <el-table-column prop="pay_status" label="业务状态" :show-overflow-tooltip="true"
+                                        :formatter="transitionStatus"></el-table-column>
+                        <el-table-column prop="feed_back" label="反馈信息"
+                                        :show-overflow-tooltip="true"></el-table-column>
+                    </el-table>
+                    <div class="allData">
+                        <span>总笔数：</span>
+                        <span v-text="detailTotal.total_num" class="numText"></span>
+                        <span>总金额：</span>
+                        <span v-text="detailTotal.total_amount" class="numText"></span>
+                    </div>
+                </section>
+                <!--分页部分-->
+                <div class="inner-botton-pag">
+                    <el-pagination
+                            background
+                            layout="sizes, prev, pager, next, jumper"
+                            :page-size="pagDeSize"
+                            :total="pagDeTotal"
+                            :page-sizes="[7, 50, 100, 500]"
+                            :pager-count="5"
+                            @current-change="getCurrentDePage"
+                            @size-change="sizeDeChange"
+                            :current-page="pagDeCurrent">
+                    </el-pagination>
+                </div>
+            </section>
             <span slot="footer" class="dialog-footer" v-if="isPending">
                 <el-button type="primary"
                     size="mini"
@@ -774,7 +1102,7 @@
                 },
                 "10":{
                     text:"内部调拨-批量",
-                    detail:"dbtbatch_detail",
+                    detail:"dbtbatch_viewbill",
                     list:"dbtbatch_pendingtasks",
                     addLots:"dbtbatch_append",
                     agree:"dbtbatch_agree",
@@ -784,7 +1112,7 @@
                 },
                 "11":{
                     text:"支付通-批量",
-                    detail:"zftbatch_detail",
+                    detail:"zftbatch_billdetail",
                     list:"zftbatch_pendingtasks",
                     addLots:"zftbatch_append",
                     agree:"zftbatch_agree",
@@ -1212,9 +1540,9 @@
                     {id:"13", lspan:4, label:"已失败金额"},
                     {id:"14", pspan:8, prop:"failed_amount"},
                     {id:"15", lspan:4, label:"已成功笔数"},
-                    {id:"16", pspan:8, prop:"sucess_num"},
+                    {id:"16", pspan:8, prop:"success_num"},
                     {id:"17", lspan:4, label:"已成功金额"},
-                    {id:"18", pspan:8, prop:"sucess_amount"}
+                    {id:"18", pspan:8, prop:"success_amount"}
                 ],
                 "20":[
                     {id:"1", lspan:4, label:"单据号"},
@@ -1461,8 +1789,8 @@
                         {id:'1',prop:"batchno",name:'批次号'},
                         {id:'2',prop:"total_num",name:'总笔数'},
                         {id:'3',prop:"total_amount",name:'总金额'},
-                        {id:'4',prop:"sucess_num",name:'成功笔数'},
-                        {id:'5',prop:"sucess_amount",name:'成功金额'},
+                        {id:'4',prop:"success_num",name:'成功笔数'},
+                        {id:'5',prop:"success_amount",name:'成功金额'},
                         {id:'6',prop:"nextUserList",name:'下级审批人'}
                     ],
                     "20":[
@@ -1533,6 +1861,15 @@
                 isFromHome: false,//是否从首页进入
                 isTop:false,//只有一个tab加样式
                 selectionData: [],//选择加签或者同意的数据
+                batchAllotVisible: false,
+                curInnerTab: true,//调拨当前显示的tab
+                detailTableList: [],
+                detailTotal:{},//弹窗的表格汇总
+                pagDeSize: 7, //弹窗分页数据
+                pagDeTotal: 1,
+                pagDeCurrent: 1,
+                searchDetailData: {},//弹窗的表格查询条件
+                curBiztype: "",//当前的biztype
             }
         },
         methods:{
@@ -1621,6 +1958,12 @@
                 }
                 if (column.property === "interactive_mode") {
                     return this.interList[cellValue];
+                }
+                if(column.property == 'pay_status'){
+                     var constants = JSON.parse(window.sessionStorage.getItem("constants"));
+                    if (constants.PayStatus) {
+                        return constants.PayStatus[cellValue];
+                    }
                 }
             },
             getAssignee: function (row, column, cellValue, index) {
@@ -1745,6 +2088,7 @@
             viewDetail:function(row,index){
                 this.businessParams = {};//清空数据
                 let bizType = row.biz_type;
+                this.curBiztype = bizType;
                 this.dialogTitle = this.classParams[bizType].text;
                 this.currentDetailDialog = this.detailDialog[bizType];
                 let id = row.bill_id;
@@ -1771,7 +2115,7 @@
                 //详情接口参数
                 var params = {};
                 params.id = id;
-                if(bizType == '10'){
+                if(bizType == '10' || bizType == '11' || bizType == '19'){
                     params.batchno = row.batchno ? row.batchno : row.bill_code;
                 }
                 this.$axios({
@@ -1827,8 +2171,7 @@
                                     data.new_acc_purpose_name = content[i].new_value;
                                 }
                             }
-                        }
-                        if(bizType === 7){//销户补录的时候处理销户交易数据
+                        }else if(bizType === 7){//销户补录的时候处理销户交易数据
                             let content = data.additionals;
                             let len = content.length;
                             let str = "";
@@ -1840,6 +2183,13 @@
                                 }
                             });
                             data.salesTransaction = str;
+                        }else if(bizType === 10 || bizType == 11 || bizType == 19){//批量调拨和支付or非直连归集
+                            data.cancel_amount = this.$common.transitSeparator(data.cancel_amount);
+                            data.failed_amount = this.$common.transitSeparator(data.failed_amount);
+                            data.process_amount = this.$common.transitSeparator(data.process_amount);
+                            data.saved_amount = this.$common.transitSeparator(data.saved_amount);
+                            data.success_amount = this.$common.transitSeparator(data.success_amount);
+                            data.total_amount = this.$common.transitSeparator(data.total_amount);
                         }
                         //组装查看弹出框数据
                         Object.assign(this.dialogData,data)
@@ -1853,7 +2203,15 @@
                         this.fileMessage.bill_id = id;
                         this.fileMessage.biz_type = bizType;
                         this.triggerFile = !this.triggerFile;
-                        this.dialogVisible = true;
+                        if(bizType == 10 || bizType == 11 || bizType == 19){
+                            this.batchAllotVisible = true;
+                            this.searchDetailData.batchno = data.batchno;
+                            this.searchDetailData.biz_type = bizType;
+                            this.getDetailTable(this.searchDetailData);
+                        }else{
+                            this.dialogVisible = true;
+                        }
+                        
                     }
                 })
             },
@@ -1944,7 +2302,11 @@
                             duration: 2000
                         });
                         this.getTabList('third');
-                        this.dialogVisible = false;
+                        if(this.curBiztype==10 || this.curBiztype==11 || this.curBiztype==19){
+                            this.batchAllotVisible = false;
+                        }else{
+                            this.dialogVisible = false;
+                        }   
                         this.thirdFunVisible = false;
                     }
                 })
@@ -1992,6 +2354,70 @@
             //选择加签的或者同意的数据
             handleSelectionChange: function (val) {
                 this.selectionData = val;
+            },
+            //切换弹框内tab
+            changeTab: function (type) {
+                // this.dialogTitle = type ? '批次汇总查看' : '批次汇总明细';
+                this.curInnerTab = type;
+            },
+            //换页后获取数据(弹窗表格)
+            getCurrentDePage: function (currPage) {
+                this.searchDetailData.page_num = currPage;
+                this.getDetailTable(this.searchDetailData);
+            },
+            //当前页数据条数发生变化(弹窗表格)
+            sizeDeChange: function (val) {
+                this.searchDetailData.page_size = val;
+                this.searchDetailData.page_num = 1;
+                this.getDetailTable(this.searchDetailData);
+            },
+            getDetailTable: function (params) {
+                params.page_size = params.page_size ? params.page_size : 7;
+                params.page_num = params.page_num ? params.page_num : 1;
+                var optype = "";
+                var bizType = params.biz_type;
+                if(bizType == 10){
+                    optype = "dbtbatch_detaillist";
+                }else if(bizType == 11){
+                    optype = "zftbatch_billdetaillist";
+                }else if(bizType == 19){
+                    optype = "ndc_billdetaillist";
+                }
+                this.$axios({
+                    url: "/cfm/normalProcess",
+                    method: "post",
+                    data: {
+                        optype: optype,
+                        params: params
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                    } else {
+                        var val = result.data;
+                        var data = val.data;
+                        this.detailTotal = val.ext;
+                        this.pagDeSize = val.page_size;
+                        this.pagDeTotal = val.total_line;
+                        this.pagDeCurrent = val.page_num;
+                        this.detailTableList = data;
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            },
+            //批量调拨查看弹框弹框关闭
+            closeLookDialog: function(){
+                this.pagDeSize = 7;
+                this.pagDeTotal = 1;
+                this.pagDeCurrent = 1;
+                this.detailTableList = [];
+                this.curInnerTab = true;
+                this.searchDetailData = {};
             },
         },
         computed:{

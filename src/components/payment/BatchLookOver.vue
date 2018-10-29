@@ -272,8 +272,8 @@
                                  :formatter="transitAmount"></el-table-column>
                 <el-table-column prop="pay_mode" label="付款方式" :show-overflow-tooltip="true"
                                  :formatter="transitPayMode"></el-table-column>
-                <el-table-column prop="sucess_num" label="成功笔数" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="sucess_amount" label="成功金额" :show-overflow-tooltip="true"
+                <el-table-column prop="success_num" label="成功笔数" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="success_amount" label="成功金额" :show-overflow-tooltip="true"
                                  :formatter="transitAmount"></el-table-column>
                 <el-table-column prop="service_status" label="批次状态" :show-overflow-tooltip="true"
                                  :formatter="transitStatus"></el-table-column>
@@ -295,7 +295,7 @@
                 <span>总金额：</span>
                 <span v-text="totalData.total_amount" class="numText"></span>
                 <span>成功金额：</span>
-                <span v-text="totalData.sucess_amount" class="numText"></span>
+                <span v-text="totalData.success_amount" class="numText"></span>
             </div>
         </section>
         <!--分页部分-->
@@ -374,8 +374,8 @@
 
                     <li class="table-li-title">已成功</li>
                     <li class="table-li-content table-two-row">
-                        <span v-text="dialogData.sucess_num"></span>笔
-                        <span v-text="dialogData.sucess_amount" class="partition"></span>元
+                        <span v-text="dialogData.success_num"></span>笔
+                        <span v-text="dialogData.success_amount" class="partition"></span>元
                     </li>
 
                     <li class="table-li-title">摘要</li>
@@ -494,7 +494,7 @@
                 pagCurrent: 1,
                 totalData: { //汇总数据
                     total_amount: "",
-                    sucess_amount: ""
+                    success_amount: ""
                 },
                 dateValue: "", //时间选择
                 statusList: {
