@@ -416,7 +416,7 @@
             if (constants.InactiveMode) {
                 this.interList = constants.InactiveMode;
             }
-            //存款类型 
+            //存款类型
             if (constants.DepositsMode) {
                 this.depositsList = constants.DepositsMode;
             }
@@ -555,6 +555,7 @@
                 for (var key in searchData) {
                     this.routerMessage.params[key] = searchData[key];
                 }
+                this.routerMessage.params.page_num = 1;
                 this.$emit("getCommTable", this.routerMessage);
             },
             //查看

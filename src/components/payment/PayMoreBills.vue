@@ -863,6 +863,7 @@
                 for (var k in searchData) {
                     this.routerMessage.params[k] = searchData[k];
                 }
+                this.routerMessage.params.page_num = 1;
                 this.$emit("getCommTable", this.routerMessage);
             },
             //换页后获取数据
@@ -1447,7 +1448,7 @@
                         //将数据传递给子组件
                         this.flowList = define;
                         this.isEmptyFlow = false;
-                        
+
                     }
                 })
             },

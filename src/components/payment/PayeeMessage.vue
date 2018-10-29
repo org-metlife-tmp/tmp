@@ -351,6 +351,7 @@
             //搜索
             queryData: function(){
                 this.routerMessage.params.query_key = this.searchData;
+                this.routerMessage.params.page_num = 1;
                 this.$emit("getCommTable", this.routerMessage);
             },
             //银行大类搜索筛选

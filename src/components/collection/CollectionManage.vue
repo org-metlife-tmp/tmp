@@ -436,6 +436,7 @@
                 for (var k in searchData) {
                     this.routerMessage.params[k] = searchData[k];
                 }
+                this.routerMessage.params.page_num = 1;
                 this.$emit("getCommTable", this.routerMessage);
             },
             //展示格式转换-金额

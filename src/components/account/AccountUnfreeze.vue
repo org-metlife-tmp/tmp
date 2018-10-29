@@ -453,8 +453,11 @@
                 for(var k in searchData){
                     if(this.isPending){
                         this.routerMessage.todo.params[k] = searchData[k];
+                        this.routerMessage.todo.params.page_num = 1;
+
                     }else{
                         this.routerMessage.done.params[k] = searchData[k];
+                        this.routerMessage.done.params.page_num = 1;
                     }
                 }
                 this.$emit("getTableData", this.routerMessage);
@@ -889,7 +892,7 @@
                         //将数据传递给子组件
                         this.flowList = define;
                         this.isEmptyFlow = false;
-                        
+
                     }
                 })
             },

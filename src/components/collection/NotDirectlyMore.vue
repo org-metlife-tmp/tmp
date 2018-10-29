@@ -309,10 +309,10 @@
                 <div class="btn-left">
                     <el-button type="warning" plain size="mini" @click="goMakeBill">制单</el-button>
                 </div>
-                <span>总金额：</span>
+                <!--<span>总金额：</span>
                 <span v-text="totalData.total_amount" class="numText"></span>
                 <span>成功金额：</span>
-                <span v-text="totalData.sucess_amount" class="numText"></span>
+                <span v-text="totalData.sucess_amount" class="numText"></span>-->
             </div>
         </section>
         <!--分页部分-->
@@ -502,10 +502,10 @@
                 pagSize: 8, //分页数据
                 pagTotal: 1,
                 pagCurrent: 1,
-                totalData: { //汇总数据
+                /*totalData: { //汇总数据
                     total_amount: "",
                     sucess_amount: ""
-                },
+                },*/
                 dateValue: "", //时间选择
                 pickerOptions: {
                     disabledDate(time) {
@@ -564,6 +564,7 @@
                 for (var k in searchData) {
                     this.routerMessage.params[k] = searchData[k];
                 }
+                this.routerMessage.params.page_num = 1;
                 this.$emit("getCommTable", this.routerMessage);
             },
             //换页后获取数据
@@ -786,7 +787,7 @@
                 this.pagTotal = val.total_line;
                 this.tableList = val.data;
                 this.pagCurrent = val.page_num;
-                this.totalData = val.ext;
+                // this.totalData = val.ext;
             }
         }
     }

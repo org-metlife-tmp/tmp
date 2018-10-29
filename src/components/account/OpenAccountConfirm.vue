@@ -390,6 +390,7 @@
                 for (var key in searchData) {
                     this.routerMessage.params[key] = searchData[key];
                 }
+                this.routerMessage.params.page_num = 1;
                 this.$emit("getCommTable", this.routerMessage);
             },
             //编辑
