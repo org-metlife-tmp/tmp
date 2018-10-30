@@ -112,6 +112,7 @@
                 }
                 .feed-back{
                     margin-left: 25px;
+                    color: red;
                 }
             }
             .success-color {
@@ -173,7 +174,7 @@
             background-position: -410px -166px;
             cursor: pointer;
             z-index: 5;
-            background-color: #fff;
+            background-color: #fafafa;
             border: 0;
             padding: 0;
         }
