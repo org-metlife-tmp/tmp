@@ -92,20 +92,28 @@
             margin-bottom: 22px;
             background: #fafafa;
             line-height: 50px;
-
-            > i {
-                margin-left: 10px;
+            display: flex;
+            flex-flow: row;
+            >.i-status i {
                 font-size: 30px;
                 vertical-align: middle;
+                flex: 1;
             }
-            > span:nth-child(2) {
+            >.i-status span {
                 font-size: 22px;
                 vertical-align: middle;
             }
-            > span {
-                margin-right: 180px;
+            >.i-time{
+                flex: 1;
+                text-align: center;
+                >span{
+                    display: inline-block;
+                    overflow: hidden;
+                }
+                .feed-back{
+                    margin-left: 25px;
+                }
             }
-
             .success-color {
                 color: #44c62b;
             }
@@ -154,6 +162,21 @@
             margin-bottom: 2px;
             margin-top: -15px;
         }
+        /*失败原因图标*/
+        .flow-tip-box{
+            display: inline-block;
+            width: 24px;
+            height: 20px;
+            vertical-align: middle;
+            background-image: url(../../assets/icon_common.png);
+            background-repeat: no-repeat;
+            background-position: -410px -166px;
+            cursor: pointer;
+            z-index: 5;
+            background-color: #fff;
+            border: 0;
+            padding: 0;
+        }
     }
 </style>
 <style lang="less">
@@ -165,6 +188,12 @@
         }
         .el-form--inline .el-form-item__content {
             width: 100%;
+        }
+        .el-dialog__wrapper {
+            .el-dialog__body {
+                max-height: 440px;
+                overflow-y: auto;
+            }
         }
     }
 </style>
@@ -311,23 +340,39 @@
                    width="900px" top="76px"
                    :close-on-click-modal="false">
             <div class="bill-status">
-                <i :class="{'success-color':dialogData.service_status == 4,
+                <div class="i-status">
+                    <i :class="{'success-color':dialogData.service_status == 4,
                             'defeated-color':dialogData.service_status != 4,
                             'el-icon-circle-check-outline':dialogData.service_status == 4,
                             'el-icon-circle-close-outline':dialogData.service_status != 4}">
-                </i>
-                <span v-text="currentStatus"
-                      :class="{'success-color':dialogData.service_status == 4,'defeated-color':dialogData.service_status != 4}"></span>
-                <span v-text="dialogData.create_on"></span>
-                <el-button type="warning" plain size="mini" icon="el-icon-delete" v-show="searchData.pay_mode == '1'"
+                    </i>
+                    <span v-text="currentStatus"
+                        :class="{'success-color':dialogData.service_status == 4,'defeated-color':dialogData.service_status != 4}"></span>
+                </div>
+                <div class="i-time">
+                    <span v-text="dialogData.create_on"></span>
+                    <span class="feed-back" v-show="dialogData.feed_back">失败原因</span>
+                    <el-popover
+                        v-show="dialogData.feed_back"
+                        placement="top-start"
+                        title="失败原因"
+                        width="200"
+                        trigger="hover"
+                        :content="dialogData.feed_back">
+                        <el-button class="flow-tip-box" slot="reference"></el-button>
+                    </el-popover>
+                </div>
+                <div class="i-btn">
+                    <el-button type="warning" plain size="mini" icon="el-icon-delete" v-show="searchData.pay_mode == '1'"
                            @click="cancellation">支付作废
-                </el-button>
-                <el-button type="warning" size="mini" @click="sendBill" v-show="searchData.pay_mode == '1'">
-                    <span class="transmit-icon"><i></i></span>发送
-                </el-button>
-                <el-button type="warning" size="mini" @click="affirmBill('one')" v-show="searchData.pay_mode == '2'">
-                    <span class="transmit-icon"><i></i></span>支付确认
-                </el-button>
+                    </el-button>
+                    <el-button type="warning" size="mini" @click="sendBill" v-show="searchData.pay_mode == '1'">
+                        <span class="transmit-icon"><i></i></span>发送
+                    </el-button>
+                    <el-button type="warning" size="mini" @click="affirmBill('one')" v-show="searchData.pay_mode == '2'">
+                        <span class="transmit-icon"><i></i></span>支付确认
+                    </el-button>
+                </div>
             </div>
             <div class="serial-number">
                 [编号:
