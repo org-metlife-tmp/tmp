@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div class="container">
+    <div class="row clearfix">
+        <!--左侧-->
+        <div class="span6">
+            <h2>组件</h2>
+            <hr>
+            <div class="tabbable">
+                <form class="form-horizontal" id="components">
+                    <fieldset>
+                        <div class="tab-content">
+                            <div class="tab-pane active" id="1">
+                                <!-- Text start -->
+                                <!-- rel popover 弹框-->
+                                <div class="control-group component components" rel="popover" title="文本框控件"
+                                     trigger="manual" data-content="
+<form class='form'>
+<div class='controls'>
+<label class='control-label'>控件名称</label> <input type='text' id='orgname' placeholder='必填项'>
+<label class='control-label'>默认值</label> <input type='text' id='orgvalue' placeholder='默认值'>
+<hr/>
+<button class='btn btn-info' type='button'>确定</button><button class='btn btn-danger' type='button'>取消</button>
+</div>
+</form>">
+                                    <!-- Text -->
+                                    <label class="control-label leipiplugins-orgname" class="leipiplugins">文本框</label>
+                                    <div class="controls">
+                                        <input name="leipiNewField" type="text" placeholder="默认值" title="文本框" value=""
+                                               class="leipiplugins" leipiplugins="text"/>
+                                        <button class="delete">删除</button>
+                                    </div>
+
+                                </div>
+
+
+                                <!-- Text end -->
+
+                            </div>
+
+                    </fieldset>
+                </form>
+            </div>
+            <!--tab-content-->
+        </div>
+        <!--中间-->
+        <div class="span5">
+            <div class="span6">
+                <div class="clearfix">
+                    <h2>标题一</h2>
+                    <hr>
+                    <div id="build">
+                        <div class="tainer">
+                            <form id="target" class="form-horizontal">
+                                <fieldset>
+
+                                </fieldset>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--右侧-->
+            <div class="span6">
+                <div class="clearfix">
+                    <h2>标题二</h2>
+                    <hr>
+                    <div id="build">
+                        <div class="tainer">
+                            <form id="targettwo" class="form-horizontal">
+                                <fieldset>
+
+                                </fieldset>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+</body>
+<script>
+    $("h2").click(function () {
+        $("#target").hide()
+    })
+    $("h2").mouseleave(function () {
+        $("#target").show()
+    })
+</script>
+</html>
