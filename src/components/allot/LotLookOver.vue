@@ -112,14 +112,6 @@
             background-position: -48px 0;
         }
 
-
-
-        .serial-number {
-            color: #ccc;
-            margin-bottom: 2px;
-            margin-top: -15px;
-        }
-
         /*编辑弹框*/
         .table-input {
             width: 100%;
@@ -250,6 +242,10 @@
             .tab-content{
                 height: 300px;
             }
+        }
+        .title-batchno{
+            color: #ccc;
+            font-size: 14px;
         }
     }
 </style>
@@ -428,7 +424,10 @@
                    :visible.sync="dialogVisible"
                    width="900px" top="76px"
                    :close-on-click-modal="false">
-            <h1 slot="title" v-text="dialogTitle" class="dialog-title"></h1>
+            <h1 slot="title"  class="dialog-title">
+                <span v-text="dialogTitle"></span>
+                <span class="title-batchno">[{{dialogData.batchno}}]</span>
+            </h1>
             <div class="view-mode">
                 <el-button-group>
                     <el-button size="mini" :class="{viewSelect:curTab}" round title="查看批次汇总" @click="changeTab(true)"><i class="tabBtn total"></i></el-button>

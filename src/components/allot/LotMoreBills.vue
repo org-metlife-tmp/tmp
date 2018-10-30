@@ -112,14 +112,6 @@
             background-position: -48px 0;
         }
 
-
-
-        .serial-number {
-            color: #ccc;
-            margin-bottom: 2px;
-            margin-top: -15px;
-        }
-
         /*编辑弹框*/
         .table-input {
             width: 100%;
@@ -265,6 +257,10 @@
             background-color: #fff;
             border: 0;
             padding: 0;
+        }
+        .title-batchno{
+            color: #ccc;
+            font-size: 14px;
         }
     }
 </style>
@@ -460,18 +456,16 @@
                    :visible.sync="dialogVisible"
                    width="900px" top="76px"
                    :close-on-click-modal="false">
-            <h1 slot="title" v-text="dialogTitle" class="dialog-title"></h1>
+            <h1 slot="title"  class="dialog-title">
+                <span v-text="dialogTitle"></span>
+                <span class="title-batchno">[{{dialogData.batchno}}]</span>
+            </h1>
             <div class="view-mode">
                 <el-button-group>
                     <el-button size="mini" :class="{viewSelect:curTab}" round title="查看批次汇总" @click="changeTab(true)"><i class="tabBtn total"></i></el-button>
                     <el-button size="mini" :class="{viewSelect:!curTab}" round title="查看批次明细" @click="changeTab(false)"><i class="tabBtn detail"></i></el-button>
                 </el-button-group>
             </div>
-            <!-- <div class="serial-number">
-                [编号:
-                <span v-text="dialogData.service_serial_number"></span>
-                ]
-            </div> -->
             <section id="batchSummary" v-show="curTab">
                 <ul class="dialog-talbe">
                     <li class="borderRight bgColor">
