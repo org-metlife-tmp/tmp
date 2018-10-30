@@ -59,11 +59,22 @@
                 border-left: none;
             }
         }
+
+        //顶部按钮
+        .button-list-right {
+            position: absolute;
+            top: -60px;
+            right: -18px;
+        }
     }
 </style>
 
 <template>
     <div id="dataManage">
+        <!-- 顶部按钮-->
+        <div class="button-list-right">
+            <el-button type="warning" size="mini" @click="exportFun">导出</el-button>
+        </div>
         <!--搜索区-->
         <div class="search-setion">
             <el-form :inline="true" :model="searchData" size="mini">
@@ -272,6 +283,16 @@
         },
         props: ["tableData"],
         methods: {
+            //导出
+            exportFun: function(){
+                var user = JSON.parse(window.sessionStorage.getItem("user"));
+                var params = this.routerMessage.params;
+                params.org_id = user.curUodp.org_id;
+                this.$emit("exportData",{
+                    optype: "origindataoa_listexport",
+                    params: params
+                });
+            },
             //根据条件查询数据
             queryData: function () {
                 var searchData = this.searchData;

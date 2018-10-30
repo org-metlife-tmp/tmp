@@ -55,6 +55,7 @@
                          @getCommTable="commRouterData"
                          @getGatherData="getGatherData"
                          @downLoadData="downLoad"
+                         @exportData="exportFun"
                          :tableData="childData"
                          :gatherData="childGatherData"></router-view>
         </section>
@@ -100,6 +101,7 @@
                     console.log(error);
                 })
             },
+            //获取normal接口数据
             commRouterData:function(routerData){
                 this.loading = true;
                 var currParams = {};
@@ -127,6 +129,7 @@
                     console.log(error);
                 })
             },
+            //部分页面获取汇总数据接口
             getGatherData: function(routerData){
                 var currParams = {};
                 for (var k in routerData) {
@@ -151,6 +154,7 @@
                     console.log(error);
                 })
             },
+            //下载
             downLoad:function(loadData){
                 var currParams = {};
                 for (var k in loadData) {
@@ -184,6 +188,42 @@
                         }
                     }
                 }).catch(function(error){
+                    console.log(error);
+                })
+            },
+            //导出
+            exportFun: function(routerMessage){
+                this.$axios({
+                    url: "/cfm/normalProcess",
+                    method: "post",
+                    data: {
+                        optype: routerMessage.optype,
+                        params: routerMessage.params
+                    },
+                    responseType: 'blob'
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                    } else {
+                        var fileName = decodeURI(result.headers["content-disposition"]).split("=")[1];
+                        //ie兼容
+                        if (window.navigator && window.navigator.msSaveOrOpenBlob) {
+                            window.navigator.msSaveOrOpenBlob(new Blob([result.data]), fileName);
+                        } else {
+                            let url = window.URL.createObjectURL(new Blob([result.data]));
+                            let link = document.createElement('a');
+                            link.style.display = 'none';
+                            link.href = url;
+                            link.setAttribute('download', fileName);
+                            document.body.appendChild(link);
+                            link.click();
+                        }
+                    }
+                }).catch(function (error) {
                     console.log(error);
                 })
             }
