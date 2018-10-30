@@ -30,7 +30,7 @@
         /*查看弹框*/
         .dialog-talbe {
             width: 100%;
-            height: 290px;
+            height: 260px;
 
             li {
                 float: left;
@@ -86,6 +86,26 @@
             vertical-align: middle;
             background-position: -48px 0;
         }
+        /*通过样式*/
+        .pass{
+            width: 20px;
+            height: 20px;
+            background-image: url(../../assets/icon_common.png);
+            border: none;
+            padding: 0;
+            vertical-align: middle;
+            background-position: -465px -62px;
+        }
+    }
+</style>
+<style lang="less" type="text/less">
+    #suspiciousData {
+        .el-dialog__wrapper {
+            .el-dialog__body {
+                max-height: 400px;
+                overflow-y: auto;
+            }
+        }
     }
 </style>
 
@@ -107,7 +127,7 @@
                     </el-col>
                     <el-col :span="4">
                         <el-form-item>
-                            <el-input v-model="searchData.recv_acc_query_key" clearable placeholder="请输入收款人账号或名称"></el-input>
+                            <el-input v-model="searchData.recv_acc_no" clearable placeholder="请输入收款人账号或名称"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="4">
@@ -139,17 +159,7 @@
                             <el-button type="primary" plain @click="queryData" size="mini">搜索</el-button>
                         </el-form-item>
                     </el-col>
-                    <el-col :span="24">
-                        <el-form-item style="margin-bottom:0px">
-                            <el-checkbox-group v-model="searchData.status">
-                                <el-checkbox v-for="(name,k) in statusList"
-                                             :label="k" name="type" :key="k">
-                                    {{ name }}
-                                </el-checkbox>
-                            </el-checkbox-group>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="10"></el-col>
+
                 </el-row>
             </el-form>
         </div>
@@ -160,9 +170,7 @@
             <el-table :data="tableList"
                       border size="mini">
                 <el-table-column prop="bill_no" label="报销单申请号" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="pay_org_type" label="付款机构类型" :show-overflow-tooltip="true"
-                                 :formatter="transitPayType"></el-table-column>
-                <!-- <el-table-column prop="apply_user" label="申请用户" :show-overflow-tooltip="true"></el-table-column> -->
+                <el-table-column prop="pay_org_type" label="付款机构类型" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="org_name" label="申请单位" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="recv_acc_name" label="收款人" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="recv_acc_no" label="收款方账号" :show-overflow-tooltip="true"></el-table-column>
@@ -181,8 +189,8 @@
                         </el-tooltip>
                         <el-tooltip content="通过" placement="bottom" effect="light"
                                     :enterable="false" :open-delay="500">
-                            <el-button type="success" icon="el-icon-arrow-right" size="mini"
-                                       @click="lookData(scope.row)"></el-button>
+                            <el-button class="pass" size="mini"
+                                       @click="passData(scope.row)"></el-button>
                         </el-tooltip>
                         <el-tooltip content="撤回" placement="bottom" effect="light"
                                     :enterable="false" :open-delay="500">
@@ -249,23 +257,19 @@
                 <li class="table-li-content" v-text="dialogData.recv_bank_cnaps"></li>
 
                 <li class="table-li-title">付款机构类型</li>
-                <li class="table-li-content" v-text="payOrgList[dialogData.pay_org_type]"></li>
-                <li class="table-li-title">状态</li>
-                <li class="table-li-content" v-text="statusList[dialogData.status]"></li>
-
+                <li class="table-li-content" v-text="dialogData.pay_org_type"></li>
                 <li class="table-li-title">摘要</li>
-                <li class="table-li-content table-two-row" v-text="dialogData.memo"></li>
+                <li class="table-li-content" v-text="dialogData.memo"></li>
             </ul>
             <div class="form-small-title">
                 <span></span>
                 <span>可疑数据</span>
             </div>
-            <el-table :data="tableList"
+            <el-table :data="dialogList"
                       border size="mini">
                 <el-table-column prop="bill_no" label="报销单申请号" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="pay_org_type" label="付款机构类型" :show-overflow-tooltip="true"
-                                 :formatter="transitPayType"></el-table-column>
-                <el-table-column prop="org_name" label="单据编号" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="pay_org_type" label="付款机构类型" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="ref_service_serial_number" label="单据编号" :show-overflow-tooltip="true"></el-table-column>
             </el-table>
             <span slot="footer" class="dialog-footer">
             </span>
@@ -283,9 +287,6 @@
         },
         mounted: function(){
             var constants = JSON.parse(window.sessionStorage.getItem("constants"));
-            if(constants.OaInterfaceStatus){
-                this.statusList = constants.OaInterfaceStatus;
-            }
             if(constants.OaPayOrgType){
                 this.payOrgList = constants.OaPayOrgType;
             }
@@ -293,29 +294,28 @@
         data: function () {
             return {
                 routerMessage: {
-                    optype: "origindataoa_list",
+                    optype: "checkdoubtfuloa_list",
                     params: {
                         page_size: 7,
                         page_num: 1
                     }
                 },
                 tableList: [],
+                dialogList: [],
                 pagSize: 8, //分页数据
                 pagTotal: 1,
                 pagCurrent: 1,
                 searchData:{ //搜索条件
                     bill_no: "",
                     org_name: "",
-                    recv_acc_query_key: "",
+                    recv_acc_no: "",
                     pay_org_type: "",
                     min_amount: "",
-                    max_amount: "",
-                    status: []
+                    max_amount: ""
                 },
                 dialogVisible: false, //弹框数据
                 dialogData: {},
-                statusList: {}, //常量数据
-                payOrgList: {}
+                payOrgList: {} //常量数据
             }
         },
         props: ["tableData"],
@@ -343,28 +343,129 @@
                 };
                 this.$emit("getCommTable", this.routerMessage);
             },
-            //展示格式转换-接口状态
-            transitStatus: function (row, column, cellValue, index) {
-                return this.statusList[cellValue];
-            },
-            //展示格式转换-处理状态
-            transitProStatus: function (row, column, cellValue, index) {
-                var constants = JSON.parse(window.sessionStorage.getItem("constants"));
-                return constants.OaProcessStatus[cellValue];
-            },
-            //展示格式转换
-            transitPayType: function (row, column, cellValue, index) {
-                var constants = JSON.parse(window.sessionStorage.getItem("constants"));
-                return constants.OaPayOrgType[cellValue];
-            },
+
             //查看
             lookData: function(row){
-                console.log(row);
                 this.dialogVisible = true;
                 var dialogData = this.dialogData;
                 for(var k in row){
                     dialogData[k] = row[k];
                 }
+
+                this.$axios({
+                    url: "/cfm/normalProcess",
+                    method: "post",
+                    data: {
+                        optype: "checkdoubtfuloa_doubtlist",
+                        params: {
+                            bill_no: row.bill_no,
+                            identification: row.identification
+                        }
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                        return;
+                    } else {
+                        var data = result.data.data;
+                        this.dialogList = data;
+                        console.log(data);
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            },
+            //通过
+            passData: function(row){
+                this.$confirm('确认通过当前单据吗?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.$axios({
+                        url: "/cfm/normalProcess",
+                        method: "post",
+                        data: {
+                            optype: "checkdoubtfuloa_pass",
+                            params: {
+                                id: row.id,
+                                persist_version: row.persist_version
+                            }
+                        }
+                    }).then((result) => {
+                        if (result.data.error_msg) {
+                            this.$message({
+                                type: "error",
+                                message: result.data.error_msg,
+                                duration: 2000
+                            })
+                            return;
+                        } else {
+                            this.$message({
+                                type: "success",
+                                message: "通过成功",
+                                duration: 2000
+                            });
+                            this.$emit("getCommTable", this.routerMessage);
+                        }
+                    }).catch(function (error) {
+                        console.log(error);
+                    })
+                }).catch(() => {
+                });
+            },
+            //通过
+            withdrawData: function(row){
+                this.$prompt('请输入撤回原因', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    title: "撤回原因",
+                    inputValidator: function(value){
+                        if(!value){
+                            return false;
+                        }else{
+                            return true;
+                        }
+                    },
+                    inputErrorMessage: '请输入撤回原因'
+                }).then(({ value }) => {
+                    this.$axios({
+                        url: "/cfm/normalProcess",
+                        method: "post",
+                        data: {
+                            optype: "checkdoubtfuloa_payoff",
+                            params: {
+                                ids: [row.id],
+                                persist_version: [row.persist_version],
+                                feed_back: value
+                            }
+                        }
+                    }).then((result) => {
+                        if (result.data.error_msg) {
+                            this.$message({
+                                type: "error",
+                                message: result.data.error_msg,
+                                duration: 2000
+                            });
+                            return;
+                        } else {
+                            this.$message({
+                                type: "success",
+                                message: "撤回成功",
+                                duration: 2000
+                            });
+                            this.$emit("getCommTable", this.routerMessage);
+                        }
+                    }).catch(function (error) {
+                        console.log(error);
+                    })
+                }).catch(() => {
+
+                });
             }
         },
         watch: {

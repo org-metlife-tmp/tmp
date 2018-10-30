@@ -543,6 +543,7 @@
                     <el-menu-item index="/OA-data/data-manage" v-if="menuList.DataMgt">接口数据管理</el-menu-item>
                     <el-menu-item index="/OA-data/head-office-pay" v-if="menuList.OAHeadPay">总公司付款</el-menu-item>
                     <el-menu-item index="/OA-data/filiale-payment" v-if="menuList.OABranchPay">分公司付款</el-menu-item>
+                    <el-menu-item index="/OA-data/suspicious-data">可疑数据管理</el-menu-item>
                     <el-menu-item index="/payment/deal-check?bizType=20" v-if="menuList.OACheck">交易核对</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
