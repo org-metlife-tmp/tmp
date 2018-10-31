@@ -74,18 +74,11 @@
 <template>
     <div id="dealCheck">
         <!-- 顶部按钮-->
-        <div class="button-list-right" v-show="oaControl">
-            <el-select v-model="dataNum" filterable style="width:100%" size="mini"
-                       @change="setParams">
-                <el-option value="1" label="总公司付款"></el-option>
-                <el-option value="2" label="分公司付款"></el-option>
-            </el-select>
-        </div>
         <div class="button-list-right" v-show="showDataNum">
             <el-select v-model="dataNum" filterable style="width:100%" size="mini"
                        @change="setParams">
-                <el-option value="1" label="单笔支付"></el-option>
-                <el-option value="2" label="批量支付"></el-option>
+                <el-option value="1" :label="selectText.oneText"></el-option>
+                <el-option value="2" :label="selectText.allText"></el-option>
             </el-select>
         </div>
         <!--搜索区-->
@@ -289,14 +282,16 @@
                 selectData: [], //待管理数据选中数据
                 dataNum: "1",
                 showDataNum: true,
-                oaControl: false
+                selectText: {
+                    oneText: "单笔支付",
+                    allText: "批量支付"
+                }
             }
         },
         methods: {
             //设置页面相关optype
             setOptypes: function(queryData){
                 this.showDataNum = true;
-                this.oaControl = false;
                 //设置当前optype信息
                 if (queryData.bizType == "9") { //支付通
                     this.routerMessage.todo.optype = "zft_checkbillList"; //未核对
@@ -304,6 +299,10 @@
                     this.checkOptype = "zft_checkTradeList"; //获取对应的核对数据
                     this.confirmOptype = "zft_confirmCheck"; //确认核对
                     this.validatedOptype = "zft_checkAlreadyTradeList"; //获取对应的已核对数据
+
+                    //设置下拉框文字
+                    this.selectText.oneText = "单笔支付";
+                    this.selectText.allText = "批量支付";
                 }
                 if(queryData.bizType == "12"){ //归集通
                     this.routerMessage.todo.optype = "collectcheck_checkbillList";
@@ -311,6 +310,10 @@
                     this.checkOptype = "collectcheck_checkNoCheckTradeList";
                     this.confirmOptype = "collectcheck_confirmCheck";
                     this.validatedOptype = "collectcheck_checkAlreadyTradeList";
+
+                    //设置下拉框文字
+                    this.selectText.oneText = "直联归集";
+                    this.selectText.allText = "非直联归集";
                 }
                 if(queryData.bizType == "14"){ //广银联
                     this.routerMessage.todo.optype = "gylcheck_checkbillList";
@@ -326,15 +329,16 @@
                     this.checkOptype = "headorgoacheck_checkTradeList";
                     this.confirmOptype = "headorgoacheck_confirmCheck";
                     this.validatedOptype = "headorgoacheck_checkAlreadyTradeList";
-                    this.showDataNum = false;
-                    this.oaControl = true;
+
+                    //设置下拉框文字
+                    this.selectText.oneText = "总公司付款";
+                    this.selectText.allText = "分公司付款";
                 }
                 this.$emit("getTableData", this.routerMessage);
             },
             //设置批量相关optype
             setBatchOptype: function(queryData){
                 this.showDataNum = true;
-                this.oaControl = false;
                 //设置当前optype信息
                 if (queryData.bizType == "9") { //支付通
                     this.routerMessage.todo.optype = "zftbatchcheck_checkbillList"; //未核对
@@ -342,6 +346,10 @@
                     this.checkOptype = "zftbatchcheck_checkNoCheckTradeList"; //获取对应的核对数据
                     this.confirmOptype = "zftbatchcheck_confirmCheck"; //确认核对
                     this.validatedOptype = "zftbatchcheck_checkAlreadyTradeList"; //获取对应的已核对数据
+
+                    //设置下拉框文字
+                    this.selectText.oneText = "单笔支付";
+                    this.selectText.allText = "批量支付";
                 }
                 if(queryData.bizType == "12"){ //归集通
                     this.routerMessage.todo.optype = "collectbatchcheck_checkbillList";
@@ -349,6 +357,10 @@
                     this.checkOptype = "collectbatchcheck_checkNoCheckTradeList";
                     this.confirmOptype = "collectbatchcheck_confirmCheck";
                     this.validatedOptype = "collectbatchcheck_checkAlreadyTradeList";
+
+                    //设置下拉框文字
+                    this.selectText.oneText = "直联归集";
+                    this.selectText.allText = "非直联归集";
                 }
                 if(queryData.bizType == "20"){ //分公司付款
                     this.routerMessage.todo.optype = "branchorgoacheck_checkbillList";
@@ -356,8 +368,10 @@
                     this.checkOptype = "branchorgoacheck_checkTradeList";
                     this.confirmOptype = "branchorgoacheck_confirmCheck";
                     this.validatedOptype = "branchorgoacheck_checkAlreadyTradeList";
-                    this.showDataNum = false;
-                    this.oaControl = true;
+
+                    //设置下拉框文字
+                    this.selectText.oneText = "总公司付款";
+                    this.selectText.allText = "分公司付款";
                 }
                 this.$emit("getTableData", this.routerMessage);
             },

@@ -593,7 +593,6 @@
             },
             transitPayStatus: function (row, column, cellValue, index) {
                 var constants = JSON.parse(window.sessionStorage.getItem("constants"));
-                console.log(cellValue);
                 if (constants.PayStatus) {
                     return constants.PayStatus[cellValue];
                 }
