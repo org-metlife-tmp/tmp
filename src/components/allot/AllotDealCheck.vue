@@ -254,7 +254,7 @@
         mounted: function () {
             this.paymentTypeList = {
                 8: '内部调拨',
-                10: '内部调拨批量'
+                10: '批量调拨'
             }
         },
         props:["isPending","tableData"],
