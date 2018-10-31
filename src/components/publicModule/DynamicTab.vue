@@ -99,6 +99,7 @@
             <router-view @transmitTitle="currentTitle= $event"
                          @getTableData="setRouterMessage"
                          @tableText="setTablText"
+                         @exportData="exportFun"
                          :tableData="childData"
                          :isPending="isPending"
             ></router-view>
@@ -127,10 +128,12 @@
             }
         },
         methods: {
+            //设置tab标题
             setTablText: function(text){
                 this.tabText.leftTab = text.leftTab;
                 this.tabText.rightTab = text.rightTab;
             },
+            //设置当前message信息
             setRouterMessage:function(routerData){
                 this.todoMessage = routerData.todo;
                 this.doneMessage = routerData.done;
@@ -140,6 +143,7 @@
                     this.getRouterData(routerData.done);
                 }
             },
+            //获取数据
             getRouterData:function(params){
                 this.loading = true;
                 this.$axios({
@@ -162,6 +166,7 @@
                     console.log(error);
                 })
             },
+            //切换tab页
             activeCurrentTab:function(currentStatus){
                 if(currentStatus){
                     if(!this.isActive){
@@ -196,6 +201,42 @@
                         }
                     }
                 }
+            },
+            //导出
+            exportFun: function(routerMessage){
+                this.$axios({
+                    url: "/cfm/normalProcess",
+                    method: "post",
+                    data: {
+                        optype: routerMessage.optype,
+                        params: routerMessage.params
+                    },
+                    responseType: 'blob'
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                    } else {
+                        var fileName = decodeURI(result.headers["content-disposition"]).split("=")[1];
+                        //ie兼容
+                        if (window.navigator && window.navigator.msSaveOrOpenBlob) {
+                            window.navigator.msSaveOrOpenBlob(new Blob([result.data]), fileName);
+                        } else {
+                            let url = window.URL.createObjectURL(new Blob([result.data]));
+                            let link = document.createElement('a');
+                            link.style.display = 'none';
+                            link.href = url;
+                            link.setAttribute('download', fileName);
+                            document.body.appendChild(link);
+                            link.click();
+                        }
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                })
             }
         }
     }

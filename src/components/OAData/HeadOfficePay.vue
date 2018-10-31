@@ -70,6 +70,13 @@
                 border-left: none;
             }
         }
+
+        //顶部按钮
+        .button-list-right {
+            position: absolute;
+            top: -60px;
+            right: -18px;
+        }
     }
 </style>
 <style lang="less" type="text/less">
@@ -85,6 +92,10 @@
 
 <template>
     <div id="headOfficePay">
+        <!-- 顶部按钮-->
+        <div class="button-list-right">
+            <el-button type="warning" size="mini" @click="exportFun">导出</el-button>
+        </div>
         <!--搜索区-->
         <div class="search-setion">
             <el-form :inline="true" :model="searchData" size="mini">
@@ -370,6 +381,24 @@
             }
         },
         methods: {
+            //导出
+            exportFun: function(){
+                if(this.tableList.length == 0){
+                    this.$message({
+                        type: "warning",
+                        message: "当前数据为空",
+                        duration: 2000
+                    });
+                    return;
+                }
+                var user = JSON.parse(window.sessionStorage.getItem("user"));
+                var params = this.isPending ? this.routerMessage.todo.params : this.routerMessage.done.params;
+                params.org_id = user.curUodp.org_id;
+                this.$emit("exportData",{
+                    optype: this.isPending ? "headorgoa_todolistexport" : "headorgoa_donelistexport",
+                    params: params
+                });
+            },
             //根据条件查询数据
             queryData: function () {
                 var searchData = this.searchData;

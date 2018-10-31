@@ -285,6 +285,14 @@
         methods: {
             //导出
             exportFun: function(){
+                if(this.tableList.length == 0){
+                    this.$message({
+                        type: "warning",
+                        message: "当前数据为空",
+                        duration: 2000
+                    });
+                    return;
+                }
                 var user = JSON.parse(window.sessionStorage.getItem("user"));
                 var params = this.routerMessage.params;
                 params.org_id = user.curUodp.org_id;
