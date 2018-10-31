@@ -1728,9 +1728,9 @@
                         {id:'6',prop:"nextUserList",name:'下级审批人'}
                     ],
                     "9":[
-                        {id:'1',prop:"pay_account_bank",name:'收款方名称'},
+                        {id:'1',prop:"recv_account_name",name:'收款方名称'},
                         {id:'2',prop:"recv_account_no",name:'收款方账号'},
-                        {id:'3',prop:"recv_account_name",name:'收款方银行'},
+                        {id:'3',prop:"recv_account_bank",name:'收款方银行'},
                         {id:'4',prop:"payment_amount",name:'金额'},
                         {id:'5',prop:"nextUserList",name:'下级审批人'}
                     ],
@@ -1781,9 +1781,9 @@
                         {id:'6',prop:"nextUserList",name:'下级审批人'}
                     ],
                     "15":[
-                        {id:'1',prop:"recv_account_bank",name:'收款方名称'},
+                        {id:'1',prop:"recv_account_name",name:'收款方名称'},
                         {id:'2',prop:"pay_account_no",name:'付款方账号'},
-                        {id:'3',prop:"pay_account_name",name:'付款方银行'},
+                        {id:'3',prop:"pay_account_bank",name:'付款方银行'},
                         {id:'4',prop:"receipts_amount",name:'金额'},
                         {id:'6',prop:"nextUserList",name:'下级审批人'}
                     ],
