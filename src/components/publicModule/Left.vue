@@ -351,7 +351,6 @@
                     <el-menu-item index="/user-manage/user-menu" v-if="menuList.UsrMenuMgt">用户菜单设置</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
-            .
             <el-submenu index="3" v-if="menuList.RTPRMGT">
                 <template slot="title" height="200px">
                     <i class="icon-ssjy"></i>
