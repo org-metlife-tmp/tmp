@@ -537,6 +537,7 @@
             bankIsSelect: function (val){
                 //清空搜索条件
                 this.searchData = {};
+                this.searchList = [];
                 //查询电子回单模板
                 this.$axios({
                     url: "/cfm/normalProcess",
