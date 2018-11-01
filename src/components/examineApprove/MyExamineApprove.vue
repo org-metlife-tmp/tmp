@@ -1470,7 +1470,7 @@
                 ],
                 "12":[
                     {id:"1", lspan:4, label:"归集主题"},
-                    {id:"2",pspan:20, prop:"topic"},
+                    {id:"2",pspan:8, prop:"topic"},
                     {id:"3", lspan:4, label:"归集额度"},
                     {id:"4", pspan:8, prop:"collect_type"},
                     {id:"5", lspan:4, label:"归集金额"},
@@ -1481,8 +1481,6 @@
                     {id:"10", pspan:8, prop:"time_settings"},
                     {id:"11", lspan:4, label:"归集集户(个)"},
                     {id:"12", pspan:8, prop:"collect_main_account_count"},
-                    {id:"13", lspan:4, label:"业务状态"},
-                    {id:"14", pspan:8, prop:"service_status"}
                 ],
                 "13":[
                     {id:"1", lspan:4, label:"归集主题"},
