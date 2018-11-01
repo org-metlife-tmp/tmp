@@ -115,6 +115,10 @@
             .icon-gzrl{
                 background-position: -32px -252px;
             }
+
+            .icon-tpgl{
+                background-position: -272px -254px;
+            }
             /*首页背景图定位结束*/
         }
 
@@ -180,6 +184,10 @@
             .icon-gzrl{
                 background-position: -1px -252px;
             }
+            .icon-tpgl{
+                background-position: -242px -254px;
+            }
+
             .el-submenu__title p {
                 color: rgba(0, 0, 0, 0.5);
             }
@@ -259,6 +267,10 @@
 
             .el-submenu__title:hover .icon-gzrl{
                 background-position: -32px -252px;
+            }
+
+            .el-submenu__title:hover .icon-tpgl{
+                background-position: -272px -254px;
             }
 
             .el-submenu__title:hover p {
@@ -547,16 +559,16 @@
                     <el-menu-item index="/payment/deal-check?bizType=20" v-if="menuList.OACheck">交易核对</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
-            <!--
-            <el-submenu index="18" v-if="">
+            <!--<el-submenu index="18">
                 <template slot="title" height="200px">
                     <i class="icon-tpgl"></i>
                     <p class="mg-four">退票管理</p>
                 </template>
                 <el-menu-item-group>
-                    <el-menu-item index="/refund-ticket/refund-dispose" v-if="">退票处理</el-menu-item>
+                    <el-menu-item index="/refund-ticket/refund-dispose">退票处理</el-menu-item>
                 </el-menu-item-group>
-            </el-submenu>
+            </el-submenu>-->
+            <!--
             <el-submenu index="10">
                 <template slot="title" height="200px">
                     <i class="icon-zjys"></i>
