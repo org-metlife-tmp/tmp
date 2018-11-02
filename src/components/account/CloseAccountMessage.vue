@@ -427,6 +427,7 @@
         },
         data: function () {
             return {
+                queryUrl: this.$store.state.queryUrl,
                 routerMessage: {
                     todo:{
                         optype: "closeacccomple_todolist",
@@ -568,7 +569,7 @@
                     this.dialogData.close_date = row.close_date;
                     this.dialogData.memo = row.memo;
                     this.$axios({
-                        url:"/cfm/normalProcess",
+                        url: this.queryUrl + "normalProcess",
                         method:"post",
                         data:{
                             optype:"closeacccomple_detail",
@@ -656,7 +657,7 @@
                 data.memo = this.dialogData.memo;
                 data.apply_on = this.dialogData.apply_on;
                 this.$axios({
-                    url:"/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method:"post",
                     data:{
                         optype:optype,
@@ -694,7 +695,7 @@
                     type: 'warning'
                 }).then(() =>{
                     this.$axios({
-                        url:"/cfm/normalProcess",
+                        url: this.queryUrl + "normalProcess",
                         method:"post",
                         data:{
                             optype:"closeacccomple_tododel",
@@ -771,7 +772,7 @@
 
                 this.dialogData.additionals = saleList;
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "closeacccomple_presubmit",
@@ -808,7 +809,7 @@
                     persist_version: workflowData.persist_version
                 };
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "closeacccomple_submit",
@@ -857,7 +858,7 @@
                     type: 'warning'
                 }).then(() => {
                     this.$axios({
-                        url: "/cfm/normalProcess",
+                        url: this.queryUrl + "normalProcess",
                         method: "post",
                         data: {
                             optype: "closeacccomple_revoke",
@@ -909,7 +910,7 @@
             showFlowDialog:function(workflow){
                 this.lookFlowDialogVisible = true;
                 this.$axios({
-                    url: "/cfm/commProcess",
+                    url: this.queryUrl + "commProcess",
                     method: "post",
                     data: {
                         optype: "wfquery_wfdetail",

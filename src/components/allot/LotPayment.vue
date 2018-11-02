@@ -454,6 +454,7 @@
         props: ["tableData"],
         data: function () {
             return {
+                queryUrl: this.$store.state.queryUrl,
                 routerMessage: {
                     optype: "dbtbatch_paylist",
                     params: {
@@ -544,7 +545,7 @@
                 params.page_num = params.page_num ? params.page_num : 1;
                 params.pay_status = [0,2];
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "dbtbatch_detaillist",
@@ -649,7 +650,7 @@
                 }
                 var optype =  'dbtbatch_sendpaylist';
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url:  this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: optype,
@@ -699,7 +700,7 @@
                 var optype = this.paymentData.number ? 'dbtbatch_cancelids' : 'dbtbatch_cancel';
                 var lala = this.paymentData;
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url:  this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: optype,
@@ -815,7 +816,7 @@
                 } 
                 var optype = this.paymentData.number ? 'dbtbatch_payconfirm' : 'dbtbatch_paybatchconfirm';
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: optype,

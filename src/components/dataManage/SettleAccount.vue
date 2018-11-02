@@ -304,6 +304,7 @@
         props: ["tableData"],
         data: function () {
             return {
+                queryUrl: this.$store.state.queryUrl,
                 routerMessage: { //本页数据获取参数
                     optype: "settacc_list",
                     params: {
@@ -544,7 +545,7 @@
                         }
 
                         this.$axios({
-                            url: "/cfm/adminProcess",
+                            url: this.queryUrl + "adminProcess",
                             method: "post",
                             data: {
                                 optype: optype,
@@ -594,7 +595,7 @@
                     type: 'warning'
                 }).then(() => {
                     this.$axios({
-                        url: "/cfm/adminProcess",
+                        url: this.queryUrl + "adminProcess",
                         method: "post",
                         data: {
                             optype: "settacc_del",
@@ -700,7 +701,7 @@
                 if (query && query.trim()) {
                     this.loading = true;
                     this.$axios({
-                        url: "/cfm/commProcess",
+                        url: this.queryUrl + "commProcess",
                         method: "post",
                         data: {
                             optype: "area_list",
@@ -729,7 +730,7 @@
                     var bank_type = this.bankCorrelation.bankTypeName;
 
                     this.$axios({
-                        url: "/cfm/commProcess",
+                        url: this.queryUrl + "commProcess",
                         method: "post",
                         data: {
                             optype: "bank_list",

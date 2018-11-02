@@ -411,6 +411,7 @@
         },
         data: function () {
             return {
+                queryUrl: this.$store.state.queryUrl,
                 routerMessage: {
                     optype: "allocreport_orglist",
                     params: {
@@ -587,7 +588,7 @@
             getChartAxios:function (type){
                 var optype = type === "org" ? 'allocreport_orgtopchar' : 'allocreport_acctopchar';
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data:{
                         optype: optype,

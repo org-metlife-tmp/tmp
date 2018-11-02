@@ -447,6 +447,7 @@
         props: ["tableData"],
         data: function () {
             return {
+                queryUrl: this.$store.state.queryUrl,
                 routerMessage: { //本页数据获取参数
                     optype: "account_list",
                     params: {
@@ -570,7 +571,7 @@
             subEdit:function(){
                 var editDialogData = this.editDialogData;
                 this.$axios({
-                    url:"/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data:{
                         optype: "account_chg",
@@ -619,7 +620,7 @@
                     }
                 }
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "account_detail",

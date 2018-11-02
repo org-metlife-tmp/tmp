@@ -195,6 +195,7 @@
         props: ["tableData"],
         data: function () {
             return {
+                queryUrl: this.$store.state.queryUrl,
                 routerMessage: { //本页数据获取参数
                     optype: "handlechannel_list",
                     params: {
@@ -244,7 +245,7 @@
             //设置状态
             setStatus: function (row) {
                 this.$axios({
-                    url: "/cfm/adminProcess",
+                    url: this.queryUrl + "adminProcess",
                     method: "post",
                     data: {
                         optype: "handlechannel_setstatus",
@@ -329,7 +330,7 @@
                             params.third_party_flag = "0";
                         }
                         this.$axios({
-                            url: "/cfm/adminProcess",
+                            url: this.queryUrl + "adminProcess",
                             method: "post",
                             data: {
                                 optype: "handlechannel_add",

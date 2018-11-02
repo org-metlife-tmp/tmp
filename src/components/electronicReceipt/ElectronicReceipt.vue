@@ -461,6 +461,7 @@
         props: ["tableData"],
         data: function () {
             return {
+                queryUrl: this.$store.state.queryUrl,
                 routerMessage: {
                     optype: "ele_list",
                     params: {
@@ -540,7 +541,7 @@
                 this.searchList = [];
                 //查询电子回单模板
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "ele_template",

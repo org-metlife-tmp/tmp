@@ -291,7 +291,7 @@
             }
             //结算账号
             this.$axios({
-                url:"/cfm/adminProcess",
+                url: this.queryUrl + "adminProcess",
                 method: "post",
                 data: {
                     optype: "settacc_list",
@@ -318,6 +318,7 @@
         props: ["tableData"],
         data: function () {
             return {
+                queryUrl: this.$store.state.queryUrl,
                 routerMessage: {
                     optype: "merchacc_list",
                     params: {
@@ -517,7 +518,7 @@
                     type: 'warning'
                 }).then(() => {
                     this.$axios({
-                        url: "/cfm/adminProcess",
+                        url: this.queryUrl + "adminProcess",
                         method: "post",
                         data: {
                             optype: "merchacc_del",
@@ -585,7 +586,7 @@
                         }
 
                         this.$axios({
-                            url: "/cfm/adminProcess",
+                            url: this.queryUrl + "adminProcess",
                             method: "post",
                             data: {
                                 optype: optype,
@@ -631,7 +632,7 @@
             //设置状态
             setStatus:function (row) {
                 this.$axios({
-                    url:"/cfm/adminProcess",
+                    url: this.queryUrl + "adminProcess",
                     method: "post",
                     data: {
                         optype: "merchacc_setstatus",

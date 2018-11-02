@@ -181,6 +181,7 @@
         props: ["tableData"],
         data: function () {
             return {
+                queryUrl: this.$store.state.queryUrl,
                 routerMessage: {
                     optype: "wftrans_list",
                     params: {
@@ -228,7 +229,7 @@
             },
             getBeUsrList: function (query){
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "wftrans_findauthorizename",
@@ -258,7 +259,7 @@
                 this.dialogData.be_authorize_usr_id = user.usr_id;
                 this.dialogData.be_authorize_usr_name = user.name;
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "wftrans_add",

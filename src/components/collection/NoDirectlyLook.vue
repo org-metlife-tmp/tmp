@@ -452,6 +452,7 @@
         },
         data: function () {
             return {
+                queryUrl: this.$store.state.queryUrl,
                 routerMessage: {
                     optype: "ndc_batchlist",
                     params: {
@@ -566,7 +567,7 @@
             lookBill: function (row) {
                 //获取汇总数据
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "ndc_detail",
@@ -612,7 +613,7 @@
                 params.params.page_num = pageNum;
 
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: params
                 }).then((result) => {

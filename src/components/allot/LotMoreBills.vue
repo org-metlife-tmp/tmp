@@ -760,7 +760,7 @@
 
             //业务类型
             this.$axios({
-                url:"/cfm/commProcess",
+                url: this.queryUrl + "commProcess",
                 method:"post",
                 data:{
                     optype:"biztype_biztypes",
@@ -798,6 +798,7 @@
         props: ["tableData"],
         data: function () {
             return {
+                queryUrl: this.$store.state.queryUrl,
                 routerMessage: {
                     optype: "dbtbatch_list",
                     params: {
@@ -980,7 +981,7 @@
             lookBill: function (row) {
                 this.searchDetailData.batchno = row.batchno;
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "dbtbatch_viewbill",
@@ -1026,7 +1027,7 @@
                 params.page_size = params.page_size ? params.page_size : 7;
                 params.page_num = params.page_num ? params.page_num : 1;
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url:  this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "dbtbatch_detaillist",
@@ -1070,7 +1071,7 @@
                 var billData = this.editDialogData;
 
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "dbt_payacclist",
@@ -1098,7 +1099,7 @@
                 var billData = this.editDialogData;
 
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url:  this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "dbt_recvacclist",
@@ -1214,7 +1215,7 @@
                 }
 
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "dbt_chg",
@@ -1253,7 +1254,7 @@
                 }
 
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "dbt_presubmit",
@@ -1297,7 +1298,7 @@
                 };
 
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "dbt_submit",
@@ -1391,7 +1392,7 @@
                     type: 'warning'
                 }).then(() => {
                     this.$axios({
-                        url: "/cfm/normalProcess",
+                        url: this.queryUrl + "normalProcess",
                         method: "post",
                         data: {
                             optype: "dbtbatch_del",
@@ -1439,7 +1440,7 @@
                     type: 'warning'
                 }).then(() => {
                     this.$axios({
-                        url: "/cfm/normalProcess",
+                        url: this.queryUrl + "normalProcess",
                         method: "post",
                         data: {
                             optype: "dbtbatch_revoke",
@@ -1475,7 +1476,7 @@
             showFlowDialog:function(workflow){
                 this.lookFlowDialogVisible = true;
                 this.$axios({
-                    url: "/cfm/commProcess",
+                    url: this.queryUrl + "commProcess",
                     method: "post",
                     data: {
                         optype: "wfquery_wfdetail",

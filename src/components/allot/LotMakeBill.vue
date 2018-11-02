@@ -738,7 +738,7 @@
                 <div class="error-name">文档内容不符合要求</div>
                 <a class="downLoad" href="javascript:;"
                     @click = "downLoadExcel"
-                v-text="'/cfm/normal/excel/downExcel?object_id='+currentUpload.download_object_id"
+                v-text="queryUrl + 'normal/excel/downExcel?object_id='+currentUpload.download_object_id"
                 ></a>
             </div>
             <div class="modeUpload">
@@ -747,7 +747,7 @@
                     <template slot="append">
                         <el-upload
                                 class="upload-demo"
-                                action="/cfm/normal/excel/upload"
+                                :action="queryUrl + 'normal/excel/upload'"
                                 :headers="{pk:'8 ',Authorization:currToken}"
                                 multiple
                                 accept=".xlsx,.xls"
@@ -818,7 +818,7 @@
             this.saveParams = params;
             if(params.id){
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url:  this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "dbtbatch_detail",
@@ -861,7 +861,7 @@
                         var interactive_mode = data.pay_mode !='1' ? '2' : '1';
                         //获取付款方账户列表(保证他先执行，tip才能带出来)
                         this.$axios({
-                            url:"/cfm/commProcess",
+                            url: this.queryUrl + "commProcess",
                             method:"post",
                             data:{
                                 optype:"account_normallist",
@@ -882,7 +882,7 @@
 
 
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url:  this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "dbtbatch_initchgtemp",
@@ -904,7 +904,7 @@
             }else{
                 //获取付款方账户列表(保证他先执行，tip才能带出来)
                 this.$axios({
-                    url:"/cfm/commProcess",
+                    url: this.queryUrl + "commProcess",
                     method:"post",
                     data:{
                         optype:"account_normallist",
@@ -922,7 +922,7 @@
             
             //业务类型
             this.$axios({
-                url:"/cfm/commProcess",
+                url: this.queryUrl + "commProcess",
                 method:"post",
                 data:{
                     optype:"biztype_biztypes",
@@ -967,6 +967,7 @@
         },
         data: function () {
             return {
+                queryUrl: this.$store.state.queryUrl,
                 dateValue: new Date(), //申请时间
                 billData: {
                     pay_mode: "1", //付款方式
@@ -1054,7 +1055,7 @@
                     return;
                 }
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url:  this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: this.saveParams.id ? "dbtbatch_chg" : "dbtbatch_add",
@@ -1079,7 +1080,7 @@
                             duration: 2000
                         });
                         this.$axios({
-                            url: "/cfm/normalProcess",
+                            url:  this.queryUrl + "normalProcess",
                             method: "post",
                             data: {
                                 optype: "dbtbatch_initchgtemp",
@@ -1149,7 +1150,7 @@
             },
             getDetailTable: function (params) {
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "dbtbatch_batchbillattlist",
@@ -1226,7 +1227,7 @@
                 }
 
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url:  this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "dbtbatch_imports",
@@ -1269,7 +1270,7 @@
             delUpFile: function(file){
                 var params = this.saveParams;
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "dbtbatch_removetemp",
@@ -1325,7 +1326,7 @@
             deleteBill: function () {
                 var params = this.saveParams;
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "dbtbatch_del",
@@ -1370,7 +1371,7 @@
                     return;
                 }
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "dbtbatch_presubmit",
@@ -1394,7 +1395,7 @@
                         this.billData.service_status = data.service_status;
                         this.commitVisible = true;
                         this.$axios({
-                            url: "/cfm/normalProcess",
+                            url:  this.queryUrl + "normalProcess",
                             method: "post",
                             data: {
                                 optype: "dbtbatch_initchgtemp",
@@ -1429,7 +1430,7 @@
                     persist_version: workflowData.persist_version
                 };
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "dbtbatch_submit",
@@ -1465,7 +1466,7 @@
                     params.pk = '8';
                 }
                 this.$axios({
-                    url: "/cfm/normal/excel/downExcel",
+                    url: this.queryUrl + "normal/excel/downExcel",
                     method: "post",
                     data:{
                         params:params
@@ -1559,7 +1560,7 @@
                  var interactive_mode = val !='1' ? '2' : '1';
                 //获取付款方账户列表(保证他先执行，tip才能带出来)
                 this.$axios({
-                    url:"/cfm/commProcess",
+                    url: this.queryUrl + "commProcess",
                     method:"post",
                     data:{
                         optype:"account_normallist",
@@ -1578,7 +1579,7 @@
             showFlowDialog:function(workflow){
                 this.lookFlowDialogVisible = true;
                 this.$axios({
-                    url: "/cfm/commProcess",
+                    url:  this.queryUrl + "commProcess",
                     method: "post",
                     data: {
                         optype: "wfquery_wfdetail",

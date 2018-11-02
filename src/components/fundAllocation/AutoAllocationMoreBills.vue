@@ -232,6 +232,7 @@
         props: ["tableData"],
         data:function(){
             return {
+                queryUrl: this.$store.state.queryUrl,
                 routerMessage: {
                     optype: "allocset_morelist",
                     params: {
@@ -306,7 +307,7 @@
                     type: 'warning'
                 }).then(() => {
                     this.$axios({
-                        url: "/cfm/normalProcess",
+                        url: this.queryUrl + "normalProcess",
                         method: "post",
                         data: {
                             optype: "allocset_del",
@@ -356,7 +357,7 @@
                     type: 'warning'
                 }).then(() => {
                     this.$axios({
-                        url: "/cfm/normalProcess",
+                        url: this.queryUrl + "normalProcess",
                         method: "post",
                         data: {
                             optype: "allocset_revoke",

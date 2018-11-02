@@ -272,6 +272,7 @@
         props: ["tableData"],
         data:function(){
             return {
+                queryUrl: this.$store.state.queryUrl,
                 routerMessage: {
                     optype: "allocmgt_list",
                     params: {
@@ -320,7 +321,7 @@
             //激活
             activeAllocate: function(row){
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "allocmgt_setstatus",
@@ -360,7 +361,7 @@
                     type: 'warning'
                 }).then(() => {
                     this.$axios({
-                        url: "/cfm/normalProcess",
+                        url: this.queryUrl + "normalProcess",
                         method: "post",
                         data: {
                             optype: "allocmgt_cancel",

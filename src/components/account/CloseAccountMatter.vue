@@ -609,7 +609,7 @@
 
             //查询分发人
             this.$axios({
-                url:"/cfm/commProcess",
+                url:this.queryUrl + "commProcess",
                 method:"post",
                 data:{
                     optype:"user_list"
@@ -647,6 +647,7 @@
         },
         data: function () {
             return {
+                queryUrl: this.$store.state.queryUrl,
                 routerMessage: {
                     todo:{
                         optype: "closeacc_todolist",
@@ -788,7 +789,7 @@
                 this.getDeptOrg();
                 this.accOptions = [];
                 this.$axios({
-                    url:"/cfm/normalProcess",
+                    url:this.queryUrl + "normalProcess",
                     method:"post",
                     data:{
                         optype:"account_accs",
@@ -823,7 +824,7 @@
                 this.getDeptOrg();
                 //设置弹框数据
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "closeacc_detail",
@@ -851,7 +852,7 @@
                 this.fileMessage.bill_id = row.id;
                 this.triggerFile = !this.triggerFile;
                 this.$axios({
-                    url:"/cfm/normalProcess",
+                    url:this.queryUrl + "normalProcess",
                     method:"post",
                     data:{
                         optype:"account_accs",
@@ -878,7 +879,7 @@
                         var optype = "";
                         optype = params.id ? "closeacc_todochg" : "closeacc_todoadd";
                         this.$axios({
-                            url:"/cfm/normalProcess",
+                            url:this.queryUrl + "normalProcess",
                             method:"post",
                             data: {
                                 optype: optype,
@@ -927,7 +928,7 @@
                     type: 'warning'
                 }).then(() => {
                     this.$axios({
-                        url:"/cfm/normalProcess",
+                        url:this.queryUrl + "normalProcess",
                         method:"post",
                         data:{
                             optype:"closeacc_tododel",
@@ -1002,7 +1003,7 @@
             //确认分发
             distriConfirm:function(){
                 this.$axios({
-                    url:"/cfm/normalProcess",
+                    url:this.queryUrl + "normalProcess",
                     method:"post",
                     data:{
                         optype:"closeacc_doneissue",
@@ -1046,7 +1047,7 @@
             //办结确认
             handleConfirm:function(){
                 this.$axios({
-                    url:"/cfm/normalProcess",
+                    url:this.queryUrl + "normalProcess",
                     method:"post",
                     data:{
                         optype:"closeacc_doneend",
@@ -1083,7 +1084,7 @@
                     this.lookDialogData[k] = "";
                 }
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "closeacc_detail",
@@ -1135,7 +1136,7 @@
                 this.$refs.dialogForm.validate((valid, object) => {
                     if (valid) {
                         this.$axios({
-                            url: "/cfm/normalProcess",
+                            url: this.queryUrl + "normalProcess",
                             method: "post",
                             data: {
                                 optype: "closeacc_presubmit",
@@ -1176,7 +1177,7 @@
                     persist_version: workflowData.persist_version
                 };
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "closeacc_submit",
@@ -1228,7 +1229,7 @@
                     type: 'warning'
                 }).then(() => {
                     this.$axios({
-                        url: "/cfm/normalProcess",
+                        url: this.queryUrl + "normalProcess",
                         method: "post",
                         data: {
                             optype: "closeacc_revoke",
@@ -1296,7 +1297,7 @@
             showFlowDialog:function(workflow){
                 this.lookFlowDialogVisible = true;
                 this.$axios({
-                    url: "/cfm/commProcess",
+                    url: this.queryUrl + "commProcess",
                     method: "post",
                     data: {
                         optype: "wfquery_wfdetail",

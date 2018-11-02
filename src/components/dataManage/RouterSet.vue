@@ -516,6 +516,7 @@
         props: ["tableData"],
         data: function () {
             return {
+                queryUrl: this.$store.state.queryUrl,
                 routerMessage: { //本页数据获取参数
                     optype: "handleroute_list",
                     params: {
@@ -671,7 +672,7 @@
                 }
                 if (!row.items) {
                     this.$axios({
-                        url: "/cfm/adminProcess",
+                        url: this.queryUrl + "adminProcess",
                         method: "post",
                         data: {
                             optype: "handleroute_detail",
@@ -759,7 +760,7 @@
                     type: 'warning'
                 }).then(() => {
                     this.$axios({
-                        url: "/cfm/adminProcess",
+                        url: this.queryUrl + "adminProcess",
                         method: "post",
                         data: {
                             optype: "handleroute_del",
@@ -860,7 +861,7 @@
                 }
                 if (this.isCloseAccount && code) {
                     this.$axios({
-                        url: "/cfm/adminProcess",
+                        url: this.queryUrl + "adminProcess",
                         method: "post",
                         data: {
                             optype: "handleroute_setormeracc",
@@ -916,7 +917,7 @@
                 }
 
                 this.$axios({
-                    url: "/cfm/adminProcess",
+                    url: this.queryUrl + "adminProcess",
                     method: "post",
                     data: {
                         optype: optype,
@@ -1124,7 +1125,7 @@
             //设置状态
             setStatus: function (row) {
                 this.$axios({
-                    url: "/cfm/adminProcess",
+                    url: this.queryUrl + "adminProcess",
                     method: "post",
                     data: {
                         optype: "handleroute_setstatus",

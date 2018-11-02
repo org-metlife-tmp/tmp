@@ -260,6 +260,7 @@
         props:["isPending","tableData"],
         data: function () {
             return {
+                queryUrl: this.$store.state.queryUrl,
                 routerMessage: {
                     todo:{
                         optype: "dbttrad_billList",
@@ -345,7 +346,7 @@
             //获取未核对下第二个表格数据
             getCurRowData: function (row, event, column) {
                 this.$axios({
-                    url:"/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method:"post",
                     data:{
                         optype:this.checkOptype,
@@ -390,7 +391,7 @@
                     }).then(() => {
                         var row = this.currenrRow;
                         this.$axios({
-                            url:"/cfm/normalProcess",
+                            url: this.queryUrl + "normalProcess",
                             method:"post",
                             data:{
                                 optype:this.confirmOptype,
@@ -428,7 +429,7 @@
             getExpandData: function (row, expandedRows) {
                 if(!row.list){
                     this.$axios({
-                        url:"/cfm/normalProcess",
+                        url: this.queryUrl + "normalProcess",
                         method:"post",
                         data:{
                             optype:this.validatedOptype,

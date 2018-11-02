@@ -141,6 +141,7 @@
         props: ["tableData"],
         data: function () {
             return {
+                queryUrl: this.$store.state.queryUrl,
                 tableSite: true,
                 routerMessage: {
                     optype: "yet_hiswavelist",
@@ -192,7 +193,7 @@
                     acc_id = row.acc_id;
                 }
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "yet_hiswavetopchart",

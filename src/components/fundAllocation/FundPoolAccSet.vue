@@ -189,6 +189,7 @@
         props:["tableData"],
         data: function () {
             return {
+                queryUrl: this.$store.state.queryUrl,
                 routerMessage: {
                     optype: "poolacc_acclist",
                     params: {
@@ -230,7 +231,7 @@
             //设为默认
             setDefault: function (row) {
                 this.$axios({
-                    url:"/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method:"post",
                     data:{
                         optype:"poolacc_defaultset",
@@ -296,7 +297,7 @@
             //选择银行大类后查询账户
             seletBank:function (val){
                 this.$axios({
-                    url:"/cfm/normalProcess",
+                    url:this.queryUrl + "normalProcess",
                     method:"post",
                     data:{
                         optype:"poolacc_getaccbybank",
@@ -331,7 +332,7 @@
                     }
                 }
                 this.$axios({
-                    url:"/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method:"post",
                     data:{
                         optype:"poolacc_add",
@@ -359,7 +360,7 @@
                     type: 'warning'
                 }).then(() => {
                     this.$axios({
-                        url: "/cfm/normalProcess",
+                        url: this.queryUrl + "normalProcess",
                         method: "post",
                         data: {
                             optype: "poolacc_delete",

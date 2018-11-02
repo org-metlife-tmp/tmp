@@ -429,7 +429,7 @@
             if(params){
                 params = params.split("=");
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "dbt_detail",
@@ -472,7 +472,7 @@
 
             //业务类型
             this.$axios({
-                url:"/cfm/commProcess",
+                url: this.queryUrl + "commProcess",
                 method:"post",
                 data:{
                     optype:"biztype_biztypes",
@@ -509,6 +509,7 @@
         },
         data: function () {
             return {
+                queryUrl: this.$store.state.queryUrl,
                 dateValue: new Date(), //申请时间
                 billData: {
                     biz_id: "", //业务类型
@@ -560,7 +561,7 @@
                 var billData = this.billData;
                 var interactive_mode = billData.pay_mode !='1' ? '2' : '1';
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url:  this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "dbt_payacclist",
@@ -589,7 +590,7 @@
                 var billData = this.billData;
 
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url:  this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "dbt_recvacclist",
@@ -774,7 +775,7 @@
                 var billData = this.billData;
 
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: billData.id ? "dbt_chg" : "dbt_add",
@@ -811,7 +812,7 @@
                 }
 
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "dbt_presubmit",
@@ -895,7 +896,7 @@
                 };
 
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "dbt_submit",
@@ -926,7 +927,7 @@
             showFlowDialog:function(workflow){
                 this.lookFlowDialogVisible = true;
                 this.$axios({
-                    url: "/cfm/commProcess",
+                    url: this.queryUrl + "commProcess",
                     method: "post",
                     data: {
                         optype: "wfquery_wfdetail",

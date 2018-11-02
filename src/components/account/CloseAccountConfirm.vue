@@ -314,6 +314,7 @@
         props: ["tableData"],
         data: function () {
             return {
+                queryUrl: this.$store.state.queryUrl,
                 routerMessage: { //本页数据获取参数
                     optype: "accconfirm_closelist",
                     params: {
@@ -391,7 +392,7 @@
                 var row = this.dialogData;
                 if(row.acc_id && row.subject_code){
                     this.$axios({
-                        url:"/cfm/normalProcess",
+                        url:this.queryUrl + "normalProcess",
                         method: "post",
                         data:{
                             optype: "accconfirm_closesetstatus",

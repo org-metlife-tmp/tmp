@@ -163,6 +163,7 @@
         },
         data: function () {
             return {
+                queryUrl: this.$store.state.queryUrl,
                 workdayData: [], //日历数据
                 yearList: [],
                 currentYear: "",
@@ -173,7 +174,7 @@
             //获取日历
             getWorkday: function(getYear){
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "workcal_list",
@@ -229,7 +230,7 @@
                 }
 
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "workcal_checkoutlist",
@@ -320,7 +321,7 @@
                     })
                 });
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "workcal_checkoutset",
@@ -394,7 +395,7 @@
             //启用请求
             startUsingAxios: function(){
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "workcal_checkoutactivity",

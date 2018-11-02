@@ -989,7 +989,7 @@
             this.getTabList();
             //获取用户列表
             this.$axios({
-                url:"/cfm/commProcess",
+                url: this.queryUrl + "commProcess",
                 method:"post",
                 data:{
                     optype:"user_list"
@@ -1630,6 +1630,7 @@
         },
         data:function(){
             return {
+                queryUrl: this.$store.state.queryUrl,
                 routerMessage: {
                     todo: {
                         optype: "wfquery_pendingtasksall",
@@ -1878,7 +1879,7 @@
             getTabList:function(type){
                 var _this = this;
                 this.$axios({
-                    url:"/cfm/commProcess",
+                    url: this.queryUrl + "commProcess",
                     method:"post",
                     data:{
                         optype: "wfquery_pendingtaskallnum"
@@ -2120,7 +2121,7 @@
                     params.batchno = row.batchno ? row.batchno : row.bill_code;
                 }
                 this.$axios({
-                    url:"/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method:"post",
                     data:{
                         optype:this.classParams[bizType].detail,
@@ -2283,7 +2284,7 @@
                 }
                 let paramsObj = number ? lotParams : this.currentData;
                 this.$axios({
-                    url:"/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method:"post",
                     data:{
                         optype:optype,
@@ -2385,7 +2386,7 @@
                     optype = "ndc_billdetaillist";
                 }
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: optype,

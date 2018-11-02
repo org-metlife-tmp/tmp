@@ -376,6 +376,7 @@
         },
         data: function () {
             return {
+                queryUrl: this.$store.state.queryUrl,
                 routerMessage:{
                     todo:{
                         optype:"accdefreeze_todolist",
@@ -500,7 +501,7 @@
                 }
 
                 this.$axios({
-                    url:"/cfm/normalProcess",
+                    url:this.queryUrl + "normalProcess",
                     method:"post",
                     data:{
                         optype:"account_accs",
@@ -531,7 +532,7 @@
 
                 this.currentUnfreeze = row;
                 this.$axios({
-                    url:"/cfm/normalProcess",
+                    url:this.queryUrl + "normalProcess",
                     method:"post",
                     data:{
                         optype:"accdefreeze_detail",
@@ -550,7 +551,7 @@
                 this.fileMessage.bill_id = row.id;
                 this.triggerFile = !this.triggerFile;
                 this.$axios({
-                    url:"/cfm/normalProcess",
+                    url:this.queryUrl + "normalProcess",
                     method:"post",
                     data:{
                         optype:"account_accs",
@@ -593,7 +594,7 @@
                     type: 'warning'
                 }).then(() =>{
                     this.$axios({
-                        url:"/cfm/normalProcess",
+                        url:this.queryUrl + "normalProcess",
                         method:"post",
                         data:{
                             optype:"accdefreeze_tododel",
@@ -651,7 +652,7 @@
                             data.id = this.dialogData.id;
                         }
                         this.$axios({
-                            url:"/cfm/normalProcess",
+                            url:this.queryUrl + "normalProcess",
                             method:"post",
                             data:{
                                 optype:optype,
@@ -726,7 +727,7 @@
                 this.$refs.dialogForm.validate((valid, object) => {
                     if (valid) {
                         this.$axios({
-                            url: "/cfm/normalProcess",
+                            url: this.queryUrl + "normalProcess",
                             method: "post",
                             data: {
                                 optype: "accdefreeze_presubmit",
@@ -767,7 +768,7 @@
                     persist_version: workflowData.persist_version
                 };
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "accdefreeze_submit",
@@ -818,7 +819,7 @@
                     type: 'warning'
                 }).then(() => {
                     this.$axios({
-                        url: "/cfm/normalProcess",
+                        url: this.queryUrl + "normalProcess",
                         method: "post",
                         data: {
                             optype: "accdefreeze_revoke",
@@ -870,7 +871,7 @@
             showFlowDialog:function(workflow){
                 this.lookFlowDialogVisible = true;
                 this.$axios({
-                    url: "/cfm/commProcess",
+                    url: this.queryUrl + "commProcess",
                     method: "post",
                     data: {
                         optype: "wfquery_wfdetail",

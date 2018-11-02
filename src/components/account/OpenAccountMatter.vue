@@ -652,7 +652,7 @@
 
             //查询分发人
             this.$axios({
-                url: "/cfm/commProcess",
+                url: this.queryUrl + "commProcess",
                 method: "post",
                 data: {
                     optype: "user_list"
@@ -713,6 +713,7 @@
         },
         data: function () {
             return {
+                queryUrl: this.$store.state.queryUrl,
                 routerMessage: {
                     todo: {
                         optype: "openintent_todolist",
@@ -910,7 +911,7 @@
                 this.dialogTitle = "编辑";
                 //查询详情
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "openintent_detail",
@@ -980,7 +981,7 @@
                             optype = "openintent_chg";
                         }
                         this.$axios({
-                            url: "/cfm/normalProcess",
+                            url: this.queryUrl + "normalProcess",
                             method: "post",
                             data: {
                                 optype: optype,
@@ -1031,7 +1032,7 @@
                     type: 'warning'
                 }).then(() => {
                     this.$axios({
-                        url: "/cfm/normalProcess",
+                        url: this.queryUrl + "normalProcess",
                         method: "post",
                         data: {
                             optype: "openintent_del",
@@ -1105,7 +1106,7 @@
                 }
                 //查询详情
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "openintent_detail",
@@ -1153,7 +1154,7 @@
                     type: 'warning'
                 }).then(() => {
                     this.$axios({
-                        url: "/cfm/normalProcess",
+                        url: this.queryUrl + "normalProcess",
                         method: "post",
                         data: {
                             optype: "openintent_revoke",
@@ -1202,7 +1203,7 @@
             subDist: function () {
                 var distData = this.distDialogData;
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "openintent_issue",
@@ -1242,7 +1243,7 @@
             subConclude: function () {
                 var concludeData = this.concludeDialogData;
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "openintent_finish",
@@ -1299,7 +1300,7 @@
                         }
 
                         this.$axios({
-                            url: "/cfm/normalProcess",
+                            url: this.queryUrl + "normalProcess",
                             method: "post",
                             data: {
                                 optype: "openintent_presubmit",
@@ -1342,7 +1343,7 @@
                 };
 
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "openintent_submit",
@@ -1441,7 +1442,7 @@
                 if (query && query.trim()) {
                     this.loading = true;
                     this.$axios({
-                        url: "/cfm/commProcess",
+                        url: this.queryUrl + "commProcess",
                         method: "post",
                         data: {
                             optype: "area_list",
@@ -1470,7 +1471,7 @@
                     var bank_type = this.dialogData.bank_type;
 
                     this.$axios({
-                        url: "/cfm/commProcess",
+                        url: this.queryUrl + "commProcess",
                         method: "post",
                         data: {
                             optype: "bank_list",
@@ -1494,7 +1495,7 @@
             showFlowDialog:function(workflow){
                 this.lookFlowDialogVisible = true;
                 this.$axios({
-                    url: "/cfm/commProcess",
+                    url: this.queryUrl + "commProcess",
                     method: "post",
                     data: {
                         optype: "wfquery_wfdetail",

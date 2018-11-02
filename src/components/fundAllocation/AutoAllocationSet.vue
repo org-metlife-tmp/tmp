@@ -565,7 +565,7 @@
                     this.viewReadonly = true;
                 }
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "allocset_detail",
@@ -624,6 +624,7 @@
         },
         data: function () {
             return {
+                queryUrl: this.$store.state.queryUrl,
                 allocationData: { //表单数据
                     allocation_frequency: "1"
                 },
@@ -816,7 +817,7 @@
                 params.excludeInstIds = excludeInstIds;
                 //查询子账户列表
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "allocset_childacclist",
@@ -992,7 +993,7 @@
                     }
                 });
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "allocset_mainacclist",
@@ -1128,7 +1129,7 @@
             deleteBill:function (){
                 var param = this.allocationData;
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "allocset_del",
@@ -1167,7 +1168,7 @@
                 var optype = params.id ? 'allocset_chg' : 'allocset_add';
                 var message = params.id ? '修改成功' : '保存成功';
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: optype,
@@ -1201,7 +1202,7 @@
                     return;
                 }
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "allocset_presubmit",
@@ -1238,7 +1239,7 @@
                     persist_version: workflowData.persist_version
                 };
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "allocset_submit",
@@ -1281,7 +1282,7 @@
             showFlowDialog:function(workflow){
                 this.lookFlowDialogVisible = true;
                 this.$axios({
-                    url: "/cfm/commProcess",
+                    url: this.queryUrl + "commProcess",
                     method: "post",
                     data: {
                         optype: "wfquery_wfdetail",

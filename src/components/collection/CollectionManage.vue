@@ -389,6 +389,7 @@
         props: ["tableData"],
         data:function(){
             return {
+                queryUrl: this.$store.state.queryUrl,
                 routerMessage: {
                     optype: "collectmanage_list",
                     params: {
@@ -462,7 +463,7 @@
             //激活
             activeCollect: function(row){
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "collectmanage_setstate",
@@ -502,7 +503,7 @@
                     type: 'warning'
                 }).then(() => {
                     this.$axios({
-                        url: "/cfm/normalProcess",
+                        url: this.queryUrl + "normalProcess",
                         method: "post",
                         data: {
                             optype: "collectmanage_cancel",
@@ -536,7 +537,7 @@
             //弹框-发送
             sendData: function(row){
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "collectmanage_sendPayList",
@@ -567,7 +568,7 @@
             //弹框-作废
             cancelData: function(row){
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "collectmanage_cancelinstruction",
@@ -616,7 +617,7 @@
                 //获取当前数据
                 this.dialogVisible = true;
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "collectmanage_instruction",

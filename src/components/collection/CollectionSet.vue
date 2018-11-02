@@ -583,7 +583,7 @@
             }
             //归集主账户列表
             this.$axios({
-                url: "/cfm/normalProcess",
+                url: this.queryUrl + "normalProcess",
                 method: "post",
                 data: {
                     optype: "collectsetting_accs",
@@ -603,7 +603,7 @@
             if(params){
                 params = params.split("=");
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "collectsetting_detail",
@@ -671,6 +671,7 @@
         },
         data: function () {
             return {
+                queryUrl: this.$store.state.queryUrl,
                 collectionData: { //表单数据
                     id: "",
                     persist_version: "",
@@ -944,7 +945,7 @@
                 params.exclude_ids = exclude_ids;
 
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "collectsetting_getchildacclist",
@@ -1123,7 +1124,7 @@
                 var collectionData = this.collectionData;
 
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: collectionData.id ? "collectsetting_chg" : "collectsetting_add",
@@ -1231,7 +1232,7 @@
                 }
 
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "collectsetting_presubmit",
@@ -1274,7 +1275,7 @@
                 };
 
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "collectsetting_submit",
@@ -1308,7 +1309,7 @@
             showFlowDialog:function(workflow){
                 this.lookFlowDialogVisible = true;
                 this.$axios({
-                    url: "/cfm/commProcess",
+                    url:this.queryUrl + "commProcess",
                     method: "post",
                     data: {
                         optype: "wfquery_wfdetail",

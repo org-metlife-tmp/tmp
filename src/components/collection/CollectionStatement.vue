@@ -415,6 +415,7 @@
         },
         data: function () {
             return {
+                queryUrl: this.$store.state.queryUrl,
                 routerMessage: {
                     optype: "collectreport_reports",
                     params: {
@@ -520,7 +521,7 @@
             //获取饼图数据
             getPieData: function () {
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "collectreport_reportsChart",

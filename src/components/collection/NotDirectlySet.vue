@@ -562,7 +562,7 @@
                 <div class="error-name">文档内容不符合要求</div>
                 <a class="downLoad" href="javascript:;"
                    @click="templateDownLoad(currentUpload.download_object_id)"
-                   v-text="'/cfm/normal/excel/downExcel?object_id='+currentUpload.download_object_id"
+                   v-text="queryUrl + 'normal/excel/downExcel?object_id='+currentUpload.download_object_id"
                 ></a>
             </div>
             <div class="dialog-upload-input">
@@ -571,7 +571,7 @@
                     <template slot="append">
                         <el-upload
                                 class="upload-demo"
-                                action="/cfm/normal/excel/upload"
+                                :action="queryUrl + 'normal/excel/upload'"
                                 :headers="{pk:'9',Authorization:currToken}"
                                 :on-success="uploadSuccess"
                                 multiple>
@@ -673,7 +673,7 @@
         created: function () {
             //获取付款方账户列表
             this.$axios({
-                url: "/cfm/normalProcess",
+                url: this.queryUrl + "normalProcess",
                 method: "post",
                 data: {
                     optype: "ndc_accs",
@@ -696,7 +696,7 @@
                 })
 
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "ndc_prechgbill",
@@ -742,6 +742,7 @@
         },
         data: function () {
             return {
+                queryUrl: this.$store.state.queryUrl,
                 dateValue: new Date(), //申请时间
                 billData: {
                     id: "",
@@ -821,7 +822,7 @@
                 }
 
                 this.$axios({
-                    url: "/cfm/normal/excel/downExcel",
+                    url: this.queryUrl + "normal/excel/downExcel",
                     method: "post",
                     data: {
                         params: params
@@ -896,7 +897,7 @@
                 }
 
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "ndc_addbillexcel",
@@ -938,7 +939,7 @@
                     info_id: file.id
                 }
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "ndc_delbillexcel",
@@ -1015,7 +1016,7 @@
 
                 var billData = this.billData;
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: billData.id ? "ndc_chgbill" : "ndc_addbill",
@@ -1051,7 +1052,7 @@
                 }
 
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "ndc_presubmit",
@@ -1090,7 +1091,7 @@
                 };
 
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "ndc_submit",
@@ -1129,7 +1130,7 @@
             showFlowDialog: function (workflow) {
                 this.lookFlowDialogVisible = true;
                 this.$axios({
-                    url: "/cfm/commProcess",
+                    url: this.queryUrl + "commProcess",
                     method: "post",
                     data: {
                         optype: "wfquery_wfdetail",
@@ -1163,7 +1164,7 @@
 
                 //获取汇总数据
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "ndc_batchbillattlist",

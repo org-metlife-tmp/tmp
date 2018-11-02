@@ -608,6 +608,7 @@
         props: ["tableData"],
         data: function () {
             return {
+                queryUrl: this.$store.state.queryUrl,
                 routerMessage: {
                     optype: "dbtbatch_viewlist",
                     params: {
@@ -785,7 +786,7 @@
                 params.page_size = params.page_size ? params.page_size : 7;
                 params.page_num = params.page_num ? params.page_num : 1;
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url:  this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "dbtbatch_detaillist",
@@ -841,7 +842,7 @@
             lookBill: function (row) {
                 this.searchDetailData.batchno = row.batchno;
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url:  this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "dbtbatch_viewbill",

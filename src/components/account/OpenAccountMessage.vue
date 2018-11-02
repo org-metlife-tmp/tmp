@@ -622,7 +622,7 @@
 
             //获取账户性质下拉数据
             this.$axios({
-                url: "/cfm/commProcess",
+                url:  this.queryUrl + "commProcess",
                 method: "post",
                 data: {
                     optype: "category_list",
@@ -647,7 +647,7 @@
 
             //获取账户用途下拉数据
             this.$axios({
-                url: "/cfm/commProcess",
+                url: this.queryUrl + "commProcess",
                 method: "post",
                 data: {
                     optype: "category_list",
@@ -694,6 +694,7 @@
         },
         data: function () {
             return {
+                queryUrl: this.$store.state.queryUrl,
                 routerMessage: {
                     todo: {
                         optype: "opencom_todolist",
@@ -861,7 +862,7 @@
                 } else {
                     //获取当前项详细信息
                     this.$axios({
-                        url: "/cfm/normalProcess",
+                        url: this.queryUrl + "normalProcess",
                         method: "post",
                         data: {
                             optype: "opencom_detail",
@@ -920,7 +921,7 @@
                             optype = "opencom_add"
                         }
                         this.$axios({
-                            url: "/cfm/normalProcess",
+                            url: this.queryUrl + "normalProcess",
                             method: "post",
                             data: {
                                 optype: optype,
@@ -962,7 +963,7 @@
                     type: 'warning'
                 }).then(() => {
                     this.$axios({
-                        url: "/cfm/normalProcess",
+                        url: this.queryUrl + "normalProcess",
                         method: "post",
                         data: {
                             optype: "opencom_del",
@@ -1006,7 +1007,7 @@
                 this.bankSelect = true;
                 //当前项详细信息
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "opencom_detail",
@@ -1090,7 +1091,7 @@
                 this.$refs.dialogForm.validate((valid, object) => {
                     if (valid) {
                         this.$axios({
-                            url: "/cfm/normalProcess",
+                            url: this.queryUrl + "normalProcess",
                             method: "post",
                             data: {
                                 optype: "opencom_presubmit",
@@ -1131,7 +1132,7 @@
                     persist_version: workflowData.persist_version
                 };
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "opencom_submit",
@@ -1181,7 +1182,7 @@
                     type: 'warning'
                 }).then(() => {
                     this.$axios({
-                        url: "/cfm/normalProcess",
+                        url: this.queryUrl + "normalProcess",
                         method: "post",
                         data: {
                             optype: "opencom_revoke",
@@ -1234,7 +1235,7 @@
             showFlowDialog:function(workflow){
                 this.lookFlowDialogVisible = true;
                 this.$axios({
-                    url: "/cfm/commProcess",
+                    url: this.queryUrl + "commProcess",
                     method: "post",
                     data: {
                         optype: "wfquery_wfdetail",

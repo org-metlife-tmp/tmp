@@ -694,6 +694,7 @@
         props: ["isPending", "tableData"],
         data: function () {
             return {
+                queryUrl: this.$store.state.queryUrl,
                 routerMessage: { //路由数据参数信息
                     todo: {
                         optype: "openchg_todolist",
@@ -880,7 +881,7 @@
                 this.triggerFile = !this.triggerFile;
                 //获取当前项详细数据
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "openchg_detail",
@@ -980,7 +981,7 @@
                         }
 
                         this.$axios({
-                            url: "/cfm/normalProcess",
+                            url: this.queryUrl + "normalProcess",
                             method: "post",
                             data: {
                                 optype: optype,
@@ -1031,7 +1032,7 @@
                     type: 'warning'
                 }).then(() => {
                     this.$axios({
-                        url: "/cfm/normalProcess",
+                        url: this.queryUrl + "normalProcess",
                         method: "post",
                         data: {
                             optype: "openchg_del",
@@ -1091,7 +1092,7 @@
 
                 //当前项详细数据
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "openchg_detail",
@@ -1161,7 +1162,7 @@
             //设置账户号下拉数据
             setAccsList:function(row){
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "account_accs",
@@ -1233,7 +1234,7 @@
                 if (query && query.trim()) {
                     this.loading = true;
                     this.$axios({
-                        url: "/cfm/commProcess",
+                        url: this.queryUrl + "commProcess",
                         method: "post",
                         data: {
                             optype: "area_list",
@@ -1262,7 +1263,7 @@
                     var bank_type = this.bankDialogData.bank_type;
 
                     this.$axios({
-                        url: "/cfm/commProcess",
+                        url: this.queryUrl + "commProcess",
                         method: "post",
                         data: {
                             optype: "bank_list",
@@ -1351,7 +1352,7 @@
                         }
                         params.change_content = paramsData;
                         this.$axios({
-                            url: "/cfm/normalProcess",
+                            url: this.queryUrl + "normalProcess",
                             method: "post",
                             data: {
                                 optype: "openchg_presubmit",
@@ -1393,7 +1394,7 @@
                 };
 
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "openchg_submit",
@@ -1444,7 +1445,7 @@
                     type: 'warning'
                 }).then(() => {
                     this.$axios({
-                        url: "/cfm/normalProcess",
+                        url: this.queryUrl + "normalProcess",
                         method: "post",
                         data: {
                             optype: "openchg_revoke",
@@ -1497,7 +1498,7 @@
             showFlowDialog:function(workflow){
                 this.lookFlowDialogVisible = true;
                 this.$axios({
-                    url: "/cfm/commProcess",
+                    url: this.queryUrl + "commProcess",
                     method: "post",
                     data: {
                         optype: "wfquery_wfdetail",

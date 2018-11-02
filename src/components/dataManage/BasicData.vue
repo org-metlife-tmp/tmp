@@ -404,6 +404,7 @@
         },
         data: function () {
             return {
+                queryUrl: this.$store.state.queryUrl,
                 routerMessage: {
                     optype: "org_list"
                 },
@@ -590,7 +591,7 @@
                     type: 'warning'
                 }).then(() => {
                     this.$axios({
-                        url: "/cfm/adminProcess",
+                        url: this.queryUrl + "adminProcess",
                         method: "post",
                         data: {
                             optype: "org_del",
@@ -640,7 +641,7 @@
                         }
                         if (this.dialogTitle == "添加下级公司") {
                             this.$axios({
-                                url: "/cfm/adminProcess",
+                                url: this.queryUrl + "adminProcess",
                                 method: "post",
                                 data: {
                                     optype: "org_add",
@@ -676,7 +677,7 @@
                             })
                         } else { //编辑当前公司
                             this.$axios({
-                                url: "/cfm/adminProcess",
+                                url: this.queryUrl + "adminProcess",
                                 method: "post",
                                 data: {
                                     optype: "org_chg",
@@ -724,7 +725,7 @@
             //币种-设为默认币种
             setCurrency: function (currentRow, rows) {
                 this.$axios({
-                    url: "/cfm/adminProcess",
+                    url: this.queryUrl + "adminProcess",
                     method: "post",
                     data: {
                         optype: "currency_setdefault",
@@ -769,7 +770,7 @@
                 //修改部门状态
                 if (this.btActive.department) {
                     this.$axios({
-                        url: "/cfm/adminProcess",
+                        url: this.queryUrl + "adminProcess",
                         method: "post",
                         data: {
                             optype: "dept_setstatus",
@@ -794,7 +795,7 @@
                 //修改职位状态
                 if (this.btActive.post) {
                     this.$axios({
-                        url: "/cfm/adminProcess",
+                        url: this.queryUrl + "adminProcess",
                         method: "post",
                         data: {
                             optype: "position_setstatus",
@@ -873,7 +874,7 @@
                     if (valid) {
                         if (this.deptDialogTitle == "新增") {
                             this.$axios({
-                                url: "/cfm/adminProcess",
+                                url: this.queryUrl + "adminProcess",
                                 method: "post",
                                 data: {
                                     optype: "dept_add",
@@ -905,7 +906,7 @@
                         } else {
                             var currentDept = this.currentDept
                             this.$axios({
-                                url: "/cfm/adminProcess",
+                                url: this.queryUrl + "adminProcess",
                                 method: "post",
                                 data: {
                                     optype: "dept_chg",
@@ -950,7 +951,7 @@
                         type: 'warning'
                     }).then(() => {
                         this.$axios({
-                            url: "/cfm/adminProcess",
+                            url: this.queryUrl + "adminProcess",
                             method: "post",
                             data: {
                                 optype: "dept_del",
@@ -999,7 +1000,7 @@
                         type: 'warning'
                     }).then(() => {
                         this.$axios({
-                            url: "/cfm/adminProcess",
+                            url: this.queryUrl + "adminProcess",
                             method: "post",
                             data: {
                                 optype: "position_del",
@@ -1053,7 +1054,7 @@
                             optype = "position_chg";
                         }
                         this.$axios({
-                            url: "/cfm/adminProcess",
+                            url: this.queryUrl + "adminProcess",
                             method: "post",
                             data: {
                                 optype: optype,
@@ -1167,7 +1168,7 @@
                 this.cityList = [];
                 if (value) {
                     this.$axios({
-                        url: "/cfm/commProcess",
+                        url: this.queryUrl + "commProcess",
                         method: "post",
                         data: {
                             optype: "area_list",

@@ -292,6 +292,7 @@
         props: ["tableData"],
         data:function(){
             return {
+                queryUrl: this.$store.state.queryUrl,
                 routerMessage: {
                     optype: "collectview_collections",
                     params: {
@@ -418,7 +419,7 @@
                 //获取当前数据
                 this.dialogVisible = true;
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "collectmanage_instruction",
