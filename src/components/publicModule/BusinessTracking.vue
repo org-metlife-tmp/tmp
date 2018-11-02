@@ -22,7 +22,7 @@
             .seeMore{
                 position: absolute;
                 right: 0;
-                top: -2px;
+                top: -4px;
             }
         }
 
@@ -228,7 +228,7 @@
 <style lang="less" type="text/less">
     /*进度条样式*/
     .slidersContainer{
-        top: 44px;
+        top: 32px;
         position: relative;
         .el-progress-bar{
             padding: 0;
