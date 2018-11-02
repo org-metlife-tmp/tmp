@@ -13,7 +13,8 @@ Vue.use(Vuex);
 export default new Vuex.Store({
     state:{
         token: '',
-        user: ''
+        user: '',
+        queryUrl: "/cfm/"
     },
     mutations: {
         set_token:function(state,data){
@@ -26,6 +27,10 @@ export default new Vuex.Store({
             state.token = '';
             state.user = '';
             window.sessionStorage.clear();
+        },
+        set_url:function(state,url){
+            state.queryUrl = url;
+            window.sessionStorage.setItem("queryUrl",url);
         }
     }
 })

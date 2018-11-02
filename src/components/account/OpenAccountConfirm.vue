@@ -335,8 +335,15 @@
                 //校验规则设置
                 rules: {
                     subject_code: {
-                        required: true,
-                        message: "请输入会计科目代码",
+                        validator: (rule, value, callback) => {
+                            console.log(value);
+                            debugger;
+                            if (!value) {
+                                return callback(new Error('请输入会计科目代码'));
+                            }else{
+                                callback();
+                            }
+                        },
                         trigger: "blur"
                     }
                 },
@@ -448,7 +455,7 @@
                         }else{
                             this.$message({
                                 type: "warning",
-                                message: "会计科目代码不能为空！",
+                                message: "当前数据id为空！",
                                 duration: 2000
                             })
                         }
