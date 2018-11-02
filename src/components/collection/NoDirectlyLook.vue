@@ -278,10 +278,6 @@
                 <div class="btn-left">
                     <el-button type="warning" plain size="mini" @click="goMakeBill">制单</el-button>
                 </div>
-                <span>总金额：</span>
-                <span v-text="totalData.total_amount" class="numText"></span>
-                <span>成功金额：</span>
-                <span v-text="totalData.success_amount" class="numText"></span>
             </div>
         </section>
         <!--分页部分-->
@@ -473,10 +469,6 @@
                 pagSize: 8, //分页数据
                 pagTotal: 1,
                 pagCurrent: 1,
-                totalData: { //汇总数据
-                    total_amount: "",
-                    success_amount: ""
-                },
                 dateValue: "", //时间选择
                 statusList: {
                     2: "已提交",
@@ -655,7 +647,6 @@
                 this.pagTotal = val.total_line;
                 this.tableList = val.data;
                 this.pagCurrent = val.page_num;
-                this.totalData = val.ext;
             }
         }
     }
