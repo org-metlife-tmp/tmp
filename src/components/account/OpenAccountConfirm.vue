@@ -331,19 +331,13 @@
                 pagCurrent: 1,
                 dialogVisible: false, //弹框数据
                 dialogData: {
+                    subject_code: ""
                 },
                 //校验规则设置
                 rules: {
                     subject_code: {
-                        validator: (rule, value, callback) => {
-                            console.log(value);
-                            debugger;
-                            if (!value) {
-                                return callback(new Error('请输入会计科目代码'));
-                            }else{
-                                callback();
-                            }
-                        },
+                        required: true,
+                        message: "请输入会计科目代码",
                         trigger: "blur"
                     }
                 },
