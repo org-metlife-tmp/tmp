@@ -331,6 +331,7 @@
                 pagCurrent: 1,
                 dialogVisible: false, //弹框数据
                 dialogData: {
+                    subject_code: ""
                 },
                 //校验规则设置
                 rules: {
@@ -448,7 +449,7 @@
                         }else{
                             this.$message({
                                 type: "warning",
-                                message: "会计科目代码不能为空！",
+                                message: "当前数据id为空！",
                                 duration: 2000
                             })
                         }

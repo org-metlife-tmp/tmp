@@ -202,7 +202,7 @@
         created: function () {
             var routeThis = this;
             this.$axios({
-                url: "/cfm/",
+                url: this.queryUrl,
                 method: "get"
             }).then(function (result) {
                 var data = result.data;
@@ -214,6 +214,7 @@
         },
         data: function () {
             return {
+                queryUrl: this.$store.state.queryUrl,
                 isPassword: true,
                 errorMessage: "",
                 //加密模板
@@ -261,7 +262,7 @@
 
                 var routeThis = this;
                 this.$axios({
-                    url: "/cfm/login",
+                    url: this.queryUrl + "login",
                     method: "post",
                     data: {
                         optype: "login",
