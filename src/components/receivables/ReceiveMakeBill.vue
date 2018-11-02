@@ -453,7 +453,7 @@
         created: function(){
             //获取付款方账户列表
             this.$axios({
-                url:"/cfm/commProcess",
+                url:this.queryUrl + "commProcess",
                 method:"post",
                 data:{
                     optype:"account_normallist",
@@ -476,7 +476,7 @@
             if(params) {
                 params = params.split("=");
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "skt_billdetail",
@@ -514,7 +514,7 @@
 
             //业务类型
             this.$axios({
-                url:"/cfm/commProcess",
+                url:this.queryUrl + "commProcess",
                 method:"post",
                 data:{
                     optype:"biztype_biztypes",
@@ -625,7 +625,7 @@
             getPayerSelect: function(){
                 //获取收款方户名列表
                 this.$axios({
-                    url:"/cfm/normalProcess",
+                    url:this.queryUrl + "normalProcess",
                     method:"post",
                     data:{
                         optype:"zft_payacclist",
@@ -692,7 +692,7 @@
                 if (query && query.trim()) {
                     this.loading = true;
                     this.$axios({
-                        url: "/cfm/commProcess",
+                        url: this.queryUrl + "commProcess",
                         method: "post",
                         data: {
                             optype: "area_list",
@@ -721,7 +721,7 @@
                     var bank_type = this.dialogData.bankTypeName;
 
                     this.$axios({
-                        url: "/cfm/commProcess",
+                        url: this.queryUrl + "commProcess",
                         method: "post",
                         data: {
                             optype: "bank_list",
@@ -877,7 +877,7 @@
                     return;
                 }
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: params.id ? "skt_chgbill" : "skt_addbill",
@@ -916,7 +916,7 @@
             submitBill: function(){
                 if(this.billData.id){
                     this.$axios({
-                        url: "/cfm/normalProcess",
+                        url: this.queryUrl + "normalProcess",
                         method: "post",
                         data: {
                             optype: "skt_chgservicestatus",
@@ -938,42 +938,6 @@
                 }else{
                     this.saveBill('submit');
                 }
-                // var params = this.setParams();
-                // if(!params){
-                //     return;
-                // }
-                // this.$axios({
-                //     url: "/cfm/normalProcess",
-                //     method: "post",
-                //     data: {
-                //         optype: "skt_presubmit",
-                //         params: params
-                //     }
-                // }).then((result) => {
-                //     if (result.data.error_msg) {
-                //         this.$message({
-                //             type: "error",
-                //             message: result.data.error_msg,
-                //             duration: 2000
-                //         });
-                //     } else {
-                //         var data = result.data.data;
-
-                //         var billData = this.billData;
-                //         billData.id = data.id;
-                //         billData.persist_version = data.persist_version;
-                //         billData.service_status = data.service_status;
-                //         billData.service_serial_number = data.service_serial_number;
-                //         this.getPayerSelect();
-
-                //         //设置弹框数据
-                //         this.selectWorkflow = "";
-                //         this.workflows = data.workflows;
-                //         this.innerVisible = true;
-                //     }
-                // }).catch(function (error) {
-                //     console.log(error);
-                // });
             },
             //提交流程
             submitFlow: function(){
@@ -987,7 +951,7 @@
                 };
 
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "skt_submit",

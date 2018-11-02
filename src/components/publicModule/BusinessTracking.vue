@@ -378,6 +378,7 @@
         props:["businessParams"],
         data:function(){
             return {
+                queryUrl: this.$store.state.queryUrl,
                 submiter:{},
                 history:{},
                 historyList:[],
@@ -404,7 +405,7 @@
                 this.future = {};
                 //加载业务跟踪状态数据
                 this.$axios({
-                    url:"/cfm/commProcess",
+                    url:this.queryUrl + "commProcess",
                     method:"post",
                     data:{
                         optype:"wfquery_approvedetail",

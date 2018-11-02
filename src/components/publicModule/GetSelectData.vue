@@ -13,7 +13,7 @@
             if (isAdmin) {
                 //机构
                 this.$axios({
-                    url: "/cfm/adminProcess",
+                    url: this.queryUrl + "adminProcess",
                     method: "post",
                     data: {
                         optype: "org_list"
@@ -40,7 +40,7 @@
 
                 //部门
                 this.$axios({
-                    url: "/cfm/adminProcess",
+                    url: this.queryUrl + "adminProcess",
                     method: "post",
                     data: {
                         optype: "dept_list",
@@ -62,7 +62,7 @@
 
                 //用户组
                 this.$axios({
-                    url: "/cfm/adminProcess",
+                    url: this.queryUrl + "adminProcess",
                     method: "post",
                     data: {
                         optype: "usrgroup_list",
@@ -85,7 +85,7 @@
                 //币种
                 if (!window.sessionStorage.getItem("currencyList")) {
                     this.$axios({
-                        url: "/cfm/adminProcess",
+                        url: this.queryUrl + "adminProcess",
                         method: "post",
                         data: {
                             optype: "currency_list",
@@ -109,7 +109,7 @@
             if(!isAdmin && !window.sessionStorage.getItem("orgTreeList")){
                 //普通用户用机构树
                 this.$axios({
-                    url: "/cfm/commProcess",
+                    url: this.queryUrl + "commProcess",
                     method: "post",
                     data: {
                         optype: "org_curlist"
@@ -132,7 +132,7 @@
             //渠道名称
             if (!window.sessionStorage.getItem("channelList")) {
                 this.$axios({
-                    url: "/cfm/extserv/catg/bankchannel",
+                    url: this.queryUrl + "extserv/catg/bankchannel",
                     method: "post",
                     data: {
                         optype: "catg_bankchannel",
@@ -155,7 +155,7 @@
             //银行大类
             if (!window.sessionStorage.getItem("bankTypeList")) {
                 this.$axios({
-                    url: "/cfm/commProcess",
+                    url: this.queryUrl + "commProcess",
                     method: "post",
                     data: {
                         optype: "bank_typelist"
@@ -175,7 +175,7 @@
             //系统常量
             if (!window.sessionStorage.getItem("catgList")) {
                 this.$axios({
-                    url: "/cfm/extserv/catg/list",
+                    url: this.queryUrl + "extserv/catg/list",
                     method: "post",
                     data: {
                         optype: "catg_list"
@@ -194,7 +194,7 @@
             //省/自治区 列表
             if (!window.sessionStorage.getItem("provinceList")) {
                 this.$axios({
-                    url: "/cfm/commProcess",
+                    url: this.queryUrl + "commProcess",
                     method: "post",
                     data: {
                         optype: "area_toplevel"
@@ -213,7 +213,7 @@
             //币种下拉数据
             if (!window.sessionStorage.getItem("selectCurrencyList")) {
                 this.$axios({
-                    url: "/cfm/commProcess",
+                    url: this.queryUrl + "commProcess",
                     method: "post",
                     data: {
                         optype: "currency_list",
@@ -236,7 +236,7 @@
             //所属机构下拉数据
             if (!window.sessionStorage.getItem("selectOrgList")) {
                 this.$axios({
-                    url: "/cfm/commProcess",
+                    url: this.queryUrl + "commProcess",
                     method: "post",
                     data: {
                         optype: "org_list",
@@ -259,7 +259,7 @@
             //电子回单类型（普通用户）
             if(!isAdmin && !window.sessionStorage.getItem("eleType")){
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "ele_type",
@@ -278,7 +278,9 @@
             }
         },
         data: function () {
-            return {}
+            return {
+                queryUrl: this.$store.state.queryUrl,
+            }
         },
         methods: {
             //设置树数据的转换

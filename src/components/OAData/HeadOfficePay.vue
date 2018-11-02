@@ -336,6 +336,7 @@
         props: ["isPending", "tableData"],
         data: function () {
             return {
+                queryUrl: this.$store.state.queryUrl,
                 routerMessage: {
                     todo: {
                         optype: "headorgoa_todolist",
@@ -488,7 +489,7 @@
                     type: 'warning'
                 }).then(() => {
                     this.$axios({
-                        url: "/cfm/normalProcess",
+                        url: this.queryUrl + "normalProcess",
                         method: "post",
                         data: {
                             optype: "headorgoa_revoke",
@@ -536,7 +537,7 @@
                     inputErrorMessage: '请输入作废原因'
                 }).then(({ value }) => {
                     this.$axios({
-                        url: "/cfm/normalProcess",
+                        url: this.queryUrl + "normalProcess",
                         method: "post",
                         data: {
                             optype: "headorgoa_payOff",

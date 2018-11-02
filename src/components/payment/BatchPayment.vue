@@ -197,10 +197,6 @@
                 padding: 0;
             }
         }
-    }
-</style>
-<style lang="less">
-    #batchPayment {
         .el-form--inline .el-form-item {
             width: calc(100% - 10px);
             width: -moz-calc(100% - 10px);
@@ -459,6 +455,7 @@
         props: ["tableData"],
         data: function () {
             return {
+                queryUrl: this.$store.state.queryUrl,
                 routerMessage: {
                     optype: "zftbatch_payList",
                     params: {
@@ -526,7 +523,7 @@
                 params.page_num = params.page_num ? params.page_num : 1;
                 params.pay_status = [0, 2];
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "zftbatch_billdetaillist",
@@ -642,7 +639,7 @@
                 var optype = this.paymentData.number ? 'zftbatch_payOneOff' : 'zftbatch_payOff';
                 var params = this.paymentData;
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: optype,
@@ -730,7 +727,7 @@
                 }
 
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: optype,
@@ -791,7 +788,7 @@
 
                 var optype = 'zftbatch_sendpaylist';
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: optype,

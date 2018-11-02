@@ -471,6 +471,7 @@
         },
         data: function () {
             return {
+                queryUrl: this.$store.state.queryUrl,
                 routerMessage: {
                     optype: "zftbatch_paybatchlist",
                     params: {
@@ -601,7 +602,7 @@
             lookBill: function (row) {
                 //获取汇总数据
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "zftbatch_billdetail",
@@ -647,7 +648,7 @@
                 var params = this.dialogMessage;
                 params.params.page_num = pageNum;
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: params
                 }).then((result) => {

@@ -514,7 +514,7 @@
             if(params) {
                 params = params.split("=");
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "zft_billdetail",
@@ -553,7 +553,7 @@
 
             //业务类型
             this.$axios({
-                url:"/cfm/commProcess",
+                url:this.queryUrl + "commProcess",
                 method:"post",
                 data:{
                     optype:"biztype_biztypes",
@@ -599,6 +599,7 @@
         },
         data: function () {
             return {
+                queryUrl: this.$store.state.queryUrl,
                 dateValue: new Date(), //申请时间
                 billData: {
                     id:"",
@@ -664,7 +665,7 @@
                     var pay_mode = this.billData.pay_mode;
                     //获取付款方账户列表
                     this.$axios({
-                        url:"/cfm/commProcess",
+                        url:this.queryUrl + "commProcess",
                         method:"post",
                         data:{
                             optype:"account_normallist",
@@ -686,7 +687,7 @@
             getPayerSelect: function(){
                 //获取收款方户名列表
                 this.$axios({
-                    url:"/cfm/normalProcess",
+                    url:this.queryUrl + "normalProcess",
                     method:"post",
                     data:{
                         optype:"zft_payacclist",
@@ -762,7 +763,7 @@
                 if (query && query.trim()) {
                     this.loading = true;
                     this.$axios({
-                        url: "/cfm/commProcess",
+                        url: this.queryUrl + "commProcess",
                         method: "post",
                         data: {
                             optype: "area_list",
@@ -791,7 +792,7 @@
                     var bank_type = this.dialogData.bankTypeName;
 
                     this.$axios({
-                        url: "/cfm/commProcess",
+                        url: this.queryUrl + "commProcess",
                         method: "post",
                         data: {
                             optype: "bank_list",
@@ -957,7 +958,7 @@
                 }
 
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: params.id ? "zft_chgbill" : "zft_addbill",
@@ -997,7 +998,7 @@
                 }
 
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "zft_presubmit",
@@ -1042,7 +1043,7 @@
                 };
 
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "zft_submit",
@@ -1085,7 +1086,7 @@
             showFlowDialog:function(workflow){
                 this.lookFlowDialogVisible = true;
                 this.$axios({
-                    url: "/cfm/commProcess",
+                    url: this.queryUrl + "commProcess",
                     method: "post",
                     data: {
                         optype: "wfquery_wfdetail",
@@ -1107,7 +1108,7 @@
                         //将数据传递给子组件
                         this.flowList = define;
                         this.isEmptyFlow = false;
-                        
+
                     }
                 })
             },

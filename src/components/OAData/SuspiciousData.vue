@@ -303,6 +303,7 @@
         },
         data: function () {
             return {
+                queryUrl: this.$store.state.queryUrl,
                 routerMessage: {
                     optype: "checkdoubtfuloa_list",
                     params: {
@@ -381,7 +382,7 @@
                 }
 
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "checkdoubtfuloa_doubtlist",
@@ -415,7 +416,7 @@
                     type: 'warning'
                 }).then(() => {
                     this.$axios({
-                        url: "/cfm/normalProcess",
+                        url: this.queryUrl + "normalProcess",
                         method: "post",
                         data: {
                             optype: "checkdoubtfuloa_pass",
@@ -462,7 +463,7 @@
                     inputErrorMessage: '请输入撤回原因'
                 }).then(({ value }) => {
                     this.$axios({
-                        url: "/cfm/normalProcess",
+                        url: this.queryUrl + "normalProcess",
                         method: "post",
                         data: {
                             optype: "checkdoubtfuloa_payoff",

@@ -605,7 +605,7 @@
                     <template slot="append">
                         <el-upload
                                 class="upload-demo"
-                                action="/cfm/normal/excel/upload"
+                                :action="queryUrl + 'normal/excel/upload'"
                                 :headers="{pk:'2',Authorization:currToken}"
                                 :on-success="uploadSuccess"
                                 multiple>
@@ -720,7 +720,7 @@
                 })
 
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "zftbatch_prechgbill",
@@ -770,7 +770,7 @@
 
             //业务类型
             this.$axios({
-                url: "/cfm/commProcess",
+                url: this.queryUrl + "commProcess",
                 method: "post",
                 data: {
                     optype: "biztype_biztypes",
@@ -811,6 +811,7 @@
         },
         data: function () {
             return {
+                queryUrl: this.$store.state.queryUrl,
                 dateValue: new Date(), //申请时间
                 billData: {
                     uploadName: "", //上传的文件名
@@ -881,7 +882,7 @@
                     var pay_mode = this.billData.pay_mode;
                     //获取付款方账户列表
                     this.$axios({
-                        url: "/cfm/commProcess",
+                        url: this.queryUrl + "commProcess",
                         method: "post",
                         data: {
                             optype: "account_normallist",
@@ -954,7 +955,7 @@
                 }
 
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "zftbatch_addbillexcel",
@@ -997,7 +998,7 @@
                     info_id: file.id
                 }
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "zftbatch_delbillexcel",
@@ -1079,7 +1080,7 @@
 
                 var billData = this.billData;
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: billData.id ? "zftbatch_chgbill" : "zftbatch_addbill",
@@ -1115,7 +1116,7 @@
                 }
 
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "zftbatch_presubmit",
@@ -1154,7 +1155,7 @@
                 };
 
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "zftbatch_submit",
@@ -1203,7 +1204,7 @@
                 }
 
                 this.$axios({
-                    url: "/cfm/normal/excel/downExcel",
+                    url: this.queryUrl + "normal/excel/downExcel",
                     method: "post",
                     data: {
                         params: params
@@ -1239,7 +1240,7 @@
             showFlowDialog: function (workflow) {
                 this.lookFlowDialogVisible = true;
                 this.$axios({
-                    url: "/cfm/commProcess",
+                    url: this.queryUrl + "commProcess",
                     method: "post",
                     data: {
                         optype: "wfquery_wfdetail",
@@ -1273,7 +1274,7 @@
 
                 //获取汇总数据
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "zftbatch_batchbillattlist",

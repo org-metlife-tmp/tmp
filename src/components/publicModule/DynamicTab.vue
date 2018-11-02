@@ -112,6 +112,7 @@
         name: "DynamicTab",
         data: function () {
             return {
+                queryUrl: this.$store.state.queryUrl,
                 currentTitle: "标题错误",
                 loading: false,
                 childData:{},
@@ -147,7 +148,7 @@
             getRouterData:function(params){
                 this.loading = true;
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: params
                 }).then((result) => {
@@ -205,7 +206,7 @@
             //导出
             exportFun: function(routerMessage){
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: routerMessage.optype,

@@ -106,6 +106,7 @@
         props: ["tableData"],
         data: function(){
             return {
+                queryUrl: this.$store.state.queryUrl,
                 routerMessage: { //获取自身数据信息
                     optype: "jyt_hiswavelist",
                     params:{
@@ -158,7 +159,7 @@
                     acc_id = row.acc_id;
                 }
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "jyt_hiswavetopchart",

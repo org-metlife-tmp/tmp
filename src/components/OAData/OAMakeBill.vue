@@ -399,7 +399,7 @@
             if (params) {
                 params = params.split("=");
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "headorgoa_detail",
@@ -435,7 +435,7 @@
 
                         //获取付款方账号
                         this.$axios({
-                            url: "/cfm/normalProcess",
+                            url: this.queryUrl + "normalProcess",
                             method: "post",
                             data: {
                                 optype: "poolacc_getpoolaccinfo",
@@ -470,6 +470,7 @@
         },
         data: function () {
             return {
+                queryUrl: this.$store.state.queryUrl,
                 billData: {
                     pay_mode: "",
                     service_serial_number: "", //单据编号
@@ -563,7 +564,7 @@
                 params.files = this.fileList;
 
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "headorgoa_chg",
@@ -600,7 +601,7 @@
                 var params = this.billData;
 
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "headorgoa_presubmit",
@@ -643,7 +644,7 @@
                 };
 
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "headorgoa_submit",
@@ -674,7 +675,7 @@
             showFlowDialog:function(workflow){
                 this.lookFlowDialogVisible = true;
                 this.$axios({
-                    url: "/cfm/commProcess",
+                    url: this.queryUrl + "commProcess",
                     method: "post",
                     data: {
                         optype: "wfquery_wfdetail",
@@ -696,7 +697,7 @@
                         //将数据传递给子组件
                         this.flowList = define;
                         this.isEmptyFlow = false;
-                        
+
                     }
                 })
             },

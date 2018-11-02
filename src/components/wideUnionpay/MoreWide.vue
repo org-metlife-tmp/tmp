@@ -227,6 +227,7 @@
         props: ["tableData"],
         data:function(){
             return {
+                queryUrl: this.$store.state.queryUrl,
                 routerMessage: {
                     optype: "gylsetting_morebill",
                     params: {
@@ -301,7 +302,7 @@
                     type: 'warning'
                 }).then(() => {
                     this.$axios({
-                        url: "/cfm/normalProcess",
+                        url: this.queryUrl + "normalProcess",
                         method: "post",
                         data: {
                             optype: "gylsetting_del",
@@ -384,7 +385,7 @@
                     type: 'warning'
                 }).then(() => {
                     this.$axios({
-                        url: "/cfm/normalProcess",
+                        url:this.queryUrl + "normalProcess",
                         method: "post",
                         data: {
                             optype: "gylsetting_revoke",

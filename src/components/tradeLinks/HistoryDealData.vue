@@ -81,7 +81,7 @@
                 <template slot="append">
                     <el-upload
                         class="upload-demo"
-                        action="/cfm/normal/excel/upload"
+                        :action="queryUrl + 'normal/excel/upload'"
                         :headers="uploadHeaders"
                         multiple
                         accept=".xlsx,.xls"
@@ -114,6 +114,7 @@
         props: ["isPending"],
         data: function () {
             return {
+                queryUrl: this.$store.state.queryUrl,
                 currToken:"",
                 currentUpload:{},
                 uploadHeaders:{},
@@ -149,7 +150,7 @@
                     params.object_id = this.currentUpload.download_object_id;
                 }
                 this.$axios({
-                    url: "/cfm/normal/excel/downExcel",
+                    url: this.queryUrl + "normal/excel/downExcel",
                     method: "post",
                     data:{
                         params:params

@@ -83,7 +83,7 @@
             </li>
             <el-upload
                     class="upload-demo"
-                    action="/cfm/comm/attachment/upload"
+                    :action="queryUrl + 'comm/attachment/upload'"
                     :headers="{Authorization:currToken}"
                     multiple
                     :on-success="uploadSuccess"
@@ -107,6 +107,7 @@
         props:["emptyFileList","fileMessage","isPending","triggerFile"],
         data:function(){
             return {
+                queryUrl: this.$store.state.queryUrl,
                 currToken: "",
                 fileList: []
             }
@@ -139,7 +140,7 @@
             //下载
             downloadUpFile:function(objectId){
                 this.$axios({
-                    url:"/cfm/comm/attachment/download",
+                    url:this.queryUrl + "comm/attachment/download",
                     method: "post",
                     data: {
                         optype:"download",
@@ -178,7 +179,7 @@
             getFileList: function(){
                 var params = this.fileMessage;
                 this.$axios({
-                    url:"/cfm/commProcess",
+                    url:this.queryUrl + "commProcess",
                     method: "post",
                     data:{
                         optype: "attachment_list",

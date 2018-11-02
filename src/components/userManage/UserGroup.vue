@@ -129,7 +129,7 @@
         mounted:function(){
             //获取下拉框数据
             this.$axios({
-                url:"/cfm/adminProcess",
+                url:this.queryUrl + "adminProcess",
                 method: "post",
                 data: {
                     optype: "usrgroup_busmenu"
@@ -154,6 +154,7 @@
         props: ["tableData"],
         data: function () {
             return {
+                queryUrl: this.$store.state.queryUrl,
                 routerMessage: {
                     optype: "usrgroup_list",
                     params: {
@@ -228,7 +229,7 @@
                     type: 'warning'
                 }).then(() => {
                     this.$axios({
-                        url: "/cfm/adminProcess",
+                        url: this.queryUrl + "adminProcess",
                         method: "post",
                         data: {
                             optype: "usrgroup_del",
@@ -294,7 +295,7 @@
                         }
 
                         this.$axios({
-                            url: "/cfm/adminProcess",
+                            url: this.queryUrl + "adminProcess",
                             method: "post",
                             data: {
                                 optype: optype,
