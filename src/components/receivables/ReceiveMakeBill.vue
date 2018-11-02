@@ -561,6 +561,7 @@
         },
         data: function () {
             return {
+                queryUrl: this.$store.state.queryUrl,
                 dateValue: new Date(), //申请时间
                 billData: {
                     id:"",
