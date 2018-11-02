@@ -324,7 +324,7 @@
             //用户列表
             if (!window.sessionStorage.getItem("userList")) {
                 this.$axios({
-                    url:"/cfm/adminProcess",
+                    url:this.queryUrl + "adminProcess",
                     method: "post",
                     data: {
                         optype: "usrmenu_list",
@@ -356,6 +356,7 @@
         props: ["tableData"],
         data: function () {
             return {
+                queryUrl: this.$store.state.queryUrl,
                 routerMessage: {
                     optype: "usrmenu_list",
                     params: {
@@ -486,7 +487,7 @@
             //提交当前修改
             subCurrent: function () {
                 this.$axios({
-                    url: "/cfm/adminProcess",
+                    url: this.queryUrl + "adminProcess",
                     method: "post",
                     data: {
                         optype: "usrmenu_allot",
@@ -572,7 +573,7 @@
                     idList.push(item.uodp_id);
                 })
                 this.$axios({
-                    url:"/cfm/adminProcess",
+                    url:this.queryUrl + "adminProcess",
                     method: "post",
                     data: {
                         optype: "usrgroup_allot",

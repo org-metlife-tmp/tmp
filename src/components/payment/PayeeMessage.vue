@@ -258,6 +258,7 @@
         props: ["tableData"],
         data: function(){
             return {
+                queryUrl: this.$store.state.queryUrl,
                 routerMessage: { //本页数据获取参数
                     optype: "supplier_list",
                     params: {
@@ -395,7 +396,7 @@
                 if (query && query.trim()) {
                     this.loading = true;
                     this.$axios({
-                        url: "/cfm/commProcess",
+                        url: this.queryUrl + "commProcess",
                         method: "post",
                         data: {
                             optype: "area_list",
@@ -424,7 +425,7 @@
                     var bank_type = this.bankCorrelation.bankTypeName;
 
                     this.$axios({
-                        url: "/cfm/commProcess",
+                        url: this.queryUrl + "commProcess",
                         method: "post",
                         data: {
                             optype: "bank_list",
@@ -508,7 +509,7 @@
                         var params = this.dialogData;
 
                         this.$axios({
-                            url: "/cfm/normalProcess",
+                            url: this.queryUrl + "normalProcess",
                             method: "post",
                             data: {
                                 optype: this.dialogTitle == "新增" ? "supplier_add" : "supplier_chg",
@@ -558,7 +559,7 @@
                     type: 'warning'
                 }).then(() => {
                     this.$axios({
-                        url: "/cfm/normalProcess",
+                        url: this.queryUrl + "normalProcess",
                         method: "post",
                         data: {
                             optype: "supplier_del",

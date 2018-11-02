@@ -457,7 +457,7 @@
             }
             //归集账户
             this.$axios({
-                url: "/cfm/commProcess",
+                url: this.queryUrl + "commProcess",
                 method: "post",
                 data: {
                     optype: "account_normallist",
@@ -476,7 +476,7 @@
             if (params) {
                 params = params.split("=");
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "gylsetting_detail",
@@ -532,6 +532,7 @@
         },
         data: function () {
             return {
+                queryUrl: this.$store.state.queryUrl,
                 collectionData: { //表单数据
                     id: "",
                     persist_version: "",
@@ -842,7 +843,7 @@
                 var collectionData = this.collectionData;
 
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: collectionData.id ? "gylsetting_chg" : "gylsetting_add",
@@ -887,7 +888,7 @@
                 }
 
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "gylsetting_presubmit",
@@ -929,7 +930,7 @@
                 };
 
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "gylsetting_submit",
@@ -962,7 +963,7 @@
             showFlowDialog:function(workflow){
                 this.lookFlowDialogVisible = true;
                 this.$axios({
-                    url: "/cfm/commProcess",
+                    url: this.queryUrl + "commProcess",
                     method: "post",
                     data: {
                         optype: "wfquery_wfdetail",

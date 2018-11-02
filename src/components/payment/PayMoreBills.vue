@@ -627,7 +627,7 @@
 
             //获取付款方账户列表
             this.$axios({
-                url:"/cfm/commProcess",
+                url:this.queryUrl + "commProcess",
                 method:"post",
                 data:{
                     optype:"account_normallist",
@@ -646,7 +646,7 @@
 
             //业务类型
             this.$axios({
-                url:"/cfm/commProcess",
+                url:this.queryUrl + "commProcess",
                 method:"post",
                 data:{
                     optype:"biztype_biztypes",
@@ -692,6 +692,7 @@
         props: ["tableData"],
         data: function () {
             return {
+                queryUrl: this.$store.state.queryUrl,
                 routerMessage: {
                     optype: "zft_morebills",
                     params: {
@@ -815,7 +816,7 @@
                     var pay_mode = this.editDialogData.pay_mode;
                     //获取付款方账户列表
                     this.$axios({
-                        url:"/cfm/commProcess",
+                        url:this.queryUrl + "commProcess",
                         method:"post",
                         data:{
                             optype:"account_normallist",
@@ -837,7 +838,7 @@
             getPayerSelect: function(){
                 //获取收款方户名列表
                 this.$axios({
-                    url:"/cfm/normalProcess",
+                    url:this.queryUrl + "normalProcess",
                     method:"post",
                     data:{
                         optype:"zft_payacclist",
@@ -942,7 +943,7 @@
                     type: 'warning'
                 }).then(() => {
                     this.$axios({
-                        url: "/cfm/normalProcess",
+                        url: this.queryUrl + "normalProcess",
                         method: "post",
                         data: {
                             optype: "zft_delbill",
@@ -992,7 +993,7 @@
                     type: 'warning'
                 }).then(() => {
                     this.$axios({
-                        url: "/cfm/normalProcess",
+                        url: this.queryUrl + "normalProcess",
                         method: "post",
                         data: {
                             optype: "zft_revoke",
@@ -1150,7 +1151,7 @@
                 if (query && query.trim()) {
                     this.loading = true;
                     this.$axios({
-                        url: "/cfm/commProcess",
+                        url: this.queryUrl + "commProcess",
                         method: "post",
                         data: {
                             optype: "area_list",
@@ -1179,7 +1180,7 @@
                     var bank_type = this.bankDialogData.bankTypeName;
 
                     this.$axios({
-                        url: "/cfm/commProcess",
+                        url: this.queryUrl + "commProcess",
                         method: "post",
                         data: {
                             optype: "bank_list",
@@ -1308,7 +1309,7 @@
                 }
 
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "zft_chgbill",
@@ -1354,7 +1355,7 @@
                 }
 
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "zft_presubmit",
@@ -1396,7 +1397,7 @@
                 };
 
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "zft_submit",
@@ -1426,7 +1427,7 @@
             showFlowDialog:function(workflow){
                 this.lookFlowDialogVisible = true;
                 this.$axios({
-                    url: "/cfm/commProcess",
+                    url: this.queryUrl + "commProcess",
                     method: "post",
                     data: {
                         optype: "wfquery_wfdetail",

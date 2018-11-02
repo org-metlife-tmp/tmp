@@ -349,6 +349,7 @@
         props: ["tableData","gatherData"],
         data: function () {
             return {
+                queryUrl: this.$store.state.queryUrl,
                 routerMessage: { //本页数据获取参数
                     optype: "ydssdk_list",
                     params: {
@@ -503,7 +504,7 @@
             //查看详细信息
             lookParticular: function(row){
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "ydssdk_detail",

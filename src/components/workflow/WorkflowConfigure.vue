@@ -331,7 +331,7 @@
             }
             //业务  biztype_list
             this.$axios({
-                url: "/cfm/adminProcess",
+                url: this.queryUrl + "adminProcess",
                 method: "post",
                 data: {
                     optype: "biztype_list"
@@ -367,6 +367,7 @@
         },
         data: function () {
             return {
+                queryUrl: this.$store.state.queryUrl,
                 routerMessage: { //本页数据获取参数
                     optype: "wfdefine_list",
                     params: {
@@ -441,7 +442,7 @@
             //设置状态
             setStatus: function (row) {
                 this.$axios({
-                    url: "/cfm/adminProcess",
+                    url: this.queryUrl + "adminProcess",
                     method: "post",
                     data: {
                         optype: "wfdefine_setstatus",
@@ -482,7 +483,7 @@
             //配置流程弹框数据换页
             getSettingData: function (currPag) {
                 this.$axios({
-                    url: "/cfm/adminProcess",
+                    url: this.queryUrl + "adminProcess",
                     method: "post",
                     data: {
                         optype: "wfrelation_list",
@@ -609,7 +610,7 @@
                 }
 
                 this.$axios({
-                    url: "/cfm/adminProcess",
+                    url: this.queryUrl + "adminProcess",
                     method: "post",
                     data: {
                         optype: optype,
@@ -692,7 +693,7 @@
                     type: 'warning'
                 }).then(() => {
                     this.$axios({
-                        url: "/cfm/adminProcess",
+                        url: this.queryUrl + "adminProcess",
                         method: "post",
                         data: {
                             optype: "wfrelation_del",
@@ -753,7 +754,7 @@
             lookFlow: function (row) {
                 if (row.id) {
                     this.$axios({
-                        url: "/cfm/commProcess",
+                        url: this.queryUrl + "commProcess",
                         method: "post",
                         data: {
                             optype: "wfquery_wfdetail",

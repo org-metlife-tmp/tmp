@@ -195,7 +195,7 @@
         name: "WhiteContent",
         created: function () {
             this.$axios({
-                url: "/cfm/commProcess",
+                url: this.queryUrl + "commProcess",
                 method: "post",
                 data: {
                     optype: "org_curlist"
@@ -256,6 +256,7 @@
         },
         data: function () {
             return {
+                queryUrl: this.$store.state.queryUrl,
                 currentTitle: "",
                 childData: {},
                 loading: false,
@@ -291,7 +292,7 @@
 
                 this.loading = true;
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: routerData
                 }).then((result) => {
@@ -471,7 +472,7 @@
                 var params = this.curRouterParam.params;
                 params.org_id = user.curUodp.org_id;
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype:this.exportOptype,

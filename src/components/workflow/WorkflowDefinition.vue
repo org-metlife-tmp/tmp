@@ -2,7 +2,7 @@
     #workflowDefinition{
         /*搜索区*/
         .search-setion{
-            margin-bottom: 20px; 
+            margin-bottom: 20px;
             /*搜索区按钮*/
             .el-button--primary {
                 color: #fff;
@@ -11,7 +11,7 @@
                 border-radius: 0;
             }
         }
-        
+
         /*顶部按钮*/
         .button-list-right {
             position: absolute;
@@ -40,7 +40,7 @@
             border: none;
             padding: 0;
             vertical-align: middle;
-        }   
+        }
         /*增加规则弹出框的样式*/
         .dialog-svg{
             width: 50px;
@@ -259,9 +259,9 @@
                             height: 12px;
                             width: 12px;
                             line-height: 12px;
-                            right: 0px; 
+                            right: 0px;
                         }
-                    } 
+                    }
                 }
                 .showBtn{
                     display: inline-block!important;
@@ -516,7 +516,7 @@
                             <span class="userCheck iconBg" @click="changeOrgUser(item)"></span>
                         </div>
                         <div class="child-select">
-                            <div class="child-users-container">    
+                            <div class="child-users-container">
                                 <div class="child-users-source">
                                     <el-tag
                                         size="small"
@@ -529,9 +529,9 @@
                                         {{tag.name}}
                                     </el-tag>
                                 </div>
-                            </div> 
-                            <button class="iconBg left-icon scrBtn" @click="leftMove($event)"></button>     
-                            <button class="iconBg right-icon scrBtn" @click="rightMove($event)"></button> 
+                            </div>
+                            <button class="iconBg left-icon scrBtn" @click="leftMove($event)"></button>
+                            <button class="iconBg right-icon scrBtn" @click="rightMove($event)"></button>
                         </div>
                         <div class="child_add iconBg" @click="addChild(item.n_column,item.axis_x,item.item_id)"></div>
                         <div class="check_redirect iconBg" @click="selectFlow(item.n_column,item.item_id)"></div>
@@ -631,7 +631,7 @@ export default {
         this.$emit("getTableData", this.routerMessage);
 
         this.$axios({
-            url:"/cfm/adminProcess",
+            url: this.queryUrl + "adminProcess",
             method:"post",
             data:{
                 optype:"usr_list",
@@ -644,7 +644,7 @@ export default {
             this.user_list = result.data.data;
         });
         this.$axios({
-            url:"/cfm/adminProcess",
+            url: this.queryUrl + "adminProcess",
             method:"post",
             data:{
                 optype:"position_list",
@@ -656,7 +656,7 @@ export default {
         }).then((result) =>{
            this.position_list = result.data.data;
         })
-        
+
     },
     props:["tableData"],
     components: {
@@ -664,6 +664,7 @@ export default {
     },
     data:function(){
         return {
+            queryUrl: this.$store.state.queryUrl,
             routerMessage: {
                 optype:"wfdefine_list",
                 params: {
@@ -786,16 +787,16 @@ export default {
         },
         //打开下一步
         showNext:function(curdata){
-            
+
             if(curdata.workflow_name){
                 //关闭新建弹框
                 this.createDialogVisible = false;
 
-                var initalNum = curdata.lanes * 1;      
+                var initalNum = curdata.lanes * 1;
                 for(let i =0;i<initalNum;i++){
-                    let obj_design ={		
-                        axis_y:0,				
-                        n_row:"1", 
+                    let obj_design ={
+                        axis_y:0,
+                        n_row:"1",
                         isOrg:false,
                         curUser:"",
                         push_org:"",
@@ -822,12 +823,12 @@ export default {
                 this.design_data.push({item_id: "-2"});
 
                 this.nextStepDialogVisible = true;
-                
+
                 setTimeout(() =>{
                     this.jsplumb = jsPlumb.getInstance(this.lineStyle);
                     //初始化显示默认节点的位置
                     for (let j = 0;j<initalNum;j++){
-                        // var newLength = 0 ;   
+                        // var newLength = 0 ;
                         var curId = "item_" + this.design_data[j].item_id;
                         var firstChild = document.getElementById(curId);
                         firstChild.style.top = this.design_data[j].axis_y+ "px";
@@ -836,7 +837,7 @@ export default {
                             var sourceId = "root_box";
                         }else{
                             var sourceId = "item_" + j ;
-                        } 
+                        }
                         var targetId = "item_" + (j+1);
                         this.jsplumb.connect({
                             source: sourceId,
@@ -876,9 +877,9 @@ export default {
                             if(j===0){
                                 this.addRuleCurData.source_id = "-1";
                             }else{
-                                this.addRuleCurData.source_id = j + ""; 
+                                this.addRuleCurData.source_id = j + "";
                             }
-                            
+
                             this.addRuleCurData.item_id = this.design_data[j].item_id;
                             this.selectLineId = event.target.id;
                         }
@@ -895,7 +896,7 @@ export default {
                         this.jsplumb.draggable(targetId);
                         this.jsplumb.draggable("end_box");
                     }
-                },0) 
+                },0)
             }else{
                 this.$message({
                     type: "warning",
@@ -903,24 +904,24 @@ export default {
                     duration: 2000
                 })
                 return ;
-            }         
+            }
         },
         //点击创建第一列的节点
         creatFirst:function(){
-            
+
             //每点击一次该列数据增加一条
             var top = this.matrixArr[1].length * 180;
-            
+
             var list = this.design_data;
             var len = list.length - 2;
             var item_id = (len == 0) ? 1 : list[len-1].item_id*1 + 1;
             var newId = "item_" + item_id; //取最后一个元素的item_id
             this.matrixArr[1].push(item_id);
             //组织点数据,因为多了两条首尾数据，所以要在指定位置增加点数据
-            list.splice(len, 0, {axis_x: 200,			
-                axis_y: top,				
-                n_column: "1",			
-                n_row: this.matrixArr[1].length,			
+            list.splice(len, 0, {axis_x: 200,
+                axis_y: top,
+                n_column: "1",
+                n_row: this.matrixArr[1].length,
                 item_id: item_id + "",
                 isOrg:false,
                 curUser:"",
@@ -930,8 +931,8 @@ export default {
             //组织线数据
             this.line_data.push(
                 {
-                    d_source_id: "-1",	
-                    d_target_id: item_id+"",		
+                    d_source_id: "-1",
+                    d_target_id: item_id+"",
                     rule:""
                 }
             )
@@ -994,17 +995,17 @@ export default {
             var len = list.length - 2;//因为多了首尾两条数据
             var item_id = list[len-1].item_id*1 + 1;
             var curId = "item_" + id;
-            var newId = "item_" + item_id; 
+            var newId = "item_" + item_id;
             this.matrixArr[column+1] = this.matrixArr[column+1] ? this.matrixArr[column+1] : [];
             if(this.matrixArr[column+1] && this.matrixArr[column+1].length>0){//如果新增列有数据(不可能为0)
                 top = this.matrixArr[column+1].length * 180;
             }
             this.matrixArr[column+1].push(item_id);
             //组织点数据,因为多了两条首尾数据，所以要在指定位置增加点数据
-            list.splice(len, 0, {axis_x: left,			
-                axis_y: top,				
-                n_column: column + 1,			
-                n_row: this.matrixArr[column+1].length,			
+            list.splice(len, 0, {axis_x: left,
+                axis_y: top,
+                n_column: column + 1,
+                n_row: this.matrixArr[column+1].length,
                 item_id: item_id + "",
                 isOrg: false,
                 curUser: "",
@@ -1014,8 +1015,8 @@ export default {
             //组织线数据
             this.line_data.push(
                 {
-                    d_source_id: id,	
-                    d_target_id: item_id+"",		
+                    d_source_id: id,
+                    d_target_id: item_id+"",
                     rule:""
                 }
             )
@@ -1056,8 +1057,8 @@ export default {
                         }]
                     ]
                 })
-                
-                
+
+
                 document.getElementById("addRule_"+newLength).onclick=(event)=>{
                     //清空弹出框数据
                     this.addRuleCurData = {};
@@ -1237,9 +1238,9 @@ export default {
             //重复选择的判断
             if(item.data){
                 if(item.data.users && item.data.users.indexOf(id) > -1){
-                    flag = true; 
+                    flag = true;
                 }else if(item.data.position && item.data.position.indexOf(id) > -1){
-                    flag = true; 
+                    flag = true;
                 }
             }
 
@@ -1255,11 +1256,11 @@ export default {
             if(type === 'user'){
                 arrList = this.user_list;
                 key = "usr_id";
-            }else{ 
+            }else{
                 arrList = this.position_list;
                 key = "pos_id";
             }
-            
+
             let len = arrList.length;
             for(let i=0;i<len;i++){
                 if(arrList[i][key] === id){
@@ -1282,7 +1283,7 @@ export default {
                     let btn = curDom.getElementsByClassName("scrBtn");
                     btn[0].classList.add("showBtn");
                     btn[1].classList.add("showBtn");
-                } 
+                }
             },0)
             item.data = item.data ? item.data : {};
             if(item.isOrg){
@@ -1321,7 +1322,7 @@ export default {
                 let btn = curDom.getElementsByClassName("scrBtn");
                 btn[0].classList.remove("showBtn");
                 btn[1].classList.remove("showBtn");
-            } 
+            }
             if(conDomW - scrDomW + curWidth > 0){
                 curDom.getElementsByClassName("child-users-source")[0].style.marginLeft = 0 +"px";
             }else{
@@ -1333,13 +1334,13 @@ export default {
             item.isOrg = !item.isOrg;
             item.addUsers = [];
             item.data = {};
-            
+
             //组织点数据的时候得声明这两个变量，否则会造成选不上的诡异现象
             //这段代码造成选值有延迟，待解决
             item.curUser = "";
             if(item.isOrg){//切换为机构了
                 item.push_org = "0";
-            }  
+            }
         },
         //删除节点
         deleteNode:function(list,item,index,event){
@@ -1374,8 +1375,8 @@ export default {
                         this.matrixArr[i].forEach(element => {
                             arr.push({id:element+"",name:element});
                         });
-                        // this.select_flow = this.select_flow.concat(this.matrixArr[i]); 
-                        this.select_flow = this.select_flow.concat(arr); 
+                        // this.select_flow = this.select_flow.concat(this.matrixArr[i]);
+                        this.select_flow = this.select_flow.concat(arr);
                     }
                 }
             }
@@ -1418,8 +1419,8 @@ export default {
             //组织线数据
             this.line_data.push(
                 {
-                    d_source_id: this.selectFlowData.item_id,	
-                    d_target_id: targetId,		
+                    d_source_id: this.selectFlowData.item_id,
+                    d_target_id: targetId,
                     rule:""
                 }
             )
@@ -1486,7 +1487,7 @@ export default {
             }
             commitObj.workflow_name = this.createDialogData.workflow_name;
             commitObj.reject_strategy = this.createDialogData.reject_strategy;
-           
+
             commitObj.design_data = {};
             commitObj.design_data.lines = this.line_data;
             commitObj.design_data.nodes = this.design_data.slice(0,this.design_data.length-2); //去除最后两个元素
@@ -1501,7 +1502,7 @@ export default {
             }
 
             this.$axios({
-               url:"/cfm/adminProcess",
+               url: this.queryUrl + "adminProcess",
                 method:"post",
                 data:{
                     optype:"wfchart_add",
@@ -1514,7 +1515,7 @@ export default {
                         message: result.data.error_msg,
                         duration: 2000
                     });
-                    
+
                     return;
                 }else{
                     var data = result.data.data;
@@ -1534,7 +1535,7 @@ export default {
                     this.createDialogData.reject_strategy = "";
                     this.createDialogData.lanes = "";
                     this.curRow.workflow_name = data.workflow_name;
-                    
+
                     this.$message({
                         type: "success",
                         message: message,
@@ -1549,7 +1550,7 @@ export default {
             if(row.id){
                 this.curRow = row;
                 this.$axios({
-                    url:"/cfm/commProcess",
+                    url: this.queryUrl + "commProcess",
                     method:"post",
                     data:{
                         optype:"wfquery_wfdetail",
@@ -1570,9 +1571,9 @@ export default {
                         if(getData){
                             var define = getData.define;
                             if(type ==='copy'){
-                                this.flowBase.type = 'copy'; 
+                                this.flowBase.type = 'copy';
                             }else if(type ==='edit'){
-                                this.flowBase.type = 'edit'; 
+                                this.flowBase.type = 'edit';
                             }
                             //修改工作流需要的参数
                             this.flowBase.base_id = define.base_id;
@@ -1588,9 +1589,9 @@ export default {
                                即将在for循环中初始化的变量不会被渲染到页面上，curUser、push_org
                                会造成数据无法及时相应的情况
                              */
-                            
+
                             var nodes = define.nodes;
-                            
+
                             this.createDialogData.workflow_name = getData.workflow_name;
                             this.createDialogData.reject_strategy = define.reject_strategy;
 
@@ -1641,7 +1642,7 @@ export default {
                                 }
                                 //初始化线的位置，因为线可能比点多，所以不能共用循环
                                 let lineLen = this.line_data.length;
-                                for (let q = 0; q< lineLen; q++){ 
+                                for (let q = 0; q< lineLen; q++){
                                     var newLength = 0;//记录这是第几根线
                                     var clickObjId = "";//点击对象的id，是加号还是规则框
                                     var sourceId ,targetId;
@@ -1714,13 +1715,13 @@ export default {
                                     }
                                     this.jsplumb.draggable(targetId);
                                 }
-                            },0) 
+                            },0)
                         }
-                        
+
                     }
                 })
             }
-            
+
         },
         //删除工作流
         delFlow:function(row,index,rows){
@@ -1730,7 +1731,7 @@ export default {
                 type: 'warning'
             }).then(() =>{
                 this.$axios({
-                    url:"/cfm/adminProcess",
+                    url: this.queryUrl + "adminProcess",
                     method:"post",
                     data:{
                         optype:"wfdefine_del",
@@ -1812,7 +1813,7 @@ export default {
         lookFlow:function(row){
             if(row.id){
                this.$axios({
-                    url:"/cfm/commProcess",
+                    url: this.queryUrl + "commProcess",
                     method:"post",
                     data:{
                         optype:"wfquery_wfdetail",
@@ -1838,7 +1839,7 @@ export default {
                         this.flowList = define;
                         this.isEmptyFlow = false;
                     }
-                }) 
+                })
             }
         },
         //关闭查看工作流弹框
@@ -1867,7 +1868,7 @@ export default {
         }
     },
     computed: {
-        
+
     },
     watch: {
         tableData: function (val, oldVal) {

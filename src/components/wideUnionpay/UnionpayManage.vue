@@ -271,6 +271,7 @@
         props: ["tableData"],
         data:function(){
             return {
+                queryUrl: this.$store.state.queryUrl,
                 routerMessage: {
                     optype: "gylmanage_list",
                     params: {
@@ -314,7 +315,7 @@
             //激活
             activeCollect: function(row){
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "gylmanage_setstate",
@@ -354,7 +355,7 @@
                     type: 'warning'
                 }).then(() => {
                     this.$axios({
-                        url: "/cfm/normalProcess",
+                        url: this.queryUrl + "normalProcess",
                         method: "post",
                         data: {
                             optype: "gylmanage_cancel",

@@ -469,6 +469,7 @@
         props: ["isPending", "tableData"],
         data: function () {
             return {
+                queryUrl: this.$store.state.queryUrl,
                 routerMessage: {
                     todo: {
                         optype: "branchorgoa_oaTodoList",
@@ -639,7 +640,7 @@
                     type: 'warning'
                 }).then(() => {
                     this.$axios({
-                        url: "/cfm/normalProcess",
+                        url: this.queryUrl + "normalProcess",
                         method: "post",
                         data: {
                             optype: "branchorgoa_revoke",
@@ -687,7 +688,7 @@
                     inputErrorMessage: '请输入作废原因'
                 }).then(({ value }) => {
                     this.$axios({
-                        url: "/cfm/normalProcess",
+                        url: this.queryUrl + "normalProcess",
                         method: "post",
                         data: {
                             optype: "branchorgoa_payOff",
@@ -723,7 +724,7 @@
             //查看
             lookData: function (row) {
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "branchorgoa_detail",
@@ -778,7 +779,7 @@
                 }
                 this.getPayList(row.id);
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "branchorgoa_detail",
@@ -821,7 +822,7 @@
             getPayList: function(rowId) {
                 //获取付款账号列表
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "branchorgoa_accListByOrg",
@@ -853,7 +854,7 @@
                         var item = payList[i];
                         if (item.acc_id == payId) {
                             this.$axios({
-                                url: "/cfm/normalProcess",
+                                url: this.queryUrl + "normalProcess",
                                 method: "post",
                                 data: {
                                     optype: "branchorgoa_poolAccListByBankType",
@@ -890,7 +891,7 @@
                     if (valid) {
                         var params = this.eidtData;
                         this.$axios({
-                            url: "/cfm/normalProcess",
+                            url: this.queryUrl + "normalProcess",
                             method: "post",
                             data: {
                                 optype: "branchorgoa_chgBranchPayment",
@@ -928,7 +929,7 @@
                     if (valid) {
                         var params = this.eidtData;
                         this.$axios({
-                            url: "/cfm/normalProcess",
+                            url: this.queryUrl + "normalProcess",
                             method: "post",
                             data: {
                                 optype: "branchorgoa_presubmit",
@@ -973,7 +974,7 @@
                 };
 
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "branchorgoa_submit",
@@ -1013,7 +1014,7 @@
             showFlowDialog:function(workflow){
                 this.lookFlowDialogVisible = true;
                 this.$axios({
-                    url: "/cfm/commProcess",
+                    url: this.queryUrl + "commProcess",
                     method: "post",
                     data: {
                         optype: "wfquery_wfdetail",

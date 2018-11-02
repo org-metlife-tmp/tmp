@@ -218,6 +218,7 @@
         },
         data: function () {
             return {
+                queryUrl: this.$store.state.queryUrl,
                 companyName: "",
                 userName: "用户名",
                 showCompany: true,
@@ -349,7 +350,7 @@
 
                 //获取新数据
                 this.$axios({
-                    url: "/cfm/commProcess",
+                    url: this.queryUrl + "commProcess",
                     method: "post",
                     data: {
                         optype: "user_userinfo",
@@ -409,7 +410,7 @@
                             if (item.$current == "1" && item.id != dialogData.cur_uodp_id) {
                                 setCurrent = true;
                                 this.$axios({
-                                    url: "/cfm/commProcess",
+                                    url: this.queryUrl + "commProcess",
                                     method: "post",
                                     data: {
                                         optype: "user_switchuodp",
@@ -444,7 +445,7 @@
             //保存基本信息
             saveBaseInfo: function(){
                 this.$axios({
-                    url: "/cfm/commProcess",
+                    url: this.queryUrl + "commProcess",
                     method: "post",
                     data: {
                         optype: "user_chg",
@@ -492,7 +493,7 @@
                     if (valid) {
                         var passDialogData = this.passDialogData;
                         this.$axios({
-                            url: "/cfm/commProcess",
+                            url: this.queryUrl + "commProcess",
                             method: "post",
                             data: {
                                 optype: "user_chgpwd",

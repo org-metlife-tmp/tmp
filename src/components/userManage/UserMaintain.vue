@@ -282,7 +282,7 @@
             }
             //职位
             this.$axios({
-                url: "/cfm/adminProcess",
+                url: this.queryUrl + "adminProcess",
                 method: "post",
                 data: {
                     optype: "position_list",
@@ -310,6 +310,7 @@
         props: ["tableData"],
         data: function () {
             return {
+                queryUrl: this.$store.state.queryUrl,
                 routerMessage: {
                     optype: "usr_list",
                     params: {
@@ -441,7 +442,7 @@
             //修改用户状态
             setUserStatus: function (row) {
                 this.$axios({
-                    url: "/cfm/adminProcess",
+                    url: this.queryUrl + "adminProcess",
                     method: "post",
                     data: {
                         optype: "usr_setstatus",
@@ -477,7 +478,7 @@
                     type: 'warning'
                 }).then(() => {
                     this.$axios({
-                        url: "/cfm/adminProcess",
+                        url: this.queryUrl + "adminProcess",
                         method: "post",
                         data: {
                             optype: "usr_del",
@@ -656,7 +657,7 @@
                         }
 
                         this.$axios({
-                            url: "/cfm/adminProcess",
+                            url: this.queryUrl + "adminProcess",
                             method: "post",
                             data: {
                                 optype: optype,

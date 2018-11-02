@@ -246,7 +246,7 @@
 
             //获取待办列表数据
             this.$axios({
-                url: "/cfm/commProcess",
+                url: this.queryUrl + "commProcess",
                 method: "post",
                 data: {
                     optype: "wfquery_pendingtaskallnum",
@@ -283,6 +283,7 @@
         },
         data: function () {
             return {
+                queryUrl: this.$store.state.queryUrl,
                 currentAddress: "",
                 userName: "",
                 currentDate: new Date(),

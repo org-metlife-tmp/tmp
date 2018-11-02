@@ -153,6 +153,7 @@
         props: ["tableData"],
         data: function () {
             return {
+                queryUrl: this.$store.state.queryUrl,
                 routerMessage: {
                     biz_type : "9",
                     method_name : "billrefund",
@@ -252,7 +253,7 @@
                 this.currSelectData = val;
                 this.childList = [];
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: this.checkOptype,
@@ -306,7 +307,7 @@
                     type: 'warning'
                 }).then(() => {
                     this.$axios({
-                        url: "/cfm/normalProcess",
+                        url: this.queryUrl + "normalProcess",
                         method: "post",
                         data: {
                             optype: this.confirmOptype,
@@ -334,7 +335,7 @@
             getValidated: function (row) {
                 this.validatedList = [];
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: this.validatedOptype,

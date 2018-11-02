@@ -51,7 +51,7 @@
         .iconTime {
             background-position: -369px -62px;
         }
-        
+
     }
     /*弹框标题*/
     .dialog-title {
@@ -74,7 +74,7 @@
         position: absolute;
         right: -500px;
         transition: all 1.5s;
-    } 
+    }
 </style>
 
 <template>
@@ -143,15 +143,15 @@
                     size="mini">
                 <el-table-column prop="bill_code" label="单据编号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="start_time" label="申请日期" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="biz_type" label="业务种类" 
+                <el-table-column prop="biz_type" label="业务种类"
                                 :formatter="transitionStatus"
                                 :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="init_user_name" label="发起人" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="current" label="当前处理人"
-                                :formatter="rename" 
+                                :formatter="rename"
                                 :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="history_name" label="上级处理人" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="future" label="下级审批人"   
+                <el-table-column prop="future" label="下级审批人"
                                 :formatter="rename"
                                 :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column
@@ -188,7 +188,7 @@
                 @current-change="getCurrentPage"
                 @size-change="sizeChange">
             </el-pagination>
-        </div> 
+        </div>
         <!--查看工作流弹出框-->
         <el-dialog :visible.sync="lookFlowDialogVisible"
                    width="800px" title="新建流程"
@@ -221,7 +221,7 @@
                 @closeRightDialog="closeRightFlow"
             ></BusinessTracking>
         </div>
-        
+
     </div>
 </template>
 
@@ -245,7 +245,7 @@ import BusinessTracking from "../publicModule/BusinessTracking.vue"
                 })
             }
             this.businessType = businessTypeArr;
-            
+
         },
         props: ["tableData"],
         components:{
@@ -254,6 +254,7 @@ import BusinessTracking from "../publicModule/BusinessTracking.vue"
         },
         data: function () {
             return {
+                queryUrl: this.$store.state.queryUrl,
                 routerMessage: { //本页数据获取参数
                     optype: "wftrace_list",
                     params: {
@@ -329,7 +330,7 @@ import BusinessTracking from "../publicModule/BusinessTracking.vue"
                     type: 'warning'
                 }).then(() => {
                     this.$axios({
-                        url: "/cfm/adminProcess",
+                        url: this.queryUrl + "adminProcess",
                         method: "post",
                         data: {
                             optype: "wftrace_approvrevoke",
@@ -378,7 +379,7 @@ import BusinessTracking from "../publicModule/BusinessTracking.vue"
             lookFlow:function(row){
                 if(row.id){
                     this.$axios({
-                            url:"/cfm/commProcess",
+                            url: this.queryUrl + "commProcess",
                             method:"post",
                             data:{
                                 optype:"wfquery_wfdetail",

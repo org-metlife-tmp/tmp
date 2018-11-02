@@ -112,6 +112,7 @@
         name: "TabContent",
         data: function () {
             return {
+                queryUrl: this.$store.state.queryUrl,
                 currentTitle: "标题错误",
                 loading: false,
                 childData:{},
@@ -134,9 +135,9 @@
                 }
             },
             getRouterData:function(params){
-                var url ="/cfm/normalProcess";
+                var url =this.queryUrl + "normalProcess";
                 if(params.optype ==='wfquery_pendingtasksall'||params.optype ==='wfquery_processtasksall'){
-                    url ="/cfm/commProcess";
+                    url =this.queryUrl + "commProcess";
                 }
                 this.loading = true;
                 this.$axios({

@@ -67,6 +67,7 @@
         name: "EmptyContent",
         data: function () {
             return {
+                queryUrl: this.$store.state.queryUrl,
                 currentTitle: "",
                 childData: {},
                 childGatherData: {},
@@ -82,7 +83,7 @@
                 }
                 var temporaryThis = this;
                 this.$axios({
-                    url: "/cfm/adminProcess",
+                    url: this.queryUrl + "adminProcess",
                     method: "post",
                     data: currParams
                 }).then((result) => {
@@ -110,7 +111,7 @@
                 }
                 var temporaryThis = this;
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: currParams
                 }).then((result) => {
@@ -136,7 +137,7 @@
                     currParams[k] = routerData[k];
                 }
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: currParams
                 }).then((result) => {
@@ -161,7 +162,7 @@
                     currParams[k] = loadData[k];
                 }
                 this.$axios({
-                    url:"/cfm/normalProcess",
+                    url:this.queryUrl + "normalProcess",
                     method: "post",
                     data: currParams,
                     responseType: 'blob'
@@ -194,7 +195,7 @@
             //导出
             exportFun: function(routerMessage){
                 this.$axios({
-                    url: "/cfm/normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: routerMessage.optype,
