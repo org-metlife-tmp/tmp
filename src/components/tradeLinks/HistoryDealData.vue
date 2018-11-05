@@ -203,9 +203,9 @@
                 var url = "";
                 if(this.isPending){
                     url = this.queryUrl + 'normal/jyt/curTransImport';
-                    params.inport_type = this.inportType;
                 }else{
                     url = this.queryUrl + 'normal/jyt/hisTransImport';
+                    params.inport_type = this.inportType;
                 }
 
                 this.$axios({
