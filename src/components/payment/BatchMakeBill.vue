@@ -596,7 +596,7 @@
                 <div class="error-name">文档内容不符合要求</div>
                 <a class="downLoad" href="javascript:;"
                    @click="templateDownLoad(currentUpload.download_object_id)"
-                   v-text="'/cfm/normal/excel/downExcel?object_id='+currentUpload.download_object_id"
+                   v-text="queryUrl + 'normal/excel/downExcel?object_id='+currentUpload.download_object_id"
                 ></a>
             </div>
             <div class="dialog-upload-input">

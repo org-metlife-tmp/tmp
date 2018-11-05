@@ -184,7 +184,7 @@
             //获取上部分数据
             getTopData: function(){
                 this.$axios({
-                    url: "cfm/refundProcess",
+                    url: this.queryUrl + "refundProcess",
                     method: "post",
                     data: {
                         params:this.routerMessage

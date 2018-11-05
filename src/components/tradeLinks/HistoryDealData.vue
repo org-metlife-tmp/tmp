@@ -81,7 +81,7 @@
             <div class="error-name">文档内容不符合要求</div>
             <a class="downLoad" href="javascript:;"
                 @click = "downLoadExcel"
-               v-text="'/cfm/normal/excel/downExcel?object_id='+currentUpload.download_object_id"
+               v-text="queryUrl+'normal/excel/downExcel?object_id='+currentUpload.download_object_id"
             ></a>
         </div>
         <div class="modeUpload">
@@ -196,7 +196,7 @@
                 });
             },
             subConfirm: function (){
-                var url = this.isPending ? '/cfm/normal/jyt/curTransImport' : '/cfm/normal/jyt/hisTransImport';
+                var url = this.queryUrl + (this.isPending ? 'normal/jyt/curTransImport' : 'normal/jyt/hisTransImport');
                 var currentUpload = this.currentUpload;
                 this.$axios({
                     url: url,
