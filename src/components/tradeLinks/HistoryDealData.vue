@@ -50,6 +50,10 @@
             }
         }
 
+        .select-way{
+            text-align: left;
+            padding-left: 60px;
+        }
     }
 </style>
 <style lang="less">
@@ -63,6 +67,12 @@
 
 <template>
     <div id="historyDealData">
+        <div class="select-way">
+            <el-select v-model="inportType" size="mini" @change="uploadHeaders.inport_type=$event">
+                <el-option label="覆盖导入" value="1"></el-option>
+                <el-option label="增量导入" value="2"></el-option>
+            </el-select>
+        </div>
         <div class="dataBox" v-show="!isPending">
             <div class="title-text">导入范围</div>
             <div class="title-content">截止到{{limitDate}}</div>
@@ -117,9 +127,12 @@
                 queryUrl: this.$store.state.queryUrl,
                 currToken:"",
                 currentUpload:{},
-                uploadHeaders:{},
+                uploadHeaders:{
+                    inport_type: "1"
+                },
                 errorTipShow: false,
                 limitDate:"",
+                inportType: "1"
             }
         },
         methods: {
