@@ -205,7 +205,7 @@
                     url = this.queryUrl + 'normal/jyt/curTransImport';
                 }else{
                     url = this.queryUrl + 'normal/jyt/hisTransImport';
-                    params.inport_type = this.inportType;
+                    params.import_type = this.inportType;
                 }
 
                 this.$axios({
@@ -222,7 +222,7 @@
                             duration: 2000
                         })
                     } else {
-                        this.currentUpload = {};
+                        this.currentUpload = {} ;
                         this.$message({
                             type: "success",
                             message: "确认成功",
