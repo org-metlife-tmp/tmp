@@ -67,8 +67,8 @@
 
 <template>
     <div id="historyDealData">
-        <div class="select-way">
-            <el-select v-model="inportType" size="mini" @change="uploadHeaders.inport_type=$event">
+        <div class="select-way" v-show="!isPending">
+            <el-select v-model="inportType" size="mini">
                 <el-option label="覆盖导入" value="1"></el-option>
                 <el-option label="增量导入" value="2"></el-option>
             </el-select>
@@ -128,7 +128,6 @@
                 currToken:"",
                 currentUpload:{},
                 uploadHeaders:{
-                    inport_type: "1"
                 },
                 errorTipShow: false,
                 limitDate:"",
@@ -196,13 +195,24 @@
                 });
             },
             subConfirm: function (){
-                var url = this.queryUrl + (this.isPending ? 'normal/jyt/curTransImport' : 'normal/jyt/hisTransImport');
+                var params = {};
                 var currentUpload = this.currentUpload;
+                for(var k in currentUpload){
+                    params[k] = currentUpload[k];
+                }
+                var url = "";
+                if(this.isPending){
+                    url = this.queryUrl + 'normal/jyt/curTransImport';
+                    params.inport_type = this.inportType;
+                }else{
+                    url = this.queryUrl + 'normal/jyt/hisTransImport';
+                }
+
                 this.$axios({
                     url: url,
                     method: "post",
                     data:{
-                        params: currentUpload
+                        params: params
                     }
                 }).then((result) => {
                     if (result.data.error_msg) {
