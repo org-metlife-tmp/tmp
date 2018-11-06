@@ -73,13 +73,15 @@
                 <el-table-column prop="acc_attr_name" label="账户性质" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="bank_type_name" label="银行大类" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="bank_name" label="开户行" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="bal" label="当前余额" :show-overflow-tooltip="true" width="100px"></el-table-column>
-                <el-table-column prop="hisbal" label="期初余额" :show-overflow-tooltip="true" width="100px"></el-table-column>
+                <el-table-column prop="bal" label="当前余额" :show-overflow-tooltip="true" width="100px"
+                                 :formatter="transitAmount"></el-table-column>
+                <el-table-column prop="hisbal" label="期初余额" :show-overflow-tooltip="true" width="100px"
+                                 :formatter="transitAmount"></el-table-column>
                 <el-table-column prop="import_time" label="同步时间" :show-overflow-tooltip="true"></el-table-column>
             </el-table>
             <div class="allData">
                 <span>合计：</span>
-                <span v-text="recvAll" class="numText"></span>
+                <span v-text="this.$common.transitSeparator(recvAll)" class="numText"></span>
             </div>
         </div>
         <!--分页-->
@@ -142,6 +144,10 @@
             }
         },
         methods: {
+            //展示格式转换-金额
+            transitAmount: function (row, column, cellValue, index) {
+                return this.$common.transitSeparator(cellValue);
+            },
             //点击页数 获取当前页数据
             getCurrentPage: function (currPage) {
                 this.routerMessage.params.page_num = currPage;

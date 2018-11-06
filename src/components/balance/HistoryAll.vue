@@ -121,11 +121,12 @@
                       max-height="362px">
                 <el-table-column prop="name" label="公司名称" v-if="btActive" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="name" label="银行名称" v-else :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="bal" label="余额" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="bal" label="余额" :show-overflow-tooltip="true"
+                                 :formatter="transitAmount"></el-table-column>
             </el-table>
             <div class="allData">
                 <span>合计：</span>
-                <span v-text="recvAll" class="numText"></span>
+                <span v-text="this.$common.transitSeparator(recvAll)" class="numText"></span>
             </div>
         </div>
         <!-- 分页-->
@@ -226,6 +227,10 @@
             CakePicture: CakePicture
         },
         methods: {
+            //展示格式转换-金额
+            transitAmount: function (row, column, cellValue, index) {
+                return this.$common.transitSeparator(cellValue);
+            },
             //点击页数 获取当前页数据
             getCurrentPage: function (currPage) {
                 this.routerMessage.params.page_num = currPage;

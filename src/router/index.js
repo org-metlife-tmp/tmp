@@ -121,6 +121,7 @@ import OAMakeBill from '@/components/OAData/OAMakeBill'
 import SuspiciousData from '@/components/OAData/SuspiciousData'
 //退票管理
 import RefundDispose from '@/components/RefundTicket/RefundDispose'
+import SuspiciousRefund from '@/components/RefundTicket/SuspiciousRefund'
 
 
 
@@ -231,6 +232,7 @@ const router = new Router({
                         {path: '/OA-data/suspicious-data', name: 'SuspiciousData', component: SuspiciousData, meta: {requireAuth: true}},
                         //退票管理
                         {path: '/refund-ticket/refund-dispose', name: 'RefundDispose', component: RefundDispose, meta: {requireAuth: true}},
+                        {path: '/refund-ticket/suspicious-refund', name: 'SuspiciousRefund', component: SuspiciousRefund, meta: {requireAuth: true}},
                     ]
                 },
                 //基础样式三（tab页）

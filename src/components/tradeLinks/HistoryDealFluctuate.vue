@@ -53,9 +53,12 @@
                       max-height="397px">
                 <el-table-column prop="acc_no" label="账户号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="org_name" label="公司名称" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="recv" label="收入" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="pay" label="支出" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="netrecv" label="净收支" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="recv" label="收入" :show-overflow-tooltip="true"
+                                 :formatter="transitAmount"></el-table-column>
+                <el-table-column prop="pay" label="支出" :show-overflow-tooltip="true"
+                                 :formatter="transitAmount"></el-table-column>
+                <el-table-column prop="netrecv" label="净收支" :show-overflow-tooltip="true"
+                                 :formatter="transitAmount"></el-table-column>
             </el-table>
         </div>
         <!--分页部分-->
@@ -129,6 +132,10 @@
             }
         },
         methods: {
+            //展示格式转换-金额
+            transitAmount: function (row, column, cellValue, index) {
+                return this.$common.transitSeparator(cellValue);
+            },
             //点击页数 获取当前页数据
             getCurrentPage: function (currPage) {
                 this.routerMessage.params.page_num = currPage;

@@ -76,18 +76,19 @@
                 </el-table-column>
                 <el-table-column prop="opp_acc_no" label="对方账户号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="opp_acc_name" label="对方账户名称" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="amount" label="交易金额" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="amount" label="交易金额" :show-overflow-tooltip="true"
+                                 :formatter="transitAmount"></el-table-column>
                 <el-table-column prop="summary" label="摘要" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="trans_date" label="交易日期" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="trans_time" label="交易时间" :show-overflow-tooltip="true"></el-table-column>
             </el-table>
             <div class="allData">
                 <span>收入合计：</span>
-                <span v-text="recvAll" class="numText"></span>
+                <span v-text="this.$common.transitSeparator(recvAll)" class="numText"></span>
                 <span>支出合计：</span>
-                <span v-text="payAll" class="numText"></span>
+                <span v-text="this.$common.transitSeparator(payAll)" class="numText"></span>
                 <span>净收支合计：</span>
-                <span v-text="netrecvAll" class="numText"></span>
+                <span v-text="this.$common.transitSeparator(netrecvAll)" class="numText"></span>
             </div>
         </div>
         <!--分页部分-->
@@ -164,6 +165,10 @@
             }
         },
         methods: {
+            //展示格式转换-金额
+            transitAmount: function (row, column, cellValue, index) {
+                return this.$common.transitSeparator(cellValue);
+            },
             //展示格式转换-收付方向
             // transitionDirection: function (row, column, cellValue, index) {
             //     var constants = JSON.parse(window.sessionStorage.getItem("constants"));

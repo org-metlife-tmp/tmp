@@ -109,17 +109,20 @@
                 <el-table-column prop="name" label="银行名称" :show-overflow-tooltip="true"
                                  v-if="btActive.bankActive" ></el-table-column>
 
-                <el-table-column prop="totalrecv" label="收入" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="totalpay" label="支出" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="totalnetrecv" label="净收支" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="totalrecv" label="收入" :show-overflow-tooltip="true"
+                                 :formatter="transitAmount"></el-table-column>
+                <el-table-column prop="totalpay" label="支出" :show-overflow-tooltip="true"
+                                 :formatter="transitAmount"></el-table-column>
+                <el-table-column prop="totalnetrecv" label="净收支" :show-overflow-tooltip="true"
+                                 :formatter="transitAmount"></el-table-column>
             </el-table>
             <div class="allData">
                 <span>收入合计：</span>
-                <span v-text="recvAll" class="numText"></span>
+                <span v-text="this.$common.transitSeparator(recvAll)" class="numText"></span>
                 <span>支出合计：</span>
-                <span v-text="payAll" class="numText"></span>
+                <span v-text="this.$common.transitSeparator(payAll)" class="numText"></span>
                 <span>净收支合计：</span>
-                <span v-text="netrecvAll" class="numText"></span>
+                <span v-text="this.$common.transitSeparator(netrecvAll)" class="numText"></span>
             </div>
         </div>
         <!--分页部分-->
@@ -195,6 +198,10 @@
             }
         },
         methods: {
+            //展示格式转换-金额
+            transitAmount: function (row, column, cellValue, index) {
+                return this.$common.transitSeparator(cellValue);
+            },
             //点击页数 获取当前页数据
             getCurrentPage: function (currPage) {
                 this.routerMessage.params.page_num = currPage;
