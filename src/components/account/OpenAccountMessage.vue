@@ -720,6 +720,10 @@
                 pagCurrent: 1,
                 dialogVisible: false,
                 dialogData: {
+                    acc_no: "",
+                    acc_name: "",
+                    org_name: "",
+                    lawfull_man: "",
                     interactive_mode: "",
                     bank_cnaps_code: "",
                     curr_id: "",
@@ -727,6 +731,8 @@
                     acc_attr: "",
                     acc_purpose: "",
                     interactive_mode: "",
+                    reserved_seal: "",
+                    memo: "",
                     files: []
                 },
                 //校验规则设置
@@ -1257,7 +1263,7 @@
                         //将数据传递给子组件
                         this.flowList = define;
                         this.isEmptyFlow = false;
-                        
+
                     }
                 })
             },

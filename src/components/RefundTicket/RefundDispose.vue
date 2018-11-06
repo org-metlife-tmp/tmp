@@ -145,7 +145,7 @@
                            :value="key">
                 </el-option>
             </el-select>
-            <el-button type="warning" size="mini" @click="confirmCheck">退票确认</el-button>
+            <el-button type="warning" size="mini" @click="confirmCheck">确认退票</el-button>
             <div style="float:right;display:inline-block;width:60px;height:12px"></div>
             <el-pagination
                     background
@@ -162,17 +162,19 @@
         <!--主数据关联数据-->
         <section class="table-content" style="margin-top:40px">
             <el-table :data="childList" border
+                      highlight-current-row
                       height="100%" size="mini"
-                      @selection-change="selectChange">
-                <el-table-column type="selection" width="38"></el-table-column>
-                <el-table-column prop="acc_no" label="账户号" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="acc_name" label="账户名称" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="bank_name" label="开户行" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="direction" label="收付方向" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="opp_acc_no" label="对方账户号" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="opp_acc_name" label="对方账户名称" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="amount" label="交易金额" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="summary" label="摘要" :show-overflow-tooltip="true"></el-table-column>
+                      @current-change="selectData = $event || {}">
+                <el-table-column prop="service_serial_number" label="单据编号" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="pay_account_no" label="付款方账号" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="pay_account_name" label="付款方账户名称" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="pay_account_bank" label="付款方开户行" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="recv_account_no" label="收款方账户号" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="recv_account_name" label="收款方账户名称" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="recv_account_bank" label="收款方开户行" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="payment_summary" label="摘要" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="payment_amount" label="金额" :show-overflow-tooltip="true"
+                                 :formatter="transitAmount"></el-table-column>
             </el-table>
         </section>
     </div>
@@ -232,13 +234,7 @@
                     "21": "OA分公司付款"
                 }, //业务类型
                 bizType: "",
-
-                confirmOptype: "",
-                validatedOptype: "",
-
-                validatedList: [],
-
-                selectData: [], //待管理数据选中数据
+                selectData: {}, //底部数据选中数据
             }
         },
         methods: {
@@ -266,14 +262,15 @@
             getCurrentPage: function (currPage) {
                 this.routerMessage.params.page_num = currPage;
                 this.$emit("getCommTable", this.routerMessage);
+                this.childList = [];
             },
             //当前页数据条数发生变化
             sizeChange: function (val) {
                 this.routerMessage.params.page_num = 1;
                 this.routerMessage.params.page_size = val;
                 this.$emit("getCommTable", this.routerMessage);
+                this.childList = [];
             },
-
             //获取当前数据对应的单据数据
             getCheckData: function (val) {
                 if (!val) {
@@ -338,32 +335,30 @@
                 })
             },
 
-            //列表选择框改变后
-            selectChange: function (val) {
-                this.selectData = [];
-                for (var i = 0; i < val.length; i++) {
-                    this.selectData.push(val[i].id);
-                }
-            },
-            //确认核对
+            //确认退票
             confirmCheck: function () {
-                //校验是否选择核对数据
-                if (this.selectData.length == 0) {
+                var currSelectData = this.currSelectData;
+                var selectData = this.selectData;
+
+                //校验是否选择退票数据
+                if(JSON.stringify(currSelectData) == "{}" || JSON.stringify(selectData) == "{}"){
                     this.$message({
                         type: "warning",
-                        message: "请选择核对数据",
+                        message: "请选择要退票的数据",
                         duration: 2000
                     });
                     return;
                 }
-                var currSelectData = this.currSelectData;
                 var params = {
-                    bill_id: currSelectData.id,
-                    persist_version: currSelectData.persist_version,
-                    trade_id: this.selectData
+                    biz_type: this.bizType,
+                    trade_id: currSelectData.trade_id,
+                    bill_id: selectData.bill_id,
+                    bill_persist_version: selectData.bill_persist_version,
+                    detail_id: selectData.detail_id,
+                    detail_persist_version: selectData.detail_persist_version
                 }
 
-                this.$confirm('确认核对当前选择数据吗?', '提示', {
+                this.$confirm('确认对当前数据进行退票处理吗?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'warning'
@@ -372,7 +367,7 @@
                         url: this.queryUrl + "normalProcess",
                         method: "post",
                         data: {
-                            optype: this.confirmOptype,
+                            optype: "refund_confirm",
                             params: params
                         }
                     }).then((result) => {
@@ -384,7 +379,12 @@
                             })
                         } else {
                             var data = result.data.data;
-                            this.$emit("getTableData", this.routerMessage);
+                            this.$message({
+                                type: "success",
+                                message: "退票成功",
+                                duration: 2000
+                            });
+                            this.$emit("getCommTable", this.routerMessage);
                             this.childList = [];
                         }
                     }).catch(function (error) {
@@ -392,34 +392,7 @@
                     });
                 }).catch(() => {
                 });
-            },
-            //获取已核对数据的关联数据
-            getValidated: function (row) {
-                this.validatedList = [];
-                this.$axios({
-                    url: this.queryUrl + "normalProcess",
-                    method: "post",
-                    data: {
-                        optype: this.validatedOptype,
-                        params: {
-                            id: row.id
-                        }
-                    }
-                }).then((result) => {
-                    if (result.data.error_msg) {
-                        this.$message({
-                            type: "error",
-                            message: result.data.error_msg,
-                            duration: 2000
-                        })
-                    } else {
-                        var data = result.data.data;
-                        this.validatedList = data;
-                    }
-                }).catch(function (error) {
-                    console.log(error);
-                })
-            },
+            }
         },
         watch: {
             tableData: function (val, oldVal) {
