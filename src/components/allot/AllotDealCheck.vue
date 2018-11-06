@@ -446,6 +446,7 @@
                             })
                         } else {
                             var data = result.data.data;
+                            row.list = [];
                             this.$set(row,'list',data);
                         }
                     }).catch(function (error) {
