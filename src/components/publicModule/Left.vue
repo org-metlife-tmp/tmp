@@ -559,14 +559,14 @@
                     <el-menu-item index="/payment/deal-check?bizType=20" v-if="menuList.OACheck">交易核对</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="18">
+            <el-submenu index="18" v-if="menuList.TPGL">
                 <template slot="title" height="200px">
                     <i class="icon-tpgl"></i>
                     <p class="mg-four">退票管理</p>
                 </template>
                 <el-menu-item-group>
-                    <el-menu-item index="/refund-ticket/refund-dispose">主动退票</el-menu-item>
-                    <el-menu-item index="/refund-ticket/suspicious-refund">可疑退票</el-menu-item>
+                    <el-menu-item index="/refund-ticket/refund-dispose" v-if="menuList.ActiveRefund">主动退票</el-menu-item>
+                    <el-menu-item index="/refund-ticket/suspicious-refund" v-if="menuList.DoubtfulRefund">可疑退票</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
             <!--
@@ -729,6 +729,10 @@
 
                     ELECTB: false, //电子回单
                     ElectronicBillMgr: false, //电子回单
+
+                    TPGL: false, //退票管理
+                    ActiveRefund: false, //主动退票
+                    DoubtfulRefund: false, //可疑退票
                 }
             }
         },
