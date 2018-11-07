@@ -341,19 +341,19 @@
                         <el-row>
                             <el-col :span="6">
                                 <el-form-item>
-                                    <el-input v-model="searchDetailData.recv_query_key" clearable
+                                    <el-input v-model="searchDetailData.query_key" clearable
                                               placeholder="请输入收款方名称或账号"></el-input>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="8">
                                 <el-form-item>
                                     <el-col :span="11">
-                                        <el-input v-model="searchDetailData.min" clearable
+                                        <el-input v-model="searchDetailData.min_amount" clearable
                                                   placeholder="最小金额"></el-input>
                                     </el-col>
                                     <el-col class="line" :span="2">-</el-col>
                                     <el-col :span="11">
-                                        <el-input v-model="searchDetailData.max" clearable
+                                        <el-input v-model="searchDetailData.max_amount" clearable
                                                   placeholder="最大金额"></el-input>
                                     </el-col>
                                 </el-form-item>
