@@ -26,19 +26,19 @@
             text-underline: none;
             font-family: "Microsoft YaHei";
         }
-        html { visibility:hidden; }  
+        html { visibility:hidden; }
 
     </style>
+    <script type="text/javascript">
+        if( self == top){
+            document.documentElement.style.visibility='visible';
+        }else{
+            top.location = self.location;
+        }
+    </script>
 </head>
 <body>
 <div id="app"></div>
 <!-- built files will be auto injected -->
 </body>
-<script>
-     if( self == top){  
-             document.documentElement.style.visibility='visible';  
-     }else{  
-             top.location = self.location;  
-     }  
-</script>
 </html>
