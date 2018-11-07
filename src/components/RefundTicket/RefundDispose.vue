@@ -165,7 +165,7 @@
                       highlight-current-row
                       height="100%" size="mini"
                       @current-change="selectData = $event || {}">
-                <el-table-column prop="service_serial_number" label="单据编号" :show-overflow-tooltip="true"></el-table-column>
+                <!--<el-table-column prop="service_serial_number" label="单据编号" :show-overflow-tooltip="true"></el-table-column>-->
                 <el-table-column prop="pay_account_no" label="付款方账号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="pay_account_name" label="付款方账户名称" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="pay_account_bank" label="付款方开户行" :show-overflow-tooltip="true"></el-table-column>
