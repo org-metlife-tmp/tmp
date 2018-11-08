@@ -433,10 +433,9 @@
             },
             //当前页数据条数发生变化
             sizeChange: function (val) {
-                this.routerMessage.params = {
-                    page_size: val,
-                    page_num: "1"
-                };
+                this.routerMessage.params.page_size = val;
+                this.routerMessage.params.page_num = 1;
+
                 this.$emit("getTableData", this.routerMessage);
             },
             //设置状态

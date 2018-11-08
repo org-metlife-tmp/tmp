@@ -418,16 +418,14 @@
             },
             //当前页数据条数发生变化
             sizeChange: function (val) {
-                this.routerMessage.todo.params = {
-                    page_size: val,
-                    page_num: 1,
-                    is_checked: 0
-                };
-                this.routerMessage.done.params = {
-                    page_size: val,
-                    page_num: 1,
-                    is_checked: 1
-                };
+                this.routerMessage.todo.params.page_size = val;
+                this.routerMessage.params.page_num = 1;
+                this.routerMessage.todo.params.is_checked = 0;
+
+                this.routerMessage.done.params.page_size = val;
+                this.routerMessage.done.params.page_num = 1;
+                this.routerMessage.done.params.is_checked = 1;
+
                 this.$emit("getTableData", this.routerMessage);
             },
             //获取当前数据对应的核对数据
@@ -529,10 +527,10 @@
                 *   2.1 手动关闭某一行(expandedRows.length ==0)
                 *   2.2 打开第二行导致原展开行关闭(expandedRows.length == 1 && row != expandedRows[0])
                 * */
-                if(expandedRows.length == 0 || (expandedRows.length == 1 && row != expandedRows[0])){ //关闭全部行
+                if(expandedRows.length == 0 || (expandedRows.length == 1 && row != expandedRows[0])){ //关闭行
                     return;
                 }
-                if(expandedRows.length == 2){
+                if(expandedRows.length == 2){ //展开第二行
                     for(var i = 0; i < expandedRows.length; i++){
                         var item = expandedRows[i];
                         if(row != item){
