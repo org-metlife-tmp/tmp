@@ -624,12 +624,12 @@
             },
             //获取户名和账号的下拉列表值
             getPayerSelect: function(){
-                //获取收款方户名列表
+                //获取付款方户名列表
                 this.$axios({
                     url:this.queryUrl + "normalProcess",
                     method:"post",
                     data:{
-                        optype:"zft_payacclist",
+                        optype:"zft_recvacclist",
                         params:{
                             page_num:1,
                             page_size: 10000

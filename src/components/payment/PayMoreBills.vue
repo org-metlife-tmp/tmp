@@ -841,7 +841,7 @@
                     url:this.queryUrl + "normalProcess",
                     method:"post",
                     data:{
-                        optype:"zft_payacclist",
+                        optype:"zft_recvacclist",
                         params:{
                             page_num:1,
                             page_size: 10000
