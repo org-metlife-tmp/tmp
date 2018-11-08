@@ -1085,14 +1085,10 @@
             },
             //当前页数据条数发生变化
             sizeChange: function (val) {
-                this.routerMessage.todo.params = {
-                    page_size: val,
-                    page_num: 1
-                };
-                this.routerMessage.done.params = {
-                    page_size: val,
-                    page_num: 1
-                };
+                this.routerMessage.todo.params.page_size = val;
+                this.routerMessage.todo.params.page_num = 1;
+                this.routerMessage.done.params.page_size = val;
+                this.routerMessage.done.params.page_num = 1;
                 this.$emit("getTableData", this.routerMessage);
             },
             //已处理事项查看
