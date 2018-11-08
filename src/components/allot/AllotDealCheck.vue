@@ -168,11 +168,13 @@
                       highlight-current-row
                       @row-click="getCurRowData"
                       @expand-change="getExpandData"
+                      :expand-row-keys="expandKeys"
+                      :row-key="getRowKeys"
                       size="mini">
-                <el-table-column type="expand" v-if="!isPending"> 
-                    <template slot-scope="props" >
+                <el-table-column type="expand" prop="list" v-if="!isPending"> 
+                    <template slot-scope="scope">
                         <section class="childTable">
-                            <el-table :data="props.row.list"
+                            <el-table :data="scope.row.list"
                                     border
                                     size="mini">
                                 <el-table-column prop="acc_no" label="账户号" :show-overflow-tooltip="true"></el-table-column>
@@ -298,6 +300,11 @@
                 },
                 paymentTypeList:{},//调拨类型
                 isAllot: false,//是否是调拨
+                expandKeys:[],//存放展开的id
+                // 获取row的key值
+                getRowKeys(row) {
+                    return row.id;
+                },
             }
         },
         methods: {
@@ -427,6 +434,21 @@
             },
             //点击获取当前展开表格数据
             getExpandData: function (row, expandedRows) {
+                var isPush = true;
+                var esList = this.expandKeys;
+                var esLen = esList.length;
+                for(let i =0 ;i<esLen;i++){
+                    if(esList[i] == row.id){
+                        isPush = false;
+                        break;
+                    }
+                }
+                if(isPush){
+                    this.expandKeys.push(row.id);
+                }else{
+                    let index = esList.indexOf(row.id);
+                    esList.splice(index,1);
+                }
                 if(!row.list){
                     this.$axios({
                         url: this.queryUrl + "normalProcess",
@@ -446,8 +468,12 @@
                             })
                         } else {
                             var data = result.data.data;
-                            row.list = [];
-                            this.$set(row,'list',data);
+                            var obj = {};
+                            obj.list = data;
+                            var newRow = Object.assign(row, obj);
+                            var rows = this.tableList;
+                            var index = this.tableList.indexOf(row);
+                            this.$set(rows,index,newRow);
                         }
                     }).catch(function (error) {
                         console.log(error);
@@ -521,12 +547,16 @@
                         searchData[k] = "";
                 }
                 this.childList = [];
+                
             },
             tableData: function (val, oldVal) {
                 this.pagSize = val.page_size;
                 this.pagTotal = val.total_line;
                 this.pagCurrent = val.page_num;
                 this.tableList = val.data;
+                if(!this.isPending){
+                     this.expandKeys = [];
+                }
             },
             '$route' (to, from) {
                 // 对路由变化作出响应...
