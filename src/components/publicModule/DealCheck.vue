@@ -151,7 +151,7 @@
         </section>
         <div class="validated-content" v-if="!isPending">
             <el-table :data="tableList" border
-                      size="mini"
+                      size="mini" ref="validateTable"
                       @expand-change="getValidated">
                 <el-table-column type="expand">
                     <template slot-scope="props">
@@ -517,7 +517,31 @@
                 });
             },
             //获取已核对数据的关联数据
-            getValidated: function (row) {
+            getValidated: function (row,expandedRows) {
+                /*
+                * 1、展开某一行
+                *   1.1 只有一行展开(expandedRows.length == 1 && row == expandedRows[0])
+                *       获取当前行数据
+                *   2.1 展开行为第二个(expandedRows.length > 1)
+                *       2.1.1 关闭之前展开行
+                *       2.1.2 获取当前行数据
+                * 2、关闭某一行
+                *   2.1 手动关闭某一行(expandedRows.length ==0)
+                *   2.2 打开第二行导致原展开行关闭(expandedRows.length == 1 && row != expandedRows[0])
+                * */
+                if(expandedRows.length == 0 || (expandedRows.length == 1 && row != expandedRows[0])){ //关闭全部行
+                    return;
+                }
+                if(expandedRows.length == 2){
+                    for(var i = 0; i < expandedRows.length; i++){
+                        var item = expandedRows[i];
+                        if(row != item){
+                            this.$refs.validateTable.toggleRowExpansion(item,false);
+                            break;
+                        }
+                    }
+                }
+
                 this.validatedList = [];
                 this.$axios({
                     url: this.queryUrl + "normalProcess",

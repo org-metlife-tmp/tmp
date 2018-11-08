@@ -199,7 +199,7 @@
                         </el-tooltip>
                         <el-tooltip content="撤回" placement="bottom" effect="light"
                                     :enterable="false" :open-delay="500"
-                                    v-if="!isPending">
+                                    v-if="!isPending && scope.row.service_status == '2'">
                             <el-button size="mini" class="withdraw"
                                        @click="withdrawData(scope.row)"></el-button>
                         </el-tooltip>
@@ -314,10 +314,7 @@
                     6: "处理中",
                     7: "已成功",
                     8: "已失败",
-                    9: "已作废",
-                    10: "未完结",
-                    11: "已完结",
-                    12: "待处理"
+                    9: "已作废"
                 }
             }
 
@@ -586,10 +583,7 @@
                         6: "处理中",
                         7: "已成功",
                         8: "已失败",
-                        9: "已作废",
-                        10: "未完结",
-                        11: "已完结",
-                        12: "待处理"
+                        9: "已作废"
                     }
                 }
                 var searchData = this.searchData;
