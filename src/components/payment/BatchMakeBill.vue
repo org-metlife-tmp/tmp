@@ -888,7 +888,7 @@
                             optype: "account_normallist",
                             params: {
                                 status: 1,
-                                interactive_mode: pay_mode ? (pay_mode == "1" ? "1" : "2") : ""
+                                interactive_mode: pay_mode != 8  ? (pay_mode == "1" ? "1" : "2") : ""
                             }
                         }
                     }).then((result) => {
