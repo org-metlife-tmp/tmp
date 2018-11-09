@@ -529,7 +529,7 @@
                 var actionOne = (currPage-1)*8;
                 var endOne = actionOne + 8;
                 this.selectUserList = [];
-                for(var i=actionOne; i<=endOne; i++){
+                for(var i=actionOne; i<endOne; i++){
                     if(userAllList[i]){
                         this.selectUserList.push(userAllList[i]);
                     }
