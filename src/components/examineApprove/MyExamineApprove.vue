@@ -1788,9 +1788,9 @@
                     ],
                     "19":[
                         {id:'1',prop:"batchno",name:'批次号'},
-                        {id:'2',prop:"recv_account_no",name:'付款方账号'},
-                        {id:'3',prop:"recv_account_name",name:'付款方名称'},
-                        {id:'4',prop:"recv_account_bank",name:'付款方银行'},
+                        {id:'2',prop:"pay_account_no",name:'付款方账号'},
+                        {id:'3',prop:"pay_account_name",name:'付款方名称'},
+                        {id:'4',prop:"pay_account_bank",name:'付款方银行'},
                         {id:'5',prop:"total_num",name:'总笔数'},
                         {id:'6',prop:"total_amount",name:'总金额'},
                         {id:'7',prop:"nextUserList",name:'下级审批人'}
