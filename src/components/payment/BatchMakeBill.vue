@@ -492,6 +492,8 @@
                                :key="item.acc_id"
                                :label="item.acc_no"
                                :value="item.acc_id">
+                            <span>{{ item.acc_no }}</span>
+                            <span style="margin-left:10px;color:#bbb">{{ item.acc_name }}</span>
                     </el-option>
                 </el-select>
                 <el-select v-model="billData.biz_id" placeholder="请选择业务类型"
