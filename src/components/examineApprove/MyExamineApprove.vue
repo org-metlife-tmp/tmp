@@ -1588,7 +1588,7 @@
                     {id:"17", lspan:4, label:"状态"},
                     {id:"18", pspan:8, prop:"service_status"},
                     {id:"19", lspan:4, label:"摘要"},
-                    {id:"20",pspan:8, prop:"pay_account_no"}
+                    {id:"20",pspan:8, prop:"payment_summary"}
                 ],
             }
         },
