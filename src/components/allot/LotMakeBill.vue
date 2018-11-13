@@ -557,6 +557,8 @@
                                 :key="item.acc_id"
                                 :label="item.acc_no"
                                 :value="item">
+                                <span>{{ item.acc_no }}</span>
+                                <span style="margin-left:10px;color:#bbb">{{ item.acc_name }}</span>
                     </el-option>
                 </el-select>
                 <el-tooltip class="tip-box" type="warning" effect="light" placement="right-start" v-show="payAccDetail.acc_name">

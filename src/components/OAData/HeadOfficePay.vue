@@ -102,6 +102,12 @@
                 <el-row>
                     <el-col :span="4">
                         <el-form-item>
+                            <el-input v-model="searchData.bill_no" clearable
+                                      placeholder="请输入报销单申请号"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="4">
+                        <el-form-item>
                             <el-input v-model="searchData.recv_account_query_key" clearable
                                       placeholder="请输入收款方账户号或名称"></el-input>
                         </el-form-item>
@@ -356,6 +362,7 @@
                 pagCurrent: 1,
                 searchData: { //搜索条件
                     recv_account_query_key: "",
+                    bill_no: "",
                     org_name: "",
                     min: "",
                     max: "",
