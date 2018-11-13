@@ -5,6 +5,13 @@
         box-sizing: border-box;
         position: relative;
 
+        /*顶部按钮*/
+        .button-list-right,{
+            position: absolute;
+            top: -55px;
+            right: -20px;
+        }
+
         /*搜索区*/
         .search-setion{
             text-align: left;
@@ -59,6 +66,11 @@
 
 <template>
     <div id="accountMessage">
+        <!--顶部按钮-->
+        <div class="button-list-right">
+            <!-- <el-button type="warning" size="mini">打印</el-button> -->
+            <el-button type="warning" size="mini" @click="exportFun">导出</el-button>
+        </div>
         <!--搜索区-->
         <div class="search-setion">
             <el-form :inline="true" :model="searchData" size="mini">
@@ -662,6 +674,43 @@
             getName:function(type){
                 var accountChangeField = JSON.parse(window.sessionStorage.getItem("constants")).AccountChangeField
                 return accountChangeField[type];
+            },
+            //导出
+            exportFun:function () {
+                var params = this.searchData;
+                this.$axios({
+                    url: this.queryUrl + "normalProcess",
+                    method: "post",
+                    data: {
+                        optype: 'account_listexport',
+                        params:params
+                    },
+                    responseType: 'blob'
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                    } else {
+                        var fileName = decodeURI(result.headers["content-disposition"]).split("=")[1];
+                        //ie兼容
+                        if (window.navigator && window.navigator.msSaveOrOpenBlob) {
+                            window.navigator.msSaveOrOpenBlob(new Blob([result.data]), fileName);
+                        } else {
+                            let url = window.URL.createObjectURL(new Blob([result.data]));
+                            let link = document.createElement('a');
+                            link.style.display = 'none';
+                            link.href = url;
+                            link.setAttribute('download', fileName);
+                            document.body.appendChild(link);
+                            link.click();
+                        }
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                })
             }
         },
         computed:{
