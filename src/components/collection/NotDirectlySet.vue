@@ -467,6 +467,7 @@
                                :key="item.recv_account_id"
                                :label="item.recv_account_no"
                                :value="item.recv_account_id">
+                        <span>{{ item.recv_account_no }}</span><span style="margin-left:10px;color:#bbb">{{ item.recv_account_name }}</span>
                     </el-option>
                 </el-select>
                 <div class="serial-number">
