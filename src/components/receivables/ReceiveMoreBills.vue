@@ -185,7 +185,7 @@
         .el-dialog__wrapper {
             .el-dialog__body {
                 height:300px;
-                overflow-y: scroll;
+                overflow-y: auto;
             }
         }
         .el-form--inline .el-form-item{
@@ -626,6 +626,7 @@
             }
             this.messageTips = {
                 recv_account_id: "请选择收款方！",
+                biz_id: "请选择业务类型！",
                 pay_account_no: "请选择付款方账号！",
                 receipts_amount: "请填写金额！",
             }
@@ -1150,6 +1151,12 @@
                             duration: 2000
                         });
                         return;
+                    }
+                }
+                var payStatList = this.payStatList;
+                for(var i = 0; i < payStatList.length; i++){
+                    if(params.biz_id == payStatList[i].biz_id){
+                        params.biz_name = payStatList[i].biz_name;
                     }
                 }
                 params.receipts_amount = params.receipts_amount.split(",").join("");
