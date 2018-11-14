@@ -440,6 +440,7 @@
                     }
                 }
                 if(isPush){
+                    this.expandKeys = [];
                     this.expandKeys.push(row.id);
                 }else{
                     let index = esList.indexOf(row.id);
@@ -464,12 +465,7 @@
                             })
                         } else {
                             var data = result.data.data;
-                            var obj = {};
-                            obj.list = data;
-                            var newRow = Object.assign(row, obj);
-                            var rows = this.tableList;
-                            var index = this.tableList.indexOf(row);
-                            this.$set(rows,index,newRow);
+                            this.$set(row,'list',data);
                         }
                     }).catch(function (error) {
                         console.log(error);
