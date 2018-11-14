@@ -340,14 +340,10 @@
             },
             //当前页数据条数发生变化
             sizeChange:function(val){
-                this.routerMessage.todo.params = {
-                    page_size: val,
-                    page_num: 1
-                };
-                this.routerMessage.done.params = {
-                    page_size: val,
-                    page_num: 1
-                };
+                this.routerMessage.todo.params.page_size = val;
+                this.routerMessage.todo.params.page_num = 1;
+                this.routerMessage.done.params.page_size = val;
+                this.routerMessage.done.params.page_num = 1;
                 this.$emit("getTableData", this.routerMessage);
             },
             //获取未核对下第二个表格数据
@@ -444,6 +440,7 @@
                     }
                 }
                 if(isPush){
+                    this.expandKeys = [];
                     this.expandKeys.push(row.id);
                 }else{
                     let index = esList.indexOf(row.id);
@@ -468,12 +465,7 @@
                             })
                         } else {
                             var data = result.data.data;
-                            var obj = {};
-                            obj.list = data;
-                            var newRow = Object.assign(row, obj);
-                            var rows = this.tableList;
-                            var index = this.tableList.indexOf(row);
-                            this.$set(rows,index,newRow);
+                            this.$set(row,'list',data);
                         }
                     }).catch(function (error) {
                         console.log(error);
