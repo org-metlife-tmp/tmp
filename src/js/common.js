@@ -99,11 +99,15 @@ export default {
             if(decimal[0] == 0 && decimal[1] == 0){
                 return numText + "元整";
             }else{
-                numText += "点";
+                numText += "元";
                 for (var i = 0; i < decimal.length; i++) {
+                    if(i == 1 && decimal[i] == 0){
+                        break;
+                    }
                     numText += textList[decimal[i]];
+                    numText += i == 0 ? "角" : "分";
                 }
-                return numText + "元";
+                return numText;
             }
         }
     }

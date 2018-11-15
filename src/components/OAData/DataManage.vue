@@ -61,6 +61,16 @@
         }
 
         //顶部按钮
+        .button-list-left{
+            position: absolute;
+            top: -56px;
+            left: -20px;
+
+            /*时间控件*/
+            .el-date-editor {
+                width: 260px;
+            }
+        }
         .button-list-right {
             position: absolute;
             top: -60px;
@@ -72,6 +82,20 @@
 <template>
     <div id="dataManage">
         <!-- 顶部按钮-->
+        <div class="button-list-left">
+            <el-date-picker
+                    v-model="dateValue"
+                    type="daterange"
+                    range-separator="至"
+                    start-placeholder="开始日期"
+                    end-placeholder="结束日期"
+                    value-format="yyyy-MM-dd"
+                    size="mini" clearable
+                    unlink-panels
+                    :picker-options="pickerOptions"
+                    @change="getDateData">
+            </el-date-picker>
+        </div>
         <div class="button-list-right">
             <el-button type="warning" size="mini" @click="exportFun">导出</el-button>
         </div>
@@ -133,7 +157,6 @@
                             </el-checkbox-group>
                         </el-form-item>
                     </el-col>
-                    <el-col :span="10"></el-col>
                 </el-row>
             </el-form>
         </div>
@@ -148,6 +171,7 @@
                                  :formatter="transitPayType"></el-table-column>
                 <!-- <el-table-column prop="apply_user" label="申请用户" :show-overflow-tooltip="true"></el-table-column> -->
                 <el-table-column prop="org_name" label="申请单位" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="apply_date" label="申请日期" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="recv_acc_name" label="收款人" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="recv_acc_no" label="收款方账号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="recv_bank" label="收款方银行" :show-overflow-tooltip="true"></el-table-column>
@@ -267,6 +291,8 @@
                 pagTotal: 1,
                 pagCurrent: 1,
                 searchData:{ //搜索条件
+                    apply_start_date: "",
+                    apply_end_date: "",
                     bill_no: "",
                     org_name: "",
                     recv_acc_query_key: "",
@@ -278,7 +304,13 @@
                 dialogVisible: false, //弹框数据
                 dialogData: {},
                 statusList: {}, //常量数据
-                payOrgList: {}
+                payOrgList: {},
+                dateValue: "", //时间控件
+                pickerOptions: {
+                    disabledDate(time) {
+                        return time.getTime() > Date.now();
+                    }
+                },
             }
         },
         props: ["tableData"],
@@ -321,6 +353,12 @@
                 this.routerMessage.params.page_size = val;
                 this.routerMessage.params.page_num = 1;
                 this.$emit("getCommTable", this.routerMessage);
+            },
+            //选择时间后设置数据
+            getDateData: function (val) {
+                this.routerMessage.params.apply_start_date = val ? val[0] : "";
+                this.routerMessage.params.apply_end_date = val ? val[1] : "";
+                this.$emit('getCommTable', this.routerMessage);
             },
             //展示格式转换-接口状态
             transitStatus: function (row, column, cellValue, index) {

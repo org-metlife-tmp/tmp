@@ -8,6 +8,11 @@
         /*搜索区*/
         .search-setion {
             text-align: left;
+
+            /*时间控件*/
+            .el-date-editor {
+                width: 96%;
+            }
         }
 
         /*分隔栏*/
@@ -114,6 +119,20 @@
         <div class="search-setion">
             <el-form :inline="true" :model="searchData" size="mini">
                 <el-row>
+                    <el-col :span="5">
+                        <el-date-picker
+                                v-model="dateValue"
+                                type="daterange"
+                                range-separator="至"
+                                start-placeholder="开始日期"
+                                end-placeholder="结束日期"
+                                value-format="yyyy-MM-dd"
+                                size="mini" clearable
+                                unlink-panels
+                                :picker-options="pickerOptions"
+                                @change="">
+                        </el-date-picker>
+                    </el-col>
                     <el-col :span="4">
                         <el-form-item>
                             <el-input v-model="searchData.bill_no" clearable
@@ -131,7 +150,7 @@
                             <el-input v-model="searchData.org_name" clearable placeholder="请输入申请单位"></el-input>
                         </el-form-item>
                     </el-col>
-                    <el-col :span="6">
+                    <el-col :span="5">
                         <el-form-item>
                             <el-col :span="11">
                                 <el-input v-model="searchData.min" clearable placeholder="最小金额"></el-input>
@@ -172,6 +191,10 @@
                                  width="120"></el-table-column>
                 <el-table-column prop="org_name" label="申请单位" :show-overflow-tooltip="true"
                                  width="120"></el-table-column>
+                <el-table-column prop="create_on" label="申请日期" :show-overflow-tooltip="true"
+                                 width="100"></el-table-column>
+                <el-table-column prop="update_on" label="发送日期" :show-overflow-tooltip="true"
+                                 width="100" v-if="!isPending"></el-table-column>
                 <el-table-column prop="pool_account_no" label="资金池账户" :show-overflow-tooltip="true"
                                  width="120"></el-table-column>
                 <el-table-column prop="pay_pay_account_no" label="付款方账号" width="120"
@@ -566,6 +589,12 @@
                 flowList: {},//查看流程
                 isEmptyFlow: false,//
                 lookFlowDialogVisible: false,
+                dateValue: "", //时间控件
+                pickerOptions: {
+                    disabledDate(time) {
+                        return time.getTime() > Date.now();
+                    }
+                },
             }
         },
         methods: {
@@ -590,6 +619,8 @@
             //根据条件查询数据
             queryData: function () {
                 var searchData = this.searchData;
+                searchData.apply_start_date = this.dateValue ? this.dateValue[0] : "";
+                searchData.apply_end_date = this.dateValue ? this.dateValue[1] : "";
                 for (var k in searchData) {
                     if (this.isPending) {
                         this.routerMessage.todo.params[k] = searchData[k];
@@ -1074,6 +1105,7 @@
                         searchData[k] = "";
                     }
                 }
+                this.dateValue = "";
             },
             tableData: function (val, oldVal) {
                 this.pagSize = val.page_size;

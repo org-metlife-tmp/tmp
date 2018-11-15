@@ -440,7 +440,7 @@
                             data: {
                                 optype: "poolacc_getpoolaccinfo",
                                 params: {
-                                    bank_type: data.recv_bank_cnaps.slice(0, 3)
+                                    bank_type: data.pay_bank_cnaps.slice(0, 3)
                                 }
                             }
                         }).then((result) => {
