@@ -242,8 +242,16 @@
                 <el-table-column prop="recv_account_bank" label="归集账号开户行" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="pay_account_no" label="归集主账号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="collect_amount" label="归集金额" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="collect_status" label="状态" :show-overflow-tooltip="true"
-                                 :formatter="transitionStatus"></el-table-column>
+                <el-table-column label="状态" :show-overflow-tooltip="true" width="80">
+                    <template slot-scope="scope">
+                        <el-popover placement="top" title="失败原因"
+                                    width="200" trigger="hover"
+                                    :disabled="scope.row.collect_status != 4"
+                                    :content="scope.row.feed_back">
+                            <span slot="reference" style="cursor:default">{{ transitionStatus(scope.row.collect_status) }}</span>
+                        </el-popover>
+                    </template>
+                </el-table-column>
             </el-table>
 
             <!--下半部分表格-->
@@ -263,8 +271,16 @@
                 <el-table-column prop="recv_account_bank" label="归集账号开户行" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="pay_account_no" label="归集主账号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="collect_amount" label="归集金额" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="collect_status" label="状态" :show-overflow-tooltip="true"
-                                 :formatter="transitionStatus"></el-table-column>
+                <el-table-column label="状态" :show-overflow-tooltip="true" width="80">
+                    <template slot-scope="scope">
+                        <el-popover placement="top" title="失败原因"
+                                    width="200" trigger="hover"
+                                    :disabled="scope.row.collect_status != 4"
+                                    :content="scope.row.feed_back">
+                            <span slot="reference" style="cursor:default">{{ transitionStatus(scope.row.collect_status) }}</span>
+                        </el-popover>
+                    </template>
+                </el-table-column>
             </el-table>
             <span slot="footer" class="dialog-footer" style="text-align:center"></span>
         </el-dialog>
@@ -377,7 +393,7 @@
                 return "￥" + this.$common.transitSeparator(num);
             },
             //展示格式转换-状态
-            transitionStatus:  function (row, column, cellValue, index) {
+            transitionStatus:  function (cellValue) {
                 var constants = JSON.parse(window.sessionStorage.getItem("constants"));
                 if (constants.CollOrPoolRunStatus) {
                     return constants.CollOrPoolRunStatus[cellValue];
