@@ -984,9 +984,12 @@
                 this.isFromHome = true;
             }
             this.$emit("transmitTitle", "我的审批平台");
-            // this.$emit("getTableData", this.routerMessage);
             //获取tab数据
-            this.getTabList();
+            if(this.isPending){
+                this.getTabList();
+            }else{
+                this.$emit("getTableData", this.routerMessage);
+            }
             //获取用户列表
             this.$axios({
                 url: this.queryUrl + "commProcess",
@@ -1622,6 +1625,11 @@
             if (constants.PayMode) {
                 this.PayModeList = constants.PayMode;
             }
+            //业务类型下拉
+            if(constants.MajorBizType){
+                this.businessType = constants.MajorBizType;
+            }
+            
         },
         props: ["isPending", "tableData"],
         components:{
@@ -1877,73 +1885,73 @@
         methods:{
             //获取tab集合
             getTabList:function(type){
-                var _this = this;
-                this.$axios({
-                    url: this.queryUrl + "commProcess",
-                    method:"post",
-                    data:{
-                        optype: "wfquery_pendingtaskallnum"
-                    }
-                }).then((result) =>{
-                    if (result.data.error_msg) {
-                        this.$message({
-                            type: "error",
-                            message: result.data.error_msg,
-                            duration: 2000
-                        });
-                    }else{
-                        var constantsBiz = JSON.parse(window.sessionStorage.getItem("constants")).MajorBizType;
-                        this.businessType = constantsBiz;//业务类型下拉
-                        var data = result.data.data;
-                        var list = data.pending_list;
-                        var tableHead = this.tableHeadList;
-                        this.totalTabNum = data.total_num;
-                        var _tab_index = "";//为了tab样式做处理
-                        //默认我的待办
-                        var arrObject = {
-                            "0":{
-                                title: '我的待办',
-                                name: '0',
-                                tableHead:tableHead[0],
-                                tableList:[],
-                                num: data.total_num
-                            }
-                        };
-                        if (list.length>0) {
-                            list.forEach((element,index) =>{
-                                var type = element.biz_type;
-                                if(type == this.activeName){
-                                    _tab_index = index + 1;
-                                }
-                                arrObject[type]={
-                                    title: constantsBiz[type],
-                                    name: type +"",
-                                    tableHead:tableHead[type],
+                
+                    this.$axios({
+                        url: this.queryUrl + "commProcess",
+                        method:"post",
+                        data:{
+                            optype: "wfquery_pendingtaskallnum"
+                        }
+                    }).then((result) =>{
+                        if (result.data.error_msg) {
+                            this.$message({
+                                type: "error",
+                                message: result.data.error_msg,
+                                duration: 2000
+                            });
+                        }else{
+                            var constantsBiz= this.businessType;
+                            var data = result.data.data;
+                            var list = data.pending_list;
+                            var tableHead = this.tableHeadList;
+                            this.totalTabNum = data.total_num;
+                            var _tab_index = "";//为了tab样式做处理
+                            //默认我的待办
+                            var arrObject = {
+                                "0":{
+                                    title: '我的待办',
+                                    name: '0',
+                                    tableHead:tableHead[0],
                                     tableList:[],
-                                    num: element.num,
-                                };
-                            })
-                        }
-                        this.editableTabsList = arrObject;
-
-                        if(this.isFromHome){//从home页跳过了
-                            let rowBar = document.getElementsByClassName("el-tabs__active-bar")[0];
-                            if(_tab_index==1){
-                                rowBar.style.left = "20px";
+                                    num: data.total_num
+                                }
+                            };
+                            if (list.length>0) {
+                                list.forEach((element,index) =>{
+                                    var type = element.biz_type;
+                                    if(type == this.activeName){
+                                        _tab_index = index + 1;
+                                    }
+                                    arrObject[type]={
+                                        title: constantsBiz[type],
+                                        name: type +"",
+                                        tableHead:tableHead[type],
+                                        tableList:[],
+                                        num: element.num,
+                                    };
+                                })
                             }
-                            this.routerMessage.todo.params.page_num = 1;
-                            this.routerMessage.todo.optype = this.classParams[this.activeName].list;
-                            this.routerMessage.todo.params.biz_type = this.activeName;
-                            this.$emit("getTableData", this.routerMessage);
-                        }else if(!arrObject[this.activeName] || this.activeName == "0"){//如果没找到上次停留的tab，回到我的待办
-                            this.comeBack();
-                        }else if(type =='third'){
-                            //同意，加签，拒绝后刷新列表
-                            this.$emit("getTableData", this.routerMessage);
+                            this.editableTabsList = arrObject;
+
+                            if(this.isFromHome){//从home页跳过了
+                                let rowBar = document.getElementsByClassName("el-tabs__active-bar")[0];
+                                if(_tab_index==1){
+                                    rowBar.style.left = "20px";
+                                }
+                                this.routerMessage.todo.params.page_num = 1;
+                                this.routerMessage.todo.optype = this.classParams[this.activeName].list;
+                                this.routerMessage.todo.params.biz_type = this.activeName;
+                                this.$emit("getTableData", this.routerMessage);
+                            }else if(!arrObject[this.activeName] || this.activeName == "0"){//如果没找到上次停留的tab，回到我的待办
+                                this.comeBack();
+                            }else if(type =='third'){
+                                //同意，加签，拒绝后刷新列表
+                                this.$emit("getTableData", this.routerMessage);
+                            }
+                            console.log(arrObject);
                         }
-                        console.log(arrObject);
-                    }
-                })
+                    })
+                
             },
             //展示格式转换
             transitionStatus: function (row, column, cellValue, index) {
@@ -2429,6 +2437,7 @@
             isPending: function (val, oldVal) {
                 if(val){//已办
                     this.activeName = "0";
+                    this.getTabList();
                 }else{
                    this.routerMessage.todo.optype = "wfquery_pendingtasksall";
                 }
@@ -2439,7 +2448,8 @@
                 this.pagCurrent = val.page_num;
                 if(this.isPending){
                     var curTab = this.editableTabsList[this.activeName];
-                    curTab.tableList=val.data;
+                    if(curTab)
+                        curTab.tableList=val.data;
                     if(this.isFromHome){
                         this.isFromHome = false;
                     }
