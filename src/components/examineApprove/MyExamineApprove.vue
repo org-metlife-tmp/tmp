@@ -721,12 +721,12 @@
                             :emptyFileList="emptyFileList"
                             :isPending="false"
                             :fileMessage="fileMessage"
-                            :triggerFile="triggerFile"></Upload>
+                            :triggerFile="normalTriggerFile"></Upload>
                     </el-col>
                 </el-row>
             </div>
             <BusinessTracking
-                :businessParams="businessParams"
+                :businessParams="normalBusinessParams"
             ></BusinessTracking>
             <span slot="footer" class="dialog-footer" v-if="isPending">
                 <el-button type="primary"
@@ -838,11 +838,11 @@
                     <span class="memo-content" style="height:60px;padding-top:6px;overflow-y:auto">
                         <Upload :emptyFileList="emptyFileList"
                             :fileMessage="fileMessage"
-                            :triggerFile="triggerFile"
+                            :triggerFile="specialTriggerFile"
                             :isPending="false"></Upload>
                     </span>
                 </div>
-                <BusinessTracking :businessParams="businessParams"></BusinessTracking>
+                <BusinessTracking :businessParams="specialBusinessParams"></BusinessTracking>
             </section>
             <section id="batchDeatil" v-show="!curInnerTab">
                 <section class="tab-content">
@@ -1842,7 +1842,8 @@
                     bill_id: "",
                     biz_type: 1
                 },
-                triggerFile: false,
+                normalTriggerFile: false,
+                specialTriggerFile: false,
                 currentData:{},//当前查看的该条数据
                 thirdFunVisible:false,//加签,同意，拒绝弹出框
                 thirdFunData:{},
@@ -1854,7 +1855,8 @@
                 ],
                 searchData:{},
                 businessType:[],
-                businessParams:{},//业务状态追踪参数
+                normalBusinessParams:{},//业务状态追踪参数
+                specialBusinessParams:{},//批量调拨等特殊业务状态追踪参数
                 detailDialog:{},//详情弹出框
                 currentDetailDialog:[],//当前详情弹出框
                 classParams:{},// 待办列表optype
@@ -2092,20 +2094,28 @@
                 this.thirdFunVisible = true;
             },
             viewDetail:function(row,index){
-                this.businessParams = {};//清空数据
                 let bizType = row.biz_type;
+                let id = row.bill_id;
+                let _index = this.activeName;
+                if(bizType == 10 || bizType == 11 || bizType == 19){
+                    this.specialBusinessParams = {};//清空数据
+                    this.specialBusinessParams.biz_type = bizType;
+                    this.specialBusinessParams.id = id;
+                }else{
+                    this.normalBusinessParams = {};
+                    this.normalBusinessParams.biz_type = bizType;
+                    this.normalBusinessParams.id = id;
+                }
+                
                 this.curBiztype = bizType;
                 this.dialogTitle = this.classParams[bizType].text;
                 this.currentDetailDialog = this.detailDialog[bizType];
-                let id = row.bill_id;
-                let _index = this.activeName;
                 //组装开户同意接口的参数
                 this.currentData.index = index;
                 this.currentData.id = id;
                 this.currentData.define_id = row.define_id;
 
-                this.businessParams.biz_type = bizType;
-                this.businessParams.id = id;
+                
 
                 //附件所占宽度
                 // if( bizType === 1 || bizType === 6){
@@ -2208,13 +2218,15 @@
                         console.log(this.dialogData)
                         this.fileMessage.bill_id = id;
                         this.fileMessage.biz_type = bizType;
-                        this.triggerFile = !this.triggerFile;
+                        
                         if(bizType == 10 || bizType == 11 || bizType == 19){
+                            this.specialTriggerFile = !this.specialTriggerFile;
                             this.batchAllotVisible = true;
                             this.searchDetailData.batchno = data.batchno;
                             this.searchDetailData.biz_type = bizType;
                             this.getDetailTable(this.searchDetailData);
                         }else{
+                            this.normalTriggerFile = !this.normalTriggerFile;
                             this.dialogVisible = true;
                         }
 

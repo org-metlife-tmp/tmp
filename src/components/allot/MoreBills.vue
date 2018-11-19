@@ -422,7 +422,7 @@
                             :isPending="false"></Upload>
                 </li>
             </ul>
-            <BusinessTracking :businessParams="businessParams"></BusinessTracking>
+            <BusinessTracking :businessParams="lookBusinessParams"></BusinessTracking>
         </el-dialog>
         <!--编辑弹出框-->
         <el-dialog title="编辑调拨单"
@@ -529,7 +529,7 @@
             </ul>
             <BusinessTracking
                 v-show="editDialogData.service_status==5"
-                :businessParams="businessParams"
+                :businessParams="editBusinessParams"
             ></BusinessTracking>
             <span slot="footer" class="dialog-footer" style="text-align:center">
                     <el-button type="warning" size="mini" @click="saveBill">保 存</el-button>
@@ -708,8 +708,8 @@
                 editEmptyFile: [],
                 eidttrigFile: false,
                 fileList: [],
-                businessParams:{ //业务状态追踪参数
-                },
+                lookBusinessParams:{},//业务状态追踪参数
+                editBusinessParams:{}, //业务状态追踪参数
                 payModeList:{}, //下拉框数据
                 payStatList: [],
                 messageTips: {},
@@ -821,9 +821,9 @@
                 this.triggerFile = !this.triggerFile;
 
                 //业务状态跟踪
-                this.businessParams = {};
-                this.businessParams.biz_type = 8;
-                this.businessParams.id = row.id;
+                this.lookBusinessParams = {};
+                this.lookBusinessParams.biz_type = 8;
+                this.lookBusinessParams.id = row.id;
             },
             //切换付款方式
             changePayMode: function(val){
@@ -859,9 +859,9 @@
 
                 //审批拒绝显示业务追踪
                 if(row.service_status == 5){
-                    this.businessParams = {};//清空数据
-                    this.businessParams.biz_type = 8;
-                    this.businessParams.id = row.id;
+                    this.editBusinessParams = {};//清空数据
+                    this.editBusinessParams.biz_type = 8;
+                    this.editBusinessParams.id = row.id;
                 }
                 this.editVisible = true;
             },
