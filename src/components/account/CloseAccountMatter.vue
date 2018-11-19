@@ -325,7 +325,7 @@
                             <Upload @currentFielList="setFileList"
                                     :emptyFileList="emptyFileList"
                                     :fileMessage="fileMessage"
-                                    :triggerFile="triggerFile"
+                                    :triggerFile="todoTriggerFile"
                                     :isPending="isPending"></Upload>
                         </el-form-item>
                     </el-col>
@@ -333,7 +333,7 @@
             </el-form>
             <BusinessTracking
                 v-show="dialogData.service_status==5"
-                :businessParams="businessParams"
+                :businessParams="todoBusinessParams"
             ></BusinessTracking>
             <span slot="footer" class="dialog-footer">
                 <el-button type="warning" size="mini" plain @click="dialogVisible = false">取 消</el-button>
@@ -477,13 +477,13 @@
                         <Upload @currentFielList="setFileList"
                                 :emptyFileList="emptyFileList"
                                 :fileMessage="fileMessage"
-                                :triggerFile="triggerFile"
+                                :triggerFile="doneTriggerFile"
                                 :isPending="isPending"></Upload>
                     </el-form-item>
                 </el-row>
             </el-form>
             <BusinessTracking
-                :businessParams="businessParams"
+                :businessParams="doneBusinessParams"
             ></BusinessTracking>
         </el-dialog>
         <!--分发弹出框-->
@@ -713,12 +713,14 @@
                     bill_id: "",
                     biz_type: 6
                 },
-                triggerFile: false,
+                todoTriggerFile: false,
+                doneTriggerFile: false,
                 innerVisible: false, //提交弹出框
                 selectWorkflow: "", //流程选择
                 workflows: [],
                 workflowData: {},
-                businessParams:{},//业务状态追踪参数
+                todoBusinessParams:{},//业务状态追踪参数
+                doneBusinessParams:{},//业务状态追踪参数
                 accOptions:[],//账户号下拉数据,
                 interList:[],//账户模式
                 depositsList:[],//存款类型
@@ -850,7 +852,7 @@
 
                 //获取附件列表
                 this.fileMessage.bill_id = row.id;
-                this.triggerFile = !this.triggerFile;
+                this.todoTriggerFile = !this.todoTriggerFile;
                 this.$axios({
                     url:this.queryUrl + "normalProcess",
                     method:"post",
@@ -866,9 +868,9 @@
                 });
                 //审批拒绝显示业务追踪
                 if(row.service_status == 5){
-                    this.businessParams = {};//清空数据
-                    this.businessParams.biz_type = 6;
-                    this.businessParams.id = row.id;
+                    this.todoBusinessParams = {};//清空数据
+                    this.todoBusinessParams.biz_type = 6;
+                    this.todoBusinessParams.id = row.id;
                 }
             },
             //提交当前修改或新增
@@ -1072,9 +1074,9 @@
             },
             //已处理事项查看
             lookMatter:function(row){
-                this.businessParams = {};//清空数据
-                this.businessParams.biz_type = 6;
-                this.businessParams.id = row.id;
+                this.doneBusinessParams = {};//清空数据
+                this.doneBusinessParams.biz_type = 6;
+                this.doneBusinessParams.id = row.id;
 
                 for(var k in this.lookDialogData){
                     this.lookDialogData[k] = "";
@@ -1112,7 +1114,7 @@
                 //附件数据
                 this.emptyFileList = [];
                 this.fileMessage.bill_id = row.id;
-                this.triggerFile = !this.triggerFile;
+                this.doneTriggerFile = !this.doneTriggerFile;
             },
             //设置当前项上传附件
             setFileList: function ($event) {

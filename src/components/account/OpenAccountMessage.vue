@@ -260,7 +260,7 @@
                     <el-col :span="24" v-show="showRelationFile">
                         <el-form-item label="附件">
                             <Upload :fileMessage="relationFile"
-                                    :triggerFile="relationTrigger"
+                                    :triggerFile="todoRelationTrigger"
                                     :emptyFileList="emptyFileList"
                                     :isPending="false"></Upload>
                         </el-form-item>
@@ -373,7 +373,7 @@
                             <Upload @currentFielList="setFileList"
                                     :emptyFileList="emptyFileList"
                                     :fileMessage="fileMessage"
-                                    :triggerFile="triggerFile"
+                                    :triggerFile="todoTriggerFile"
                                     :isPending="isPending"></Upload>
                         </el-form-item>
                     </el-col>
@@ -381,7 +381,7 @@
             </el-form>
             <BusinessTracking
                 v-show="dialogData.service_status==5"
-                :businessParams="businessParams"
+                :businessParams="todoBusinessParams"
             ></BusinessTracking>
             <span slot="footer" class="dialog-footer">
                 <el-button type="warning" plain size="mini" @click="dialogVisible=false">取 消</el-button>
@@ -443,7 +443,7 @@
                     <el-col :span="24" v-show="showRelationFile">
                         <el-form-item label="附件">
                             <Upload :fileMessage="relationFile"
-                                    :triggerFile="relationTrigger"
+                                    :triggerFile="doneRelationTrigger"
                                     :emptyFileList="emptyFileList"
                                     :isPending="false"></Upload>
                         </el-form-item>
@@ -586,14 +586,14 @@
                             <Upload @currentFielList="setFileList"
                                     :emptyFileList="emptyFileList"
                                     :fileMessage="fileMessage"
-                                    :triggerFile="triggerFile"
+                                    :triggerFile="doneTriggerFile"
                                     :isPending="isPending"></Upload>
                         </el-form-item>
                     </el-col>
                 </el-row>
             </el-form>
             <BusinessTracking
-                :businessParams="businessParams"
+                :businessParams="doneBusinessParams"
             ></BusinessTracking>
         </el-dialog>
         <!--查看工作流弹出框-->
@@ -777,19 +777,22 @@
                     bill_id: "",
                     biz_type: 2
                 },
-                triggerFile: false,
+                todoTriggerFile: false,
+                doneTriggerFile: false,
                 relationFile:{
                     bill_id: "",
                     biz_type: 1
                 },
-                relationTrigger: false,
+                todoRelationTrigger: false,
+                doneRelationTrigger: false,
                 fileLength: 0,
                 showRelationFile: false,
                 innerVisible: false, //提交弹出框
                 selectWorkflow: "", //流程选择
                 workflows: [],
                 workflowData: {},
-                businessParams:{},//业务状态追踪参数
+                todoBusinessParams:{},//业务状态追踪参数
+                doneBusinessParams:{},//业务状态追踪参数
                 depositsList:[],//存款类型
                 flowList: {},//查看流程
                 isEmptyFlow: false,//
@@ -852,7 +855,7 @@
 
                 //获取其事项申请的附件
                 this.relationFile.bill_id = row.relation_id;
-                this.relationTrigger = !this.relationTrigger;
+                this.todoRelationTrigger = !this.todoRelationTrigger;
 
                 //设置显示数据
                 if (!row.id) {
@@ -906,13 +909,13 @@
                     })
                     //获取附件列表
                     this.fileMessage.bill_id = row.id;
-                    this.triggerFile = !this.triggerFile;
+                    this.todoTriggerFile = !this.todoTriggerFile;
                 }
                 //审批拒绝显示业务追踪
                 if(row.service_status == 5){
-                    this.businessParams = {};//清空数据
-                    this.businessParams.biz_type = 2;
-                    this.businessParams.id = row.id;
+                    this.todoBusinessParams = {};//清空数据
+                    this.todoBusinessParams.biz_type = 2;
+                    this.todoBusinessParams.id = row.id;
                 }
             },
             //代办修改-提交
@@ -1001,9 +1004,9 @@
             },
             //已处理事项查看
             lookMessage:function(row){
-                this.businessParams = {};//清空数据
-                this.businessParams.biz_type = 2;
-                this.businessParams.id = row.id;
+                this.doneBusinessParams = {};//清空数据
+                this.doneBusinessParams.biz_type = 2;
+                this.doneBusinessParams.id = row.id;
                 this.lookDialog = true;
                 for (var k in this.lookDialogData) {
                     this.lookDialogData[k] = '';
@@ -1053,9 +1056,9 @@
                 this.emptyFileList = [];
                 //获取其事项申请的附件
                 this.relationFile.bill_id = row.relation_id;
-                this.relationTrigger = !this.relationTrigger;
+                this.doneRelationTrigger = !this.doneRelationTrigger;
                 this.fileMessage.bill_id = row.id;
-                this.triggerFile = !this.triggerFile;
+                this.doneTriggerFile = !this.doneTriggerFile;
             },
             //点击页数 获取当前页数据
             getCurrentPage: function (currPage) {
