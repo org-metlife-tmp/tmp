@@ -506,7 +506,7 @@
             </ul>
             <BusinessTracking
                 v-show="editDialogData.service_status==5"
-                :businessParams="businessParams"
+                :businessParams="editBusiness"
             ></BusinessTracking>
             <span slot="footer" class="dialog-footer" style="text-align:center">
                     <el-button type="warning" size="mini" @click="saveBill">保 存</el-button>
@@ -791,6 +791,7 @@
                 workflows: [],
                 businessParams:{ //业务状态追踪参数
                 },
+                editBusiness: {},
                 flowList: {},//查看流程
                 isEmptyFlow: false,//
                 lookFlowDialogVisible: false,
@@ -1053,9 +1054,9 @@
 
                 //审批拒绝显示业务追踪
                 if(row.service_status == 5){
-                    this.businessParams = {};//清空数据
-                    this.businessParams.biz_type = 9;
-                    this.businessParams.id = row.id;
+                    this.editBusiness = {};//清空数据
+                    this.editBusiness.biz_type = 9;
+                    this.editBusiness.id = row.id;
                 }
                 this.editVisible = true;
             },
