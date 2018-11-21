@@ -138,6 +138,7 @@
                                            clearable filterable
                                            :filter-method="filterBankType"
                                            @visible-change="clearSearch"
+                                           :loading="bankLongding"
                                            @change="bankIsSelect">
                                     <el-option v-for="bankType in bankTypeList"
                                                :key="bankType.name"
@@ -243,7 +244,6 @@
             var bankTypeList = JSON.parse(window.sessionStorage.getItem("bankTypeList"));
             if (bankTypeList) {
                 this.bankAllList = bankTypeList;
-                this.bankTypeList = bankTypeList;
             }
             var bankAllTypeList = JSON.parse(window.sessionStorage.getItem("bankAllTypeList"));
             if(bankAllTypeList){
@@ -316,6 +316,8 @@
                 bankAllList: [], //银行相关数据
                 bankAllTypeList: [], //银行大类全部(不重复)
                 bankTypeList: [],
+                outTime: "", //银行大类搜索控制
+                bankLongding: false,
                 areaList: [],
                 loading: false,
                 bankList: [],
@@ -355,38 +357,43 @@
             },
             //银行大类搜索筛选
             filterBankType: function (value) {
-                if (value && value.trim()) {
-                    this.bankTypeList = this.bankAllList.filter(item => {
-                        var chineseReg = /^[\u0391-\uFFE5]+$/; //判断是否为中文
-                        var englishReg = /^[a-zA-Z]+$/; //判断是否为字母
-                        var quanpinReg = /(a[io]?|ou?|e[inr]?|ang?|ng|[bmp](a[io]?|[aei]ng?|ei|ie?|ia[no]|o|u)|pou|me|m[io]u|[fw](a|[ae]ng?|ei|o|u)|fou|wai|[dt](a[io]?|an|e|[aeio]ng|ie?|ia[no]|ou|u[ino]?|uan)|dei|diu|[nl][gh]ei|[jqx](i(ao?|ang?|e|ng?|ong|u)?|u[en]?|uan)|([csz]h?|r)([ae]ng?|ao|e|i|ou|u[ino]?|uan)|[csz](ai?|ong)|[csz]h(ai?|uai|uang)|zei|[sz]hua|([cz]h|r)ong|y(ao?|[ai]ng?|e|i|ong|ou|u[en]?|uan))/; //判断是否为全拼
+                this.bankLongding = true;
+                clearTimeout(this.outTime);
+                this.outTime = setTimeout(() => {
+                    if (value && value.trim()) {
+                        this.bankTypeList = this.bankAllList.filter(item => {
+                            var chineseReg = /^[\u0391-\uFFE5]+$/; //判断是否为中文
+                            var englishReg = /^[a-zA-Z]+$/; //判断是否为字母
+                            var quanpinReg = /(a[io]?|ou?|e[inr]?|ang?|ng|[bmp](a[io]?|[aei]ng?|ei|ie?|ia[no]|o|u)|pou|me|m[io]u|[fw](a|[ae]ng?|ei|o|u)|fou|wai|[dt](a[io]?|an|e|[aeio]ng|ie?|ia[no]|ou|u[ino]?|uan)|dei|diu|[nl][gh]ei|[jqx](i(ao?|ang?|e|ng?|ong|u)?|u[en]?|uan)|([csz]h?|r)([ae]ng?|ao|e|i|ou|u[ino]?|uan)|[csz](ai?|ong)|[csz]h(ai?|uai|uang)|zei|[sz]hua|([cz]h|r)ong|y(ao?|[ai]ng?|e|i|ong|ou|u[en]?|uan))/; //判断是否为全拼
 
-                        if (chineseReg.test(value)) {
-                            return item.name.toLowerCase().indexOf(value.toLowerCase()) > -1;
-                        } else if (englishReg.test(value)) {
-                            if (quanpinReg.test(value)) {
-                                return item.pinyin.toLowerCase().indexOf(value.toLowerCase()) > -1;
-                            } else {
-                                return item.jianpin.toLowerCase().indexOf(value.toLowerCase()) > -1;
+                            if (chineseReg.test(value)) {
+                                return item.name.toLowerCase().indexOf(value.toLowerCase()) > -1;
+                            } else if (englishReg.test(value)) {
+                                if (quanpinReg.test(value)) {
+                                    return item.pinyin.toLowerCase().indexOf(value.toLowerCase()) > -1;
+                                } else {
+                                    return item.jianpin.toLowerCase().indexOf(value.toLowerCase()) > -1;
+                                }
                             }
-                        }
-                    });
-                    this.bankTypeList = this.bankTypeList.filter((item,index,arr) => {
-                        for(var i = index+1; i < arr.length; i++){
-                            if(item.display_name == arr[i].display_name){
-                                return false;
+                        });
+                        this.bankTypeList = this.bankTypeList.filter((item,index,arr) => {
+                            for(var i = index+1; i < arr.length; i++){
+                                if(item.display_name == arr[i].display_name){
+                                    return false;
+                                }
                             }
-                        }
-                        return true;
-                    });
-                } else {
-                    this.bankTypeList = this.bankAllTypeList;
-                }
+                            return true;
+                        });
+                    } else {
+                        this.bankTypeList = this.bankAllTypeList.slice(0,200);
+                    }
+                    this.bankLongding = false;
+                }, 1200);
             },
             //银行大类展开时重置数据
             clearSearch: function (val) {
                 if (this.bankTypeList != this.bankAllTypeList && val) {
-                    this.bankTypeList = this.bankAllTypeList;
+                    this.bankTypeList = this.bankAllTypeList.slice(0,200);
                 }
             },
             //地区数据
