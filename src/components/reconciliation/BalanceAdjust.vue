@@ -95,41 +95,16 @@
                 <el-row>
                     <el-col :span="4">
                         <el-form-item>
-                            <el-select v-model="searchData.pay_mode" placeholder="银行承兑汇票"
-                                       filterable clearable>
-                                <el-option v-for="(name,k) in payModeList"
-                                           :key="k"
-                                           :label="name"
-                                           :value="k">
-                                </el-option>
-                            </el-select>
+                            <el-input v-model="searchData.pay_query_key" clearable
+                                      placeholder="请输入账户"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="4">
                         <el-form-item>
-                            <el-input size="mini" v-model="searchData.pay_query_key" clearable
-                                      placeholder="请输入被背书人"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="4">
-                        <el-form-item>
-                            <el-select v-model="searchData.bank_type" placeholder="请选择开票银行"
-                                       clearable filterable
-                                       :filter-method="filterBankType"
-                                       :loading="bankLongding"
-                                       @visible-change="clearSearch">
-                                <el-option v-for="bankType in bankTypeList"
-                                           :key="bankType.name"
-                                           :label="bankType.name"
-                                           :value="bankType.code">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="4">
-                        <el-form-item>
-                            <el-input v-model="searchData.recv_query_key" clearable
-                                      placeholder='输入票据编号以“|”分隔'></el-input>
+                            <el-date-picker v-model="searchData.bank_type"
+                                    type="date" placeholder="请选择日期"
+                                    value-format="yyyy-MM-dd">
+                            </el-date-picker>
                         </el-form-item>
                     </el-col>
                     <el-col :span="2">
@@ -147,16 +122,11 @@
             <el-table :data="tableList"
                       height="100%"
                       border size="mini">
-                <el-table-column prop="bill_number" label="票据编号" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="bill_type" label="票据类型" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="date_draft" label="出票日期" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="money" label="金额" :show-overflow-tooltip="true"
-                                 :formatter="transitAmount"></el-table-column>
-                <el-table-column prop="sign_date" label="签收日期" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="due_date" label="票据到期日" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="endorse_people" label="被背书人" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="endorse_type" label="背书类型" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="endorse_date" label="背书日期" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="bill_number" label="账户" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="bill_type" label="月份" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="date_draft" label="账户名称" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="money" label="所属机构" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="money" label="状态" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column
                         label="操作" width="50"
                         fixed="right">
@@ -193,87 +163,29 @@
             <el-form :model="dialogData" size="small"
                      :label-width="formLabelWidth">
                 <el-row>
-                    <el-col :span="24" class="form-small-title"
-                            style="border-bottom: 1px solid #eee;margin-bottom: 10px;">
-                        <span></span>被背书人信息
-                    </el-col>
                     <el-col :span="12">
-                        <el-form-item label="被背书人">
-                            <el-input v-model="dialogData.endorse_people"></el-input>
+                        <el-form-item label="账号">
+                            <el-select v-model="dialogData.endorse_type" placeholder="请选择账号" clearable>
+                                <el-option label="123456" value="123456"></el-option>
+                                <el-option label="654321" value="654321"></el-option>
+                            </el-select>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="背书类型">
-                            <el-select v-model="dialogData.endorse_type" placeholder="请选择背书类型" clearable>
-                                <el-option label="转让背书" value="转让背书"></el-option>
-                                <el-option label="非转让背书" value="非转让背书"></el-option>
-                            </el-select>
+                        <el-form-item label="日期">
+                            <el-date-picker v-model="searchData.bank_type"
+                                            style="width:100%"
+                                            type="date" placeholder="请选择日期"
+                                            value-format="yyyy-MM-dd">
+                            </el-date-picker>
                         </el-form-item>
                     </el-col>
 
-                    <el-col :span="24" class="form-small-title" style="margin-bottom:-22px"><span></span>票据信息</el-col>
-                </el-row>
-                <el-row v-for="item in items"
-                        :key="item.$id">
-                    <el-col :span="24">
-                        <div class="split-form">
-                            <el-button-group>
-                                <el-button size="mini" @click="removeAccount(item)"
-                                           v-show="showDel">删除
-                                </el-button>
-                                <el-button size="mini" style="margin-left:0"
-                                           @click="addAccount">新增
-                                </el-button>
-                            </el-button-group>
-                        </div>
-                    </el-col>
-                    <el-col :span="12" required>
-                        <el-form-item label="单据编号">
-                            <el-select v-model="item.bill_number" placeholder="请选择单据编号" clearable>
-                                <el-option label="G234234234" value="G234234234"></el-option>
-                                <el-option label="J324324577" value="J324324577"></el-option>
-                                <el-option label="Q090680234" value="Q090680234"></el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="出票日">
-                            <el-input v-model="item.date_draft"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="到期日">
-                            <el-input v-model="item.due_date"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="金额">
-                            <el-input v-model="item.money"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="签发行">
-                            <el-input v-model="item.issued"></el-input>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-                <el-row>
-                    <el-col :span="24" class="form-small-title"
-                            style="border-bottom: 1px solid #eee;margin-bottom: 10px;">
-                        <span></span>背书事项
-                    </el-col>
-                    <el-col :span="24">
-                        <el-form-item label-width="10px">
-                            <el-input v-model="dialogData.memo"
-                                      type="textarea"
-                                      :rows="3"></el-input>
-                        </el-form-item>
-                    </el-col>
                 </el-row>
             </el-form>
             <span slot="footer" class="dialog-footer">
                 <el-button type="warning" size="mini" plain @click="dialogVisible = false">取 消</el-button>
-                <el-button type="warning" size="mini" @click="affirmEndorse">背 书</el-button>
+                <el-button type="warning" size="mini" @click="affirmEndorse">生成余额调节表</el-button>
             </span>
         </el-dialog>
         <!--查看弹出框-->
@@ -403,18 +315,13 @@
                 payModeList: {
                     "1": "银行承兑汇票"
                 },
-                bankAllList: [], //银行大类全部
-                bankAllTypeList: [], //银行大类全部(不重复)
-                bankTypeList: [], //银行大类
-                outTime: "", //银行大类搜索控制
-                bankLongding: false,
                 dialogVisible: false, //弹框数据
                 dialogData: {
                     endorse_people: "",
                     endorse_type: "",
                     memo: "",
                 },
-                dialogTitle: "新增",
+                dialogTitle: "生成余额调节表",
                 items: [
                     {
                         bill_number: "",
