@@ -569,33 +569,16 @@
                     <el-menu-item index="/refund-ticket/suspicious-refund" v-if="menuList.DoubtfulRefund">可疑退票</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
-            <!--
-            <el-submenu index="10">
+            <el-submenu index="20">
                 <template slot="title" height="200px">
-                    <i class="icon-zjys"></i>
-
-                    <p class="mg-four">资金预算</p>
+                    <i class="icon-dzt"></i>
+                    <p>对账通</p>
                 </template>
                 <el-menu-item-group>
-                    <el-menu-item index="1-1">选项1</el-menu-item>
-                    <el-menu-item index="1-2">选项2</el-menu-item>
-                    <el-menu-item index="1-3">选项3</el-menu-item>
+                    <el-menu-item index="/reconciliation/initial-balance">期初余额</el-menu-item>
+                    <el-menu-item index="/reconciliation/balance-adjust">余额调节表</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
-
-            <el-submenu index="12">
-                <template slot="title" height="200px">
-                    <i class="icon-bb"></i>
-
-                    <p>报表</p>
-                </template>
-                <el-menu-item-group>
-                    <el-menu-item index="1-1">选项1</el-menu-item>
-                    <el-menu-item index="1-2">选项2</el-menu-item>
-                    <el-menu-item index="1-3">选项3</el-menu-item>
-                </el-menu-item-group>
-            </el-submenu>
-            -->
         </el-menu>
     </div>
 </template>

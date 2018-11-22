@@ -122,7 +122,9 @@ import SuspiciousData from '@/components/OAData/SuspiciousData'
 //退票管理
 import RefundDispose from '@/components/RefundTicket/RefundDispose'
 import SuspiciousRefund from '@/components/RefundTicket/SuspiciousRefund'
-
+//对账通
+import InitialBalance from '@/components/reconciliation/InitialBalance'
+import BalanceAdjust from '@/components/reconciliation/BalanceAdjust'
 
 
 Vue.use(Router)
@@ -233,6 +235,9 @@ const router = new Router({
                         //退票管理
                         {path: '/refund-ticket/refund-dispose', name: 'RefundDispose', component: RefundDispose, meta: {requireAuth: true}},
                         {path: '/refund-ticket/suspicious-refund', name: 'SuspiciousRefund', component: SuspiciousRefund, meta: {requireAuth: true}},
+                        //对账通
+                        {path: '/reconciliation/initial-balance', name: 'InitialBalance', component: InitialBalance, meta: {requireAuth: true}},
+                        {path: '/reconciliation/balance-adjust', name: 'BalanceAdjust', component: BalanceAdjust, meta: {requireAuth: true}}
                     ]
                 },
                 //基础样式三（tab页）
