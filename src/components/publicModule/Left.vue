@@ -577,6 +577,7 @@
                 <el-menu-item-group>
                     <el-menu-item index="/reconciliation/initial-balance">期初余额</el-menu-item>
                     <el-menu-item index="/reconciliation/balance-adjust">余额调节表</el-menu-item>
+                    <el-menu-item index="/allot/allot-deal-check?bizType=100">交易核对</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
         </el-menu>
