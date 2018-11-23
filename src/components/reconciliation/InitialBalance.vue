@@ -5,6 +5,12 @@
         box-sizing: border-box;
         position: relative;
 
+        /*顶部按钮*/
+        .button-list-right {
+            position: absolute;
+            top: -60px;
+            right: -18px;
+        }
         /*分页部分*/
         .botton-pag {
             position: absolute;
@@ -55,32 +61,37 @@
 
 <template>
     <div id="initialBalance">
+        <!-- 顶部按钮-->
+        <div class="button-list-right">
+            <el-button type="warning" size="mini" @click="addSign">新增</el-button>
+        </div>
         <!--数据展示区-->
         <section class="table-content">
             <el-table :data="tableList"
                       height="100%"
                       border size="mini">
-                <el-table-column prop="bill_number" label="账户" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="bill_type" label="账户名称" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="money" label="期初余额" :show-overflow-tooltip="true"
+                <el-table-column prop="acc_no" label="账户号" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="acc_name" label="账户名称" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="balance" label="期初余额" :show-overflow-tooltip="true"
                                  :formatter="transitAmount"></el-table-column>
-                <el-table-column prop="sign_date" label="银行未达账项" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="due_date" label="企业未达账项" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="endorse_people" label="状态" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="bank_fail_achieve" label="银行未达账项" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="enter_fail_achieve" label="企业未达账项" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="is_enabled" label="状态" :show-overflow-tooltip="true"
+                                :formatter="transitionStatus"></el-table-column>
                 <el-table-column
                         label="操作" width="80"
                         fixed="right">
                     <template slot-scope="scope" class="operationBtn">
                         <el-tooltip content="查看" placement="bottom" effect="light"
-                                    :enterable="false" :open-delay="500">
+                                    :enterable="false" :open-delay="500" v-show="scope.row.is_enabled == 1">
                             <el-button type="primary" icon="el-icon-search" size="mini"
-                                       @click="addSign(scope.row)"></el-button>
+                                       @click="lookSign(scope.row)"></el-button>
                         </el-tooltip>
-                        <!-- <el-tooltip content="新增" placement="bottom" effect="light"
-                                    :enterable="false" :open-delay="500">
-                            <el-button type="primary" icon="el-icon-plus" size="mini"
-                                       @click="addSign(scope.row)"></el-button>
-                        </el-tooltip> -->
+                        <el-tooltip content="编辑" placement="bottom" effect="light"
+                                    :enterable="false" :open-delay="500" v-show="scope.row.is_enabled == 0">
+                            <el-button type="primary" icon="el-icon-edit" size="mini"
+                                       @click="editSign(scope.row)"></el-button>
+                        </el-tooltip>
                     </template>
                 </el-table-column>
             </el-table>
@@ -110,26 +121,43 @@
                 <el-row>
                     <el-col :span="12">
                         <el-form-item label="账户号">
-                            <el-select v-model="dialogData.endorse_type" placeholder="请选择账户号" clearable>
-                                <el-option label="转让背书" value="转让背书"></el-option>
-                                <el-option label="非转让背书" value="非转让背书"></el-option>
+                            <el-select v-model="dialogData.acc_id" clearable placeholder="请选择账户号" :disabled="lookDisabled">
+                                <el-option
+                                    v-for="item in accOptions"
+                                    :key="item.acc_no"
+                                    :label="item.acc_no"
+                                    :value="item.acc_id">
+                                    <span>{{ item.acc_no }}</span>
+                                    <span style="margin-left:10px;color:#bbb">{{ item.acc_name }}</span>
+                                </el-option>
                             </el-select>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="日期">
+                        <el-form-item label="期初余额">
+                            <el-input v-model="dialogData.balance" :disabled="lookDisabled" clearable></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="年">
                             <el-date-picker
-                                    v-model="dialogData.start_date"
-                                    type="date"
-                                    placeholder="起始日期"
-                                    value-format="yyyy-MM-dd"
-                                    style="width: 100%;">
+                                v-model="dialogData.year"
+                                type="year"
+                                placeholder="选择年"
+                                value-format="yyyy"
+                                style="width: 100%;" :disabled="lookDisabled">
                             </el-date-picker>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="期初余额">
-                            <el-input v-model="dialogData.endorse_people"></el-input>
+                        <el-form-item label="月">
+                            <el-date-picker
+                                v-model="dialogData.month"
+                                type="month"
+                                placeholder="选择月"
+                                value-format="M"
+                                style="width: 100%;" :disabled="lookDisabled">
+                            </el-date-picker>
                         </el-form-item>
                     </el-col>
                 </el-row>
@@ -137,10 +165,9 @@
                         :key="item.$id">
                     <el-col :span="24">
                         <div class="split-form">
-                            <el-button-group>
+                            <el-button-group v-show="!lookDisabled">
                                 <el-button size="mini" @click="removeAccount(item)"
-                                           v-show="showDel">删除
-                                </el-button>
+                                           v-show="showDel">删除</el-button>
                                 <el-button size="mini" style="margin-left:0"
                                            @click="addAccount">新增
                                 </el-button>
@@ -149,37 +176,44 @@
                     </el-col>
                     <el-col :span="12" required>
                         <el-form-item label="类型">
-                            <el-select v-model="item.bill_number" placeholder="请选择单据编号" clearable>
-                                <el-option label="G234234234" value="G234234234"></el-option>
-                                <el-option label="J324324577" value="J324324577"></el-option>
-                                <el-option label="Q090680234" value="Q090680234"></el-option>
+                            <el-select v-model="item.data_type" placeholder="请选择类型" clearable :disabled="lookDisabled">
+                                <el-option
+                                    v-for="(item,k) in initDataType"
+                                    :key="k"
+                                    :label="item"
+                                    :value="k">
+                                </el-option>
                             </el-select>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="借贷方向">
-                            <el-select v-model="item.bill_number" placeholder="请选择借贷方向" clearable>
-                                <el-option label="收" value="1"></el-option>
-                                <el-option label="付" value="2"></el-option>
+                            <el-select v-model="item.credit_or_debit" placeholder="请选择借贷方向" clearable  :disabled="lookDisabled">
+                                <el-option
+                                    v-for="(item,k) in credirOrDebit"
+                                    :key="k"
+                                    :label="item"
+                                    :value="k">
+                                </el-option>
                             </el-select>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="金额">
-                            <el-input v-model="item.money"></el-input>
+                            <el-input v-model="item.amount" :disabled="lookDisabled" clearable></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="摘要">
-                            <el-input v-model="item.issued"></el-input>
+                            <el-input v-model="item.memo" :disabled="lookDisabled" clearable></el-input>
                         </el-form-item>
                     </el-col>
                 </el-row>
             </el-form>
-            <span slot="footer" class="dialog-footer">
+            <span slot="footer" class="dialog-footer" v-show="!lookDisabled">
                 <el-button type="warning" size="mini" plain @click="dialogVisible = false">取 消</el-button>
-                <el-button type="warning" size="mini" @click="affirmEndorse">保 存</el-button>
-                <el-button type="warning" size="mini" @click="affirmEndorse">启 用</el-button>
+                <el-button type="warning" size="mini" @click="saveBalance">保 存</el-button>
+                <el-button type="warning" size="mini" @click="enableBalance">启 用</el-button>
             </span>
         </el-dialog>
     </div>
@@ -191,7 +225,7 @@
         name: "InitialBalance",
         created: function () {
             this.$emit("transmitTitle", "期初余额");
-            // this.$emit("getCommTable", this.routerMessage);
+            this.$emit("getCommTable", this.routerMessage);
         },
         components: {},
         mounted: function () {
@@ -204,64 +238,92 @@
             if (bankAllTypeList) {
                 this.bankAllTypeList = bankAllTypeList;
             }
+            var constants = JSON.parse(window.sessionStorage.getItem("constants"));
+            //借贷方向
+            if(constants.CredirOrDebit){
+                this.credirOrDebit = constants.CredirOrDebit;
+            }
+            //类型
+            if(constants.InitDataType){
+                this.initDataType = constants.InitDataType;
+            }
+
+            this.$axios({
+                url:this.queryUrl + "normalProcess",
+                method:"post",
+                data:{
+                    optype:"account_accs",
+                    params:{
+                        status:1,
+                        acc_id:""
+                    }
+                }
+            }).then((result) =>{
+                this.accOptions = result.data.data;
+            });
+            this.messageTips = {
+                acc_id: "请选择账号！",
+                balance: "请填写正确的金额！",
+                year: "请选择年！",
+                month: "请选择月！"
+            }
         },
         props: ["tableData"],
         data: function () {
             return {
                 queryUrl: this.$store.state.queryUrl,
                 routerMessage: {
-                    optype: "dbtbatch_viewlist",
+                    optype: "dztinit_list",
                     params: {
                         page_size: 7,
                         page_num: 1
                     }
                 },
-                tableList: [
-                    {id:"1",money:"10000"}
-                ], //列表数据
+                tableList: [], //列表数据
                 pagSize: 8, //分页数据
                 pagTotal: 1,
                 pagCurrent: 1,
                 payModeList: {
                     "1": "银行承兑汇票"
                 },
-                bankAllList: [], //银行大类全部
-                bankAllTypeList: [], //银行大类全部(不重复)
-                bankTypeList: [], //银行大类
-                outTime: "", //银行大类搜索控制
-                bankLongding: false,
+                accOptions: [],
                 dialogVisible: false, //弹框数据
                 dialogData: {
-                    endorse_people: "",
-                    endorse_type: "",
-                    memo: "",
+                    acc_id: "",
+                    year: "",
+                    month: "",
+                    balance: ""
                 },
-                dialogTitle: "期初余额",
+                dialogTitle: "查看",
                 items: [
                     {
-                        bill_number: "",
-                        date_draft: "",
-                        due_date: "",
-                        money: "",
-                        issued: "",
+                        data_type: "",
+                        credit_or_debit: "",
+                        memo: "",
+                        amount:"",
                         $id: 1
                     }
                 ],
                 formLabelWidth: "100px",
-                lookDialogVisible: false, //查看弹框
-                lookDialog: {
-                    endorse_people: "",
-                    endorse_type: "",
-                    memo: "",
-                    bill_number: "",
-                    date_draft: "",
-                    due_date: "",
-                    money: "",
-                    issued: "",
+                credirOrDebit: {},//借贷方向
+                initDataType: {},//类型
+                isEnabled:{
+                    1: "已启用",
+                    0: "未启用",
                 },
+                lookDisabled: false,
+                messageTips: {},//校验提示
             }
         },
         methods: {
+            //展示格式转换-业务状态
+            transitionStatus: function (row, column, cellValue, index) {
+                if(column.property === "is_enabled"){//转换启用状态
+                    if (this.isEnabled) {
+                        return this.isEnabled[cellValue];
+                    }
+                }
+            },
             //展示格式转换-金额
             transitAmount: function (row, column, cellValue, index) {
                 return this.$common.transitSeparator(cellValue);
@@ -280,35 +342,15 @@
             sizeChange: function (val) {
                 this.routerMessage.params.page_size = val;
                 this.routerMessage.params.page_num = 1;
-                return;
                 this.$emit("getCommTable", this.routerMessage);
-            },
-            //新增
-            addSign: function (row) {
-                var dialogData = this.dialogData;
-                for(var k in dialogData){
-                    dialogData[k] = "";
-                }
-                this.items = [
-                    {
-                        bill_number: "",
-                        date_draft: "",
-                        due_date: "",
-                        money: "",
-                        issued: "",
-                        $id: 1
-                    }
-                ];
-                this.dialogVisible = true;
             },
             //新增票据信息
             addAccount: function () {
                 var item = {
-                    bill_number: "",
-                    date_draft: "",
-                    due_date: "",
-                    money: "",
-                    issued: "",
+                    data_type: "",
+                    credit_or_debit: "",
+                    memo: "",
+                    amount: "",
                     $id: Date.now()
                 };
                 this.items.push(item);
@@ -320,24 +362,186 @@
                     this.items.splice(index, 1);
                 }
             },
-            //确认背书
-            affirmEndorse: function(){
+            //新增
+            addSign: function (row) {
+                this.dialogTitle = "新增";
+                this.lookDisabled = false;
                 var dialogData = this.dialogData;
-                var items = this.items;
-                items.forEach((item) => {
-                    var currItem = {};
-                    for(var k in dialogData){
-                        currItem[k] = dialogData[k];
+                for(var k in dialogData){
+                    dialogData[k] = "";
+                }
+                this.items = [
+                    {
+                        data_type: "",
+                        credit_or_debit: "",
+                        amount: "",
+                        memo: "",
+                        $id: 1
                     }
-                    for(var key in item){
-                        if(key != "$id"){
-                            currItem[key] = item[key];
+                ];
+                this.dialogVisible = true;
+            },
+            editSign: function (row) {
+                this.lookSign(row,'edit');
+            },
+            //查看
+            lookSign: function (row,type) {
+                this.lookDisabled = type ? false : true;
+                this.dialogTitle = type ? "修改" : "查看";
+                var dialogData = this.dialogData;
+                this.$axios({
+                    url:this.queryUrl + "normalProcess",
+                    method:"post",
+                    data:{
+                        optype: "dztinit_detail",
+                        params:  {
+                            acc_id: row.acc_id,
+                            year: row.year,
+                            month: row.month
                         }
                     }
-                    this.tableList.push(currItem);
-                });
-                this.dialogVisible = false;
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                    }else{
+                        var data = result.data.data;
+                        for(var k in dialogData){
+                            dialogData[k] = row[k];
+                        }
+                        this.items = data;
+                        data.forEach(ele=>{
+                            ele.data_type = ele.data_type + "";
+                            ele.credit_or_debit = ele.credit_or_debit + "";
+                        })
+                        if(type == 'edit' && data.length==0){//编辑
+                            this.items = [
+                                {
+                                    data_type: "",
+                                    credit_or_debit: "",
+                                    amount: "",
+                                    memo: "",
+                                    $id: 1
+                                }
+                            ];
+                        }
+                        this.dialogVisible = true;
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                })
             },
+            //保存
+            saveBalance: function(){
+                var params = this.setParams();
+                if(!params){
+                    return;
+                }
+                var optype = this.dialogTitle=="新增" ? "dztinit_add" : "dztinit_chg";
+                this.$axios({
+                    url:this.queryUrl + "normalProcess",
+                    method:"post",
+                    data:{
+                        optype: optype,
+                        params: params
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                    }else{
+                        var data = result.data.data;
+                        this.$emit("getCommTable", this.routerMessage);
+                        this.dialogVisible = false;
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                })
+            },
+            //启用
+            enableBalance: function(){
+                var params = this.setParams();
+                if(!params){
+                    return;
+                }
+                this.$axios({
+                    url:this.queryUrl + "normalProcess",
+                    method:"post",
+                    data:{
+                        optype: "dztinit_enable",
+                        params: params
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                    }else{
+                        var data = result.data.data;
+                        this.$emit("getCommTable", this.routerMessage);
+                        this.dialogVisible = false;
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                })
+            },
+            //设置参数
+            setParams:function(){
+                // var obj = {
+                //     "zh":{
+                //         aaa:1,
+                //         bbb:2
+                //     },
+                //     "bs":{
+                //         bbb:111,
+                //         ccc:111
+                //     }
+                // }
+                var flag = false;
+                var params = this.dialogData;
+                var messageTips = this.messageTips;
+                for(var k in messageTips){
+                    if(!params[k]){
+                        var message = messageTips[k];
+                        this.$message({
+                            type: "warning",
+                            message: message,
+                            duration: 2000
+                        });
+                        return ;
+                    }
+                }
+                //校验子类型
+                var items = [];
+                this.items.forEach(element =>{
+                    if(!element.data_type && !element.amount && !element.credit_or_debit){
+
+                    }else if(!element.data_type || !element.amount || !element.credit_or_debit){
+                        this.$message({
+                            type: "warning",
+                            message: "请完善子类型！",
+                            duration: 2000
+                        })
+                        flag = true;
+                        return ;
+                    }else{
+                        items.push(element);
+                    }
+                })
+                if (flag) {
+                    return ;
+                }
+                params.list = items;
+                return params;
+            }
         },
         computed: {
             showDel: function () {
