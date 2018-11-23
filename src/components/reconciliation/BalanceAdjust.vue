@@ -231,7 +231,7 @@
                     <li>加：银行已收,企业未收款</li>
                     <li v-text="dialogTable.ysAll"></li>
                     <template v-for="(item,index) in ysList">
-                        <li>{{ item.$empty ? "" : (index + 1 ) + "、" + item.memo }}</li>
+                        <li>{{ item.$empty ? "" : (index + 1 ) + "、" + item.summary }}</li>
                         <li>{{ item.amount }}</li>
                     </template>
 
@@ -239,7 +239,7 @@
                     <li>减：银行已付,企业未付款</li>
                     <li v-text="dialogTable.yfAll"></li>
                     <template v-for="(item,index) in yfList">
-                        <li>{{ item.$empty ? "" : (index + 1 ) + "、" + item.memo }}</li>
+                        <li>{{ item.$empty ? "" : (index + 1 ) + "、" + item.summary }}</li>
                         <li>{{ item.amount }}</li>
                     </template>
                     <li class="table-bottom">调节后的存款余额</li>
