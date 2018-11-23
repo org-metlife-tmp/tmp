@@ -48,27 +48,52 @@
             height: 340px;
         }
 
-        /*弹框*/
-        .form-small-title{
-            font-weight: bold;
-            padding-bottom: 6px;
-
-            span{
-                display:inline-block;
-                width: 4px;
-                height: 16px;
-                background-color: orange;
-                margin-right: 6px;
-                vertical-align: middle;
-            }
-        }
-        .split-form {
+        /*弹框余额表*/
+        .build-table {
             width: 100%;
-            height: 26px;
-            border-bottom: 1px solid #eee;
-            margin-bottom: 10px;
-            padding-bottom: 1px;
-            text-align: right;
+            padding: 0 10px;
+            box-sizing: border-box;
+
+            ul {
+                width: 50%;
+                float: left;
+                box-sizing: border-box;
+                border-top: 1px solid #E7E7E7;
+                border-right: 1px solid #E7E7E7;
+
+                li {
+                    float: left;
+                    box-sizing: border-box;
+                    border: 1px solid #E7E7E7;
+                    height: 30px;
+                    border-right: none;
+                    border-top: none;
+                    line-height: 30px;
+                    text-indent: 8px;
+                }
+
+                li:nth-child(odd) {
+                    width: 70%;
+                }
+
+                li:nth-child(even) {
+                    width: 30%;
+                }
+
+                /*表格标题*/
+                .table-title {
+                    background-color: #E9F2F9;
+                    height: 32px;
+                    line-height: 32px;
+                    text-align: center;
+                    text-indent: 0px;
+                }
+
+                /*表格底部*/
+                .table-bottom {
+                    background-color: #F8F8F8;
+                }
+            }
         }
     }
 </style>
@@ -87,7 +112,7 @@
     <div id="balanceAdjust">
         <!-- 顶部按钮-->
         <div class="button-list-right">
-            <el-button type="warning" size="mini" @click="addSign">新增</el-button>
+            <el-button type="warning" size="mini" @click="addBill">新增</el-button>
         </div>
         <!--搜索区-->
         <div class="search-setion">
@@ -95,16 +120,24 @@
                 <el-row>
                     <el-col :span="4">
                         <el-form-item>
-                            <el-input v-model="searchData.pay_query_key" clearable
-                                      placeholder="请输入账户"></el-input>
+                            <el-date-picker v-model="searchData.year"
+                                            type="year" placeholder="请选择年份"
+                                            format="yyyy 年" value-format="yyyy">
+                            </el-date-picker>
                         </el-form-item>
                     </el-col>
                     <el-col :span="4">
                         <el-form-item>
-                            <el-date-picker v-model="searchData.bank_type"
-                                    type="date" placeholder="请选择日期"
-                                    value-format="yyyy-MM-dd">
+                            <el-date-picker v-model="searchData.month"
+                                            type="month" placeholder="请选择月份"
+                                            format="M 月" value-format="M">
                             </el-date-picker>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="4">
+                        <el-form-item>
+                            <el-input v-model="searchData.query_key" clearable
+                                      placeholder="请输入账户名或账号"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="2">
@@ -122,11 +155,10 @@
             <el-table :data="tableList"
                       height="100%"
                       border size="mini">
-                <el-table-column prop="bill_number" label="账户" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="bill_type" label="月份" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="date_draft" label="账户名称" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="money" label="所属机构" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="money" label="状态" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="month" label="月份" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="acc_no" label="账户号" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="acc_name" label="账户名称" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="org_name" label="所属机构" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column
                         label="操作" width="50"
                         fixed="right">
@@ -154,7 +186,7 @@
                     :current-page="pagCurrent">
             </el-pagination>
         </div>
-        <!--新增弹出框-->
+        <!--新增/查看弹出框-->
         <el-dialog title=""
                    :visible.sync="dialogVisible"
                    width="860px" top="76px"
@@ -163,109 +195,82 @@
             <el-form :model="dialogData" size="small"
                      :label-width="formLabelWidth">
                 <el-row>
-                    <el-col :span="12">
+                    <el-col :span="11">
                         <el-form-item label="账号">
-                            <el-select v-model="dialogData.endorse_type" placeholder="请选择账号" clearable>
-                                <el-option label="123456" value="123456"></el-option>
-                                <el-option label="654321" value="654321"></el-option>
+                            <el-select v-model="dialogData.acc_id" placeholder="请选择账号"
+                                       clearable :disabled="dialogTitle != '新增余额调节表'">
+                                <el-option v-for="accItem in accList"
+                                           :key="accItem.acc_id"
+                                           :label="accItem.acc_no"
+                                           :value="accItem.acc_id">
+                                </el-option>
                             </el-select>
                         </el-form-item>
                     </el-col>
-                    <el-col :span="12">
+                    <el-col :span="11">
                         <el-form-item label="日期">
-                            <el-date-picker v-model="searchData.bank_type"
+                            <el-date-picker v-model="dialogData.cdate"
                                             style="width:100%"
-                                            type="date" placeholder="请选择日期"
-                                            value-format="yyyy-MM-dd">
+                                            type="month" placeholder="请选择日期"
+                                            value-format="yyyy-MM"
+                                            :disabled="dialogTitle != '新增余额调节表'">
                             </el-date-picker>
                         </el-form-item>
                     </el-col>
-
+                    <el-col :span="2" style="text-align:right">
+                        <el-button type="primary" plain @click="getBuild" size="small">查询</el-button>
+                    </el-col>
                 </el-row>
             </el-form>
+            <div class="build-table" v-show="hasBuild">
+                <ul>
+                    <li class="table-title">项目</li>
+                    <li class="table-title">金额 (元)</li>
+                    <li>企业银行存款日记账余额</li>
+                    <li v-text="dialogTable.voucher_bal"></li>
+                    <li>加：银行已收,企业未收款</li>
+                    <li v-text="dialogTable.ysAll"></li>
+                    <template v-for="(item,index) in ysList">
+                        <li>{{ item.$empty ? "" : (index + 1 ) + "、" + item.memo }}</li>
+                        <li>{{ item.amount }}</li>
+                    </template>
+
+
+                    <li>减：银行已付,企业未付款</li>
+                    <li v-text="dialogTable.yfAll"></li>
+                    <template v-for="(item,index) in yfList">
+                        <li>{{ item.$empty ? "" : (index + 1 ) + "、" + item.memo }}</li>
+                        <li>{{ item.amount }}</li>
+                    </template>
+                    <li class="table-bottom">调节后的存款余额</li>
+                    <li class="table-bottom" v-text="dialogTable.voucher_adjust_bal"></li>
+                </ul>
+                <ul>
+                    <li class="table-title">项目</li>
+                    <li class="table-title">金额 (元)</li>
+                    <li>银行对账单余额</li>
+                    <li v-text="dialogTable.acc_bal"></li>
+                    <li>加：企业已收,银行未收款</li>
+                    <li v-text="dialogTable.qsAll"></li>
+                    <template v-for="(item,index) in qsList">
+                        <li>{{ item.$empty ? "" : (index + 1 ) + "、" + item.memo }}</li>
+                        <li>{{ item.amount }}</li>
+                    </template>
+
+                    <li>减：企业已付,银行未付款</li>
+                    <li v-text="dialogTable.qfAll"></li>
+                    <template v-for="(item,index) in qfList">
+                        <li>{{ item.$empty ? "" : (index + 1 ) + "、" + item.memo }}</li>
+                        <li>{{ item.amount }}</li>
+                    </template>
+                    <li class="table-bottom">调节后的存款余额</li>
+                    <li class="table-bottom" v-text="dialogTable.acc_adjust_bal"></li>
+                </ul>
+            </div>
             <span slot="footer" class="dialog-footer">
                 <el-button type="warning" size="mini" plain @click="dialogVisible = false">取 消</el-button>
-                <el-button type="warning" size="mini" @click="affirmEndorse">生成余额调节表</el-button>
-            </span>
-        </el-dialog>
-        <!--查看弹出框-->
-        <el-dialog title=""
-                   :visible.sync="lookDialogVisible"
-                   width="860px" top="76px"
-                   :close-on-click-modal="false">
-            <h1 slot="title" v-text="lookDialogTitle" class="dialog-title"></h1>
-            <el-form :model="lookDialog" size="small"
-                     :label-width="formLabelWidth">
-                <el-row>
-                    <el-col :span="24" class="form-small-title"
-                            style="border-bottom: 1px solid #eee;margin-bottom: 10px;">
-                        <span></span>被背书人信息
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="被背书人">
-                            <el-input v-model="lookDialog.endorse_people" disabled></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="背书类型">
-                            <el-select v-model="lookDialog.endorse_type" placeholder="请选择背书类型"
-                                       disabled clearable>
-                                <el-option label="转让背书" value="转让背书"></el-option>
-                                <el-option label="非转让背书" value="非转让背书"></el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-
-                    <el-col :span="24" class="form-small-title"
-                            style="border-bottom: 1px solid #eee;margin-bottom: 10px;">
-                        <span></span>票据信息
-                    </el-col>
-                </el-row>
-                <el-row>
-                    <el-col :span="12" required>
-                        <el-form-item label="单据编号">
-                            <el-select v-model="lookDialog.bill_number" placeholder="请选择单据编号"
-                                       clearable disabled>
-                                <el-option label="G234234234" value="G234234234"></el-option>
-                                <el-option label="J324324577" value="J324324577"></el-option>
-                                <el-option label="Q090680234" value="Q090680234"></el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="出票日">
-                            <el-input v-model="lookDialog.date_draft" disabled></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="到期日">
-                            <el-input v-model="lookDialog.due_date" disabled></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="金额">
-                            <el-input v-model="lookDialog.money" disabled></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="签发行">
-                            <el-input v-model="lookDialog.issued" disabled></el-input>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-                <el-row>
-                    <el-col :span="24" class="form-small-title"
-                            style="border-bottom: 1px solid #eee;margin-bottom: 10px;">
-                        <span></span>背书事项
-                    </el-col>
-                    <el-col :span="24">
-                        <el-form-item label-width="10px">
-                            <el-input v-model="lookDialog.memo" type="textarea" :rows="3" disabled></el-input>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-            </el-form>
-            <span slot="footer" class="dialog-footer">
+                <el-button type="warning" size="mini" @click="createTable"
+                           v-show="dialogTitle == '新增余额调节表'">生成余额调节表</el-button>
             </span>
         </el-dialog>
     </div>
@@ -277,122 +282,81 @@
         name: "BalanceAdjust",
         created: function () {
             this.$emit("transmitTitle", "余额调节表");
-            // this.$emit("getCommTable", this.routerMessage);
-        },
-        components: {},
-        mounted: function () {
-            //银行大类
-            var bankTypeList = JSON.parse(window.sessionStorage.getItem("bankTypeList"));
-            if (bankTypeList) {
-                this.bankAllList = bankTypeList;
-            }
-            var bankAllTypeList = JSON.parse(window.sessionStorage.getItem("bankAllTypeList"));
-            if (bankAllTypeList) {
-                this.bankAllTypeList = bankAllTypeList;
-            }
+            this.$emit("getCommTable", this.routerMessage);
+
+            //账号列表
+            this.$axios({
+                url: this.queryUrl + "normalProcess",
+                method: "post",
+                data: {
+                    optype: "account_list",
+                    params: {
+                        service_status: [1]
+                    }
+                }
+            }).then((result) => {
+                if (result.data.error_msg) {
+                    this.$message({
+                        type: "error",
+                        message: result.data.error_msg,
+                        duration: 2000
+                    })
+                } else {
+                    var data = result.data.data;
+                    this.accList = data;
+                }
+            }).catch(function (error) {
+                console.log(error);
+            });
         },
         props: ["tableData"],
         data: function () {
             return {
                 queryUrl: this.$store.state.queryUrl,
                 routerMessage: {
-                    optype: "dbtbatch_viewlist",
+                    optype: "dztadjust_list",
                     params: {
                         page_size: 7,
                         page_num: 1
                     }
                 },
                 searchData: { //搜索条件
-                    pay_mode: "",
-                    pay_query_key: "",
-                    bank_type: "",
-                    recv_query_key: ""
+                    year: "",
+                    month: "",
+                    query_key: ""
                 },
                 tableList: [], //列表数据
                 pagSize: 8, //分页数据
                 pagTotal: 1,
                 pagCurrent: 1,
-                payModeList: {
-                    "1": "银行承兑汇票"
-                },
+                accList: [], //下拉框数据
                 dialogVisible: false, //弹框数据
                 dialogData: {
-                    endorse_people: "",
-                    endorse_type: "",
-                    memo: "",
+                    acc_id: "",
+                    cdate: "",
+                    id: "",
+                    persist_version: "",
                 },
-                dialogTitle: "生成余额调节表",
-                items: [
-                    {
-                        bill_number: "",
-                        date_draft: "",
-                        due_date: "",
-                        money: "",
-                        issued: "",
-                        $id: 1
-                    }
-                ],
+                dialogTitle: "新增余额调节表",
                 formLabelWidth: "100px",
-                lookDialogVisible: false, //查看弹框
-                lookDialog: {
-                    endorse_people: "",
-                    endorse_type: "",
-                    memo: "",
-                    bill_number: "",
-                    date_draft: "",
-                    due_date: "",
-                    money: "",
-                    issued: "",
+                dialogTable: {  //余额调节表汇总金额数据
+                    voucher_bal: "",
+                    voucher_adjust_bal: "",
+                    acc_bal: "",
+                    acc_adjust_bal: "",
+                    ysAll: "",
+                    yfAll: "",
+                    qsAll: "",
+                    qfAll: "",
                 },
-                lookDialogTitle: "查看",
+                ysList: [], //各个分项金额总数据
+                yfList: [],
+                qsList: [],
+                qfList: [],
+                hasBuild: false, //余额调节表显示控制
             }
         },
         methods: {
-            //银行大类搜索筛选
-            filterBankType: function (value) {
-                this.bankLongding = true;
-                clearTimeout(this.outTime);
-                this.outTime = setTimeout(() => {
-                    if (value && value.trim()) {
-                        this.bankTypeList = this.bankAllList.filter(item => {
-                            var chineseReg = /^[\u0391-\uFFE5]+$/; //判断是否为中文
-                            var englishReg = /^[a-zA-Z]+$/; //判断是否为字母
-                            var quanpinReg = /(a[io]?|ou?|e[inr]?|ang?|ng|[bmp](a[io]?|[aei]ng?|ei|ie?|ia[no]|o|u)|pou|me|m[io]u|[fw](a|[ae]ng?|ei|o|u)|fou|wai|[dt](a[io]?|an|e|[aeio]ng|ie?|ia[no]|ou|u[ino]?|uan)|dei|diu|[nl][gh]ei|[jqx](i(ao?|ang?|e|ng?|ong|u)?|u[en]?|uan)|([csz]h?|r)([ae]ng?|ao|e|i|ou|u[ino]?|uan)|[csz](ai?|ong)|[csz]h(ai?|uai|uang)|zei|[sz]hua|([cz]h|r)ong|y(ao?|[ai]ng?|e|i|ong|ou|u[en]?|uan))/; //判断是否为全拼
-
-                            if (chineseReg.test(value)) {
-                                return item.name.toLowerCase().indexOf(value.toLowerCase()) > -1;
-                            } else if (englishReg.test(value)) {
-                                if (quanpinReg.test(value)) {
-                                    return item.pinyin.toLowerCase().indexOf(value.toLowerCase()) > -1;
-                                } else {
-                                    return item.jianpin.toLowerCase().indexOf(value.toLowerCase()) > -1;
-                                }
-                            }
-                        });
-                        this.bankTypeList = this.bankTypeList.filter((item, index, arr) => {
-                            for (var i = index + 1; i < arr.length; i++) {
-                                if (item.display_name == arr[i].display_name) {
-                                    return false;
-                                }
-                            }
-                            return true;
-                        });
-                    } else {
-                        this.bankTypeList = this.bankAllTypeList.slice(0, 200);
-                    }
-                    this.bankLongding = false;
-                }, 1200);
-            },
-            //银行大类展开时重置数据
-            clearSearch: function (val) {
-                if (this.bankTypeList != this.bankAllTypeList && val) {
-                    this.bankTypeList = this.bankAllTypeList.slice(0, 200);
-                }
-            },
-            //展示格式转换-金额
-            transitAmount: function (row, column, cellValue, index) {
-                return this.$common.transitSeparator(cellValue);
-            },
             //根据条件查询数据
             queryData: function () {
                 var searchData = this.searchData;
@@ -401,105 +365,219 @@
                     this.routerMessage.params[k] = searchData[k];
                 }
                 this.routerMessage.params.page_num = 1;
-                return;
                 this.$emit("getCommTable", this.routerMessage);
             },
             //换页后获取数据
             getCurrentPage: function (currPage) {
                 this.routerMessage.params.page_num = currPage;
-                return;
                 this.$emit("getCommTable", this.routerMessage);
             },
             //当前页数据条数发生变化
             sizeChange: function (val) {
                 this.routerMessage.params.page_size = val;
                 this.routerMessage.params.page_num = 1;
-                return;
                 this.$emit("getCommTable", this.routerMessage);
             },
             //新增
-            addSign: function () {
+            addBill: function () {
+                this.dialogTitle = "新增余额调节表"
+                this.hasBuild = false;
                 var dialogData = this.dialogData;
-                for(var k in dialogData){
+                for (var k in dialogData) {
                     dialogData[k] = "";
                 }
-                this.items = [
-                    {
-                        bill_number: "",
-                        date_draft: "",
-                        due_date: "",
-                        money: "",
-                        issued: "",
-                        $id: 1
-                    }
-                ];
+                var dialogTable = this.dialogTable;
+                for (var k in dialogTable) {
+                    dialogTable[k] = "";
+                }
+                this.ysList = [];
+                this.yfList = [];
+                this.qsList = [];
+                this.qfList = [];
                 this.dialogVisible = true;
             },
-            //新增票据信息
-            addAccount: function () {
-                var item = {
-                    bill_number: "",
-                    date_draft: "",
-                    due_date: "",
-                    money: "",
-                    issued: "",
-                    $id: Date.now()
-                };
-                this.items.push(item);
-            },
-            //删除票据信息
-            removeAccount: function (item) {
-                var index = this.items.indexOf(item);
-                if (index != -1) {
-                    this.items.splice(index, 1);
-                }
-            },
-            //确认背书
-            affirmEndorse: function(){
+            //获取调节表
+            getBuild: function (val) {
                 var dialogData = this.dialogData;
-                var items = this.items;
-                items.forEach((item) => {
-                    var currItem = {};
-                    for(var k in dialogData){
-                        currItem[k] = dialogData[k];
-                    }
-                    for(var key in item){
-                        if(key != "$id"){
-                            currItem[key] = item[key];
+                if (dialogData.acc_id && dialogData.cdate) {
+                    this.$axios({
+                        url: this.queryUrl + "normalProcess",
+                        method: "post",
+                        data: {
+                            optype: "dztadjust_build",
+                            params: dialogData
                         }
-                    }
-                    this.tableList.push(currItem);
-                });
-                this.dialogVisible = false;
+                    }).then((result) => {
+                        if (result.data.error_msg) {
+                            this.$message({
+                                type: "error",
+                                message: result.data.error_msg,
+                                duration: 2000
+                            })
+                        } else {
+                            var data = result.data.data;
+                            this.setTableData(data);
+                        }
+                    }).catch(function (error) {
+                        console.log(error);
+                    })
+                }else{
+                    this.$message({
+                        type: "warning",
+                        message: "请选择账号和日期",
+                        duration: 2000
+                    });
+                }
             },
             //查看
             lookBill: function (row) {
-                var lookDialog = this.lookDialog;
-                for(var k in row){
-                    lookDialog[k] = row[k];
-                }
-                this.lookDialogVisible = true;
-            },
+                this.addBill(); //使用新增来清空数据
 
-            //编辑
-            editBill: function (row) {
-                this.$router.push({
-                    name: "LotMakeBill",
-                    params: {
-                        id: row.id,
-                        batchno: row.batchno
+                this.dialogTitle = "查看余额调节表";
+                this.$axios({
+                    url: this.queryUrl + "normalProcess",
+                    method: "post",
+                    data: {
+                        optype: "dztadjust_detail",
+                        params: {
+                            id: row.id
+                        }
                     }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                    } else {
+                        var data = result.data.data;
+                        this.setTableData(data);
+                    }
+                }).catch(function (error) {
+                    console.log(error);
                 });
             },
-        },
-        computed: {
-            showDel: function () {
-                if (this.items.length > 1) {
-                    return true;
-                } else {
-                    return false;
+            //设置调节表数据
+            setTableData: function (data) {
+                this.hasBuild = true;
+                //设置账号和日期
+                var dialogData = this.dialogData;
+                for (var k in dialogData) {
+                    if (k == "cdate") {
+                        dialogData.cdate = data.checkout_date;
+                    } else {
+                        dialogData[k] = data[k];
+                    }
                 }
-            }
+
+                var allData = {
+                    ysAll: 0,
+                    yfAll: 0,
+                    qsAll: 0,
+                    qfAll: 0,
+                }
+                //转换金额格式
+                data.ysqws.forEach((item) => {
+                    allData.ysAll += item.amount;
+                    item.amount = this.$common.transitSeparator(item.amount);
+                });
+                data.qsyws.forEach((item) => {
+                    allData.qsAll += item.amount;
+                    item.amount = this.$common.transitSeparator(item.amount);
+                });
+                data.yfqwf.forEach((item) => {
+                    allData.yfAll += item.amount;
+                    item.amount = this.$common.transitSeparator(item.amount);
+                });
+                data.qfywf.forEach((item) => {
+                    allData.qfAll += item.amount;
+                    item.amount = this.$common.transitSeparator(item.amount);
+                });
+
+                //设置余额表汇总数据
+                var dialogTable = this.dialogTable;
+                for (var k in dialogTable) {
+                    if (data[k]) {
+                        dialogTable[k] = this.$common.transitSeparator(data[k]);
+                    }
+                }
+                for (var k in allData) {
+                    dialogTable[k] = this.$common.transitSeparator(allData[k]);
+                }
+
+                //银行已收和企业已收数据设置
+                var emptyLength = Math.abs(data.ysqws.length - data.qsyws.length);
+                var pushData = "";
+                if (data.ysqws.length > data.qsyws.length) {
+                    pushData = data.qsyws;
+                } else {
+                    pushData = data.ysqws;
+                }
+
+                for (var i = 0; i < emptyLength; i++) {
+                    pushData.push({
+                        $empty: true
+                    })
+                }
+                this.ysList = data.ysqws;
+                this.qsList = data.qsyws;
+                //银行已付和企业已付数据设置
+                var emptyLength = Math.abs(data.yfqwf.length - data.qfywf.length);
+                var pushData = "";
+                if (data.yfqwf.length > data.qfywf.length) {
+                    pushData = data.qfywf;
+                } else {
+                    pushData = data.yfqwf;
+                }
+
+                for (var i = 0; i < emptyLength; i++) {
+                    pushData.push({
+                        $empty: true
+                    })
+                }
+                this.yfList = data.yfqwf;
+                this.qfList = data.qfywf;
+            },
+            //生成余额调节表
+            createTable: function () {
+                var dialogData = this.dialogData;
+                this.$axios({
+                    url: this.queryUrl + "normalProcess",
+                    method: "post",
+                    data: {
+                        optype: "dztadjust_confirm",
+                        params: {
+                            id: dialogData.id,
+                            persist_version: dialogData.persist_version
+                        }
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        });
+                    } else {
+                        var data = result.data.data;
+
+                        if (this.tableList.length < this.routerMessage.params.page_size) {
+                            this.tableList.push(data);
+                        }
+                        this.pagTotal++;
+
+                        this.$message({
+                            type: "success",
+                            message: "已成功生成余额调节表",
+                            duration: 2000
+                        });
+                        this.dialogVisible = false;
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            },
         },
         watch: {
             tableData: function (val, oldVal) {
