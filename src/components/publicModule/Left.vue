@@ -79,9 +79,11 @@
             .icon-skt{
                 background-position: -152px -254px;
             }
+
             .icon-electb{
                 background-position: -321px -194px;
             }
+
             .icon-gyl{
                 background-position: -212px -254px;
             }
@@ -93,9 +95,11 @@
             .icon-zht {
                 background-position: -249px -193px;
             }
+
             .icon-splgl {
                 background-position: -322px -222px;
             }
+
             .icon-zjys {
                 background-position: -32px 0px;
             }
@@ -118,6 +122,10 @@
 
             .icon-tpgl{
                 background-position: -272px -254px;
+            }
+
+            .icon-dzt{
+                background-position: -333px -254px;
             }
             /*首页背景图定位结束*/
         }
@@ -186,6 +194,9 @@
             }
             .icon-tpgl{
                 background-position: -242px -254px;
+            }
+            .icon-dzt{
+                background-position: -302px -254px;
             }
 
             .el-submenu__title p {
@@ -271,6 +282,10 @@
 
             .el-submenu__title:hover .icon-tpgl{
                 background-position: -272px -254px;
+            }
+
+            .el-submenu__title:hover .icon-dzt{
+                background-position: -333px -254px;
             }
 
             .el-submenu__title:hover p {
@@ -569,15 +584,15 @@
                     <el-menu-item index="/refund-ticket/suspicious-refund" v-if="menuList.DoubtfulRefund">可疑退票</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="20">
+            <el-submenu index="20" v-if="menuList.DZT">
                 <template slot="title" height="200px">
                     <i class="icon-dzt"></i>
                     <p>对账通</p>
                 </template>
                 <el-menu-item-group>
-                    <el-menu-item index="/reconciliation/initial-balance">期初余额</el-menu-item>
-                    <el-menu-item index="/reconciliation/balance-adjust">余额调节表</el-menu-item>
-                    <el-menu-item index="/allot/allot-deal-check?bizType=100">交易核对</el-menu-item>
+                    <el-menu-item index="/reconciliation/initial-balance" v-if="menuList.DztInitData">期初余额</el-menu-item>
+                    <el-menu-item index="/reconciliation/balance-adjust" v-if="menuList.DztBalAdjust">余额调节表</el-menu-item>
+                    <el-menu-item index="/allot/allot-deal-check?bizType=100" v-if="menuList.DztInitCheck">交易核对</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
         </el-menu>
@@ -717,6 +732,11 @@
                     TPGL: false, //退票管理
                     ActiveRefund: false, //主动退票
                     DoubtfulRefund: false, //可疑退票
+
+                    DZT: false, //对账通
+                    DztInitData: false, //期初余额设置
+                    DztBalAdjust: false, //余额调节表
+                    DztInitCheck: false, //期初数据核对
                 }
             }
         },
