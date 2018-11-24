@@ -254,13 +254,13 @@
                     <span class="name">{{submiter.submitter_name}}</span>
                     <span class="pointCon"><em class="pointer parse"></em></span>
                     <span class="node-name"><el-tag type="info" size="mini">提交</el-tag></span>
-                    <span class="time">{{submiter.start_time}}</span>
+                    <span class="time">{{submiter.lastSubmit_time}}</span>
                 </el-col>
                 <el-col :span="divideCol" class="node-item" v-show="history.show">
                     <span class="name">{{history.assignee}}</span>
                     <span class="pointCon"><em class="pointer parse"></em></span>
                     <span class="node-name"><el-tag type="info" size="mini">自定义节点</el-tag></span>
-                    <span class="time">{{history.start_time}}</span>
+                    <span class="time">{{history.end_time}}</span>
                 </el-col>
                 <el-col :span="divideCol" class="node-item" v-show="current.show">
                     <span class="name" :title="current.name">{{current.name}}</span>
@@ -290,7 +290,7 @@
                     </div>
                     <el-row>
                         <el-col :span="24" class="node-item" v-show="submiter.show">
-                            <span class="time">{{submiter.start_time}}</span>
+                            <span class="time">{{submiter.initSubmit_time}}</span>
                             <div class="node"><span class="pointCon"><em class="pointer parse"></em></span></div>
                             <div class="personImg">
                                 <span class="img-box">
@@ -307,7 +307,7 @@
                         </el-col>
                         <template v-for="history in historyList">
                             <el-col :span="24" class="node-item" :key="history.id">
-                                <span class="time">{{history.start_time}}</span>
+                                <span class="time">{{history.end_time}}</span>
                                 <div class="node"><span class="pointCon"><em class="pointer parse"></em></span></div>
                                 <div class="personImg">
                                     <span class="img-box">
