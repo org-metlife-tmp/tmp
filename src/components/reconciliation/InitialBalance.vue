@@ -254,10 +254,9 @@
                 url:this.queryUrl + "normalProcess",
                 method:"post",
                 data:{
-                    optype:"account_accs",
+                    optype:"account_list",
                     params:{
-                        status:1,
-                        acc_id:""
+                         service_status: [1]
                     }
                 }
             }).then((result) =>{
