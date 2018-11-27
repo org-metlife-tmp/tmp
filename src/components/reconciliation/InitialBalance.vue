@@ -245,7 +245,9 @@
             }
             //类型
             if(constants.InitDataType){
-                this.initDataType = constants.InitDataType;
+                var data = constants.InitDataType;
+                delete data['1'];//删除企业未达
+                this.initDataType = data;
             }
 
             this.$axios({
