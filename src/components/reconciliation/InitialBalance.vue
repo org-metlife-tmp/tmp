@@ -134,7 +134,7 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="期初余额">
+                        <el-form-item label="期末余额">
                             <el-input v-model="dialogData.balance" :disabled="lookDisabled" clearable></el-input>
                         </el-form-item>
                     </el-col>
@@ -224,7 +224,7 @@
     export default {
         name: "InitialBalance",
         created: function () {
-            this.$emit("transmitTitle", "期初余额");
+            this.$emit("transmitTitle", "期初数据");
             this.$emit("getCommTable", this.routerMessage);
         },
         components: {},

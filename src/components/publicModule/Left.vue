@@ -590,7 +590,7 @@
                     <p>对账通</p>
                 </template>
                 <el-menu-item-group>
-                    <el-menu-item index="/reconciliation/initial-balance" v-if="menuList.DztInitData">期初余额</el-menu-item>
+                    <el-menu-item index="/reconciliation/initial-balance" v-if="menuList.DztInitData">期初数据</el-menu-item>
                     <el-menu-item index="/reconciliation/balance-adjust" v-if="menuList.DztBalAdjust">余额调节表</el-menu-item>
                     <el-menu-item index="/allot/allot-deal-check?bizType=100" v-if="menuList.DztInitCheck">交易核对</el-menu-item>
                 </el-menu-item-group>
