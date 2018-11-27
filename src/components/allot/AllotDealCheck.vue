@@ -268,14 +268,17 @@
         created: function () {
             //设置当前optype信息
             var queryData = this.$router.currentRoute.query;
-
-            this.$emit("transmitTitle", "交易核对");
+            this.biz_type = queryData.bizType;
+            if(this.biz_type!=100)
+                this.$emit("transmitTitle", "交易核对");
+            else
+                this.$emit("transmitTitle", "期初数据核对");
             this.$emit("tableText", {
                 leftTab: "未核对",
                 rightTab: "已核对"
             });
-            this.getRouterParamsChange(queryData.bizType);
-            this.biz_type = queryData.bizType;
+            this.getRouterParamsChange(this.biz_type);
+            
             // this.$emit("getTableData", this.routerMessage);
         },
         mounted: function () {
@@ -609,6 +612,10 @@
                 // 对路由变化作出响应...
                 this.getRouterParamsChange(to.query.bizType);
                 this.biz_type = to.query.bizType;
+                if(this.biz_type!=100)
+                    this.$emit("transmitTitle", "交易核对");
+                else
+                    this.$emit("transmitTitle", "期初数据核对");
             }
         }
     }
