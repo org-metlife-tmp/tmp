@@ -213,7 +213,7 @@
             <span slot="footer" class="dialog-footer" v-show="!lookDisabled">
                 <el-button type="warning" size="mini" plain @click="dialogVisible = false">取 消</el-button>
                 <el-button type="warning" size="mini" @click="saveBalance">保 存</el-button>
-                <el-button type="warning" size="mini" @click="enableBalance">启 用</el-button>
+                <el-button type="warning" size="mini" @click="enableBalance" v-show="isEnabled">启 用</el-button>
             </span>
         </el-dialog>
     </div>
@@ -314,6 +314,7 @@
                 },
                 lookDisabled: false,
                 messageTips: {},//校验提示
+                isEnabled: false,//是否显示启用按钮
             }
         },
         methods: {
@@ -367,6 +368,7 @@
             addSign: function (row) {
                 this.dialogTitle = "新增";
                 this.lookDisabled = false;
+                this.isEnabled = false;
                 var dialogData = this.dialogData;
                 for(var k in dialogData){
                     dialogData[k] = "";
@@ -389,6 +391,7 @@
             lookSign: function (row,type) {
                 this.lookDisabled = type ? false : true;
                 this.dialogTitle = type ? "修改" : "查看";
+                this.isEnabled = true;
                 var dialogData = this.dialogData;
                 this.$axios({
                     url:this.queryUrl + "normalProcess",
@@ -459,7 +462,8 @@
                     }else{
                         var data = result.data.data;
                         this.$emit("getCommTable", this.routerMessage);
-                        this.dialogVisible = false;
+                        this.isEnabled = true;
+                        // this.dialogVisible = false;
                     }
                 }).catch(function (error) {
                     console.log(error);
