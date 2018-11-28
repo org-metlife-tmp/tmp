@@ -416,6 +416,8 @@
                             })
                         } else {
                             var data = result.data.data;
+                            data.checkout_date = this.dialogData.cdate;
+                            data.acc_id = this.dialogData.acc_id;
                             this.setTableData(data);
                         }
                     }).catch(function (error) {
@@ -549,7 +551,8 @@
                         optype: "dztadjust_confirm",
                         params: {
                             id: dialogData.id,
-                            persist_version: dialogData.persist_version
+                            persist_version: dialogData.persist_version,
+                            cdate: dialogData.cdate
                         }
                     }
                 }).then((result) => {
