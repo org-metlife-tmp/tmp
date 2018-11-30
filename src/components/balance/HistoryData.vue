@@ -65,7 +65,7 @@
     <div id="historyData">
         <div class="dataBox" v-show="!isPending">
             <div class="title-text">导入范围</div>
-            <div class="title-content">截止到{{limitDate}}，只能导入非直联账户，导入模式为覆盖。</div>
+            <div class="title-content">截止到{{limitDate}}，导入模式为覆盖。</div>
         </div>
         <div class="errorTip" v-show="errorTipShow">
             <div class="error-name">文档内容不符合要求</div>
