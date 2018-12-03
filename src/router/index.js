@@ -236,13 +236,10 @@ const router = new Router({
                         //退票管理
                         {path: '/refund-ticket/refund-dispose', name: 'RefundDispose', component: RefundDispose, meta: {requireAuth: true}},
                         {path: '/refund-ticket/suspicious-refund', name: 'SuspiciousRefund', component: SuspiciousRefund, meta: {requireAuth: true}},
-<<<<<<< HEAD
+                        {path: '/refund-ticket/refund-inquiry', name: 'RefundInquiry', component: RefundInquiry, meta: {requireAuth: true}}
                         //对账通
                         {path: '/reconciliation/initial-balance', name: 'InitialBalance', component: InitialBalance, meta: {requireAuth: true}},
                         {path: '/reconciliation/balance-adjust', name: 'BalanceAdjust', component: BalanceAdjust, meta: {requireAuth: true}}
-=======
-                        {path: '/refund-ticket/refund-inquiry', name: 'RefundInquiry', component: RefundInquiry, meta: {requireAuth: true}}
->>>>>>> ddh-bug
                     ]
                 },
                 //基础样式三（tab页）
