@@ -119,7 +119,7 @@
                         placeholder="银行" size="mini"
                         @change="bankIsSelect"
                         value-key="eb_type">
-                <el-option v-for="type in bankList"
+                <el-option v-for="type in bankListByChannel"
                             :key="type.eb_type"
                             :label="type.eb_type_desc"
                             :value="type">
@@ -488,7 +488,8 @@
                 searchOptionList: [],//可供增加的搜索条件的下拉列表
                 searchList: [],//增加的搜索条件
                 channelList: [],//渠道编码
-                bankList: [],//银行
+                bankList: [],//全量银行
+                bankListByChannel: [],//对应渠道的银行
                 channel_code: "",//当前渠道编码
                 ebObj: {},//当前银行
                 tableHead: [], //动态表格的列名称
@@ -604,6 +605,9 @@
                 this.searchData = {};
                 this.searchList = [];
                 this.ebObj = {};
+                this.bankListByChannel = this.bankList.filter(function(currentValue,index,arr){
+                    return currentValue.channel_code == val;
+                })
             },
             //查看详情
             viewDetail: function(row, index){
