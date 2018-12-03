@@ -567,6 +567,7 @@
                 <el-menu-item-group>
                     <el-menu-item index="/refund-ticket/refund-dispose" v-if="menuList.ActiveRefund">主动退票</el-menu-item>
                     <el-menu-item index="/refund-ticket/suspicious-refund" v-if="menuList.DoubtfulRefund">可疑退票</el-menu-item>
+                    <el-menu-item index="/refund-ticket/refund-inquiry" v-if="menuList.QRefund">退票查询</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
             <!--
@@ -733,6 +734,7 @@
                     TPGL: false, //退票管理
                     ActiveRefund: false, //主动退票
                     DoubtfulRefund: false, //可疑退票
+                    QRefund: false, //退票查询
                 }
             }
         },
