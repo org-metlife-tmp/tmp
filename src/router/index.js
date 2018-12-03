@@ -122,6 +122,7 @@ import SuspiciousData from '@/components/OAData/SuspiciousData'
 //退票管理
 import RefundDispose from '@/components/RefundTicket/RefundDispose'
 import SuspiciousRefund from '@/components/RefundTicket/SuspiciousRefund'
+import RefundInquiry from '@/components/RefundTicket/RefundInquiry'
 //对账通
 import InitialBalance from '@/components/reconciliation/InitialBalance'
 import BalanceAdjust from '@/components/reconciliation/BalanceAdjust'
@@ -235,9 +236,13 @@ const router = new Router({
                         //退票管理
                         {path: '/refund-ticket/refund-dispose', name: 'RefundDispose', component: RefundDispose, meta: {requireAuth: true}},
                         {path: '/refund-ticket/suspicious-refund', name: 'SuspiciousRefund', component: SuspiciousRefund, meta: {requireAuth: true}},
+<<<<<<< HEAD
                         //对账通
                         {path: '/reconciliation/initial-balance', name: 'InitialBalance', component: InitialBalance, meta: {requireAuth: true}},
                         {path: '/reconciliation/balance-adjust', name: 'BalanceAdjust', component: BalanceAdjust, meta: {requireAuth: true}}
+=======
+                        {path: '/refund-ticket/refund-inquiry', name: 'RefundInquiry', component: RefundInquiry, meta: {requireAuth: true}}
+>>>>>>> ddh-bug
                     ]
                 },
                 //基础样式三（tab页）

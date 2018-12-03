@@ -106,7 +106,8 @@
     <div id="electronicReceipt">
         <div class="btn-list-left">
             <el-select v-model="channel_code"
-                        placeholder="渠道编码" size="mini">
+                        placeholder="渠道编码" size="mini"
+                        @change="channelIsSelect">
                 <el-option v-for="channel in channelList"
                             :key="channel.channel_code"
                             :label="channel.channel_code"
@@ -118,7 +119,7 @@
                         placeholder="银行" size="mini"
                         @change="bankIsSelect"
                         value-key="eb_type">
-                <el-option v-for="type in bankList"
+                <el-option v-for="type in bankListByChannel"
                             :key="type.eb_type"
                             :label="type.eb_type_desc"
                             :value="type">
@@ -301,9 +302,14 @@
             // this.$emit("getCommTable", this.routerMessage);
         },
         mounted:function(){
-            this.channelList = [{
-                channel_code: 'cmbc'
-            }];
+            this.channelList = [
+                {
+                    channel_code: 'cmbc',
+                },
+                {
+                    channel_code: 'icbc',
+                },
+            ];
             var typeList = JSON.parse(window.sessionStorage.getItem("eleType"));
             if(typeList){
                 this.bankList = typeList;
@@ -482,7 +488,8 @@
                 searchOptionList: [],//可供增加的搜索条件的下拉列表
                 searchList: [],//增加的搜索条件
                 channelList: [],//渠道编码
-                bankList: [],//银行
+                bankList: [],//全量银行
+                bankListByChannel: [],//对应渠道的银行
                 channel_code: "",//当前渠道编码
                 ebObj: {},//当前银行
                 tableHead: [], //动态表格的列名称
@@ -591,6 +598,15 @@
                         routerParam.eb_type = val.eb_type;
                         this.$emit("getCommTable", this.routerMessage);
                     }
+                })
+            },
+            channelIsSelect: function (val){
+                //清空搜索条件
+                this.searchData = {};
+                this.searchList = [];
+                this.ebObj = {};
+                this.bankListByChannel = this.bankList.filter(function(currentValue,index,arr){
+                    return currentValue.channel_code == val;
                 })
             },
             //查看详情
