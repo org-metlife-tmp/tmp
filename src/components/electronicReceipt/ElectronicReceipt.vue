@@ -106,7 +106,8 @@
     <div id="electronicReceipt">
         <div class="btn-list-left">
             <el-select v-model="channel_code"
-                        placeholder="渠道编码" size="mini">
+                        placeholder="渠道编码" size="mini"
+                        @change="channelIsSelect">
                 <el-option v-for="channel in channelList"
                             :key="channel.channel_code"
                             :label="channel.channel_code"
@@ -301,9 +302,14 @@
             // this.$emit("getCommTable", this.routerMessage);
         },
         mounted:function(){
-            this.channelList = [{
-                channel_code: 'cmbc'
-            }];
+            this.channelList = [
+                {
+                    channel_code: 'cmbc',
+                },
+                {
+                    channel_code: 'icbc',
+                },
+            ];
             var typeList = JSON.parse(window.sessionStorage.getItem("eleType"));
             if(typeList){
                 this.bankList = typeList;
@@ -592,6 +598,12 @@
                         this.$emit("getCommTable", this.routerMessage);
                     }
                 })
+            },
+            channelIsSelect: function (val){
+                //清空搜索条件
+                this.searchData = {};
+                this.searchList = [];
+                this.ebObj = {};
             },
             //查看详情
             viewDetail: function(row, index){
