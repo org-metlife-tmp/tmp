@@ -234,6 +234,7 @@
             text-align: right;
         }
         .table-file{
+            overflow: hidden;
             >*{
                 float: left;
             }
