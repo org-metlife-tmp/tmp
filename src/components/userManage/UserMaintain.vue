@@ -324,7 +324,12 @@
                 tableList: [], //表格数据
                 dialogVisible: false, //新增/修改弹框
                 dialogTitle: "新增",
-                dialogData: {},
+                dialogData: {
+                    name: "",
+                    login_name: "",
+                    email: "",
+                    phone: ""
+                },
                 udopsList: [],
                 formLabelWidth: "120px",
                 innerVisible: false, //添加职位弹框
@@ -412,7 +417,10 @@
             //编辑员工
             editStaff: function (row) {
                 this.dialogTitle = "编辑";
-                this.dialogData = {};
+                //清空弹框数据
+                for (var k in this.dialogData) {
+                    this.dialogData[k] = '';
+                }
                 if (this.$refs.dialogForm) {
                     this.$refs.dialogForm.clearValidate();
                 }
