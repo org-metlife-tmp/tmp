@@ -426,18 +426,19 @@
         }
         .modeUpload{
             width: 90%;
-            display: flex;/*设为伸缩容器*/
-            flex-flow: row;/*伸缩项目单行排列*/
-            line-height: 40px;
-            margin: 60px 0;
-            .title-text{
-                font-size: 14px;
-                width: 100px;
-                text-align: right;
-                padding-right: 15px;
-            }
-            >*:last-child{
-                flex: 1;
+            margin: 10px auto 40px;
+            .el-input {
+                width: 80%;
+                vertical-align: middle;
+                margin-left: 10px;
+
+                input {
+                    cursor: default;
+                }
+
+                div {
+                    cursor: pointer;
+                }
             }
         }
 
@@ -458,6 +459,8 @@
             }
             .downLoad{
                 color: #00B4EC;
+                width: 80%;
+                display: inline-block;
             }
         }
 
@@ -734,7 +737,7 @@
         <!--导入模板-->
         <el-dialog :visible.sync="tempalteDailogVisible"
                    width="800px" title=""
-                   top="76px" :close-on-click-modal="false">
+                   top="140px" :close-on-click-modal="false">
             <h1 slot="title" class="dialog-title">批量上传</h1>
             <div class="errorTip" v-show="currentUpload.errorTipShow">
                 <div class="error-name">文档内容不符合要求</div>
@@ -744,7 +747,7 @@
                 ></a>
             </div>
             <div class="modeUpload">
-                <div class="title-text">模板上传</div>
+                模板上传
                 <el-input v-model="currentUpload.original_file_name" readonly>
                     <template slot="append">
                         <el-upload
@@ -753,8 +756,7 @@
                                 :headers="{pk:'8 ',Authorization:currToken}"
                                 multiple
                                 accept=".xlsx,.xls"
-                                :on-success="uploadSuccess"
-                                :before-upload="beforeUpload">
+                                :on-success="uploadSuccess">
                             <span class="">浏览</span>
                         </el-upload>
                     </template>
@@ -1210,9 +1212,6 @@
                 }else{
                     this.currentUpload.errorTipShow = false;
                 }
-            },
-            beforeUpload: function(){
-
             },
             //添加上传成功的文件
             addCurUpload: function () {

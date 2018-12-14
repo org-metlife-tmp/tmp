@@ -87,13 +87,24 @@
             box-sizing: border-box;
             border-right: 0;
             .el-row{
-                >div{
+                >div:not(.acc-change){
                     border-right: 1px solid #e2e2e2;
                     border-bottom: 1px solid #e2e2e2;
                     padding: 3px 10px;
                     min-width: 60px;
                     white-space: nowrap;
                     text-overflow: ellipsis;
+                    overflow: hidden;
+                    min-height: 32px;
+                }
+            }
+            .acc-change{
+                display: flex;
+                >div{
+                    border-right: 1px solid #e2e2e2;
+                    border-bottom: 1px solid #e2e2e2;
+                    padding: 3px 10px;
+                    min-width: 60px;
                     overflow: hidden;
                     min-height: 32px;
                 }
@@ -649,9 +660,22 @@
             <div class="dialogTable">
                 <el-row>
                     <template v-for="detail in currentDetailDialog" >
-                        <el-col v-if="detail.type"
+                        <el-col v-if="detail.type==1"
                                 :key="detail.id"
                                 :span="detail.lspan" class="left center">{{detail.label}}</el-col>
+                        <el-col class="acc-change" v-else-if="detail.type=='chg'" :key="detail.id">
+                            <template v-for="item in detail.list">
+                                <el-col v-if="item.label"
+                                        :key="item.id"
+                                        :span="item.lspan" class="left">{{item.label}}</el-col>
+                                <el-col  v-else-if="item.parent"
+                                        :key="item.id"
+                                        :span="item.pspan">{{hasParent(item.prop)}}</el-col>
+                                <el-col v-else
+                                        :key="item.id"
+                                        :span="item.pspan">{{dialogData[item.prop]}}</el-col>
+                            </template>
+                        </el-col>
                         <el-col v-else-if="detail.label"
                                 :key="detail.id"
                                 :span="detail.lspan" class="left">{{detail.label}}</el-col>
@@ -1202,10 +1226,16 @@
                 "1":[
                     {id:"1", lspan:4, label:"编号"},
                     {id:"2", pspan:20, prop:"service_serial_number"},
-                    {id:"3", lspan:4, label:"事由摘要"},
-                    {id:"4", pspan:8, prop:"memo"},//事由说明字段显示特殊，未写在这里
-                    {id:"5", lspan:4, label:"开户行"},
-                    {id:"6", pspan:8, prop:"bank_name"},
+                    {
+                        id:"3",
+                        type: "chg",
+                        list:[
+                            {id:"3", lspan:4, label:"事由摘要"},
+                            {id:"4", pspan:8, prop:"memo"},//事由说明字段显示特殊，未写在这里
+                            {id:"5", lspan:4, label:"开户行"},
+                            {id:"6", pspan:8, prop:"bank_name"},
+                        ]
+                    },
                     {id:"7", lspan:4, label:"账户性质"},
                     {id:"8", pspan:8, prop:"acc_attr_name"},
                     {id:"9", lspan:4, label:"账户法人"},
@@ -1226,14 +1256,26 @@
                     {id:"4", pspan:8, prop:"acc_no"},
                     {id:"5", lspan:4, label:"账户名称"},
                     {id:"6", pspan:8, prop:"acc_name"},
-                    {id:"7", lspan:4, label:"所属机构"},
-                    {id:"8", pspan:8, prop:"org_name"},
-                    {id:"9", lspan:4, label:"账户法人"},
-                    {id:"10", pspan:8, prop:"lawfull_man"},
-                    {id:"11", lspan:4, label:"开户行"},
-                    {id:"12", pspan:8, prop:"bank_name"},
-                    {id:"13", lspan:4, label:"开户行地址"},
-                    {id:"14", pspan:8, prop:"bank_address"},
+                    {
+                        id:"7",
+                        type:"chg",
+                        list:[
+                            {id:"7", lspan:4, label:"所属机构"},
+                            {id:"8", pspan:8, prop:"org_name"},
+                            {id:"9", lspan:4, label:"账户法人"},
+                            {id:"10", pspan:8, prop:"lawfull_man"},
+                        ]
+                    },
+                    {
+                        id:"8",
+                        type:"chg",
+                        list:[
+                            {id:"11", lspan:4, label:"开户行"},
+                            {id:"12", pspan:8, prop:"bank_name"},
+                            {id:"13", lspan:4, label:"开户行地址"},
+                            {id:"14", pspan:8, prop:"bank_address"},
+                        ]
+                    },
                     {id:"15", lspan:4, label:"开户行联系人"},
                     {id:"16", pspan:8, prop:"bank_contact"},
                     {id:"17", lspan:4, label:"联系电话"},
@@ -1265,18 +1307,36 @@
                     {id:"6", pspan:8, prop:"apply_on"},
                     {id:"7", lspan:12, label:"变更前信息", type:'1'},
                     {id:"8", lspan:12, label:"变更后信息", type:'1'},
-                    {id:"9", lspan:4, label:"账户名称"},
-                    {id:"10", pspan:8, prop:"old_acc_name"},
-                    {id:"11", lspan:4, label:"账户名称"},
-                    {id:"12", pspan:8, prop:"new_acc_name"},
-                    {id:"13", lspan:4, label:"所属机构"},
-                    {id:"14", pspan:8, prop:"old_org_name"},
-                    {id:"15", lspan:4, label:"所属机构"},
-                    {id:"16", pspan:8, prop:"new_org_name"},
-                    {id:"17", lspan:4, label:"开户行"},
-                    {id:"18", pspan:8, prop:"old_bank_name"},
-                    {id:"19", lspan:4, label:"开户行"},
-                    {id:"20", pspan:8, prop:"new_bank_name"},
+                    {
+                        id:"9",
+                        type:"chg",
+                        list:[
+                            {id:"9", lspan:4, label:"账户名称"},
+                            {id:"10", pspan:8, prop:"old_acc_name"},
+                            {id:"11", lspan:4, label:"账户名称"},
+                            {id:"12", pspan:8, prop:"new_acc_name"},
+                        ]                    
+                    },
+                    {
+                        id:"10",
+                        type:"chg",
+                        list:[
+                            {id:"13", lspan:4, label:"所属机构"},
+                            {id:"14", pspan:8, prop:"old_org_name"},
+                            {id:"15", lspan:4, label:"所属机构"},
+                            {id:"16", pspan:8, prop:"new_org_name"},
+                        ]                    
+                    },
+                    {
+                        id:"11",
+                        type:"chg",
+                        list:[
+                            {id:"17", lspan:4, label:"开户行"},
+                            {id:"18", pspan:8, prop:"old_bank_name"},
+                            {id:"19", lspan:4, label:"开户行"},
+                            {id:"20", pspan:8, prop:"new_bank_name"},
+                        ]                    
+                    },
                     {id:"21", lspan:4, label:"账户法人"},
                     {id:"22", pspan:8, prop:"old_lawfull_man"},
                     {id:"23", lspan:4, label:"账户法人"},
@@ -1303,14 +1363,26 @@
                 "4":[
                     {id:"1", lspan:4, label:"编号"},
                     {id:"2",pspan:20, prop:"service_serial_number"},
-                    {id:"3", lspan:4, label:"账户号"},
-                    {id:"4", pspan:8, prop:"acc_no"},
-                    {id:"5", lspan:4, label:"账户名称"},
-                    {id:"6", pspan:8, prop:"acc_name"},
-                    {id:"7", lspan:4, label:"所属机构"},
-                    {id:"8", pspan:8, prop:"org_name"},
-                    {id:"9", lspan:4, label:"账户法人"},
-                    {id:"10", pspan:8, prop:"lawfull_man"},
+                    {
+                        id:"3",
+                        type:"chg",
+                        list:[
+                            {id:"3", lspan:4, label:"账户号"},
+                            {id:"4", pspan:8, prop:"acc_no"},
+                            {id:"5", lspan:4, label:"账户名称"},
+                            {id:"6", pspan:8, prop:"acc_name"},
+                        ]
+                    },
+                    {
+                        id:"4",
+                        type:"chg",
+                        list:[
+                            {id:"7", lspan:4, label:"所属机构"},
+                            {id:"8", pspan:8, prop:"org_name"},
+                            {id:"9", lspan:4, label:"账户法人"},
+                            {id:"10", pspan:8, prop:"lawfull_man"},
+                        ]
+                    },
                     {id:"11", lspan:4, label:"开户行"},
                     {id:"12", pspan:20, prop:"bank_name"},
                     {id:"13", lspan:4, label:"币种"},
@@ -1329,14 +1401,26 @@
                 "5":[
                     {id:"1", lspan:4, label:"编号"},
                     {id:"2",pspan:20, prop:"service_serial_number"},
-                    {id:"3", lspan:4, label:"账户号"},
-                    {id:"4", pspan:8, prop:"acc_no"},
-                    {id:"5", lspan:4, label:"账户名称"},
-                    {id:"6", pspan:8, prop:"acc_name"},
-                    {id:"7", lspan:4, label:"所属机构"},
-                    {id:"8", pspan:8, prop:"org_name"},
-                    {id:"9", lspan:4, label:"账户法人"},
-                    {id:"10", pspan:8, prop:"lawfull_man"},
+                    {
+                        id:"3",
+                        type:"chg",
+                        list:[
+                            {id:"3", lspan:4, label:"账户号"},
+                            {id:"4", pspan:8, prop:"acc_no"},
+                            {id:"5", lspan:4, label:"账户名称"},
+                            {id:"6", pspan:8, prop:"acc_name"},
+                        ]
+                    },
+                    {
+                        id:"4",
+                        type:"chg",
+                        list:[
+                            {id:"7", lspan:4, label:"所属机构"},
+                            {id:"8", pspan:8, prop:"org_name"},
+                            {id:"9", lspan:4, label:"账户法人"},
+                            {id:"10", pspan:8, prop:"lawfull_man"},
+                        ]
+                    },
                     {id:"11", lspan:4, label:"开户行"},
                     {id:"12", pspan:20, prop:"bank_name"},
                     {id:"13", lspan:4, label:"币种"},
@@ -1357,18 +1441,36 @@
                     {id:"2", pspan:20, prop:"service_serial_number"},
                     {id:"3", lspan:4, label:"事由摘要"},
                     {id:"4", pspan:20, prop:"memo"},
-                    {id:"5", lspan:4, label:"账户号"},
-                    {id:"6", pspan:8, prop:"acc_no", parent:'account_info'},
-                    {id:"7", lspan:4, label:"账户名称"},
-                    {id:"8", pspan:8, prop:"acc_name", parent:'account_info'},
-                    {id:"9", lspan:4, label:"所属机构"},
-                    {id:"10", pspan:8, prop:"org_name", parent:'account_info'},
-                    {id:"11", lspan:4, label:"账户法人"},
-                    {id:"12", pspan:8, prop:"lawfull_man", parent:'account_info'},
-                    {id:"13", lspan:4, label:"币种"},
-                    {id:"14", pspan:8, prop:"curr_name", parent:'account_info'},
-                    {id:"15", lspan:4, label:"开户行"},
-                    {id:"16", pspan:8, prop:"bank_name", parent:'account_info'},
+                    {
+                        id:"5",
+                        type:"chg",
+                        list:[
+                            {id:"5", lspan:4, label:"账户号"},
+                            {id:"6", pspan:8, prop:"acc_no", parent:'account_info'},
+                            {id:"7", lspan:4, label:"账户名称"},
+                            {id:"8", pspan:8, prop:"acc_name", parent:'account_info'},
+                        ]
+                    },
+                    {
+                        id:"6",
+                        type:"chg",
+                        list:[
+                            {id:"9", lspan:4, label:"所属机构"},
+                            {id:"10", pspan:8, prop:"org_name", parent:'account_info'},
+                            {id:"11", lspan:4, label:"账户法人"},
+                            {id:"12", pspan:8, prop:"lawfull_man", parent:'account_info'},
+                        ]
+                    },
+                    {
+                        id:"7",
+                        type:"chg",
+                        list:[
+                            {id:"13", lspan:4, label:"币种"},
+                            {id:"14", pspan:8, prop:"curr_name", parent:'account_info'},
+                            {id:"15", lspan:4, label:"开户行"},
+                            {id:"16", pspan:8, prop:"bank_name", parent:'account_info'},
+                        ]
+                    },
                     {id:"17", lspan:4, label:"账户模式"},
                     {id:"18", pspan:8, prop:"interactive_mode", parent:'account_info'},
                     {id:"19", lspan:4, label:"账户用途"},
@@ -1381,14 +1483,26 @@
                 "7":[
                     {id:"1", lspan:4, label:"编号"},
                     {id:"2",pspan:20, prop:"service_serial_number"},
-                    {id:"3", lspan:4, label:"账户号"},
-                    {id:"4", pspan:8, prop:"acc_no"},
-                    {id:"5", lspan:4, label:"账户名称"},
-                    {id:"6", pspan:8, prop:"acc_name"},
-                    {id:"7", lspan:4, label:"所属机构"},
-                    {id:"8", pspan:8, prop:"org_name"},
-                    {id:"9", lspan:4, label:"账户法人"},
-                    {id:"10", pspan:8, prop:"lawfull_man"},
+                    {
+                        id:'3',
+                        type:'chg',
+                        list:[
+                            {id:"3", lspan:4, label:"账户号"},
+                            {id:"4", pspan:8, prop:"acc_no"},
+                            {id:"5", lspan:4, label:"账户名称"},
+                            {id:"6", pspan:8, prop:"acc_name"},
+                        ]
+                    },
+                    {
+                        id:'4',
+                        type:'chg',
+                        list:[
+                            {id:"7", lspan:4, label:"所属机构"},
+                            {id:"8", pspan:8, prop:"org_name"},
+                            {id:"9", lspan:4, label:"账户法人"},
+                            {id:"10", pspan:8, prop:"lawfull_man"},
+                        ]
+                    },
                     {id:"11", lspan:4, label:"开户行"},
                     {id:"12", pspan:20, prop:"bank_name"},
                     {id:"13", lspan:4, label:"币种"},
@@ -1409,18 +1523,30 @@
                 "8":[//调拨通
                     {id:"1", lspan:4, label:"编号"},
                     {id:"2",pspan:20, prop:"service_serial_number"},
-                    {id:"3", lspan:4, label:"转出公司"},
-                    {id:"4", pspan:8, prop:"pay_account_name"},
-                    {id:"5", lspan:4, label:"转入公司"},
-                    {id:"6", pspan:8, prop:"recv_account_name"},
+                    {
+                        id:"3",
+                        type:"chg",
+                        list:[
+                            {id:"3", lspan:4, label:"转出公司"},
+                            {id:"4", pspan:8, prop:"pay_account_name"},
+                            {id:"5", lspan:4, label:"转入公司"},
+                            {id:"6", pspan:8, prop:"recv_account_name"},
+                        ]
+                    },
                     {id:"7", lspan:4, label:"付款账号"},
                     {id:"8", pspan:8, prop:"pay_account_no"},
                     {id:"9", lspan:4, label:"收款账号"},
                     {id:"10", pspan:8, prop:"recv_account_no"},
-                    {id:"11", lspan:4, label:"开户行"},
-                    {id:"12", pspan:8, prop:"pay_account_bank"},
-                    {id:"13", lspan:4, label:"开户行"},
-                    {id:"14", pspan:8, prop:"recv_account_bank"},
+                    {
+                        id:"11",
+                        type:"chg",
+                        list:[
+                            {id:"11", lspan:4, label:"开户行"},
+                            {id:"12", pspan:8, prop:"pay_account_bank"},
+                            {id:"13", lspan:4, label:"开户行"},
+                            {id:"14", pspan:8, prop:"recv_account_bank"},
+                        ]
+                    },
                     {id:"15", lspan:4, label:"金额"},
                     {id:"16", pspan:20, prop:"payment_amount"},
                     {id:"17", lspan:4, label:"摘要"},
@@ -1431,14 +1557,26 @@
                 "9":[
                     {id:"1", lspan:4, label:"编号"},
                     {id:"2",pspan:20, prop:"service_serial_number"},
-                    {id:"3", lspan:4, label:"付款账号"},
-                    {id:"4", pspan:8, prop:"pay_account_no"},
-                    {id:"5", lspan:4, label:"收款人户名"},
-                    {id:"6", pspan:8, prop:"recv_account_name"},
-                    {id:"7", lspan:4, label:"收款人账号"},
-                    {id:"8", pspan:8, prop:"recv_account_no"},
-                    {id:"9", lspan:4, label:"开户行"},
-                    {id:"10", pspan:8, prop:"recv_account_bank"},
+                    {
+                        id:"3",
+                        type:"chg",
+                        list:[
+                            {id:"3", lspan:4, label:"付款账号"},
+                            {id:"4", pspan:8, prop:"pay_account_no"},
+                            {id:"5", lspan:4, label:"收款人户名"},
+                            {id:"6", pspan:8, prop:"recv_account_name"},
+                        ]
+                    },
+                    {
+                        id:"4",
+                        type:"chg",
+                        list:[
+                            {id:"7", lspan:4, label:"收款人账号"},
+                            {id:"8", pspan:8, prop:"recv_account_no"},
+                            {id:"9", lspan:4, label:"开户行"},
+                            {id:"10", pspan:8, prop:"recv_account_bank"},
+                        ]
+                    },
                     {id:"11", lspan:4, label:"金额"},
                     {id:"12", pspan:8, prop:"payment_amount"},
                     {id:"13", lspan:4, label:"摘要"},
