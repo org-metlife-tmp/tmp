@@ -753,20 +753,13 @@
             },
             //获取当前用户公司和部门
             getDeptOrg:function(){
-                // var userUodp = JSON.parse(window.sessionStorage.getItem("user")).uodp;
-                var userUodp = this.$store.state.user.uodp;
-                for (var i = 0; i < userUodp.length; i++) {
-                    var item = userUodp[i];
-                    if (item.is_default == "1") {
-                        this.dialogData.dept_id = item.dept_id;
-                        this.dialogData.org_id = item.org_id;
-                        this.dialogData.dept_name = item.dept_name;
-                        this.dialogData.org_name = item.org_name;
-                        var curData = new Date();
-                        this.dialogData.apply_on = curData.getFullYear() + "-" + (curData.getMonth() + 1) + "-" + curData.getDate();
-                        break;
-                    }
-                }
+                var userUodp = this.$store.state.user.curUodp;
+                this.dialogData.dept_id = userUodp.dept_id;
+                this.dialogData.org_id = userUodp.org_id;
+                this.dialogData.dept_name = userUodp.dept_name;
+                this.dialogData.org_name = userUodp.org_name;
+                var curData = new Date();
+                this.dialogData.apply_on = curData.getFullYear() + "-" + (curData.getMonth() + 1) + "-" + curData.getDate();
             },
             //添加销户事项申请
             addAccountMatter:function(){

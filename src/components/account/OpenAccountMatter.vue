@@ -873,17 +873,11 @@
             },
             //获取当前用户部门和公司
             getDeptOrg: function () {
-                var userUodp = this.$store.state.user.uodp;
-                for (var i = 0; i < userUodp.length; i++) {
-                    var item = userUodp[i];
-                    if (item.is_default == "1") {
-                        this.dialogData.dept_name = item.dept_name;
-                        this.dialogData.org_name = item.org_name;
-                        var curData = new Date();
-                        this.dialogData.apply_on = curData.getFullYear() + "-" + (curData.getMonth() + 1) + "-" + curData.getDate();
-                        break;
-                    }
-                }
+                var userUodp = this.$store.state.user.curUodp;
+                this.dialogData.dept_name = userUodp.dept_name;
+                this.dialogData.org_name = userUodp.org_name;
+                var curData = new Date();
+                this.dialogData.apply_on = curData.getFullYear() + "-" + (curData.getMonth() + 1) + "-" + curData.getDate();
             },
             //添加开户事项
             addAccountMatter: function () {
