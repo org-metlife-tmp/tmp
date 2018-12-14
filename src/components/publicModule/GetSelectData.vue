@@ -175,10 +175,10 @@
             //系统常量
             if (!window.sessionStorage.getItem("catgList")) {
                 this.$axios({
-                    url: this.queryUrl + "extserv/catg/list",
+                    url: this.queryUrl + "commProcess",
                     method: "post",
                     data: {
-                        optype: "catg_list"
+                        optype: "category_listN"
                     }
                 }).then((result) => {
                     if (result.data.error_msg) {
