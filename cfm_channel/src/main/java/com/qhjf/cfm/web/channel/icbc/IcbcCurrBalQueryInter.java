@@ -1,0 +1,63 @@
+package com.qhjf.cfm.web.channel.icbc;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.jfinal.plugin.activerecord.Record;
+import com.qhjf.bankinterface.api.AtomicInterfaceConfig;
+import com.qhjf.bankinterface.icbc.IcbcConstant;
+import com.qhjf.cfm.web.channel.inter.api.ISingleResultChannelInter;
+import com.qhjf.cfm.web.channel.util.AmountUtil;
+import com.qhjf.cfm.web.channel.util.IcbcResultParseUtil;
+/**
+ *当日余额查询
+ */
+public class IcbcCurrBalQueryInter implements ISingleResultChannelInter{
+
+	@Override
+	public Map<String, Object> genParamsMap(Record record) {
+		Map<String,Object> result = new HashMap<>();
+		AtomicInterfaceConfig inter = getInter();
+		
+		Map<String,Object> pub = new HashMap<>();
+		pub.put("CIS", inter.getChannelConfig("CIS"));//集团CIS号
+		pub.put("fSeqno", inter.getChannelInfo().getSerialnoGenTool().next());//指令包序列号
+		
+		List<Map<String, Object>> rds = new ArrayList<Map<String, Object>>();
+		Map<String,Object> rd = new HashMap<>();
+		rd.put("iSeqno", "1");//指令顺序号
+		rd.put("AccNo", record.getStr("acc_no"));
+		rds.add(rd);
+        
+		result.put("TotalNum", "1");//总笔数:需要查询的账号的个数，即提交包明细的笔数。
+		result.put("pub", pub);
+		result.put("rd", rds);
+        return result;
+	}
+
+	@Override
+	public Record parseResult(String jsonStr)throws Exception {
+		Record record = new Record();
+		JSONArray rdArray = IcbcResultParseUtil.parseResult(jsonStr).getJSONArray("rd");
+		
+		JSONObject rd0 = rdArray.getJSONObject(0);
+		
+		BigDecimal balance = AmountUtil.icbcAmountHandle(rd0.getBigDecimal("Balance"));
+		BigDecimal usableBalance = AmountUtil.icbcAmountHandle(rd0.getBigDecimal("UsableBalance"));
+		BigDecimal frzAmt = AmountUtil.icbcAmountHandle(rd0.getBigDecimal("FrzAmt"));
+		
+		record.set("bal", balance);
+		record.set("available_bal", usableBalance);
+		record.set("frz_amt", frzAmt);
+		return record;
+	}
+
+	@Override
+	public AtomicInterfaceConfig getInter() {
+		return IcbcConstant.QACCBAL;
+	}
+}

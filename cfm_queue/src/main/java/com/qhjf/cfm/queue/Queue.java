@@ -1,0 +1,46 @@
+package com.qhjf.cfm.queue;
+
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingDeque;
+
+/**
+ * 队列实现
+ * @author yunxw
+ *
+ */
+@SuppressWarnings("unchecked")
+public class Queue {
+
+	@SuppressWarnings("rawtypes")
+	private Queue(){
+		this.cmbcQueue = new LinkedBlockingDeque();
+		this.icbcQueue = new LinkedBlockingDeque();
+	}
+	private static Queue instance = new Queue();
+	public static Queue getInstance(){
+		return instance;
+	}
+	private BlockingQueue<QueueBean> cmbcQueue;
+	
+	private BlockingQueue<QueueBean> icbcQueue;
+	public BlockingQueue<QueueBean> getCmbcQueue() {
+		return cmbcQueue;
+	}
+
+	public void setCmbcQueue(BlockingQueue<QueueBean> cmbcQueue) {
+		this.cmbcQueue = cmbcQueue;
+	}
+
+	public BlockingQueue<QueueBean> getIcbcQueue() {
+		return icbcQueue;
+	}
+
+	public void setIcbcQueue(BlockingQueue<QueueBean> icbcQueue) {
+		this.icbcQueue = icbcQueue;
+	}
+
+	
+	
+	
+
+}
