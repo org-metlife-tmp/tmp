@@ -49,10 +49,17 @@
             top: -58px;
             left: -20px;
         }
-        .bgImg{
+        .bgStyle{
             height: 100%;
-            background: url(../../assets/zhaohang.jpg) no-repeat;
+            // background-image: url(../../assets/cmbc.jpg);
+            background-repeat: no-repeat;
             position: relative;
+        }
+        .icbc{
+            background-image: url(../../assets/icbc.jpg);
+        }
+        .cmbc{
+            background-image: url(../../assets/cmbc.jpg);
         }
         .bankContentFir{
             position: absolute;
@@ -265,7 +272,7 @@
                    :close-on-click-modal="false"
                    top="46px">
             <!-- <h1 slot="title" class="dialog-title">收款回单查看</h1> -->
-            <div class="bgImg">
+            <div class="bgStyle" :class="[bgImg]">
                 <div class="bankContentFir">
                     <template v-for="field in curDialogField.first">
                         <div :key="field.id">
@@ -461,6 +468,27 @@
                         {id:"2", name:"回单验证码", value:""},
                         // {id:"3", name:"提示", value:""}
                     ]
+                },
+                "ICBCEBILL":{//工行电子回单
+                    "first":[
+                        {id:"1", name:"日期", value:"field_14"},
+                        {id:"2", name:"收款账号", value:"field_5"},
+                        {id:"3", name:"户名", value:"field_6"},
+                        {id:"4", name:"开户行", value:"field_7"},
+                        {id:"5", name:"金额（大写）", value:"field_8", key:"bAmount"},
+                        {id:"6", name:"（小写）", value:"field_9", key:"sAmount"},
+                        {id:"7", name:"付款人账号", value:"field_2"},
+                        {id:"8", name:"付款人名称", value:"field_3"},
+                        {id:"9", name:"付款人开户行", value:"field_4"},
+                        {id:"10", name:"摘要", value:"field_10"},
+                        {id:"11", name:"流水号", value:"field_13"},
+                        {id:"12", name:"经办", value:""},
+                    ],
+                    "second":[
+                        {id:"1", name:"回单编号", value:""},
+                        {id:"2", name:"回单验证码", value:""},
+                        // {id:"3", name:"提示", value:""}
+                    ]
                 }
             }
         },
@@ -495,6 +523,7 @@
                 tableHead: [], //动态表格的列名称
                 templateMapField: {},//不同模板对应的字段
                 curDialogField: [],
+                bgImg:"cmbc",//详情背景图片
             }
         },
         methods: {
@@ -615,6 +644,7 @@
                 var eb_type = this.ebObj.eb_type;
                 this.curDialogField = this.templateMapField[eb_type];
                 this.dialogData = row;
+                this.bgImg = this.channel_code;//切换背景图片
                 this.dialogVisible = true;
             }
         },
