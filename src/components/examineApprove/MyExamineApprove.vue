@@ -86,7 +86,7 @@
             border: 1px solid #e2e2e2;
             box-sizing: border-box;
             border-right: 0;
-            .el-row{
+            .el-row:not(.enclosureUp){
                 >div:not(.acc-change){
                     border-right: 1px solid #e2e2e2;
                     border-bottom: 1px solid #e2e2e2;
@@ -94,6 +94,16 @@
                     min-width: 60px;
                     white-space: nowrap;
                     text-overflow: ellipsis;
+                    overflow: hidden;
+                    min-height: 32px;
+                }
+            }
+            .enclosureUp{
+                >div{
+                    border-right: 1px solid #e2e2e2;
+                    border-bottom: 1px solid #e2e2e2;
+                    padding: 3px 10px;
+                    min-width: 60px;
                     overflow: hidden;
                     min-height: 32px;
                 }
