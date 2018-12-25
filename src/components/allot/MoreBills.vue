@@ -218,12 +218,20 @@
     <div id="moreBills">
         <!--顶部按钮-->
         <div class="button-list-left">
-            <el-select v-model="searchData.payment_type" placeholder="请选择调拨类型"
+            <!-- <el-select v-model="searchData.payment_type" placeholder="请选择调拨类型"
                        filterable clearable size="mini" @change="queryByPayType">
                 <el-option v-for="(name,k) in paymentTypeList"
                            :key="k"
                            :label="name"
                            :value="k">
+                </el-option>
+            </el-select> -->
+            <el-select v-model="searchData.biz_id" placeholder="请选择业务类型"
+                        filterable clearable size="mini" @change="queryByPayType">
+                <el-option v-for="payItem in payStatList"
+                            :key="payItem.biz_id"
+                            :label="payItem.biz_name"
+                            :value="payItem.biz_id">
                 </el-option>
             </el-select>
             <el-select v-model="searchData.pay_mode" placeholder="请选择付款方式"
@@ -302,6 +310,7 @@
             <el-table :data="tableList"
                        height="100%"
                       border size="mini">
+                <el-table-column prop="biz_name" label="业务类型" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="pay_mode" label="付款方式" :show-overflow-tooltip="true"
                                  :formatter="transitPayMode"></el-table-column>
                 <el-table-column prop="pay_account_no" label="付款方账号" :show-overflow-tooltip="true"></el-table-column>
@@ -639,6 +648,7 @@
                 searchData: { //搜索条件
                     pay_mode: "",
                     payment_type: "",
+                    biz_id: "",
                     pay_query_key: "",
                     recv_query_key: "",
                     min: "",
@@ -731,13 +741,13 @@
                 this.routerMessage.params.page_num = 1;
                 this.$emit("getCommTable", this.routerMessage);
             },
-            //根据调拨类型查询
+            //根据业务类型查询
             queryByPayType:function(val){
                 var searchData = this.searchData;
                 searchData.start_date = this.dateValue ? this.dateValue[0] : "";
                 searchData.end_date = this.dateValue ? this.dateValue[1] : "";
                 for (var k in searchData) {
-                    if(k=='payment_type'){
+                    if(k=='biz_id'){
                         this.routerMessage.params[k] = val;
                     }else{
                          this.routerMessage.params[k] = searchData[k];
