@@ -336,10 +336,12 @@
             //根据条件查询数据
             queryData: function () {
                 var searchData = this.searchData;
-
                 for (var k in searchData) {
                     this.routerMessage.params[k] = searchData[k];
                 }
+                var val = this.dateValue;
+                this.routerMessage.params.apply_start_date = val ? val[0] : "";
+                this.routerMessage.params.apply_end_date = val ? val[1] : "";
                 this.routerMessage.params.page_num = 1;
                 this.$emit("getCommTable", this.routerMessage);
             },
