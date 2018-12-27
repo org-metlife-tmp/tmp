@@ -2243,6 +2243,17 @@
                 this.thirdFunVisible = true;
             },
             viewDetail:function(row,index){
+                //清空数据
+                for (var k in this.dialogData) {
+                    if (k == "files") {
+                        this.dialogData[k] = [];
+                    } else {
+                        this.dialogData[k] = "";
+                    }
+                }
+                this.fileMessage.bill_id = "";
+                this.emptyFileList = [];
+                
                 let bizType = row.biz_type;
                 let id = row.bill_id;
                 let _index = this.activeName;
