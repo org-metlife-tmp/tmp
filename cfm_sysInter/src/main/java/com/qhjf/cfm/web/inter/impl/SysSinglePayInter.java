@@ -46,8 +46,8 @@ public class SysSinglePayInter implements ISysAtomicInterface {
         if (instructCode == null || instructCode.length() == 0) {
             instructCode = RedisSericalnoGenTool.genShortSerial();
         }
-        String bankSerialNumber = CmbcChannel.getInstance().getSerialnoGenTool().next();
-        instr.set("bank_serial_number", bankSerialNumber);
+        //String bankSerialNumber = CmbcChannel.getInstance().getSerialnoGenTool().next();
+        instr.set("bank_serial_number", record.getStr("bank_serial_number"));
         instr.set("repeat_count", record.getInt("repeat_count"));
         instr.set("source_ref", record.get("source_ref"));
         instr.set("bill_id", record.getLong("id"));

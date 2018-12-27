@@ -34,7 +34,7 @@ public class BranchOrgOaCheckController extends CFMBaseController {
         UodpInfo uodpInfo = getCurUodp();
         record.set("org_id", uodpInfo.getOrg_id());
         //状态为已成功的单据
-        AccCommonService.setInnerTradStatus(record, "service_status");
+        AccCommonService.setInnerBatchTradStatus(record, "service_status");
         Page<Record> page = service.checkbillList(pageNum, pageSize, record);
         renderOkPage(page);
     }

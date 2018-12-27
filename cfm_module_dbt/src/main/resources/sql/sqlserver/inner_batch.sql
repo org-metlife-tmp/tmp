@@ -759,7 +759,7 @@ AND uuid = ?
 AND batchno = ?
 #end
 
-#sql("findBatchAttachDetailByBatchno")
+#sql("findBatchAttachDetailByBatchnoAndPayStatus")
 SELECT
 	detail_id,
 	batchno,
@@ -780,8 +780,26 @@ SELECT
 	feed_back
 FROM
 	inner_batchpay_bus_attach_detail
-where batchno = ?
-and pay_status in(?,?)
+where 1=1
+  #if(map != null)
+    #for (x : map)
+      #if(x.value&&x.value!="")
+      AND
+        #if("pay_status".equals(x.key))
+          pay_status in(
+          #for(y : map.pay_status)
+            #if(for.index > 0)
+              #(",")
+            #end
+            #(y)
+          #end
+        )
+        #else
+          #(x.key) = '#(x.value)'
+        #end
+      #end
+    #end
+  #end
 #end
 
 

@@ -1200,3 +1200,46 @@ WHERE base.batchno = detail.batchno
       #end
     #end
 #end
+
+#sql("findBatchAttachDetailByBatchnoAndPayStatus")
+SELECT
+	detail_id,
+	batchno,
+	info_id,
+	recv_account_id,
+	recv_account_no,
+	recv_account_name,
+	recv_account_cur,
+	recv_account_bank,
+	recv_bank_cnaps,
+	recv_bank_prov,
+	recv_bank_city,
+	payment_amount,
+	pay_status,
+	memo,
+	update_on,
+	update_by,
+	feed_back
+FROM
+	outer_batchpay_bus_attach_detail
+WHERE 1=1
+  #if(map != null)
+    #for (x : map)
+      #if(x.value&&x.value!="")
+      AND
+        #if("pay_status".equals(x.key))
+          pay_status in(
+          #for(y : map.pay_status)
+            #if(for.index > 0)
+              #(",")
+            #end
+            #(y)
+          #end
+        )
+        #else
+          #(x.key) = '#(x.value)'
+        #end
+      #end
+    #end
+  #end
+#end

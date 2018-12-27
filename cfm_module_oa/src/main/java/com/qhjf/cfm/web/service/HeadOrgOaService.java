@@ -178,6 +178,7 @@ public class HeadOrgOaService {
             headRecord.set("source_ref", "oa_head_payment");
             final int old_repeat_count = TypeUtils.castToInt(headRecord.get("repeat_count"));
             headRecord.set("repeat_count", old_repeat_count+ 1);
+            headRecord.set("bank_serial_number", ChannelManager.getSerianlNo(payBankCode));
             SysOaSinglePayInter sysInter = new SysOaSinglePayInter();
             sysInter.setChannelInter(channelInter);
             final Record instr = sysInter.genInstr(headRecord);

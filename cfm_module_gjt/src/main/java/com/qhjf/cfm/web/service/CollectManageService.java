@@ -152,6 +152,7 @@ public class CollectManageService {
         record.set("payment_amount", record.getBigDecimal("collect_amount"));
         record.set("process_bank_type", record.getStr("recv_bank_cnaps").subSequence(0, 3));
         record.set("payment_summary", record.getStr("memo"));
+        record.set("bank_serial_number", ChannelManager.getSerianlNo(payBankCode));
         SysSinglePayInter sysInter = new SysSinglePayInter();
         sysInter.setChannelInter(channelInter);
         final Record instr = sysInter.genInstr(record);

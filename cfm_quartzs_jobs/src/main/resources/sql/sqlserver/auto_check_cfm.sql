@@ -37,7 +37,7 @@
     select id,instruct_code,create_on,payment_amount,pay_account_no,recv_account_no
     from oa_branch_payment_item
     where is_checked = 0
-    and service_status = 7
+    and service_status = 1
     and item_type = 1
     and DATEDIFF(day,create_on,GETDATE())=1
   #end
@@ -45,7 +45,7 @@
     select id,instruct_code,create_on,payment_amount
     from oa_branch_payment_item
     where is_checked = 0
-    and service_status = 7
+    and service_status = 1
     and item_type = 2
     and DATEDIFF(day,create_on,GETDATE())=1
   #end

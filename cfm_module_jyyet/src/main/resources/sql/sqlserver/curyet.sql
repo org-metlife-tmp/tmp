@@ -486,3 +486,13 @@ where
 	    #end
 	)
 #end
+
+
+#sql("findCurrentBal")
+  select  
+    *  
+  FROM 
+    acc_cur_balance
+  where
+	acc_no = ?
+#end

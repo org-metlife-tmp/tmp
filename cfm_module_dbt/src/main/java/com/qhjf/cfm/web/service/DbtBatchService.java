@@ -2,6 +2,7 @@ package com.qhjf.cfm.web.service;
 
 import com.alibaba.fastjson.util.TypeUtils;
 import com.jfinal.kit.Kv;
+import com.jfinal.kit.Ret;
 import com.jfinal.plugin.activerecord.*;
 import com.jfinal.plugin.redis.Redis;
 import com.qhjf.cfm.excel.bean.ExcelResultBean;
@@ -817,18 +818,37 @@ public class DbtBatchService {
         }
 
         final String batchno = TypeUtils.castToString(innerRec.get("batchno"));
+        int service_status = TypeUtils.castToInt(innerRec.get("service_status"));
+        if (service_status != WebConstant.BillStatus.PASS.getKey()
+                && service_status != WebConstant.BillStatus.FAILED.getKey()
+                && service_status != WebConstant.BillStatus.NOCOMPLETION.getKey()) {
+            throw new ReqDataException("此单据状态错误，请刷新重试！");
+        }
+
+
+        //查询是否有未完结的单据
+        SqlPara detailPara = Db.getSqlPara("batch.findBatchAttachDetailByBatchnoAndPayStatus",
+                Ret.by("map",Kv.create().set("batchno",innerRec.get("batchno")).set("pay_status",new Integer[]{
+                        WebConstant.PayStatus.HANDLE.getKey(),
+                        WebConstant.PayStatus.FAILD.getKey()
+
+                })));
+        List<Record> detailRecList = Db.find(detailPara);
+        if(detailRecList != null && detailRecList.size() > 0){
+            throw new ReqDataException("此单据还有未完结的单据，无法作废！");
+        }
 
         boolean flag = Db.tx(new IAtom() {
             @Override
             public boolean run() throws SQLException {
                 String feed_back = TypeUtils.castToString(record.get("feed_back"));
                 //修改详细表支付状态以及作废原因
-                boolean flag = CommonService.update("inner_batchpay_bus_attach_detail",
+                int flag = CommonService.updateRows("inner_batchpay_bus_attach_detail",
                         new Record().set("feed_back", feed_back).set("pay_status", WebConstant.PayStatus.CANCEL.getKey())
                                 .set("update_by", userInfo.getUsr_id()).set("update_on", new Date()),
-                        new Record().set("batchno", batchno));
+                        new Record().set("batchno", batchno).set("pay_status",WebConstant.PayStatus.INIT.getKey()));
                 //修改主表单据状态为已作废
-                if (flag) {
+                if (flag>=0) {
                     return CommonService.update("inner_batchpay_baseinfo",
                             new Record().set("service_status",
                                     WebConstant.BillStatus.COMPLETION.getKey()).set("persist_version", (oldversion + 1))
@@ -868,6 +888,12 @@ public class DbtBatchService {
         if (innerRec == null) {
             throw new ReqDataException("单据不存在或已过期!");
         }
+        int service_status = TypeUtils.castToInt(innerRec.get("service_status"));
+        if (service_status != WebConstant.BillStatus.PASS.getKey()
+                && service_status != WebConstant.BillStatus.FAILED.getKey()
+                && service_status != WebConstant.BillStatus.NOCOMPLETION.getKey()) {
+            throw new ReqDataException("此单据状态错误，请刷新重试！");
+        }
 
         boolean flag = Db.tx(new IAtom() {
             @Override
@@ -893,7 +919,16 @@ public class DbtBatchService {
                 where.set("id", id).set("persist_version", oldversion);
 
                 //根据批次号查询该单据是否有已保存单据
-                List<Record> detailRecList = Db.find(Db.getSql("batch.findBatchAttachDetailByBatchno"), innerRec.get("batchno"), WebConstant.PayStatus.INIT.getKey(), WebConstant.PayStatus.FAILD.getKey());
+
+                //根据批次号查询该单据是否未完结的单据
+                SqlPara detailPara = Db.getSqlPara("batch.findBatchAttachDetailByBatchnoAndPayStatus",
+                        Ret.by("map",Kv.create().set("batchno",innerRec.get("batchno")).set("pay_status",new Integer[]{
+                                WebConstant.PayStatus.INIT.getKey(),
+                                WebConstant.PayStatus.HANDLE.getKey(),
+                                WebConstant.PayStatus.FAILD.getKey()
+
+                        })));
+                List<Record> detailRecList = Db.find(detailPara);
                 if (detailRecList == null || detailRecList.size() == 0) {
                     //修改主表信息
                     set.set("service_status", WebConstant.BillStatus.COMPLETION.getKey());
@@ -1007,7 +1042,10 @@ public class DbtBatchService {
                 where.set("id", id).set("persist_version", version);
 
                 //根据批次号查询该单据是否有已保存单据和已失败
-                List<Record> detailRecList = Db.find(Db.getSql("batch.findBatchAttachDetailByBatchno"), innerRec.get("batchno"), WebConstant.PayStatus.INIT.getKey(), WebConstant.PayStatus.FAILD.getKey());
+                List<Record> detailRecList = Db.find(Db.getSql("batch.findBatchAttachDetailByBatchnoAndPayStatus"),
+                        innerRec.get("batchno"), WebConstant.PayStatus.INIT.getKey(),
+                        WebConstant.PayStatus.FAILD.getKey(),
+                        WebConstant.PayStatus.HANDLE.getKey());
                 if (detailRecList == null || detailRecList.size() == 0) {
                     //修改主表信息
                     set.set("service_status", WebConstant.BillStatus.COMPLETION.getKey());
@@ -1092,6 +1130,7 @@ public class DbtBatchService {
         innerRec.set("source_ref", "inner_batchpay_bus_attach_detail");
         final int oldRepearCount = innerRec.getInt("repeat_count");
         innerRec.set("repeat_count", innerRec.getInt("repeat_count") + 1);
+        innerRec.set("bank_serial_number", ChannelManager.getSerianlNo(payBankCode));
         SysSinglePayInter sysInter = new SysSinglePayInter();
         sysInter.setChannelInter(channelInter);
         final Record instr = sysInter.genInstr(innerRec);

@@ -15,13 +15,13 @@ public class DbtOptypeMgr extends AbstractOptypeMgr {
         //更多列表
         optypes.add(new Optype(Optype.Mode.NORMAL, "dbt_morelist")
                 .registKeepParams(new String[]{"pay_query_key", "recv_query_key", "service_status",
-                        "payment_type", "min", "max", "start_date", "end_date", "pay_mode",
+                        "payment_type", "min", "max", "start_date", "end_date", "pay_mode", "biz_id",
                         "page_size", "page_num"}));
 
         //查看列表
         optypes.add(new Optype(Optype.Mode.NORMAL, "dbt_detaillist")
                 .registKeepParams(new String[]{"pay_query_key", "recv_query_key", "service_status",
-                        "payment_type", "min", "max", "start_date", "end_date", "pay_mode",
+                        "payment_type", "min", "max", "start_date", "end_date", "pay_mode", "biz_id",
                         "page_size", "page_num"}));
 
         //支付列表
@@ -30,7 +30,7 @@ public class DbtOptypeMgr extends AbstractOptypeMgr {
                         "pay_mode"
                 }))
                 .registKeepParams(new String[]{"pay_query_key", "recv_query_key", "service_status",
-                        "payment_type", "pay_mode", "min", "max", "start_date", "end_date", "pay_mode",
+                        "payment_type", "pay_mode", "min", "max", "start_date", "end_date", "pay_mode", "biz_id",
                         "page_size", "page_num"}));
 
         //新增

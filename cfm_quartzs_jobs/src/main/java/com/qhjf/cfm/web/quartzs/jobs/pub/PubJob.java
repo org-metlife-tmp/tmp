@@ -77,7 +77,9 @@ public abstract class PubJob implements Job{
 	 * 调用call()方法之前的业务处理,默认不做处理,可被子类重写
 	 * @param record
 	 */
-	public void beforeProcess(Record record){
+	public Boolean beforeProcess(Record record){
+		//默认失败
+		return false ;
 	}
 	
 	/**
@@ -163,7 +165,10 @@ public abstract class PubJob implements Job{
 		@Override
 		public String call() throws Exception {
 			try {
-				beforeProcess(record);
+				Boolean flag = beforeProcess(record);
+				if(!flag){
+					return "fail";
+				}
 				String cnaps = record.getStr("bank_cnaps_code");
 				String bankCode = cnaps.substring(0, 3);
 				IChannelInter channelInter = ChannelManager.getInter(bankCode, getJobCode());

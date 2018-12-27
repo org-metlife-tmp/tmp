@@ -75,4 +75,78 @@
   #sql("delete_cur_bal_wave")
     delete from acc_cur_balance_wave
   #end
+  
+  #sql("get_account_list_balance")
+    select a.acc_id,a.acc_no,a.acc_name,a.acc_attr,a.acc_purpose,a.open_date,a.lawfull_man,a.cancel_date,
+           a.curr_id,a.bank_cnaps_code,a.org_id,a.interactive_mode,a.memo,a.is_activity,a.is_virtual,a.status,
+           a.is_close_confirm,a.deposits_mode,a.subject_code 
+    from account a 
+    where a.status != 2 and a.interactive_mode = 1 
+    	and a.is_activity = 1 and bank_cnaps_code not like '102%'
   #end
+  #sql("get_account_list_balance_batch")
+    select a.acc_id,a.acc_no,a.acc_name,a.acc_attr,a.acc_purpose,a.open_date,a.lawfull_man,a.cancel_date,
+           a.curr_id,a.bank_cnaps_code,a.org_id,a.interactive_mode,a.memo,a.is_activity,a.is_virtual,a.status,
+           a.is_close_confirm,a.deposits_mode,a.subject_code 
+    from account a 
+    where a.status != 2 and a.interactive_mode = 1 
+    	and a.is_activity = 1 
+    	#if(cnpas != null)
+    		and (
+    		#for(x: cnpas)
+    			#if(for.index > 0)
+                	#("or")
+           		#end
+    			bank_cnaps_code like concat(#(x), '%')
+    		#end
+    		)
+    	#end
+    order by acc_id ASC
+  #end
+  
+  #sql("get_account_cur_balance_byaccno")
+    select id,acc_id,acc_no,acc_name,bank_type,bal,available_bal,frz_amt,data_source,bal_date,import_time
+    from acc_cur_balance where acc_no = ? and bal_date = ?
+  #end
+  
+  #sql("get_account_byaccno")
+    select a.acc_id,a.acc_no,a.acc_name,a.acc_attr,a.acc_purpose,a.open_date,a.lawfull_man,a.cancel_date,
+           a.curr_id,a.bank_cnaps_code,a.org_id,a.interactive_mode,a.memo,a.is_activity,a.is_virtual,a.status,
+           a.is_close_confirm,a.deposits_mode,a.subject_code  
+    from account a where a.acc_no = ?
+  #end
+  
+  #sql("get_account_his_balance_byaccno")
+    select id,acc_id,acc_no,acc_name,bank_type,bal,available_bal,frz_amt,data_source,bal_date,import_time
+    from acc_his_balance where acc_no = ? and bal_date = ?
+  #end
+  
+  #sql("get_batch_dbt_nocompletion")
+    select id,batchno,persist_version 
+    from inner_batchpay_baseinfo where service_status = ?
+  #end
+  
+  #sql("get_batch_dbt_count")
+    select count(1) as cnt 
+    from inner_batchpay_bus_attach_detail where batchno = ? and pay_status in(?,?,?)
+  #end
+  
+  #sql("update_batch_dbt_status")
+    update inner_batchpay_baseinfo set service_status = ? where id = ? and persist_version = ?
+  #end
+  
+  #sql("get_batch_zft_nocompletion")
+    select id,batchno,persist_version 
+    from outer_batchpay_baseinfo where service_status = ?
+  #end
+  
+  #sql("get_batch_zft_count")
+    select count(1) as cnt 
+    from outer_batchpay_bus_attach_detail where batchno = ? and pay_status in(?,?,?)
+  #end
+  
+  #sql("update_batch_zft_status")
+    update outer_batchpay_baseinfo set service_status = ? where id = ? and persist_version = ?
+  #end
+#end
+  

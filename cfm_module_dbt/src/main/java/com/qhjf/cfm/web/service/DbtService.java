@@ -182,6 +182,11 @@ public class DbtService {
             kv.set("end_date", endDate);
         }
 
+        String bizId = TypeUtils.castToString(record.get("biz_id"));
+        if (bizId != null && !"".equals(bizId)) {
+            kv.set("biz_id", bizId);
+        }
+
         kv.set("delete_flag", 0);
         kv.set("service_status", record.get("service_status"));
         return Db.getSqlPara(sql, Kv.by("map", kv));
@@ -448,7 +453,7 @@ public class DbtService {
         }
 
         //申请单创建人id非登录用户，不允许进行操作
-        if(!TypeUtils.castToLong(innerRec.get("create_by")).equals(userInfo.getUsr_id())){
+        if (!TypeUtils.castToLong(innerRec.get("create_by")).equals(userInfo.getUsr_id())) {
             throw new ReqDataException("无权进行此操作！");
         }
 
@@ -687,20 +692,20 @@ public class DbtService {
                     @Override
                     public boolean run() throws SQLException {
 
-                        if( WebConstant.BillStatus.PASS.getKey() != status && WebConstant.BillStatus.FAILED.getKey() != status ){
+                        if (WebConstant.BillStatus.PASS.getKey() != status && WebConstant.BillStatus.FAILED.getKey() != status) {
                             log.error("单据状态有误!");
                             return false;
                         }
                         Record setRecord = new Record();
-                        Record whereRecord  = new Record();
+                        Record whereRecord = new Record();
 
-                        setRecord.set("service_status",WebConstant.BillStatus.FAILED.getKey()).set("feed_back",feedBack)
-                                .set("persist_version",persist_version+1);
-                        whereRecord.set("id",idStr).set("service_status",status).set("persist_version",persist_version);
-                        return CommonService.updateRows("inner_db_payment",setRecord,whereRecord) == 1;
+                        setRecord.set("service_status", WebConstant.BillStatus.FAILED.getKey()).set("feed_back", feedBack)
+                                .set("persist_version", persist_version + 1);
+                        whereRecord.set("id", idStr).set("service_status", status).set("persist_version", persist_version);
+                        return CommonService.updateRows("inner_db_payment", setRecord, whereRecord) == 1;
                     }
                 });
-                if(!flag){
+                if (!flag) {
                     log.error("数据过期！");
                 }
                 continue;
@@ -771,6 +776,7 @@ public class DbtService {
         innerRec.set("source_ref", "inner_db_payment");
         final int old_repeat_count = TypeUtils.castToInt(innerRec.get("repeat_count")); // 发送之前的repeat_count
         innerRec.set("repeat_count", old_repeat_count + 1);
+        innerRec.set("bank_serial_number", ChannelManager.getSerianlNo(payBankCode));
         SysSinglePayInter sysInter = new SysSinglePayInter();
         sysInter.setChannelInter(channelInter);
         final Record instr = sysInter.genInstr(innerRec);
@@ -782,7 +788,7 @@ public class DbtService {
                 if (save) {
                     return Db.update(Db.getSql("nbdb.updBillById"), instr.getStr("bank_serial_number"),
                             instr.getInt("repeat_count"), WebConstant.BillStatus.PROCESSING.getKey(),
-                            instr.getStr("instruct_code"), id,old_repeat_count,status) == 1;
+                            instr.getStr("instruct_code"), id, old_repeat_count, status) == 1;
                 }
                 return save;
             }

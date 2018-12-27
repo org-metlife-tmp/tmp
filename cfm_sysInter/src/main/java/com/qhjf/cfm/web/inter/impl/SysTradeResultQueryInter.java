@@ -275,8 +275,10 @@ public class SysTradeResultQueryInter implements ISysAtomicInterface {
         String payCnaps = branchRecord.getStr("pay_bank_cnaps");
         String payBankCode = payCnaps.substring(0, 3);
         IChannelInter channelInter = null;
+        String bankSerialNumber = null;
         try {
             channelInter = ChannelManager.getInter(payBankCode, "SinglePay");
+            bankSerialNumber = ChannelManager.getSerianlNo(payBankCode);
         } catch (Exception e) {
             e.printStackTrace();
             Db.tx(new IAtom() {
@@ -311,6 +313,7 @@ public class SysTradeResultQueryInter implements ISysAtomicInterface {
 
         branchRecord.set("source_ref", "oa_branch_payment_item");
         branchRecord.set("repeat_count", oldRepearCount + 1);
+        branchRecord.set("bank_serial_number", bankSerialNumber);
         SysOaSinglePayInter sysInter = new SysOaSinglePayInter();
         sysInter.setChannelInter(channelInter);
         final Record instr = sysInter.genInstr(branchRecord);

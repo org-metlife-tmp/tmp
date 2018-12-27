@@ -6,6 +6,7 @@ import java.util.Map;
 import com.qhjf.bankinterface.api.ChannelInfo;
 import com.qhjf.bankinterface.cmbc.CmbcChannel;
 import com.qhjf.bankinterface.icbc.IcbcChannel;
+import com.qhjf.cfm.utils.RedisSericalnoGenTool;
 import com.qhjf.cfm.web.channel.inter.api.IChannelInter;
 
 /**
@@ -72,7 +73,10 @@ public class ChannelManager {
 	 * @throws Exception
 	 */
 	public static String getSerianlNo(String bankCode) throws Exception{
-		return getChannelInfo(bankCode).getSerialnoGenTool().next();
+		if(bankCode.equals("308") || bankCode.equals("102")){
+			return RedisSericalnoGenTool.genBankSeqNo();
+		}
+		throw new Exception("银行"+bankCode+"未开通");
 	}
 	
 	/**

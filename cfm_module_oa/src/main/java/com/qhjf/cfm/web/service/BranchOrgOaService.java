@@ -479,7 +479,8 @@ public class BranchOrgOaService {
                 }
             });
             if(flag){
-                oaCallback.callback(originRecord);
+            	Record newOrigin = Db.findById("oa_origin_data", "id", originId);
+                oaCallback.callback(newOrigin);
             }else{
                 errmsg = "数据库执行失败";
                 return errmsg;
@@ -509,8 +510,10 @@ public class BranchOrgOaService {
         String payCnaps = branchRecord.getStr("pay_bank_cnaps");
         String payBankCode = payCnaps.substring(0, 3);
         IChannelInter channelInter = null;
+        String bankSerialNumber = null;
         try {
             channelInter   = ChannelManager.getInter(payBankCode, "SinglePay");
+            bankSerialNumber = ChannelManager.getSerianlNo(payBankCode);
         } catch (Exception e) {
             if (branchRecord != null) {
                 Long baseId = branchRecord.getLong("base_id");
@@ -542,6 +545,7 @@ public class BranchOrgOaService {
         branchRecord.set("source_ref", "oa_branch_payment_item");
 
         branchRecord.set("repeat_count", old_repeat_count + 1);
+        branchRecord.set("bank_serial_number", bankSerialNumber);
         SysOaSinglePayInter sysInter = new SysOaSinglePayInter();
         sysInter.setChannelInter(channelInter);
         final Record instr = sysInter.genInstr(branchRecord);

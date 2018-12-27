@@ -830,6 +830,7 @@ public class ZftService {
         innerRec.set("source_ref", "outer_zf_payment");
         final int old_repeat_count = TypeUtils.castToInt(innerRec.get("repeat_count"));
         innerRec.set("repeat_count", old_repeat_count + 1);
+        innerRec.set("bank_serial_number", ChannelManager.getSerianlNo(payBankCode));
         SysSinglePayInter sysInter = new SysSinglePayInter();
         sysInter.setChannelInter(channelInter);
         final Record instr = sysInter.genInstr(innerRec);

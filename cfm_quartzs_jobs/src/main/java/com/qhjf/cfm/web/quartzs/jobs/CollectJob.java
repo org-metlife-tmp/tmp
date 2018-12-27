@@ -1,5 +1,6 @@
 package com.qhjf.cfm.web.quartzs.jobs;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -9,8 +10,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alibaba.fastjson.util.TypeUtils;
+import com.jfinal.kit.Kv;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
+import com.jfinal.plugin.activerecord.SqlPara;
 import com.qhjf.cfm.utils.RedisSericalnoGenTool;
 import com.qhjf.cfm.web.channel.inter.api.IChannelInter;
 import com.qhjf.cfm.web.channel.manager.ChannelManager;
@@ -83,9 +86,9 @@ public class CollectJob extends PubJob{
 	}
 
 	@Override
-	public void beforeProcess(Record record){
+	public Boolean beforeProcess(Record record){
 		
-		
+		Boolean flag = true ;
 
 		String bankSerialNumber = null;
 		int repeatCount = 0;
@@ -104,10 +107,14 @@ public class CollectJob extends PubJob{
              } else {
                  errMsg = e.getMessage();
              }
-             feedBack = errMsg;
-			status = WebConstant.CollOrPoolRunStatus.FAILED.getKey();
+            feedBack = errMsg;
+			flag = false ;
 		}
-		Record instruction = new Record();
+		Integer collect_type = TypeUtils.castToInt(topic.get("collect_type"));
+		log.info("归集类型====collect_type="+collect_type);
+		log.info("归集id======collect_id="+topic.getLong("id"));
+		
+		Record instruction = new Record();		
 		instruction.set("collect_id", topic.getLong("id"));
 		instruction.set("collect_execute_id", execute.getLong("id"));
 		instruction.set("bank_serial_number", bankSerialNumber);
@@ -122,7 +129,6 @@ public class CollectJob extends PubJob{
 		instruction.set("pay_bank_cnaps", record.getStr("child_acc_bank_cnaps_code"));
 		instruction.set("pay_bank_prov", record.getStr("child_acc_bank_prov"));
 		instruction.set("pay_bank_city", record.getStr("child_acc_bank_city"));
-
 		instruction.set("recv_account_id", record.getLong("main_acc_id"));
 		instruction.set("recv_account_org_id", record.getLong("main_acc_org_id"));
 		instruction.set("recv_account_org_name", record.getStr("main_acc_org_name"));
@@ -133,22 +139,69 @@ public class CollectJob extends PubJob{
 		instruction.set("recv_bank_cnaps", record.getStr("main_acc_bank_cnaps_code"));
 		instruction.set("recv_bank_prov", record.getStr("main_acc_bank_prov"));
 		instruction.set("recv_bank_city", record.getStr("main_acc_bank_city"));
-		
-		instruction.set("collect_amount", topic.getBigDecimal("collect_amount"));
 		instruction.set("collect_status", status);
 		instruction.set("create_on", new Date());
 		instruction.set("update_on", new Date());
 		instruction.set("memo", topic.getStr("summary"));
 		instruction.set("feed_back", feedBack);
 		instruction.set("instruct_code",RedisSericalnoGenTool.genShortSerial());
+		
+		if(1 == collect_type){
+			log.info("=======定额归集");			
+			instruction.set("collect_amount", topic.getBigDecimal("collect_amount"));
+		}else if(2 == collect_type){
+			log.info("=======留存余额");
+			//查询付款账户余额,确定此子账户需要归集的金额
+			SqlPara sqlPara = Db.getSqlPara("curyet.findCurrentBal", record.getStr("child_acc_no"));
+			List<Record> find = Db.find(sqlPara);
+			if(null != find){
+				Record rec = find.get(0);
+				BigDecimal amount = TypeUtils.castToBigDecimal(rec.get("bal"));
+				if(amount.compareTo(topic.getBigDecimal("collect_amount")) < 0){
+					log.error("=======账号=="+record.getStr("child_acc_no")+"余额小于要求的留存余额");
+					feedBack = feedBack == null ? "付款账户余额小于留存余额" : feedBack+",付款账户余额小于留存余额" ;
+					flag = false ;
+				}else{
+					BigDecimal collectAmount = amount.subtract(topic.getBigDecimal("collect_amount"));
+					instruction.set("collect_amount", collectAmount);
+				}
+			}else{
+				log.error("=========未在acc_cur_balance表内查询到余额信息,账号=="+record.getStr("child_acc_no"));
+				feedBack = feedBack == null ? "暂未查询到付款账户余额" : feedBack+",暂未查询到付款账户余额" ;
+				flag = false ;
+			}
+		}else if(3 == collect_type){
+			log.info("=======全额归集");
+			SqlPara sqlPara = Db.getSqlPara("curyet.findCurrentBal", record.getStr("child_acc_no"));
+			List<Record> find = Db.find(sqlPara);
+			if(null != find){
+				Record rec = find.get(0);
+				BigDecimal collectAmount = TypeUtils.castToBigDecimal(rec.get("bal"));
+				instruction.set("collect_amount", collectAmount);
+			}else{
+				log.error("=========未在acc_cur_balance表内查询到余额信息,账号=="+record.getStr("child_acc_no"));
+				feedBack = feedBack == null ? "暂未查询到付款账户余额" : feedBack+",暂未查询到付款账户余额" ;
+				flag = false ;
+			}
+		}else {
+			log.error("===========数据失效,不存在此归集类型");
+			feedBack = feedBack == null ? "数据失效,归集类型有误" : feedBack+",数据失效,归集类型有误" ;
+			flag = false ;
+		}
+        if(!flag) {
+        	instruction.set("feed_back", feedBack);
+        	instruction.set("collect_status", WebConstant.CollOrPoolRunStatus.FAILED.getKey());
+        	instruction.set("collect_amount", new BigDecimal("0.00"));
+        }
 		Db.save("collect_execute_instruction", instruction);
 		record.setColumns(instruction);
 		record.set("bank_cnaps_code", instruction.getStr("pay_bank_cnaps"));
+		record.set("bank_serial_number", bankSerialNumber);
 		record.set("source_ref", "collect_execute_instruction");
 		record.set("payment_amount", topic.getBigDecimal("collect_amount"));
 		record.set("process_bank_type", record.getStr("child_acc_bank_cnaps_code").subSequence(0, 3));
-		record.set("payment_summary", topic.getStr("summary"));
-		
+		record.set("payment_summary", topic.getStr("summary"));	
+		return flag ;
 	}
 	
 	@Override
