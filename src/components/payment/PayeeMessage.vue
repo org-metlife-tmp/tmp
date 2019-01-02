@@ -582,12 +582,11 @@
                             })
                             return;
                         }
-
                         if (this.pagCurrent < (this.pagTotal / this.pagSize)) { //存在下一页
                             this.$emit("getCommTable", this.routerMessage);
                         } else {
-                            if (rows.length == "1" && (this.routerMessage.todo.params.page_num != 1)) { //是当前页最后一条
-                                this.routerMessage.todo.params.page_num--;
+                            if (rows.length == "1" && (this.routerMessage.params.page_num != 1)) { //是当前页最后一条
+                                this.routerMessage.params.page_num--;
                                 this.$emit("getCommTable", this.routerMessage);
                             } else {
                                 rows.splice(index, 1);
