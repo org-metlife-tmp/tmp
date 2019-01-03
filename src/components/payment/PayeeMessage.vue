@@ -512,7 +512,7 @@
                 this.$refs.dialogForm.validate((valid, object) => {
                     if (valid) {
                         var params = this.dialogData;
-
+                        params.acc_no = params.acc_no.trim();
                         this.$axios({
                             url: this.queryUrl + "normalProcess",
                             method: "post",
