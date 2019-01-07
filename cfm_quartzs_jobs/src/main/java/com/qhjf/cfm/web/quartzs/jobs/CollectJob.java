@@ -152,9 +152,10 @@ public class CollectJob extends PubJob{
 		}else if(2 == collect_type){
 			log.info("=======留存余额");
 			//查询付款账户余额,确定此子账户需要归集的金额
-			SqlPara sqlPara = Db.getSqlPara("curyet.findCurrentBal", record.getStr("child_acc_no"));
-			List<Record> find = Db.find(sqlPara);
-			if(null != find){
+			String sql = Db.getSql("curyet.findCurrentBal");
+			log.info("归集子账户=="+record.getStr("child_acc_no"));
+			List<Record> find = Db.find(sql, record.getStr("child_acc_no"));
+			if(null != find && find.size() == 1){
 				Record rec = find.get(0);
 				BigDecimal amount = TypeUtils.castToBigDecimal(rec.get("bal"));
 				if(amount.compareTo(topic.getBigDecimal("collect_amount")) < 0){
@@ -172,9 +173,10 @@ public class CollectJob extends PubJob{
 			}
 		}else if(3 == collect_type){
 			log.info("=======全额归集");
-			SqlPara sqlPara = Db.getSqlPara("curyet.findCurrentBal", record.getStr("child_acc_no"));
-			List<Record> find = Db.find(sqlPara);
-			if(null != find){
+			String sql = Db.getSql("curyet.findCurrentBal");
+			log.info("归集子账户=="+record.getStr("child_acc_no"));
+			List<Record> find = Db.find(sql, record.getStr("child_acc_no"));
+			if(null != find && find.size() == 1){
 				Record rec = find.get(0);
 				BigDecimal collectAmount = TypeUtils.castToBigDecimal(rec.get("bal"));
 				instruction.set("collect_amount", collectAmount);

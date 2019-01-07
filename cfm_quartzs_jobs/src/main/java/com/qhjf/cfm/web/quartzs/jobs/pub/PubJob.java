@@ -79,7 +79,7 @@ public abstract class PubJob implements Job{
 	 */
 	public Boolean beforeProcess(Record record){
 		//默认失败
-		return false ;
+		return true ;
 	}
 	
 	/**

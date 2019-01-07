@@ -106,7 +106,7 @@ public class SupplierAccService {
     public Record chg(final Record record, UserInfo userInfo) throws BusinessException {
 
         long id = TypeUtils.castToLong(record.get("id"));
-        String accNo = TypeUtils.castToString(record.get("acc_no"));
+        String accNo = TypeUtils.castToString(record.get("acc_no")).trim();
 
         //根据id查询供应商信息
         Record supplierRec = Db.findById("supplier_acc_info", "id", id);

@@ -818,6 +818,7 @@ select
 	base.pay_bank_prov,
 	base.pay_bank_city,
 	base.biz_id,
+	base.service_status,
 	detail.recv_account_id,
 	detail.recv_account_no,
 	detail.recv_account_name,

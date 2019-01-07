@@ -43,6 +43,8 @@ public class BranchOrgOaController extends CFMBaseController {
     public void oaTodoList() throws ReqDataException {
         log.info("========OA分公司付款未处理列表模块");
         Record record = getRecordByParamsStrong();
+        String sql = Db.getSql("curyet.findCurrentBal");
+		List<Record> find = Db.find(sql, "123123");
         int pageNum = getPageNum(record);
         int pageSize = getPageSize(record);
         record.set("org_id", getCurUodp().getOrg_id());
