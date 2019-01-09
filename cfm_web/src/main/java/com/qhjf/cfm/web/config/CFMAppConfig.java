@@ -1,5 +1,6 @@
 package com.qhjf.cfm.web.config;
 
+import com.alibaba.druid.filter.logging.Slf4jLogFilter;
 import com.jfinal.config.*;
 import com.jfinal.core.JFinal;
 import com.jfinal.ext.handler.UrlSkipHandler;
@@ -85,6 +86,11 @@ public class CFMAppConfig extends JFinalConfig {
         log.debug("Enter into configPlugin(Plugins plugins)  .....");
         log.debug("dburl is:" + iniMgr.getDbURL());
         DruidPlugin dp = new DruidPlugin(iniMgr.getDbURL(), iniMgr.getDbUser(), iniMgr.getDbPwd());
+        Slf4jLogFilter slf4jLogFilter = new Slf4jLogFilter();
+        slf4jLogFilter.setConnectionLogEnabled(false);
+        slf4jLogFilter.setStatementLogEnabled(true);
+        slf4jLogFilter.setStatementLogErrorEnabled(true);
+        slf4jLogFilter.setResultSetLogEnabled(false);
         plugins.add(dp);
 
         ActiveRecordPlugin arp = new ActiveRecordPlugin(dp);

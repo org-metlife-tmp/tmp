@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.util.TypeUtils;
 import com.qhjf.cfm.queue.ProductQueue;
 import com.qhjf.cfm.queue.QueueBean;
@@ -62,7 +63,9 @@ public class SysTradeResultQueryInter implements ISysAtomicInterface {
     public void callBack(String jsonStr) throws Exception {
         log.debug("查询交易状态指令回写开始");
         Db.delete("trade_result_query_instr_queue_lock", instr);
-        final Record parseRecord = channelInter.parseResult(jsonStr);
+        JSONObject json = JSONObject.parseObject(jsonStr);
+        json.put("bank_serial_number", this.getInstr().getStr("bank_serial_number"));
+        final Record parseRecord = channelInter.parseResult(json.toJSONString());
         final int status = parseRecord.getInt("status");
         if (status == WebConstant.PayStatus.SUCCESS.getKey() || status == WebConstant.PayStatus.FAILD.getKey()) {
             final Record instrRecord = Db.findById("single_pay_instr_queue", "id", instr.getLong("bill_id"));
@@ -341,7 +344,7 @@ public class SysTradeResultQueryInter implements ISysAtomicInterface {
             ProductQueue productQueue = new ProductQueue(bean);
             new Thread(productQueue).start();
         } else {
-           log.error("发送失败！");
+            log.error("发送失败！");
         }
     }
 }
