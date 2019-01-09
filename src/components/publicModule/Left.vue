@@ -570,33 +570,17 @@
                     <el-menu-item index="/refund-ticket/refund-inquiry" v-if="menuList.QRefund">退票查询</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
-            <!--
-            <el-submenu index="10">
+            <el-submenu index="19">
                 <template slot="title" height="200px">
-                    <i class="icon-zjys"></i>
-
-                    <p class="mg-four">资金预算</p>
+                    <i class="icon-xtsz"></i>
+                    <p class="mg-four">系统设置</p>
                 </template>
                 <el-menu-item-group>
-                    <el-menu-item index="1-1">选项1</el-menu-item>
-                    <el-menu-item index="1-2">选项2</el-menu-item>
-                    <el-menu-item index="1-3">选项3</el-menu-item>
+                    <el-menu-item index="/system-set/aisle-set">通道设置</el-menu-item>
+                    <el-menu-item index="/system-set/bankkey-set">bankkey设置</el-menu-item>
+                    <!--<el-menu-item index="1-3">选项3</el-menu-item>-->
                 </el-menu-item-group>
             </el-submenu>
-
-            <el-submenu index="12">
-                <template slot="title" height="200px">
-                    <i class="icon-bb"></i>
-
-                    <p>报表</p>
-                </template>
-                <el-menu-item-group>
-                    <el-menu-item index="1-1">选项1</el-menu-item>
-                    <el-menu-item index="1-2">选项2</el-menu-item>
-                    <el-menu-item index="1-3">选项3</el-menu-item>
-                </el-menu-item-group>
-            </el-submenu>
-            -->
         </el-menu>
     </div>
 </template>

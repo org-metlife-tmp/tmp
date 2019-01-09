@@ -123,6 +123,10 @@ import SuspiciousData from '@/components/OAData/SuspiciousData'
 import RefundDispose from '@/components/RefundTicket/RefundDispose'
 import SuspiciousRefund from '@/components/RefundTicket/SuspiciousRefund'
 import RefundInquiry from '@/components/RefundTicket/RefundInquiry'
+//系统设置
+import AisleSet from '@/components/systemSet/AisleSet'
+import BankkeySet from '@/components/systemSet/BankkeySet'
+import PreventRepet from '@/components/systemSet/PreventRepet'
 
 
 Vue.use(Router)
@@ -233,7 +237,10 @@ const router = new Router({
                         //退票管理
                         {path: '/refund-ticket/refund-dispose', name: 'RefundDispose', component: RefundDispose, meta: {requireAuth: true}},
                         {path: '/refund-ticket/suspicious-refund', name: 'SuspiciousRefund', component: SuspiciousRefund, meta: {requireAuth: true}},
-                        {path: '/refund-ticket/refund-inquiry', name: 'RefundInquiry', component: RefundInquiry, meta: {requireAuth: true}}
+                        {path: '/refund-ticket/refund-inquiry', name: 'RefundInquiry', component: RefundInquiry, meta: {requireAuth: true}},
+                        //系统设置
+                        {path: '/system-set/aisle-set', name: 'AisleSet', component: AisleSet, meta: {requireAuth: true}},
+                        {path: '/system-set/bankkey-set', name: 'BankkeySet', component: BankkeySet, meta: {requireAuth: true}},
                     ]
                 },
                 //基础样式三（tab页）
