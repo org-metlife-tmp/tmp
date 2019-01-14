@@ -13,11 +13,11 @@ import com.qhjf.cfm.web.channel.inter.api.ISingleResultChannelInter;
 import com.qhjf.cfm.web.inter.api.ISysAtomicInterface;
 
 public class SysCurrBalQueryInter implements ISysAtomicInterface{
-	
+
 	private static Logger log = LoggerFactory.getLogger(SysCurrBalQueryInter.class);
 	private ISingleResultChannelInter channelInter;
 	private Record instr;
-	
+
 	@Override
 	public Record genInstr(Record record) {
 		this.instr = new Record();
@@ -27,7 +27,7 @@ public class SysCurrBalQueryInter implements ISysAtomicInterface{
 		instr.set("pre_query_time", DateKit.toDate(DateKit.toStr(date,DateKit.timeStampPattern)));
 		return instr;
 	}
-	
+
 	@Override
 	public Record getInstr() {
 		return this.instr;
@@ -36,6 +36,10 @@ public class SysCurrBalQueryInter implements ISysAtomicInterface{
 	@Override
 	public void callBack(String jsonStr) throws Exception {
 		Db.delete("bal_query_instr_queue_lock", instr);
+		if(jsonStr == null || jsonStr.length() == 0){
+			log.error("当日余额查询返回报文为空,不错处理");
+			return;
+		}
 		Long accId = instr.getLong("acc_id");
 		String date = instr.getStr("query_date");
 		Record accCurBal = Db.findFirst(Db.getSql("quartzs_job_cfm.get_account_cur_balance") ,accId,date);
@@ -63,13 +67,13 @@ public class SysCurrBalQueryInter implements ISysAtomicInterface{
 		}
 		accCurBal.remove("id");
 		Db.save("acc_cur_balance_wave", accCurBal);
-		
+
 	}
 
 	@Override
 	public void setChannelInter(IChannelInter channelInter) {
 		this.channelInter = (ISingleResultChannelInter) channelInter;
-		
+
 	}
 
 	@Override

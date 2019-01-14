@@ -89,6 +89,10 @@ public class SysSinglePayInter implements ISysAtomicInterface {
     @Override
     public void callBack(String jsonStr) throws Exception {
         log.debug("交易回写开始");
+        if(jsonStr == null || jsonStr.length() == 0){
+            log.error("交易返回报文为空,不错处理");
+            return;
+        }
         final Record parseRecord = channelInter.parseResult(jsonStr);
         final int status = parseRecord.getInt("status");
         if (status == WebConstant.PayStatus.SUCCESS.getKey() || status == WebConstant.PayStatus.FAILD.getKey()) {

@@ -35,6 +35,10 @@ public class SysHisTransQueryInter implements ISysAtomicInterface {
 	@Override
 	public void callBack(String jsonStr) throws Exception {
 		Db.delete("trans_query_instr_queue_lock", instr);
+		if(jsonStr == null || jsonStr.length() == 0){
+			log.error("历史交易查询返回报文为空,不错处理");
+			return;
+		}
 		int resultCount = channelInter.getResultCount(jsonStr);
 		log.debug("resultCount" + resultCount);
 		if (resultCount <= 0) {
@@ -56,22 +60,22 @@ public class SysHisTransQueryInter implements ISysAtomicInterface {
 				break;
 			}
 		}
-		
+
 		//历史交易查询完毕，更新历史交易作业最近执行日期表acc_his_transaction_jobext
 		String preDay = getChannelInter().getInter().getChannelConfig("preday");
-	    Map<String, String> times = 
-	    		TransQueryTimesGenUtil.getInstance().getTransQueryTime(String.valueOf(accId), preDay);
-	    
-	    //查询acc_his_transaction_jobext
-	    List<Record> find = Db.find("select * from acc_his_transaction_jobext where acc_id=?", new Object[]{accId});
-	    if (null == find || find.size() == 0) {
-	    	Record r = new Record().set("acc_id", accId)
-	    			.set("latest_date", times.get("end"))
-	    			.set("update_on", new Date());
+		Map<String, String> times =
+				TransQueryTimesGenUtil.getInstance().getTransQueryTime(String.valueOf(accId), preDay);
+
+		//查询acc_his_transaction_jobext
+		List<Record> find = Db.find("select * from acc_his_transaction_jobext where acc_id=?", new Object[]{accId});
+		if (null == find || find.size() == 0) {
+			Record r = new Record().set("acc_id", accId)
+					.set("latest_date", times.get("end"))
+					.set("update_on", new Date());
 			Db.save("acc_his_transaction_jobext", r);
 		}else {
 			Object[] params = new Object[]{times.get("end"), new Date(), accId};
-		    Db.update("update acc_his_transaction_jobext set latest_date=?,update_on=? where acc_id=?", params);
+			Db.update("update acc_his_transaction_jobext set latest_date=?,update_on=? where acc_id=?", params);
 		}
 
 	}

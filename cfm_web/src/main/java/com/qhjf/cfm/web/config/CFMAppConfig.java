@@ -91,6 +91,7 @@ public class CFMAppConfig extends JFinalConfig {
         slf4jLogFilter.setStatementLogEnabled(true);
         slf4jLogFilter.setStatementLogErrorEnabled(true);
         slf4jLogFilter.setResultSetLogEnabled(false);
+        dp.addFilter(slf4jLogFilter);
         plugins.add(dp);
 
         ActiveRecordPlugin arp = new ActiveRecordPlugin(dp);
