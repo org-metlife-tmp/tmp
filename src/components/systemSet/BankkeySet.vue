@@ -74,6 +74,7 @@
         <!-- 顶部按钮-->
         <div class="button-list-right">
             <el-button type="warning" size="mini" @click="addBankkey">新增</el-button>
+            <el-button type="warning" size="mini" @click="exportFun">导出</el-button>
         </div>
         <!--搜索区-->
         <div class="search-setion">
@@ -94,33 +95,22 @@
                     </el-col>
                     <el-col :span="4">
                         <el-form-item>
-                            <el-select v-model="searchData.channel_id" placeholder="请选择通道编码"
-                                       clearable filterable
-                                       style="width:100%">
-                                <el-option v-for="channel in channelList"
-                                           :key="channel.channel_id"
-                                           :label="channel.channel_code"
-                                           :value="channel.channel_id">
-                                </el-option>
-                            </el-select>
+                            <el-input v-model="searchData.channel_code" clearable placeholder="请输入通道编码"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="4">
                         <el-form-item>
-                            <el-select v-model="searchData.org_id" placeholder="请选择机构"
-                                       clearable filterable
-                                       style="width:100%">
-                                <el-option v-for="item in orgList"
-                                           :key="item.org_id"
-                                           :label="item.name"
-                                           :value="item.org_id">
-                                </el-option>
-                            </el-select>
+                            <el-input v-model="searchData.channel_desc" clearable placeholder="请输入通道描述"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="4">
                         <el-form-item>
                             <el-input v-model="searchData.bankkey" clearable placeholder="请输入bankkey"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="4">
+                        <el-form-item>
+                            <el-input v-model="searchData.bankkey_desc" clearable placeholder="请输入bankkey描述"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="2">
@@ -130,10 +120,10 @@
                     </el-col>
                     <el-col :span="24">
                         <el-form-item style="margin-bottom:0px">
-                            <el-radio-group v-model="searchData.bankkey_status">
-                                <el-radio :label="1">启用</el-radio>
-                                <el-radio :label="0">停用</el-radio>
-                            </el-radio-group>
+                            <el-checkbox-group v-model="searchData.bankkey_status">
+                                <el-checkbox :label="1" name="启用">启用</el-checkbox>
+                                <el-checkbox :label="0" name="停用">停用</el-checkbox>
+                            </el-checkbox-group>
                         </el-form-item>
                     </el-col>
                 </el-row>
@@ -147,15 +137,22 @@
                       border size="mini">
                 <el-table-column prop="os_source" label="来源系统" :show-overflow-tooltip="true"
                                  :formatter="transitSource"></el-table-column>
-                <el-table-column prop="orgname" label="公司" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="bankkey" label="bankkey" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="bankkey_desc" label="bankkey描述" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="bankkey" label="bankkey" width="90px"
+                                 :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="bankkey_desc" label="bankkey描述" width="110px"
+                                 :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="channel_code" label="通道编码" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="channel_desc" label="通道描述" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="orgname" label="机构名称" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="bankcode" label="bankcode" width="100px"
+                                 :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="acc_no" label="银行账号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="subordinate_channel" label="所属渠道" :show-overflow-tooltip="true"
                                  :formatter="transitChannel"></el-table-column>
-                <el-table-column prop="bankkey_status" label="bankkey状态" :show-overflow-tooltip="true"
-                                 :formatter="transitStatus"></el-table-column>
+                <el-table-column prop="is_source_back" label="原通道退款" :show-overflow-tooltip="true"
+                                 width="96px" :formatter="transitSurce"></el-table-column>
+                <el-table-column prop="bankkey_status" label="状态" :show-overflow-tooltip="true"
+                                 width="60px" :formatter="transitStatus"></el-table-column>
                 <el-table-column
                         label="操作" width="80"
                         fixed="right">
@@ -195,10 +192,11 @@
                    top="56px">
             <h1 slot="title" v-text="dialogTitle" class="dialog-title"></h1>
             <el-form :model="dialogData" size="small"
-                     :label-width="formLabelWidth">
+                     :label-width="formLabelWidth"
+                     :rules="rules" ref="dialogForm">
                 <el-row>
                     <el-col :span="12">
-                        <el-form-item label="来源系统">
+                        <el-form-item label="来源系统" prop="os_source">
                             <el-select v-model="dialogData.os_source" placeholder="请选择来源系统"
                                        clearable filterable :disabled="isLook"
                                        style="width:100%">
@@ -211,7 +209,7 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="公司">
+                        <el-form-item label="机构名称" prop="org_id">
                             <el-select v-model="dialogData.org_id" placeholder="请选择机构"
                                        clearable filterable :disabled="isLook"
                                        style="width:100%">
@@ -224,19 +222,20 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="bankkey">
+                        <el-form-item label="bankkey" prop="bankkey">
                             <el-input v-model="dialogData.bankkey" placeholder="请输入bankkey" :disabled="isLook"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="bankkey描述">
+                        <el-form-item label="bankkey描述" prop="bankkey_desc">
                             <el-input v-model="dialogData.bankkey_desc" placeholder="请输入bankkey描述" :disabled="isLook"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="收付属性">
+                        <el-form-item label="收付属性" prop="pay_mode">
                             <el-select v-model="dialogData.pay_mode" placeholder="请选择收付属性"
                                        clearable filterable :disabled="isLook"
+                                       @change="dialogData.channel_id = ''"
                                        style="width:100%">
                                 <el-option v-for="(payAttr,key) in payAttrList"
                                            :key="key"
@@ -256,9 +255,10 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="通道编码">
+                        <el-form-item label="通道编码" prop="channel_id">
                             <el-select v-model="dialogData.channel_id" placeholder="请选择通道编码"
-                                       clearable filterable @change="setChannel" :disabled="isLook"
+                                       clearable filterable @change="setChannel" :disabled="isLook || !dialogData.pay_mode"
+                                       @visible-change="getChannelList"
                                        style="width:100%">
                                 <el-option v-for="channel in channelList"
                                            :key="channel.channel_id"
@@ -283,8 +283,8 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="银行名称">
-                            <el-select v-model="dialogData.bank_type" placeholder="请选择银行大类"
+                        <el-form-item label="银行名称" prop="bank_type">
+                            <el-select v-model="dialogData.bank_type" placeholder="请选择银行"
                                        clearable filterable :disabled="isLook"
                                        style="width:100%"
                                        :filter-method="filterBankType"
@@ -299,7 +299,7 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="所属渠道">
+                        <el-form-item label="所属渠道" prop="subordinate_channel">
                             <el-select v-model="dialogData.subordinate_channel" placeholder="请选择渠道"
                                        clearable filterable :disabled="isLook"
                                        style="width:100%">
@@ -351,7 +351,7 @@
             //机构列表
             this.getOrgList();
             //通道列表
-            this.getChannelList();
+            this.getChannelList(true);
             //银行大类
             var bankTypeList = JSON.parse(window.sessionStorage.getItem("bankTypeList"));
             if (bankTypeList) {
@@ -376,16 +376,16 @@
                 },
                 searchData: { //搜索条件
                     os_source: "",
-                    channel_id: "",
-                    org_id: "",
+                    channel_code: "",
+                    channel_desc: "",
                     bankkey: "",
-                    bankkey_status: 1
+                    bankkey_desc: "",
+                    bankkey_status: []
                 },
                 tableList: [], //列表数据
                 pagSize: 8, //分页数据
                 pagTotal: 1,
                 pagCurrent: 1,
-
                 sourceList: {}, //常量数据
                 channelList: [],
                 orgList: [],
@@ -395,8 +395,6 @@
                 bankAllTypeList: [], //银行大类全部(不重复)
                 bankTypeList: [], //银行大类
                 bankLongding: false,
-
-
                 dialogVisible: false, //弹框数据
                 dialogTitle: "新增",
                 dialogData: {
@@ -409,12 +407,55 @@
                     channel_id: "",
                     bank_type: "",
                     is_source_back: "",
-                    subordinate_channel: "",
+                    subordinate_channel: "0",
                     remark: ""
                 },
                 formLabelWidth: "110px",
                 currentBank: {},
-                isLook: false
+                isLook: false,
+                //校验规则设置
+                rules: {
+                    os_source: {
+                        required: true,
+                        message: "请选择来源系统",
+                        trigger: "change"
+                    },
+                    org_id: {
+                        required: true,
+                        message: "请选择机构名称",
+                        trigger: "change"
+                    },
+                    subordinate_channel: {
+                        required: true,
+                        message: "请选择渠道",
+                        trigger: "change"
+                    },
+                    bank_type: {
+                        required: true,
+                        message: "请选择银行",
+                        trigger: "change"
+                    },
+                    channel_id: {
+                        required: true,
+                        message: "请选择通道编码",
+                        trigger: "change"
+                    },
+                    pay_mode: {
+                        required: true,
+                        message: "请选择收付属性",
+                        trigger: "change"
+                    },
+                    bankkey_desc: {
+                        required: true,
+                        message: "请输入bankkey描述",
+                        trigger: "blur"
+                    },
+                    bankkey: {
+                        required: true,
+                        message: "请输入bankkey",
+                        trigger: "blur"
+                    }
+                },
             }
         },
         methods: {
@@ -465,29 +506,33 @@
                 });
             },
             //获取通道编码
-            getChannelList: function () {
-                this.$axios({
-                    url: this.queryUrl + "normalProcess",
-                    method: "post",
-                    data: {
-                        optype: "sftchannel_getallchannel",
-                        params: {}
-                    }
-                }).then((result) => {
-                    if (result.data.error_msg) {
-                        this.$message({
-                            type: "error",
-                            message: result.data.error_msg,
-                            duration: 2000
-                        });
-                    } else {
-                        var data = result.data.data;
-                        this.channelList = data;
-                    }
+            getChannelList: function (val) {
+                if(val){
+                    this.$axios({
+                        url: this.queryUrl + "normalProcess",
+                        method: "post",
+                        data: {
+                            optype: "sftchannel_getallchannel",
+                            params: {
+                                pay_mode: this.dialogData.pay_mode
+                            }
+                        }
+                    }).then((result) => {
+                        if (result.data.error_msg) {
+                            this.$message({
+                                type: "error",
+                                message: result.data.error_msg,
+                                duration: 2000
+                            });
+                        } else {
+                            var data = result.data.data;
+                            this.channelList = data;
+                        }
 
-                }).catch(function (error) {
-                    console.log(error);
-                });
+                    }).catch(function (error) {
+                        console.log(error);
+                    });
+                }
             },
             //银行大类搜索筛选
             filterBankType: function (value) {
@@ -546,14 +591,17 @@
             },
             //新增
             addBankkey: function () {
+                if (this.$refs.dialogForm) {
+                    this.$refs.dialogForm.clearValidate();
+                }
                 this.isLook = false;
                 this.dialogVisible = true;
                 this.dialogTitle = "新增";
 
                 var dialogData = this.dialogData;
                 for (var k in dialogData) {
-                    if (k == "bankkey_status" || k == "is_source_back") {
-                        dialogData[k] = 0;
+                    if (k == "bankkey_status" || k == "is_source_back" || k == "subordinate_channel") {
+                        dialogData[k] = "0";
                     } else {
                         dialogData[k] = "";
                     }
@@ -561,58 +609,64 @@
             },
             //保存新增或修改
             subCurrent: function () {
-                var dialogData = this.dialogData;
-                var optype = "";
-
-                if (this.dialogTitle == "新增") {
-                    optype = "sftbankkey_addbankkey";
-                } else {
-                    optype = "sftbankkey_chgbankkey";
-                    dialogData.id = this.currentBank.id;
-                    dialogData.persist_version = this.currentBank.persist_version;
-                }
-
-                this.$axios({
-                    url: this.queryUrl + "normalProcess",
-                    method: "post",
-                    data: {
-                        optype: optype,
-                        params: dialogData
-                    }
-                }).then((result) => {
-                    if (result.data.error_msg) {
-                        this.$message({
-                            type: "error",
-                            message: result.data.error_msg,
-                            duration: 2000
-                        });
-                    } else {
-                        var data = result.data.data;
+                this.$refs.dialogForm.validate((valid, object) => {
+                    if (valid) {
+                        var dialogData = this.dialogData;
+                        var optype = "";
 
                         if (this.dialogTitle == "新增") {
-                            if (this.tableList.length < this.routerMessage.params.page_size) {
-                                this.tableList.push(data);
-                            }
-                            this.pagTotal++;
-                            var message = "新增成功";
+                            optype = "sftbankkey_addbankkey";
                         } else {
-                            var currentBank = this.currentBank;
-                            for (var k in currentBank) {
-                                currentBank[k] = data[k];
-                            }
-                            var message = "修改成功";
+                            optype = "sftbankkey_chgbankkey";
+                            dialogData.id = this.currentBank.id;
+                            dialogData.persist_version = this.currentBank.persist_version;
                         }
 
-                        this.dialogVisible = false;
-                        this.$message({
-                            type: "success",
-                            message: message,
-                            duration: 2000
-                        })
-                    }
+                        this.$axios({
+                            url: this.queryUrl + "normalProcess",
+                            method: "post",
+                            data: {
+                                optype: optype,
+                                params: dialogData
+                            }
+                        }).then((result) => {
+                            if (result.data.error_msg) {
+                                this.$message({
+                                    type: "error",
+                                    message: result.data.error_msg,
+                                    duration: 2000
+                                });
+                            } else {
+                                var data = result.data.data;
 
-                }).catch(function (error) {
-                    console.log(error);
+                                if (this.dialogTitle == "新增") {
+                                    if (this.tableList.length < this.routerMessage.params.page_size) {
+                                        this.tableList.push(data);
+                                    }
+                                    this.pagTotal++;
+                                    var message = "新增成功";
+                                } else {
+                                    var currentBank = this.currentBank;
+                                    for (var k in currentBank) {
+                                        currentBank[k] = data[k];
+                                    }
+                                    var message = "修改成功";
+                                }
+
+                                this.dialogVisible = false;
+                                this.$message({
+                                    type: "success",
+                                    message: message,
+                                    duration: 2000
+                                })
+                            }
+
+                        }).catch(function (error) {
+                            console.log(error);
+                        });
+                    } else {
+                        return false;
+                    }
                 });
             },
             //展示格式转换-来源系统
@@ -626,6 +680,10 @@
             //展示格式转换-状态
             transitStatus: function (row, column, cellValue, index) {
                 return cellValue == 1 ? "启用" : "禁用";
+            },
+            //展示格式转换-原通道退款
+            transitSurce: function (row, column, cellValue, index) {
+                return cellValue == 1 ? "是" : "否";
             },
             //编辑
             editBankkey: function (row) {
@@ -657,6 +715,43 @@
                 this.dialogTitle = "查看";
                 this.isLook = true;
             },
+            //导出
+            exportFun:function () {
+                var params = this.routerMessage.params;
+                this.$axios({
+                    url: this.queryUrl + "normalProcess",
+                    method: "post",
+                    data: {
+                        optype:"sftbankkey_listexport",
+                        params:params
+                    },
+                    responseType: 'blob'
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                    } else {
+                        var fileName = decodeURI(result.headers["content-disposition"]).split("=")[1];
+                        //ie兼容
+                        if (window.navigator && window.navigator.msSaveOrOpenBlob) {
+                            window.navigator.msSaveOrOpenBlob(new Blob([result.data]), fileName);
+                        } else {
+                            let url = window.URL.createObjectURL(new Blob([result.data]));
+                            let link = document.createElement('a');
+                            link.style.display = 'none';
+                            link.href = url;
+                            link.setAttribute('download', fileName);
+                            document.body.appendChild(link);
+                            link.click();
+                        }
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                })
+            }
         },
         watch: {
             tableData: function (val, oldVal) {

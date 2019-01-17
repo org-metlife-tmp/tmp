@@ -84,6 +84,7 @@
         <!-- 顶部按钮-->
         <div class="button-list-right">
             <el-button type="warning" size="mini" @click="addAisle">新增</el-button>
+            <el-button type="warning" size="mini" @click="exportFun">导出</el-button>
         </div>
         <!--搜索区-->
         <div class="search-setion">
@@ -91,7 +92,12 @@
                 <el-row>
                     <el-col :span="4">
                         <el-form-item>
-                            <el-input v-model="searchData.channel_code" clearable placeholder="请选择通道编码"></el-input>
+                            <el-input v-model="searchData.channel_code" clearable placeholder="请输入通道编码"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="4">
+                        <el-form-item>
+                            <el-input v-model="searchData.channel_desc" clearable placeholder="请输入通道描述"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="4">
@@ -102,6 +108,19 @@
                                 <el-option v-for="(payMode,key) in payModeList"
                                            :key="key"
                                            :label="payMode"
+                                           :value="key">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="4">
+                        <el-form-item>
+                            <el-select v-model="searchData.pay_attr" placeholder="请选择收付属性"
+                                       clearable filterable
+                                       style="width:100%">
+                                <el-option v-for="(payAttr,key) in payAttrList"
+                                           :key="key"
+                                           :label="payAttr"
                                            :value="key">
                                 </el-option>
                             </el-select>
@@ -125,17 +144,17 @@
                             </el-select>
                         </el-form-item>
                     </el-col>
+                    <el-col :span="22">
+                        <el-form-item style="margin-bottom:0px">
+                            <el-checkbox-group v-model="searchData.is_checkout">
+                                <el-checkbox :label="1" name="启用">启用</el-checkbox>
+                                <el-checkbox :label="0" name="停用">停用</el-checkbox>
+                            </el-checkbox-group>
+                        </el-form-item>
+                    </el-col>
                     <el-col :span="2">
                         <el-form-item>
                             <el-button type="primary" plain @click="queryData" size="mini">搜索</el-button>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="24">
-                        <el-form-item style="margin-bottom:0px">
-                            <el-radio-group v-model="searchData.is_checkout">
-                                <el-radio :label="1">启用</el-radio>
-                                <el-radio :label="0">停用</el-radio>
-                            </el-radio-group>
                         </el-form-item>
                     </el-col>
                 </el-row>
@@ -147,24 +166,22 @@
         <section class="table-content">
             <el-table :data="tableList"
                       border size="mini">
-                <el-table-column prop="channel_code" label="通道编码" width="100px"
-                                 :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="channel_desc" label="通道描述" width="100px"
-                                 :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="pay_mode" label="支付方式" width="80px"
-                                 :show-overflow-tooltip="true" :formatter="transitPayMode"></el-table-column>
-                <el-table-column prop="pay_attr" label="收付属性" width="80px"
-                                 :show-overflow-tooltip="true" :formatter="transitPayAttr"></el-table-column>
-                <el-table-column prop="single_amount_limit" label="单笔金额限制" width="120px"
+                <el-table-column prop="channel_code" label="通道编码" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="channel_desc" label="通道描述" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="pay_mode" label="支付方式" :show-overflow-tooltip="true"
+                                 :formatter="transitPayMode"></el-table-column>
+                <el-table-column prop="pay_attr" label="收付属性" :show-overflow-tooltip="true"
+                                 :formatter="transitPayAttr"></el-table-column>
+                <el-table-column prop="interactive_mode" label="交互方式" :show-overflow-tooltip="true"
+                                 :formatter="transitInteract"></el-table-column>
+                <el-table-column prop="bankcode" label="bankcode" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="bank_name" label="银行账号" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="org_name" label="文件生成归属地" width="120px"
                                  :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="single_file_limit" label="单批次文件笔数限制" width="150px"
                                  :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="bankcode" label="bankcode" width="110px"
-                                 :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="org_name" label="文件生成归属地" width="120px"
-                                 :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="interactive_mode" label="交互方式" width="80px"
-                                 :show-overflow-tooltip="true" :formatter="transitInteract"></el-table-column>
+                <el-table-column prop="is_checkout" label="状态" :show-overflow-tooltip="true"
+                                 :formatter="transitStatus"></el-table-column>
                 <el-table-column
                         label="操作" width="80"
                         fixed="right">
@@ -196,14 +213,15 @@
                     :current-page="pagCurrent">
             </el-pagination>
         </div>
-        <!--日志 弹出框-->
+        <!--新增/修改 弹出框-->
         <el-dialog :visible.sync="dialogVisible"
                    width="860px"
                    :close-on-click-modal="false"
                    top="56px">
             <h1 slot="title" v-text="dialogTitle" class="dialog-title"></h1>
             <el-form :model="dialogData" size="small"
-                     :label-width="formLabelWidth">
+                     :label-width="formLabelWidth"
+                     :rules="rules" ref="dialogForm">
                 <el-row>
                     <el-col :span="24">
                         <el-form-item label="交互方式">
@@ -214,9 +232,9 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="12" v-if="!dialogData.interactive_mode">
-                        <el-form-item label="直连通道">
+                        <el-form-item label="直连通道" prop="direct_channel">
                             <el-select v-model="dialogData.direct_channel" placeholder="请选择通道"
-                                       clearable filterable @change="dialogData.direct_child_channel = ''"
+                                       clearable filterable
                                        style="width:100%" :disabled="isLook">
                                 <el-option v-for="(direct,key) in directList"
                                            :key="key"
@@ -226,22 +244,8 @@
                             </el-select>
                         </el-form-item>
                     </el-col>
-                    <el-col :span="12" v-if="!dialogData.interactive_mode">
-                        <el-form-item label="子接口">
-                            <el-select v-model="dialogData.direct_child_channel" placeholder="请选择子接口"
-                                       clearable filterable :disabled="isLook || !dialogData.direct_channel"
-                                       @visible-change="getDirectSubChannel"
-                                       style="width:100%">
-                                <el-option v-for="(directsub,key) in directsubList"
-                                           :key="key"
-                                           :label="directsub"
-                                           :value="key">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
                     <el-col :span="12" v-if="dialogData.interactive_mode">
-                        <el-form-item label="报盘模板">
+                        <el-form-item label="报盘模板" prop="document_moudle">
                             <el-select v-model="dialogData.document_moudle" placeholder="请选择模板"
                                        clearable filterable
                                        style="width:100%" :disabled="isLook">
@@ -254,19 +258,19 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="通道编码">
+                        <el-form-item label="通道编码" prop="channel_code">
                             <el-input v-model="dialogData.channel_code" placeholder="请输入通道编码"
                                       :disabled="isLook || dialogTitle == '编辑'"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="通道描述">
+                        <el-form-item label="通道描述" prop="channel_desc">
                             <el-input v-model="dialogData.channel_desc" placeholder="请输入体系名称"
                                       :disabled="isLook"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="支付方式">
+                        <el-form-item label="支付方式" prop="pay_mode">
                             <el-select v-model="dialogData.pay_mode" placeholder="请选择支付方式"
                                        clearable filterable :disabled="isLook"
                                        style="width:100%">
@@ -279,7 +283,7 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="收付属性">
+                        <el-form-item label="收付属性" prop="pay_attr">
                             <el-select v-model="dialogData.pay_attr" placeholder="请选择收付属性"
                                        clearable filterable :disabled="isLook"
                                        style="width:100%">
@@ -292,7 +296,7 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="文件生成归属地">
+                        <el-form-item label="文件生成归属地" prop="org_id">
                             <el-select v-model="dialogData.org_id" placeholder="请选择文件生成归属地"
                                        clearable filterable :disabled="isLook"
                                        style="width:100%">
@@ -307,17 +311,17 @@
 
                     <el-col :span="24" class="form-small-title"><span></span>限制</el-col>
                     <el-col :span="12">
-                        <el-form-item label="单笔金额限制">
-                            <el-input v-model="dialogData.single_amount_limit" placeholder="请输入限制"
+                        <el-form-item label="单笔金额限制" prop="single_amount_limit">
+                            <el-input v-model.number="dialogData.single_amount_limit" placeholder="请输入限制"
                                       :disabled="isLook">
                                 <i slot="suffix" style="color: #000000;">元</i>
                             </el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item>
+                        <el-form-item prop="single_file_limit">
                             <div slot="label" style="line-height:16px">单批次文件<br>笔数限制</div>
-                            <el-input v-model="dialogData.single_file_limit" placeholder="请输入限制"
+                            <el-input v-model.number="dialogData.single_file_limit" placeholder="请输入限制"
                                       :disabled="isLook">
                                 <i slot="suffix" style="color: #000000;">条</i>
                             </el-input>
@@ -330,7 +334,8 @@
                             <el-radio :label="0" v-model="dialogData.charge_mode" @change="setMoney" :disabled="isLook">
                                 按金额百分比收取
                                 <el-input style="width:60px;vertical-align:middle;margin:0 16px 0 6px"
-                                          v-model="chargeMoney.percentage" :disabled="isLook"></el-input>
+                                          v-model.number="chargeMoney.percentage" :disabled="isLook || dialogData.charge_mode == 1"
+                                          @blur="numberRule('percentage')"></el-input>
                                 %元/每笔金额
                             </el-radio>
                         </el-form-item>
@@ -340,7 +345,8 @@
                             <el-radio :label="1" v-model="dialogData.charge_mode" @change="setMoney" :disabled="isLook">
                                 按笔数收取
                                 <el-input style="width:60px;vertical-align:middle;margin:0 16px 0 6px"
-                                          v-model="chargeMoney.number" :disabled="isLook"></el-input>
+                                          v-model.number="chargeMoney.number" :disabled="isLook || dialogData.charge_mode === 0"
+                                          @blur="numberRule('percentage')"></el-input>
                                 元/每笔
                             </el-radio>
                         </el-form-item>
@@ -348,7 +354,7 @@
 
                     <el-col :span="24" class="form-small-title"><span></span>账户</el-col>
                     <el-col :span="12">
-                        <el-form-item label="bankcode">
+                        <el-form-item label="bankcode" prop="bankcode">
                             <el-select v-model="dialogData.bankcode" placeholder="请选择bankcode"
                                        clearable filterable :disabled="isLook"
                                        @change="setBankcode"
@@ -381,22 +387,25 @@
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="账号">
-                            <el-input v-model="dialogData.op_acc_no" placeholder="请输入账号" :disabled="isLook"></el-input>
+                            <el-input v-model="dialogData.op_acc_no" placeholder="请输入账号"
+                                      clearable :disabled="isLook"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="户名">
-                            <el-input v-model="dialogData.op_acc_name" placeholder="请输入户名" :disabled="isLook"></el-input>
+                        <el-form-item label="户名" prop="op_acc_name">
+                            <el-input v-model="dialogData.op_acc_name" placeholder="请输入户名"
+                                      clearable :disabled="isLook"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="开户行">
-                            <el-input v-model="dialogData.op_bank_name" placeholder="请输入开户行" :disabled="isLook"></el-input>
+                        <el-form-item label="开户行" prop="op_bank_name">
+                            <el-input v-model="dialogData.op_bank_name" placeholder="请输入开户行"
+                                      clearable :disabled="isLook"></el-input>
                         </el-form-item>
                     </el-col>
 
                     <el-col :span="24">
-                        <el-form-item label="通道">
+                        <el-form-item label="状态">
                             <el-switch v-model="dialogData.is_checkout"
                                        active-value="1" :disabled="isLook"
                                        inactive-value="0"></el-switch>
@@ -473,10 +482,12 @@
                 },
                 searchData: { //搜索条件
                     channel_code: "",
+                    channel_desc: "",
                     pay_mode: "",
+                    pay_attr: "",
                     bankcode: "",
                     interactive_mode: "",
-                    is_checkout: 1
+                    is_checkout: []
                 },
                 tableList: [], //列表数据
                 pagSize: 8, //分页数据
@@ -497,7 +508,6 @@
                 dialogData: {
                     interactive_mode: 0,
                     direct_channel: "",
-                    direct_child_channel: "",
                     document_moudle: "",
                     channel_code: "",
                     channel_desc: "",
@@ -526,6 +536,111 @@
                 },
                 currentBank: {}, //编辑的当前项
                 isLook: false,
+                //校验规则设置
+                rules: {
+                    direct_channel: [
+                        {
+                            validator: (rule, value, callback, source, options) => {
+                                if (this.dialogData.interactive_mode == 0) {
+                                    value ? callback() : callback(new Error("请选择直连通道"));
+                                } else {
+                                    callback();
+                                }
+                            },
+                            trigger: "change"
+                        }
+                    ],
+                    document_moudle: [
+                        {
+                            validator: (rule, value, callback, source, options) => {
+                                if (this.dialogData.interactive_mode == 1) {
+                                    value ? callback() : callback(new Error("请选择报盘模板"));
+                                } else {
+                                    callback();
+                                }
+                            },
+                            trigger: "change"
+                        }
+                    ],
+                    channel_code: {
+                        required: true,
+                        message: "请输入通道编码",
+                        trigger: "blur",
+                        transform: function (value) {
+                            if (value) {
+                                return value.trim();
+                            }
+                        }
+                    },
+                    channel_desc: {
+                        required: true,
+                        message: "请输入通道描述",
+                        trigger: "blur",
+                        transform: function (value) {
+                            if (value) {
+                                return value.trim();
+                            }
+                        }
+                    },
+                    pay_mode: {
+                        required: true,
+                        message: "请选择支付方式",
+                        trigger: "change"
+                    },
+                    pay_attr: {
+                        required: true,
+                        message: "请选择收付属性",
+                        trigger: "change"
+                    },
+                    org_id: {
+                        required: true,
+                        message: "请选择文件生成归属地",
+                        trigger: "change"
+                    },
+                    single_amount_limit: [
+                        {
+                            validator: (rule, value, callback, source, options) => {
+                                value ? (typeof(value) == "number" ? (
+                                                value < 0 ? (callback(new Error("请输入大于零的数字"))) : callback()
+                                        ) : callback(new Error("金额必须为数字值"))
+                                ) : callback();
+                            },
+                            trigger: "blur"
+                        }
+                    ],
+                    single_file_limit: [
+                        {
+                            validator: (rule, value, callback, source, options) => {
+                                value ? (typeof(value) == "number" ? (
+                                                value < 0 ? (callback(new Error("请输入大于零的数字"))) : callback()
+                                        ) : callback(new Error("笔数必须为数字值"))
+                                ) : callback();
+                            },
+                            trigger: "blur"
+                        }
+                    ],
+                    bankcode: {
+                        required: true,
+                        message: "请选择bankcode",
+                        trigger: "change"
+                    },
+                    op_acc_name: [
+                        {
+                            validator: (rule, value, callback, source, options) => {
+                                this.dialogData.op_acc_no.trim() ? (value ? callback() : callback(new Error("请输入户名"))) : callback();
+                            },
+                            trigger: "blur"
+                        }
+                    ],
+                    op_bank_name: [
+                        {
+                            validator: (rule, value, callback, source, options) => {
+                                this.dialogData.op_acc_no.trim() ? (value ? callback() : callback(new Error("请输入开户行"))) : callback();
+                            },
+                            trigger: "blur"
+                        }
+                    ],
+                },
             }
         },
         methods: {
@@ -552,6 +667,9 @@
             },
             //新增归集单据
             addAisle: function () {
+                if (this.$refs.dialogForm) {
+                    this.$refs.dialogForm.clearValidate();
+                }
                 this.dialogVisible = true;
                 this.isLook = false;
                 this.dialogTitle = "新增";
@@ -594,37 +712,6 @@
                 }).catch(function (error) {
                     console.log(error);
                 });
-            },
-            //获取子接口
-            getDirectSubChannel: function (val) {
-                if (val) {
-                    this.directsubList = {};
-                    var directChannel = this.dialogData.direct_channel
-                    this.$axios({
-                        url: this.queryUrl + "normalProcess",
-                        method: "post",
-                        data: {
-                            optype: "sftchannel_getdirectsubchannel",
-                            params: {
-                                direct_channel: directChannel
-                            }
-                        }
-                    }).then((result) => {
-                        if (result.data.error_msg) {
-                            this.$message({
-                                type: "error",
-                                message: result.data.error_msg,
-                                duration: 2000
-                            });
-                        } else {
-                            var data = result.data.data;
-                            this.directsubList = data;
-                        }
-
-                    }).catch(function (error) {
-                        console.log(error);
-                    });
-                }
             },
             //获取机构列表
             getOrgList: function () {
@@ -669,7 +756,7 @@
                         });
                     } else {
                         var data = result.data.data;
-                        // this.bankcodeList.push(data[16]);
+                        // this.bankcodeList.push(data[11]);
 
                         this.bankcodeList = data;
                     }
@@ -715,75 +802,80 @@
                     this.dialogData.document_moudle = "";
                 } else {
                     this.dialogData.direct_channel = "";
-                    this.dialogData.direct_child_channel = "";
                 }
             },
             //保存新增或修改
             subCurrent: function () {
-                var dialogData = this.dialogData;
-                var optype = "";
+                this.$refs.dialogForm.validate((valid, object) => {
+                    if (valid) {
+                        var dialogData = this.dialogData;
+                        var optype = "";
 
-                if (dialogData.charge_mode == 0) {
-                    dialogData.charge_amount = this.chargeMoney.percentage;
-                } else if (dialogData.charge_mode == 1) {
-                    dialogData.charge_amount = this.chargeMoney.number;
-                }
-                if(this.dialogTitle == "新增"){
-                    optype = "sftchannel_addchannel";
-                }else{
-                    optype = "sftchannel_chgchannel";
-                    dialogData.id = this.currentBank.id;
-                    dialogData.persist_version = this.currentBank.persist_version;
-                }
+                        if (dialogData.charge_mode == 0) {
+                            dialogData.charge_amount = this.chargeMoney.percentage;
+                        } else if (dialogData.charge_mode == 1) {
+                            dialogData.charge_amount = this.chargeMoney.number;
+                        }
+                        if (this.dialogTitle == "新增") {
+                            optype = "sftchannel_addchannel";
+                        } else {
+                            optype = "sftchannel_chgchannel";
+                            dialogData.id = this.currentBank.id;
+                            dialogData.persist_version = this.currentBank.persist_version;
+                        }
 
-                this.$axios({
-                    url: this.queryUrl + "normalProcess",
-                    method: "post",
-                    data: {
-                        optype: optype,
-                        params: dialogData
-                    }
-                }).then((result) => {
-                    if (result.data.error_msg) {
-                        this.$message({
-                            type: "error",
-                            message: result.data.error_msg,
-                            duration: 2000
+                        this.$axios({
+                            url: this.queryUrl + "normalProcess",
+                            method: "post",
+                            data: {
+                                optype: optype,
+                                params: dialogData
+                            }
+                        }).then((result) => {
+                            if (result.data.error_msg) {
+                                this.$message({
+                                    type: "error",
+                                    message: result.data.error_msg,
+                                    duration: 2000
+                                });
+                            } else {
+                                var data = result.data.data;
+                                var orgList = this.orgList;
+                                for (var i = 0; i < orgList.length; i++) {
+                                    if (orgList[i].org_id == data.org_id) {
+                                        data.org_name = orgList[i].name;
+                                        break;
+                                    }
+                                }
+
+                                if (this.dialogTitle == "新增") {
+                                    if (this.tableList.length < this.routerMessage.params.page_size) {
+                                        this.tableList.push(data);
+                                    }
+                                    this.pagTotal++;
+                                    var message = "新增成功";
+                                } else {
+                                    var currentBank = this.currentBank;
+                                    for (var k in currentBank) {
+                                        currentBank[k] = data[k];
+                                    }
+                                    var message = "修改成功";
+                                }
+
+                                this.dialogVisible = false;
+                                this.$message({
+                                    type: "success",
+                                    message: message,
+                                    duration: 2000
+                                })
+                            }
+
+                        }).catch(function (error) {
+                            console.log(error);
                         });
                     } else {
-                        var data = result.data.data;
-                        var orgList = this.orgList;
-                        for(var i = 0; i < orgList.length; i++){
-                            if(orgList[i].org_id == data.org_id){
-                                data.org_name = orgList[i].name;
-                                break;
-                            }
-                        }
-
-                        if (this.dialogTitle == "新增") {
-                            if (this.tableList.length < this.routerMessage.params.page_size) {
-                                this.tableList.push(data);
-                            }
-                            this.pagTotal++;
-                            var message = "新增成功";
-                        }else{
-                            var currentBank = this.currentBank;
-                            for(var k in currentBank){
-                                currentBank[k] = data[k];
-                            }
-                            var message = "修改成功";
-                        }
-
-                        this.dialogVisible = false;
-                        this.$message({
-                            type: "success",
-                            message: message,
-                            duration: 2000
-                        })
+                        return false;
                     }
-
-                }).catch(function (error) {
-                    console.log(error);
                 });
             },
             //展示格式转换-支付方式
@@ -798,7 +890,10 @@
             transitInteract: function (row, column, cellValue, index) {
                 return this.interactList[cellValue];
             },
-
+            //展示格式转换-状态
+            transitStatus:  function (row, column, cellValue, index) {
+                return cellValue == 1 ? "启用" : "停用";
+            },
             //查看
             lookBankcode: function (row) {
                 this.editBankcode(row);
@@ -831,10 +926,55 @@
                     default:
                         break;
                 }
-
-                if(dialogData.interactive_mode == 0){
-                    this.getDirectSubChannel(true);
+            },
+            //校验是否为大于零的数字
+            numberRule: function (target) {
+                var targetVal = this.chargeMoney[target]
+                if (targetVal && (typeof targetVal != "number" || targetVal < 0)) {
+                    this.$message({
+                        type: "warning",
+                        message: "百分比只能为大于零的数字",
+                        duration: 2000
+                    });
+                    this.chargeMoney[target] = "";
                 }
+            },
+            //导出
+            exportFun:function () {
+                var params = this.routerMessage.params;
+                this.$axios({
+                    url: this.queryUrl + "normalProcess",
+                    method: "post",
+                    data: {
+                        optype:"sftchannel_listexport",
+                        params:params
+                    },
+                    responseType: 'blob'
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                    } else {
+                        var fileName = decodeURI(result.headers["content-disposition"]).split("=")[1];
+                        //ie兼容
+                        if (window.navigator && window.navigator.msSaveOrOpenBlob) {
+                            window.navigator.msSaveOrOpenBlob(new Blob([result.data]), fileName);
+                        } else {
+                            let url = window.URL.createObjectURL(new Blob([result.data]));
+                            let link = document.createElement('a');
+                            link.style.display = 'none';
+                            link.href = url;
+                            link.setAttribute('download', fileName);
+                            document.body.appendChild(link);
+                            link.click();
+                        }
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                })
             }
         },
         watch: {
