@@ -1,8 +1,8 @@
 package com.qhjf.cfm.queue;
 
-import java.util.Map;
-
 import com.qhjf.cfm.web.inter.api.ISysAtomicInterface;
+
+import java.util.Map;
 
 /**
  * 队列发送bean
@@ -15,7 +15,7 @@ public class QueueBean {
 	private Map<String,Object> params; //发送参数
 	private String bankCode;
 	
-	public QueueBean(ISysAtomicInterface sysInter,Map<String,Object> params,String bankCode){
+	public QueueBean(ISysAtomicInterface sysInter, Map<String,Object> params, String bankCode){
 		this.sysInter = sysInter;
 		this.params = params;
 		this.bankCode = bankCode;

@@ -90,7 +90,10 @@ public class SysSinglePayInter implements ISysAtomicInterface {
     public void callBack(String jsonStr) throws Exception {
         log.debug("交易回写开始");
         if(jsonStr == null || jsonStr.length() == 0){
-            log.error("交易返回报文为空,不错处理");
+            Record instr_setRecord = new Record().set("init_resp_time", new Date()); //添加初始反馈时间;;
+            Record instr_whereRecord = new Record().set("id", instr.getLong("id"));
+            CommonService.updateRows("single_pay_instr_queue", instr_setRecord, instr_whereRecord);
+            log.error("交易返回报文为空,修改响应时间,不做其他处理");
             return;
         }
         final Record parseRecord = channelInter.parseResult(jsonStr);

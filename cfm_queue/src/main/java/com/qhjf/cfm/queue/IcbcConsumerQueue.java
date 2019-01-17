@@ -1,19 +1,13 @@
 package com.qhjf.cfm.queue;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Map;
-
 import com.qhjf.bankinterface.api.ProcessEntrance;
 import com.qhjf.cfm.queue.patch.IcbcTransQueryProcessPatch;
 import com.qhjf.cfm.web.channel.inter.api.IChannelInter;
-import com.qhjf.cfm.web.config.ICBCTestConfigSection;
 import com.qhjf.cfm.web.inter.api.ISysAtomicInterface;
 
-public class IcbcConsumerQueue implements Runnable{
+public class IcbcConsumerQueue implements Runnable {
 
-	private static ICBCTestConfigSection configSection = ICBCTestConfigSection.getInstance();
+//	private static ICBCTestConfigSection configSection = ICBCTestConfigSection.getInstance();
 
 	@Override
 	public void run() {
@@ -36,11 +30,11 @@ public class IcbcConsumerQueue implements Runnable{
 						|| "IcbcHisTransQueryInter".equals(channelInter.getClass().getSimpleName())) {
 					jsonStr = IcbcTransQueryProcessPatch.process(channelInter.getInter(), queueBean.getParams());
 				}else {
-					Map<String, Object> params = queueBean.getParams();
+					/*Map<String, Object> params = queueBean.getParams();
 					//如果为支付指令，则加签名时间
 					if ("IcbcSinglePayInter".equals(channelInter.getClass().getSimpleName())) {
 						params.put("SignTime", getSpecifiedDayBefore(new Date(), configSection.getPreDay(), "yyyyMMddHHmmssSSS"));
-					}
+					}*/
 					jsonStr = ProcessEntrance.getInstance().process(channelInter.getInter(), queueBean.getParams());
 				}
 
@@ -59,7 +53,7 @@ public class IcbcConsumerQueue implements Runnable{
 
 	}
 
-	private static String getSpecifiedDayBefore(Date date, int dayNum, String format) {
+/*	private static String getSpecifiedDayBefore(Date date, int dayNum, String format) {
 		Calendar c = Calendar.getInstance();
 		c.setTime(date);
 		int day = c.get(Calendar.DATE);
@@ -67,6 +61,6 @@ public class IcbcConsumerQueue implements Runnable{
 
 		String dayBefore = new SimpleDateFormat(format).format(c.getTime());
 		return dayBefore;
-	}
+	}*/
 
 }

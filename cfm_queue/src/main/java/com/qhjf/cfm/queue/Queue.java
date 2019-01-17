@@ -15,6 +15,7 @@ public class Queue {
 	private Queue(){
 		this.cmbcQueue = new LinkedBlockingDeque();
 		this.icbcQueue = new LinkedBlockingDeque();
+		this.icbcSignQueue = new LinkedBlockingDeque();
 	}
 	private static Queue instance = new Queue();
 	public static Queue getInstance(){
@@ -23,6 +24,9 @@ public class Queue {
 	private BlockingQueue<QueueBean> cmbcQueue;
 	
 	private BlockingQueue<QueueBean> icbcQueue;
+	
+	private BlockingQueue<QueueBean> icbcSignQueue;
+
 	public BlockingQueue<QueueBean> getCmbcQueue() {
 		return cmbcQueue;
 	}
@@ -39,7 +43,13 @@ public class Queue {
 		this.icbcQueue = icbcQueue;
 	}
 
-	
+	public BlockingQueue<QueueBean> getIcbcSignQueue() {
+		return icbcSignQueue;
+	}
+
+	public void setIcbcSignQueue(BlockingQueue<QueueBean> icbcSignQueue) {
+		this.icbcSignQueue = icbcSignQueue;
+	}
 	
 	
 

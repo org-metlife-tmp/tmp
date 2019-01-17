@@ -12,10 +12,15 @@ public class QueuePlugin implements IPlugin{
 	private static final String cmbcThreadName = "招行消费者队列";
 	
 	private static final String icbcThreadName = "工行消费者队列";
+	
+	private static final String icbcSignThreadName = "工行签名消费者队列";
 
     private static int cmbcConsumerCount = 1;   //定义最大的消费线程数
     
-    private static int icbcConsumerCount = 4;   //定义最大的消费线程数
+    private static int icbcConsumerCount = 2;   //定义最大的消费线程数
+    
+    
+    private static int icbcSignConsumerCount = 1;   //定义最大的消费线程数
 
 	@Override
 	public boolean start() {
@@ -27,6 +32,11 @@ public class QueuePlugin implements IPlugin{
 		IcbcConsumerQueue icbcConsumer = new IcbcConsumerQueue();
 		for(int i = 0;i < icbcConsumerCount;i++){
 			new Thread(icbcConsumer,icbcThreadName+"["+(i+1)+"]").start();
+		}
+		
+		IcbcSignConsumerQueue icbcSignConsumer = new IcbcSignConsumerQueue();
+		for(int i = 0;i < icbcSignConsumerCount;i++){
+			new Thread(icbcSignConsumer,icbcSignThreadName+"["+(i+1)+"]").start();
 		}
 		return true;
 	}
