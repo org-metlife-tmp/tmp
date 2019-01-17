@@ -112,12 +112,16 @@
                 background-position: -506px -190px;
             }
 
-            .icon-gzrl{
+            .icon-gzrl {
                 background-position: -32px -252px;
             }
 
-            .icon-tpgl{
+            .icon-tpgl {
                 background-position: -272px -254px;
+            }
+
+            .icon-xtsz {
+                background-position: -31px -85px;
             }
             /*首页背景图定位结束*/
         }
@@ -181,11 +185,14 @@
             .icon-oa {
                 background-position: -506px -160px;
             }
-            .icon-gzrl{
+            .icon-gzrl {
                 background-position: -1px -252px;
             }
-            .icon-tpgl{
+            .icon-tpgl {
                 background-position: -242px -254px;
+            }
+            .icon-xtsz {
+                background-position: 0px -85px;
             }
 
             .el-submenu__title p {
@@ -271,6 +278,10 @@
 
             .el-submenu__title:hover .icon-tpgl{
                 background-position: -272px -254px;
+            }
+
+            .el-submenu__title:hover .icon-xtsz {
+                background-position: -31px -85px;
             }
 
             .el-submenu__title:hover p {
