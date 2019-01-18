@@ -17,7 +17,6 @@
             left: -21px;
         }
 
-
         /*搜索区*/
         .search-setion {
             text-align: left;
@@ -169,7 +168,8 @@
         <section class="table-content">
             <el-table :data="tableList"
                       border size="mini">
-                <el-table-column prop="os_source" label="来源系统" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="os_source" label="来源系统" :show-overflow-tooltip="true"
+                                 :formatter="transitSource"></el-table-column>
                 <el-table-column prop="pay_date" label="应付日期" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="pay_code" label="支付号码" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="pay_mode" label="支付方式" :show-overflow-tooltip="true"
@@ -194,12 +194,14 @@
                         fixed="right">
                     <template slot-scope="scope" class="operationBtn">
                         <el-tooltip content="拒绝" placement="bottom" effect="light"
-                                    :enterable="false" :open-delay="500">
+                                    :enterable="false" :open-delay="500"
+                                    v-show="scope.row.status != 1">
                             <el-button type="danger" icon="el-icon-close" size="mini"
                                        @click="rejectData(scope.row)"></el-button>
                         </el-tooltip>
-                        <el-tooltip content="放行" placement="bottom" effect="light"
-                                    :enterable="false" :open-delay="500">
+                        <el-tooltip content="通过" placement="bottom" effect="light"
+                                    :enterable="false" :open-delay="500"
+                                    v-show="scope.row.status != 1">
                             <el-button type="success" icon="el-icon-check" size="mini"
                                        @click="passData(scope.row)"></el-button>
                         </el-tooltip>
@@ -289,8 +291,8 @@
                     this.routerMessage.params[k] = searchData[k];
                 }
                 var val = this.dateValue;
-                this.routerMessage.params.apply_start_date = val ? val[0] : "";
-                this.routerMessage.params.apply_end_date = val ? val[1] : "";
+                this.routerMessage.params.start_date = val ? val[0] : "";
+                this.routerMessage.params.end_date = val ? val[1] : "";
                 this.routerMessage.params.page_num = 1;
                 this.$emit("getCommTable", this.routerMessage);
             },
@@ -331,8 +333,8 @@
                 });
             },
             //导出
-            exportFun:function () {
-                if(!this.tableList.length){
+            exportFun: function () {
+                if (!this.tableList.length) {
                     this.$message({
                         type: "warning",
                         message: "当前数据为空",
@@ -345,8 +347,8 @@
                     url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
-                        optype:"sftdoubtful_listexport",
-                        params:params
+                        optype: "sftdoubtful_listexport",
+                        params: params
                     },
                     responseType: 'blob'
                 }).then((result) => {
@@ -375,6 +377,10 @@
                     console.log(error);
                 })
             },
+            //展示格式转换-来源系统
+            transitSource: function (row, column, cellValue, index) {
+                return this.sourceList[cellValue];
+            },
             //展示格式转换-支付方式
             transitMode: function (row, column, cellValue, index) {
                 return this.payModeList[cellValue];
@@ -383,29 +389,21 @@
             transitStatus: function (row, column, cellValue, index) {
                 return cellValue == 1 ? "已处理" : "未处理";
             },
-            //放行
-            passData: function(row){
-                this.$prompt('请输入放行原因', '提示', {
+            //通过
+            passData: function (row) {
+                this.$prompt('请输入通过原因', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
-                    title: "放行原因",
-                    inputValidator: function(value){
-                        if(!value){
+                    title: "通过原因",
+                    inputValidator: function (value) {
+                        if (!value) {
                             return false;
-                        }else{
+                        } else {
                             return true;
                         }
                     },
-                    inputErrorMessage: '请输入放行原因'
-                }).then(({ value }) => {
-                    var sourceList = this.sourceList;
-                    var osSource = "";
-                    for(var k in sourceList){
-                        if(sourceList[k] == row.os_source){
-                            osSource = k;
-                            break;
-                        }
-                    }
+                    inputErrorMessage: '请输入通过原因'
+                }).then(({value}) => {
                     this.$axios({
                         url: this.queryUrl + "normalProcess",
                         method: "post",
@@ -413,7 +411,7 @@
                             optype: "sftdoubtful_pass",
                             params: {
                                 id: row.id,
-                                os_source: osSource,
+                                os_source: row.os_source,
                                 persist_version: row.persist_version,
                                 op_reason: value
                             }
@@ -442,20 +440,20 @@
                 });
             },
             //拒绝
-            rejectData: function(row){
+            rejectData: function (row) {
                 this.$prompt('请输入拒绝原因', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     title: "拒绝原因",
-                    inputValidator: function(value){
-                        if(!value){
+                    inputValidator: function (value) {
+                        if (!value) {
                             return false;
-                        }else{
+                        } else {
                             return true;
                         }
                     },
                     inputErrorMessage: '请输入拒绝原因'
-                }).then(({ value }) => {
+                }).then(({value}) => {
                     this.$axios({
                         url: this.queryUrl + "normalProcess",
                         method: "post",
