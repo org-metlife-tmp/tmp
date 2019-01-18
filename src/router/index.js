@@ -241,6 +241,7 @@ const router = new Router({
                         //系统设置
                         {path: '/system-set/aisle-set', name: 'AisleSet', component: AisleSet, meta: {requireAuth: true}},
                         {path: '/system-set/bankkey-set', name: 'BankkeySet', component: BankkeySet, meta: {requireAuth: true}},
+                        {path: '/system-set/prevent-repet', name: 'PreventRepet', component: PreventRepet, meta: {requireAuth: true}},
                     ]
                 },
                 //基础样式三（tab页）

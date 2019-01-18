@@ -448,8 +448,8 @@
                 this.interactiveList = constants.SftInteractiveMode;
             }
             //报盘模板
-            if (constants.SftDocumentMoudle) {
-                this.moudleList = constants.SftDocumentMoudle;
+            if (constants.Channel) {
+                this.moudleList = constants.Channel;
             }
             //收付属性
             if (constants.SftPayAttr) {
@@ -476,8 +476,7 @@
                     optype: "sftchannel_channellist",
                     params: {
                         page_size: 7,
-                        page_num: 1,
-                        is_checkout: 1
+                        page_num: 1
                     }
                 },
                 searchData: { //搜索条件
@@ -756,8 +755,6 @@
                         });
                     } else {
                         var data = result.data.data;
-                        // this.bankcodeList.push(data[11]);
-
                         this.bankcodeList = data;
                     }
 
@@ -772,13 +769,13 @@
                     var bankcodeList = this.bankcodeList;
                     for (var i = 0; i < bankcodeList.length; i++) {
                         var item = bankcodeList[i];
-                        if (item.acc_id = val) {
+                        if (item.bankcode == val) {
                             dialogData.acc_id = item.acc_id;
                             dialogData.acc_no = item.acc_no;
                             dialogData.acc_name = item.acc_name;
                             dialogData.bank_name = item.bank_name;
+                            break;
                         }
-                        break;
                     }
                 } else {
                     dialogData.acc_id = "";
@@ -941,6 +938,14 @@
             },
             //导出
             exportFun:function () {
+                if(!this.tableList.length){
+                    this.$message({
+                        type: "warning",
+                        message: "当前数据为空",
+                        duration: 2000
+                    });
+                    return;
+                }
                 var params = this.routerMessage.params;
                 this.$axios({
                     url: this.queryUrl + "normalProcess",

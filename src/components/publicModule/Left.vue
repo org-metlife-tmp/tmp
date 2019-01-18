@@ -589,7 +589,7 @@
                 <el-menu-item-group>
                     <el-menu-item index="/system-set/aisle-set">通道设置</el-menu-item>
                     <el-menu-item index="/system-set/bankkey-set">bankkey设置</el-menu-item>
-                    <!--<el-menu-item index="1-3">选项3</el-menu-item>-->
+                    <el-menu-item index="/system-set/prevent-repet">收付数据防重预警</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
         </el-menu>

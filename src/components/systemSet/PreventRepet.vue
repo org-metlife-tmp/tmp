@@ -1,17 +1,508 @@
 <style scoped lang="less" type="text/less">
-    #PreventRepet {
+    #preventRepet {
+        width: 100%;
+        height: 100%;
+        box-sizing: border-box;
+        position: relative;
 
+        /*顶部按钮*/
+        .button-list-right {
+            position: absolute;
+            top: -60px;
+            right: -18px;
+        }
+        .button-list-left {
+            position: absolute;
+            top: -56px;
+            left: -21px;
+        }
+
+
+        /*搜索区*/
+        .search-setion {
+            text-align: left;
+
+            /*时间控件*/
+            .el-date-editor {
+                width: 100%;
+            }
+        }
+
+        /*分隔栏*/
+        .split-bar {
+            width: 106%;
+            height: 6px;
+            margin-left: -20px;
+            background-color: #E7E7E7;
+            margin-bottom: 20px;
+        }
+
+        /*分页部分*/
+        .botton-pag {
+            position: absolute;
+            width: 100%;
+            height: 8%;
+            bottom: -6px;
+        }
+
+        /*按钮样式*/
+        .on-copy, .withdraw {
+            width: 20px;
+            height: 20px;
+            background-image: url(../../assets/icon_common.png);
+            border: none;
+            padding: 0;
+            vertical-align: middle;
+        }
+        /*复制按钮*/
+        .on-copy {
+            background-position: -24px 1px;
+        }
+        /*撤回按钮*/
+        .withdraw {
+            background-position: -48px 0;
+        }
     }
 </style>
 
 <template>
-    <div id="PreventRepet">
-
+    <div id="preventRepet">
+        <!-- 顶部按钮-->
+        <div class="button-list-left">
+            <el-select v-model="searchData.os_source"
+                       filterable size="mini"
+                       @change="queryData">
+                <el-option v-for="(item,key) in sourceList"
+                           :key="key"
+                           :label="item"
+                           :value="key">
+                </el-option>
+            </el-select>
+        </div>
+        <div class="button-list-right">
+            <el-button type="warning" size="mini" @click="exportFun">导出</el-button>
+        </div>
+        <!--搜索区-->
+        <div class="search-setion">
+            <el-form :inline="true" :model="searchData" size="mini">
+                <el-row>
+                    <el-col :span="5">
+                        <el-form-item>
+                            <el-date-picker
+                                    v-model="dateValue"
+                                    type="daterange"
+                                    range-separator="至"
+                                    start-placeholder="开始日期"
+                                    end-placeholder="结束日期"
+                                    value-format="yyyy-MM-dd"
+                                    size="mini" clearable
+                                    unlink-panels
+                                    :picker-options="pickerOptions">
+                            </el-date-picker>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="4">
+                        <el-form-item>
+                            <el-select v-model="searchData.pay_mode" placeholder="请选择支付方式"
+                                       clearable filterable
+                                       style="width:100%">
+                                <el-option v-for="(payMode,key) in payModeList"
+                                           :key="key"
+                                           :label="payMode"
+                                           :value="key">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="4">
+                        <el-form-item>
+                            <el-input v-model="searchData.bank_key" clearable placeholder="请输入bankkey"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="4">
+                        <el-form-item>
+                            <el-input v-model="searchData.bankkey_desc" clearable placeholder="请输入bankkey描述"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="4">
+                        <el-form-item>
+                            <el-select v-model="searchData.tmp_org_id" placeholder="请选择机构"
+                                       clearable filterable
+                                       style="width:100%">
+                                <el-option v-for="item in orgList"
+                                           :key="item.org_id"
+                                           :label="item.name"
+                                           :value="item.org_id">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="2">
+                        <el-form-item>
+                            <el-button type="primary" plain @click="queryData" size="mini">搜索</el-button>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="4">
+                        <el-form-item>
+                            <el-input v-model="searchData.preinsure_bill_no" clearable placeholder="请输入投保单号"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="4">
+                        <el-form-item>
+                            <el-input v-model="searchData.insure_bill_no" clearable placeholder="请输入保单号"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="16">
+                        <el-form-item style="margin-bottom:0px">
+                            <el-checkbox-group v-model="searchData.status">
+                                <el-checkbox :label="1" name="已处理">已处理</el-checkbox>
+                                <el-checkbox :label="0" name="未处理">未处理</el-checkbox>
+                            </el-checkbox-group>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+            </el-form>
+        </div>
+        <!--分隔栏-->
+        <div class="split-bar"></div>
+        <!--数据展示区-->
+        <section class="table-content">
+            <el-table :data="tableList"
+                      border size="mini">
+                <el-table-column prop="os_source" label="来源系统" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="pay_date" label="应付日期" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="pay_code" label="支付号码" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="pay_mode" label="支付方式" :show-overflow-tooltip="true"
+                                 :formatter="transitMode"></el-table-column>
+                <el-table-column prop="bank_key" label="bankkey" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="bankkey_desc" label="bankkey描述" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="biz_type" label="业务类型" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="org_name" label="机构名称" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="preinsure_bill_no" label="投保单号" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="insure_bill_no" label="保单号" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="amount" label="金额" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="recv_acc_name" label="客户姓名" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="recv_cert_code" label="证件号码" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="recv_acc_no" label="银行账号" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="status" label="状态" :show-overflow-tooltip="true"
+                                 :formatter="transitStatus"></el-table-column>
+                <el-table-column prop="op_user_name" label="操作人" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="op_date" label="操作日期" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="pay_mode" label="操作理由" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column
+                        label="操作" width="80"
+                        fixed="right">
+                    <template slot-scope="scope" class="operationBtn">
+                        <el-tooltip content="拒绝" placement="bottom" effect="light"
+                                    :enterable="false" :open-delay="500">
+                            <el-button type="danger" icon="el-icon-close" size="mini"
+                                       @click="rejectData(scope.row)"></el-button>
+                        </el-tooltip>
+                        <el-tooltip content="放行" placement="bottom" effect="light"
+                                    :enterable="false" :open-delay="500">
+                            <el-button type="success" icon="el-icon-check" size="mini"
+                                       @click="passData(scope.row)"></el-button>
+                        </el-tooltip>
+                    </template>
+                </el-table-column>
+            </el-table>
+        </section>
+        <!--分页部分-->
+        <div class="botton-pag">
+            <el-pagination
+                    background
+                    layout="sizes, prev, pager, next, jumper"
+                    :page-size="pagSize"
+                    :total="pagTotal"
+                    :page-sizes="[7, 50, 100, 500]"
+                    :pager-count="5"
+                    @current-change="getCurrentPage"
+                    @size-change="sizeChange"
+                    :current-page="pagCurrent">
+            </el-pagination>
+        </div>
     </div>
 </template>
 
 <script>
     export default {
-        name: "PreventRepet"
+        name: "PreventRepet",
+        created: function () {
+            this.$emit("transmitTitle", "收付数据防重预警");
+            this.$emit("getCommTable", this.routerMessage);
+
+            /*获取常量数据*/
+            var constants = JSON.parse(window.sessionStorage.getItem("constants"));
+            //来源系统
+            if (constants.SftOsSource) {
+                this.sourceList = constants.SftOsSource;
+            }
+            //支付方式
+            if (constants.SftPayMode) {
+                this.payModeList = constants.SftPayMode;
+            }
+            //机构列表
+            this.getOrgList();
+        },
+        props: ["tableData"],
+        data: function () {
+            return {
+                queryUrl: this.$store.state.queryUrl,
+                routerMessage: {
+                    optype: "sftdoubtful_doubtfullist",
+                    params: {
+                        page_size: 7,
+                        page_num: 1,
+                        os_source: "0"
+                    }
+                },
+                searchData: { //搜索条件
+                    os_source: "0",
+                    pay_mode: "",
+                    bank_key: "",
+                    bankkey_desc: "",
+                    tmp_org_id: "",
+                    preinsure_bill_no: "",
+                    insure_bill_no: "",
+                    status: []
+                },
+                dateValue: "", //时间控件
+                pickerOptions: {
+                    disabledDate(time) {
+                        return time.getTime() > Date.now();
+                    }
+                },
+                tableList: [], //列表数据
+                pagSize: 8, //分页数据
+                pagTotal: 1,
+                pagCurrent: 1,
+                sourceList: {}, //常量数据
+                payModeList: {},
+                orgList: []
+            }
+        },
+        methods: {
+            //根据条件查询数据
+            queryData: function () {
+                var searchData = this.searchData;
+                for (var k in searchData) {
+                    this.routerMessage.params[k] = searchData[k];
+                }
+                var val = this.dateValue;
+                this.routerMessage.params.apply_start_date = val ? val[0] : "";
+                this.routerMessage.params.apply_end_date = val ? val[1] : "";
+                this.routerMessage.params.page_num = 1;
+                this.$emit("getCommTable", this.routerMessage);
+            },
+            //换页后获取数据
+            getCurrentPage: function (currPage) {
+                this.routerMessage.params.page_num = currPage;
+                this.$emit("getCommTable", this.routerMessage);
+            },
+            //当前页数据条数发生变化
+            sizeChange: function (val) {
+                this.routerMessage.params.page_size = val;
+                this.routerMessage.params.page_num = 1;
+                this.$emit("getCommTable", this.routerMessage);
+            },
+            //获取机构列表
+            getOrgList: function () {
+                this.$axios({
+                    url: this.queryUrl + "normalProcess",
+                    method: "post",
+                    data: {
+                        optype: "sftbankkey_getorg",
+                        params: {}
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        });
+                    } else {
+                        var data = result.data.data;
+                        this.orgList = data;
+                    }
+
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            },
+            //导出
+            exportFun:function () {
+                if(!this.tableList.length){
+                    this.$message({
+                        type: "warning",
+                        message: "当前数据为空",
+                        duration: 2000
+                    });
+                    return;
+                }
+                var params = this.routerMessage.params;
+                this.$axios({
+                    url: this.queryUrl + "normalProcess",
+                    method: "post",
+                    data: {
+                        optype:"sftdoubtful_listexport",
+                        params:params
+                    },
+                    responseType: 'blob'
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                    } else {
+                        var fileName = decodeURI(result.headers["content-disposition"]).split("=")[1];
+                        //ie兼容
+                        if (window.navigator && window.navigator.msSaveOrOpenBlob) {
+                            window.navigator.msSaveOrOpenBlob(new Blob([result.data]), fileName);
+                        } else {
+                            let url = window.URL.createObjectURL(new Blob([result.data]));
+                            let link = document.createElement('a');
+                            link.style.display = 'none';
+                            link.href = url;
+                            link.setAttribute('download', fileName);
+                            document.body.appendChild(link);
+                            link.click();
+                        }
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                })
+            },
+            //展示格式转换-支付方式
+            transitMode: function (row, column, cellValue, index) {
+                return this.payModeList[cellValue];
+            },
+            //展示格式转换-状态
+            transitStatus: function (row, column, cellValue, index) {
+                return cellValue == 1 ? "已处理" : "未处理";
+            },
+            //放行
+            passData: function(row){
+                this.$prompt('请输入放行原因', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    title: "放行原因",
+                    inputValidator: function(value){
+                        if(!value){
+                            return false;
+                        }else{
+                            return true;
+                        }
+                    },
+                    inputErrorMessage: '请输入放行原因'
+                }).then(({ value }) => {
+                    var sourceList = this.sourceList;
+                    var osSource = "";
+                    for(var k in sourceList){
+                        if(sourceList[k] == row.os_source){
+                            osSource = k;
+                            break;
+                        }
+                    }
+                    this.$axios({
+                        url: this.queryUrl + "normalProcess",
+                        method: "post",
+                        data: {
+                            optype: "sftdoubtful_pass",
+                            params: {
+                                id: row.id,
+                                os_source: osSource,
+                                persist_version: row.persist_version,
+                                op_reason: value
+                            }
+                        }
+                    }).then((result) => {
+                        if (result.data.error_msg) {
+                            this.$message({
+                                type: "error",
+                                message: result.data.error_msg,
+                                duration: 2000
+                            });
+                            return;
+                        } else {
+                            this.$message({
+                                type: "success",
+                                message: "方形成功",
+                                duration: 2000
+                            });
+                            this.$emit("getCommTable", this.routerMessage);
+                        }
+                    }).catch(function (error) {
+                        console.log(error);
+                    })
+                }).catch(() => {
+
+                });
+            },
+            //拒绝
+            rejectData: function(row){
+                this.$prompt('请输入拒绝原因', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    title: "拒绝原因",
+                    inputValidator: function(value){
+                        if(!value){
+                            return false;
+                        }else{
+                            return true;
+                        }
+                    },
+                    inputErrorMessage: '请输入拒绝原因'
+                }).then(({ value }) => {
+                    this.$axios({
+                        url: this.queryUrl + "normalProcess",
+                        method: "post",
+                        data: {
+                            optype: "sftdoubtful_reject",
+                            params: {
+                                id: row.id,
+                                os_source: row.os_source,
+                                persist_version: row.persist_version,
+                                op_reason: value
+                            }
+                        }
+                    }).then((result) => {
+                        if (result.data.error_msg) {
+                            this.$message({
+                                type: "error",
+                                message: result.data.error_msg,
+                                duration: 2000
+                            });
+                            return;
+                        } else {
+                            this.$message({
+                                type: "success",
+                                message: "拒绝成功",
+                                duration: 2000
+                            });
+                            this.$emit("getCommTable", this.routerMessage);
+                        }
+                    }).catch(function (error) {
+                        console.log(error);
+                    })
+                }).catch(() => {
+
+                });
+            },
+        },
+        watch: {
+            tableData: function (val, oldVal) {
+                this.pagSize = val.page_size;
+                this.pagTotal = val.total_line;
+                this.tableList = val.data;
+                this.pagCurrent = val.page_num;
+            }
+        }
     }
 </script>
+
+
+
+

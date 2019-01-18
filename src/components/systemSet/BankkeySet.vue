@@ -350,8 +350,6 @@
             }
             //机构列表
             this.getOrgList();
-            //通道列表
-            this.getChannelList(true);
             //银行大类
             var bankTypeList = JSON.parse(window.sessionStorage.getItem("bankTypeList"));
             if (bankTypeList) {
@@ -370,8 +368,7 @@
                     optype: "sftbankkey_bankkeylist",
                     params: {
                         page_size: 7,
-                        page_num: 1,
-                        bankkey_status: 1
+                        page_num: 1
                     }
                 },
                 searchData: { //搜索条件
@@ -506,15 +503,15 @@
                 });
             },
             //获取通道编码
-            getChannelList: function (val) {
+            getChannelList: function (val,payMode) {
                 if(val){
                     this.$axios({
                         url: this.queryUrl + "normalProcess",
                         method: "post",
                         data: {
-                            optype: "sftchannel_getallchannel",
+                            optype: "sftbankkey_getchanbypaymode",
                             params: {
-                                pay_mode: this.dialogData.pay_mode
+                                pay_mode: payMode ? payMode : this.dialogData.pay_mode
                             }
                         }
                     }).then((result) => {
@@ -700,6 +697,7 @@
                         dialogData[k] = row[k];
                     }
                 }
+                this.getChannelList(true,dialogData.pay_mode);
 
                 var channelList = this.channelList;
                 for(var i = 0; i < channelList.length; i++){
@@ -717,6 +715,14 @@
             },
             //导出
             exportFun:function () {
+                if(!this.tableList.length){
+                    this.$message({
+                        type: "warning",
+                        message: "当前数据为空",
+                        duration: 2000
+                    });
+                    return;
+                }
                 var params = this.routerMessage.params;
                 this.$axios({
                     url: this.queryUrl + "normalProcess",
