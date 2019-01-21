@@ -581,15 +581,25 @@
                     <el-menu-item index="/refund-ticket/refund-inquiry" v-if="menuList.QRefund">退票查询</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="19">
+            <el-submenu index="19" v-if="menuList.SYSSET">
                 <template slot="title" height="200px">
                     <i class="icon-xtsz"></i>
                     <p class="mg-four">系统设置</p>
                 </template>
                 <el-menu-item-group>
-                    <el-menu-item index="/system-set/aisle-set">通道设置</el-menu-item>
-                    <el-menu-item index="/system-set/bankkey-set">bankkey设置</el-menu-item>
-                    <el-menu-item index="/system-set/prevent-repet">收付数据防重预警</el-menu-item>
+                    <el-menu-item index="/system-set/aisle-set" v-if="menuList.BankkeySet">通道设置</el-menu-item>
+                    <el-menu-item index="/system-set/bankkey-set" v-if="menuList.ChannelSet">bankkey设置</el-menu-item>
+                </el-menu-item-group>
+            </el-submenu>
+            <el-submenu index="20">
+                <template slot="title" height="200px">
+                    <i class="icon-plsf"></i>
+                    <p class="mg-four">批量收付</p>
+                </template>
+                <el-menu-item-group>
+                    <el-menu-item index="/batch-payment/prevent-repet">收付数据防重预警</el-menu-item>
+                    <el-menu-item index="/batch-payment/pay-check-batch">批量付款-核对组批</el-menu-item>
+                    <el-menu-item index="/batch-payment/pay-disk-sending">批量付款-盘片发送</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
         </el-menu>
@@ -730,6 +740,10 @@
                     ActiveRefund: false, //主动退票
                     DoubtfulRefund: false, //可疑退票
                     QRefund: false, //退票查询
+
+                    SYSSET: false, //系统设置
+                    BankkeySet: false, //Bankkey设置
+                    ChannelSet: false, //通道设置
                 }
             }
         },

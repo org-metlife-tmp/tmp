@@ -126,7 +126,10 @@ import RefundInquiry from '@/components/RefundTicket/RefundInquiry'
 //系统设置
 import AisleSet from '@/components/systemSet/AisleSet'
 import BankkeySet from '@/components/systemSet/BankkeySet'
-import PreventRepet from '@/components/systemSet/PreventRepet'
+//批量收付业务管理
+import PreventRepet from '@/components/batchPayment/PreventRepet'
+import PayDiskSending from '@/components/batchPayment/PayDiskSending'
+import PayCheckBatch from '@/components/batchPayment/PayCheckBatch'
 
 
 Vue.use(Router)
@@ -241,7 +244,10 @@ const router = new Router({
                         //系统设置
                         {path: '/system-set/aisle-set', name: 'AisleSet', component: AisleSet, meta: {requireAuth: true}},
                         {path: '/system-set/bankkey-set', name: 'BankkeySet', component: BankkeySet, meta: {requireAuth: true}},
-                        {path: '/system-set/prevent-repet', name: 'PreventRepet', component: PreventRepet, meta: {requireAuth: true}},
+                        //批量首付款业务管理
+                        {path: '/batch-payment/prevent-repet', name: 'PreventRepet', component: PreventRepet, meta: {requireAuth: true}},
+                        {path: '/batch-payment/pay-check-batch', name: 'PayCheckBatch', component: PayCheckBatch, meta: {requireAuth: true}},
+                        {path: '/batch-payment/pay-disk-sending', name: 'PayDiskSending', component: PayDiskSending, meta: {requireAuth: true}},
                     ]
                 },
                 //基础样式三（tab页）

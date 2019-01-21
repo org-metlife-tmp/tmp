@@ -427,7 +427,7 @@
                         } else {
                             this.$message({
                                 type: "success",
-                                message: "方形成功",
+                                message: "放行成功",
                                 duration: 2000
                             });
                             this.$emit("getCommTable", this.routerMessage);
