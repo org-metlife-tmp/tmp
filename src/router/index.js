@@ -130,6 +130,7 @@ import BankkeySet from '@/components/systemSet/BankkeySet'
 import PreventRepet from '@/components/batchPayment/PreventRepet'
 import PayDiskSending from '@/components/batchPayment/PayDiskSending'
 import PayCheckBatch from '@/components/batchPayment/PayCheckBatch'
+import SettleAccounts from '@/components/batchPayment/SettleAccounts'
 
 
 Vue.use(Router)
@@ -248,6 +249,7 @@ const router = new Router({
                         {path: '/batch-payment/prevent-repet', name: 'PreventRepet', component: PreventRepet, meta: {requireAuth: true}},
                         {path: '/batch-payment/pay-check-batch', name: 'PayCheckBatch', component: PayCheckBatch, meta: {requireAuth: true}},
                         {path: '/batch-payment/pay-disk-sending', name: 'PayDiskSending', component: PayDiskSending, meta: {requireAuth: true}},
+                        {path: '/batch-payment/settle-accounts', name: 'SettleAccounts', component: SettleAccounts, meta: {requireAuth: true}},
                     ]
                 },
                 //基础样式三（tab页）

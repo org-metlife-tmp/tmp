@@ -1,5 +1,5 @@
 <style scoped lang="less" type="text/less">
-    #preventRepet {
+    #settleAccounts {
         width: 100%;
         height: 100%;
         box-sizing: border-box;
@@ -65,7 +65,7 @@
 </style>
 
 <template>
-    <div id="preventRepet">
+    <div id="settleAccounts">
         <!-- 顶部按钮-->
         <div class="button-list-left">
             <el-select v-model="searchData.os_source"
@@ -228,9 +228,9 @@
 
 <script>
     export default {
-        name: "PreventRepet",
+        name: "SettleAccounts",
         created: function () {
-            this.$emit("transmitTitle", "收付数据防重预警");
+            this.$emit("transmitTitle", "结算对账");
             this.$emit("getCommTable", this.routerMessage);
 
             /*获取常量数据*/
@@ -500,6 +500,13 @@
         }
     }
 </script>
+
+
+
+
+
+
+
 
 
 

@@ -593,13 +593,14 @@
             </el-submenu>
             <el-submenu index="20">
                 <template slot="title" height="200px">
-                    <i class="icon-plsf"></i>
-                    <p class="mg-four">批量收付</p>
+                    <i class="icon-plfk"></i>
+                    <p class="mg-four">批量付款</p>
                 </template>
                 <el-menu-item-group>
                     <el-menu-item index="/batch-payment/prevent-repet">收付数据防重预警</el-menu-item>
                     <el-menu-item index="/batch-payment/pay-check-batch">批量付款-核对组批</el-menu-item>
                     <el-menu-item index="/batch-payment/pay-disk-sending">批量付款-盘片发送</el-menu-item>
+                    <el-menu-item index="/batch-payment/settle-accounts">结算对账</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
         </el-menu>
