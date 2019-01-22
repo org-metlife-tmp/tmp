@@ -36,12 +36,26 @@
             margin-bottom: 20px;
         }
 
+        /*数据展示区*/
+        .table-content {
+            height: 181px;
+        }
+
         /*分页部分*/
         .botton-pag {
             position: absolute;
             width: 100%;
             height: 8%;
-            bottom: -6px;
+            bottom: 190px;
+
+            .el-button {
+                float: right;
+                margin-top: -30px;
+            }
+        }
+
+        .botton-pag-center {
+            top: 258px;
         }
 
         /*按钮样式*/
@@ -68,7 +82,7 @@
     <div id="settleAccounts">
         <!-- 顶部按钮-->
         <div class="button-list-left">
-            <el-select v-model="searchData.os_source"
+            <el-select v-model="searchData.source_sys"
                        filterable size="mini"
                        @change="queryData">
                 <el-option v-for="(item,key) in sourceList"
@@ -102,61 +116,33 @@
                     </el-col>
                     <el-col :span="4">
                         <el-form-item>
-                            <el-select v-model="searchData.pay_mode" placeholder="请选择支付方式"
+                            <el-select v-model="searchData.channel_id_one" placeholder="请选择通道编码"
                                        clearable filterable
                                        style="width:100%">
-                                <el-option v-for="(payMode,key) in payModeList"
-                                           :key="key"
-                                           :label="payMode"
-                                           :value="key">
+                                <el-option v-for="channel in channelList"
+                                           :key="channel.channel_id"
+                                           :label="channel.channel_code"
+                                           :value="channel.channel_id">
                                 </el-option>
                             </el-select>
                         </el-form-item>
                     </el-col>
                     <el-col :span="4">
                         <el-form-item>
-                            <el-input v-model="searchData.bank_key" clearable placeholder="请输入bankkey"></el-input>
+                            <el-input v-model="searchData.channel_desc" clearable placeholder="请输入通道描述"></el-input>
                         </el-form-item>
                     </el-col>
-                    <el-col :span="4">
-                        <el-form-item>
-                            <el-input v-model="searchData.bankkey_desc" clearable placeholder="请输入bankkey描述"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="4">
-                        <el-form-item>
-                            <el-select v-model="searchData.tmp_org_id" placeholder="请选择机构"
-                                       clearable filterable
-                                       style="width:100%">
-                                <el-option v-for="item in orgList"
-                                           :key="item.org_id"
-                                           :label="item.name"
-                                           :value="item.org_id">
-                                </el-option>
-                            </el-select>
+                    <el-col :span="5">
+                        <el-form-item style="margin-bottom:0px">
+                            <el-checkbox-group v-model="searchData.is_checked">
+                                <el-checkbox :label="0" name="未核对">未核对</el-checkbox>
+                                <el-checkbox :label="1" name="已核对">已核对</el-checkbox>
+                            </el-checkbox-group>
                         </el-form-item>
                     </el-col>
                     <el-col :span="2">
                         <el-form-item>
                             <el-button type="primary" plain @click="queryData" size="mini">搜索</el-button>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="4">
-                        <el-form-item>
-                            <el-input v-model="searchData.preinsure_bill_no" clearable placeholder="请输入投保单号"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="4">
-                        <el-form-item>
-                            <el-input v-model="searchData.insure_bill_no" clearable placeholder="请输入保单号"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="16">
-                        <el-form-item style="margin-bottom:0px">
-                            <el-checkbox-group v-model="searchData.status">
-                                <el-checkbox :label="1" name="已处理">已处理</el-checkbox>
-                                <el-checkbox :label="0" name="未处理">未处理</el-checkbox>
-                            </el-checkbox-group>
                         </el-form-item>
                     </el-col>
                 </el-row>
@@ -167,6 +153,7 @@
         <!--数据展示区-->
         <section class="table-content">
             <el-table :data="tableList"
+                      height="100%"
                       border size="mini">
                 <el-table-column prop="os_source" label="来源系统" :show-overflow-tooltip="true"
                                  :formatter="transitSource"></el-table-column>
@@ -223,6 +210,22 @@
                     :current-page="pagCurrent">
             </el-pagination>
         </div>
+        <!--主数据关联数据-->
+        <section class="table-content" style="margin-top:40px">
+            <el-table :data="childList" border
+                      height="100%" size="mini">
+                <el-table-column type="selection" width="38"></el-table-column>
+                <el-table-column prop="acc_no" label="账户号" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="acc_name" label="账户名称" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="bank_name" label="开户行" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="direction" label="收付方向" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="opp_acc_no" label="对方账户号" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="opp_acc_name" label="对方账户名称" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="amount" label="交易金额" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="summary" label="摘要" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="trans_date" label="交易时间" :show-overflow-tooltip="true"></el-table-column>
+            </el-table>
+        </section>
     </div>
 </template>
 
@@ -231,7 +234,7 @@
         name: "SettleAccounts",
         created: function () {
             this.$emit("transmitTitle", "结算对账");
-            this.$emit("getCommTable", this.routerMessage);
+            // this.$emit("getCommTable", this.routerMessage);
 
             /*获取常量数据*/
             var constants = JSON.parse(window.sessionStorage.getItem("constants"));
@@ -239,34 +242,26 @@
             if (constants.SftOsSource) {
                 this.sourceList = constants.SftOsSource;
             }
-            //支付方式
-            if (constants.SftDoubtPayMode) {
-                this.payModeList = constants.SftDoubtPayMode;
-            }
-            //机构列表
-            this.getOrgList();
+            //通道编码
+            this.getChannelList();
         },
         props: ["tableData"],
         data: function () {
             return {
                 queryUrl: this.$store.state.queryUrl,
                 routerMessage: {
-                    optype: "sftdoubtful_doubtfullist",
+                    optype: "sftpaycheck_batchlist",
                     params: {
                         page_size: 7,
                         page_num: 1,
-                        os_source: "0"
+                        source_sys: "0"
                     }
                 },
                 searchData: { //搜索条件
-                    os_source: "0",
-                    pay_mode: "",
-                    bank_key: "",
-                    bankkey_desc: "",
-                    tmp_org_id: "",
-                    preinsure_bill_no: "",
-                    insure_bill_no: "",
-                    status: []
+                    source_sys: "0",
+                    channel_id_one: "",
+                    channel_id_two: "",
+                    is_checked: []
                 },
                 dateValue: "", //时间控件
                 pickerOptions: {
@@ -275,12 +270,12 @@
                     }
                 },
                 tableList: [], //列表数据
+                childList: [],
                 pagSize: 8, //分页数据
                 pagTotal: 1,
                 pagCurrent: 1,
                 sourceList: {}, //常量数据
-                payModeList: {},
-                orgList: []
+                channelList: []
             }
         },
         methods: {
@@ -307,6 +302,33 @@
                 this.routerMessage.params.page_num = 1;
                 this.$emit("getCommTable", this.routerMessage);
             },
+            //获取通道编码
+            getChannelList: function () {
+                this.$axios({
+                    url: this.queryUrl + "normalProcess",
+                    method: "post",
+                    data: {
+                        optype: "sftchannel_getallchannel",
+                        params: {}
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        });
+                    } else {
+                        var data = result.data.data;
+                        this.channelList = data;
+                    }
+
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            },
+
+
             //获取机构列表
             getOrgList: function () {
                 this.$axios({

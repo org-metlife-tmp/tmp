@@ -159,8 +159,7 @@
         <section class="table-content">
             <el-table :data="tableList"
                       border size="mini">
-                <el-table-column prop="source_sys" label="来源系统" :show-overflow-tooltip="true"
-                                 :formatter="transitSource"></el-table-column>
+                <el-table-column prop="source_sys" label="来源系统" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="master_batchno" label="主批次号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="child_batchno" label="子批次号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="interactive_mode" label="交互方式" :show-overflow-tooltip="true"></el-table-column>
@@ -178,7 +177,7 @@
                     <template slot-scope="scope" class="operationBtn">
                         <el-tooltip content="下载" placement="bottom" effect="light"
                                     :enterable="false" :open-delay="500"
-                                    v-show="scope.row.interactive_mode=='报盘' && scope.row.status=='2'">
+                                    v-show="scope.row.interactive_mode=='报盘' && (scope.row.status=='已审批未发送' || scope.row.status=='已发送未回盘')">
                             <el-button type="info" icon="el-icon-download" size="mini"
                                        @click="downData(scope.row)"></el-button>
                         </el-tooltip>

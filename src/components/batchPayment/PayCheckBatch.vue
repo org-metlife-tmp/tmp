@@ -381,7 +381,7 @@
                     this.selectVersion.push(item.persist_version);
                 }
                 this.totalData.total_num = val.length;
-                this.totalData.total_amount = totalNum;
+                this.totalData.total_amount = this.$common.transitSeparator(totalNum);
             },
             //确认
             affirm: function(){
