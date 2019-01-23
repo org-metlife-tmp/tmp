@@ -22,13 +22,13 @@ import com.qhjf.cfm.web.constant.WebConstant;
 import com.qhjf.cfm.web.inter.api.ISysAtomicInterface;
 
 public class SysCurrTransQueryInter implements ISysAtomicInterface{
-
+	
 	private static Logger log = LoggerFactory.getLogger(SysCurrBalQueryInter.class);
 	private IMoreResultChannelInter channelInter;
 	private ExecutorService executeService = Executors.newFixedThreadPool(10);
 	private Future<String> future = null;
 	private Record instr;
-
+	
 	@Override
 	public Record genInstr(Record record) {
 		this.instr = new Record();
@@ -49,9 +49,9 @@ public class SysCurrTransQueryInter implements ISysAtomicInterface{
 	public void callBack(String jsonStr) throws Exception {
 		Db.delete("trans_query_instr_queue_lock", instr);
 		if(jsonStr == null || jsonStr.length() == 0){
-			log.error("当日交易查询返回报文为空,不错处理");
-			return;
-		}
+        	log.error("当日交易查询返回报文为空,不错处理");
+        	return;
+        }
 		int resultCount = channelInter.getResultCount(jsonStr);
 		log.debug("resultCount"+resultCount);
 		if(resultCount <= 0){
@@ -73,20 +73,20 @@ public class SysCurrTransQueryInter implements ISysAtomicInterface{
 				break;
 			}
 		}
-
+		
 	}
 
 	@Override
 	public void setChannelInter(IChannelInter channelInter) {
 		this.channelInter = (IMoreResultChannelInter) channelInter;
-
+		
 	}
-
+	
 	@Override
 	public IChannelInter getChannelInter() {
 		return this.channelInter;
 	}
-
+	
 	public class ExecuteThread implements Callable<String> {
 
 		private Record parseRecord;
@@ -137,7 +137,7 @@ public class SysCurrTransQueryInter implements ISysAtomicInterface{
 				return "fail";
 			}
 		}
-
+		
 
 	}
 
@@ -145,7 +145,7 @@ public class SysCurrTransQueryInter implements ISysAtomicInterface{
 	public void callBack(Exception e) throws Exception {
 		Db.delete("trans_query_instr_queue_lock", instr);
 	}
-
+	
 	public boolean isValidInstructCode(String instructCode) {
 		String regEx = "[0-9a-fA-F]{6}";
 		Pattern pat = Pattern.compile(regEx);

@@ -44,6 +44,10 @@ public class SysElectronicQueryInter implements ISysAtomicInterface{
 	@Override
 	public void callBack(String jsonStr) throws Exception {
 		Db.delete("electronic_bill_query_lock", instr);
+		if(jsonStr == null || jsonStr.length() == 0){
+        	log.error("电子回单查询返回报文为空,不错处理");
+        	return;
+        }
 		int resultCount = channelInter.getResultCount(jsonStr);
 		log.debug("resultCount"+resultCount);
 		if(resultCount <= 0){

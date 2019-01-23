@@ -7,7 +7,7 @@ import com.qhjf.cfm.web.channel.inter.api.ISingleResultChannelInter;
 import com.qhjf.cfm.web.inter.api.ISysAtomicInterface;
 
 public class SysElectronicImgQueryInter implements ISysAtomicInterface{
-
+	
 	private IMoreResultChannelInter channelInter;
 
 	@Override
@@ -31,7 +31,7 @@ public class SysElectronicImgQueryInter implements ISysAtomicInterface{
 	@Override
 	public void setChannelInter(IChannelInter channelInter) {
 		this.channelInter = (IMoreResultChannelInter) channelInter;
-
+		
 	}
 
 	@Override

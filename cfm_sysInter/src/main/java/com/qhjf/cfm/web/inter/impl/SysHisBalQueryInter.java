@@ -14,7 +14,7 @@ import com.qhjf.cfm.web.channel.util.DateUtil;
 import com.qhjf.cfm.web.inter.api.ISysAtomicInterface;
 
 public class SysHisBalQueryInter implements ISysAtomicInterface{
-
+	
 	private static Logger log = LoggerFactory.getLogger(SysHisBalQueryInter.class);
 	private ISingleResultChannelInter channelInter;
 	private Record instr;
@@ -29,19 +29,19 @@ public class SysHisBalQueryInter implements ISysAtomicInterface{
 		instr.set("pre_query_time", DateKit.toDate(DateKit.toStr(date,DateKit.timeStampPattern)));
 		return this.instr;
 	}
-
+	
 	@Override
 	public Record getInstr() {
 		return this.instr;
 	}
-
+	
 	@Override
 	public void callBack(String jsonStr) throws Exception {
 		Db.delete("bal_query_instr_queue_lock", instr);
 		if(jsonStr == null || jsonStr.length() == 0){
-			log.error("历史余额查询返回报文为空,不错处理");
-			return;
-		}
+        	log.error("历史余额查询返回报文为空,不错处理");
+        	return;
+        }
 		Long accId = instr.getLong("acc_id");
 		String date = instr.getStr("query_date");
 		Record accHisBal = Db.findFirst(Db.getSql("quartzs_job_cfm.get_account_his_balance"), accId,date);
@@ -67,9 +67,9 @@ public class SysHisBalQueryInter implements ISysAtomicInterface{
 			accHisBal.setColumns(parseRecord);
 			Db.update("acc_his_balance", accHisBal);
 		}
-
+		
 	}
-
+	
 	@Override
 	public IChannelInter getChannelInter() {
 		return this.channelInter;
@@ -78,13 +78,13 @@ public class SysHisBalQueryInter implements ISysAtomicInterface{
 	@Override
 	public void setChannelInter(IChannelInter channelInter) {
 		this.channelInter = (ISingleResultChannelInter) channelInter;
-
+		
 	}
 
 	@Override
 	public void callBack(Exception e) throws Exception {
 		Db.delete("bal_query_instr_queue_lock", instr);
-
+		
 	}
 }
 

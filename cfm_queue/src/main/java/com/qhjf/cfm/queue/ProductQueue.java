@@ -1,15 +1,16 @@
 package com.qhjf.cfm.queue;
 
-import com.qhjf.cfm.web.inter.api.ISysAtomicInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.qhjf.cfm.web.inter.api.ISysAtomicInterface;
 
 /**
  * 队列生产者
  * @author yunxw
  *
  */
-public class ProductQueue implements Runnable {
+public class ProductQueue implements Runnable{
 	private static final Logger log = LoggerFactory.getLogger(ProductQueue.class);
 	private static final String ICBC_SIGN_LOG = "工行指令进入签名队列：原子接口[{}]，请求参数[{}]";
 	private static final String ICBC_LOG = "工行指令进入一般队列：原子接口[{}]，请求参数[{}]";

@@ -64,8 +64,8 @@ public class SysTradeResultQueryInter implements ISysAtomicInterface {
         log.debug("查询交易状态指令回写开始");
         Db.delete("trade_result_query_instr_queue_lock", instr);
         if(jsonStr == null || jsonStr.length() == 0){
-            log.error("交易状态返回报文为空,不错处理");
-            return;
+        	log.error("交易状态返回报文为空,不错处理");
+        	return;
         }
         JSONObject json = JSONObject.parseObject(jsonStr);
         json.put("bank_serial_number", this.getInstr().getStr("bank_serial_number"));
@@ -348,7 +348,7 @@ public class SysTradeResultQueryInter implements ISysAtomicInterface {
             ProductQueue productQueue = new ProductQueue(bean);
             new Thread(productQueue).start();
         } else {
-            log.error("发送失败！");
+           log.error("发送失败！");
         }
     }
 }

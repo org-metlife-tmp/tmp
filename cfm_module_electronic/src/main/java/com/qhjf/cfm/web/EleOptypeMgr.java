@@ -44,7 +44,7 @@ public class EleOptypeMgr extends AbstractOptypeMgr {
                         "field_36", "field_37", "field_38", "field_39", "field_40",
                         "field_41", "field_42", "field_43", "field_44", "field_45",
                         "field_46", "field_47", "field_48", "field_49", "field_50",
-                        "min", "max"
+                        "min", "max", "page_size", "page_num"
                 }));
 
     }
