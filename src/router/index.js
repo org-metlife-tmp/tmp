@@ -131,6 +131,8 @@ import PreventRepet from '@/components/batchPayment/PreventRepet'
 import PayDiskSending from '@/components/batchPayment/PayDiskSending'
 import PayCheckBatch from '@/components/batchPayment/PayCheckBatch'
 import SettleAccounts from '@/components/batchPayment/SettleAccounts'
+import AbnormalDispose from '@/components/batchPayment/AbnormalDispose'
+import PayDiskbacking from '@/components/batchPayment/PayDiskbacking'
 
 
 Vue.use(Router)
@@ -250,6 +252,8 @@ const router = new Router({
                         {path: '/batch-payment/pay-check-batch', name: 'PayCheckBatch', component: PayCheckBatch, meta: {requireAuth: true}},
                         {path: '/batch-payment/pay-disk-sending', name: 'PayDiskSending', component: PayDiskSending, meta: {requireAuth: true}},
                         {path: '/batch-payment/settle-accounts', name: 'SettleAccounts', component: SettleAccounts, meta: {requireAuth: true}},
+                        {path: '/batch-payment/abnormal-dispose', name: 'AbnormalDispose', component: AbnormalDispose, meta: {requireAuth: true}},
+                        {path: '/batch-payment/pay-diskbacking', name: 'PayDiskbacking', component: PayDiskbacking, meta: {requireAuth: true}},
                     ]
                 },
                 //基础样式三（tab页）

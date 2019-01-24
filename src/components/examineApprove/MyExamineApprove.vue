@@ -1230,6 +1230,16 @@
                     'more-addLots':"branchorgoa_batchappend",
                     'more-agree':"branchorgoa_batchagree"
                 },
+                "24":{
+                    text:"批量付款",
+                    detail:"checkbatch_detail",
+                    list:"checkbatch_pendingtasks",
+                    addLots:"checkbatch_append",
+                    agree:"checkbatch_agree",
+                    reject:"checkbatch_reject",
+                    'more-addLots':"checkbatch_batchappend",
+                    'more-agree':"checkbatch_batchagree"
+                },
             };
 
             this.detailDialog ={
@@ -1325,7 +1335,7 @@
                             {id:"10", pspan:8, prop:"old_acc_name"},
                             {id:"11", lspan:4, label:"账户名称"},
                             {id:"12", pspan:8, prop:"new_acc_name"},
-                        ]                    
+                        ]
                     },
                     {
                         id:"10",
@@ -1335,7 +1345,7 @@
                             {id:"14", pspan:8, prop:"old_org_name"},
                             {id:"15", lspan:4, label:"所属机构"},
                             {id:"16", pspan:8, prop:"new_org_name"},
-                        ]                    
+                        ]
                     },
                     {
                         id:"11",
@@ -1345,7 +1355,7 @@
                             {id:"18", pspan:8, prop:"old_bank_name"},
                             {id:"19", lspan:4, label:"开户行"},
                             {id:"20", pspan:8, prop:"new_bank_name"},
-                        ]                    
+                        ]
                     },
                     {id:"21", lspan:4, label:"账户法人"},
                     {id:"22", pspan:8, prop:"old_lawfull_man"},
@@ -1742,6 +1752,28 @@
                     {id:"19", lspan:4, label:"摘要"},
                     {id:"20",pspan:8, prop:"payment_summary"}
                 ],
+                "24":[
+                    {id:"1", lspan:4, label:"日期"},
+                    {id:"2", pspan:8, prop:"create_time"},
+                    {id:"3", lspan:4, label:"通道编码"},
+                    {id:"4",pspan:8, prop:"channel_code"},
+                    {id:"5", lspan:4, label:"通道描述"},
+                    {id:"6", pspan:8, prop:"channel_desc"},
+                    {id:"7", lspan:4, label:"投保单号"},
+                    {id:"8", pspan:8, prop:"preinsure_bill_no"},
+                    {id:"9", lspan:4, label:"保单号"},
+                    {id:"10", pspan:8, prop:"insure_bill_no"},
+                    {id:"11", lspan:4, label:"金额"},
+                    {id:"12", pspan:8, prop:"amount"},
+                    {id:"13", lspan:4, label:"状态"},
+                    {id:"14", pspan:8, prop:"status"},
+                    {id:"15", lspan:4, label:"操作人"},
+                    {id:"16", pspan:8, prop:"op_user_name"},
+                    {id:"17", lspan:4, label:"操作日期"},
+                    {id:"18", pspan:8, prop:"op_date"},
+                    {id:"19", lspan:4, label:"支付号码"},
+                    {id:"20",pspan:8, prop:"pay_code"}
+                ],
             }
         },
         mounted:function(){
@@ -1778,7 +1810,7 @@
             if(constants.MajorBizType){
                 this.businessType = constants.MajorBizType;
             }
-            
+
         },
         props: ["isPending", "tableData"],
         components:{
@@ -1976,6 +2008,16 @@
                         {id:'9',prop:"payment_summary",name:'摘要'},
                         {id:'10',prop:"nextUserList",name:'下级审批人'}
                     ],
+                    "24":[
+                        {id:'1',prop:"create_time",name:'日期'},
+                        {id:'2',prop:"channel_code",name:'通道编码'},
+                        {id:'3',prop:"channel_desc",name:'通道描述'},
+                        {id:'4',prop:"preinsure_bill_no",name:'投保单号'},
+                        {id:'5',prop:"amount",name:'金额'},
+                        {id:'6',prop:"status",name:'状态'},
+                        {id:'7',prop:"op_user_name",name:'操作人'},
+                        {id:'8',prop:"op_date",name:'操作日期'}
+                    ],
                 },
                 editableTabsList: {},
                 totalTabNum: "",//我的待办条数
@@ -2036,7 +2078,7 @@
         methods:{
             //获取tab集合
             getTabList:function(type){
-                
+
                     this.$axios({
                         url: this.queryUrl + "commProcess",
                         method:"post",
@@ -2102,7 +2144,7 @@
                             console.log(arrObject);
                         }
                     })
-                
+
             },
             //展示格式转换
             transitionStatus: function (row, column, cellValue, index) {
@@ -2253,7 +2295,7 @@
                 }
                 this.fileMessage.bill_id = "";
                 this.emptyFileList = [];
-                
+
                 let bizType = row.biz_type;
                 let id = row.bill_id;
                 let _index = this.activeName;
@@ -2266,7 +2308,7 @@
                     this.normalBusinessParams.biz_type = bizType;
                     this.normalBusinessParams.id = id;
                 }
-                
+
                 this.curBiztype = bizType;
                 this.dialogTitle = this.classParams[bizType].text;
                 this.currentDetailDialog = this.detailDialog[bizType];
@@ -2275,7 +2317,7 @@
                 this.currentData.id = id;
                 this.currentData.define_id = row.define_id;
 
-                
+
 
                 //附件所占宽度
                 // if( bizType === 1 || bizType === 6){
@@ -2378,7 +2420,7 @@
                         console.log(this.dialogData)
                         this.fileMessage.bill_id = id;
                         this.fileMessage.biz_type = bizType;
-                        
+
                         if(bizType == 10 || bizType == 11 || bizType == 19){
                             this.specialTriggerFile = !this.specialTriggerFile;
                             this.batchAllotVisible = true;
