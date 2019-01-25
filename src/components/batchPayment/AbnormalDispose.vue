@@ -107,12 +107,28 @@
                     </el-col>
                     <el-col :span="4">
                         <el-form-item>
-                            <el-input v-model="searchData.channel_id_one" clearable placeholder="请输入通道编码"></el-input>
+                            <el-select v-model="searchData.channel_id_one" placeholder="请选择通道编码"
+                                       clearable filterable
+                                       style="width:100%">
+                                <el-option v-for="channel in channelList"
+                                           :key="channel.channel_id"
+                                           :label="channel.channel_code"
+                                           :value="channel.channel_id">
+                                </el-option>
+                            </el-select>
                         </el-form-item>
                     </el-col>
                     <el-col :span="4">
                         <el-form-item>
-                            <el-input v-model="searchData.channel_id_two" clearable placeholder="请输入通道描述"></el-input>
+                            <el-select v-model="searchData.channel_id_two" placeholder="请选择通道描述"
+                                       clearable filterable
+                                       style="width:100%">
+                                <el-option v-for="channel in channelList"
+                                           :key="channel.channel_id"
+                                           :label="channel.channel_desc"
+                                           :value="channel.channel_id">
+                                </el-option>
+                            </el-select>
                         </el-form-item>
                     </el-col>
                     <el-col :span="4">
@@ -213,6 +229,8 @@
             if (constants.SftInteractiveMode) {
                 this.interactiveList = constants.SftInteractiveMode;
             }
+            //通道编码
+            this.getChannelList();
         },
         props: ["tableData"],
         data: function () {
@@ -253,6 +271,7 @@
                     8: "已回退",
                 },
                 interactiveList: {},
+                channelList: [],
             }
         },
         methods: {
@@ -310,7 +329,7 @@
                         url: this.queryUrl + "normalProcess",
                         method: "post",
                         data: {
-                            optype: "sftdoubtful_reject",
+                            optype: "sftexcept_revoke",
                             params: {
                                 id: row.id,
                                 os_source: row.source_sys,
@@ -385,6 +404,31 @@
                 }).catch(function (error) {
                     console.log(error);
                 })
+            },
+            //获取通道编码
+            getChannelList: function () {
+                this.$axios({
+                    url: this.queryUrl + "normalProcess",
+                    method: "post",
+                    data: {
+                        optype: "sftchannel_getallchannel",
+                        params: {}
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        });
+                    } else {
+                        var data = result.data.data;
+                        this.channelList = data;
+                    }
+
+                }).catch(function (error) {
+                    console.log(error);
+                });
             },
         },
         watch: {

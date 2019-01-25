@@ -1240,6 +1240,16 @@
                     'more-addLots':"checkbatch_batchappend",
                     'more-agree':"checkbatch_batchagree"
                 },
+                "26":{
+                    text:"批量付款-异常处理",
+                    detail:"sftexcept_detail",
+                    list:"sftexcept_pendingtasks",
+                    addLots:"sftexcept_append",
+                    agree:"sftexcept_agree",
+                    reject:"sftexcept_reject",
+                    'more-addLots':"sftexcept_batchappend",
+                    'more-agree':"sftexcept_batchagree"
+                },
             };
 
             this.detailDialog ={
@@ -1774,6 +1784,28 @@
                     {id:"19", lspan:4, label:"支付号码"},
                     {id:"20",pspan:8, prop:"pay_code"}
                 ],
+                "26":[
+                    {id:"1", lspan:4, label:"来源系统"},
+                    {id:"2", pspan:8, prop:"source_sys"},
+                    {id:"3", lspan:4, label:"主批次号"},
+                    {id:"4",pspan:8, prop:"master_batchno"},
+                    {id:"5", lspan:4, label:"子批次号"},
+                    {id:"6", pspan:8, prop:"child_batchno"},
+                    {id:"7", lspan:4, label:"通道编码"},
+                    {id:"8", pspan:8, prop:"channel_code"},
+                    {id:"9", lspan:4, label:"通道描述"},
+                    {id:"10", pspan:8, prop:"channel_desc"},
+                    {id:"11", lspan:4, label:"总金额"},
+                    {id:"12", pspan:8, prop:"total_amount"},
+                    {id:"13", lspan:4, label:"状态"},
+                    {id:"14", pspan:8, prop:"service_status"},
+                    {id:"15", lspan:4, label:"异常原因"},
+                    {id:"16", pspan:8, prop:"error_msg"},
+                    {id:"17", lspan:4, label:"回退申请人"},
+                    {id:"18", pspan:8, prop:"revoke_user_name"},
+                    {id:"19", lspan:4, label:"申请日期"},
+                    {id:"20",pspan:8, prop:"revoke_date"}
+                ],
             }
         },
         mounted:function(){
@@ -2018,6 +2050,16 @@
                         {id:'7',prop:"op_user_name",name:'操作人'},
                         {id:'8',prop:"op_date",name:'操作日期'}
                     ],
+                    "26":[
+                        {id:'1',prop:"source_sys",name:'来源系统'},
+                        {id:'2',prop:"master_batchno",name:'主批次号'},
+                        {id:'3',prop:"child_batchno",name:'子批次号'},
+                        {id:'4',prop:"channel_code",name:'通道编码'},
+                        {id:'5',prop:"total_amount",name:'总金额'},
+                        {id:'6',prop:"service_status",name:'状态'},
+                        {id:'7',prop:"revoke_user_name",name:'回退申请人'},
+                        {id:'8',prop:"revoke_date",name:'申请日期'}
+                    ]
                 },
                 editableTabsList: {},
                 totalTabNum: "",//我的待办条数

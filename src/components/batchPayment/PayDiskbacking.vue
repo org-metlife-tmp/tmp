@@ -107,7 +107,15 @@
                     </el-col>
                     <el-col :span="4">
                         <el-form-item>
-                            <el-input v-model="searchData.channel_id" clearable placeholder="请输入通道编码"></el-input>
+                            <el-select v-model="searchData.channel_id" placeholder="请选择通道编码"
+                                       clearable filterable
+                                       style="width:100%">
+                                <el-option v-for="channel in channelList"
+                                           :key="channel.channel_id"
+                                           :label="channel.channel_code"
+                                           :value="channel.channel_id">
+                                </el-option>
+                            </el-select>
                         </el-form-item>
                     </el-col>
                     <el-col :span="4">
@@ -139,12 +147,10 @@
         <section class="table-content">
             <el-table :data="tableList"
                       border size="mini">
-                <el-table-column prop="source_sys" label="来源系统" :show-overflow-tooltip="true"
-                                 :formatter="transitSource"></el-table-column>
+                <el-table-column prop="source_sys" label="来源系统" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="master_batchno" label="主批次号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="child_batchno" label="子批次号" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="interactive_mode" label="交互方式" :show-overflow-tooltip="true"
-                                 :formatter="transitMode"></el-table-column>
+                <el-table-column prop="interactive_mode" label="交互方式" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="channel_code" label="通道编码" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="channel_desc" label="通道描述" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="send_on" label="出盘日期" :show-overflow-tooltip="true"></el-table-column>
@@ -162,7 +168,7 @@
                     <template slot-scope="scope" class="operationBtn">
                         <el-tooltip content="上传" placement="bottom" effect="light"
                                     :enterable="false" :open-delay="500"
-                                    v-show="scope.row.status=='已发送未回盘' && scope.row.status=='回盘异常'">
+                                    v-show="scope.row.interactive_mode=='报盘' && (scope.row.status=='已发送未回盘' || scope.row.status=='回盘异常')">
                             <el-upload
                                     class="upload-demo"
                                     :action="queryUrl + 'normal/excel/upload'"
@@ -199,7 +205,7 @@
         name: "PayDiskbacking",
         created: function () {
             this.$emit("transmitTitle", "盘片回盘");
-            // this.$emit("getCommTable", this.routerMessage);
+            this.$emit("getCommTable", this.routerMessage);
 
             /*获取常量数据*/
             var constants = JSON.parse(window.sessionStorage.getItem("constants"));
@@ -211,6 +217,8 @@
             if (constants.SftInteractiveMode) {
                 this.interactiveList = constants.SftInteractiveMode;
             }
+            //通道编码
+            this.getChannelList();
         },
         props: ["tableData"],
         data: function () {
@@ -249,6 +257,7 @@
                     8: "已回退",
                 },
                 interactiveList: {},
+                channelList: [],
             }
         },
         methods: {
@@ -275,19 +284,31 @@
                 this.routerMessage.params.page_num = 1;
                 this.$emit("getCommTable", this.routerMessage);
             },
-            //展示格式转换-来源系统
-            transitSource: function (row, column, cellValue, index) {
-                return this.sourceList[cellValue];
-            },
-            //展示格式转换-状态
-            transitStatus: function (row, column, cellValue, index) {
-                return this.statusList[cellValue];
-            },
-            //展示格式转换-交互方式
-            transitMode: function (row, column, cellValue, index) {
-                return this.interactiveList[cellValue];
-            },
+            //获取通道编码
+            getChannelList: function () {
+                this.$axios({
+                    url: this.queryUrl + "normalProcess",
+                    method: "post",
+                    data: {
+                        optype: "checkbatch_channelCodeList",
+                        params: {}
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        });
+                    } else {
+                        var data = result.data.data;
+                        this.channelList = data;
+                    }
 
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            },
             //导出
             exportFun: function () {
                 if (!this.tableList.length) {

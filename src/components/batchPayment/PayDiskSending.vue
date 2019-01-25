@@ -292,7 +292,7 @@
                     url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
-                        optype: "sftchannel_getallchannel",
+                        optype: "checkbatch_channelCodeList",
                         params: {}
                     }
                 }).then((result) => {
