@@ -295,6 +295,19 @@
                             </el-select>
                         </el-form-item>
                     </el-col>
+                    <el-col :span="12" v-if="dialogData.pay_attr == 1">
+                        <el-form-item label="结算模式" prop="net_mode">
+                            <el-select v-model="dialogData.net_mode" placeholder="请选择结算模式"
+                                       clearable filterable :disabled="isLook"
+                                       style="width:100%">
+                                <el-option v-for="(netMode,key) in netModeList"
+                                           :key="key"
+                                           :label="netMode"
+                                           :value="key">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
                     <el-col :span="12">
                         <el-form-item label="文件生成归属地" prop="org_id">
                             <el-select v-model="dialogData.org_id" placeholder="请选择文件生成归属地"
@@ -459,6 +472,10 @@
             if (constants.SftInteractiveMode) {
                 this.interactList = constants.SftInteractiveMode;
             }
+            //结算模式
+            if(constants.SftNetMode){
+                this.netModeList = constants.SftNetMode;
+            }
             //省
             this.provinceList = JSON.parse(window.sessionStorage.getItem("provinceList"));
             //直连通道
@@ -500,6 +517,7 @@
                 directsubList: {},
                 provinceList: {},
                 interactList: {},
+                netModeList: {},
                 orgList: [],
                 bankcodeList: [],
                 dialogVisible: false, //弹框数据
@@ -520,6 +538,7 @@
                     acc_id: "",
                     acc_no: "",
                     acc_name: "",
+                    net_mode: "",
                     bank_name: "",
                     bankcode: "",
                     op_acc_no: "",
@@ -542,6 +561,18 @@
                             validator: (rule, value, callback, source, options) => {
                                 if (this.dialogData.interactive_mode == 0) {
                                     value ? callback() : callback(new Error("请选择直连通道"));
+                                } else {
+                                    callback();
+                                }
+                            },
+                            trigger: "change"
+                        }
+                    ],
+                    net_mode: [
+                        {
+                            validator: (rule, value, callback, source, options) => {
+                                if (this.dialogData.pay_attr == 1) {
+                                    value ? callback() : callback(new Error("请选择结算模式"));
                                 } else {
                                     callback();
                                 }

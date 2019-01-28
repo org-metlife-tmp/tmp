@@ -171,10 +171,11 @@
                                     v-show="scope.row.interactive_mode=='报盘' && (scope.row.status=='已发送未回盘' || scope.row.status=='回盘异常')">
                             <el-upload
                                     class="upload-demo"
-                                    :action="queryUrl + 'normal/excel/upload'"
+                                    :action="queryUrl + 'normal/diskbacking/upload'"
                                     :headers="{pay_master_id:scope.row.pay_master_id,
-                                    pay_id:scope.row.child_batchno,
-                                    channel_id:scope.row.channel_id}"
+                                    pay_id:scope.row.pay_id,
+                                    channel_id:scope.row.channel_id,
+                                    user_id:userId}"
                                     multiple>
                                 <el-button type="warning" icon="el-icon-upload2" size="mini"></el-button>
                             </el-upload>
@@ -219,6 +220,9 @@
             }
             //通道编码
             this.getChannelList();
+            //用户id
+            var user = JSON.parse(window.sessionStorage.getItem("user"));
+            this.userId = user.usr_id;
         },
         props: ["tableData"],
         data: function () {
@@ -258,6 +262,7 @@
                 },
                 interactiveList: {},
                 channelList: [],
+                userId: ""
             }
         },
         methods: {

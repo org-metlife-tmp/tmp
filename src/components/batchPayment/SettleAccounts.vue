@@ -48,6 +48,24 @@
             height: 181px;
         }
 
+        /*汇总数据*/
+        .allData {
+            height: 36px;
+            line-height: 36px;
+            width: 100%;
+            background-color: #F8F8F8;
+            border: 1px solid #ebeef5;
+            border-top: none;
+            box-sizing: border-box;
+            text-align: right;
+
+            /*汇总数字*/
+            .numText {
+                color: #FF5800;
+                margin-right: 10px;
+            }
+        }
+
         /*分页部分*/
         .botton-pag {
             width: 100%;
@@ -118,6 +136,7 @@
                             <el-form-item>
                                 <el-select v-model="searchData.channel_id_one" placeholder="请选择通道编码"
                                            clearable filterable
+                                           @change="setBankcode"
                                            style="width:100%">
                                     <el-option v-for="channel in channelList"
                                                :key="channel.channel_id"
@@ -162,24 +181,32 @@
                           @selection-change="selectChange"
                           height="100%" border size="mini">
                     <el-table-column type="selection" width="38"></el-table-column>
-                    <el-table-column prop="create_on" label="出盘日期" :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="pay_date" label="主批次号" :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="pay_code" label="子批次号" :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="pay_mode" label="通道编码" :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="bank_key" label="通道描述" :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="bankkey_desc" label="总金额" :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="biz_type" label="总笔数" :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="org_name" label="成功金额" :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="preinsure_bill_no" label="成功笔数" :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="insure_bill_no" label="失败金额" :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="amount" label="失败笔数" :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="recv_acc_name" label="状态" :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="recv_cert_code" label="对账流水号" width="100px"
+                    <el-table-column prop="send_on" label="出盘日期" :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column prop="master_batchno" label="主批次号" :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column prop="child_batchno" label="子批次号" :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column prop="channel_code" label="通道编码" :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column prop="channel_desc" label="通道描述" :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column prop="net_mode" label="结算模式" :show-overflow-tooltip="true"
+                                     :formatter="transtMode"></el-table-column>
+                    <el-table-column prop="total_amount" label="总金额" :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column prop="total_num" label="总笔数" :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column prop="success_amount" label="成功金额" :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column prop="success_num" label="成功笔数" :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column prop="fail_amount" label="失败金额" :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column prop="fail_num" label="失败笔数" :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column prop="service_status" label="状态" :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column prop="check_service_number" label="对账流水号" width="100px"
                                      :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="op_user_name" label="操作人" :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="op_date" label="操作日期" :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column prop="check_user_name" label="操作人" :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column prop="check_date" label="操作日期" :show-overflow-tooltip="true"></el-table-column>
                 </el-table>
             </section>
+            <div class="allData">
+                <span>总笔数：</span>
+                <span v-text="totalData.total_num" class="numText"></span>
+                <span>总金额：</span>
+                <span v-text="totalData.total_amount" class="numText"></span>
+            </div>
             <!--分页部分-->
             <div class="botton-pag">
                 <el-pagination
@@ -280,25 +307,25 @@
                           @selection-change="childChange"
                           height="100%" size="mini">
                     <el-table-column type="selection" width="38"></el-table-column>
-                    <el-table-column prop="acc_no" label="交易日期" :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="acc_name" label="BankCode" width="100px"
+                    <el-table-column prop="trans_date" label="交易日期" :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column prop="bankcode" label="BankCode" width="100px"
                                      :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="bank_name" label="银行账号" :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="direction" label="账户名称" :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="opp_acc_no" label="开户行" :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="opp_acc_name" label="收付方向" :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="amount" label="对方银行账号" width="110px"
+                    <el-table-column prop="acc_no" label="银行账号" :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column prop="bank_nameacc_name" label="账户名称" :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column prop="bank_name" label="开户行" :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column prop="direction" label="收付方向" :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column prop="opp_acc_no" label="对方银行账号" width="110px"
                                      :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="summary" label="对方账户名称" width="110px"
+                    <el-table-column prop="opp_acc_name" label="对方账户名称" width="110px"
                                      :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="trans_date" label="对方开户行" width="100px"
+                    <el-table-column prop="opp_acc_bank" label="对方开户行" width="100px"
                                      :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="trans_date" label="交易金额" :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="trans_date" label="摘要" :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="trans_date" label="状态" :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="trans_date" label="对账流水号" width="100px"
+                    <el-table-column prop="amount" label="交易金额" :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column prop="summary" label="摘要" :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column prop="business_check" label="状态" :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column prop="check_service_number" label="对账流水号" width="100px"
                                      :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="trans_date" label="操作人" :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column prop="check_user_name" label="操作人" :show-overflow-tooltip="true"></el-table-column>
                 </el-table>
             </section>
         </div>
@@ -367,6 +394,10 @@
                 batchidList: [], //选中数据
                 versionList: [],
                 tradingList: [],
+                totalData: { //汇总数据
+                    total_amount: "",
+                    total_num: ""
+                },
             }
         },
         methods: {
@@ -459,7 +490,9 @@
                     method: "post",
                     data: {
                         optype: "sftchannel_getallbankcode",
-                        params: {}
+                        params: {
+                            channel_id: this.searchData.channel_id_one
+                        }
                     }
                 }).then((result) => {
                     if (result.data.error_msg) {
@@ -476,6 +509,25 @@
                 }).catch(function (error) {
                     console.log(error);
                 });
+            },
+            //选择通道编码后设置bankcode
+            setBankcode: function(val){
+                var channelList = this.channelList;
+                var bankcodeList = this.bankcodeList;
+                this.childSearch.bankcode = "";
+                for(var i = 0; i < channelList.length; i++){
+                    var item = channelList[i];
+                    if(item.channel_id == val){
+                        var curBankcode = item.bankcode;
+                        for(var j = 0; j < bankcodeList.length; j++){
+                            if(bankcodeList[j].bankcode == curBankcode){
+                                this.childSearch.bankcode = bankcodeList[j].bankcode;
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                }
             },
             //列表选择框改变后
             selectChange: function (val) {
@@ -528,7 +580,12 @@
                 }).catch(function (error) {
                     console.log(error);
                 })
-            }
+            },
+            //展示格式转换-结算模式
+            transtMode: function (row, column, cellValue, index) {
+                var constants = JSON.parse(window.sessionStorage.getItem("constants"));
+                return constants.SftNetMode[cellValue];
+            },
         },
         watch: {
             tableData: function (val, oldVal) {
