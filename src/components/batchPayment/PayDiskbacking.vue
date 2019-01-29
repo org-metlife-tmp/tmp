@@ -176,6 +176,7 @@
                                     pay_id:scope.row.pay_id,
                                     channel_id:scope.row.channel_id,
                                     user_id:userId}"
+                                    :on-success="uploadSuccess"
                                     multiple>
                                 <el-button type="warning" icon="el-icon-upload2" size="mini"></el-button>
                             </el-upload>
@@ -358,6 +359,23 @@
                 }).catch(function (error) {
                     console.log(error);
                 })
+            },
+            //上传成功
+            uploadSuccess: function (response, file, fileList) {
+                if (response.error_message) {
+                    this.$message({
+                        type: "error",
+                        message: response.error_message,
+                        duration: 3000
+                    });
+                    return;
+                } else {
+                    this.$message({
+                        type: "success",
+                        message: "上传成功",
+                        duration: 2000
+                    });
+                }
             },
         },
         watch: {
