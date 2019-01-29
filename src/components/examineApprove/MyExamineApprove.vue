@@ -752,7 +752,7 @@
                                 :span="detail.pspan">{{PayModeList[dialogData.pay_mode]}}</el-col>
                         <el-col v-else-if="detail.prop=='source_sys'"
                                 :key="detail.id"
-                                :span="detail.pspan">{{ transtSourceSys(dialogData.source_sys) }}</el-col>
+                                :span="detail.pspan">{{ transtSourceSys(true,true,dialogData.source_sys) }}</el-col>
 
                         <el-col v-else-if="detail.prop=='payment_amount' || detail.prop=='total_amount'"
                                 :key="detail.id"
@@ -1043,7 +1043,7 @@
                    title="子批次号"
                    :close-on-click-modal="false"
                    top="120px">
-            <div style="font-size:18px" v-if="curBiztype == 24">主批次号:{{ masterBatchNo }}</div>
+            <div style="font-size:14px" v-if="curBiztype == 24">主批次号:{{ masterBatchNo }}</div>
             <el-table :data="sonTableList"
                       v-if="curBiztype == 24"
                       border size="mini">
@@ -1060,8 +1060,10 @@
             <el-table :data="sonTableList"
                       v-if="curBiztype == 26"
                       border size="mini">
-                <el-table-column prop="source_sys" label="来源系统" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="source_sys" label="来源系统" :show-overflow-tooltip="true"
+                                 :formatter="transtSourceSys"></el-table-column>
                 <el-table-column prop="org_name" label="机构名称" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="pay_date" label="日期" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="recv_bank_name" label="银行名称" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="recv_cert_code" label="证件号码" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="recv_acc_name" label="客户姓名" :show-overflow-tooltip="true"></el-table-column>
@@ -2111,13 +2113,14 @@
                     "24":[
                         {id:'1',prop:"source_sys",name:'来源系统'},
                         {id:'2',prop:"master_batchno",name:'主批次号'},
-                        {id:'3',prop:"child_batchno",name:'子批次号'},
-                        {id:'4',prop:"create_on",name:'组批时间'},
-                        {id:'5',prop:"name",name:'操作人'},
-                        {id:'6',prop:"total_num",name:'总笔数'},
+                        {id:'3',prop:"interactive_mode",name:'交互方式'},
+                        {id:'4',prop:"channel_code",name:'渠道编码'},
+                        {id:'5',prop:"channel_desc",name:'渠道描述'},
+                        {id:'6',prop:"create_on",name:'组批日期'},
                         {id:'7',prop:"total_amount",name:'总金额'},
-                        {id:'8',prop:"channel_code",name:'渠道编码'},
-                        {id:'9',prop:"channel_desc",name:'渠道描述'}
+                        {id:'8',prop:"total_num",name:'总笔数'},
+                        {id:'9',prop:"name",name:'操作人'}
+
                     ],
                     "26":[
                         {id:'1',prop:"source_sys",name:'来源系统'},
