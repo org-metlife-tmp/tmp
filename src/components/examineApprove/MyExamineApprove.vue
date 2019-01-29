@@ -1840,7 +1840,7 @@
                     {id:"3", lspan:4, label:"子批次号"},
                     {id:"4",pspan:8, prop:"child_batchno"},
                     {id:"5", lspan:4, label:"交互方式"},
-                    {id:"6", pspan:8, prop:"interactive_mode"},
+                    {id:"6", pspan:8, prop:"inter_mode"},
                     {id:"7", lspan:4, label:"组批时间"},
                     {id:"8", pspan:8, prop:"create_on"},
                     {id:"9", lspan:4, label:"操作人"},
@@ -2109,7 +2109,7 @@
                     "24":[
                         {id:'1',prop:"source_sys",name:'来源系统'},
                         {id:'2',prop:"master_batchno",name:'主批次号'},
-                        {id:'3',prop:"interactive_mode",name:'交互方式'},
+                        {id:'3',prop:"inter_mode",name:'交互方式'},
                         {id:'4',prop:"channel_code",name:'渠道编码'},
                         {id:'5',prop:"channel_desc",name:'渠道描述'},
                         {id:'6',prop:"create_on",name:'组批日期'},
@@ -2121,7 +2121,7 @@
                     "26":[
                         {id:'1',prop:"source_sys",name:'来源系统'},
                         {id:'3',prop:"child_batchno",name:'子批次号'},
-                        {id:'4',prop:"interactive_mode",name:'交互方式'},
+                        {id:'4',prop:"inter_mode",name:'交互方式'},
                         {id:'5',prop:"channel_code",name:'通道编码'},
                         {id:'6',prop:"channel_desc",name:'通道描述'},
                         {id:'7',prop:"send_on",name:'出盘日期'},
