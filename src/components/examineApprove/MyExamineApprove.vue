@@ -1313,7 +1313,7 @@
                     'more-agree':"checkbatch_batchagree"
                 },
                 "26":{
-                    text:"批量付款-异常处理",
+                    text:"申请退回",
                     detail:"sftexcept_detail",
                     list:"sftexcept_pendingtasks",
                     addLots:"sftexcept_append",
@@ -1841,8 +1841,8 @@
                     {id:"4",pspan:8, prop:"child_batchno"},
                     {id:"5", lspan:4, label:"交互方式"},
                     {id:"6", pspan:8, prop:"interactive_mode"},
-                    {id:"7", lspan:4, label:"出盘日期"},
-                    {id:"8", pspan:8, prop:"send_on"},
+                    {id:"7", lspan:4, label:"组批时间"},
+                    {id:"8", pspan:8, prop:"create_on"},
                     {id:"9", lspan:4, label:"操作人"},
                     {id:"10", pspan:8, prop:"name"},
                     {id:"11", lspan:4, label:"总笔数"},
@@ -1853,6 +1853,8 @@
                     {id:"16", pspan:8, prop:"channel_code"},
                     {id:"17", lspan:4, label:"渠道描述"},
                     {id:"18", pspan:8, prop:"channel_desc"},
+                    {id:"17", lspan:4, label:"审批状态"},
+                    {id:"18", pspan:8, prop:"service_status"},
                 ],
                 "26":[
                     {id:"1", lspan:4, label:"来源系统"},
@@ -1868,13 +1870,7 @@
                     {id:"11", lspan:4, label:"总金额"},
                     {id:"12", pspan:8, prop:"total_amount"},
                     {id:"13", lspan:4, label:"状态"},
-                    {id:"14", pspan:8, prop:"service_status"},
-                    {id:"15", lspan:4, label:"异常原因"},
-                    {id:"16", pspan:8, prop:"error_msg"},
-                    {id:"17", lspan:4, label:"回退申请人"},
-                    {id:"18", pspan:8, prop:"revoke_user_name"},
-                    {id:"19", lspan:4, label:"申请日期"},
-                    {id:"20",pspan:8, prop:"revoke_date"}
+                    {id:"14", pspan:8, prop:"service_status"}
                 ],
             }
         },

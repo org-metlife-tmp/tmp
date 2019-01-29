@@ -45,21 +45,14 @@
         }
 
         /*按钮样式*/
-        .on-copy, .withdraw {
+        .send {
             width: 20px;
             height: 20px;
             background-image: url(../../assets/icon_common.png);
             border: none;
             padding: 0;
+            background-position: -440px -62px;
             vertical-align: middle;
-        }
-        /*复制按钮*/
-        .on-copy {
-            background-position: -24px 1px;
-        }
-        /*撤回按钮*/
-        .withdraw {
-            background-position: -48px 0;
         }
     }
 </style>
@@ -184,7 +177,7 @@
                         <el-tooltip content="发送" placement="bottom" effect="light"
                                     :enterable="false" :open-delay="500"
                                     v-if="scope.row.interactive_mode=='直连'">
-                            <el-button type="info" icon="el-icon-download" size="mini"
+                            <el-button class="send" size="mini"
                                        @click="sendData(scope.row)"></el-button>
                         </el-tooltip>
                     </template>
@@ -341,7 +334,7 @@
                     data: {
                         optype: "disksending_sendbank",
                         params: {
-                            id: row.id
+                            id: row.pay_id
                         }
                     },
                     responseType: 'blob'

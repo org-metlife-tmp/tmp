@@ -602,18 +602,18 @@
                     <el-menu-item index="/system-set/bankkey-set" v-if="menuList.ChannelSet">bankkey设置</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="20">
+            <el-submenu index="20" v-if="menuList.BATCHPAY">
                 <template slot="title" height="200px">
                     <i class="icon-plfk"></i>
                     <p class="mg-four">批量付款</p>
                 </template>
                 <el-menu-item-group>
-                    <el-menu-item index="/batch-payment/prevent-repet">收付数据防重预警</el-menu-item>
-                    <el-menu-item index="/batch-payment/pay-check-batch">批量付款-核对组批</el-menu-item>
-                    <el-menu-item index="/batch-payment/pay-disk-sending">批量付款-盘片发送</el-menu-item>
-                    <el-menu-item index="/batch-payment/pay-diskbacking">批量付款-盘片回盘</el-menu-item>
-                    <el-menu-item index="/batch-payment/settle-accounts">结算对账</el-menu-item>
-                    <el-menu-item index="/batch-payment/abnormal-dispose">异常处理</el-menu-item>
+                    <el-menu-item index="/batch-payment/prevent-repet" v-if="menuList.DataAntiDualWaring">收付数据防重预警</el-menu-item>
+                    <el-menu-item index="/batch-payment/pay-check-batch" v-if="menuList.PayCheckAllot">核对组批</el-menu-item>
+                    <el-menu-item index="/batch-payment/pay-disk-sending" v-if="menuList.PayBatchSend">盘片发送</el-menu-item>
+                    <el-menu-item index="/batch-payment/pay-diskbacking" v-if="menuList.PayBatchResp">盘片回盘</el-menu-item>
+                    <el-menu-item index="/batch-payment/settle-accounts" v-if="menuList.PayBatchCheck">结算对账</el-menu-item>
+                    <el-menu-item index="/batch-payment/abnormal-dispose" v-if="menuList.PayBatchDoExcp">异常处理</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
         </el-menu>
@@ -758,6 +758,14 @@
                     SYSSET: false, //系统设置
                     BankkeySet: false, //Bankkey设置
                     ChannelSet: false, //通道设置
+
+                    BATCHPAY: false, //批量付款
+                    DataAntiDualWaring: false, //支付数据防重预警
+                    PayCheckAllot: false, //核对组批
+                    PayBatchSend: false, //盘片发送
+                    PayBatchResp: false, //盘片回盘
+                    PayBatchCheck: false, //结算对账
+                    PayBatchDoExcp: false, //异常处理
                 }
             }
         },
