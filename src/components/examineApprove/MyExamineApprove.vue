@@ -607,6 +607,17 @@
                                              :formatter="payMode"
                                              :show-overflow-tooltip="true">
                             </el-table-column>
+                            <!--主批次号-->
+                            <el-table-column v-else-if="head.prop=='master_batchno'"
+                                             :key="head.id"
+                                             :label="head.name"
+                                             :show-overflow-tooltip="true">
+                                <template slot-scope="scope">
+                                    <span style="color:blue;text-decoration:underline"
+                                          @click="showSonData(scope.row.master_batchno)"
+                                    >{{ scope.row.master_batchno }}</span>
+                                </template>
+                            </el-table-column>
                             <!-- 公用列 -->
                             <el-table-column
                                 v-else
@@ -1001,6 +1012,29 @@
             <span slot="footer" class="dialog-footer">
                 <el-button type="warning" size="mini" @click="thirdFunVisible = false">取 消</el-button>
                 <el-button type="warning" size="mini" @click="confirmThirdFun">确定</el-button>
+            </span>
+        </el-dialog>
+        <!--子批次号弹框-->
+        <el-dialog :visible.sync="lookSonVisible"
+                   width="660px"
+                   title="子批次号"
+                   :close-on-click-modal="false"
+                   top="120px">
+            <div style="font-size:18px">主批次号:{{ masterBatchNo }}</div>
+            <el-table :data="sonTableList"
+                      border size="mini">
+                <el-table-column prop="source_sys" label="来源系统" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="child_batchno" label="子批次号" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="create_on" label="组批时间" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="name" label="操作人" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="total_num" label="总笔数" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="total_amount" label="总金额" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="channel_code" label="渠道编码" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="channel_desc" label="渠道描述" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="interactive_mode" label="交互方式" :show-overflow-tooltip="true"></el-table-column>
+            </el-table>
+            <span slot="footer" class="dialog-footer">
+                <el-button type="warning" size="mini" @click="lookSonVisible = false">取 消</el-button>
             </span>
         </el-dialog>
     </div>
@@ -1763,26 +1797,26 @@
                     {id:"20",pspan:8, prop:"payment_summary"}
                 ],
                 "24":[
-                    {id:"1", lspan:4, label:"日期"},
-                    {id:"2", pspan:8, prop:"create_time"},
-                    {id:"3", lspan:4, label:"通道编码"},
-                    {id:"4",pspan:8, prop:"channel_code"},
-                    {id:"5", lspan:4, label:"通道描述"},
-                    {id:"6", pspan:8, prop:"channel_desc"},
-                    {id:"7", lspan:4, label:"投保单号"},
-                    {id:"8", pspan:8, prop:"preinsure_bill_no"},
-                    {id:"9", lspan:4, label:"保单号"},
-                    {id:"10", pspan:8, prop:"insure_bill_no"},
-                    {id:"11", lspan:4, label:"金额"},
-                    {id:"12", pspan:8, prop:"amount"},
-                    {id:"13", lspan:4, label:"状态"},
-                    {id:"14", pspan:8, prop:"status"},
-                    {id:"15", lspan:4, label:"操作人"},
-                    {id:"16", pspan:8, prop:"op_user_name"},
-                    {id:"17", lspan:4, label:"操作日期"},
-                    {id:"18", pspan:8, prop:"op_date"},
-                    {id:"19", lspan:4, label:"支付号码"},
-                    {id:"20",pspan:8, prop:"pay_code"}
+                    {id:"1", lspan:4, label:"来源系统"},
+                    {id:"2", pspan:8, prop:"source_sys"},
+                    {id:"3", lspan:4, label:"主批次号"},
+                    {id:"4",pspan:8, prop:"master_batchno"},
+                    {id:"5", lspan:4, label:"子批次号"},
+                    {id:"6", pspan:8, prop:"child_batchno"},
+                    {id:"7", lspan:4, label:"组批时间"},
+                    {id:"8", pspan:8, prop:"create_on"},
+                    {id:"9", lspan:4, label:"操作人"},
+                    {id:"10", pspan:8, prop:"name"},
+                    {id:"11", lspan:4, label:"总笔数"},
+                    {id:"12", pspan:8, prop:"pay_master_total_num"},
+                    {id:"13", lspan:4, label:"总金额"},
+                    {id:"14", pspan:8, prop:"pay_master_total_num"},
+                    {id:"15", lspan:4, label:"渠道编码"},
+                    {id:"16", pspan:8, prop:"channel_code"},
+                    {id:"17", lspan:4, label:"渠道描述"},
+                    {id:"18", pspan:8, prop:"channel_desc"},
+                    {id:"19", lspan:4, label:"交互方式"},
+                    {id:"20",pspan:8, prop:"interactive_mode"}
                 ],
                 "26":[
                     {id:"1", lspan:4, label:"来源系统"},
@@ -2041,14 +2075,15 @@
                         {id:'10',prop:"nextUserList",name:'下级审批人'}
                     ],
                     "24":[
-                        {id:'1',prop:"create_time",name:'日期'},
-                        {id:'2',prop:"channel_code",name:'通道编码'},
-                        {id:'3',prop:"channel_desc",name:'通道描述'},
-                        {id:'4',prop:"preinsure_bill_no",name:'投保单号'},
-                        {id:'5',prop:"amount",name:'金额'},
-                        {id:'6',prop:"status",name:'状态'},
-                        {id:'7',prop:"op_user_name",name:'操作人'},
-                        {id:'8',prop:"op_date",name:'操作日期'}
+                        {id:'1',prop:"source_sys",name:'来源系统'},
+                        {id:'2',prop:"master_batchno",name:'主批次号'},
+                        {id:'3',prop:"child_batchno",name:'子批次号'},
+                        {id:'4',prop:"create_on",name:'组批时间'},
+                        {id:'5',prop:"name",name:'操作人'},
+                        {id:'6',prop:"total_num",name:'总笔数'},
+                        {id:'7',prop:"total_amount",name:'总金额'},
+                        {id:'8',prop:"channel_code",name:'渠道编码'},
+                        {id:'9',prop:"channel_desc",name:'渠道描述'}
                     ],
                     "26":[
                         {id:'1',prop:"source_sys",name:'来源系统'},
@@ -2115,6 +2150,9 @@
                 pagDeCurrent: 1,
                 searchDetailData: {},//弹窗的表格查询条件
                 curBiztype: "",//当前的biztype
+                lookSonVisible: false, //子批次号弹框
+                sonTableList: [],
+                masterBatchNo: ""
             }
         },
         methods:{
@@ -2681,6 +2719,36 @@
                 this.curInnerTab = true;
                 this.searchDetailData = {};
             },
+            //查看子批次号
+            showSonData: function(batchNO){
+                this.lookSonVisible = true;
+                this.sonTableList = [];
+                this.masterBatchNo = batchNO;
+
+                this.$axios({
+                    url: this.queryUrl + "normalProcess",
+                    method: "post",
+                    data: {
+                        optype: "checkbatch_findSonByMasterBatch",
+                        params: {
+                            master_batchno: batchNO
+                        }
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        });
+                    } else {
+                        var data = result.data.data;
+                        this.sonTableList = data;
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                })
+            }
         },
         computed:{
             classObject:function (){

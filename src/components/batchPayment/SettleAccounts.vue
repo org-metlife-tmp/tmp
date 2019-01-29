@@ -348,8 +348,8 @@
                 <span>交易金额(付)：</span>
                 <span v-text="childTotalData.payAmount" class="numText"></span>
                 <span>合计金额：</span>
-                <span v-show="childTotalData.totalAmount > 0">收</span>
-                <span v-show="childTotalData.totalAmount < 0">付</span>
+                <span v-show="!isPay">收</span>
+                <span v-show="isPay">付</span>
                 <span v-text="childTotalData.totalAmount" class="numText"></span>
             </div>
         </div>
@@ -430,7 +430,8 @@
                     payAmount: "",
                     recvAmount: "",
                     totalAmount: ""
-                }
+                },
+                isPay: false
             }
         },
         methods: {
@@ -585,12 +586,12 @@
                     this.batchidList.push(item.id);
                     this.versionList.push(item.persist_version);
                 }
-                this.total_amount = allAmount;
-                this.total_num = allNum;
-                this.success_amount = sucAmount;
-                this.success_num = sucNum;
-                this.fail_amount = filAmount;
-                this.fail_num = filNum;
+                this.totalData.total_amount = allAmount;
+                this.totalData.total_num = allNum;
+                this.totalData.success_amount = sucAmount;
+                this.totalData.success_num = sucNum;
+                this.totalData.fail_amount = filAmount;
+                this.totalData.fail_num = filNum;
             },
             childChange: function (val) {
                 this.tradingList = [];
@@ -604,8 +605,14 @@
                         payAmount += item.amount;
                     }
                     this.tradingList.push(item.id);
-                    this.childTotalData.payAmount = payAmount;
-                    this.childTotalData.recvAmount = recvAmount;
+                }
+                this.childTotalData.payAmount = payAmount;
+                this.childTotalData.recvAmount = recvAmount;
+                if(payAmount > recvAmount){
+                    this.isPay = true;
+                    this.childTotalData.totalAmount = payAmount - recvAmount;
+                }else{
+                    this.isPay = false;
                     this.childTotalData.totalAmount = recvAmount - payAmount;
                 }
             },

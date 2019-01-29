@@ -174,7 +174,7 @@
                                  :formatter="transitPayAttr"></el-table-column>
                 <el-table-column prop="interactive_mode" label="交互方式" :show-overflow-tooltip="true"
                                  :formatter="transitInteract"></el-table-column>
-                <el-table-column prop="interactive_mode" label="结算模式" :show-overflow-tooltip="true"
+                <el-table-column prop="net_mode" label="结算模式" :show-overflow-tooltip="true"
                                  :formatter="transitMode"></el-table-column>
                 <el-table-column prop="bankcode" label="bankcode" width="100px"
                                  :show-overflow-tooltip="true"></el-table-column>
