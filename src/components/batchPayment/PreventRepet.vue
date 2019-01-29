@@ -172,8 +172,7 @@
                                  :formatter="transitSource"></el-table-column>
                 <el-table-column prop="pay_date" label="应付日期" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="pay_code" label="支付号码" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="pay_mode" label="支付方式" :show-overflow-tooltip="true"
-                                 :formatter="transitMode"></el-table-column>
+                <el-table-column prop="pay_mode" label="支付方式" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="bank_key" label="bankkey" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="bankkey_desc" label="bankkey描述" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="biz_type" label="业务类型" :show-overflow-tooltip="true"></el-table-column>

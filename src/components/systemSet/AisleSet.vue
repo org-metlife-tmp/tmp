@@ -174,7 +174,10 @@
                                  :formatter="transitPayAttr"></el-table-column>
                 <el-table-column prop="interactive_mode" label="交互方式" :show-overflow-tooltip="true"
                                  :formatter="transitInteract"></el-table-column>
-                <el-table-column prop="bankcode" label="bankcode" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="interactive_mode" label="结算模式" :show-overflow-tooltip="true"
+                                 :formatter="transitMode"></el-table-column>
+                <el-table-column prop="bankcode" label="bankcode" width="100px"
+                                 :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="bank_name" label="银行账号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="org_name" label="文件生成归属地" width="120px"
                                  :show-overflow-tooltip="true"></el-table-column>
@@ -922,6 +925,10 @@
             transitStatus:  function (row, column, cellValue, index) {
                 return cellValue == 1 ? "启用" : "停用";
             },
+            //展示格式转换-结算模式
+            transitMode: function (row, column, cellValue, index) {
+                return this.netModeList[cellValue];
+            },
             //查看
             lookBankcode: function (row) {
                 this.editBankcode(row);
@@ -937,7 +944,7 @@
                 //设置数据
                 var dialogData = this.dialogData;
                 for (var k in dialogData) {
-                    if (k == "pay_mode" || k == "pay_attr" || k == "is_checkout" || k == "document_moudle") {
+                    if (k == "pay_mode" || k == "pay_attr" || k == "is_checkout" || k == "document_moudle" || k == "net_mode") {
                         dialogData[k] = row[k] + "";
                     } else {
                         dialogData[k] = row[k];

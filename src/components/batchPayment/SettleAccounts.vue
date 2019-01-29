@@ -194,7 +194,8 @@
                     <el-table-column prop="success_num" label="成功笔数" :show-overflow-tooltip="true"></el-table-column>
                     <el-table-column prop="fail_amount" label="失败金额" :show-overflow-tooltip="true"></el-table-column>
                     <el-table-column prop="fail_num" label="失败笔数" :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="service_status" label="状态" :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column prop="service_status" label="状态" :show-overflow-tooltip="true"
+                                     :formatter="transtSerStatus"></el-table-column>
                     <el-table-column prop="check_service_number" label="对账流水号" width="100px"
                                      :show-overflow-tooltip="true"></el-table-column>
                     <el-table-column prop="check_user_name" label="操作人" :show-overflow-tooltip="true"></el-table-column>
@@ -206,6 +207,14 @@
                 <span v-text="totalData.total_num" class="numText"></span>
                 <span>总金额：</span>
                 <span v-text="totalData.total_amount" class="numText"></span>
+                <span>成功笔数：</span>
+                <span v-text="totalData.success_num" class="numText"></span>
+                <span>成功金额：</span>
+                <span v-text="totalData.success_amount" class="numText"></span>
+                <span>失败笔数：</span>
+                <span v-text="totalData.fail_num" class="numText"></span>
+                <span>失败金额：</span>
+                <span v-text="totalData.fail_amount" class="numText"></span>
             </div>
             <!--分页部分-->
             <div class="botton-pag">
@@ -322,12 +331,27 @@
                                      :show-overflow-tooltip="true"></el-table-column>
                     <el-table-column prop="amount" label="交易金额" :show-overflow-tooltip="true"></el-table-column>
                     <el-table-column prop="summary" label="摘要" :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="business_check" label="状态" :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column label="状态" :show-overflow-tooltip="true">
+                        <template slot-scope="scope">
+                            <span v-if="scope.row.is_inner == 1">{{ transitStatus(scope.row.is_checked) }}</span>
+                            <span v-if="scope.row.is_inner == 0">{{ transitStatus(scope.row.business_check)}}</span>
+                        </template>
+                    </el-table-column>
                     <el-table-column prop="check_service_number" label="对账流水号" width="100px"
                                      :show-overflow-tooltip="true"></el-table-column>
                     <el-table-column prop="check_user_name" label="操作人" :show-overflow-tooltip="true"></el-table-column>
                 </el-table>
             </section>
+            <div class="allData">
+                <span>交易金额(收)：</span>
+                <span v-text="childTotalData.recvAmount" class="numText"></span>
+                <span>交易金额(付)：</span>
+                <span v-text="childTotalData.payAmount" class="numText"></span>
+                <span>合计金额：</span>
+                <span v-show="childTotalData.totalAmount > 0">收</span>
+                <span v-show="childTotalData.totalAmount < 0">付</span>
+                <span v-text="childTotalData.totalAmount" class="numText"></span>
+            </div>
         </div>
     </div>
 </template>
@@ -396,8 +420,17 @@
                 tradingList: [],
                 totalData: { //汇总数据
                     total_amount: "",
-                    total_num: ""
+                    total_num: "",
+                    success_amount: "",
+                    success_num: "",
+                    fail_amount: "",
+                    fail_num: "",
                 },
+                childTotalData: {
+                    payAmount: "",
+                    recvAmount: "",
+                    totalAmount: ""
+                }
             }
         },
         methods: {
@@ -532,19 +565,48 @@
             //列表选择框改变后
             selectChange: function (val) {
                 //计算汇总数据
+                var allAmount = 0;
+                var allNum = 0;
+                var sucAmount = 0;
+                var sucNum = 0;
+                var filAmount = 0;
+                var filNum = 0;
+
                 this.batchidList = [];
                 this.versionList = [];
                 for (var i = 0; i < val.length; i++) {
                     var item = val[i];
+                    allAmount += item.total_amount;
+                    allNum += item.total_num;
+                    sucAmount += item.success_amount;
+                    sucNum += item.success_num;
+                    filAmount += item.fail_amount;
+                    filNum += item.fail_num;
                     this.batchidList.push(item.id);
                     this.versionList.push(item.persist_version);
                 }
+                this.total_amount = allAmount;
+                this.total_num = allNum;
+                this.success_amount = sucAmount;
+                this.success_num = sucNum;
+                this.fail_amount = filAmount;
+                this.fail_num = filNum;
             },
             childChange: function (val) {
                 this.tradingList = [];
+                var payAmount = 0;
+                var recvAmount = 0;
                 for (var i = 0; i < val.length; i++) {
                     var item = val[i];
+                    if(item.direction == 0){
+                        recvAmount += item.amount;
+                    }else{
+                        payAmount += item.amount;
+                    }
                     this.tradingList.push(item.id);
+                    this.childTotalData.payAmount = payAmount;
+                    this.childTotalData.recvAmount = recvAmount;
+                    this.childTotalData.totalAmount = recvAmount - payAmount;
                 }
             },
             //对账确认
@@ -585,6 +647,15 @@
             transtMode: function (row, column, cellValue, index) {
                 var constants = JSON.parse(window.sessionStorage.getItem("constants"));
                 return constants.SftNetMode[cellValue];
+            },
+            //展示格式转换-状态(上)
+            transtSerStatus: function (row, column, cellValue, index) {
+                var constants = JSON.parse(window.sessionStorage.getItem("constants"));
+                return constants.SftCheckBatchStatus[cellValue];
+            },
+            //展示格式转换-状态
+            transitStatus: function (row, column, cellValue, index) {
+                return cellValue == 0 ? "未核对" : "已核对";
             },
         },
         watch: {
