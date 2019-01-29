@@ -618,6 +618,26 @@
                                     >{{ scope.row.master_batchno }}</span>
                                 </template>
                             </el-table-column>
+                            <!--子批次号-->
+                            <el-table-column v-else-if="head.prop=='child_batchno'"
+                                             :key="head.id"
+                                             :label="head.name"
+                                             :show-overflow-tooltip="true">
+                                <template slot-scope="scope">
+                                    <span style="color:blue;text-decoration:underline"
+                                          @click="LookSonData(scope.row.source_sys,scope.row.id)"
+                                    >{{ scope.row.master_batchno }}</span>
+                                </template>
+                            </el-table-column>
+                            <!-- 来源系统 -->
+                            <el-table-column v-else-if="head.prop=='source_sys'"
+                                             :key="head.id"
+                                             :prop="head.prop"
+                                             :label="head.name"
+                                             :formatter="transtSourceSys"
+                                             :show-overflow-tooltip="true"
+                            >
+                            </el-table-column>
                             <!-- 公用列 -->
                             <el-table-column
                                 v-else
@@ -2087,7 +2107,6 @@
                     ],
                     "26":[
                         {id:'1',prop:"source_sys",name:'来源系统'},
-                        {id:'2',prop:"master_batchno",name:'主批次号'},
                         {id:'3',prop:"child_batchno",name:'子批次号'},
                         {id:'4',prop:"channel_code",name:'通道编码'},
                         {id:'5',prop:"total_amount",name:'总金额'},
@@ -2304,6 +2323,11 @@
                 if (constants.PayMode) {
                     return constants.PayMode[cellValue];
                 }
+            },
+            //展示格式转换-来源系统
+            transtSourceSys: function (row, column, cellValue, index) {
+                var constants = JSON.parse(window.sessionStorage.getItem("constants"));
+                return constants.SftOsSource[cellValue];
             },
             //点击页数 获取当前页数据
             getCurrentPage: function (currPage) {
@@ -2748,7 +2772,36 @@
                 }).catch(function (error) {
                     console.log(error);
                 })
-            }
+            },
+            LookSonData: function(sourceSys,childId){
+                this.lookSonVisible = true;
+                this.sonTableList = [];
+
+                this.$axios({
+                    url: this.queryUrl + "normalProcess",
+                    method: "post",
+                    data: {
+                        optype: "sftpaycheck_getdetailbybaseid",
+                        params: {
+                            source_sys: sourceSys,
+                            id: childId
+                        }
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        });
+                    } else {
+                        var data = result.data.data;
+                        this.sonTableList = data;
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                })
+            },
         },
         computed:{
             classObject:function (){
