@@ -270,10 +270,10 @@
                                 <el-select v-model="childSearch.acc_no" placeholder="请选择银行账号"
                                            clearable filterable
                                            style="width:100%">
-                                    <el-option v-for="channel in channelList"
-                                               :key="channel.channel_id"
-                                               :label="channel.channel_desc"
-                                               :value="channel.channel_id">
+                                    <el-option v-for="bank in bankList"
+                                               :key="bank.acc_no"
+                                               :label="bank.acc_no"
+                                               :value="bank.acc_no">
                                     </el-option>
                                 </el-select>
                             </el-form-item>
@@ -373,6 +373,8 @@
             this.getChannelList();
             //bankcode
             this.getBankcode();
+            //银行账号
+            this.getBankList();
         },
         props: ["tableData"],
         data: function () {
@@ -415,6 +417,7 @@
                 sourceList: {}, //常量数据
                 channelList: [],
                 bankcodeList: [],
+                bankList: [],
                 batchidList: [], //选中数据
                 versionList: [],
                 tradingList: [],
@@ -544,6 +547,33 @@
                     console.log(error);
                 });
             },
+            //获取银行账号
+            getBankList: function(){
+                this.$axios({
+                    url: this.queryUrl + "normalProcess",
+                    method: "post",
+                    data: {
+                        optype: "sftpaycheck_getallaccountno",
+                        params: {
+
+                        }
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        });
+                    } else {
+                        var data = result.data.data;
+                        this.bankList = data;
+                    }
+
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            },
             //选择通道编码后设置bankcode
             setBankcode: function(val){
                 var channelList = this.channelList;
@@ -599,13 +629,14 @@
                 var recvAmount = 0;
                 for (var i = 0; i < val.length; i++) {
                     var item = val[i];
-                    if(item.direction == 0){
+                    if(item.direction == 1){
                         recvAmount += item.amount;
                     }else{
                         payAmount += item.amount;
                     }
                     this.tradingList.push(item.id);
                 }
+
                 this.childTotalData.payAmount = payAmount;
                 this.childTotalData.recvAmount = recvAmount;
                 if(payAmount > recvAmount){

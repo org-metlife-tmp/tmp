@@ -1819,24 +1819,22 @@
                 "24":[
                     {id:"1", lspan:4, label:"来源系统"},
                     {id:"2", pspan:8, prop:"source_sys"},
-                    {id:"3", lspan:4, label:"主批次号"},
-                    {id:"4",pspan:8, prop:"master_batchno"},
-                    {id:"5", lspan:4, label:"子批次号"},
-                    {id:"6", pspan:8, prop:"child_batchno"},
-                    {id:"7", lspan:4, label:"组批时间"},
-                    {id:"8", pspan:8, prop:"create_on"},
+                    {id:"3", lspan:4, label:"子批次号"},
+                    {id:"4",pspan:8, prop:"child_batchno"},
+                    {id:"5", lspan:4, label:"交互方式"},
+                    {id:"6", pspan:8, prop:"interactive_mode"},
+                    {id:"7", lspan:4, label:"出盘日期"},
+                    {id:"8", pspan:8, prop:"send_on"},
                     {id:"9", lspan:4, label:"操作人"},
                     {id:"10", pspan:8, prop:"name"},
                     {id:"11", lspan:4, label:"总笔数"},
                     {id:"12", pspan:8, prop:"pay_master_total_num"},
                     {id:"13", lspan:4, label:"总金额"},
-                    {id:"14", pspan:8, prop:"pay_master_total_num"},
+                    {id:"14", pspan:8, prop:"pay_master_total_amount"},
                     {id:"15", lspan:4, label:"渠道编码"},
                     {id:"16", pspan:8, prop:"channel_code"},
                     {id:"17", lspan:4, label:"渠道描述"},
                     {id:"18", pspan:8, prop:"channel_desc"},
-                    {id:"19", lspan:4, label:"交互方式"},
-                    {id:"20",pspan:8, prop:"interactive_mode"}
                 ],
                 "26":[
                     {id:"1", lspan:4, label:"来源系统"},
@@ -2108,11 +2106,11 @@
                     "26":[
                         {id:'1',prop:"source_sys",name:'来源系统'},
                         {id:'3',prop:"child_batchno",name:'子批次号'},
-                        {id:'4',prop:"channel_code",name:'通道编码'},
-                        {id:'5',prop:"total_amount",name:'总金额'},
-                        {id:'6',prop:"service_status",name:'状态'},
-                        {id:'7',prop:"revoke_user_name",name:'回退申请人'},
-                        {id:'8',prop:"revoke_date",name:'申请日期'}
+                        {id:'4',prop:"interactive_mode",name:'交互方式'},
+                        {id:'5',prop:"channel_code",name:'通道编码'},
+                        {id:'6',prop:"channel_desc",name:'通道描述'},
+                        {id:'7',prop:"send_on",name:'出盘日期'},
+                        {id:'8',prop:"total_amount",name:'总金额'}
                     ]
                 },
                 editableTabsList: {},

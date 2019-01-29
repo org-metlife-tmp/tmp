@@ -123,6 +123,10 @@
             .icon-xtsz {
                 background-position: -31px -85px;
             }
+
+            .icon-plfk{
+                background-position: -512px -252px;
+            }
             /*首页背景图定位结束*/
         }
 
@@ -193,6 +197,9 @@
             }
             .icon-xtsz {
                 background-position: 0px -85px;
+            }
+            .icon-plfk{
+                background-position: -482px -252px;
             }
 
             .el-submenu__title p {
@@ -282,6 +289,10 @@
 
             .el-submenu__title:hover .icon-xtsz {
                 background-position: -31px -85px;
+            }
+
+            .el-submenu__title:hover .icon-plfk{
+                background-position: -512px -252px;
             }
 
             .el-submenu__title:hover p {

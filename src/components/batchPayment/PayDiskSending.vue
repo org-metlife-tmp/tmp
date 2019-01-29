@@ -177,9 +177,15 @@
                     <template slot-scope="scope" class="operationBtn">
                         <el-tooltip content="下载" placement="bottom" effect="light"
                                     :enterable="false" :open-delay="500"
-                                    v-show="scope.row.interactive_mode=='报盘' && (scope.row.status=='已审批未发送' || scope.row.status=='已发送未回盘')">
+                                    v-if="scope.row.interactive_mode=='报盘' && (scope.row.status=='已审批未发送' || scope.row.status=='已发送未回盘')">
                             <el-button type="info" icon="el-icon-download" size="mini"
                                        @click="downData(scope.row)"></el-button>
+                        </el-tooltip>
+                        <el-tooltip content="发送" placement="bottom" effect="light"
+                                    :enterable="false" :open-delay="500"
+                                    v-if="scope.row.interactive_mode=='直连'">
+                            <el-button type="info" icon="el-icon-download" size="mini"
+                                       @click="sendData(scope.row)"></el-button>
                         </el-tooltip>
                     </template>
                 </el-table-column>
@@ -326,6 +332,37 @@
                     }
                 }
                 this.$emit("downLoadData", params);
+            },
+            //发送
+            sendData: function (row) {
+                this.$axios({
+                    url: this.queryUrl + "normalProcess",
+                    method: "post",
+                    data: {
+                        optype: "disksending_sendbank",
+                        params: {
+                            id: row.id
+                        }
+                    },
+                    responseType: 'blob'
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        });
+                    } else {
+                        this.$message({
+                            type: "success",
+                            message: "发送成功",
+                            duration: 2000
+                        });
+                        this.$emit("getCommTable", this.routerMessage);
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                })
             },
             //导出
             exportFun: function () {
