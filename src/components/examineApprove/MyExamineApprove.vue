@@ -750,6 +750,9 @@
                         <el-col v-else-if="detail.prop=='pay_mode'"
                                 :key="detail.id"
                                 :span="detail.pspan">{{PayModeList[dialogData.pay_mode]}}</el-col>
+                        <el-col v-else-if="detail.prop=='source_sys'"
+                                :key="detail.id"
+                                :span="detail.pspan">{{ transtSourceSys(dialogData.source_sys) }}</el-col>
 
                         <el-col v-else-if="detail.prop=='payment_amount' || detail.prop=='total_amount'"
                                 :key="detail.id"
@@ -1036,12 +1039,13 @@
         </el-dialog>
         <!--子批次号弹框-->
         <el-dialog :visible.sync="lookSonVisible"
-                   width="660px"
+                   width="860px"
                    title="子批次号"
                    :close-on-click-modal="false"
                    top="120px">
-            <div style="font-size:18px">主批次号:{{ masterBatchNo }}</div>
+            <div style="font-size:18px" v-if="curBiztype == 24">主批次号:{{ masterBatchNo }}</div>
             <el-table :data="sonTableList"
+                      v-if="curBiztype == 24"
                       border size="mini">
                 <el-table-column prop="source_sys" label="来源系统" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="child_batchno" label="子批次号" :show-overflow-tooltip="true"></el-table-column>
@@ -1052,6 +1056,18 @@
                 <el-table-column prop="channel_code" label="渠道编码" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="channel_desc" label="渠道描述" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="interactive_mode" label="交互方式" :show-overflow-tooltip="true"></el-table-column>
+            </el-table>
+            <el-table :data="sonTableList"
+                      v-if="curBiztype == 26"
+                      border size="mini">
+                <el-table-column prop="source_sys" label="来源系统" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="org_name" label="机构名称" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="recv_bank_name" label="银行名称" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="recv_cert_code" label="证件号码" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="recv_acc_name" label="客户姓名" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="recv_acc_no" label="客户账号" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="amount" label="金额" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="status" label="状态" :show-overflow-tooltip="true"></el-table-column>
             </el-table>
             <span slot="footer" class="dialog-footer">
                 <el-button type="warning" size="mini" @click="lookSonVisible = false">取 消</el-button>
