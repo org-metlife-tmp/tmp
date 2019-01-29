@@ -461,8 +461,8 @@
         <!--顶部按钮-->
         <div class="button-list-left">
             <el-date-picker
-                    v-model="dateValue"
-                    type="date" :readonly="true"
+                    v-model="billData.apply_on"
+                    type="date"
                     placeholder="请选择申请日期"
                     value-format="yyyy-MM-dd"
                     size="mini">
@@ -744,7 +744,8 @@
                             version: "persist_version",
                             memo: "payment_summary",
                             allList: "total_num",
-                            service_status: "service_status"
+                            service_status: "service_status",
+                            apply_on: "apply_on",
                         }
 
                         for (var k in params) {
@@ -814,8 +815,8 @@
         data: function () {
             return {
                 queryUrl: this.$store.state.queryUrl,
-                dateValue: new Date(), //申请时间
                 billData: {
+                    apply_on: new Date(), //申请时间
                     uploadName: "", //上传的文件名
                     allList: "", //总笔数
                     pay_acc_id: "", //付款方式
@@ -1054,6 +1055,7 @@
                 var params = this.billData;
                 //校验
                 var validater = {
+                    apply_on: "请选择日期",
                     pay_acc_id: "请选择付款方",
                     pay_mode: "请选择付款方式",
                     biz_id: "请选择业务类型",

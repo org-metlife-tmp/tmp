@@ -253,8 +253,8 @@
             <!--表单顶部-->
             <div class="title-date">
                 <el-date-picker
-                        v-model="dateValue"
-                        type="date" :readonly="true"
+                        v-model="billData.apply_on"
+                        type="date"
                         placeholder="请选择申请日期"
                         value-format="yyyy-MM-dd"
                         size="mini">
@@ -496,6 +496,7 @@
             })
 
             this.messageTips = {
+                apply_on: "请选择日期！",
                 pay_mode: "请选择付款方式！",
                 biz_id: "请选择业务类型！",
                 pay_account_id: "请选择付款方账号！",
@@ -510,8 +511,8 @@
         data: function () {
             return {
                 queryUrl: this.$store.state.queryUrl,
-                dateValue: new Date(), //申请时间
                 billData: {
+                    apply_on: new Date(), //申请时间
                     biz_id: "", //业务类型
                     pay_mode: "1", //付款方式
                     service_serial_number: "", //单据编号
@@ -845,6 +846,7 @@
                 //校验数据是否完善 并设置发送给后台的数据
                 var billData = this.billData;
                 var params = {
+                    apply_on: "",
                     biz_id: "",
                     pay_mode: "",
                     pay_account_id: "",

@@ -82,14 +82,15 @@
         /*查看弹框*/
         .dialog-talbe {
             width: 100%;
-            height: 180px;
+            border-top: 1px solid #e2e2e2;
+            border-left: 1px solid #e2e2e2;
+            overflow: hidden;
 
             li {
                 float: left;
                 box-sizing: border-box;
-                border: 1px solid #e2e2e2;
-                margin-left: -1px;
-                margin-top: -1px;
+                border-right: 1px solid #e2e2e2;
+                border-bottom: 1px solid #e2e2e2;
                 height: 30px;
                 line-height: 30px;
             }
@@ -110,8 +111,6 @@
 
             .table-two-row {
                 width: 88%;
-                margin-left: -3px;
-                border-left: none;
             }
         }
 
@@ -270,6 +269,8 @@
                 ]
             </div>
             <ul class="dialog-talbe">
+                <li class="table-li-title">申请日期</li>
+                <li class="table-li-content table-two-row" v-text="dialogData.apply_on"></li>
                 <li class="table-li-title">付款账号</li>
                 <li class="table-li-content table-two-row" v-text="dialogData.pay_account_no"></li>
 
@@ -434,6 +435,7 @@
                         this.dialogData[k] = row[k];
                     }
                 }
+                this.dialogData['apply_on'] = row.apply_on.split(' ')[0];
                 this.dialogVisible = true;
 
                 //附件数据

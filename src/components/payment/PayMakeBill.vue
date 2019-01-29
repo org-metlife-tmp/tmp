@@ -260,8 +260,8 @@
         <!--顶部按钮-->
         <div class="button-list-left">
             <el-date-picker
-                    v-model="dateValue"
-                    type="date" :readonly="true"
+                    v-model="billData.apply_on"
+                    type="date"
                     placeholder="请选择申请日期"
                     value-format="yyyy-MM-dd"
                     size="mini">
@@ -604,8 +604,8 @@
         data: function () {
             return {
                 queryUrl: this.$store.state.queryUrl,
-                dateValue: new Date(), //申请时间
                 billData: {
+                    apply_on: new Date(), //申请时间
                     id:"",
                     persist_version: "",
                     rev_persist_version: "",
@@ -938,6 +938,7 @@
                 var billData = this.billData;
                 //校验
                 var validater = {
+                    apply_on: "请选择日期",
                     pay_account_id: "请选择付款方",
                     pay_mode: "请选择付款方式",
                     biz_id: "请选择业务类型",

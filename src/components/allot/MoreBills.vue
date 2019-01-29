@@ -111,14 +111,15 @@
         /*查看弹框*/
         .dialog-talbe {
             width: 100%;
-            height: 230px;
+            border-top: 1px solid #e2e2e2;
+            border-left: 1px solid #e2e2e2;
+            overflow: hidden;
 
             li {
                 float: left;
                 box-sizing: border-box;
-                border: 1px solid #e2e2e2;
-                margin-left: -1px;
-                margin-top: -1px;
+                border-right: 1px solid #e2e2e2;
+                border-bottom: 1px solid #e2e2e2;
                 height: 30px;
                 line-height: 30px;
             }
@@ -137,10 +138,8 @@
                 white-space: nowrap;
             }
 
-            .table-two-row {
+            .table-two-row ,.table-datepicker{
                 width: 88%;
-                margin-left: -3px;
-                border-left: none;
             }
         }
 
@@ -187,9 +186,8 @@
     #moreBills {
         /*编辑弹框*/
         .table-select {
-
             .el-select {
-                height: 95%;
+                // height: 95%;
                 width: 100%;
 
                 .el-input {
@@ -200,6 +198,18 @@
                         padding-left: 0px;
                         border: none;
                     }
+                }
+            }
+        }
+        .table-datepicker{
+            .el-date-editor{
+                // height: 95%;
+                width: 100%;
+
+                input {
+                    height: 94%;
+                    padding-right: 30px;
+                    border: none;
                 }
             }
         }
@@ -395,6 +405,8 @@
                 ]
             </div>
             <ul class="dialog-talbe">
+                <li class="table-li-title">申请日期</li>
+                <li class="table-li-content table-two-row" v-text="dialogData.apply_on"></li>
                 <li class="table-li-title">业务类型</li>
                 <li class="table-li-content" v-text="dialogData.biz_name"></li>
                 <li class="table-li-title">付款方式</li>
@@ -444,6 +456,16 @@
                 ]
             </div>
             <ul class="dialog-talbe">
+                <li class="table-li-title">申请日期</li>
+                <li class="table-li-content table-datepicker">
+                    <el-date-picker
+                        v-model="editDialogData.apply_on"
+                        type="date"
+                        placeholder="请选择申请日期"
+                        value-format="yyyy-MM-dd"
+                        size="mini">
+                    </el-date-picker>
+                </li>
                 <li class="table-li-title">业务类型</li>
                 <li class="table-li-content table-select">
                     <el-select v-model="editDialogData.biz_id" placeholder="请选择业务类型"
@@ -612,6 +634,7 @@
                 console.log(error);
             });
             this.messageTips = {
+                apply_on: "请选择日期！",
                 pay_mode: "请选择付款方式！",
                 pay_account_id: "请选择付款方账号！",
                 recv_account_id: "请选择收款方账号！",
@@ -691,6 +714,7 @@
                 selectWorkflow: "",
                 workflows: [],
                 editDialogData: {
+                    apply_on: "",
                     pay_account_name: "",
                     recv_account_name: "",
                     pay_account_no: "",
@@ -820,6 +844,7 @@
                     this.dialogData[k] = row[k];
                 }
 
+                this.dialogData.apply_on = row.apply_on.split(' ')[0];
                 this.dialogData.numText = this.$common.transitText(row.payment_amount);
                 this.dialogData.payment_amount = "￥" + this.$common.transitSeparator(row.payment_amount);
                 this.dialogData.pay_mode = JSON.parse(window.sessionStorage.getItem("constants")).PayMode[row.pay_mode];
@@ -1251,6 +1276,7 @@
                 //校验数据是否完善 并设置发送给后台的数据
                 var billData = this.editDialogData;
                 var params = {
+                    apply_on: "",
                     biz_id: "",
                     pay_mode: "",
                     pay_account_id: "",

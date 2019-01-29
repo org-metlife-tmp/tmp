@@ -86,14 +86,15 @@
         /*查看弹框*/
         .dialog-talbe {
             width: 100%;
-            height: 180px;
+            border-top: 1px solid #e2e2e2;
+            border-left: 1px solid #e2e2e2;
+            overflow: hidden;
 
             li {
                 float: left;
                 box-sizing: border-box;
-                border: 1px solid #e2e2e2;
-                margin-left: -1px;
-                margin-top: -1px;
+                border-right: 1px solid #e2e2e2;
+                border-bottom: 1px solid #e2e2e2;
                 height: 30px;
                 line-height: 30px;
             }
@@ -114,15 +115,13 @@
 
             .table-two-row {
                 width: 88%;
-                margin-left: -3px;
-                border-left: none;
             }
         }
 
         .serial-number {
             color: #ccc;
             margin-bottom: 2px;
-            margin-top: -15px;
+            margin-top: -10px;
         }
     }
 </style>
@@ -136,7 +135,14 @@
         .el-form--inline .el-form-item__content{
             width: 100%;
         }
+        .el-dialog__wrapper {
+            .el-dialog__body {
+                height:300px;
+                overflow-y: auto;
+            }
+        }
     }
+    
 </style>
 
 <template>
@@ -262,6 +268,8 @@
                 ]
             </div>
             <ul class="dialog-talbe">
+                <li class="table-li-title">申请日期</li>
+                <li class="table-li-content table-two-row" v-text="dialogData.apply_on"></li>
                 <li class="table-li-title">收款账号</li>
                 <li class="table-li-content table-two-row" v-text="dialogData.recv_account_no"></li>
 
@@ -285,16 +293,13 @@
                             :triggerFile="triggerFile"
                             :isPending="false"></Upload>
                 </li>
-
             </ul>
-            <BusinessTracking :businessParams="businessParams"></BusinessTracking>
         </el-dialog>
     </div>
 </template>
 
 <script>
     import Upload from "../publicModule/Upload.vue";
-    import BusinessTracking from "../publicModule/BusinessTracking.vue"
 
     export default {
         name: "ReceiveLookOver",
@@ -307,8 +312,7 @@
         },
         props: ["tableData"],
         components: {
-            Upload: Upload,
-            BusinessTracking:BusinessTracking
+            Upload: Upload
         },
         data: function () {
             return {
@@ -353,8 +357,6 @@
                     biz_type: 15
                 },
                 triggerFile: false,
-                businessParams:{ //业务状态追踪参数
-                },
             }
         },
         methods: {
@@ -404,17 +406,13 @@
                         this.dialogData[k] = row[k];
                     }
                 }
+                this.dialogData['apply_on'] = row.apply_on.split(" ")[0];
                 this.dialogVisible = true;
 
                 //附件数据
                 this.emptyFileList = [];
                 this.fileMessage.bill_id = row.id;
                 this.triggerFile = !this.triggerFile;
-
-                //业务状态跟踪
-                this.businessParams = {};
-                this.businessParams.biz_type = 15;
-                this.businessParams.id = row.id;
             },
         },
         watch: {

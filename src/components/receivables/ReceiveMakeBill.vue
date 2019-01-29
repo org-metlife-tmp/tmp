@@ -237,8 +237,8 @@
             <!--表单顶部-->
             <div class="title-date">
                 <el-date-picker
-                        v-model="dateValue"
-                        type="date" :readonly="true"
+                        v-model="billData.apply_on"
+                        type="date"
                         placeholder="请选择申请日期"
                         value-format="yyyy-MM-dd"
                         size="mini">
@@ -542,6 +542,7 @@
                 console.log(error);
             });
             this.messageTips = {
+                apply_on: "请选择日期！",
                 recv_account_id: "请选择收款方！",
                 biz_id: "请选择业务类型！",
                 pay_account_no: "请选择付款方账号！",
@@ -566,8 +567,8 @@
         data: function () {
             return {
                 queryUrl: this.$store.state.queryUrl,
-                dateValue: new Date(), //申请时间
                 billData: {
+                    apply_on: new Date(), //申请时间
                     id:"",
                     persist_version: "",
                     pay_persist_version: "",
