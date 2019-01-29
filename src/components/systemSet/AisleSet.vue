@@ -547,7 +547,7 @@
                     op_acc_no: "",
                     op_acc_name: "",
                     op_bank_name: "",
-                    is_checkout: "",
+                    is_checkout: 0,
                     remark: "",
                 },
                 formLabelWidth: "110px",
@@ -709,7 +709,7 @@
 
                 var dialogData = this.dialogData;
                 for (var k in dialogData) {
-                    if (k == "interactive_mode") {
+                    if (k == "interactive_mode" || k == "is_checkout") {
                         dialogData[k] = 0;
                     } else {
                         dialogData[k] = "";
