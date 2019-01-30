@@ -2385,6 +2385,7 @@
                 this.routerMessage.todo.optype = this.classParams[id].list;
                 this.routerMessage.todo.params.page_num = 1;
                 this.routerMessage.todo.params.biz_type = id;
+                this.curBiztype = id;
                 this.$emit("getTableData", this.routerMessage);
             },
             //加签
