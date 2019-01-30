@@ -180,7 +180,7 @@
     select 
       pay_master.id AS pay_master_id ,
       pay_master.master_batchno,
-      case pay_master.source_sys when '0' then 'LA' when '1' then 'EBS' else '其他' end source_sys,
+      pay_master.source_sys ,
       pay_master.channel_id,
       pay_master.org_id,
       pay_master.dept_id ,
@@ -214,7 +214,7 @@
       channel.channel_code ,
       channel.channel_desc ,
       userinfo.name ,
-      case channel.interactive_mode  when '0' then '直连' when '1' then '报盘' else '其他' end interactive_mode
+      channel.interactive_mode 
     from
     pay_batch_total AS  pay ,
     channel_setting  AS channel ,

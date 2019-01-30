@@ -54,7 +54,6 @@ public class DiskBackingController extends CFMBaseController {
       * @throws IOException 
      * @throws ReqDataException 
       */
-    @Auth(hasForces = {"PayBatchResp"})
     public void upload() throws IOException, ReqDataException {
     	String pay_master_id = getHeader("pay_master_id");
     	String pay_id = getHeader("pay_id");

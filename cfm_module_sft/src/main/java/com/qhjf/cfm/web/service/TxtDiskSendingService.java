@@ -150,8 +150,8 @@ public class TxtDiskSendingService {
 	        	            .set("recv_acc_name", detailRecords.get(i).get("recv_acc_name"))
 	        	            .set("recv_cert_type", detailRecords.get(i).get("recv_cert_type"))
 	        	            .set("recv_cert_code", detailRecords.get(i).get("recv_cert_code"))
-	        	            .set("recv_bank_name", detailRecords.get(i).get("recv_bank_name"))
-	        	            .set("recv_bank_type", detailRecords.get(i).get("recv_bank_type"));
+	        	            .set("recv_bank_name", detailRecords.get(i).get("recv_bank_name"));
+	        	            
 	        	detailOffers.add(detailRecord);
 	        	
 	        	Map<String, Object> detail_map = new HashMap<>();

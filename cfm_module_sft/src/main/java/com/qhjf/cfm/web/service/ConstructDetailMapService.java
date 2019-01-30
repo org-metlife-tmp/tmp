@@ -19,6 +19,8 @@ public class ConstructDetailMapService {
 		//金额需要由 元 转换为 分
 		BigDecimal detail_cent = record.getBigDecimal("amount").multiply(new BigDecimal(100)).setScale(0);
 		detail_map.put("detail_cent", detail_cent);	
+		// 银行 type
+		detail_map.put("recv_bank_type", record.get("recv_bank_type"));
 	}
 
 }

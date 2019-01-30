@@ -227,7 +227,7 @@ public class CheckBatchForController extends CFMBaseController{
     /**
      * @审批平台页面_根据主批次号查找子批次
      */
-    @Auth(hasForces = {"PayCheckAllot,MyWFPLAT"})
+    @Auth(hasForces = {"PayCheckAllot", "MyWFPLAT"})
     public void findSonByMasterBatch() {
         Record record = getRecordByParamsStrong();
         List<Record> list = service.findSonByMasterBatch(record);
