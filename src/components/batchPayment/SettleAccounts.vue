@@ -177,8 +177,8 @@
             </div>
             <!--数据展示区-->
             <section class="table-content">
-                <el-table :data="tableList"
-                          @selection-change="selectChange"
+                <el-table :data="tableList" ref="tableRef"
+                          @select="selectChange"
                           height="100%" border size="mini">
                     <el-table-column type="selection" width="38"></el-table-column>
                     <el-table-column prop="send_on" label="出盘日期" :show-overflow-tooltip="true"></el-table-column>
@@ -594,7 +594,15 @@
                 }
             },
             //列表选择框改变后
-            selectChange: function (val) {
+            selectChange: function (val,row) {
+                if(row.is_checked == 1){
+                    this.$refs.tableRef.toggleRowSelection(row,false);
+                    this.$message({
+                        message: '已核对数据不可勾选',
+                        type: 'warning'
+                    });
+                    return;
+                }
                 //计算汇总数据
                 var allAmount = 0;
                 var allNum = 0;
@@ -629,7 +637,7 @@
                 var recvAmount = 0;
                 for (var i = 0; i < val.length; i++) {
                     var item = val[i];
-                    if(item.direction == 1){
+                    if(item.direction == "收"){
                         recvAmount += item.amount;
                     }else{
                         payAmount += item.amount;
