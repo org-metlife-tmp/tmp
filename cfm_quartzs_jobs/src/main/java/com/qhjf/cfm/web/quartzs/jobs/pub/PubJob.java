@@ -178,6 +178,8 @@ public abstract class PubJob implements Job{
 				try{
 					if(Db.save(getInstrTableName(), instr)){
 						sendQueue(sysInter,record,bankCode);
+					}else{
+						reTry(sysInter,bankCode);
 					}
 				}catch(Exception e){
 					reTry(sysInter,bankCode);

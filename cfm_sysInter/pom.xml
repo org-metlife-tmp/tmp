@@ -18,9 +18,19 @@
 		</dependency>
 		<dependency>
 			<groupId>com.qhjf.cfm</groupId>
+			<artifactId>cfm_webservice_sft</artifactId>
+			<version>1.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.qhjf.cfm</groupId>
 			<artifactId>cfm_channel</artifactId>
 			<version>1.0-SNAPSHOT</version>
 		</dependency>
 
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 </project>

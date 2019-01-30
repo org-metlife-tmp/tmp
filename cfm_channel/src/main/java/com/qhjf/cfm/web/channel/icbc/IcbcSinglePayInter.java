@@ -16,6 +16,7 @@ import com.qhjf.bankinterface.api.AtomicInterfaceConfig;
 import com.qhjf.bankinterface.icbc.IcbcConstant;
 import com.qhjf.cfm.utils.CommKit;
 import com.qhjf.cfm.web.channel.inter.api.ISingleResultChannelInter;
+import com.qhjf.cfm.web.channel.util.ChannelStringUtil;
 import com.qhjf.cfm.web.channel.util.DateUtil;
 import com.qhjf.cfm.web.channel.util.IcbcResultParseUtil;
 import com.qhjf.cfm.web.config.ICBCTestConfigSection;
@@ -70,14 +71,10 @@ public class IcbcSinglePayInter  implements ISingleResultChannelInter{
 		String summary = CommKit.isNullOrEmpty(record.getStr("summary")) ? "cfm" : record.getStr("summary");
 		//摘要里面加指令码  做自动核对用的
 		String smr = record.getStr("instruct_code")+summary;
-		if (smr.length() >= 10) {
-			smr = smr.substring(0, 10);
-		}
-		rd.put("Summary", smr);//摘要
-		if (summary.length() >= 10) {
-			summary = summary.substring(0, 10);
-		}
-		rd.put("UseCN", summary);//用途中文描述
+		
+		rd.put("Summary", ChannelStringUtil.getFixLenStr(smr, 20));//摘要，工行要求上送20字节
+		
+		rd.put("UseCN", ChannelStringUtil.getFixLenStr(summary, 10));//用途中文描述
 		
 		
 		rdList.add(rd);

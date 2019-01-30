@@ -32,11 +32,12 @@ public class CurrBalQueryJob extends PubJob{
 	}
 	@Override
 	public Record getOldInstr(Record currInstr) {
-		return Db.findFirst(Db.getSql("quartzs_job_cfm.get_bal_lock"), currInstr.getLong("acc_id"),currInstr.getStr("query_date"));
+		return Db.findFirst(Db.getSql("quartzs_job_cfm.get_bal_lock"), currInstr.getStr("acc_id"),currInstr.getStr("query_date"));
 	}
+	//查询的可用直连账号中，排除工行的直连账号
 	@Override
 	public List<Record> getSourceDataList() {
-		return Db.find(Db.getSql("quartzs_job_cfm.get_account_list"));
+		return Db.find(Db.getSql("quartzs_job_cfm.get_account_list_balance"));
 	}
 	public boolean needReTrySaveInstr(){
 		return true;

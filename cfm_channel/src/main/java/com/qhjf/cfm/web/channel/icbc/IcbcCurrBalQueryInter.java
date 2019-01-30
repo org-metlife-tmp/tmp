@@ -20,6 +20,7 @@ public class IcbcCurrBalQueryInter implements ISingleResultChannelInter{
 
 	@Override
 	public Map<String, Object> genParamsMap(Record record) {
+		
 		Map<String,Object> result = new HashMap<>();
 		AtomicInterfaceConfig inter = getInter();
 		

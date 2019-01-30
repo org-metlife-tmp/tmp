@@ -1,11 +1,17 @@
 package com.qhjf.cfm.queue;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Map;
+
 import com.qhjf.bankinterface.api.ProcessEntrance;
 import com.qhjf.cfm.queue.patch.IcbcTransQueryProcessPatch;
 import com.qhjf.cfm.web.channel.inter.api.IChannelInter;
+import com.qhjf.cfm.web.config.ICBCTestConfigSection;
 import com.qhjf.cfm.web.inter.api.ISysAtomicInterface;
 
-public class IcbcConsumerQueue implements Runnable {
+public class IcbcConsumerQueue implements Runnable{
 
 //	private static ICBCTestConfigSection configSection = ICBCTestConfigSection.getInstance();
 

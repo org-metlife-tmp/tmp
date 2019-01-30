@@ -1043,6 +1043,7 @@ public class DbtBatchService {
                 where.set("id", id).set("persist_version", version);
 
                 //根据批次号查询该单据是否有已保存单据和已失败
+
                 SqlPara detailPara = Db.getSqlPara("batch.findBatchAttachDetailByBatchnoAndPayStatus",
                         Ret.by("map",Kv.create().set("batchno",innerRec.get("batchno")).set("pay_status",new Integer[]{
                                 WebConstant.PayStatus.INIT.getKey(),

@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='UTF-8'?>
+	<Root>
+		<Policy>
+		<PayNo>$!map.get('PayNo')</PayNo>
+		<PayDate>$!map.get('PayDate')</PayDate>
+		<PayTime>$!map.get('PayTime')</PayTime>
+		<PayResult>$!map.get('PayResult')</PayResult>
+		<ErrCol>$!map.get('ErrCol')</ErrCol>
+		<ErrCode>$!map.get('ErrCode')</ErrCode>
+		<ErrMsg>$!map.get('ErrMsg')</ErrMsg>
+		<PayMoney>$!map.get('PayMoney')</PayMoney>
+		<PayBankCode>$!map.get('PayBankCode')</PayBankCode>
+		<PayBankAccNo>$!map.get('PayBankAccNo')</PayBankAccNo>
+		</Policy>
+	</Root>

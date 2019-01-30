@@ -17,7 +17,7 @@ import java.util.Date;
 import java.util.Hashtable;
 
 /**
- * LDAP 用户验证
+ * 光大永明LDAP 用户验证
  */
 public class LdapUtil {
 

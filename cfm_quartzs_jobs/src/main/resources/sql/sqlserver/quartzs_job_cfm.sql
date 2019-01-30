@@ -120,7 +120,7 @@
     select id,acc_id,acc_no,acc_name,bank_type,bal,available_bal,frz_amt,data_source,bal_date,import_time
     from acc_his_balance where acc_no = ? and bal_date = ?
   #end
-  
+
   #sql("get_batch_dbt_nocompletion")
     select id,batchno,persist_version 
     from inner_batchpay_baseinfo where service_status = ?

@@ -125,6 +125,35 @@ public class AccCommonService {
         }
     }
 
+    /**
+     * 批量付款结算对账，针对于子批次状态为成功的
+     * @param record
+     * @param statusName
+     */
+    public static void setSftCheckStatus(final Record record, String statusName) {
+        List status = record.get(statusName);
+
+        if (status == null || status.size() == 0) {
+            record.set(statusName, new int[]{
+                    WebConstant.SftCheckBatchStatus.HPCG.getKey()
+            });
+        }
+    }
+
+    public static void setExceptStatus(final Record record, String statusName) {
+        List status = record.get(statusName);
+
+        if (status == null || status.size() == 0) {
+            record.set(statusName, new int[]{
+                    WebConstant.SftCheckBatchStatus.FSWHP.getKey(),
+                    WebConstant.SftCheckBatchStatus.HPCG.getKey(),
+                    WebConstant.SftCheckBatchStatus.HPYC.getKey(),
+                    WebConstant.SftCheckBatchStatus.HTSPZ.getKey(),
+                    WebConstant.SftCheckBatchStatus.YHT.getKey()
+            });
+        }
+    }
+
     public static void setInnerBatchTradStatus(final Record record, String statusName) {
         List status = record.get(statusName);
 

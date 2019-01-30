@@ -19,9 +19,11 @@ import com.qhjf.cfm.excel.config.parse.ICellConfigParseUtil;
 import com.qhjf.cfm.excel.config.parse.IColumnConfigParseUtil;
 import com.qhjf.cfm.excel.config.parse.impl.CellConfigParseUtil;
 import com.qhjf.cfm.excel.config.parse.impl.ColumnConfigParseUtil;
+
 import com.qhjf.cfm.queue.QueuePlugin;
 import com.qhjf.cfm.utils.ElectronicTemplateTool;
 import com.qhjf.cfm.web.BootScanRegisterMgr;
+
 import com.qhjf.cfm.web.controller.GlobalController;
 import com.qhjf.cfm.web.dialect.MySqlServerDialect;
 import com.qhjf.cfm.web.handler.CFSHandler;
@@ -35,6 +37,8 @@ import com.qhjf.cfm.web.plugins.jwt.JwtTokenPlugin;
 import com.qhjf.cfm.web.plugins.log.LogbackLogFactory;
 import com.qhjf.cfm.web.quartzs.config.MyQuartzPlugin;
 import com.qhjf.cfm.web.services.UserLoginService;
+import com.qhjf.cfm.web.webservice.ebs.queue.EbsQueuePlugin;
+import com.qhjf.cfm.web.webservice.la.queue.LaQueuePlugin;
 import com.qhjf.cfm.web.webservice.oa.server.processQueue.WebServiceQueuePlugin;
 import com.qhjf.cfm.workflow.api.WfApprovePermissionTool;
 import org.slf4j.Logger;
@@ -44,7 +48,6 @@ public class CFMAppConfig extends JFinalConfig {
 
     private static final GlobalConfigSection iniMgr = GlobalConfigSection.getInstance();
     private static Logger log = LoggerFactory.getLogger(CFMAppConfig.class);
-
 
     private RedisPlugin cfmRedis = null;
     private static final BootScanRegisterMgr bootScanRegisterMgr = BootScanRegisterMgr.getInstance();
@@ -93,7 +96,6 @@ public class CFMAppConfig extends JFinalConfig {
         slf4jLogFilter.setResultSetLogEnabled(false);
         dp.addFilter(slf4jLogFilter);
         plugins.add(dp);
-
         ActiveRecordPlugin arp = new ActiveRecordPlugin(dp);
         arp.setDevMode(true);
         arp.setShowSql(true);
@@ -139,6 +141,9 @@ public class CFMAppConfig extends JFinalConfig {
         log.debug("添加消费者队列插件！");
 
         plugins.add(new QueuePlugin());
+        plugins.add(new LaQueuePlugin());
+        plugins.add(new EbsQueuePlugin());
+        
 
 
         if(iniMgr.hasConfig(IConfigSectionType.DDHConfigSectionType.DDHOAWS)){

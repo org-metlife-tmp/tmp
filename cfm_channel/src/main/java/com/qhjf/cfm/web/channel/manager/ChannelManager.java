@@ -26,7 +26,7 @@ public class ChannelManager {
 	 */
 	@SuppressWarnings("rawtypes")
 	private static final Map<String,ChannelInfo> channelMap = new HashMap<String,ChannelInfo>();
-	
+
 	/**
 	 * 初始化map
 	 */
@@ -35,6 +35,10 @@ public class ChannelManager {
 		bankMap.put("102", "icbc");
 		channelMap.put("308", CmbcChannel.getInstance());
 		channelMap.put("102", IcbcChannel.getInstance());
+	}
+
+	public static Map<String,String> getBankMap(){
+		return bankMap;
 	}
 
 	/**

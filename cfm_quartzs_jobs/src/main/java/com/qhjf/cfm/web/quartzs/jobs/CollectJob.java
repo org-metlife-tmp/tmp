@@ -23,7 +23,7 @@ import com.qhjf.cfm.web.inter.impl.SysSinglePayInter;
 import com.qhjf.cfm.web.quartzs.jobs.pub.PubJob;
 
 public class CollectJob extends PubJob{
-
+	
 	private static Logger log = LoggerFactory.getLogger(CollectJob.class);
 	private Record topic;
 	private Record execute;
@@ -71,7 +71,7 @@ public class CollectJob extends PubJob{
 			execute.set("execute_time", new Date());
 			execute.set("collect_status", WebConstant.CollOrPoolRunStatus.SENDING.getKey());
 			Db.save("collect_execute", execute);
-
+			
 		}
 		return billRecords;
 	}
@@ -87,7 +87,7 @@ public class CollectJob extends PubJob{
 
 	@Override
 	public Boolean beforeProcess(Record record){
-
+		
 		Boolean flag = true ;
 
 		String bankSerialNumber = null;
@@ -101,20 +101,20 @@ public class CollectJob extends PubJob{
 			repeatCount = 1;
 		}catch(Exception e){
 			e.printStackTrace();
-			String errMsg = null;
-			if (e.getMessage() == null || e.getMessage().length() > 1000) {
-				errMsg = "发送银行失败！";
-			} else {
-				errMsg = e.getMessage();
-			}
-			feedBack = errMsg;
+			 String errMsg = null;
+             if (e.getMessage() == null || e.getMessage().length() > 1000) {
+                 errMsg = "发送银行失败！";
+             } else {
+                 errMsg = e.getMessage();
+             }
+            feedBack = errMsg;
 			flag = false ;
 		}
 		Integer collect_type = TypeUtils.castToInt(topic.get("collect_type"));
 		log.info("归集类型====collect_type="+collect_type);
 		log.info("归集id======collect_id="+topic.getLong("id"));
-
-		Record instruction = new Record();
+		
+		Record instruction = new Record();		
 		instruction.set("collect_id", topic.getLong("id"));
 		instruction.set("collect_execute_id", execute.getLong("id"));
 		instruction.set("bank_serial_number", bankSerialNumber);
@@ -145,9 +145,9 @@ public class CollectJob extends PubJob{
 		instruction.set("memo", topic.getStr("summary"));
 		instruction.set("feed_back", feedBack);
 		instruction.set("instruct_code",RedisSericalnoGenTool.genShortSerial());
-
+		
 		if(1 == collect_type){
-			log.info("=======定额归集");
+			log.info("=======定额归集");			
 			instruction.set("collect_amount", topic.getBigDecimal("collect_amount"));
 		}else if(2 == collect_type){
 			log.info("=======留存余额");
@@ -190,11 +190,11 @@ public class CollectJob extends PubJob{
 			feedBack = feedBack == null ? "数据失效,归集类型有误" : feedBack+",数据失效,归集类型有误" ;
 			flag = false ;
 		}
-		if(!flag) {
-			instruction.set("feed_back", feedBack);
-			instruction.set("collect_status", WebConstant.CollOrPoolRunStatus.FAILED.getKey());
-			instruction.set("collect_amount", new BigDecimal("0.00"));
-		}
+        if(!flag) {
+        	instruction.set("feed_back", feedBack);
+        	instruction.set("collect_status", WebConstant.CollOrPoolRunStatus.FAILED.getKey());
+        	instruction.set("collect_amount", new BigDecimal("0.00"));
+        }
 		Db.save("collect_execute_instruction", instruction);
 		record.setColumns(instruction);
 		record.set("bank_cnaps_code", instruction.getStr("pay_bank_cnaps"));
@@ -202,13 +202,13 @@ public class CollectJob extends PubJob{
 		record.set("source_ref", "collect_execute_instruction");
 		record.set("payment_amount", instruction.getBigDecimal("collect_amount"));
 		record.set("process_bank_type", record.getStr("child_acc_bank_cnaps_code").subSequence(0, 3));
-		record.set("payment_summary", topic.getStr("summary"));
+		record.set("payment_summary", topic.getStr("summary"));	
 		return flag ;
 	}
-
+	
 	@Override
 	public  Map<String,Object> getParams(IChannelInter inter,Record instrRecord,Record sourceRecord){
 		return inter.genParamsMap(instrRecord);
 	}
-
+	
 }

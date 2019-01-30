@@ -100,9 +100,13 @@ public class IcbcHisElectronicQueryInter implements IMoreResultChannelInter{
 		Map<String, Map<String, String>> map = ElectronicTemplateTool.ELECTRONIC_TEMPLATE_MAP;
 		Map<String,String> cmbcMap = map.get(uuid);
 		
+		if (null == cmbcMap) {
+			throw new Exception(String.format("工行电子回单模板uuid=[%s]不存在！", uuid));
+		}
+		
 		for (Entry<String, Object> entry : rd.entrySet()) {
 			String key = entry.getKey();
-			Object value = conv(key,entry.getValue().toString());
+			Object value = conv(key,entry.getValue() == null ? null : entry.getValue().toString());
 			String field = cmbcMap.get(key);
 			if(field == null || field.length() == 0){
 				continue;

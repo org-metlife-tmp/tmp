@@ -10,7 +10,9 @@ import com.qhjf.cfm.web.channel.inter.api.IChannelInter;
 import com.qhjf.cfm.web.inter.api.ISysAtomicInterface;
 
 public class IcbcSignConsumerQueue implements Runnable{
+	
 	private static final long SLEEP_TIME = 650;
+
 	private static Logger log = LoggerFactory.getLogger(IcbcSignConsumerQueue.class);
 
 	@Override
@@ -27,6 +29,7 @@ public class IcbcSignConsumerQueue implements Runnable{
 				String jsonStr = null;
 				IChannelInter channelInter = sysInter.getChannelInter();
 				jsonStr = ProcessEntrance.getInstance().process(channelInter.getInter(), signQueueBean.getParams());
+				
 				sysInter.callBack(jsonStr);
 			} catch (Exception e) {
 				e.printStackTrace();
