@@ -176,7 +176,7 @@
                         </el-tooltip>
                         <el-tooltip content="发送" placement="bottom" effect="light"
                                     :enterable="false" :open-delay="500"
-                                    v-if="scope.row.interactive_mode=='直连'">
+                                    v-if="scope.row.interactive_mode=='直连' && scope.row.status=='已审批未发送'">
                             <el-button class="send" size="mini"
                                        @click="sendData(scope.row)"></el-button>
                         </el-tooltip>
