@@ -388,6 +388,7 @@ public class DbtBatchService {
         newBaseRec.set("delete_flag", 0);
         newBaseRec.set("create_by", userInfo.getUsr_id());
         newBaseRec.set("create_on", new Date());
+        newBaseRec.set("apply_on",TypeUtils.castToDate(record.get("apply_on")));
         newBaseRec.set("batchno", batchno);
         newBaseRec.set("payment_summary", TypeUtils.castToString(record.get("payment_summary")));
         newBaseRec.set("service_status", WebConstant.BillStatus.SAVED.getKey());

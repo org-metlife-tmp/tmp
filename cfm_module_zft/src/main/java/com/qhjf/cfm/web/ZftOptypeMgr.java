@@ -30,8 +30,8 @@ public class ZftOptypeMgr extends AbstractOptypeMgr {
         //制单 -- 新增单据
         optypes.add(new Optype(Optype.Mode.NORMAL, "zft_addbill")
                 .registKeepParams(new String[]{"pay_account_id", "payment_amount", "recv_account_id", "recv_account_no", "recv_account_name", "recv_bank_cnaps",
-                        "payment_summary", "rev_persist_version", "files", "biz_id", "biz_name", "pay_mode"})
-                .registerValidate(new RequiredParamsValidate(new String[]{"pay_account_id", "payment_amount", "pay_mode", "biz_id", "biz_name"})));
+                        "payment_summary", "rev_persist_version", "files", "biz_id", "biz_name", "pay_mode", "apply_on"})
+                .registerValidate(new RequiredParamsValidate(new String[]{"pay_account_id", "payment_amount", "pay_mode", "biz_id", "biz_name", "apply_on"})));
         //制单 -- 删除单据
         optypes.add(new Optype(Optype.Mode.NORMAL, "zft_delbill")
                 .registKeepParams(new String[]{"id", "persist_version"})
@@ -53,18 +53,18 @@ public class ZftOptypeMgr extends AbstractOptypeMgr {
         //制单 --	单据修改
         optypes.add(new Optype(Optype.Mode.NORMAL, "zft_chgbill")
                 .registerValidate(new RequiredParamsValidate(new String[]{
-                        "id", "pay_account_id", "payment_amount", "persist_version", "pay_mode", "biz_id", "biz_name"
+                        "id", "pay_account_id", "payment_amount", "persist_version", "pay_mode", "biz_id", "biz_name", "apply_on"
                 })).registKeepParams(new String[]{"pay_account_id", "payment_amount", "recv_account_id", "recv_account_no", "recv_account_name", "recv_bank_cnaps",
-                        "payment_summary", "rev_persist_version", "files", "id", "persist_version", "biz_id", "biz_name", "pay_mode"}));
+                        "payment_summary", "rev_persist_version", "files", "id", "persist_version", "biz_id", "biz_name", "pay_mode", "apply_on"}));
 
         //预提交
         optypes.add(new Optype(Optype.Mode.NORMAL, "zft_presubmit")
                 .registerValidate(new RequiredParamsValidate(new String[]{
-                        "pay_account_id", "payment_amount", "pay_mode", "biz_id", "biz_name"
+                        "pay_account_id", "payment_amount", "pay_mode", "biz_id", "biz_name", "apply_on"
                 }))
                 .registKeepParams(new String[]{
                         "id", "pay_account_id", "payment_amount", "recv_account_id", "recv_account_no", "recv_account_name", "recv_bank_cnaps",
-                        "payment_summary", "rev_persist_version", "files", "persist_version", "biz_id", "biz_name", "pay_mode"
+                        "payment_summary", "rev_persist_version", "files", "persist_version", "biz_id", "biz_name", "pay_mode", "apply_on"
                 }));
 
         //提交
@@ -162,17 +162,17 @@ public class ZftOptypeMgr extends AbstractOptypeMgr {
                 }));
         optypes.add(new Optype(Optype.Mode.NORMAL, "zftbatch_addbill")
                 .registerValidate(new RequiredParamsValidate(new String[]{
-                        "uuid", "batchno", "pay_acc_id", "pay_mode", "biz_id", "biz_name"
+                        "uuid", "batchno", "pay_acc_id", "pay_mode", "biz_id", "biz_name", "apply_on"
                 }))
                 .registKeepParams(new String[]{
-                        "uuid", "batchno", "files", "memo", "pay_acc_id", "pay_mode", "biz_id", "biz_name"
+                        "uuid", "batchno", "files", "memo", "pay_acc_id", "pay_mode", "biz_id", "biz_name", "apply_on"
                 }));
         optypes.add(new Optype(Optype.Mode.NORMAL, "zftbatch_chgbill")
                 .registerValidate(new RequiredParamsValidate(new String[]{
-                        "uuid", "batchno", "id", "version", "pay_acc_id", "pay_mode", "biz_id", "biz_name"
+                        "uuid", "batchno", "id", "version", "pay_acc_id", "pay_mode", "biz_id", "biz_name", "apply_on"
                 }))
                 .registKeepParams(new String[]{
-                        "uuid", "batchno", "files", "memo", "id", "version", "pay_acc_id", "pay_mode", "biz_id", "biz_name"
+                        "uuid", "batchno", "files", "memo", "id", "version", "pay_acc_id", "pay_mode", "biz_id", "biz_name", "apply_on"
                 }));
         optypes.add(new Optype(Optype.Mode.NORMAL, "zftbatch_prechgbill")
                 .registerValidate(new RequiredParamsValidate(new String[]{
@@ -240,10 +240,10 @@ public class ZftOptypeMgr extends AbstractOptypeMgr {
 
         optypes.add(new Optype(Optype.Mode.NORMAL, "zftbatch_presubmit")
                 .registerValidate(new RequiredParamsValidate(new String[]{
-                        "uuid", "batchno", "pay_acc_id", "pay_mode", "biz_id", "biz_name"
+                        "uuid", "batchno", "pay_acc_id", "pay_mode", "biz_id", "biz_name", "apply_on"
                 }))
                 .registKeepParams(new String[]{
-                        "id", "uuid", "batchno", "files", "memo", "pay_acc_id", "pay_mode", "version", "biz_id", "biz_name"
+                        "id", "uuid", "batchno", "files", "memo", "pay_acc_id", "pay_mode", "version", "biz_id", "biz_name", "apply_on"
                 }));
 
         optypes.add(new Optype(Optype.Mode.NORMAL, "zftbatch_submit")

@@ -117,7 +117,7 @@ public class ZftBatchService {
 
                 //根据批次号查询该单据是否未完结的单据
                 SqlPara detailPara = Db.getSqlPara("zftbatch.findBatchAttachDetailByBatchnoAndPayStatus",
-                        Ret.by("map",Kv.create().set("batchno",bill.get("batchno")).set("pay_status",new Integer[]{
+                        Ret.by("map", Kv.create().set("batchno", bill.get("batchno")).set("pay_status", new Integer[]{
                                 WebConstant.PayStatus.INIT.getKey(),
                                 WebConstant.PayStatus.HANDLE.getKey(),
                                 WebConstant.PayStatus.FAILD.getKey()
@@ -158,13 +158,13 @@ public class ZftBatchService {
 
         //查询是否有未完结的单据
         SqlPara detailPara = Db.getSqlPara("zftbatch.findBatchAttachDetailByBatchnoAndPayStatus",
-                Ret.by("map",Kv.create().set("batchno",bill.get("batchno")).set("pay_status",new Integer[]{
+                Ret.by("map", Kv.create().set("batchno", bill.get("batchno")).set("pay_status", new Integer[]{
                         WebConstant.PayStatus.HANDLE.getKey(),
                         WebConstant.PayStatus.FAILD.getKey()
 
                 })));
         List<Record> detailRecList = Db.find(detailPara);
-        if(detailRecList != null && detailRecList.size() > 0){
+        if (detailRecList != null && detailRecList.size() > 0) {
             throw new ReqDataException("此单据还有未完结的单据，无法作废！");
         }
 
@@ -370,6 +370,7 @@ public class ZftBatchService {
                 .set("payment_summary", record.get("memo"))
                 .set("update_by", userInfo.getUsr_id())
                 .set("update_on", new Date())
+                .set("apply_on", TypeUtils.castToDate(record.get("apply_on")))
                 .set("pay_mode", record.get("pay_mode"))
                 .set("biz_id", record.get("biz_id"))
                 .set("biz_name", record.get("biz_name"))
@@ -441,18 +442,16 @@ public class ZftBatchService {
     }
 
 
-    public Record prechgbill(Record record, UserInfo userInfo) throws BusinessException{
+    public Record prechgbill(Record record, UserInfo userInfo) throws BusinessException {
         long bill_id = TypeUtils.castToLong(record.get("id"));
         Record bill = Db.findById("outer_batchpay_baseinfo", "id", bill_id);
-        if(bill != null ){
+        if (bill != null) {
             CommonService.checkUseCanViewBill(userInfo.getCurUodp().getOrg_id(), bill.getLong("org_id"));
-        }else{
+        } else {
             throw new ReqDataException("单据不存在！");
         }
-        return prechgbill(record,userInfo.getUsr_id());
+        return prechgbill(record, userInfo.getUsr_id());
     }
-
-
 
 
     private Record prechgbill(Record record, final long usr_id) throws BusinessException {
@@ -506,6 +505,7 @@ public class ZftBatchService {
                 .set("pay_mode", record.get("pay_mode"))
                 .set("create_by", usr_id)
                 .set("create_on", new Date())
+                .set("apply_on", TypeUtils.castToDate(record.get("apply_on")))
                 .set("update_by", usr_id)
                 .set("update_on", new Date())
                 .set("persist_version", 0)
@@ -836,20 +836,20 @@ public class ZftBatchService {
                     @Override
                     public boolean run() throws SQLException {
 
-                        if( WebConstant.PayStatus.INIT.getKey() != status && WebConstant.PayStatus.FAILD.getKey() != status ){
+                        if (WebConstant.PayStatus.INIT.getKey() != status && WebConstant.PayStatus.FAILD.getKey() != status) {
                             log.error("单据状态有误!");
                             return false;
                         }
                         Record setRecord = new Record();
-                        Record whereRecord  = new Record();
+                        Record whereRecord = new Record();
 
-                        setRecord.set("pay_status",WebConstant.BillStatus.FAILED.getKey()).set("feed_back",feedBack)
-                                .set("persist_version",persist_version+1);
-                        whereRecord.set("detail_id",idStr).set("pay_status",status).set("persist_version",persist_version);
-                        return CommonService.updateRows("outer_batchpay_bus_attach_detail",setRecord,whereRecord) == 1;
+                        setRecord.set("pay_status", WebConstant.BillStatus.FAILED.getKey()).set("feed_back", feedBack)
+                                .set("persist_version", persist_version + 1);
+                        whereRecord.set("detail_id", idStr).set("pay_status", status).set("persist_version", persist_version);
+                        return CommonService.updateRows("outer_batchpay_bus_attach_detail", setRecord, whereRecord) == 1;
                     }
                 });
-                if(!flag){
+                if (!flag) {
                     log.error("数据过期！");
                 }
                 continue;
@@ -892,7 +892,7 @@ public class ZftBatchService {
                 boolean save = Db.save("single_pay_instr_queue", instr);
                 if (save) {
                     save = Db.update(Db.getSql("zftbatch.updateDetailById"), instr.getStr("bank_serial_number"),
-                            instr.getInt("repeat_count"), WebConstant.PayStatus.HANDLE.getKey(), instr.getStr("instruct_code"),detailId,
+                            instr.getInt("repeat_count"), WebConstant.PayStatus.HANDLE.getKey(), instr.getStr("instruct_code"), detailId,
                             oldRepearCount, status) == 1;
 
                     if (save) {

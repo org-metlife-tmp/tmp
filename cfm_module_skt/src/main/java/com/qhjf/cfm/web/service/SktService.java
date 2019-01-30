@@ -63,6 +63,7 @@ public class SktService {
         insertRecord.set("attachment_count", list != null ? list.size() : 0); // 附件数量
         insertRecord.set("create_by", userInfo.getUsr_id()); // 用户id
         insertRecord.set("create_on", new Date()); // 创建时间
+        insertRecord.set("apply_on", TypeUtils.castToDate(initrecord.get("apply_on")));//申请日期
         insertRecord.set("persist_version", 0); // 版本号
         insertRecord.set("org_id", uodpInfo.getOrg_id());
         insertRecord.set("dept_id", uodpInfo.getDept_id());
@@ -205,7 +206,7 @@ public class SktService {
     }
 
     public boolean saveFileRef(int biz_type, long bill_id, List<Object> files) {
-        return CommonService.saveFileRef(biz_type,bill_id,files);
+        return CommonService.saveFileRef(biz_type, bill_id, files);
     }
 
     /**
@@ -320,8 +321,8 @@ public class SktService {
             @Override
             public boolean run() throws SQLException {
                 if (chgDbPaymentByIdAndVersion(record, new Record().set("id", id).set("persist_version", old_version))) {
-                	// 删除附件
-                	CommonService.delFileRef(WebConstant.MajorBizType.SKT.getKey(), id);
+                    // 删除附件
+                    CommonService.delFileRef(WebConstant.MajorBizType.SKT.getKey(), id);
                     if (list != null && list.size() > 0) {
                         // 保存附件
                         return CommonService.saveFileRef(WebConstant.MajorBizType.SKT.getKey(), id, list);
@@ -391,8 +392,8 @@ public class SktService {
      * @return
      */
     public SqlPara getlistparam(final Record record, String sql) {
-        CommonService.processQueryKey(record,"pay_query_key","pay_account_name","pay_account_no");
-        CommonService.processQueryKey(record,"recv_query_key","recv_account_name","recv_account_no");
+        CommonService.processQueryKey(record, "pay_query_key", "pay_account_name", "pay_account_no");
+        CommonService.processQueryKey(record, "recv_query_key", "recv_account_name", "recv_account_no");
         record.set("delete_flag", 0);
         return Db.getSqlPara(sql, Kv.by("map", record.getColumns()));
     }
@@ -439,8 +440,8 @@ public class SktService {
 
         //如果recode中同时含有“wf_inst_id"和biz_type ,则判断是workflow模块forward过来的，不进行机构权限的校验
         //否则进行机构权限的校验
-        if(record.get("wf_inst_id") == null || record.get("biz_type") == null){
-            CommonService.checkUseCanViewBill(userInfo.getCurUodp().getOrg_id(),dbRec.getLong("org_id"));
+        if (record.get("wf_inst_id") == null || record.get("biz_type") == null) {
+            CommonService.checkUseCanViewBill(userInfo.getCurUodp().getOrg_id(), dbRec.getLong("org_id"));
         }
 
 
@@ -467,6 +468,7 @@ public class SktService {
 
     /**
      * 特殊处理：点击提交直接变成审批通过状态
+     *
      * @param record
      * @return
      * @throws BusinessException

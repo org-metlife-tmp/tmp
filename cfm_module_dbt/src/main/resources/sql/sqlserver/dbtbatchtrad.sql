@@ -7,7 +7,8 @@ SELECT
 	di.recv_account_name,
 	di.persist_version,
 	di.payment_amount,
-	bi.create_on
+	bi.create_on,
+	bi.apply_on
 FROM
   inner_batchpay_baseinfo bi,
 	inner_batchpay_bus_attach_detail di

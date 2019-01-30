@@ -47,12 +47,12 @@ select sum(collect_amount) AS total_amount
 
 
 #sql("collectByOrgList")
-select
+select 
     cei.pay_account_no ,
     cei.pay_account_bank ,
     cei.pay_account_org_id ,
     cei.pay_account_org_name ,
-    sum(cei.collect_amount) AS collect_amount
+    sum(cei.collect_amount) AS collect_amount 
     FROM collect_execute_instruction  cei
     WHERE 1=1
   #if(map != null)
@@ -96,17 +96,17 @@ select
         #end
     #end
 #end
-  group by  cei.pay_account_no , cei.pay_account_bank ,cei.pay_account_org_name ,cei.pay_account_org_id
+  group by  cei.pay_account_no , cei.pay_account_bank ,cei.pay_account_org_name ,cei.pay_account_org_id 
   order by   cei.pay_account_org_id  desc
 #end
 
 
 #sql("collectByOrgChart")
-select
-    TOP 5
+select  
+    TOP 5 
     cei.pay_account_org_id ,
     cei.pay_account_org_name ,
-    sum(cei.collect_amount) AS collect_amount
+    sum(cei.collect_amount) AS collect_amount  
     FROM collect_execute_instruction  cei
     WHERE 1 = 1
   #if(map != null)
@@ -150,17 +150,17 @@ select
         #end
     #end
 #end
-  group by   cei.pay_account_org_name ,cei.pay_account_org_id
+  group by   cei.pay_account_org_name ,cei.pay_account_org_id 
   order by   collect_amount  desc
 #end
 
 
 #sql("collectByAccChart")
-select
- TOP 5
+select 
+ TOP 5 
     cei.pay_account_no ,
     cei.pay_account_name ,
-    sum(cei.collect_amount) AS collect_amount
+    sum(cei.collect_amount) AS collect_amount 
     FROM collect_execute_instruction  cei
     WHERE 1 = 1
   #if(map != null)

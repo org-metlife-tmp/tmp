@@ -99,6 +99,7 @@ SELECT
 	ozp.bank_serial_number,
 	ozp.create_by,
 	ozp.create_on,
+	ozp.apply_on,
 	ozp.update_by,
 	ozp.update_on,
 	ozp.delete_flag,

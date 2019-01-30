@@ -97,8 +97,8 @@ public class NonDirectConnectionService {
 
         //如果recode中同时含有“wf_inst_id"和biz_type ,则判断是workflow模块forward过来的，不进行机构权限的校验
         //否则进行机构权限的校验
-        if(record.get("wf_inst_id") == null || record.get("biz_type") == null){
-            CommonService.checkUseCanViewBill(userInfo.getCurUodp().getOrg_id(),bill.getLong("org_id"));
+        if (record.get("wf_inst_id") == null || record.get("biz_type") == null) {
+            CommonService.checkUseCanViewBill(userInfo.getCurUodp().getOrg_id(), bill.getLong("org_id"));
         }
 
         return bill;
@@ -109,7 +109,7 @@ public class NonDirectConnectionService {
         return Db.paginate(page_num, page_size, sqlPara);
     }
 
-    public void delbill(final Record record,UserInfo userInfo) throws BusinessException {
+    public void delbill(final Record record, UserInfo userInfo) throws BusinessException {
         final long bill_id = TypeUtils.castToLong(record.get("id"));
         final int version = TypeUtils.castToInt(record.get("persist_version"));
 
@@ -158,6 +158,7 @@ public class NonDirectConnectionService {
                 .set("payment_summary", record.get("memo"))
                 .set("update_by", userInfo.getUsr_id())
                 .set("update_on", new Date())
+                .set("apply_on", TypeUtils.castToDate(record.get("apply_on")))
                 .set("biz_id", record.get("biz_id"))
                 .set("biz_name", record.get("biz_name"))
                 .set("service_status", WebConstant.BillStatus.SAVED.getKey());
@@ -227,18 +228,16 @@ public class NonDirectConnectionService {
 
     }
 
-    public Record prechgbill(Record record, UserInfo userInfo) throws BusinessException{
+    public Record prechgbill(Record record, UserInfo userInfo) throws BusinessException {
         long bill_id = TypeUtils.castToLong(record.get("id"));
         Record bill = Db.findById("collect_batch_baseinfo", "id", bill_id);
-        if(bill != null ){
+        if (bill != null) {
             CommonService.checkUseCanViewBill(userInfo.getCurUodp().getOrg_id(), bill.getLong("org_id"));
-        }else{
+        } else {
             throw new ReqDataException("单据不存在！");
         }
-        return prechgbill(record,userInfo.getUsr_id());
+        return prechgbill(record, userInfo.getUsr_id());
     }
-
-
 
 
     private Record prechgbill(Record record, final long usr_id) throws BusinessException {
@@ -291,6 +290,7 @@ public class NonDirectConnectionService {
                 .set("pay_mode", record.get("pay_mode"))
                 .set("create_by", usr_id)
                 .set("create_on", new Date())
+                .set("apply_on", TypeUtils.castToDate(record.get("apply_on")))
                 .set("update_by", usr_id)
                 .set("update_on", new Date())
                 .set("persist_version", 0)
@@ -566,7 +566,7 @@ public class NonDirectConnectionService {
             _r.set("pay_account_cur", TypeUtils.castToString(currRec.get("iso_code")));
 
             Object cnaps = accountMap.get("bank_cnaps_code");
-            _r.set("pay_bank_cnaps",cnaps);
+            _r.set("pay_bank_cnaps", cnaps);
             Record bankRec = Db.findById("all_bank_info", "cnaps_code", cnaps);
             if (bankRec != null) {
                 _r.set("pay_account_bank", bankRec.get("name"));

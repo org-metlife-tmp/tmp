@@ -219,18 +219,18 @@ public class GjtOptypeMgr extends AbstractOptypeMgr {
                 }));
         optypes.add(new Optype(Optype.Mode.NORMAL, "ndc_addbill")
                 .registerValidate(new RequiredParamsValidate(new String[]{
-                        "uuid", "batchno", "recv_account_id", "pay_mode"
+                        "uuid", "batchno", "recv_account_id", "pay_mode", "apply_on"
                 }))
                 .registKeepParams(new String[]{
-                        "uuid", "batchno", "files", "memo", "recv_account_id", "pay_mode", "biz_id", "biz_name"
+                        "uuid", "batchno", "files", "memo", "recv_account_id", "pay_mode", "biz_id", "biz_name", "apply_on"
                 }));
 
         optypes.add(new Optype(Optype.Mode.NORMAL, "ndc_chgbill")
                 .registerValidate(new RequiredParamsValidate(new String[]{
-                        "uuid", "batchno", "id", "persist_version", "recv_account_id", "pay_mode"
+                        "uuid", "batchno", "id", "persist_version", "recv_account_id", "pay_mode", "apply_on"
                 }))
                 .registKeepParams(new String[]{
-                        "uuid", "batchno", "files", "memo", "id", "persist_version", "recv_account_id", "pay_mode", "biz_id", "biz_name"
+                        "uuid", "batchno", "files", "memo", "id", "persist_version", "recv_account_id", "pay_mode", "biz_id", "biz_name", "apply_on"
                 }));
 
         optypes.add(new Optype(Optype.Mode.NORMAL, "ndc_prechgbill")
@@ -263,10 +263,10 @@ public class GjtOptypeMgr extends AbstractOptypeMgr {
         //预提交
         optypes.add(new Optype(Optype.Mode.NORMAL, "ndc_presubmit")
                 .registKeepParams(new String[]{
-                        "uuid", "batchno", "files", "memo", "id", "persist_version", "recv_account_id", "pay_mode", "biz_id", "biz_name"
+                        "uuid", "batchno", "files", "memo", "id", "persist_version", "recv_account_id", "pay_mode", "biz_id", "biz_name", "apply_on"
                 })
                 .registerValidate(new RequiredParamsValidate(new String[]{
-                        "uuid", "batchno", "recv_account_id", "pay_mode"
+                        "uuid", "batchno", "recv_account_id", "pay_mode", "apply_on"
                 })));
 
         //提交
@@ -323,7 +323,7 @@ public class GjtOptypeMgr extends AbstractOptypeMgr {
         //批量加签
         optypes.add(new Optype(Optype.Mode.NORMAL, "ndc_batchappend")
                 .registKeepParams(new String[]{
-                       "batch_list"
+                        "batch_list"
                 })
                 .registerValidate(new RequiredParamsValidate(new String[]{
                         "batch_list"

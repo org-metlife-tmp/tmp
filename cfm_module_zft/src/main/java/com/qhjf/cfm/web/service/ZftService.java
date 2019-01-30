@@ -59,7 +59,7 @@ public class ZftService {
      * @param insertRecord
      * @param pay_info
      * @throws DbProcessException
-     * @throws ReqDataException 
+     * @throws ReqDataException
      */
     public Record insert(UodpInfo uodpInfo, UserInfo userInfo, Record initrecord,
                          Record rev_record, final Record insertRecord, Record returnRecord, Record pay_info) throws DbProcessException, ReqDataException {
@@ -87,6 +87,7 @@ public class ZftService {
         insertRecord.set("recv_bank_city", rev_record.get("city")); //收款方账户币种
         insertRecord.set("create_by", userInfo.getUsr_id()); //用户id
         insertRecord.set("create_on", new Date()); //创建时间
+        insertRecord.set("apply_on", TypeUtils.castToDate(initrecord.get("apply_on")));//申请日期
         insertRecord.set("persist_version", 0);  //版本号
         insertRecord.set("org_id", uodpInfo.getOrg_id());
         insertRecord.set("dept_id", uodpInfo.getDept_id());
@@ -100,34 +101,34 @@ public class ZftService {
         insertRecord.set("biz_id", initrecord.get("biz_id"));
         insertRecord.set("biz_name", initrecord.get("biz_name"));
         insertRecord.set("pay_mode", initrecord.get("pay_mode"));
-        
+
         //添加事物_outer_zf_payment单据表插入数据/保存附件
-        boolean txFlag = Db.tx(new IAtom() {			
-			@Override
-			public boolean run() throws SQLException {
-				boolean flag = Db.save("outer_zf_payment", insertRecord);
-				if(flag){
-					log.debug("=============支付通单据表插入成功");
-					// 保存附件
-					if (list != null && list.size() > 0){
-						return CommonService.saveFileRef(WebConstant.MajorBizType.ZFT.getKey(), TypeUtils.castToLong(insertRecord.get("id")), list);
-					}else{
-						log.debug("=============未上传附件");
-						return true ;						
-					}
-				}else{
-					log.error("==================支付通单据表插入失败");
-					return false;					
-				}
-			}
-		});
+        boolean txFlag = Db.tx(new IAtom() {
+            @Override
+            public boolean run() throws SQLException {
+                boolean flag = Db.save("outer_zf_payment", insertRecord);
+                if (flag) {
+                    log.debug("=============支付通单据表插入成功");
+                    // 保存附件
+                    if (list != null && list.size() > 0) {
+                        return CommonService.saveFileRef(WebConstant.MajorBizType.ZFT.getKey(), TypeUtils.castToLong(insertRecord.get("id")), list);
+                    } else {
+                        log.debug("=============未上传附件");
+                        return true;
+                    }
+                } else {
+                    log.error("==================支付通单据表插入失败");
+                    return false;
+                }
+            }
+        });
         // 获取此条数据id
-        log.debug("==================支付通制单插入,事物状态===="+txFlag);
-        if(txFlag){
-        	returnRecord = Db.findById("outer_zf_payment", "id", insertRecord.get("id"));
-        	returnRecord.set("rev_persist_version", rev_record.get("persist_version"));
-        }else{
-        	throw new ReqDataException("支付通保存失败");
+        log.debug("==================支付通制单插入,事物状态====" + txFlag);
+        if (txFlag) {
+            returnRecord = Db.findById("outer_zf_payment", "id", insertRecord.get("id"));
+            returnRecord.set("rev_persist_version", rev_record.get("persist_version"));
+        } else {
+            throw new ReqDataException("支付通保存失败");
         }
         return returnRecord;
     }
@@ -248,7 +249,7 @@ public class ZftService {
         }
 
         //申请单创建人id非登录用户，不允许进行操作
-        if(!TypeUtils.castToLong(innerRec.get("create_by")).equals(userInfo.getUsr_id())){
+        if (!TypeUtils.castToLong(innerRec.get("create_by")).equals(userInfo.getUsr_id())) {
             throw new ReqDataException("无权进行此操作！");
         }
 
@@ -284,7 +285,7 @@ public class ZftService {
         }
 
         //申请单创建人id非登录用户，不允许进行操作
-        if(!TypeUtils.castToLong(innerRec.get("create_by")).equals(userInfo.getUsr_id())){
+        if (!TypeUtils.castToLong(innerRec.get("create_by")).equals(userInfo.getUsr_id())) {
             throw new ReqDataException("无权进行此操作！");
         }
 
@@ -505,7 +506,7 @@ public class ZftService {
      * @return
      * @throws ReqDataException
      */
-    public Record detail(Record record,UserInfo userInfo) throws BusinessException {
+    public Record detail(Record record, UserInfo userInfo) throws BusinessException {
         long id = TypeUtils.castToLong(record.get("id"));
         // 根据单据id查询单据信息
         Record dbRec = Db.findById("outer_zf_payment", "id", id);
@@ -515,8 +516,8 @@ public class ZftService {
 
         //如果recode中同时含有“wf_inst_id"和biz_type ,则判断是workflow模块forward过来的，不进行机构权限的校验
         //否则进行机构权限的校验
-        if(record.get("wf_inst_id") == null || record.get("biz_type") == null){
-            CommonService.checkUseCanViewBill(userInfo.getCurUodp().getOrg_id(),dbRec.getLong("org_id"));
+        if (record.get("wf_inst_id") == null || record.get("biz_type") == null) {
+            CommonService.checkUseCanViewBill(userInfo.getCurUodp().getOrg_id(), dbRec.getLong("org_id"));
         }
 
 
@@ -793,20 +794,20 @@ public class ZftService {
                     @Override
                     public boolean run() throws SQLException {
 
-                        if( WebConstant.BillStatus.PASS.getKey() != status && WebConstant.BillStatus.FAILED.getKey() != status ){
+                        if (WebConstant.BillStatus.PASS.getKey() != status && WebConstant.BillStatus.FAILED.getKey() != status) {
                             log.error("单据状态有误!");
                             return false;
                         }
                         Record setRecord = new Record();
-                        Record whereRecord  = new Record();
+                        Record whereRecord = new Record();
 
-                        setRecord.set("service_status",WebConstant.BillStatus.FAILED.getKey()).set("feed_back",feedBack)
-                                .set("persist_version",persist_version+1);
-                        whereRecord.set("id",idStr).set("service_status",status).set("persist_version",persist_version);
-                        return CommonService.updateRows("outer_zf_payment",setRecord,whereRecord) == 1;
+                        setRecord.set("service_status", WebConstant.BillStatus.FAILED.getKey()).set("feed_back", feedBack)
+                                .set("persist_version", persist_version + 1);
+                        whereRecord.set("id", idStr).set("service_status", status).set("persist_version", persist_version);
+                        return CommonService.updateRows("outer_zf_payment", setRecord, whereRecord) == 1;
                     }
                 });
-                if(!flag){
+                if (!flag) {
                     log.error("数据过期！");
                 }
                 continue;
@@ -842,7 +843,7 @@ public class ZftService {
                 if (save) {
                     return Db.update(Db.getSql("zjzf.updBillById"), instr.getStr("bank_serial_number"),
                             instr.getInt("repeat_count"), WebConstant.BillStatus.PROCESSING.getKey(), instr.getStr("instruct_code"), id,
-                            status,old_repeat_count) == 1;
+                            status, old_repeat_count) == 1;
                 }
                 return save;
             }
@@ -856,7 +857,7 @@ public class ZftService {
         }
     }
 
-   
+
     /**
      * 支付通退票封装record
      *

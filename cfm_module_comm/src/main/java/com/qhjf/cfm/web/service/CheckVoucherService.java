@@ -47,6 +47,7 @@ public class CheckVoucherService {
      */
     private static String NBDB_ZJHB = "03bead791d6244a9B513bb789799fa3a";      //内部调拨-资金调拨
     private static String NBDB_TLHZ = "2b4ccc1daf0a4b44b50c10dffb7b3e54";      //内部调拨-投连划转
+    private static String NBDB_TLHH = "2b4ccc1daf0a4b44b50c10dffb7b3e55";      //内部调拨-投连划回
 
     private static String ZJZF_QT = "a0cabdb210f848cda9a6e1d090f4a783";        //资金支付-其他
     private static String ZJZF_BDYWJSF = "a0cabdb210f848cda9a6e1d090f4a793";   //资金支付-保单业务结算费
@@ -54,6 +55,7 @@ public class CheckVoucherService {
 
     private static String PLDB_ZJHB = "d50f3048cee34c6684ff36635353955a";      //内部调部-批量-资金调拨
     private static String PLDB_TLHZ = "b8439d8f56a74da9a6bad8ca04711e04";      //内部调部-批量-投连划转
+    private static String PLDB_TLHH = "d50f3048cee34c6684ff36635353955b";      //内部调拨-批量-投连划回
 
     private static String PLZF_QT = "982e09f355ea488dbd434d9f8be20365";        //资金支付-批量-其他
     private static String PLZF_BDYWJSF = "982e09f355ea488dbd434d9f8be20465";   //资金支付-批量-保单业务结算费
@@ -150,6 +152,9 @@ public class CheckVoucherService {
             list.add(CommonService.dbtPayVorcher(payRec, billRec, seqnoOrstatmentCode, 3, bizType, transDateMap));
             list.add(CommonService.dbtPayVorcher(payRec, billRec, seqnoOrstatmentCode, 4, bizType, transDateMap));
             //============ 付方向 凭证数据组装 end ============
+        } else if (NBDB_TLHH.equals(bizId) || PLDB_TLHH.equals(bizId)) {
+            list.add(CommonService.dbtPayVorcher(payRec, billRec, seqnoOrstatmentCode, 5, bizType, transDateMap));
+            list.add(CommonService.dbtPayVorcher(payRec, billRec, seqnoOrstatmentCode, 6, bizType, transDateMap));
         } else {
             throw new ReqValidateException("未定义的业务类型!");
         }

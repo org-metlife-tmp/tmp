@@ -17,17 +17,17 @@ public class SktOptypeMgr extends AbstractOptypeMgr {
         //制单 -- 新增单据
         optypes.add(new Optype(Optype.Mode.NORMAL, "skt_addbill")
                 .registKeepParams(new String[]{"recv_account_id", "receipts_amount", "pay_account_id", "pay_account_no", "pay_account_name", "pay_bank_cnaps",
-                        "receipts_summary", "pay_persist_version", "files", "biz_id", "biz_name"})
+                        "receipts_summary", "pay_persist_version", "files", "biz_id", "biz_name", "apply_on"})
                 .registerValidate(new RequiredParamsValidate(new String[]{"recv_account_id", "pay_account_no",
-                        "pay_account_name", "pay_bank_cnaps", "receipts_amount", "biz_id", "biz_name"})));
+                        "pay_account_name", "pay_bank_cnaps", "receipts_amount", "biz_id", "biz_name", "apply_on"})));
 
         //制单 --	单据修改
         optypes.add(new Optype(Optype.Mode.NORMAL, "skt_chgbill")
                 .registerValidate(new RequiredParamsValidate(new String[]{
                         "id", "recv_account_id", "pay_account_id", "pay_account_no",
-                        "pay_account_name", "pay_bank_cnaps", "receipts_amount", "biz_id", "biz_name"
+                        "pay_account_name", "pay_bank_cnaps", "receipts_amount", "biz_id", "biz_name", "apply_on"
                 })).registKeepParams(new String[]{"recv_account_id", "receipts_amount", "pay_account_id", "pay_account_no", "pay_account_name", "pay_bank_cnaps",
-                        "receipts_summary", "pay_persist_version", "files", "id", "persist_version", "biz_id", "biz_name"}));
+                        "receipts_summary", "pay_persist_version", "files", "id", "persist_version", "biz_id", "biz_name", "apply_on"}));
 
         //制单 -- 删除单据
         optypes.add(new Optype(Optype.Mode.NORMAL, "skt_delbill")
@@ -62,10 +62,10 @@ public class SktOptypeMgr extends AbstractOptypeMgr {
         optypes.add(new Optype(Optype.Mode.NORMAL, "skt_presubmit")
                 .registerValidate(new RequiredParamsValidate(new String[]{
                         "recv_account_id", "pay_account_no",
-                        "pay_account_name", "pay_bank_cnaps", "receipts_amount", "biz_id", "biz_name"
+                        "pay_account_name", "pay_bank_cnaps", "receipts_amount", "biz_id", "biz_name", "apply_on"
                 }))
                 .registKeepParams(new String[]{"recv_account_id", "receipts_amount", "pay_account_id", "pay_account_no", "pay_account_name", "pay_bank_cnaps",
-                        "receipts_summary", "pay_persist_version", "files", "id", "persist_version", "biz_id", "biz_name"
+                        "receipts_summary", "pay_persist_version", "files", "id", "persist_version", "biz_id", "biz_name", "apply_on"
                 }));
 
         //提交

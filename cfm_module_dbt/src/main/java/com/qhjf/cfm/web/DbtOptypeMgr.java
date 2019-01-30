@@ -36,16 +36,16 @@ public class DbtOptypeMgr extends AbstractOptypeMgr {
         //新增
         optypes.add(new Optype(Optype.Mode.NORMAL, "dbt_add")
                 .registerValidate(new RequiredParamsValidate(new String[]{
-                        "pay_account_id", "recv_account_id", "payment_amount", "pay_mode", "biz_id", "biz_name"
+                        "pay_account_id", "recv_account_id", "payment_amount", "pay_mode", "biz_id", "biz_name", "apply_on"
                 }))
-                .registKeepParams(new String[]{"pay_account_id", "recv_account_id", "payment_amount", "pay_mode", "payment_summary", "biz_id", "biz_name", "files"}));
+                .registKeepParams(new String[]{"pay_account_id", "recv_account_id", "payment_amount", "pay_mode", "payment_summary", "biz_id", "biz_name", "files", "apply_on"}));
 
         //修改
         optypes.add(new Optype(Optype.Mode.NORMAL, "dbt_chg")
                 .registerValidate(new RequiredParamsValidate(new String[]{
-                        "id", "pay_account_id", "recv_account_id", "payment_amount", "pay_mode", "persist_version", "biz_id", "biz_name"
+                        "id", "pay_account_id", "recv_account_id", "payment_amount", "pay_mode", "persist_version", "biz_id", "biz_name", "apply_on"
                 }))
-                .registKeepParams(new String[]{"id", "pay_account_id", "recv_account_id", "payment_amount", "pay_mode", "payment_summary", "biz_id", "biz_name", "persist_version", "files"}));
+                .registKeepParams(new String[]{"id", "pay_account_id", "recv_account_id", "payment_amount", "pay_mode", "payment_summary", "biz_id", "biz_name", "persist_version", "files", "apply_on"}));
 
         //详细
         optypes.add(new Optype(Optype.Mode.NORMAL, "dbt_detail")
@@ -92,10 +92,10 @@ public class DbtOptypeMgr extends AbstractOptypeMgr {
         //预提交
         optypes.add(new Optype(Optype.Mode.NORMAL, "dbt_presubmit")
                 .registerValidate(new RequiredParamsValidate(new String[]{
-                        "pay_account_id", "recv_account_id", "payment_amount", "pay_mode", "biz_id", "biz_name"
+                        "pay_account_id", "recv_account_id", "payment_amount", "pay_mode", "biz_id", "biz_name", "apply_on"
                 }))
                 .registKeepParams(new String[]{
-                        "id", "persist_version", "pay_account_id", "recv_account_id", "payment_amount", "pay_mode", "payment_summary", "files", "biz_id", "biz_name"
+                        "id", "persist_version", "pay_account_id", "recv_account_id", "payment_amount", "pay_mode", "payment_summary", "files", "biz_id", "biz_name", "apply_on"
                 }));
 
         //提交
@@ -279,11 +279,11 @@ public class DbtOptypeMgr extends AbstractOptypeMgr {
         optypes.add(new Optype(Optype.Mode.NORMAL, "dbtbatch_add")
                 .registerValidate(new RequiredParamsValidate(new String[]{
                         "uuid", "batchno", "pay_account_id",
-                        "pay_mode", "biz_id", "biz_name"
+                        "pay_mode", "biz_id", "biz_name", "apply_on"
                 }))
                 .registKeepParams(new String[]{
                         "uuid", "batchno", "pay_account_id",
-                        "biz_id", "biz_name", "pay_mode", "payment_summary", "files"
+                        "biz_id", "biz_name", "pay_mode", "payment_summary", "files", "apply_on"
                 }));
 
         //修改
@@ -291,12 +291,12 @@ public class DbtOptypeMgr extends AbstractOptypeMgr {
                 .registerValidate(new RequiredParamsValidate(new String[]{
                         "id", "persist_version",
                         "batchno", "uuid", "pay_account_id",
-                        "pay_mode", "biz_id", "biz_name"
+                        "pay_mode", "biz_id", "biz_name", "apply_on"
                 }))
                 .registKeepParams(new String[]{
                         "id", "persist_version",
                         "batchno", "uuid", "pay_account_id", "payment_summary",
-                        "biz_id", "biz_name", "pay_mode", "files"
+                        "biz_id", "biz_name", "pay_mode", "files", "apply_on"
                 }));
 
         //查看
@@ -418,12 +418,12 @@ public class DbtOptypeMgr extends AbstractOptypeMgr {
                 .registerValidate(new RequiredParamsValidate(new String[]{
                         //"id", "persist_version",
                         "batchno", "uuid", "pay_account_id",
-                        "pay_mode", "biz_id", "biz_name"
+                        "pay_mode", "biz_id", "biz_name", "apply_on"
                 }))
                 .registKeepParams(new String[]{
                         "id", "persist_version",
                         "batchno", "uuid", "pay_account_id",
-                        "biz_id", "biz_name", "pay_mode", "payment_summary", "files"
+                        "biz_id", "biz_name", "pay_mode", "payment_summary", "files", "apply_on"
                 }));
 
         //提交

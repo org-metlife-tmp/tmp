@@ -373,6 +373,7 @@ SELECT
 	obb.pay_account_name,
 	obb.pay_account_bank,
 	obb.create_on,
+	obb.apply_on,
 	obb.total_num,
 	obb.batchno,
 	obb.total_amount,

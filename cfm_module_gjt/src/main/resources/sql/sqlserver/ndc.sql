@@ -329,6 +329,7 @@ AND dt.batchno = ?
   obb.recv_bank_prov,
   obb.recv_bank_city,
   obb.create_on,
+  obb.apply_on,
   obb.total_num,
   obb.batchno,
   obb.total_amount,
