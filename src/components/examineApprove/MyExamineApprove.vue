@@ -614,7 +614,7 @@
                                              :show-overflow-tooltip="true">
                                 <template slot-scope="scope">
                                     <span style="color:blue;text-decoration:underline"
-                                          @click="showSonData(scope.row.master_batchno)"
+                                          @click="showSonData(scope.row.master_batchno,scope.row.biz_type)"
                                     >{{ scope.row.master_batchno }}</span>
                                 </template>
                             </el-table-column>
@@ -625,7 +625,7 @@
                                              :show-overflow-tooltip="true">
                                 <template slot-scope="scope">
                                     <span style="color:blue;text-decoration:underline"
-                                          @click="LookSonData(scope.row.source_sys,scope.row.id)"
+                                          @click="LookSonData(scope.row.source_sys,scope.row.id,scope.row.biz_type)"
                                     >{{ scope.row.master_batchno }}</span>
                                 </template>
                             </el-table-column>
@@ -1043,9 +1043,9 @@
                    title="子批次号"
                    :close-on-click-modal="false"
                    top="120px">
-            <div style="font-size:14px" v-if="curBiztype == 24">主批次号:{{ masterBatchNo }}</div>
+            <div style="font-size:14px" v-if="batchNeedBiztype == 24">主批次号:{{ masterBatchNo }}</div>
             <el-table :data="sonTableList"
-                      v-if="curBiztype == 24"
+                      v-if="batchNeedBiztype == 24"
                       border size="mini">
                 <el-table-column prop="source_sys" label="来源系统" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="child_batchno" label="子批次号" :show-overflow-tooltip="true"></el-table-column>
@@ -1058,7 +1058,7 @@
                 <el-table-column prop="interactive_mode" label="交互方式" :show-overflow-tooltip="true"></el-table-column>
             </el-table>
             <el-table :data="sonTableList"
-                      v-if="curBiztype == 26"
+                      v-if="batchNeedBiztype == 26"
                       border size="mini">
                 <el-table-column prop="source_sys" label="来源系统" :show-overflow-tooltip="true"
                                  :formatter="transtSourceSys"></el-table-column>
@@ -2182,6 +2182,7 @@
                 pagDeCurrent: 1,
                 searchDetailData: {},//弹窗的表格查询条件
                 curBiztype: "",//当前的biztype
+                batchNeedBiztype: "", //批量付款查看子批次号号用biztype
                 lookSonVisible: false, //子批次号弹框
                 sonTableList: [],
                 masterBatchNo: ""
@@ -2758,8 +2759,9 @@
                 this.searchDetailData = {};
             },
             //查看子批次号
-            showSonData: function(batchNO){
+            showSonData: function(batchNO,bizType){
                 this.lookSonVisible = true;
+                this.batchNeedBiztype = bizType;
                 this.sonTableList = [];
                 this.masterBatchNo = batchNO;
 
@@ -2787,8 +2789,9 @@
                     console.log(error);
                 })
             },
-            LookSonData: function(sourceSys,childId){
+            LookSonData: function(sourceSys,childId,bizType){
                 this.lookSonVisible = true;
+                this.batchNeedBiztype = bizType;
                 this.sonTableList = [];
 
                 this.$axios({

@@ -348,8 +348,9 @@
                 <span>交易金额(付)：</span>
                 <span v-text="childTotalData.payAmount" class="numText"></span>
                 <span>合计金额：</span>
-                <span v-show="!isPay">收</span>
-                <span v-show="isPay">付</span>
+                <span v-show="!isZero && !isPay">收</span>
+                <span v-show="!isZero && isPay">付</span>
+                <span v-show="isZero">-</span>
                 <span v-text="childTotalData.totalAmount" class="numText"></span>
             </div>
         </div>
@@ -434,7 +435,8 @@
                     recvAmount: "",
                     totalAmount: ""
                 },
-                isPay: false
+                isPay: false,
+                isZero: false
             }
         },
         methods: {
@@ -649,9 +651,15 @@
                 this.childTotalData.recvAmount = recvAmount;
                 if(payAmount > recvAmount){
                     this.isPay = true;
+                    this.isZero = false;
                     this.childTotalData.totalAmount = payAmount - recvAmount;
+                }else if(payAmount == recvAmount){
+                    this.isPay = false;
+                    this.isZero = true;
+                    this.childTotalData.totalAmount = "";
                 }else{
                     this.isPay = false;
+                    this.isZero = false;
                     this.childTotalData.totalAmount = recvAmount - payAmount;
                 }
             },
