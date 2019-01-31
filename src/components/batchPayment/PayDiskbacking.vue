@@ -375,6 +375,7 @@
                         message: "上传成功",
                         duration: 2000
                     });
+                    this.$emit("getCommTable", this.routerMessage);
                 }
             },
         },
