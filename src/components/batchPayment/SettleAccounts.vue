@@ -169,7 +169,8 @@
                         </el-col>
                         <el-col :span="2">
                             <el-form-item>
-                                <el-button type="primary" plain @click="queryData" size="mini">搜索</el-button>
+                                <el-button type="primary" plain @click="queryData" size="mini"
+                                           :disabled="!searchData.channel_id_one && !searchData.channel_id_two">搜索</el-button>
                             </el-form-item>
                         </el-col>
                     </el-row>
@@ -296,7 +297,8 @@
                         </el-col>
                         <el-col :span="2">
                             <el-form-item>
-                                <el-button type="primary" plain @click="queryChildData" size="mini">搜索</el-button>
+                                <el-button type="primary" plain @click="queryChildData" size="mini"
+                                           :disabled="tableList.length == 0">搜索</el-button>
                             </el-form-item>
                         </el-col>
                         <el-col :span="5">
@@ -333,8 +335,8 @@
                     <el-table-column prop="summary" label="摘要" :show-overflow-tooltip="true"></el-table-column>
                     <el-table-column label="状态" :show-overflow-tooltip="true">
                         <template slot-scope="scope">
-                            <span v-if="scope.row.is_inner == 1">{{ transitStatus(scope.row.is_checked) }}</span>
-                            <span v-if="scope.row.is_inner == 0">{{ transitStatus(scope.row.business_check)}}</span>
+                            <span v-if="isInner == 1">{{ transitStatus(true,true,scope.row.is_checked) }}</span>
+                            <span v-if="isInner == 0">{{ transitStatus(true,true,scope.row.business_check)}}</span>
                         </template>
                     </el-table-column>
                     <el-table-column prop="check_service_number" label="对账流水号" width="100px"
@@ -362,7 +364,7 @@
         name: "SettleAccounts",
         created: function () {
             this.$emit("transmitTitle", "结算对账");
-            this.$emit("getCommTable", this.routerMessage);
+            // this.$emit("getCommTable", this.routerMessage);
 
             /*获取常量数据*/
             var constants = JSON.parse(window.sessionStorage.getItem("constants"));
@@ -436,7 +438,8 @@
                     totalAmount: ""
                 },
                 isPay: false,
-                isZero: false
+                isZero: false,
+                isInner: ""
             }
         },
         methods: {
@@ -718,6 +721,7 @@
                 this.pagTotal = val.total_line;
                 this.tableList = val.data;
                 this.pagCurrent = val.page_num;
+                this.isInner = val.ext.is_inner;
             }
         }
     }
