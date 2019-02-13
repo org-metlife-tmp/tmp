@@ -163,7 +163,7 @@
                 .btn-left {
                     float: left;
                     margin-left: 16px;
-                } 
+                }
             }
         }
         //支付确认按钮
@@ -368,7 +368,7 @@
                             height="100%"
                             border size="mini"
                             @selection-change="selectChange">
-                        <el-table-column type="selection" width="38"></el-table-column>
+                        <el-table-column type="selection" width="40"></el-table-column>
                         <el-table-column prop="recv_account_name" label="收款户名" :show-overflow-tooltip="true"></el-table-column>
                         <el-table-column prop="recv_account_no" label="收款账号" :show-overflow-tooltip="true"></el-table-column>
                         <el-table-column prop="recv_account_bank" label="收款行" :show-overflow-tooltip="true"></el-table-column>
@@ -387,7 +387,7 @@
                             <el-button type="warning" size="mini" @click="confirmPay('more')" v-show="searchData.pay_mode==2">
                                 <span class="transmit-icon"><i></i></span>支付确认
                             </el-button>
-                            <el-button type="warning" size="mini" @click="sendlation('more')" v-show="searchData.pay_mode==1"> 
+                            <el-button type="warning" size="mini" @click="sendlation('more')" v-show="searchData.pay_mode==1">
                                 <span class="transmit-icon"><i></i></span>发送
                             </el-button>
                         </div>
@@ -625,7 +625,7 @@
                         });
                         return;
                     }
-                } 
+                }
                 this.payVisible = true;
             },
             //发送
@@ -726,7 +726,7 @@
                             this.routerMessage.params.page_size = 9;
                             this.$emit("getCommTable", this.routerMessage);
                             this.paymentData = [];
-                        } 
+                        }
                         else{//批量作废
                             this.selectData = [];
                             var detail_ids= this.paymentData.detail_ids;
@@ -813,7 +813,7 @@
                         });
                         return;
                     }
-                } 
+                }
                 var optype = this.paymentData.number ? 'dbtbatch_payconfirm' : 'dbtbatch_paybatchconfirm';
                 this.$axios({
                     url: this.queryUrl + "normalProcess",
@@ -841,7 +841,7 @@
                             this.routerMessage.params.page_size = 9;
                             this.$emit("getCommTable", this.routerMessage);
                             this.paymentData = [];
-                        } 
+                        }
                         else{//批量确认
                             this.selectData = [];
                             var detail_ids= this.paymentData.detail_ids;
@@ -888,7 +888,7 @@
                 this.pagTotal = val.total_line;
                 // this.pagCurrent = val.page_num;
                 this.tableList = val.data;
-                
+
             }
         }
     }

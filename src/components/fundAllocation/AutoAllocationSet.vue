@@ -426,7 +426,7 @@
                              size="mini" class="dialogTable"
                              max-height="250"
                             @selection-change="selectChange($event,table)">
-                        <el-table-column type="selection" width="38"></el-table-column>
+                        <el-table-column type="selection" width="40"></el-table-column>
                         <el-table-column prop="child_acc_no" :label="table.org_name" :show-overflow-tooltip="true"></el-table-column>
                         <el-table-column prop="child_acc_bank_name" label=""
                                         :show-overflow-tooltip="true"></el-table-column>

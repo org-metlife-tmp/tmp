@@ -456,7 +456,7 @@
                               :show-header="false"
                               :ref="'collect' + org.org_id"
                               @selection-change="selectChange($event,org)">
-                        <el-table-column type="selection" width="38"></el-table-column>
+                        <el-table-column type="selection" width="40"></el-table-column>
                         <el-table-column prop="child_acc_no" label="收款方账号" :show-overflow-tooltip="true"></el-table-column>
                         <el-table-column prop="child_acc_bank_name" label="收款方开户行"
                                          :show-overflow-tooltip="true"></el-table-column>

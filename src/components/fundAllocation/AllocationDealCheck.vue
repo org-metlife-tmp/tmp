@@ -119,7 +119,7 @@
                       @row-click="getCurRowData"
                       @expand-change="getExpandData"
                       size="mini">
-                <el-table-column type="expand" v-if="!isPending"> 
+                <el-table-column type="expand" v-if="!isPending">
                     <template slot-scope="props" >
                         <section class="childTable">
                             <el-table :data="props.row.list"
@@ -167,7 +167,7 @@
                       height="100%"
                       @selection-change="handleSelectionChange"
                       size="mini">
-                <el-table-column type="selection" width="38"></el-table-column>
+                <el-table-column type="selection" width="40"></el-table-column>
                 <el-table-column prop="acc_no" label="账户号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="acc_name" label="账户名称" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="direction" label="收付方向" :show-overflow-tooltip="true" width="80"></el-table-column>
@@ -367,7 +367,7 @@
                         console.log(error);
                     })
                 }
-            }  
+            }
         },
         watch:{
             isPending:function(val,oldVal){

@@ -181,7 +181,7 @@
                 <el-table :data="tableList" ref="tableRef"
                           @select="selectChange"
                           height="100%" border size="mini">
-                    <el-table-column type="selection" width="38"></el-table-column>
+                    <el-table-column type="selection" width="40"></el-table-column>
                     <el-table-column prop="send_on" label="出盘日期" :show-overflow-tooltip="true"></el-table-column>
                     <el-table-column prop="master_batchno" label="主批次号" :show-overflow-tooltip="true"></el-table-column>
                     <el-table-column prop="child_batchno" label="子批次号" :show-overflow-tooltip="true"></el-table-column>
@@ -317,7 +317,7 @@
                 <el-table :data="childList" border
                           @selection-change="childChange"
                           height="100%" size="mini">
-                    <el-table-column type="selection" width="38"></el-table-column>
+                    <el-table-column type="selection" width="40"></el-table-column>
                     <el-table-column prop="trans_date" label="交易日期" :show-overflow-tooltip="true"></el-table-column>
                     <el-table-column prop="bankcode" label="BankCode" width="100px"
                                      :show-overflow-tooltip="true"></el-table-column>

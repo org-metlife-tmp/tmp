@@ -278,7 +278,7 @@
             <el-table :data="tableList"
                       border size="mini"
                       @selection-change="selectChange">
-                <el-table-column type="selection" width="38"></el-table-column>
+                <el-table-column type="selection" width="40"></el-table-column>
                 <el-table-column prop="recv_account_name" label="收款方名称" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="recv_account_no" label="收款方账号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="recv_account_bank" label="收款方开户行"

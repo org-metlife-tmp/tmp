@@ -100,7 +100,7 @@
     <div id="allotDealCheck">
         <!--顶部按钮-->
         <div class="button-list-right" v-show="isAllot">
-            <el-select v-model="searchData.payment_type" placeholder="请选择调拨类型" size="mini" 
+            <el-select v-model="searchData.payment_type" placeholder="请选择调拨类型" size="mini"
                        @change="queryByPayType">
                 <el-option v-for="(name,k) in paymentTypeList"
                            :key="k"
@@ -171,7 +171,7 @@
                       :expand-row-keys="expandKeys"
                       :row-key="getRowKeys"
                       size="mini">
-                <el-table-column type="expand" prop="list" v-if="!isPending"> 
+                <el-table-column type="expand" prop="list" v-if="!isPending">
                     <template slot-scope="scope">
                         <section class="childTable">
                             <el-table :data="scope.row.list"
@@ -197,7 +197,7 @@
                 <el-table-column prop="recv_account_name" label="收款方公司名称" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="payment_amount" label="金额" :show-overflow-tooltip="true"
                                 :formatter="transitAmount"></el-table-column>
-                <el-table-column prop="create_on" label="日期" :show-overflow-tooltip="true"></el-table-column>         
+                <el-table-column prop="create_on" label="日期" :show-overflow-tooltip="true"></el-table-column>
             </el-table>
         </section>
         <!--分页部分-->
@@ -222,7 +222,7 @@
                       height="100%"
                       @selection-change="handleSelectionChange"
                       size="mini">
-                <el-table-column type="selection" width="38"></el-table-column>
+                <el-table-column type="selection" width="40"></el-table-column>
                 <el-table-column prop="acc_no" label="账户号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="acc_name" label="账户名称" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="bank_name" label="开户行" :show-overflow-tooltip="true"></el-table-column>
@@ -424,7 +424,7 @@
                             console.log(error);
                         })
                     }).catch(() => {
-                        
+
                     });
                 }
             },
@@ -529,7 +529,7 @@
                     this.validatedOptype = "dbttrad_confirmTradingList";
                 }
                 this.$emit("getTableData", this.routerMessage);
-            }  
+            }
         },
         watch:{
             isPending:function(val,oldVal){
@@ -539,7 +539,7 @@
                         searchData[k] = "";
                 }
                 this.childList = [];
-                
+
             },
             tableData: function (val, oldVal) {
                 this.pagSize = val.page_size;

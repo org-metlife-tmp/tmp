@@ -204,7 +204,7 @@
             <el-table :data="tableList"
                       height="100%" border size="mini"
                       @selection-change="selectChange">
-                <el-table-column type="selection" width="38"></el-table-column>
+                <el-table-column type="selection" width="40"></el-table-column>
                 <el-table-column prop="create_time" label="日期" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="channel_code" label="通道编码" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="channel_desc" label="通道描述" :show-overflow-tooltip="true"></el-table-column>
