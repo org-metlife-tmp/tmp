@@ -92,12 +92,28 @@
                 <el-row>
                     <el-col :span="4">
                         <el-form-item>
-                            <el-input v-model="searchData.channel_code" clearable placeholder="请输入通道编码"></el-input>
+                            <el-select v-model="searchData.channel_code" placeholder="请选择通道编码"
+                                       clearable filterable
+                                       style="width:100%">
+                                <el-option v-for="channel in channelList"
+                                           :key="channel.channel_id"
+                                           :label="channel.channel_code"
+                                           :value="channel.channel_id">
+                                </el-option>
+                            </el-select>
                         </el-form-item>
                     </el-col>
                     <el-col :span="4">
                         <el-form-item>
-                            <el-input v-model="searchData.channel_desc" clearable placeholder="请输入通道描述"></el-input>
+                            <el-select v-model="searchData.channel_desc" placeholder="请选择通道描述"
+                                       clearable filterable
+                                       style="width:100%">
+                                <el-option v-for="channel in channelList"
+                                           :key="channel.channel_id"
+                                           :label="channel.channel_desc"
+                                           :value="channel.channel_id">
+                                </el-option>
+                            </el-select>
                         </el-form-item>
                     </el-col>
                     <el-col :span="4">
@@ -362,7 +378,7 @@
                                 按笔数收取
                                 <el-input style="width:60px;vertical-align:middle;margin:0 16px 0 6px"
                                           v-model.number="chargeMoney.number" :disabled="isLook || dialogData.charge_mode === 0"
-                                          @blur="numberRule('percentage')"></el-input>
+                                          @blur="numberRule('number')"></el-input>
                                 元/每笔
                             </el-radio>
                         </el-form-item>
@@ -487,6 +503,8 @@
             this.getOrgList();
             //bankcode
             this.getBankcode();
+            //通道编码
+            this.getChannelList();
         },
         props: ["tableData"],
         data: function () {
@@ -523,6 +541,7 @@
                 netModeList: {},
                 orgList: [],
                 bankcodeList: [],
+                channelList: [],
                 dialogVisible: false, //弹框数据
                 dialogTitle: "新增",
                 dialogData: {
@@ -547,7 +566,7 @@
                     op_acc_no: "",
                     op_acc_name: "",
                     op_bank_name: "",
-                    is_checkout: 0,
+                    is_checkout: 1,
                     remark: "",
                 },
                 formLabelWidth: "110px",
@@ -709,9 +728,11 @@
 
                 var dialogData = this.dialogData;
                 for (var k in dialogData) {
-                    if (k == "interactive_mode" || k == "is_checkout") {
+                    if (k == "interactive_mode") {
                         dialogData[k] = 0;
-                    } else {
+                    } else if(k == "is_checkout"){
+                        dialogData[k] = "1";
+                    }else{
                         dialogData[k] = "";
                     }
                 }
@@ -790,6 +811,31 @@
                     } else {
                         var data = result.data.data;
                         this.bankcodeList = data;
+                    }
+
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            },
+            //获取通道编码
+            getChannelList: function () {
+                this.$axios({
+                    url: this.queryUrl + "normalProcess",
+                    method: "post",
+                    data: {
+                        optype: "sftchannel_getallchannel",
+                        params: {}
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        });
+                    } else {
+                        var data = result.data.data;
+                        this.channelList = data;
                     }
 
                 }).catch(function (error) {
@@ -968,7 +1014,7 @@
                 if (targetVal && (typeof targetVal != "number" || targetVal < 0)) {
                     this.$message({
                         type: "warning",
-                        message: "百分比只能为大于零的数字",
+                        message: "请输入大于零的数字",
                         duration: 2000
                     });
                     this.chargeMoney[target] = "";

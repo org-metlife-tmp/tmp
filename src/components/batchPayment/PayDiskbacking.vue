@@ -24,6 +24,7 @@
             /*时间控件*/
             .el-date-editor {
                 width: 100%;
+                max-width: 210px;
             }
         }
 
@@ -154,6 +155,7 @@
                 <el-table-column prop="channel_code" label="通道编码" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="channel_desc" label="通道描述" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="send_on" label="出盘日期" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="back_on" label="回盘日期" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="pay_total_amount" label="总金额" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="pay_total_num" label="总笔数" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="success_amount" label="成功金额" :show-overflow-tooltip="true"></el-table-column>
@@ -330,7 +332,7 @@
                     url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
-                        optype: "sftexcept_listexport",
+                        optype: "diskbacking_listexport",
                         params: params
                     },
                     responseType: 'blob'

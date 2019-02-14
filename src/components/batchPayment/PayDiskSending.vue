@@ -24,6 +24,7 @@
             /*时间控件*/
             .el-date-editor {
                 width: 100%;
+                max-width: 210px;
             }
         }
 

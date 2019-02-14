@@ -608,7 +608,7 @@
                     <p class="mg-four">批量付款</p>
                 </template>
                 <el-menu-item-group>
-                    <el-menu-item index="/batch-payment/prevent-repet" v-if="menuList.DataAntiDualWaring">收付数据防重预警</el-menu-item>
+                    <el-menu-item index="/batch-payment/prevent-repet" v-if="menuList.DataAntiDualWaring">支付数据防重预警</el-menu-item>
                     <el-menu-item index="/batch-payment/pay-check-batch" v-if="menuList.PayCheckAllot">核对组批</el-menu-item>
                     <el-menu-item index="/batch-payment/pay-disk-sending" v-if="menuList.PayBatchSend">盘片发送</el-menu-item>
                     <el-menu-item index="/batch-payment/pay-diskbacking" v-if="menuList.PayBatchResp">盘片回盘</el-menu-item>

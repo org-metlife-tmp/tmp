@@ -24,6 +24,7 @@
             /*时间控件*/
             .el-date-editor {
                 width: 100%;
+                max-width: 210px;
             }
         }
 
@@ -174,6 +175,7 @@
                 <el-table-column prop="channel_code" label="通道编码" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="channel_desc" label="通道描述" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="send_on" label="出盘日期" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="total_num" label="总笔数" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="total_amount" label="总金额" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="service_status" label="状态" :show-overflow-tooltip="true"
                                  :formatter="transitStatus"></el-table-column>

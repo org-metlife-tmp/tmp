@@ -245,7 +245,7 @@
                             </el-select>
                         </el-form-item>
                     </el-col>
-                    <el-col :span="12">
+                    <el-col :span="12" style="height:50.4px">
                         <el-form-item label="bankkey状态">
                             <el-switch v-model="dialogData.bankkey_status"
                                        active-value="1" :disabled="isLook"
@@ -257,8 +257,10 @@
                     <el-col :span="12">
                         <el-form-item label="通道编码" prop="channel_id">
                             <el-select v-model="dialogData.channel_id" placeholder="请选择通道编码"
-                                       clearable filterable @change="setChannel" :disabled="isLook || !dialogData.pay_mode"
+                                       clearable filterable
+                                       @change="setChannel"
                                        @visible-change="getChannelList"
+                                       :disabled="isLook || !dialogData.pay_mode"
                                        style="width:100%">
                                 <el-option v-for="channel in channelList"
                                            :key="channel.channel_id"
@@ -278,8 +280,8 @@
                             <el-switch v-model="dialogData.is_source_back"
                                        active-value="1" :disabled="isLook"
                                        inactive-value="0"></el-switch>
-                            <span v-show="dialogData.is_source_back == 1">是</span><span
-                                v-show="dialogData.is_source_back == 0">否</span>
+                            <span v-show="dialogData.is_source_back == 1">是</span>
+                            <span v-show="dialogData.is_source_back == 0">否</span>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
@@ -402,6 +404,7 @@
                     pay_mode: "",
                     bankkey_status: "",
                     channel_id: "",
+                    channel_desc: "",
                     bank_type: "",
                     is_source_back: "",
                     subordinate_channel: "0",
@@ -577,7 +580,7 @@
                 if (val) {
                     var channelList = this.channelList;
                     for (var i = 0; i < channelList.length; i++) {
-                        if (channelList[i].channel_id = val) {
+                        if (channelList[i].channel_id == val) {
                             this.dialogData.channel_desc = channelList[i].channel_desc;
                             break;
                         }

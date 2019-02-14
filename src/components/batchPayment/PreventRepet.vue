@@ -24,6 +24,7 @@
             /*时间控件*/
             .el-date-editor {
                 width: 100%;
+                max-width: 210px;
             }
         }
 
@@ -173,8 +174,10 @@
                 <el-table-column prop="pay_date" label="应付日期" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="pay_code" label="支付号码" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="pay_mode" label="支付方式" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="bank_key" label="bankkey" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="bankkey_desc" label="bankkey描述" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="bank_key" label="bankkey" width="90"
+                                 :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="bankkey_desc" label="bankkey描述" width="110"
+                                 :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="biz_type" label="业务类型" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="org_name" label="机构名称" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="preinsure_bill_no" label="投保单号" :show-overflow-tooltip="true"></el-table-column>
@@ -229,7 +232,7 @@
     export default {
         name: "PreventRepet",
         created: function () {
-            this.$emit("transmitTitle", "收付数据防重预警");
+            this.$emit("transmitTitle", "支付数据防重预警");
             this.$emit("getCommTable", this.routerMessage);
 
             /*获取常量数据*/

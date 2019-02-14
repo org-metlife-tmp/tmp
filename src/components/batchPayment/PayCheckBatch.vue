@@ -24,6 +24,7 @@
             /*时间控件*/
             .el-date-editor {
                 width: 100%;
+                max-width: 210px;
             }
         }
 
@@ -148,12 +149,30 @@
                     </el-col>
                     <el-col :span="4">
                         <el-form-item>
+                            <el-select v-model="searchData.channel_desc" placeholder="请选择通道描述"
+                                       clearable filterable
+                                       style="width:100%">
+                                <el-option v-for="channel in channelList"
+                                           :key="channel.channel_id"
+                                           :label="channel.channel_desc"
+                                           :value="channel.channel_id">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="4">
+                        <el-form-item>
                             <el-input v-model="searchData.preinsure_bill_no" clearable placeholder="请输入投保单号"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="4">
                         <el-form-item>
                             <el-input v-model="searchData.insure_bill_no" clearable placeholder="请输入保单号"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="2">
+                        <el-form-item>
+                            <el-button type="primary" plain @click="queryData" size="mini">搜索</el-button>
                         </el-form-item>
                     </el-col>
                     <el-col :span="4">
@@ -169,11 +188,6 @@
                             </el-select>
                         </el-form-item>
                     </el-col>
-                    <el-col :span="2">
-                        <el-form-item>
-                            <el-button type="primary" plain @click="queryData" size="mini">搜索</el-button>
-                        </el-form-item>
-                    </el-col>
                     <el-col :span="4">
                         <el-form-item>
                             <el-input v-model="searchData.recv_acc_no" clearable placeholder="请输入客户账号"></el-input>
@@ -184,7 +198,7 @@
                             <el-input v-model="searchData.bank_key" clearable placeholder="请输入bankkey"></el-input>
                         </el-form-item>
                     </el-col>
-                    <el-col :span="16">
+                    <el-col :span="12">
                         <el-form-item style="margin-bottom:0px">
                             <el-checkbox-group v-model="searchData.status">
                                 <el-checkbox v-for="(name,k) in statusList"
@@ -280,6 +294,7 @@
                 searchData: { //搜索条件
                     source_sys: "0",
                     channel_id: "",
+                    channel_desc: "",
                     preinsure_bill_no: "",
                     insure_bill_no: "",
                     org_id: "",

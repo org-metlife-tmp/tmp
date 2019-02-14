@@ -31,6 +31,7 @@
             /*时间控件*/
             .el-date-editor {
                 width: 100%;
+                max-width: 210px;
             }
         }
 
@@ -342,6 +343,7 @@
                     <el-table-column prop="check_service_number" label="对账流水号" width="100px"
                                      :show-overflow-tooltip="true"></el-table-column>
                     <el-table-column prop="check_user_name" label="操作人" :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column prop="check_date" label="操作日期" :show-overflow-tooltip="true"></el-table-column>
                 </el-table>
             </section>
             <div class="allData">
@@ -438,7 +440,7 @@
                     totalAmount: ""
                 },
                 isPay: false,
-                isZero: false,
+                isZero: true,
                 isInner: ""
             }
         },
