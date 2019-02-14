@@ -631,11 +631,11 @@
                     this.batchidList.push(item.id);
                     this.versionList.push(item.persist_version);
                 }
-                this.totalData.total_amount = allAmount;
+                this.totalData.total_amount = this.$common.transitSeparator(allAmount);
                 this.totalData.total_num = allNum;
-                this.totalData.success_amount = sucAmount;
+                this.totalData.success_amount = this.$common.transitSeparator(sucAmount);
                 this.totalData.success_num = sucNum;
-                this.totalData.fail_amount = filAmount;
+                this.totalData.fail_amount = this.$common.transitSeparator(filAmount);
                 this.totalData.fail_num = filNum;
             },
             childChange: function (val) {
@@ -652,12 +652,12 @@
                     this.tradingList.push(item.id);
                 }
 
-                this.childTotalData.payAmount = payAmount;
-                this.childTotalData.recvAmount = recvAmount;
+                this.childTotalData.payAmount = this.$common.transitSeparator(payAmount);
+                this.childTotalData.recvAmount = this.$common.transitSeparator(recvAmount);
                 if(payAmount > recvAmount){
                     this.isPay = true;
                     this.isZero = false;
-                    this.childTotalData.totalAmount = payAmount - recvAmount;
+                    this.childTotalData.totalAmount = this.$common.transitSeparator(payAmount - recvAmount);
                 }else if(payAmount == recvAmount){
                     this.isPay = false;
                     this.isZero = true;
@@ -665,7 +665,7 @@
                 }else{
                     this.isPay = false;
                     this.isZero = false;
-                    this.childTotalData.totalAmount = recvAmount - payAmount;
+                    this.childTotalData.totalAmount = this.$common.transitSeparator(recvAmount - payAmount);
                 }
             },
             //对账确认
