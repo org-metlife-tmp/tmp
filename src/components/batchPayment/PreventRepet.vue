@@ -13,8 +13,31 @@
         }
         .button-list-left {
             position: absolute;
-            top: -56px;
-            left: -21px;
+            top: -50px;
+            left: -20px;
+
+            ul{
+                font-size: 14px;
+                color: #b1b1b1;
+                text-align: center;
+                height: 30px;
+                line-height: 30px;
+
+                li{
+                    float: left;
+                    margin-right: 4px;
+                    height: 100%;
+                    width: 100px;
+                    border-radius: 3px 3px 0 0;
+                    cursor: pointer;
+                    background-color: #f2f2f2;
+                }
+
+                .active{
+                    color: #00b3ed;
+                    background-color: #fff;
+                }
+            }
         }
 
         /*搜索区*/
@@ -69,7 +92,7 @@
     <div id="preventRepet">
         <!-- 顶部按钮-->
         <div class="button-list-left">
-            <el-select v-model="searchData.os_source"
+            <!--<el-select v-model="searchData.os_source"
                        filterable size="mini"
                        @change="queryData">
                 <el-option v-for="(item,key) in sourceList"
@@ -77,7 +100,11 @@
                            :label="item"
                            :value="key">
                 </el-option>
-            </el-select>
+            </el-select>-->
+            <ul>
+                <li :class="{'active': searchData.os_source == '0'}" @click="switchTab('0')">LA</li>
+                <li :class="{'active': searchData.os_source == '1'}" @click="switchTab('1')">EBS</li>
+            </ul>
         </div>
         <div class="button-list-right">
             <el-button type="warning" size="mini" @click="exportFun">导出</el-button>
@@ -169,8 +196,6 @@
         <section class="table-content">
             <el-table :data="tableList"
                       border size="mini">
-                <el-table-column prop="os_source" label="来源系统" :show-overflow-tooltip="true"
-                                 :formatter="transitSource"></el-table-column>
                 <el-table-column prop="pay_date" label="应付日期" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="pay_code" label="支付号码" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="pay_mode" label="支付方式" :show-overflow-tooltip="true"></el-table-column>
@@ -309,6 +334,20 @@
                 this.routerMessage.params.page_num = 1;
                 this.$emit("getCommTable", this.routerMessage);
             },
+            //切换标签
+            switchTab: function(tab){
+                var searchData = this.searchData;
+                for(var k in searchData){
+                    if(k == "os_source"){
+                        searchData[k] = tab;
+                    }else if(k == "status"){
+                        searchData[k] = [];
+                    }else{
+                        searchData[k] = "";
+                    }
+                }
+                this.queryData();
+            },
             //获取机构列表
             getOrgList: function () {
                 this.$axios({
@@ -378,10 +417,6 @@
                 }).catch(function (error) {
                     console.log(error);
                 })
-            },
-            //展示格式转换-来源系统
-            transitSource: function (row, column, cellValue, index) {
-                return this.sourceList[cellValue];
             },
             //展示格式转换-支付方式
             transitMode: function (row, column, cellValue, index) {

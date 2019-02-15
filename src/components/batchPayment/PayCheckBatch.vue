@@ -13,8 +13,31 @@
         }
         .button-list-left {
             position: absolute;
-            top: -56px;
-            left: -21px;
+            top: -50px;
+            left: -20px;
+
+            ul{
+                font-size: 14px;
+                color: #b1b1b1;
+                text-align: center;
+                height: 30px;
+                line-height: 30px;
+
+                li{
+                    float: left;
+                    margin-right: 4px;
+                    height: 100%;
+                    width: 100px;
+                    border-radius: 3px 3px 0 0;
+                    cursor: pointer;
+                    background-color: #f2f2f2;
+                }
+
+                .active{
+                    color: #00b3ed;
+                    background-color: #fff;
+                }
+            }
         }
 
         /*搜索区*/
@@ -103,14 +126,18 @@
     <div id="payCheckBatch">
         <!-- 顶部按钮-->
         <div class="button-list-left">
-            <el-select v-model="searchData.source_sys"
+            <!--<el-select v-model="searchData.source_sys"
                        filterable size="mini">
                 <el-option v-for="(item,key) in sourceList"
                            :key="key"
                            :label="item"
                            :value="key">
                 </el-option>
-            </el-select>
+            </el-select>-->
+            <ul>
+                <li :class="{'active': searchData.source_sys == '0'}" @click="switchTab('0')">LA</li>
+                <li :class="{'active': searchData.source_sys == '1'}" @click="switchTab('1')">EBS</li>
+            </ul>
         </div>
         <div class="button-list-right">
             <el-button type="warning" size="mini" @click="exportFun">导出</el-button>
@@ -332,6 +359,20 @@
                 this.routerMessage.params.start_date = val ? val[0] : "";
                 this.routerMessage.params.end_date = val ? val[1] : "";
                 this.$emit("getCommTable", this.routerMessage);
+            },
+            //切换标签
+            switchTab: function(tab){
+                var searchData = this.searchData;
+                for(var k in searchData){
+                    if(k == "source_sys"){
+                        searchData[k] = tab;
+                    }else if(k == "status"){
+                        searchData[k] = [];
+                    }else{
+                        searchData[k] = "";
+                    }
+                }
+                this.tableList = [];
             },
             //获取机构列表
             getOrgList: function () {

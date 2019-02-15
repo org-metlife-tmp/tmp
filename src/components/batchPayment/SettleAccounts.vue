@@ -103,7 +103,7 @@
     <div id="settleAccounts">
         <!-- 顶部按钮-->
         <div class="button-list-left">
-            <el-select v-model="searchData.source_sys"
+            <!--<el-select v-model="searchData.source_sys"
                        filterable size="mini"
                        @change="queryData">
                 <el-option v-for="(item,key) in sourceList"
@@ -111,7 +111,7 @@
                            :label="item"
                            :value="key">
                 </el-option>
-            </el-select>
+            </el-select>-->
         </div>
         <div class="dropdown-content">
             <!--搜索区-->
@@ -390,11 +390,11 @@
                     params: {
                         page_size: 7,
                         page_num: 1,
-                        source_sys: "0"
+                        // source_sys: "0"
                     }
                 },
                 searchData: { //搜索条件
-                    source_sys: "0",
+                    // source_sys: "0",
                     channel_id_one: "",
                     channel_id_two: "",
                     is_checked: []
