@@ -61,12 +61,12 @@ public class DiskBackingWorkBook extends AbstractWorkBook {
     	}
         if(WebConstant.SftOsSource.LA.getKey() == source_sys){
             //LA
-            this.fileName = "LA_Return_FH_"+ RedisSericalnoGenTool.genShortSerial() +"_"+DateKit.toStr(new Date(), "YYYYMMDD")+".xls";
+            this.fileName = "LA_Return_FH_"+ RedisSericalnoGenTool.genShortSerial() +"_"+DateKit.toStr(new Date(), "YYYYMMdd")+".xls";
         }else if(WebConstant.SftOsSource.EBS.getKey() == source_sys){
             //EBS
-            this.fileName = "EBS_Return_FH_"+ RedisSericalnoGenTool.genShortSerial() +"_"+DateKit.toStr(new Date(), "YYYYMMDD")+".xls";
+            this.fileName = "EBS_Return_FH_"+ RedisSericalnoGenTool.genShortSerial() +"_"+DateKit.toStr(new Date(), "YYYYMMdd")+".xls";
         }
-        sqlPara = Db.getSqlPara("disk_downloading.findDiskSendingList", Kv.by("map", record.getColumns()));
+        sqlPara = Db.getSqlPara("disk_backing.findDiskSendingList", Kv.by("map", record.getColumns()));
         List<Record> recordList = Db.find(sqlPara);
         return POIUtil.createExcel(recordList, this);
     }

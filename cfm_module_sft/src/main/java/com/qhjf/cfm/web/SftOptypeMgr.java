@@ -135,8 +135,9 @@ public class SftOptypeMgr extends AbstractOptypeMgr {
         /** ============================ 批量付结算对账 begin ============================ */
         //查询所有批次
         optypes.add(new Optype(Optype.Mode.NORMAL, "sftpaycheck_batchlist")
-                .registKeepParams(new String[]{"source_sys", "channel_id_one", "channel_id_two", "is_checked", "start_date", "end_date",
-                        "page_size", "page_num"}));
+                .registKeepParams(new String[]{"channel_id_one", "channel_id_two", "is_checked", "start_date", "end_date",
+                        "page_size", "page_num"})
+                .registerValidate(new RequiredParamsValidate(new String[]{"channel_id_one"})));
 
         //查找交易流水
         optypes.add(new Optype(Optype.Mode.NORMAL, "sftpaycheck_tradingList")

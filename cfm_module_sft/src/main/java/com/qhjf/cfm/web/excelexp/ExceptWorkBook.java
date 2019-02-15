@@ -31,7 +31,7 @@ public class ExceptWorkBook extends AbstractWorkBook {
                 "revoke_user_name", "revoke_date"
         };
         this.titles = new String[]{
-                "来源系统", "主批次号", "子批次号", "交互方式", "通道编码", "通道描述", "初盘日期", "总金额", "总笔数", "状态", "异常原因"
+                "来源系统", "主批次号", "子批次号", "交互方式", "通道编码", "通道描述", "出盘日期", "总金额", "总笔数", "状态", "异常原因"
                 , "回退申请人", "申请日期"
         };
         this.sheetName = "批量付异常数据列表";
@@ -55,17 +55,16 @@ public class ExceptWorkBook extends AbstractWorkBook {
             }
         }
 
-        record.remove("source_sys");
         record.set("codes", codes);
         AccCommonService.setExceptStatus(record, "service_status");
         if(WebConstant.SftOsSource.LA.getKey() == osSource){
             //LA
             this.fileName = "LA_Abnormal_FH_" + RedisSericalnoGenTool.genShortSerial() + "_"
-                    +DateKit.toStr(new Date(), "YYYYMMDD")+".xls";
+                    +DateKit.toStr(new Date(), "YYYYMMdd")+".xls";
         }else if(WebConstant.SftOsSource.EBS.getKey() == osSource){
             //EBS
             this.fileName = "EBS_Abnormal_FH_" + RedisSericalnoGenTool.genShortSerial() + "_"
-                    +DateKit.toStr(new Date(), "YYYYMMDD")+".xls";
+                    +DateKit.toStr(new Date(), "YYYYMMdd")+".xls";
         }
         List<Record> recordList = Db.find(Db.getSqlPara("except.exceptlist", Kv.by("map", record.getColumns())));
         for(Record rd : recordList){

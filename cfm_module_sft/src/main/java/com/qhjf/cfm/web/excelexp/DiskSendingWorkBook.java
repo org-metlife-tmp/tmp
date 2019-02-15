@@ -60,10 +60,10 @@ public class DiskSendingWorkBook extends AbstractWorkBook {
     	}
         if(WebConstant.SftOsSource.LA.getKey() == source_sys){
             //LA
-            this.fileName = "LA_Send_FH_"+ RedisSericalnoGenTool.genShortSerial() +"_"+DateKit.toStr(new Date(), "YYYYMMDD")+".xls";
+            this.fileName = "LA_Send_FH_"+ RedisSericalnoGenTool.genShortSerial() +"_"+DateKit.toStr(new Date(), "YYYYMMdd")+".xls";
         }else if(WebConstant.SftOsSource.EBS.getKey() == source_sys){
             //EBS
-            this.fileName = "EBS_Send_FH_"+ RedisSericalnoGenTool.genShortSerial() +"_"+DateKit.toStr(new Date(), "YYYYMMDD")+".xls";
+            this.fileName = "EBS_Send_FH_"+ RedisSericalnoGenTool.genShortSerial() +"_"+DateKit.toStr(new Date(), "YYYYMMdd")+".xls";
         }
         sqlPara = Db.getSqlPara("disk_downloading.findDiskSendingList", Kv.by("map", record.getColumns()));
         List<Record> recordList = Db.find(sqlPara);

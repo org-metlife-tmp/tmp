@@ -23,7 +23,7 @@ public class ChannelSettingWorkBook extends AbstractWorkBook {
 
     public ChannelSettingWorkBook() {
         this.optype = "sftchannel_listexport";
-        this.fileName = "FH_"+DateKit.toStr(new Date(), "YYYYMMDD")+".xls";
+        this.fileName = "FH_"+DateKit.toStr(new Date(), "YYYYMMdd")+".xls";
         this.titleNames = new String[]{
                 "channel_code", "channel_desc", "pay_mode_name", "pay_attr_name", "interactive_mode_name",
                 "bankcode", "acc_no", "org_name", "single_file_limit", "is_checkout_name", "net_mode"

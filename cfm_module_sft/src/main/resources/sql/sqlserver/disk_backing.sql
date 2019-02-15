@@ -16,7 +16,9 @@
    update
    ebs_origin_pay_data
    set 
-   tmp_status = 1
+   tmp_status = 1,
+   paybankaccno = ?,
+   paybankcode = ? ,
    where
    id
    in
@@ -29,6 +31,7 @@
 #sql("selectLaOriginData")
    select
     *
+   from
    la_origin_pay_data
    where
    id
@@ -41,6 +44,7 @@
 #sql("selectEbsOriginData")
    select
     *
+   from
    ebs_origin_pay_data
    where
    id

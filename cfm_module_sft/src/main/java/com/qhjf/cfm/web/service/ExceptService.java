@@ -160,9 +160,9 @@ public class ExceptService {
                 boolean flag = CommonService.update("pay_batch_total",
                         new Record().set("service_status", WebConstant.SftCheckBatchStatus.HTSPZ.getKey())
                                 .set("persist_version", TypeUtils.castToInt(childRecord.get("persist_version"))+2)
-                                .set("create_by", userInfo.getName())
+                                .set("create_by", userInfo.getUsr_id())
                                 .set("create_on", new Date())
-                                .set("update_by", userInfo.getName())
+                                .set("update_by", userInfo.getUsr_id())
                                 .set("update_on", new Date()),
                         new Record().set("id", id).set("persist_version",TypeUtils.castToInt(childRecord.get("persist_version"))+1));
                 if(!flag){

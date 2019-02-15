@@ -61,7 +61,7 @@ public class ExceptController extends CFMBaseController {
 
     }
 
-    @Auth(hasForces = {"PayBatchDoExcp"})
+    @Auth(hasForces = {"PayBatchDoExcp", "MyWFPLAT"})
     public void detail() {
         try {
             Record record = getRecordByParamsStrong();

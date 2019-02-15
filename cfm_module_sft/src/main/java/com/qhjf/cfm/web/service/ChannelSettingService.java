@@ -11,6 +11,7 @@ import com.qhjf.cfm.utils.CommonService;
 import com.qhjf.cfm.web.UserInfo;
 import com.qhjf.cfm.web.channel.manager.ChannelManager;
 import com.qhjf.cfm.web.constant.WebConstant;
+import com.qhjf.cfm.web.utils.ValidateUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +28,7 @@ import java.util.*;
 public class ChannelSettingService {
 
     private static Logger log = LoggerFactory.getLogger(ChannelSettingService.class);
+    private ZftService zftservice = new ZftService();
     /**
      * 通道设置 - 查看分页列表
      *
@@ -61,11 +63,27 @@ public class ChannelSettingService {
             }
         }
         if(StringUtils.isEmpty(record.getStr("charge_amount"))){
-            record.set("charge_amount", 0);
+            record.set("charge_amount", null);
+        }else{
+            if(!ValidateUtil.checkNumber(record.getStr("charge_amount"))){
+                throw new ReqDataException("手续费不合法!");
+            }
+        }
+        if(StringUtils.isEmpty(record.getStr("single_file_limit"))){
+            record.set("single_file_limit", null);
+        }else{
+            if(!ValidateUtil.checkNumber(record.getStr("single_file_limit"))){
+                throw new ReqDataException("单批次文件笔数限制不合法!");
+            }
         }
         if(StringUtils.isEmpty(record.getStr("single_amount_limit"))){
-            record.set("single_amount_limit", 0);
+            record.set("single_amount_limit", null);
+        }else{
+            if(!ValidateUtil.checkNumber(record.getStr("single_amount_limit"))){
+                throw new ReqDataException("单笔金额限制不合法!");
+            }
         }
+
         //当前通道编码是否存在
         Record code = Db.findById("channel_setting", "channel_code", channel_code);
         if(code != null){
@@ -108,9 +126,8 @@ public class ChannelSettingService {
                 if(paybean == null){
                     record.set("is_inner", 0);
                 }else{
-                    record.set("is_inner", 1);
-                }
-
+                    record.set("is_inner", 1);                                    
+                }               
             }
         }
 
@@ -121,17 +138,55 @@ public class ChannelSettingService {
         record.set("update_by", userInfo.getUsr_id());
         record.set("update_on", new Date());
         record.set("persist_version", 0);
-
         boolean flag = Db.tx(new IAtom() {
             @Override
             public boolean run() throws SQLException {
-                return Db.save("channel_setting", record);
+            	Integer is_inner = record.getInt("is_inner");
+                boolean save = Db.save("channel_setting", record);
+                if(save){
+                	 if(is_inner == 0){
+                     	log.info("=========第三方账号");
+                     	List<Record> all_bank_info = Db.find(Db.getSql("oa_interface.getBankJQ"), record.getStr("op_bank_name"));
+                     	if(all_bank_info == null || all_bank_info.size() == 0){
+                     		log.error("=========未根据开户行在 all_bank_info 表中查询到cnaps_code");
+                     		record.set("bankinfoFlag", "error");
+                     		return false ;
+                     	}
+                     	//维护收款人信息表 supplier_acc_info
+                     	List<Record> supplier = Db.find(Db.getSql("supplier.querySupplier"),record.getStr("op_acc_no"));               	
+                         if(null != supplier && supplier.size() > 0){                        	 
+                         	log.info("=========第三方账户已存在");
+                         	return zftservice.chgSupplier(new Record().set("acc_name", record.getStr("op_acc_name"))
+                         			                           .set("acc_no", record.getStr("op_acc_no"))
+                         			                           .set("cnaps_code", all_bank_info.get(0).get("cnaps_code"))
+                         			                           .set("bank_name", record.getStr("op_bank_name")) , userInfo );
+                         }else{
+                         	log.info("=========第三方账户不存在");   //getBankJQ
+                         	record.set("recv_account_name", record.getStr("op_acc_name"));
+                         	record.set("recv_account_no", record.getStr("op_acc_no"));
+                         	record.set("recv_bank_cnaps", all_bank_info.get(0).get("cnaps_code"));
+                         	try {
+								zftservice.insertSupplier(record, userInfo);
+							} catch (ReqDataException e) {
+								e.printStackTrace();
+								return false ;
+							}
+                         }
+                     }else{
+                     	return save ;
+                     }
+                }else {
+                	return save ;
+                }               
+                return true ;
             }
         });
         if (flag) {
             return Db.findFirst(Db.getSql("channel_setting.getchannelbyid"), record.get("id"));
         }
-
+        if("error".equals(record.getStr("bankinfoFlag"))) {
+        	throw new DbProcessException("未在系统内查询到查询到此开户行信息,请确认");
+        }
         throw new DbProcessException("保存通道失败!");
     }
 
@@ -151,6 +206,33 @@ public class ChannelSettingService {
             throw new ReqDataException("未找到有效的通道信息!");
         }
         int interactiveMode = TypeUtils.castToInt(record.get("interactive_mode"));
+        int pay_attr = TypeUtils.castToInt(record.get("pay_attr"));
+        if(pay_attr == WebConstant.SftPayAttr.PAY.getKey()){
+            if(StringUtils.isEmpty(record.getStr("pay_attr"))){
+                throw new ReqDataException("付方向结算模式不能为空!");
+            }
+        }
+        if(StringUtils.isEmpty(record.getStr("charge_amount"))){
+            record.set("charge_amount", null);
+        }else{
+            if(!ValidateUtil.checkNumber(record.getStr("charge_amount"))){
+                throw new ReqDataException("手续费不合法!");
+            }
+        }
+        if(StringUtils.isEmpty(record.getStr("single_file_limit"))){
+            record.set("single_file_limit", null);
+        }else{
+            if(!ValidateUtil.checkNumber(record.getStr("single_file_limit"))){
+                throw new ReqDataException("单批次文件笔数限制不合法!");
+            }
+        }
+        if(StringUtils.isEmpty(record.getStr("single_amount_limit"))){
+            record.set("single_amount_limit", null);
+        }else{
+            if(!ValidateUtil.checkNumber(record.getStr("single_amount_limit"))){
+                throw new ReqDataException("单笔金额限制不合法!");
+            }
+        }
         //报盘的 报盘模板不能为空，直联的 直联通道不能为空
         if(interactiveMode == 0){
             if(StringUtils.isEmpty(record.getStr("direct_channel"))){
@@ -207,13 +289,51 @@ public class ChannelSettingService {
         boolean flag = Db.tx(new IAtom() {
             @Override
             public boolean run() throws SQLException {
-                return CommonService.update("channel_setting",
+                boolean update = CommonService.update("channel_setting",
                         record,
-                        new Record().set("id", id).set("persist_version", old_version));
-            }
+                        new Record().set("id", id).set("persist_version", old_version));           
+                if(update){
+            	    if(0 == record.getInt("is_inner")){
+                     	log.info("=========第三方账号");
+                     	List<Record> all_bank_info = Db.find(Db.getSql("oa_interface.getBankJQ"), record.getStr("op_bank_name"));
+                     	if(all_bank_info == null || all_bank_info.size() == 0){
+                     		log.error("=========未根据开户行在 all_bank_info 表中查询到cnaps_code");
+                     		record.set("bankinfoFlag", "error");
+                     		return false ;
+                     	}
+                     	//维护收款人信息表 supplier_acc_info
+                     	List<Record> supplier = Db.find(Db.getSql("supplier.querySupplier"),record.getStr("op_acc_no"));               	
+                         if(null != supplier && supplier.size() > 0){                        	 
+                         	log.info("=========第三方账户已存在");
+                         	return zftservice.chgSupplier(new Record().set("acc_name", record.getStr("op_acc_name"))
+                         			                           .set("acc_no", record.getStr("op_acc_no"))
+                         			                           .set("cnaps_code", all_bank_info.get(0).get("cnaps_code"))
+                         			                           .set("bank_name", record.getStr("op_bank_name")) , userInfo );
+                         }else{
+                         	log.info("=========第三方账户不存在");   //getBankJQ
+                         	record.set("recv_account_name", record.getStr("op_acc_name"));
+                         	record.set("recv_account_no", record.getStr("op_acc_no"));
+                         	record.set("recv_bank_cnaps", all_bank_info.get(0).get("cnaps_code"));
+                         	try {
+								zftservice.insertSupplier(record, userInfo);
+							} catch (ReqDataException e) {
+								e.printStackTrace();
+								return false ;
+							}
+                         }
+                     
+            	    }
+                }else {
+                	return update ;
+                }
+            return true ;
+          }
         });
         if (flag) {
             return Db.findFirst(Db.getSql("channel_setting.getchannelbyid"), id);
+        }
+        if("error".equals(record.getStr("bankinfoFlag"))) {
+        	throw new DbProcessException("未在系统内查询到查询到此开户行信息,请确认");
         }
         throw new DbProcessException("更新通道失败!");
     }

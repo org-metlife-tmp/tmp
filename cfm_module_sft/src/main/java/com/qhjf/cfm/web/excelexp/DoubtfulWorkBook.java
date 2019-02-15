@@ -28,12 +28,12 @@ public class DoubtfulWorkBook extends AbstractWorkBook {
         this.titleNames = new String[]{
                 "pay_date", "pay_code", "pay_mode", "bank_key", "bank_key_desc",
                 "biz_type", "tmp_org_id", "preinsure_bill_no", "insure_bill_no", "amount",
-                "recv_acc_name", "recv_cert_code", "recv_acc_no", "status", "op_user_name", "op_date"
+                "recv_acc_name", "recv_cert_code", "recv_acc_no", "status", "op_user_name", "op_date", "op_reason"
 
         };
         this.titles = new String[]{
                 "应付日期", "支付号码", "支付方式", "bankkey", "bankkey描述", "业务类型", "机构名称", "投保单号", "保单号", "金额"
-                , "客户姓名", "证件号码", "银行帐号", "状态", "操作人", "操作日期"
+                , "客户姓名", "证件号码", "银行帐号", "状态", "操作人", "操作日期", "操作理由"
         };
         this.sheetName = "可疑数据列表";
     }
@@ -41,7 +41,7 @@ public class DoubtfulWorkBook extends AbstractWorkBook {
     @Override
     public Workbook getWorkbook() {
         Record record = getRecord();
-        long osSource = TypeUtils.castToLong(record.get("os_source"));
+        int osSource = TypeUtils.castToInt(record.get("os_source"));
         SqlPara sqlPara = null;
         record.remove("os_source");
 
@@ -59,11 +59,11 @@ public class DoubtfulWorkBook extends AbstractWorkBook {
         record.set("codes", codes);
         if(WebConstant.SftOsSource.LA.getKey() == osSource){
             //LA
-            this.fileName = "LA_DoubleCheck_"+DateKit.toStr(new Date(), "YYYYMMDD")+".xls";
+            this.fileName = "LA_DoubleCheck_"+DateKit.toStr(new Date(), "YYYYMMdd")+".xls";
             sqlPara = Db.getSqlPara("doubtful.doubtfulLalist", Kv.by("map", record.getColumns()));
         }else if(WebConstant.SftOsSource.EBS.getKey() == osSource){
             //EBS
-            this.fileName = "EBS_DoubleCheck_"+DateKit.toStr(new Date(), "YYYYMMDD")+".xls";
+            this.fileName = "EBS_DoubleCheck_"+DateKit.toStr(new Date(), "YYYYMMdd")+".xls";
             sqlPara = Db.getSqlPara("doubtful.doubtfulEbslist", Kv.by("map", record.getColumns()));
         }
         List<Record> recordList = Db.find(sqlPara);

@@ -48,4 +48,10 @@
   select b.code,b.name from ebs_bank_mapping e,const_bank_type b
   where e.tmp_bank_code = b.code and e.ebs_bank_code = ?
 #end
+
+#sql("getRecvBankCode")
+  select * from ebs_bank_mapping 
+  where tmp_bank_code = ?
+#end
+
 #end

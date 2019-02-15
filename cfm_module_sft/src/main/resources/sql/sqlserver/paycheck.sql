@@ -170,6 +170,7 @@ and detail.base_id = ?
 SELECT
 	pay.*,
 	master.is_inner,
+	master.channel_id,
 	channel.net_mode,
 	channel.channel_code,
 	channel.channel_desc

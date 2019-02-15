@@ -11,9 +11,9 @@ WHERE chan.org_id = org.org_id
       #if(x.value&&x.value!=""&&(!"[]".equals(x.value.toString())))
         AND
         #if("channel_code".equals(x.key))
-        	chan.channel_code like convert(varchar(5),'%')+convert(varchar(255),#para(x.value))+convert(varchar(5),'%')
+        	chan.id  = #para(x.value)
         #elseif("channel_desc".equals(x.key))
-          chan.channel_desc like convert(varchar(5),'%')+convert(varchar(255),#para(x.value))+convert(varchar(5),'%')
+          chan.id  = #para(x.value)
         #elseif("bankcode".equals(x.key))
           chan.bankcode like convert(varchar(5),'%')+convert(varchar(255),#para(x.value))+convert(varchar(5),'%')
         #elseif("is_checkout".equals(x.key))

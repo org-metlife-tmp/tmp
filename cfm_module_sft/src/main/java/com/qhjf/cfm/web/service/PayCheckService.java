@@ -221,6 +221,7 @@ public class PayCheckService {
         } else {
             //返回批次列表
             Record rd = new Record();
+            rd.set("channel_id_one", batchList.get(0).get("channel_id"));
             AccCommonService.setSftCheckStatus(record, "service_status");
             SqlPara sqlPara = Db.getSqlPara("paycheck.paylist", Kv.by("map", rd.getColumns()));
             return Db.paginate(1, 10, sqlPara);

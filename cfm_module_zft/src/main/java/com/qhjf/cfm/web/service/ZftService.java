@@ -908,4 +908,16 @@ public class ZftService {
             throw new DbProcessException("单据支付确认失败，请刷新重试！");
         }
     }
+
+    /**
+     * 渠道设置更新收款人信息 (对外支付的情况下)
+     * @param set
+     * @param userInfo 
+     */
+	public Boolean chgSupplier(Record set, UserInfo userInfo) {
+		set.set("update_by", userInfo.getUsr_id())
+		   .set("update_on", new Date());   
+		boolean flag = CommonService.update("supplier_acc_info", set, new Record().set("acc_no", set.get("acc_no")));
+		return flag ;
+	}
 }

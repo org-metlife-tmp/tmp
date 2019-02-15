@@ -21,7 +21,7 @@ public class BankkeySettingWorkBook extends AbstractWorkBook {
 
     public BankkeySettingWorkBook() {
         this.optype = "sftbankkey_listexport";
-        this.fileName = "BANKKEY_"+DateKit.toStr(new Date(), "YYYYMMDD")+".xls";
+        this.fileName = "BANKKEY_"+DateKit.toStr(new Date(), "YYYYMMdd")+".xls";
         this.titleNames = new String[]{
                 "os_source", "bankkey", "bankkey_desc", "channel_code", "channel_desc",
                 "orgname", "bankcode", "acc_no", "subordinate_channel", "is_source_back_name", "bankkey_status_name"

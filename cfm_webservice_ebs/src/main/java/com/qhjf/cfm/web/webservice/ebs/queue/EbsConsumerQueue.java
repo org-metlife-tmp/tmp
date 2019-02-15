@@ -33,7 +33,7 @@ import cn.metlife.ebs_sit.services.FundingPlatformPayBack.FundingPlatformPayBack
 public class EbsConsumerQueue implements Runnable{
 	
 	private static Logger log = LoggerFactory.getLogger(EbsConsumerQueue.class);
-	private static DDHLAConfigSection config = GlobalConfigSection.getInstance().getExtraConfig(IConfigSectionType.DDHConfigSectionType.DDHLA);
+	private static DDHEBSConfigSection config = GlobalConfigSection.getInstance().getExtraConfig(IConfigSectionType.DDHConfigSectionType.DDHEBS);
 
 	@Override
 	public void run() {

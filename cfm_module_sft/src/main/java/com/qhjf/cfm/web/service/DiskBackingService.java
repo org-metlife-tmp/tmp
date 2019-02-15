@@ -145,9 +145,11 @@ public class DiskBackingService {
 		Record pay_batch_total_master = Db.findById("pay_batch_total_master", "id", pay_master_id);
 		Record pay_batch_total = Db.findById("pay_batch_total", "id", pay_id);
 		final String child_batchno = pay_batch_total.getStr("child_batchno");
-		Record channel_setting = Db.findById("channel_setting", "id", channel_id);
+		final Record channel_setting = Db.findById("channel_setting", "id", channel_id);
 		Integer document_moudle = channel_setting.getInt("document_moudle");
 		final Integer source_sys = pay_batch_total_master.getInt("source_sys");
+		final String pay_acc_no = pay_batch_total_master.getStr("pay_acc_no");
+
 		String filename = ufs.getFilename();
 		byte[] content = ufs.getContent();
 		logger.info("===========当前文件名====" + filename);
@@ -395,9 +397,23 @@ public class DiskBackingService {
 						// 开始更新原始数据状态
 						Boolean origin_flag = false;
 						if (source_sys == 0) {
-							origin_flag = (Db.update(Db.getSql("disk_backing.updateLaOriginData"), child_batchno) == sendnum);
+							origin_flag = (Db.update(Db.getSql("disk_backing.updateLaOriginData"),child_batchno) == sendnum);
 						} else {
-							origin_flag = (Db.update(Db.getSql("disk_backing.updateEbsOriginData"), child_batchno) == sendnum);
+							Integer is_inner = channel_setting.getInt("is_inner");
+							String cnaps_code = null ;
+							if( 1 == is_inner) {
+								logger.info("=====内部调拨");
+								Record payRec = Db.findFirst(Db.getSql("nbdb.findAccountByAccNo"), pay_acc_no);
+								cnaps_code = payRec.getStr("cnaps_code");
+							}else {
+								logger.info("=====第三方支付");
+					         	List<Record> supplier = Db.find(Db.getSql("supplier.querySupplier"),pay_acc_no);    
+					         	cnaps_code = supplier.get(0).get("cnaps_code");
+							}
+							Record findById = Db.findById("all_bank_info", "cnaps_code", cnaps_code);
+							String bank_type = findById.getStr("bank_type");
+							List<Record> find = Db.find(Db.getSql("ebs_cfm.getRecvBankCode"), bank_type);
+							origin_flag = (Db.update(Db.getSql("disk_backing.updateEbsOriginData"), pay_acc_no , find.get(0).get("ebs_bank_code") ,child_batchno) == sendnum);
 						}
 						logger.info("=====更新原始数据表结果===" + origin_flag);
 						if (origin_flag) {

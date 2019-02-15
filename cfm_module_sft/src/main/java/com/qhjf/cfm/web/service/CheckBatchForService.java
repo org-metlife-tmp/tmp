@@ -367,7 +367,7 @@ public class CheckBatchForService {
 					String serviceSerialNumber = "";
 					String accno = PlfConfigAccnoSection.getInstance().getAccno();
 					logger.info("===========配置文件获取到的账号======="+accno);
-					Record payRec = Db.findFirst(Db.getSql("acc.findAccountByAccNo"), accno);
+					Record payRec = Db.findFirst(Db.getSql("nbdb.findAccountByAccNo"), accno);
 					if (payRec == null) {
 						logger.error("=============未在系统内找到此账户======" + accno);
 					}
@@ -399,6 +399,9 @@ public class CheckBatchForService {
 						insertRecord.set("biz_id", "801dbfb1bfb34817b9e61ce29d86b47b")
 						            .set("biz_name", "对外支付")
 								    .set("service_serial_number", serviceSerialNumber);
+						//封装 recv_account_id
+						List<Record> find = Db.find(Db.getSql("supplier.querySupplier"),main_record.get("pay_acc_no"));
+						insertRecord.set("recv_account_id", find.get(0).get("id"));
 						boolean save = Db.save("outer_zf_payment", "id", insertRecord);
 						logger.info("===============入库支付通的结果==="+ save + "==id=="+ insertRecord.getLong("id"));
 						
@@ -411,6 +414,9 @@ public class CheckBatchForService {
 						            .set("biz_name", "资金调拨")
 								    .set("service_serial_number", serviceSerialNumber)
 						            .set("pay_mode",1);
+						//封装 recv_account_id  
+						List<Record> find = Db.find(Db.getSql("acc.findAccountByAccNo"),main_record.get("pay_acc_no"));
+						insertRecord.set("recv_account_id", find.get(0).get("id"));
 						boolean save = Db.save("inner_db_payment", "id", insertRecord);
 						logger.info("===============入库调拨通的结果==="+ save + "==id=="+ insertRecord.getLong("id"));
 					}

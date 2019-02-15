@@ -63,7 +63,7 @@ public class BankkeySettingService {
         }
 
         //当前通道编码是否存在
-        Record code = Db.findById("bankkey_setting", "bankkey", bankkey);
+        Record code = Db.findById("bankkey_setting", "bankkey,org_id", bankkey, orgId);
         if(code != null){
             throw new ReqDataException("该BANKKEY已经存在!");
         }
