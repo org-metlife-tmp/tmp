@@ -101,7 +101,9 @@
         /*查看弹框*/
         .switchover {
             text-align: center;
-            margin: -22px 0 20px 0;
+            position: absolute;
+            top: 20px;
+            left: 400px;
 
             .el-button {
                 background-color: #fff;
@@ -168,8 +170,8 @@
 
         .serial-number {
             color: #ccc;
-            margin-bottom: 2px;
-            margin-top: -15px;
+            margin-bottom: 5px;
+            margin-top: -10px;
         }
     }
 </style>
@@ -182,6 +184,12 @@
         }
         .el-form--inline .el-form-item__content{
             width: 100%;
+        }
+        .el-dialog__wrapper {
+            .el-dialog__body {
+                max-height:440px;
+                overflow-y: auto;
+            }
         }
     }
 </style>

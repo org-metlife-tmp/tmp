@@ -105,14 +105,15 @@
         /*查看弹框*/
         .dialog-talbe {
             width: 100%;
-            height: 180px;
+            border-top: 1px solid #e2e2e2;
+            border-left: 1px solid #e2e2e2;
+            overflow: hidden;
 
             li {
                 float: left;
                 box-sizing: border-box;
-                border: 1px solid #e2e2e2;
-                margin-left: -1px;
-                margin-top: -1px;
+                border-right: 1px solid #e2e2e2;
+                border-bottom: 1px solid #e2e2e2;
                 height: 30px;
                 line-height: 30px;
             }
@@ -131,17 +132,15 @@
                 white-space: nowrap;
             }
 
-            .table-two-row {
+            .table-two-row ,.table-datepicker{
                 width: 88%;
-                margin-left: -3px;
-                border-left: none;
             }
         }
 
         .serial-number {
             color: #ccc;
             margin-bottom: 2px;
-            margin-top: -15px;
+            margin-top: -10px;
         }
 
         /*编辑弹框*/
@@ -166,11 +165,9 @@
     #receiveMoreBills {
         /*编辑弹框*/
         .table-select {
-
             .el-select {
-                height: 95%;
+                // height: 95%;
                 width: 100%;
-
                 .el-input {
                     height: 100%;
 
@@ -179,6 +176,18 @@
                         padding-left: 0px;
                         border: none;
                     }
+                }
+            }
+        }
+        .table-datepicker{
+            .el-date-editor{
+                // height: 95%;
+                width: 100%;
+                input {
+                    height: 94%;
+                    padding-right: 30px;
+                    border: none;
+                    border-radius: 0;
                 }
             }
         }
@@ -347,6 +356,8 @@
                 ]
             </div>
             <ul class="dialog-talbe">
+                <li class="table-li-title">申请日期</li>
+                <li class="table-li-content table-two-row" v-text="dialogData.apply_on"></li>
                 <li class="table-li-title">收款账号</li>
                 <li class="table-li-content table-two-row" v-text="dialogData.recv_account_no"></li>
 
@@ -387,6 +398,16 @@
                 ]
             </div>
             <ul class="dialog-talbe">
+                <li class="table-li-title">申请日期</li>
+                <li class="table-li-content table-datepicker">
+                    <el-date-picker
+                        v-model="editDialogData.apply_on"
+                        type="date"
+                        placeholder="请选择申请日期"
+                        value-format="yyyy-MM-dd"
+                        size="mini">
+                    </el-date-picker>
+                </li>
                 <li class="table-li-title">收款账号</li>
                 <li class="table-li-content table-select">
                     <el-select v-model="editDialogData.recv_account_id" placeholder="请选择收款方"
@@ -411,7 +432,7 @@
                 </li>
                 <li class="table-li-title">付款人户名</li>
                 <li class="table-li-content table-select">
-                    <el-select v-model="editDialogData.pay_account_name"
+                    <el-select v-model="editDialogData.pay_account_name" size="mini"
                                filterable allow-create default-first-option
                                placeholder="请输入或选择户名"
                                @change="setPayer($event,'acc_no')">
@@ -426,7 +447,7 @@
                 <li class="table-li-title">付款人账号</li>
                 <li class="table-li-content table-select">
                     <el-select v-model="editDialogData.pay_account_no"
-                               filterable allow-create
+                               filterable allow-create size="mini"
                                default-first-option
                                placeholder="请输入或选择账号"
                                @change="setPayer($event,'acc_name')">
@@ -441,14 +462,14 @@
 
                 <li class="table-li-title">开户行</li>
                 <li class="table-li-content table-two-row">
-                    <input type="text" placeholder="请选择开户行" class="table-input"
+                    <input type="text" placeholder="请选择开户行" class="table-input" size="mini"
                            v-model="editDialogData.pay_account_bank"
                            @focus="clearBankDialog">
                 </li>
 
                 <li class="table-li-title">金额</li>
                 <li class="table-li-content">
-                    <input type="text" @blur="setMoney" class="table-input" style="color:#fd7d2f"
+                    <input type="text" @blur="setMoney" class="table-input" style="color:#fd7d2f" size="mini"
                            v-model="editDialogData.receipts_amount">
                 </li>
                 <li class="table-li-title">大写</li>
@@ -456,7 +477,7 @@
 
                 <li class="table-li-title">摘要</li>
                 <li class="table-li-content table-two-row">
-                    <input type="text" class="table-input" v-model="editDialogData.receipts_summary">
+                    <input type="text" class="table-input" size="mini" v-model="editDialogData.receipts_summary">
                 </li>
 
                 <li class="table-li-title" style="height:60px;line-height:60px">附件</li>
@@ -625,6 +646,7 @@
                 this.bankAllTypeList = bankAllTypeList;
             }
             this.messageTips = {
+                apply_on: "请选择日期！",
                 recv_account_id: "请选择收款方！",
                 biz_id: "请选择业务类型！",
                 pay_account_no: "请选择付款方账号！",
@@ -683,6 +705,7 @@
                 triggerFile: false,
                 editVisible: false, //编辑弹框数据
                 editDialogData: {
+                    apply_on: "",
                     id:"",
                     biz_id:"",
                     persist_version: "",
@@ -817,6 +840,7 @@
                         this.dialogData[k] = row[k];
                     }
                 }
+                this.dialogData['apply_on'] = row.apply_on.split(" ")[0];
                 this.dialogVisible = true;
 
                 //附件数据

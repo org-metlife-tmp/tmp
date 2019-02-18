@@ -300,7 +300,7 @@
                       border size="mini"
                       height="100%"
                       @selection-change="selectChange">
-                <el-table-column type="selection" width="40"></el-table-column>
+                <el-table-column type="selection" width="38"></el-table-column>
                 <el-table-column prop="biz_name" label="业务类型" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="pay_mode" label="付款方式" :show-overflow-tooltip="true"
                                  :formatter="transitPayMode"></el-table-column>

@@ -71,12 +71,19 @@
             bottom: 80px;
             left: 280px;
             width: 480px;
-            >div{
-                width: 240px;
+            .firstStyle{
+                width: 235px;
                 display: inline-block;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                overflow: hidden;
+            }
+            .firstStyle:nth-of-type(odd){
+                margin-right: 10px;
             }
             .tip{
                 width: 100%;
+                display: inline-block;
                 >span:last-child{
                     margin-left: 46px;
                 }
@@ -285,9 +292,9 @@
                 </div>
                 <div class="bankContentSec">
                     <template v-for="field in curDialogField.second">
-                        <div :key="field.id">
+                        <div :key="field.id" class="firstStyle">
                             <span>{{field.name}}：</span>
-                            <span>{{dialogData[field.value]}}</span>
+                            <span :title="dialogData[field.value]">{{dialogData[field.value]}}</span>
                         </div>
                     </template>
                     <div class="tip">
@@ -338,29 +345,29 @@
                         {id:"12", name:"经办", value:""},
                     ],
                     "second":[
-                        {id:"1", name:"回单编号", value:""},
-                        {id:"2", name:"回单验证码", value:""},
+                        {id:"1", name:"回单编号", value:"field_4"},
+                        {id:"2", name:"回单验证码", value:"field_19"},
                         // {id:"3", name:"提示", value:""}
                     ]
                 },
                 "AGFEERRCZ1":{//企业银行代发代扣收费
                     "first":[
                         {id:"1", name:"日期", value:"field_12"},
-                        {id:"2", name:"收款账号", value:""},
-                        {id:"3", name:"户名", value:"field_6"},
-                        {id:"4", name:"开户行", value:"field_7"},
-                        {id:"5", name:"金额（大写）", value:"field_10", key:"bAmount"},
-                        {id:"6", name:"（小写）", value:"field_9", key:"sAmount"},
-                        {id:"7", name:"付款人账号", value:"field_6"},
-                        {id:"8", name:"付款人名称", value:"field_7"},
-                        {id:"9", name:"付款人开户行", value:"field_8"},
+                        // {id:"2", name:"收款账号", value:""},
+                        // {id:"3", name:"户名", value:""},
+                        // {id:"4", name:"开户行", value:""},
+                        {id:"5", name:"付款方账号", value:"field_6"},
+                        {id:"6", name:"付款方名称", value:"field_7"},
+                        {id:"7", name:"付款方开户行", value:"field_8"},
+                        {id:"8", name:"金额（大写）", value:"field_10", key:"bAmount"},
+                        {id:"9", name:"（小写）", value:"field_9", key:"sAmount"},
                         {id:"10", name:"摘要", value:"field_11"},
                         {id:"11", name:"流水号", value:"field_1"},
                         {id:"12", name:"经办", value:""},
                     ],
                     "second":[
-                        {id:"1", name:"回单编号", value:""},
-                        {id:"2", name:"回单验证码", value:""},
+                        {id:"1", name:"回单编号", value:"field_2"},
+                        {id:"2", name:"回单验证码", value:"field_14"},
                         // {id:"3", name:"提示", value:""}
                     ]
                 },
@@ -380,8 +387,8 @@
                         {id:"12", name:"经办", value:""},
                     ],
                     "second":[
-                        {id:"1", name:"回单编号", value:""},
-                        {id:"2", name:"回单验证码", value:""},
+                        {id:"1", name:"回单编号", value:"field_28"},
+                        {id:"2", name:"回单验证码", value:"field_21"},
                         // {id:"3", name:"提示", value:""}
                     ]
                 },
@@ -389,7 +396,7 @@
                     "first":[
                         {id:"1", name:"日期", value:"field_1"},
                         {id:"2", name:"收款账号", value:""},
-                        {id:"3", name:"户名", value:""},
+                        {id:"3", name:"户名", value:"field_17"},
                         {id:"4", name:"开户行", value:""},
                         {id:"5", name:"金额（大写）", value:"field_14", key:"bAmount"},
                         {id:"6", name:"（小写）", value:"field_11", key:"sAmount"},
@@ -401,8 +408,8 @@
                         {id:"12", name:"经办", value:""},
                     ],
                     "second":[
-                        {id:"1", name:"回单编号", value:""},
-                        {id:"2", name:"回单验证码", value:""},
+                        {id:"1", name:"回单编号", value:"field_16"},
+                        {id:"2", name:"回单验证码", value:"field_19"},
                         // {id:"3", name:"提示", value:""}
                     ]
                 },
@@ -422,8 +429,8 @@
                         {id:"12", name:"经办", value:""},
                     ],
                     "second":[
-                        {id:"1", name:"回单编号", value:""},
-                        {id:"2", name:"回单验证码", value:""},
+                        {id:"1", name:"回单编号", value:"field_7"},
+                        {id:"2", name:"回单验证码", value:"field_6"},
                         // {id:"3", name:"提示", value:""}
                     ]
                 },
@@ -443,8 +450,8 @@
                         {id:"12", name:"经办", value:""},
                     ],
                     "second":[
-                        {id:"1", name:"回单编号", value:""},
-                        {id:"2", name:"回单验证码", value:""},
+                        {id:"1", name:"回单编号", value:"field_21"},
+                        {id:"2", name:"回单验证码", value:"field_24"},
                         // {id:"3", name:"提示", value:""}
                     ]
                 },
@@ -464,8 +471,29 @@
                         {id:"12", name:"经办", value:""},
                     ],
                     "second":[
-                        {id:"1", name:"回单编号", value:""},
-                        {id:"2", name:"回单验证码", value:""},
+                        {id:"1", name:"回单编号", value:"field_18"},
+                        {id:"2", name:"回单验证码", value:"field_21"},
+                        // {id:"3", name:"提示", value:""}
+                    ]
+                },
+                "ICBCEBILL":{//工行电子回单
+                    "first":[
+                        {id:"1", name:"日期", value:"field_14"},
+                        {id:"2", name:"收款账号", value:"field_5"},
+                        {id:"3", name:"户名", value:"field_6"},
+                        {id:"4", name:"开户行", value:"field_7"},
+                        {id:"5", name:"金额（大写）", value:"field_8", key:"bAmount"},
+                        {id:"6", name:"（小写）", value:"field_9", key:"sAmount"},
+                        {id:"7", name:"付款人账号", value:"field_2"},
+                        {id:"8", name:"付款人名称", value:"field_3"},
+                        {id:"9", name:"付款人开户行", value:"field_4"},
+                        {id:"10", name:"摘要", value:"field_10"},
+                        {id:"11", name:"流水号", value:"field_13"},
+                        {id:"12", name:"经办", value:""},
+                    ],
+                    "second":[
+                        {id:"1", name:"回单编号", value:"field_1"},
+                        {id:"2", name:"回单验证码", value:"field_16"},
                         // {id:"3", name:"提示", value:""}
                     ]
                 },

@@ -2414,7 +2414,6 @@
                 }
                 this.fileMessage.bill_id = "";
                 this.emptyFileList = [];
-
                 let bizType = row.biz_type;
                 let id = row.bill_id;
                 let _index = this.activeName;
