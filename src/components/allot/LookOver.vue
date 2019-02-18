@@ -93,14 +93,15 @@
         /*查看弹框*/
         .dialog-talbe {
             width: 100%;
-            height: 230px;
+            border-top: 1px solid #e2e2e2;
+            border-left: 1px solid #e2e2e2;
+            overflow: hidden;
 
             li {
                 float: left;
                 box-sizing: border-box;
-                border: 1px solid #e2e2e2;
-                margin-left: -1px;
-                margin-top: -1px;
+                border-right: 1px solid #e2e2e2;
+                border-bottom: 1px solid #e2e2e2;
                 height: 30px;
                 line-height: 30px;
             }
@@ -121,8 +122,6 @@
 
             .table-two-row {
                 width: 88%;
-                margin-left: -3px;
-                border-left: none;
             }
         }
 
@@ -302,6 +301,8 @@
                 ]
             </div>
             <ul class="dialog-talbe">
+                <li class="table-li-title">申请日期</li>
+                <li class="table-li-content table-two-row" v-text="dialogData.apply_on"></li>
                 <li class="table-li-title">业务类型</li>
                 <li class="table-li-content" v-text="dialogData.biz_name"></li>
                 <li class="table-li-title">付款方式</li>
@@ -534,6 +535,7 @@
                 for (var k in row) {
                     this.dialogData[k] = row[k];
                 }
+                this.dialogData.apply_on = row.apply_on.split(' ')[0];
                 this.dialogData.numText = this.$common.transitText(row.payment_amount);
                 this.dialogData.payment_amount = "￥" + this.$common.transitSeparator(row.payment_amount);
                 this.dialogData.pay_mode = JSON.parse(window.sessionStorage.getItem("constants")).PayMode[row.pay_mode];

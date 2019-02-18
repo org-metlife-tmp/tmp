@@ -455,8 +455,8 @@
             <!--表单顶部-->
             <div class="title-date">
                 <el-date-picker
-                        v-model="dateValue"
-                        type="date" :readonly="true"
+                        v-model="billData.apply_on"
+                        type="date"
                         placeholder="请选择申请日期"
                         value-format="yyyy-MM-dd"
                         size="mini">
@@ -717,6 +717,7 @@
                         billData.allList = data.total_num;
                         billData.persist_version = data.persist_version;
                         billData.service_status = data.service_status;
+                        billData.apply_on = data.apply_on;
                         this.saveUploadList = data.obbaiTempList;
                         billData.payment_amount = this.$common.transitSeparator(data.total_amount);
                         this.moneyText = this.$common.transitText(data.total_amount);
@@ -744,8 +745,8 @@
         data: function () {
             return {
                 queryUrl: this.$store.state.queryUrl,
-                dateValue: new Date(), //申请时间
                 billData: {
+                    apply_on: new Date(), //申请时间
                     id: "",
                     uploadName: "", //上传的文件名
                     recv_account_id: "", //付款方式
@@ -989,6 +990,7 @@
                 //校验数据是否完善 并设置发送给后台的数据
                 var params = this.billData;
                 var validater = {
+                    apply_on: "请选择日期",
                     recv_account_id: "请选择收款方",
                     batchno: "请上传付款方信息"
                 }

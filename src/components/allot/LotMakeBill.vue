@@ -588,8 +588,8 @@
             <!--表单顶部-->
             <div class="title-date">
                 <el-date-picker
-                        v-model="dateValue"
-                        type="date" :readonly="true"
+                        v-model="billData.apply_on"
+                        type="date" 
                         placeholder="请选择申请日期"
                         value-format="yyyy-MM-dd"
                         size="mini">
@@ -953,6 +953,7 @@
                 total_amount: "请上传模板！",
                 pay_account_id: "请选择付款方！",
                 biz_id: "请选择业务类型！",
+                apply_on: "请选择日期！",
                 pay_mode: "请选择付款方式！"
             }
 
@@ -975,8 +976,8 @@
         data: function () {
             return {
                 queryUrl: this.$store.state.queryUrl,
-                dateValue: new Date(), //申请时间
                 billData: {
+                    apply_on: new Date(), //申请时间
                     pay_mode: "1", //付款方式
                     service_serial_number: "", //单据编号
                     pay_account_name: "", //付款方
@@ -1056,6 +1057,7 @@
 
                 this.saveParams.pay_mode = billData.pay_mode;
                 this.saveParams.payment_summary = billData.payment_summary;
+                this.saveParams.apply_on = billData.apply_on;
                 this.saveParams.files = this.fileList;
                 var flag = this.setParams(this.saveParams);
                 if(!flag){
@@ -1114,6 +1116,7 @@
             //设置params
             setParams: function(params){
                 var hasParams = {
+                    apply_on: "",
                     uuid: "",
                     pay_account_id: "",
                     biz_id: "",
@@ -1369,6 +1372,7 @@
                 params.biz_name = billData.bizObj ? billData.bizObj.biz_name : "";
                 params.pay_mode = billData.pay_mode;
                 params.payment_summary = billData.payment_summary;
+                params.apply_on = billData.apply_on;
                 params.files = this.fileList;
                 var flag = this.setParams(params);
                 if(!flag){
