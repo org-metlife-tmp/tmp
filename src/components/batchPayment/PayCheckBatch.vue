@@ -62,7 +62,7 @@
 
         /*数据展示区*/
         .table-content{
-            height: 68%;
+            height: 60%;
         }
 
         /*汇总数据*/
@@ -117,6 +117,14 @@
             border: none;
             padding: 0;
             vertical-align: middle;
+        }
+
+        /*分页部分*/
+        .botton-pag {
+            position: absolute;
+            width: 100%;
+            height: 8%;
+            bottom: -6px;
         }
 
     }
@@ -285,6 +293,20 @@
                 <span v-text="totalData.total_amount" class="numText"></span>
             </div>
         </section>
+        <!--分页部分-->
+        <div class="botton-pag">
+            <el-pagination
+                    background
+                    layout="sizes, prev, pager, next, jumper"
+                    :page-size="pagSize"
+                    :total="pagTotal"
+                    :page-sizes="[7, 50, 100, 500]"
+                    :pager-count="5"
+                    @current-change="getCurrentPage"
+                    @size-change="sizeChange"
+                    :current-page="pagCurrent">
+            </el-pagination>
+        </div>
     </div>
 </template>
 
@@ -316,6 +338,8 @@
                 routerMessage: {
                     optype: "checkbatch_list",
                     params: {
+                        page_size: 7,
+                        page_num: 1,
                     }
                 },
                 searchData: { //搜索条件
@@ -336,6 +360,9 @@
                     }
                 },
                 tableList: [], //列表数据
+                pagSize: 8, //分页数据
+                pagTotal: 1,
+                pagCurrent: 1,
                 orgList: [], //常量数据
                 channelList: [],
                 statusList: {},
@@ -358,6 +385,17 @@
                 var val = this.dateValue;
                 this.routerMessage.params.start_date = val ? val[0] : "";
                 this.routerMessage.params.end_date = val ? val[1] : "";
+                this.$emit("getCommTable", this.routerMessage);
+            },
+            //换页后获取数据
+            getCurrentPage: function (currPage) {
+                this.routerMessage.params.page_num = currPage;
+                this.$emit("getCommTable", this.routerMessage);
+            },
+            //当前页数据条数发生变化
+            sizeChange: function (val) {
+                this.routerMessage.params.page_size = val;
+                this.routerMessage.params.page_num = 1;
                 this.$emit("getCommTable", this.routerMessage);
             },
             //切换标签

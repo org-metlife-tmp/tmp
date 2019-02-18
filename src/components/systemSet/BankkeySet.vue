@@ -95,12 +95,28 @@
                     </el-col>
                     <el-col :span="4">
                         <el-form-item>
-                            <el-input v-model="searchData.channel_code" clearable placeholder="请输入通道编码"></el-input>
+                            <el-select v-model="searchData.channel_code" placeholder="请选择通道编码"
+                                       clearable filterable
+                                       style="width:100%">
+                                <el-option v-for="channel in allChannelList"
+                                           :key="channel.channel_id"
+                                           :label="channel.channel_code"
+                                           :value="channel.channel_id">
+                                </el-option>
+                            </el-select>
                         </el-form-item>
                     </el-col>
                     <el-col :span="4">
                         <el-form-item>
-                            <el-input v-model="searchData.channel_desc" clearable placeholder="请输入通道描述"></el-input>
+                            <el-select v-model="searchData.channel_desc" placeholder="请选择通道描述"
+                                       clearable filterable
+                                       style="width:100%">
+                                <el-option v-for="channel in allChannelList"
+                                           :key="channel.channel_id"
+                                           :label="channel.channel_desc"
+                                           :value="channel.channel_id">
+                                </el-option>
+                            </el-select>
                         </el-form-item>
                     </el-col>
                     <el-col :span="4">
@@ -361,6 +377,8 @@
             if (bankAllTypeList) {
                 this.bankAllTypeList = bankAllTypeList;
             }
+            //通道
+            this.getAllChannelList();
         },
         props: ["tableData"],
         data: function () {
@@ -387,6 +405,7 @@
                 pagCurrent: 1,
                 sourceList: {}, //常量数据
                 channelList: [],
+                allChannelList: [],
                 orgList: [],
                 payAttrList: {},
                 subordinateList: {},
@@ -533,6 +552,30 @@
                         console.log(error);
                     });
                 }
+            },
+            getAllChannelList: function () {
+                this.$axios({
+                    url: this.queryUrl + "normalProcess",
+                    method: "post",
+                    data: {
+                        optype: "sftchannel_getallchannel",
+                        params: {}
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        });
+                    } else {
+                        var data = result.data.data;
+                        this.allChannelList = data;
+                    }
+
+                }).catch(function (error) {
+                    console.log(error);
+                });
             },
             //银行大类搜索筛选
             filterBankType: function (value) {
