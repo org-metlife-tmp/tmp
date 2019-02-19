@@ -160,12 +160,17 @@
                             </el-select>
                         </el-form-item>
                     </el-col>
-                    <el-col :span="22">
+                    <el-col :span="20">
                         <el-form-item style="margin-bottom:0px">
                             <el-checkbox-group v-model="searchData.is_checkout">
                                 <el-checkbox :label="1" name="启用">启用</el-checkbox>
                                 <el-checkbox :label="0" name="停用">停用</el-checkbox>
                             </el-checkbox-group>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="2">
+                        <el-form-item>
+                            <el-button type="primary" plain @click="clearData" size="mini">清空</el-button>
                         </el-form-item>
                     </el-col>
                     <el-col :span="2">
@@ -705,6 +710,18 @@
                 }
                 this.routerMessage.params.page_num = 1;
                 this.$emit("getCommTable", this.routerMessage);
+            },
+            //清空搜索条件
+            clearData: function(){
+                var searchData = this.searchData;
+                for (var k in searchData) {
+                    if(k == "is_checkout"){
+                        searchData[k] = [];
+                    }else{
+                        searchData[k] = "";
+                    }
+
+                }
             },
             //换页后获取数据
             getCurrentPage: function (currPage) {

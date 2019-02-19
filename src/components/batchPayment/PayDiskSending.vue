@@ -108,7 +108,15 @@
                     </el-col>
                     <el-col :span="4">
                         <el-form-item>
-                            <el-input v-model="searchData.channel_desc" clearable placeholder="请输入通道描述"></el-input>
+                            <el-select v-model="searchData.channel_desc" placeholder="请选择通道描述"
+                                       clearable filterable
+                                       style="width:100%">
+                                <el-option v-for="channel in channelList"
+                                           :key="channel.channel_id"
+                                           :label="channel.channel_desc"
+                                           :value="channel.channel_id">
+                                </el-option>
+                            </el-select>
                         </el-form-item>
                     </el-col>
                     <el-col :span="4">
@@ -171,7 +179,7 @@
                     <template slot-scope="scope" class="operationBtn">
                         <el-tooltip content="下载" placement="bottom" effect="light"
                                     :enterable="false" :open-delay="500"
-                                    v-if="scope.row.interactive_mode=='报盘' && (scope.row.status=='已审批未发送' || scope.row.status=='已发送未回盘')">
+                                    v-if="scope.row.interactive_mode=='报盘' && ((scope.row.status=='已审批未发送' && scope.row.status.file_name) || scope.row.status=='已发送未回盘')">
                             <el-button type="info" icon="el-icon-download" size="mini"
                                        @click="downData(scope.row)"></el-button>
                         </el-tooltip>

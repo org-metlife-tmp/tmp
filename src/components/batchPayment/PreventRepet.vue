@@ -113,21 +113,6 @@
         <div class="search-setion">
             <el-form :inline="true" :model="searchData" size="mini">
                 <el-row>
-                    <el-col :span="5">
-                        <el-form-item>
-                            <el-date-picker
-                                    v-model="dateValue"
-                                    type="daterange"
-                                    range-separator="至"
-                                    start-placeholder="开始日期"
-                                    end-placeholder="结束日期"
-                                    value-format="yyyy-MM-dd"
-                                    size="mini" clearable
-                                    unlink-panels
-                                    :picker-options="pickerOptions">
-                            </el-date-picker>
-                        </el-form-item>
-                    </el-col>
                     <el-col :span="4">
                         <el-form-item>
                             <el-select v-model="searchData.pay_mode" placeholder="请选择支付方式"
@@ -164,11 +149,6 @@
                             </el-select>
                         </el-form-item>
                     </el-col>
-                    <el-col :span="2">
-                        <el-form-item>
-                            <el-button type="primary" plain @click="queryData" size="mini">搜索</el-button>
-                        </el-form-item>
-                    </el-col>
                     <el-col :span="4">
                         <el-form-item>
                             <el-input v-model="searchData.preinsure_bill_no" clearable placeholder="请输入投保单号"></el-input>
@@ -179,12 +159,37 @@
                             <el-input v-model="searchData.insure_bill_no" clearable placeholder="请输入保单号"></el-input>
                         </el-form-item>
                     </el-col>
-                    <el-col :span="16">
+                    <el-col :span="5">
+                        <el-form-item>
+                            <el-date-picker
+                                    v-model="dateValue"
+                                    type="daterange"
+                                    range-separator="至"
+                                    start-placeholder="开始日期"
+                                    end-placeholder="结束日期"
+                                    value-format="yyyy-MM-dd"
+                                    size="mini" clearable
+                                    unlink-panels
+                                    :picker-options="pickerOptions">
+                            </el-date-picker>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="15">
                         <el-form-item style="margin-bottom:0px">
                             <el-checkbox-group v-model="searchData.status">
                                 <el-checkbox :label="1" name="已处理">已处理</el-checkbox>
                                 <el-checkbox :label="0" name="未处理">未处理</el-checkbox>
                             </el-checkbox-group>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="2">
+                        <el-form-item>
+                            <el-button type="primary" plain @click="clearData" size="mini">清空</el-button>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="2">
+                        <el-form-item>
+                            <el-button type="primary" plain @click="queryData" size="mini">搜索</el-button>
                         </el-form-item>
                     </el-col>
                 </el-row>
@@ -323,6 +328,18 @@
                 this.routerMessage.params.page_num = 1;
                 this.$emit("getCommTable", this.routerMessage);
             },
+            //清空搜索条件
+            clearData: function(){
+                var searchData = this.searchData;
+                for (var k in searchData) {
+                    if(k == "status"){
+                        searchData[k] = [];
+                    }else if (k != "os_source"){
+                        searchData[k] = "";
+                    }
+                }
+                this.dateValue = "";
+            },
             //换页后获取数据
             getCurrentPage: function (currPage) {
                 this.routerMessage.params.page_num = currPage;
@@ -346,6 +363,7 @@
                         searchData[k] = "";
                     }
                 }
+                this.dateValue = "";
                 this.queryData();
             },
             //获取机构列表
