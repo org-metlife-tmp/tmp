@@ -842,6 +842,14 @@
                         <span class="table-title">总金额</span>
                         <span class="tab-content font-red">{{dialogData.total_amount}}元</span>
                     </li>
+                    <li v-if="curBiztype!=19">
+                        <span class="table-title">付款方式</span>
+                        <span class="tab-content">{{PayModeList[dialogData.pay_mode]}}</span>
+                    </li>
+                    <li v-if="curBiztype!=19">
+                        <span class="table-title">业务类型</span>
+                        <span class="tab-content">{{dialogData.biz_name}}</span>
+                    </li>
                     <li v-if="curBiztype==19">
                         <span class="table-title">收款账号</span>
                         <span class="tab-content" :title="dialogData.recv_account_no">{{dialogData.recv_account_no}}</span>
@@ -1635,6 +1643,10 @@
                             {id:"6", pspan:8, prop:"recv_account_name"},
                         ]
                     },
+                    {id:"4", lspan:4, label:"付款方式"},
+                    {id:"5", pspan:8, prop:"pay_mode"},
+                    {id:"6", lspan:4, label:"业务类型"},
+                    {id:"11", pspan:8, prop:"biz_name"},
                     {id:"7", lspan:4, label:"付款账号"},
                     {id:"8", pspan:8, prop:"pay_account_no"},
                     {id:"9", lspan:4, label:"收款账号"},
@@ -1659,6 +1671,10 @@
                 "9":[
                     {id:"1", lspan:4, label:"编号"},
                     {id:"2",pspan:20, prop:"service_serial_number"},
+                    {id:"5", lspan:4, label:"付款方式"},
+                    {id:"6", pspan:8, prop:"pay_mode"},
+                    {id:"7", lspan:4, label:"业务类型"},
+                    {id:"8", pspan:8, prop:"biz_name"},
                     {
                         id:"3",
                         type:"chg",
