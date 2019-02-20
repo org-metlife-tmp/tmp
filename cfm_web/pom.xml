@@ -233,7 +233,13 @@
 			<artifactId>cfm_module_skt</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-
+		<!-- 收付通start -->
+		<dependency>
+			<groupId>com.qhjf.cfm</groupId>
+			<artifactId>cfm_module_sft</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<!-- 收付通end -->
 		<!-- 归集通start -->
 		<dependency>
 			<groupId>com.qhjf.cfm</groupId>
