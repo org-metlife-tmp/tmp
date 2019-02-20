@@ -146,7 +146,8 @@
                                  v-if="routerMessage.todo.optype == 'branchorgoacheck_checkbillList'"></el-table-column>
                 <el-table-column prop="payment_amount" label="金额" :show-overflow-tooltip="true"
                                  :formatter="transitAmount"></el-table-column>
-                <el-table-column prop="create_on" label="日期" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column v-if="curBizType==9||curBizType==12" prop="apply_on" label="日期" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column v-else prop="create_on" label="日期" :show-overflow-tooltip="true"></el-table-column>
             </el-table>
         </section>
         <div class="validated-content" v-if="!isPending">
@@ -176,7 +177,8 @@
                                  :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="payment_amount" label="金额" :show-overflow-tooltip="true"
                                  :formatter="transitAmount"></el-table-column>
-                <el-table-column prop="create_on" label="日期" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column v-if="curBizType==9||curBizType==12" prop="apply_on" label="日期" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column v-else prop="create_on" label="日期" :show-overflow-tooltip="true"></el-table-column>
             </el-table>
         </div>
         <!--分页部分-->
@@ -219,6 +221,7 @@
         name: "DealCheck",
         beforeRouteUpdate (to, from, next) {
             this.setOptypes(to.query);
+            this.curBizType = to.query.bizType;
             this.childList = [];
             this.dataNum = "1";
             next();
@@ -226,7 +229,7 @@
         created: function () {
             var queryData = this.$router.currentRoute.query;
             this.setOptypes(queryData);
-
+            this.curBizType = queryData.bizType;
             //设置当前页基本信息
             this.$emit("transmitTitle", "交易核对");
             this.$emit("tableText", {
@@ -286,7 +289,8 @@
                 selectText: {
                     oneText: "单笔支付",
                     allText: "批量支付"
-                }
+                },
+                curBizType: "",
             }
         },
         methods: {

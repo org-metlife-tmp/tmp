@@ -197,7 +197,8 @@
                 <el-table-column prop="recv_account_name" label="收款方公司名称" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="payment_amount" label="金额" :show-overflow-tooltip="true"
                                 :formatter="transitAmount"></el-table-column>
-                <el-table-column prop="create_on" label="日期" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column v-if="curBizType==13" prop="create_on" label="日期" :show-overflow-tooltip="true"></el-table-column> 
+                <el-table-column v-else prop="apply_on" label="日期" :show-overflow-tooltip="true"></el-table-column>         
             </el-table>
         </section>
         <!--分页部分-->
@@ -250,6 +251,7 @@
                 leftTab: "未核对",
                 rightTab: "已核对"
             });
+            this.curBizType = queryData.bizType;
             this.getRouterParamsChange(queryData.bizType);
             // this.$emit("getTableData", this.routerMessage);
         },
@@ -305,6 +307,7 @@
                 getRowKeys(row) {
                     return row.id;
                 },
+                curBizType:"",
             }
         },
         methods: {
@@ -348,17 +351,22 @@
             },
             //获取未核对下第二个表格数据
             getCurRowData: function (row, event, column) {
+                var params = {
+                    pay_account_no: row.pay_account_no,
+                    recv_account_no: row.recv_account_no,
+                    payment_amount: row.payment_amount
+                }
+                if(this.curBizType==13){//资金下拨
+                    params.create_on = row.create_on;
+                }else{
+                    params.apply_on = row.apply_on;
+                }
                 this.$axios({
                     url: this.queryUrl + "normalProcess",
                     method:"post",
                     data:{
                         optype:this.checkOptype,
-                        params:{
-                            pay_account_no: row.pay_account_no,
-                            recv_account_no: row.recv_account_no,
-                            payment_amount: row.payment_amount,
-                            create_on: row.create_on
-                        }
+                        params:params
                     }
                 }).then((result) => {
                     if (result.data.error_msg) {
@@ -553,6 +561,7 @@
             '$route' (to, from) {
                 // 对路由变化作出响应...
                 this.getRouterParamsChange(to.query.bizType);
+                this.curBizType = to.query.bizType;
             }
         }
     }
