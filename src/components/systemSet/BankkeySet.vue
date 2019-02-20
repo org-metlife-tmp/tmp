@@ -421,7 +421,7 @@
                     bankkey: "",
                     bankkey_desc: "",
                     pay_mode: "",
-                    bankkey_status: "",
+                    bankkey_status: "1",
                     channel_id: "",
                     channel_desc: "",
                     bank_type: "",
@@ -643,9 +643,11 @@
 
                 var dialogData = this.dialogData;
                 for (var k in dialogData) {
-                    if (k == "bankkey_status" || k == "is_source_back" || k == "subordinate_channel") {
+                    if (k == "is_source_back" || k == "subordinate_channel") {
                         dialogData[k] = "0";
-                    } else {
+                    } else if(k == "bankkey_status"){
+                        dialogData[k] = "1";
+                    }else{
                         dialogData[k] = "";
                     }
                 }
