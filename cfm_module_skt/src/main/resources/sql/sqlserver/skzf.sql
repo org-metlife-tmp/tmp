@@ -28,9 +28,9 @@ WHERE 1=1 and skt.pay_bank_cnaps = bank.cnaps_code
           #elseif("max".equals(x.key))
             receipts_amount <= #para(x.value)
           #elseif("start_date".equals(x.key))
-             DATEDIFF(day,#para(x.value),create_on) >= 0
+             DATEDIFF(day,#para(x.value),apply_on) >= 0
           #elseif("end_date".equals(x.key))
-              DATEDIFF(day,#para(x.value),create_on) <= 0
+              DATEDIFF(day,#para(x.value),apply_on) <= 0
           #else
             #(x.key) = #para(x.value)
           #end
@@ -69,9 +69,9 @@ WHERE 1=1
           #elseif("max".equals(x.key))
             receipts_amount <= #para(x.value)
           #elseif("start_date".equals(x.key))
-            DATEDIFF(day,#para(x.value),create_on) >= 0
+            DATEDIFF(day,#para(x.value),apply_on) >= 0
           #elseif("end_date".equals(x.key))
-            DATEDIFF(day,#para(x.value),create_on) <= 0
+            DATEDIFF(day,#para(x.value),apply_on) <= 0
           #else
             #(x.key) = #para(x.value)
           #end

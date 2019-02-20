@@ -33,24 +33,26 @@ SELECT
 	la.sale_name ,
 	la.op_code ,
 	la.op_name ,
-	org.name,
+	org2.name,
 	channel.channel_code ,
 	channel.channel_desc
 FROM
 	pay_legal_data AS pay,
 	channel_setting AS channel,
 	la_pay_legal_data_ext AS  la ,
-	organization AS org 
+	organization AS org ,
+	organization AS org2 
 WHERE
 	pay.id = la.legal_id AND
 	channel.org_id = org.org_id AND
-	channel.id = pay.channel_id 
+	channel.id = pay.channel_id AND
+	org2.org_id = pay.org_id
   #if(map != null)
     #for(x : map)
       #if(x.value&&x.value!="")
          AND
         #if("channel_desc".equals(x.key))
-        	channel.channel_desc like convert(varchar(5),'%')+convert(varchar(255),#para(x.value))+convert(varchar(5),'%')
+        	channel.channel_desc = #para(x.value)
         #elseif("start_date".equals(x.key))
              DATEDIFF(day,#para(x.value),la.pay_date) >= 0
         #elseif("end_date".equals(x.key))
@@ -323,22 +325,25 @@ SELECT
 	ebs.op_code ,
 	ebs.op_name ,
 	channel.channel_code ,
-	channel.channel_desc
+	channel.channel_desc,
+	org2.name
 FROM
 	pay_legal_data AS pay,
 	channel_setting AS channel,
 	ebs_pay_legal_data_ext AS  ebs ,
-	organization AS org
+	organization AS org ,
+	organization AS org2 
 WHERE
 	pay.id = ebs.legal_id AND
 	channel.id = pay.channel_id AND
-	org.org_id = channel.org_id
+	org.org_id = channel.org_id AND
+	org2.org_id = pay.org_id
   #if(map != null)
     #for(x : map)
       #if(x.value&&x.value!="")
         AND
        #if("channel_desc".equals(x.key))
-        	channel.channel_desc like convert(varchar(5),'%')+convert(varchar(255),#para(x.value))+convert(varchar(5),'%')
+        	channel.channel_desc = #para(x.value)
         #elseif("preinsure_bill_no".equals(x.key))
             ebs.preinsure_bill_no like convert(varchar(5),'%')+convert(varchar(255),#para(x.value))+convert(varchar(5),'%')
         #elseif("insure_bill_no".equals(x.key))

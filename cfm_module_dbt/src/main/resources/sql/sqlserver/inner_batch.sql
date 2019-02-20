@@ -59,7 +59,7 @@ SELECT
 	fin.version,
 	fin.service_status,
 	fin.create_by,
-	fin.create_on,
+	fin.apply_on,
 	fin.update_by,
 	fin.update_on,
 	fin.pay_mode
@@ -119,9 +119,9 @@ FROM
             #elseif("max".equals(x.key))
               total_amount <= #para(x.value)
             #elseif("start_date".equals(x.key))
-              DATEDIFF(day,#para(x.value),CONVERT(DATE,create_on,110)) >= 0
+              DATEDIFF(day,#para(x.value),CONVERT(DATE,apply_on,110)) >= 0
             #elseif("end_date".equals(x.key))
-              DATEDIFF(day,#para(x.value),CONVERT(DATE,create_on,110)) <= 0
+              DATEDIFF(day,#para(x.value),CONVERT(DATE,apply_on,110)) <= 0
             #else
               #(x.key) = '#(x.value)'
             #end
@@ -140,7 +140,7 @@ FROM
 		ibb.total_amount,
 		ibb.persist_version,
 		ibb.create_by,
-		ibb.create_on,
+		ibb.apply_on,
 		ibb.update_by,
 		ibb.update_on,
 		ibb.pay_mode
@@ -163,7 +163,7 @@ SELECT
 	fin.version as persist_version,
 	fin.service_status,
 	fin.create_by,
-	fin.create_on,
+	fin.apply_on,
 	fin.update_by,
 	fin.update_on
 FROM
@@ -221,9 +221,9 @@ FROM
             #elseif("max".equals(x.key))
               total_amount <= #para(x.value)
             #elseif("start_date".equals(x.key))
-              DATEDIFF(day,#para(x.value),CONVERT(DATE,create_on,110)) >= 0
+              DATEDIFF(day,#para(x.value),CONVERT(DATE,apply_on,110)) >= 0
             #elseif("end_date".equals(x.key))
-              DATEDIFF(day,#para(x.value),CONVERT(DATE,create_on,110)) <= 0
+              DATEDIFF(day,#para(x.value),CONVERT(DATE,apply_on,110)) <= 0
             #else
               #(x.key) = '#(x.value)'
             #end
@@ -242,7 +242,7 @@ FROM
 		ibb.total_amount,
 		ibb.persist_version,
 		ibb.create_by,
-		ibb.create_on,
+		ibb.apply_on,
 		ibb.update_by,
 		ibb.update_on
 	) fin
@@ -503,6 +503,9 @@ SELECT
 	obb.payment_summary,
 	obb.org_id,
 	o.name as org_name,
+	obb.biz_id,
+	obb.biz_name,
+	obb.pay_mode,
 	sum( case when obbad.pay_status = 0 then obbad.payment_amount else 0.00 end ) saved_amount,
 	sum( case when obbad.pay_status = 0 then 1 else 0 end ) saved_num,
 	sum( case when obbad.pay_status = 2 then obbad.payment_amount else 0.00 end ) failed_amount,
@@ -536,7 +539,10 @@ group by
 	obb.update_on,
 	obb.payment_summary,
 	obb.org_id ,
-	o.name
+	o.name,
+	obb.biz_id,
+	obb.biz_name,
+	obb.pay_mode
 #end
 
 #sql("findAttachDetailToPage")
@@ -885,9 +891,9 @@ SELECT DISTINCT
             #elseif("max".equals(x.key))
               total_amount <= #para(x.value)
             #elseif("start_date".equals(x.key))
-              DATEDIFF(day,#para(x.value),CONVERT(DATE,create_on,110)) >= 0
+              DATEDIFF(day,#para(x.value),CONVERT(DATE,apply_on,110)) >= 0
             #elseif("end_date".equals(x.key))
-              DATEDIFF(day,#para(x.value),CONVERT(DATE,create_on,110)) <= 0
+              DATEDIFF(day,#para(x.value),CONVERT(DATE,apply_on,110)) <= 0
             #elseif("batchnos".equals(x.key))
               #continue
             #elseif("service_status".equals(x.key))
@@ -935,9 +941,9 @@ WHERE base.batchno = detail.batchno
             #elseif("max".equals(x.key))
               total_amount <= #para(x.value)
             #elseif("start_date".equals(x.key))
-              DATEDIFF(day,#para(x.value),CONVERT(DATE,create_on,110)) >= 0
+              DATEDIFF(day,#para(x.value),CONVERT(DATE,apply_on,110)) >= 0
             #elseif("end_date".equals(x.key))
-              DATEDIFF(day,#para(x.value),CONVERT(DATE,create_on,110)) <= 0
+              DATEDIFF(day,#para(x.value),CONVERT(DATE,apply_on,110)) <= 0
             #elseif("batchnos".equals(x.key))
               #continue
             #elseif("service_status".equals(x.key))

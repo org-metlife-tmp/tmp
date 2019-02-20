@@ -661,10 +661,10 @@ public class ZftService {
         record.set("pay_account_no", billList.get("pay_account_no"));
         record.set("recv_account_no", billList.get("recv_account_no"));
         record.set("payment_amount", billList.get("payment_amount"));
-        Date create = TypeUtils.castToDate(billList.get("create_on"));
+        Date create = TypeUtils.castToDate(billList.get("apply_on"));
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String create_on = sdf.format(create);
-        record.set("create_on", create_on);
+        String apply_on = sdf.format(create);
+        record.set("apply_on", apply_on);
         SqlPara sqlPara = Db.getSqlPara("zjzf.tradingList", Kv.by("map", record.getColumns()));
         List<Record> find = Db.find(sqlPara);
         setBankName(find);

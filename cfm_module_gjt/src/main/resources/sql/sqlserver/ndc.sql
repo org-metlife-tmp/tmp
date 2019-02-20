@@ -571,9 +571,9 @@ WHERE obb.id = cwrei.bill_id
             #end
             AND
             #if("start_date".equals(x.key))
-              DATEDIFF(day,#para(x.value),obb.create_on) >= 0
+              DATEDIFF(day,#para(x.value),obb.apply_on) >= 0
             #elseif("end_date".equals(x.key))
-              DATEDIFF(day,#para(x.value),obb.create_on) <= 0
+              DATEDIFF(day,#para(x.value),obb.apply_on) <= 0
             #elseif("recv_account_no".equals(x.key))
               obb.recv_account_no like convert(varchar(5),'%')+convert(varchar(255),#para(x.value))+convert(varchar(5),'%')
             #elseif("pay_account_no".equals(x.key))
@@ -648,9 +648,9 @@ left join organization org on obb.org_id = org.org_id
             #end
             AND
             #if("start_date".equals(x.key))
-              DATEDIFF(day,#para(x.value),obb.create_on) >= 0
+              DATEDIFF(day,#para(x.value),obb.apply_on) >= 0
             #elseif("end_date".equals(x.key))
-              DATEDIFF(day,#para(x.value),obb.create_on) <= 0
+              DATEDIFF(day,#para(x.value),obb.apply_on) <= 0
             #elseif("recv_account_no".equals(x.key))
               obb.recv_account_no like convert(varchar(5),'%')+convert(varchar(255),#para(x.value))+convert(varchar(5),'%')
             #elseif("pay_account_no".equals(x.key))

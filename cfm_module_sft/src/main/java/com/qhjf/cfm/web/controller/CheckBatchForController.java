@@ -41,8 +41,10 @@ public class CheckBatchForController extends CFMBaseController{
 		logger.info("============获取核对组批LA/EBS列表");
 		Record record = getRecordByParamsStrong();
         try {            	
-        	List<Record> page = service.list(record,getCurUodp());	
-        	renderOk(page);
+        	int pageNum = getPageNum(record);
+            int pageSize = getPageSize(record);
+        	Page<Record> page = service.list(pageNum , pageSize ,record,getCurUodp());	
+        	renderOkPage(page);
 		} catch (BusinessException e) {
 			logger.error("获取组批LA列表失败");
 			renderFail(e);

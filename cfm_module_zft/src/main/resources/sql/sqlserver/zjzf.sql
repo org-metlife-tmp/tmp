@@ -26,9 +26,9 @@ WHERE 1=1 and zft.pay_bank_cnaps = bank.cnaps_code and org.org_id = zft.org_id
           #elseif("max".equals(x.key))
             payment_amount <= #para(x.value)
           #elseif("start_date".equals(x.key))
-             DATEDIFF(day,#para(x.value),create_on) >= 0
+             DATEDIFF(day,#para(x.value),apply_on) >= 0
           #elseif("end_date".equals(x.key))
-              DATEDIFF(day,#para(x.value),create_on) <= 0
+              DATEDIFF(day,#para(x.value),apply_on) <= 0
           #elseif("level_code".equals(x.key))
             org.level_code like convert(varchar(5),'%')+convert(varchar(255),#para(x.value))+convert(varchar(5),'%')
           #elseif("level_num".equals(x.key))
@@ -73,9 +73,9 @@ WHERE 1=1 and zft.org_id = org.org_id
           #elseif("max".equals(x.key))
             payment_amount <= #para(x.value)
            #elseif("start_date".equals(x.key))
-             DATEDIFF(day,#para(x.value),create_on) >= 0
+             DATEDIFF(day,#para(x.value),apply_on) >= 0
           #elseif("end_date".equals(x.key))
-              DATEDIFF(day,#para(x.value),create_on) <= 0
+              DATEDIFF(day,#para(x.value),apply_on) <= 0
           #elseif("level_code".equals(x.key))
             org.level_code like convert(varchar(5),'%')+convert(varchar(255),#para(x.value))+convert(varchar(5),'%')
           #elseif("level_num".equals(x.key))
@@ -284,7 +284,7 @@ where is_checked = 0
 	and acc_no = #para(map.pay_account_no)
 	and opp_acc_no = #para(map.recv_account_no)
 	and amount = #para(map.payment_amount)
-	and convert(varchar,trans_date)+' '+convert(varchar,trans_time) >= #para(map.create_on)
+	and convert(varchar,trans_date)+' '+convert(varchar,trans_time) >= #para(map.apply_on)
 #end
 
 

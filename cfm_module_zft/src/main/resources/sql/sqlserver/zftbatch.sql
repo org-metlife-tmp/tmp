@@ -294,9 +294,9 @@ AND dt.batchno = ?
             #end
             AND
             #if("start_date".equals(x.key))
-              DATEDIFF(day,#para(x.value),obb.create_on) >= 0
+              DATEDIFF(day,#para(x.value),obb.apply_on) >= 0
             #elseif("end_date".equals(x.key))
-              DATEDIFF(day,#para(x.value),obb.create_on) <= 0
+              DATEDIFF(day,#para(x.value),obb.apply_on) <= 0
             #elseif("pay_account_no".equals(x.key))
               obb.pay_account_no like convert(varchar(5),'%')+convert(varchar(255),#para(x.value))+convert(varchar(5),'%')
             #elseif("recv_account_no".equals(x.key))
@@ -458,6 +458,9 @@ WHERE
     obb.org_id,
     obb.service_status,
     obb.persist_version,
+    obb.biz_id,
+    obb.biz_name,
+    obb.pay_mode,
     SUM (
       CASE
       WHEN obbad.pay_status = ? THEN
@@ -554,7 +557,10 @@ WHERE
     obb.batchno,
     obb.service_status,
     obb.org_id,
-    obb.persist_version
+    obb.persist_version,
+    obb.biz_id,
+    obb.biz_name,
+    obb.pay_mode
 #end
 
 #sql("billdetaillist")
@@ -691,9 +697,9 @@ WHERE
             #end
             AND
             #if("start_date".equals(x.key))
-              DATEDIFF(day,#para(x.value),obb.create_on) >= 0
+              DATEDIFF(day,#para(x.value),obb.apply_on) >= 0
             #elseif("end_date".equals(x.key))
-              DATEDIFF(day,#para(x.value),obb.create_on) <= 0
+              DATEDIFF(day,#para(x.value),obb.apply_on) <= 0
             #elseif("pay_account_no".equals(x.key))
               obb.pay_account_no like convert(varchar(5),'%')+convert(varchar(255),#para(x.value))+convert(varchar(5),'%')
             #elseif("recv_account_no".equals(x.key))
@@ -755,9 +761,9 @@ WHERE 1=1 and zft.pay_bank_cnaps = bank.cnaps_code and oad.batchno = zft.batchno
           #elseif("max".equals(x.key))
             zft.total_amount <= #para(x.value)
           #elseif("start_date".equals(x.key))
-             DATEDIFF(day,#para(x.value),zft.create_on) >= 0
+             DATEDIFF(day,#para(x.value),zft.apply_on) >= 0
           #elseif("end_date".equals(x.key))
-              DATEDIFF(day,#para(x.value),zft.create_on) <= 0
+              DATEDIFF(day,#para(x.value),zft.apply_on) <= 0
           #else
             zft.#(x.key) = #para(x.value)
           #end
@@ -805,9 +811,9 @@ WHERE 1=1 and oad.batchno = zft.batchno
           #elseif("max".equals(x.key))
             zft.total_amount <= #para(x.value)
           #elseif("start_date".equals(x.key))
-             DATEDIFF(day,#para(x.value),zft.create_on) >= 0
+             DATEDIFF(day,#para(x.value),zft.apply_on) >= 0
           #elseif("end_date".equals(x.key))
-              DATEDIFF(day,#para(x.value),zft.create_on) <= 0
+              DATEDIFF(day,#para(x.value),zft.apply_on) <= 0
           #else
             zft.#(x.key) = #para(x.value)
           #end
@@ -1011,7 +1017,7 @@ SELECT
 	fin.version,
 	fin.service_status,
 	fin.create_by,
-	fin.create_on,
+	fin.apply_on,
 	fin.update_by,
 	fin.update_on,
 	fin.pay_mode
@@ -1032,7 +1038,7 @@ FROM
 		ibb.persist_version as version ,
 		ibb.service_status,
 		ibb.create_by,
-		ibb.create_on,
+		ibb.apply_on,
 		ibb.update_by,
 		ibb.update_on,
 		ibb.pay_mode
@@ -1071,9 +1077,9 @@ FROM
             #elseif("max".equals(x.key))
               total_amount <= #para(x.value)
             #elseif("start_date".equals(x.key))
-              DATEDIFF(day,#para(x.value),CONVERT(DATE,create_on,110)) >= 0
+              DATEDIFF(day,#para(x.value),CONVERT(DATE,apply_on,110)) >= 0
             #elseif("end_date".equals(x.key))
-              DATEDIFF(day,#para(x.value),CONVERT(DATE,create_on,110)) <= 0
+              DATEDIFF(day,#para(x.value),CONVERT(DATE,apply_on,110)) <= 0
             #else
               #(x.key) = '#(x.value)'
             #end
@@ -1092,7 +1098,7 @@ FROM
 		ibb.total_amount,
 		ibb.persist_version,
 		ibb.create_by,
-		ibb.create_on,
+		ibb.apply_on,
 		ibb.update_by,
 		ibb.update_on,
 		ibb.pay_mode
@@ -1138,9 +1144,9 @@ SELECT DISTINCT
             #elseif("max".equals(x.key))
               total_amount <= #para(x.value)
             #elseif("start_date".equals(x.key))
-              DATEDIFF(day,#para(x.value),CONVERT(DATE,create_on,110)) >= 0
+              DATEDIFF(day,#para(x.value),CONVERT(DATE,apply_on,110)) >= 0
             #elseif("end_date".equals(x.key))
-              DATEDIFF(day,#para(x.value),CONVERT(DATE,create_on,110)) <= 0
+              DATEDIFF(day,#para(x.value),CONVERT(DATE,apply_on,110)) <= 0
             #elseif("batchnos".equals(x.key))
               #continue
             #elseif("service_status".equals(x.key))
@@ -1188,9 +1194,9 @@ WHERE base.batchno = detail.batchno
             #elseif("max".equals(x.key))
               total_amount <= #para(x.value)
             #elseif("start_date".equals(x.key))
-              DATEDIFF(day,#para(x.value),CONVERT(DATE,create_on,110)) >= 0
+              DATEDIFF(day,#para(x.value),CONVERT(DATE,apply_on,110)) >= 0
             #elseif("end_date".equals(x.key))
-              DATEDIFF(day,#para(x.value),CONVERT(DATE,create_on,110)) <= 0
+              DATEDIFF(day,#para(x.value),CONVERT(DATE,apply_on,110)) <= 0
             #elseif("batchnos".equals(x.key))
               #continue
             #elseif("service_status".equals(x.key))

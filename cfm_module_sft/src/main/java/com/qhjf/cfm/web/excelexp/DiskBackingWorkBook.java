@@ -66,7 +66,7 @@ public class DiskBackingWorkBook extends AbstractWorkBook {
             //EBS
             this.fileName = "EBS_Return_FH_"+ RedisSericalnoGenTool.genShortSerial() +"_"+DateKit.toStr(new Date(), "YYYYMMdd")+".xls";
         }
-        sqlPara = Db.getSqlPara("disk_backing.findDiskSendingList", Kv.by("map", record.getColumns()));
+        sqlPara = Db.getSqlPara("disk_backing.findDiskBackingList", Kv.by("map", record.getColumns()));
         List<Record> recordList = Db.find(sqlPara);
         return POIUtil.createExcel(recordList, this);
     }

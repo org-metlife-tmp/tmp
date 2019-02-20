@@ -258,6 +258,7 @@ WHERE
 #sql("findbatchdetail")
 SELECT
 	detail.*,
+	master.channel_id,
 	master.net_mode
 FROM
 	pay_batch_detail detail,
@@ -311,6 +312,14 @@ WHERE 1 = 1
       #end
     #end
   #end
+#end
+
+#sql("findaccount")
+SELECT
+  *
+FROM
+  account
+WHERE bankcode = ?
 #end
 
 

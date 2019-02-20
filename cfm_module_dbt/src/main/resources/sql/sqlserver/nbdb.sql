@@ -62,9 +62,9 @@ WHERE 1=1
           #elseif("max".equals(x.key))
             payment_amount <= #para(x.value)
           #elseif("start_date".equals(x.key))
-            DATEDIFF(day,#para(x.value),CONVERT(DATE,create_on,110)) >= 0
+            DATEDIFF(day,#para(x.value),CONVERT(DATE,apply_on,110)) >= 0
           #elseif("end_date".equals(x.key))
-            DATEDIFF(day,#para(x.value),CONVERT(DATE,create_on,110)) <= 0
+            DATEDIFF(day,#para(x.value),CONVERT(DATE,apply_on,110)) <= 0
           #else
             #(x.key) = #para(x.value)
           #end
@@ -102,9 +102,9 @@ WHERE dbt.org_id = org.org_id
           #elseif("max".equals(x.key))
             payment_amount <= #para(x.value)
           #elseif("start_date".equals(x.key))
-            DATEDIFF(day,#para(x.value),CONVERT(DATE,create_on,110)) >= 0
+            DATEDIFF(day,#para(x.value),CONVERT(DATE,apply_on,110)) >= 0
           #elseif("end_date".equals(x.key))
-            DATEDIFF(day,#para(x.value),CONVERT(DATE,create_on,110)) <= 0
+            DATEDIFF(day,#para(x.value),CONVERT(DATE,apply_on,110)) <= 0
           #elseif("level_code".equals(x.key))
             org.level_code like convert(varchar(5),'%')+convert(varchar(255),#para(x.value))+convert(varchar(5),'%')
           #elseif("level_num".equals(x.key))
@@ -183,9 +183,9 @@ WHERE dbt.org_id = org.org_id
           #elseif("max".equals(x.key))
             payment_amount <= #para(x.value)
           #elseif("start_date".equals(x.key))
-            DATEDIFF(day,#para(x.value),CONVERT(DATE,create_on,110)) >= 0
+            DATEDIFF(day,#para(x.value),CONVERT(DATE,apply_on,110)) >= 0
           #elseif("end_date".equals(x.key))
-            DATEDIFF(day,#para(x.value),CONVERT(DATE,create_on,110)) <= 0
+            DATEDIFF(day,#para(x.value),CONVERT(DATE,apply_on,110)) <= 0
           #elseif("level_code".equals(x.key))
             org.level_code like convert(varchar(5),'%')+convert(varchar(255),#para(x.value))+convert(varchar(5),'%')
           #elseif("level_num".equals(x.key))
@@ -265,9 +265,9 @@ WHERE 1=1
           #elseif("max".equals(x.key))
             payment_amount <= #para(x.value)
           #elseif("start_date".equals(x.key))
-            DATEDIFF(day,#para(x.value),CONVERT(DATE,create_on,110)) >= 0
+            DATEDIFF(day,#para(x.value),CONVERT(DATE,apply_on,110)) >= 0
           #elseif("end_date".equals(x.key))
-            DATEDIFF(day,#para(x.value),CONVERT(DATE,create_on,110)) <= 0
+            DATEDIFF(day,#para(x.value),CONVERT(DATE,apply_on,110)) <= 0
           #elseif("level_code".equals(x.key))
             org.level_code like convert(varchar(5),'%')+convert(varchar(255),#para(x.value))+convert(varchar(5),'%')
           #elseif("level_num".equals(x.key))
@@ -441,6 +441,7 @@ WHERE idp.id = cwrei.bill_id
 	idp.bank_serial_number,
 	idp.create_by,
 	idp.create_on,
+	idp.apply_on,
 	idp.update_by,
 	idp.update_on,
 	idp.delete_flag,
@@ -470,4 +471,44 @@ where idp.id = ?
 #sql("updBillById")
    update inner_db_payment set bank_serial_number = ?,repeat_count = ?,service_status = ?,instruct_code = ?
    where id = ? and repeat_count = ? and service_status = ?
+#end
+
+
+
+#sql("findAccountByAccno")
+SELECT
+	a.acc_id,
+	a.acc_no,
+	a.acc_name,
+	a.acc_attr,
+	a.open_date,
+	a.cancel_date,
+	a.is_activity,
+	a.status,
+	a.curr_id,
+	a.bank_cnaps_code,
+	b.name as bank_name,
+	b.bank_type as bank_type,
+	b.cnaps_code as cnaps_code,
+	b.province as province,
+	b.city as city,
+	c.name as curr_name,
+	c.iso_code as curr_code,
+	a.org_id,
+	o.name as org_name,
+	o.level_num as level_num,
+	o.level_code as level_code,
+	a.interactive_mode,
+	a.is_virtual,
+	a.lawfull_man
+FROM
+	account a,
+	all_bank_info b,
+	organization o,
+	currency c
+WHERE
+	a.org_id = o.org_id
+AND a.bank_cnaps_code = b.cnaps_code
+AND a.curr_id = c.id
+AND a.acc_no = ?
 #end

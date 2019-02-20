@@ -27,7 +27,7 @@ public class LaCallbackBean {
 		this.reqnno = origin.getStr("pay_code");
 		if(origin.getInt("tmp_status") == WebConstant.SftInterfaceStatus.SFT_INTER_PROCESS_S.getKey()){
 			this.stflag = "Y";
-		}else if(origin.getInt("tmp_status") == WebConstant.SftInterfaceStatus.SFT_INTER_PROCESS_S.getKey()){
+		}else if(origin.getInt("tmp_status") == WebConstant.SftInterfaceStatus.SFT_INTER_PROCESS_F.getKey()){
 			this.stflag = "N";
 			this.txtline = origin.getStr("tmp_err_message");
 		}else{

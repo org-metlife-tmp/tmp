@@ -14,6 +14,7 @@ import com.qhjf.cfm.web.constant.WebConstant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -52,11 +53,13 @@ public class CheckVoucherService {
     private static String NBDB_ZJHB = "03bead791d6244a9B513bb789799fa3a";      //内部调拨-资金调拨
     private static String NBDB_TLHZ = "2b4ccc1daf0a4b44b50c10dffb7b3e54";      //内部调拨-投连划转
     private static String NBDB_TLHH = "2b4ccc1daf0a4b44b50c10dffb7b3e55";      //内部调拨-投连划回
+    private static String NBDB_DSF = "11e1d8f2dbe14c41a241e0a430743c6b";      //内部调拨-批量付第三方
 
     private static String ZJZF_PLF_DSF = "801dbfb1bfb34817b9e61ce29d86b47b";   //资金支付-批量付/第三方
     private static String ZJZF_QT = "a0cabdb210f848cda9a6e1d090f4a783";        //资金支付-其他
     private static String ZJZF_BDYWJSF = "a0cabdb210f848cda9a6e1d090f4a793";   //资金支付-保单业务结算费
     private static String ZJZF_YHSXF = "a0cabdb210f848cda9a6e1d090f4a893";      //资金支付-保单业务结算费
+    private static String ZJZF_BDYWSGFK = "a0cabdb210f848cda9a6e1d090f4a993";   //资金支付-保单业务手工付款
 
     private static String PLDB_ZJHB = "d50f3048cee34c6684ff36635353955a";      //内部调部-批量-资金调拨
     private static String PLDB_TLHZ = "b8439d8f56a74da9a6bad8ca04711e04";      //内部调部-批量-投连划转
@@ -65,10 +68,15 @@ public class CheckVoucherService {
     private static String PLZF_QT = "982e09f355ea488dbd434d9f8be20365";        //资金支付-批量-其他
     private static String PLZF_BDYWJSF = "982e09f355ea488dbd434d9f8be20465";   //资金支付-批量-保单业务结算费
     private static String PLZF_YHSXF = "982e09f355ea488dbd434d9f8be20565";      //资金支付-批量-保单业务结算费
+    private static String PLZF_BDYWSGFK = "982e09f355ea488dbd434d9f8be20665";   //资金支付-批量-保单业务手工付款
 
     private static String SK_LXSU = "d50f3048cee34c6684ff36634343955a";        //收款-利息收入
     private static String SK_LXSUMY = "d50f3048cee34c6684ff36634343944a";   //收款-利息收入(美金)
     private static String SK_QT = "d50f3048cee34c6684ff36634343933a";      //收款-其他
+
+    private static SimpleDateFormat formatTrans = new SimpleDateFormat("ddMMyyyy");//交易时间规则
+    private static SimpleDateFormat formatTransRefer = new SimpleDateFormat("YYMM");//交易标识规则
+    private static SimpleDateFormat formatdsfTransRefer = new SimpleDateFormat("yyMMdd");//交易标识规则
 
     private static Logger log = LoggerFactory.getLogger(CheckVoucherService.class);
 
@@ -154,7 +162,6 @@ public class CheckVoucherService {
         payRec = infos[0];
         recvRec = infos[1];
 
-
         String bizId = TypeUtils.castToString(billRec.get("biz_id"));
         List<Record> list = new ArrayList<>();
 
@@ -178,8 +185,30 @@ public class CheckVoucherService {
         } else if (NBDB_TLHH.equals(bizId) || PLDB_TLHH.equals(bizId)) {
             list.add(CommonService.dbtPayVorcher(payRec, billRec, seqnoOrstatmentCode, 5, bizType, transDateMap));
             list.add(CommonService.dbtPayVorcher(payRec, billRec, seqnoOrstatmentCode, 6, bizType, transDateMap));
+        } else if (NBDB_DSF.equals(bizId)) {
+            /**
+             * 批量付自动生成的调拨单，判断付款方和收款方是否为同一机构，
+             *      1，如果为同一机构，则生成一借一贷，
+             *      2，如果为不同机构，则需要内部往来的
+             */
+            //根据账户id查询账户所属机构
+            Record payAcc = Db.findById("account", "acc_id", TypeUtils.castToLong(billRec.get("pay_account_id")));
+            Record recvAcc = Db.findById("account", "acc_id", TypeUtils.castToLong(billRec.get("recv_account_id")));
+
+            if(payAcc.getInt("org_id") == recvAcc.getInt("org_id")){
+                //生成一借一贷
+                list.add(CommonService.dbtPlfPayVorcher(payRec, billRec, seqnoOrstatmentCode, 1, bizType, transDateMap));
+                list.add(CommonService.dbtPlfPayVorcher(recvRec, billRec, seqnoOrstatmentCode, 2, bizType, transDateMap));
+            }else{
+                //按原来的生成，但是个别字段不一样
+                list.add(CommonService.dbtPlfPayVorcher(payRec, billRec, seqnoOrstatmentCode, 3, bizType, transDateMap));
+                list.add(CommonService.dbtPlfPayVorcher(payRec, billRec, seqnoOrstatmentCode, 4, bizType, transDateMap));
+                list.add(CommonService.dbtPlfPayVorcher(recvRec, billRec, seqnoOrstatmentCode, 3, bizType, transDateMap));
+                list.add(CommonService.dbtPlfPayVorcher(recvRec, billRec, seqnoOrstatmentCode, 4, bizType, transDateMap));
+            }
         } else {
-            throw new ReqValidateException("未定义的业务类型!");
+//            throw new ReqValidateException("未定义的业务类型!");
+            return true;
         }
 
 
@@ -268,6 +297,9 @@ public class CheckVoucherService {
             //凭证6
             list.add(CommonService.zftPayVorcher(payRec, billRec, seqnoOrstatmentCode, 8, bizType, transDateMap));
             //============ 付方向 凭证数据组装 end ============ else {
+        }else if(ZJZF_BDYWSGFK.equals(bizId) || PLZF_BDYWSGFK.equals(bizId)){
+            return true;
+        } else {
             throw new ReqDataException("未定义的业务类型!");
         }
 
@@ -310,6 +342,22 @@ public class CheckVoucherService {
         String curr="",orgcode="";
         List<Record> list = new ArrayList<>();
         if(bizType == WebConstant.MajorBizType.SFF_PLF_INNER){
+            Record chann=null, acc=null;
+            String description=null, code6=null, transactionReference=null;
+            //根据通道找对应的bankcode和channel_code，然后根据channel_code找对应的账号
+            if(detailLsit!=null && detailLsit.size()>0){
+                chann = Db.findById("channel_setting", "id", detailLsit.get(0).getInt("channel_id"));
+                acc = Db.findFirst(Db.getSql("paycheck.findaccount"), chann.getStr("bankcode"));
+                //根据机构id查询机构信息
+                curr = TypeUtils.castToString(
+                        Db.findById("currency","id", TypeUtils.castToLong(acc.get("curr_id")))
+                                .get("iso_code"));
+                orgcode = TypeUtils.castToString(
+                        Db.findById("organization","org_id", TypeUtils.castToLong(acc.get("org_id")))
+                                .get("code"));
+                Record sftcheck = Db.findById("sftcheck_org_mapping", "tmp_org_code", orgcode);
+                transactionReference = "SS" + sftcheck.getStr("code_abbre") + formatTransRefer.format(new Date()) + seqnoOrstatmentCode;
+            }
             //内部调拨的分全额模式和净额模式两种 batchList 净额模式 0--净额模式 1--全额模式
             int netMode = TypeUtils.castToInt(detailLsit.get(0).get("net_mode"));
             if(netMode == 0){
@@ -319,20 +367,16 @@ public class CheckVoucherService {
                 }
                 transDate = dateList.get(dateList.size()-1);
                 periodDate = CommonService.getPeriodByCurrentDay(transDate);
-                Record[] infos = processTranIds(tradList, seqnoOrstatmentCode);
-                Record payRec = infos[0];
-                Record accRec = Db.findById("account", "acc_id", TypeUtils.castToLong(payRec.get("acc_id")));
-                curr = TypeUtils.castToString(
-                        Db.findById("currency","id", TypeUtils.castToLong(accRec.get("curr_id")))
-                                .get("iso_code"));
-                orgcode = TypeUtils.castToString(
-                        Db.findById("organization","org_id", TypeUtils.castToLong(accRec.get("org_id")))
-                                .get("code"));
+
                 for(Record detailRecord : detailLsit){
-                    //凭证1
-                    list.add(CommonService.plfPayVorcher(accRec, seqnoOrstatmentCode, 1, periodDate, transDate, detailRecord, curr, orgcode));
-                    //凭证2
-                    list.add(CommonService.plfPayVorcher(accRec, seqnoOrstatmentCode, 2, periodDate, transDate, detailRecord, curr, orgcode));
+                    int status = TypeUtils.castToInt(detailRecord.get("status"));
+                    if(status == WebConstant.SftInterfaceStatus.SFT_INTER_PROCESS_S.getKey()){
+                        description = formatdsfTransRefer.format(transDate) + chann.getStr("bankcode") + "批量付款-银行净额模式-付款成功";
+                        //凭证1
+                        list.add(CommonService.plfPayVorcher(acc, description, chann.getStr("channel_code")+chann.getStr("bankcode"), transactionReference, 1, periodDate, transDate, detailRecord, curr, orgcode));
+                        //凭证2
+                        list.add(CommonService.plfPayVorcher(acc, description, "SYS", transactionReference, 2, periodDate, transDate, detailRecord, curr, orgcode));
+                    }
                 }
 
             }else if(netMode == 1){
@@ -354,27 +398,20 @@ public class CheckVoucherService {
                 periodS = CommonService.getPeriodByCurrentDay(transS);
                 periodF = CommonService.getPeriodByCurrentDay(transF);
 
-                Record[] infos = processTranIds(tradList, seqnoOrstatmentCode);
-                Record payRec = infos[0];
-                Record accRec = Db.findById("account", "acc_id", TypeUtils.castToLong(payRec.get("acc_id")));
-                curr = TypeUtils.castToString(
-                        Db.findById("currency","id", TypeUtils.castToLong(accRec.get("curr_id")))
-                                .get("iso_code"));
-                orgcode = TypeUtils.castToString(
-                        Db.findById("organization","org_id", TypeUtils.castToLong(accRec.get("org_id")))
-                                .get("code"));
                 for(Record detailRecord : detailLsit){
                     int status = TypeUtils.castToInt(detailRecord.get("status"));
                     if(status == WebConstant.SftInterfaceStatus.SFT_INTER_PROCESS_F.getKey()){
+                        description = formatdsfTransRefer.format(transDate) + chann.getStr("bankcode") + "批量付款-银行全额模式-资金退回";
                         //凭证5
-                        list.add(CommonService.plfPayVorcher(accRec, seqnoOrstatmentCode, 5, periodDate, transDate, detailRecord, curr, orgcode));
+                        list.add(CommonService.plfPayVorcher(acc, description, chann.getStr("channel_code")+chann.getStr("bankcode"), transactionReference, 5, periodDate, transDate, detailRecord, curr, orgcode));
                         //凭证6
-                        list.add(CommonService.plfPayVorcher(accRec, seqnoOrstatmentCode, 6, periodDate, transDate, detailRecord, curr, orgcode));
+                        list.add(CommonService.plfPayVorcher(acc, description, "SYS", transactionReference, 6, periodDate, transDate, detailRecord, curr, orgcode));
                     }
+                    description = formatdsfTransRefer.format(transDate) + chann.getStr("bankcode") + "批量付款-银行全额模式-付款成功";
                     //凭证3
-                    list.add(CommonService.plfPayVorcher(accRec, seqnoOrstatmentCode, 3, periodDate, transDate, detailRecord, curr, orgcode));
+                    list.add(CommonService.plfPayVorcher(acc, description, "SYS", transactionReference, 3, periodDate, transDate, detailRecord, curr, orgcode));
                     //凭证4
-                    list.add(CommonService.plfPayVorcher(accRec, seqnoOrstatmentCode, 4, periodDate, transDate, detailRecord, curr, orgcode));
+                    list.add(CommonService.plfPayVorcher(acc, description, chann.getStr("channel_code")+chann.getStr("bankcode"), transactionReference, 4, periodDate, transDate, detailRecord, curr, orgcode));
                 }
 
             }
@@ -384,19 +421,11 @@ public class CheckVoucherService {
              */
             boolean directionFlag = false;
             List<Date> dateList = new ArrayList<Date>();
-            Record accRec = null;
             for(Record r : tradRecordList){
                 int direction = TypeUtils.castToInt(r.get("direction"));
                 //1付 2收
                 dateList.add(TypeUtils.castToDate(r.get("trans_date")));
                 if(direction == 2){
-                    accRec = Db.findById("account", "acc_id", TypeUtils.castToLong(r.get("acc_id")));
-                    curr = TypeUtils.castToString(
-                            Db.findById("currency","id", TypeUtils.castToLong(accRec.get("curr_id")))
-                                    .get("iso_code"));
-                    orgcode = TypeUtils.castToString(
-                            Db.findById("organization","org_id", TypeUtils.castToLong(accRec.get("org_id")))
-                                    .get("code"));
                     directionFlag = true;
                 }
             }
@@ -409,22 +438,40 @@ public class CheckVoucherService {
                 transDate = new Date();
             }
 
-            Record[] infos = processTranIds(tradList, seqnoOrstatmentCode);
-            Record payRec = infos[0];
+            Record chann=null, acc=null;
+            String description=null, code6=null, transactionReference=null;
+            //根据通道找对应的bankcode和channel_code，然后根据channel_code找对应的账号
+            if(detailLsit!=null && detailLsit.size()>0){
+                chann = Db.findById("channel_setting", "id", detailLsit.get(0).getInt("channel_id"));
+                acc = Db.findFirst(Db.getSql("paycheck.findaccount"), chann.getStr("bankcode"));
+                //根据机构id查询机构信息
+                curr = TypeUtils.castToString(
+                        Db.findById("currency","id", TypeUtils.castToLong(acc.get("curr_id")))
+                                .get("iso_code"));
+                orgcode = TypeUtils.castToString(
+                        Db.findById("organization","org_id", TypeUtils.castToLong(acc.get("org_id")))
+                                .get("code"));
+                Record sftcheck = Db.findById("sftcheck_org_mapping", "tmp_org_code", orgcode);
+                transactionReference = "SS" + sftcheck.getStr("code_abbre") + formatTransRefer.format(new Date()) + seqnoOrstatmentCode;
+            }
             for(Record detailRecord : detailLsit){
                 int status = TypeUtils.castToInt(detailRecord.get("status"));
+
                 if(status == WebConstant.SftInterfaceStatus.SFT_INTER_PROCESS_S.getKey()){
+                    description = formatdsfTransRefer.format(transDate) + chann.getStr("bankcode") + "第三方结算-批量付款-付款成功";
+                    code6 = chann.getStr("channel_code")+chann.getStr("bankcode");
                     //处理成功的
                     //凭证1
-                    list.add(CommonService.plfPayVorcher(null, seqnoOrstatmentCode, 7, periodDate, transDate, detailRecord, "CNY", ""));
+                    list.add(CommonService.plfPayVorcher(acc, description, code6, transactionReference, 7, periodDate, transDate, detailRecord, curr, orgcode));
                     //凭证2
-                    list.add(CommonService.plfPayVorcher(null, seqnoOrstatmentCode, 8, periodDate, transDate, detailRecord, "CNY", ""));
+                    list.add(CommonService.plfPayVorcher(acc, description, code6, transactionReference, 8, periodDate, transDate, detailRecord, curr, orgcode));
                 }else if(status == WebConstant.SftInterfaceStatus.SFT_INTER_PROCESS_F.getKey()){
                     //处理失败的
                     //凭证1
-                    list.add(CommonService.plfPayVorcher(accRec, seqnoOrstatmentCode, 9, periodDate, transDate, detailRecord, curr, orgcode));
+                    description = formatdsfTransRefer.format(transDate) + chann.getStr("bankcode") + "第三方结算-批量付款-付款失败退款";
+                    list.add(CommonService.plfPayVorcher(acc, description, "SYS", transactionReference, 9, periodDate, transDate, detailRecord, curr, orgcode));
                     //凭证2
-                    list.add(CommonService.plfPayVorcher(accRec, seqnoOrstatmentCode, 10, periodDate, transDate, detailRecord, curr, orgcode));
+                    list.add(CommonService.plfPayVorcher(acc, description, chann.getStr("channel_code")+chann.getStr("bankcode"), transactionReference, 10, periodDate, transDate, detailRecord, curr, orgcode));
                 }
             }
         }

@@ -39,6 +39,7 @@ import com.qhjf.cfm.web.constant.WebConstant.COMMONUser;
 import com.qhjf.cfm.web.constant.WebConstant.MajorBizType;
 import com.qhjf.cfm.web.constant.WebConstant.WfExpressType;
 import com.qhjf.cfm.web.plugins.log.LogbackLog;
+import com.qhjf.cfm.web.queue.DiskDownloadingQueue;
 import com.qhjf.cfm.web.webservice.sft.SftCallBack;
 
 /**
@@ -54,15 +55,15 @@ public class CheckBatchForService {
 
 	/**
 	 * LA组批列表
+	 * @param pageSize 
+	 * @param pageNum 
 	 * 
 	 * @param record
 	 * @param uodpInfo
-	 * @param pageNum
-	 * @param pageSize
 	 * @return
 	 * @throws ReqDataException
 	 */
-	public List<Record> list(Record record, UodpInfo uodpInfo) throws ReqDataException {
+	public Page<Record> list(int pageNum, int pageSize, Record record, UodpInfo uodpInfo) throws ReqDataException {
 		Long org_id = uodpInfo.getOrg_id();
 		Record findById = Db.findById("organization", "org_id", org_id);
 		if (null == findById) {
@@ -95,7 +96,7 @@ public class CheckBatchForService {
 		} else {
 			throw new ReqDataException("渠道传输不正确");
 		}
-		return Db.find(sqlPara);
+		return Db.paginate(pageNum, pageSize, sqlPara);
 	}
 
 	/**
@@ -123,10 +124,8 @@ public class CheckBatchForService {
 	 * 组批LA勾选后提交
 	 * 
 	 * @param record
-	 * @param dept_id
-	 * @param org_id
-	 * @param usr_id
-	 * @param name
+	 * @param curUodp
+	 * @param userInfo
 	 * @throws ReqDataException
 	 */
 	public void confirm(Record record, final UodpInfo curUodp, final UserInfo userInfo) throws ReqDataException {
@@ -165,7 +164,8 @@ public class CheckBatchForService {
 			throw new ReqDataException("此渠道设置还未启动");
 		}
 		final Integer document_moudle = channel_setting.getInt("document_moudle");
-		final BigDecimal limit = TypeUtils.castToBigDecimal(channel_setting.get("single_file_limit"));
+		
+		final BigDecimal limit = channel_setting.get("single_file_limit") == null ? new BigDecimal(ids.size()) :channel_setting.getBigDecimal("single_file_limit");
 		final BigDecimal num = new BigDecimal(ids.size()).divide(limit, 0, BigDecimal.ROUND_UP);
 		logger.info("此渠道文件限制个数==" + limit + "分成的子批次个数==" + num);
 		// 主批次入xx表.主批次走审批流
@@ -352,6 +352,7 @@ public class CheckBatchForService {
 		if (null == main_record) {
 			logger.error("===============此条数据数据库中未找到====" + master_id);
 		}
+		final Record channel = Db.findById("channel_setting", "id", TypeUtils.castToInt(main_record.get("channel_id")));
 		boolean flag = Db.tx(new IAtom() {
 			@Override
 			public boolean run() throws SQLException {
@@ -367,7 +368,7 @@ public class CheckBatchForService {
 					String serviceSerialNumber = "";
 					String accno = PlfConfigAccnoSection.getInstance().getAccno();
 					logger.info("===========配置文件获取到的账号======="+accno);
-					Record payRec = Db.findFirst(Db.getSql("nbdb.findAccountByAccNo"), accno);
+					Record payRec = Db.findFirst(Db.getSql("nbdb.findAccountByAccno"), accno);
 					if (payRec == null) {
 						logger.error("=============未在系统内找到此账户======" + accno);
 					}
@@ -398,7 +399,10 @@ public class CheckBatchForService {
 						serviceSerialNumber = BizSerialnoGenTool.getInstance().getSerial(WebConstant.MajorBizType.ZFT);
 						insertRecord.set("biz_id", "801dbfb1bfb34817b9e61ce29d86b47b")
 						            .set("biz_name", "对外支付")
-								    .set("service_serial_number", serviceSerialNumber);
+								    .set("service_serial_number", serviceSerialNumber)
+									.set("channel_id", main_record.getInt("channel_id"))
+									.set("channel_code", channel.getStr("channel_code"))
+									.set("bankcode", channel.getStr("bankcode"));
 						//封装 recv_account_id
 						List<Record> find = Db.find(Db.getSql("supplier.querySupplier"),main_record.get("pay_acc_no"));
 						insertRecord.set("recv_account_id", find.get(0).get("id"));
@@ -471,6 +475,11 @@ public class CheckBatchForService {
 				return false;
 			}
 		});
+		//此时直接开启一个异步线程,下载盘片
+		DiskDownloadingQueue diskDownloadingQueue = new DiskDownloadingQueue();
+		diskDownloadingQueue.setMain_record(main_record);
+		Thread thread = new Thread(diskDownloadingQueue); 
+		thread.start();
 		return flag;
 	}
 

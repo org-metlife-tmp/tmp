@@ -118,7 +118,7 @@ public class DiskBackingService {
 					WebConstant.SftCheckBatchStatus.HPCG.getKey(), WebConstant.SftCheckBatchStatus.HTSPZ.getKey(),
 					WebConstant.SftCheckBatchStatus.YHT.getKey() });
 		}
-		SqlPara sqlPara = Db.getSqlPara("disk_downloading.findDiskSendingList", Kv.by("map", record.getColumns()));
+		SqlPara sqlPara = Db.getSqlPara("disk_backing.findDiskBackingList", Kv.by("map", record.getColumns()));
 		return Db.paginate(pageNum, pageSize, sqlPara);
 	}
 
@@ -403,7 +403,7 @@ public class DiskBackingService {
 							String cnaps_code = null ;
 							if( 1 == is_inner) {
 								logger.info("=====内部调拨");
-								Record payRec = Db.findFirst(Db.getSql("nbdb.findAccountByAccNo"), pay_acc_no);
+								Record payRec = Db.findFirst(Db.getSql("acc.findAccountByAccNo"), pay_acc_no);
 								cnaps_code = payRec.getStr("cnaps_code");
 							}else {
 								logger.info("=====第三方支付");

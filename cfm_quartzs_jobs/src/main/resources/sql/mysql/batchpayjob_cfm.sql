@@ -3,7 +3,7 @@
 #sql("getTradeResultBatchQrySourceList")
 	select * from 
 		(
-			select top (?) 
+			select
 				id,
 				bank_serial_number,
 				source_ref,
@@ -20,7 +20,8 @@
 				trade_date 
 			from 
 				batch_pay_instr_queue_total 
-			where status=3
+			where status=1
+			limit ?
 		) t
 		join 
 		(

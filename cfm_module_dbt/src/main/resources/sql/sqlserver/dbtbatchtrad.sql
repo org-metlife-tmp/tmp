@@ -27,9 +27,9 @@ and bi.delete_flag = 0
           #elseif("max".equals(x.key))
             di.payment_amount <= #para(x.value)
           #elseif("start_date".equals(x.key))
-            DATEDIFF(day,#para(x.value),bi.create_on) >= 0
+            DATEDIFF(day,#para(x.value),bi.apply_on) >= 0
           #elseif("end_date".equals(x.key))
-            DATEDIFF(day,#para(x.value),bi.create_on) <= 0
+            DATEDIFF(day,#para(x.value),bi.apply_on) <= 0
           #elseif("org_id".equals(x.key))
             bi.org_id = #para(x.value)
           #elseif("is_checked".equals(x.key))
@@ -76,7 +76,7 @@ FROM
 			and acc_no = #para(map.pay_account_no)
 			and opp_acc_no = #para(map.recv_account_no)
 			and amount = #para(map.payment_amount)
-			and convert(varchar,trans_date)+' '+convert(varchar,trans_time) >= #para(map.create_on)
+			and convert(varchar,trans_date)+' '+convert(varchar,trans_time) >= #para(map.apply_on)
 		UNION ALL  
 		SELECT
 			id,
@@ -96,7 +96,7 @@ FROM
 			and acc_no = #para(map.recv_account_no)
 			and opp_acc_no = #para(map.pay_account_no)
 			and amount = #para(map.payment_amount)
-			and convert(varchar,trans_date)+' '+convert(varchar,trans_time) >= #para(map.create_on)
+			and convert(varchar,trans_date)+' '+convert(varchar,trans_time) >= #para(map.apply_on)
 	) his,
 	account acc,
 	all_bank_info bank 
@@ -113,7 +113,7 @@ SELECT
 	di.recv_account_no,
 	di.recv_account_name,
 	di.payment_amount,
-	bi.create_on,
+	bi.apply_on,
   COUNT ( 1 )  total_num
 FROM
 	inner_batchpay_baseinfo bi,
@@ -140,9 +140,9 @@ WHERE bi.batchno = di.batchno
             #elseif("is_checked".equals(x.key))
               di.is_checked = #para(x.value)
             #elseif("start_date".equals(x.key))
-              DATEDIFF(day,#para(x.value),bi.create_on) >= 0
+              DATEDIFF(day,#para(x.value),bi.apply_on) >= 0
             #elseif("end_date".equals(x.key))
-              DATEDIFF(day,#para(x.value),bi.create_on) <= 0
+              DATEDIFF(day,#para(x.value),bi.apply_on) <= 0
             #elseif("service_status".equals(x.key))
               di.pay_status in(
                 #for(y : map.service_status)
@@ -165,7 +165,7 @@ GROUP BY
 	di.recv_account_no,
 	di.recv_account_name,
 	di.payment_amount,
-	bi.create_on
+	bi.apply_on
 order by di.detail_id
 #end
 

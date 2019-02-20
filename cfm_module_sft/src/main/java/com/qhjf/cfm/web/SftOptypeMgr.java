@@ -80,7 +80,7 @@ public class SftOptypeMgr extends AbstractOptypeMgr {
                         "channel_id", "is_source_back", "subordinate_channel", "bank_type", "remark", "persist_version"})
                 .registerValidate(new RequiredParamsValidate(new String[]{
                         "id", "os_source", "org_id", "bankkey", "bankkey_desc", "pay_mode", "bankkey_status",
-                        "channel_id", "is_source_back", "subordinate_channel", "bank_type", "remark", "persist_version"
+                        "channel_id", "is_source_back", "subordinate_channel", "bank_type",  "persist_version"
                 })));
 
         //bankkey列表
@@ -267,8 +267,8 @@ public class SftOptypeMgr extends AbstractOptypeMgr {
         /** ============================ 核对组批 start ============================ */
         optypes.add(new Optype(Optype.Mode.NORMAL, "checkbatch_list")
                 .registKeepParams(new String[]{"preinsure_bill_no","insure_bill_no","pay_mode","biz_type","recv_acc_name","bank_key","channel_id",
-                		     "status","source_sys","recv_acc_no","start_date","end_date","org_id"})
-                .registerValidate(new RequiredParamsValidate(new String[]{"source_sys"})));
+                		     "status","source_sys","recv_acc_no","start_date","end_date","org_id","page_size", "page_num"})
+                .registerValidate(new RequiredParamsValidate(new String[]{"source_sys","page_size", "page_num"})));
         
         optypes.add(new Optype(Optype.Mode.NORMAL, "checkbatch_listexport")
                 .registKeepParams(new String[]{"preinsure_bill_no","insure_bill_no","pay_mode","biz_type","recv_acc_name","bank_key","channel_id",

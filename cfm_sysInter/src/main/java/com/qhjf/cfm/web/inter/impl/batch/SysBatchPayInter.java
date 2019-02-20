@@ -507,13 +507,13 @@ public class SysBatchPayInter implements ISysAtomicInterface {
 		
 		if (flag) {
 			try {
-				Record originRecord = null;
+				List<Record> originRecord = null;
 				if (sourceSys == WebConstant.SftOsSource.LA.getKey()) {
 					log.info("======回调LA");
-					originRecord = Db.findFirst(Db.getSql("disk_backing.selectLaOriginData"), billTotalRecord.get("child_batchno"));
+					originRecord = Db.find(Db.getSql("disk_backing.selectLaOriginData"), billTotalRecord.get("child_batchno"));
 				} else if (sourceSys == WebConstant.SftOsSource.EBS.getKey()) {
 					log.info("======回调EBS");
-					originRecord = Db.findFirst(Db.getSql("disk_backing.selectEbsOriginData"), billTotalRecord.get("child_batchno"));
+					originRecord = Db.find(Db.getSql("disk_backing.selectEbsOriginData"), billTotalRecord.get("child_batchno"));
 				}
 				SftCallBack callback = new SftCallBack();
 				callback.callback(sourceSys, originRecord);

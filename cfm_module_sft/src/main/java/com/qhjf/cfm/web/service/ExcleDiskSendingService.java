@@ -237,11 +237,14 @@ public class ExcleDiskSendingService {
 
     /**
      * @param offer 
+     * @param userInfo 
+     * @param pay_id 
      * @当不是第一次下载的时候,直接从服务器上获取文件
      * @param string
      * @throws IOException 
      */
-	public byte[] repeatDownload(String filename, Record offer) throws IOException {
+	public byte[] repeatDownload(String filename, Record offer, UserInfo userInfo, Long pay_id) throws IOException {
+		Record user_record = Db.findById("user_info", "usr_id",userInfo.getUsr_id());
 		DiskDownLoadSection diskDownLoadSection = DiskDownLoadSection.getInstance();
         String path = diskDownLoadSection.getPath()+filename;
         FileInputStream fis = null;
@@ -272,6 +275,10 @@ public class ExcleDiskSendingService {
     			new Record().set("download_count", offer.getInt("download_count")+1),
                 new Record().set("batch_id", offer.get("batch_id")));
    	    logger.info("更新表offerDocument_total下载次数结果==="+updateDownCount);
+   	    logger.info("===============子批次表状态更新为已发送未回盘");
+   	    boolean updateStatus = CommonService.update("pay_batch_total", new Record().set("send_on", new Date()).set("send_user_name", user_record.get("name"))
+				.set("service_status", WebConstant.SftCheckBatchStatus.FSWHP.getKey()) //TODO 已发送未回盘
+				, new Record().set("id", pay_id));
         
    	    return byteArray ;
 

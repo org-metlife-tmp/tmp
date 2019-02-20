@@ -79,7 +79,7 @@ public class DiskSendingController extends CFMBaseController {
         		}else{
         			//直接去服务器上获取文件
         			String file_name = offerDocument.get(0).getStr("file_name");
-        			byte[] file_string = excleservice.repeatDownload(file_name,offerDocument.get(0));      	
+        			byte[] file_string = excleservice.repeatDownload(file_name,offerDocument.get(0),userInfo,pay_id);      	
         			render(new ByteArrayRender(file_name,file_string));
         		}
         	}else{
@@ -91,7 +91,7 @@ public class DiskSendingController extends CFMBaseController {
         		}else{
         			//直接去服务器上获取文件
         			String file_name = offerDocument.get(0).getStr("file_name");
-        			byte[] file_string = excleservice.repeatDownload(file_name,offerDocument.get(0));
+        			byte[] file_string = excleservice.repeatDownload(file_name,offerDocument.get(0),userInfo,pay_id);
         			render(new ByteArrayRender(file_name,file_string));
         		}
         	}

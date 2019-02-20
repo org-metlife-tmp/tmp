@@ -7,7 +7,8 @@ SELECT
 	recv_account_name,
 	persist_version,
 	payment_amount,
-	create_on
+	create_on,
+	apply_on
 FROM
 	inner_db_payment
 where delete_flag = 0
@@ -26,9 +27,9 @@ where delete_flag = 0
           #elseif("is_checked".equals(x.key))
             is_checked = #para(x.value)
           #elseif("start_date".equals(x.key))
-             DATEDIFF(day,#para(x.value),create_on) >= 0
+             DATEDIFF(day,#para(x.value),apply_on) >= 0
           #elseif("end_date".equals(x.key))
-              DATEDIFF(day,#para(x.value),create_on) <= 0            
+              DATEDIFF(day,#para(x.value),apply_on) <= 0
           #elseif("service_status".equals(x.key))
             service_status in(
               #for(y : map.service_status)
@@ -71,7 +72,7 @@ FROM
 			and acc_no = #para(map.pay_account_no)
 			and opp_acc_no = #para(map.recv_account_no)
 			and amount = #para(map.payment_amount)
-			and convert(varchar,trans_date)+' '+convert(varchar,trans_time) >= #para(map.create_on)
+			and convert(varchar,trans_date)+' '+convert(varchar,trans_time) >= #para(map.apply_on)
 		UNION ALL  
 		SELECT
 			id,
@@ -91,7 +92,7 @@ FROM
 			and acc_no = #para(map.recv_account_no)
 			and opp_acc_no = #para(map.pay_account_no)
 			and amount = #para(map.payment_amount)
-			and convert(varchar,trans_date)+' '+convert(varchar,trans_time) >= #para(map.create_on)
+			and convert(varchar,trans_date)+' '+convert(varchar,trans_time) >= #para(map.apply_on)
 	) his,
 	account acc,
 	all_bank_info bank 
@@ -108,7 +109,7 @@ SELECT
 	pay.recv_account_no,
 	pay.recv_account_name,
 	pay.payment_amount,
-	pay.create_on,
+	pay.apply_on,
 	COUNT ( 1 )  total_num
 FROM
 	inner_db_payment pay,
@@ -134,9 +135,9 @@ WHERE
 			      #elseif("is_checked".equals(x.key))
 			        pay.is_checked = #para(x.value)
 		        #elseif("start_date".equals(x.key))
-		             DATEDIFF(day,#para(x.value),pay.create_on) >= 0
+		             DATEDIFF(day,#para(x.value),pay.apply_on) >= 0
 		        #elseif("end_date".equals(x.key))
-		              DATEDIFF(day,#para(x.value),pay.create_on) <= 0 			        
+		              DATEDIFF(day,#para(x.value),pay.apply_on) <= 0
 			      #else
 			        #(x.key) = #para(x.value)
 			      #end
@@ -150,7 +151,7 @@ GROUP BY
 	pay.recv_account_no,
 	pay.recv_account_name,
 	pay.payment_amount,
-	pay.create_on
+	pay.apply_on
 order by pay.id
 #end
 

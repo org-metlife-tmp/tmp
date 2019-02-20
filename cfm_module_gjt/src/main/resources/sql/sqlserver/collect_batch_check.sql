@@ -23,7 +23,8 @@ SELECT
 	cbb.process_bank_type,
 	cbb.total_num,
 	cbb.pay_mode,
-	cbb.create_on
+	cbb.create_on,
+	cbb.apply_on
 FROM
   collect_batch_baseinfo cbb,
     collect_batch_bus_attach_detail cbbad
@@ -44,9 +45,9 @@ and cbb.delete_flag = 0
           #elseif("is_checked".equals(x.key))
             cbbad.is_checked = #para(x.value)
           #elseif("start_date".equals(x.key))
-            DATEDIFF(day,#para(x.value),cbb.create_on) >= 0
+            DATEDIFF(day,#para(x.value),cbb.apply_on) >= 0
           #elseif("end_date".equals(x.key))
-            DATEDIFF(day,#para(x.value),cbb.create_on) <= 0
+            DATEDIFF(day,#para(x.value),cbb.apply_on) <= 0
           #elseif("org_id".equals(x.key))
             cbb.org_id = #para(x.value)
           #elseif("service_status".equals(x.key))
@@ -87,7 +88,7 @@ where is_checked = 0
 	and acc_no = #para(map.pay_account_no)
 	and opp_acc_no = #para(map.recv_account_no)
 	and amount = #para(map.collect_amount)
-	and convert(varchar,trans_date)+' '+convert(varchar,trans_time) >= #para(map.create_on)
+	and convert(varchar,trans_date)+' '+convert(varchar,trans_time) >= #para(map.apply_on)
 UNION ALL  
 SELECT
 	id,
@@ -107,7 +108,7 @@ where is_checked = 0
 	and acc_no = #para(map.recv_account_no)
 	and opp_acc_no = #para(map.pay_account_no)
 	and amount = #para(map.collect_amount)
-	and convert(varchar,trans_date)+' '+convert(varchar,trans_time) >= #para(map.create_on)
+	and convert(varchar,trans_date)+' '+convert(varchar,trans_time) >= #para(map.apply_on)
 #end
 
 

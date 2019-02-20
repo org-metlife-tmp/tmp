@@ -11,11 +11,20 @@ import com.jfinal.plugin.activerecord.Record;
 import com.qhjf.cfm.web.constant.WebConstant;
 import com.qhjf.cfm.web.webservice.ebs.EbsCallback;
 import com.qhjf.cfm.web.webservice.la.LaCallback;
-
+/**
+ * webservice回写LA/EBS
+ * 
+ * @author MXW
+ * 
+ */
 public class SftCallBack {
 	
 	private static Logger log = LoggerFactory.getLogger(SftCallBack.class);
-	
+	/**
+	 * 整个子批次回调
+	 * @param sftOsSource 系统来源 0：LA，1：EBS
+	 * @param originDatas LA/EBS原始数据列表
+	 */
 	public void callback(int sftOsSource,List<Record> originDatas){
 		if(sftOsSource == WebConstant.SftOsSource.LA.getKey()){
 			LaCallback callback = new LaCallback();
@@ -25,12 +34,21 @@ public class SftCallBack {
 			callback.callBack(originDatas);
 		}
 	}
-	
+	/**
+	 * 重复预警，单笔回调
+	 * @param sftOsSource
+	 * @param originData
+	 */
     public void callback(int sftOsSource,Record originData){
 		List<Record> originDatas = new ArrayList<Record>();
-		callback(sftOsSource,originDatas);
+		originDatas.add(originData);
+		callback(sftOsSource, originDatas);
 	}
-    
+    /**
+     * 重复预警，单笔回调
+     * @param sftOsSource
+     * @param originId
+     */
     public void callback(int sftOsSource,Long originId){
     	Record originData = null;
     	if(sftOsSource == WebConstant.SftOsSource.LA.getKey()){

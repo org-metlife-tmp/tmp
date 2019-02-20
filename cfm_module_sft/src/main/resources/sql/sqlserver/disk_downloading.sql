@@ -85,7 +85,21 @@
     master_batchno = ?
 #end
 
+#sql("findTotalByMainBatchNo")
+    select
+      *
+    from
+    pay_batch_total
+   where
+    master_batchno = ?
+#end
+
 #sql("findDiskSendingList")
+   select 
+      tab.* ,
+      offer.file_name
+      from
+      (
     select 
       pay_master.id AS pay_master_id ,
       pay_master.master_batchno,
@@ -142,7 +156,7 @@
           #if("interactive_mode".equals(x.key))
              channel.interactive_mode = #para(x.value)
           #elseif("channel_desc".equals(x.key))
-             channel.channel_desc like convert(varchar(5),'%')+convert(varchar(255),#para(x.value))+convert(varchar(5),'%')
+             channel.channel_desc = #para(x.value)
           #elseif("master_batchno".equals(x.key))
              pay_master.master_batchno like convert(varchar(5),'%')+convert(varchar(255),#para(x.value))+convert(varchar(5),'%')
           #elseif("start_date".equals(x.key))
@@ -173,6 +187,8 @@
         #end
     #end
   #end
+   )  tab  left join  pay_offerDocument_total  offer
+       on   tab.pay_id = offer.batch_id     
 #end
 
 
