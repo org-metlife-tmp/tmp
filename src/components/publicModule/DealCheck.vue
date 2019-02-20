@@ -146,7 +146,7 @@
                                  v-if="routerMessage.todo.optype == 'branchorgoacheck_checkbillList'"></el-table-column>
                 <el-table-column prop="payment_amount" label="金额" :show-overflow-tooltip="true"
                                  :formatter="transitAmount"></el-table-column>
-                <el-table-column v-if="curBizType==9" prop="apply_on" label="日期" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column v-if="curBizType==9||curBizType==12" prop="apply_on" label="日期" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column v-else prop="create_on" label="日期" :show-overflow-tooltip="true"></el-table-column>
             </el-table>
         </section>
@@ -177,7 +177,7 @@
                                  :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="payment_amount" label="金额" :show-overflow-tooltip="true"
                                  :formatter="transitAmount"></el-table-column>
-                <el-table-column v-if="curBizType==9" prop="apply_on" label="日期" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column v-if="curBizType==9||curBizType==12" prop="apply_on" label="日期" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column v-else prop="create_on" label="日期" :show-overflow-tooltip="true"></el-table-column>
             </el-table>
         </div>
