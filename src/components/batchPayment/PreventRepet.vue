@@ -184,7 +184,7 @@
                     </el-col>
                     <el-col :span="2">
                         <el-form-item>
-                            <el-button type="primary" plain @click="clearData" size="mini">清空</el-button>
+                            <el-button type="primary" plain @click="clearData" size="mini">清空筛选</el-button>
                         </el-form-item>
                     </el-col>
                     <el-col :span="2">

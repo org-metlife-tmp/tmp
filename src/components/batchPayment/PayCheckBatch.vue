@@ -240,7 +240,7 @@
                     </el-col>
                     <el-col :span="2">
                         <el-form-item>
-                            <el-button type="primary" plain @click="clearData" size="mini">清空</el-button>
+                            <el-button type="primary" plain @click="clearData" size="mini">清空筛选</el-button>
                         </el-form-item>
                     </el-col>
                     <el-col :span="2">
@@ -629,7 +629,10 @@
         },
         watch: {
             tableData: function (val, oldVal) {
+                this.pagSize = val.page_size;
+                this.pagTotal = val.total_line;
                 this.tableList = val.data;
+                this.pagCurrent = val.page_num;
             }
         }
     }
