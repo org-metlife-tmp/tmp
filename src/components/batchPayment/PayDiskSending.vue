@@ -179,7 +179,7 @@
                     <template slot-scope="scope" class="operationBtn">
                         <el-tooltip content="下载" placement="bottom" effect="light"
                                     :enterable="false" :open-delay="500"
-                                    v-if="scope.row.interactive_mode=='报盘' && ((scope.row.status=='已审批未发送' && scope.row.status.file_name) || scope.row.status=='已发送未回盘')">
+                                    v-if="scope.row.interactive_mode=='报盘' && ((scope.row.status=='已审批未发送' && scope.row.file_name) || scope.row.status=='已发送未回盘')">
                             <el-button type="info" icon="el-icon-download" size="mini"
                                        @click="downData(scope.row)"></el-button>
                         </el-tooltip>
