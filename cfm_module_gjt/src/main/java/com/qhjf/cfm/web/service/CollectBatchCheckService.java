@@ -56,8 +56,8 @@ public class CollectBatchCheckService {
         record.set("collect_amount", billList.get("payment_amount"));
         Date create = TypeUtils.castToDate(batchno.get(0).get("apply_on"));
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String apply_on = sdf.format(create);
-        record.set("apply_on", apply_on);
+        String create_on = sdf.format(create);
+        record.set("create_on", create_on);
         SqlPara sqlPara = Db.getSqlPara("collect_batch_check.nochecktradingList", Kv.by("map", record.getColumns()));
         List<Record> find = Db.find(sqlPara);
         if (null != find && find.size() > 0) {

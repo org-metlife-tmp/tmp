@@ -284,7 +284,7 @@ where is_checked = 0
 	and acc_no = #para(map.pay_account_no)
 	and opp_acc_no = #para(map.recv_account_no)
 	and amount = #para(map.payment_amount)
-	and convert(varchar,trans_date)+' '+convert(varchar,trans_time) >= #para(map.apply_on)
+	and convert(varchar,trans_date)+' '+convert(varchar,trans_time) >= #para(map.create_on)
 #end
 
 

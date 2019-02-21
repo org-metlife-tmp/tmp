@@ -80,7 +80,7 @@ FROM
 		ibb.persist_version as version ,
 		ibb.service_status,
 		ibb.create_by,
-		ibb.create_on,
+		ibb.apply_on,
 		ibb.update_by,
 		ibb.update_on,
 		ibb.pay_mode
@@ -183,7 +183,7 @@ FROM
 		ibb.persist_version as version ,
 		ibb.service_status,
 		ibb.create_by,
-		ibb.create_on,
+		ibb.apply_on,
 		ibb.update_by,
 		ibb.update_on
 	FROM

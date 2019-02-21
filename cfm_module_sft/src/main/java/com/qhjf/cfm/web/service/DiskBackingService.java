@@ -270,7 +270,7 @@ public class DiskBackingService {
 					} else {
 						sonnum ++ ;
 						// 建行直接开始校验详情列数
-						if (linefile.split("|").length != 12) {
+						if (linefile.split("\\|").length != 12) {
 							// 汇总信息列数不正确
 							logger.error("===========建行详情列数不对");
 							result.put("success", false);
@@ -278,20 +278,19 @@ public class DiskBackingService {
 							result.put("error_message", "文件格式错误");
 							return result;
 						}
-						backamount = backamount.add(new BigDecimal(linefile.split("|")[amount - 1]));
+						backamount = backamount.add(new BigDecimal(linefile.split("\\|")[amount - 1]));
 						updateDetailRecord.set("child_batchno", pay_batch_total.getStr("child_batchno"));
-						updateDetailRecord.set("package_seq", linefile.split("|")[package_seq - 1]);
-						if (linefile.split("|")[response_code - 1].contains("0000")
-								|| linefile.split("|")[response_code - 1].contains("成功")) {
+						updateDetailRecord.set("package_seq", linefile.split("\\|")[package_seq - 1]);
+						if (linefile.split("\\|")[response_code - 1].contains("0000")
+								|| linefile.split("\\|")[response_code - 1].contains("成功")) {
 							// 0000 S0000 F0000 成功 都表示交易成功
 							updateDetailRecord.set("status", 1);
 							backnum_success++;
-							backamount_success = backamount_success.add(new BigDecimal(linefile.split("|")[amount - 1])
-									.divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP));
+							backamount_success = backamount_success.add(new BigDecimal(linefile.split("\\|")[amount - 1]));
 						} else {
 							updateDetailRecord.set("status", 2);
 							backnum_faild++;
-							backamount_faild = backamount_faild.add(new BigDecimal(linefile.split("|")[amount - 1]));
+							backamount_faild = backamount_faild.add(new BigDecimal(linefile.split("\\|")[amount - 1]));
 						}
 						updateDetailRecords.add(updateDetailRecord);
 						continue;
@@ -300,21 +299,21 @@ public class DiskBackingService {
 				sonnum ++ ;
 				// 非第一行
 				if (document_moudle == WebConstant.Channel.JP.getKey()) {
-					if (linefile.split("|")[response_code - 1].contains("0000")
-							|| linefile.split("|")[response_code - 1].contains("成功")) {
+					if (linefile.split("\\|")[response_code - 1].contains("0000")
+							|| linefile.split("\\|")[response_code - 1].contains("成功")) {
 						// 0000 S0000 F0000 成功 都表示交易成功
 						updateDetailRecord.set("status", 1);
 						backnum_success++;
-						backamount_success = backamount_success.add(new BigDecimal(linefile.split("|")[amount - 1]));
+						backamount_success = backamount_success.add(new BigDecimal(linefile.split("\\|")[amount - 1]));
 					} else {
 						updateDetailRecord.set("status", 2);
 						backnum_faild++;
-						backamount_faild = backamount_faild.add(new BigDecimal(linefile.split("|")[amount - 1]));
+						backamount_faild = backamount_faild.add(new BigDecimal(linefile.split("\\|")[amount - 1]));
 					}
 					updateDetailRecord.set("child_batchno", pay_batch_total.getStr("child_batchno"));
-					updateDetailRecord.set("package_seq", linefile.split("|")[package_seq - 1]);
+					updateDetailRecord.set("package_seq", linefile.split("\\|")[package_seq - 1]);
 					// 建行不校验了
-					backamount = backamount.add(new BigDecimal(linefile.split("|")[amount - 1]));
+					backamount = backamount.add(new BigDecimal(linefile.split("\\|")[amount - 1]));
 					updateDetailRecords.add(updateDetailRecord);
 					continue;
 				} else if (document_moudle == WebConstant.Channel.RP.getKey()) {

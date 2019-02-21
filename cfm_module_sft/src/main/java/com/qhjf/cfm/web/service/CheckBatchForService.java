@@ -165,7 +165,7 @@ public class CheckBatchForService {
 		}
 		final Integer document_moudle = channel_setting.getInt("document_moudle");
 		
-		final BigDecimal limit = channel_setting.get("single_file_limit") == null ? new BigDecimal(ids.size()) :channel_setting.getBigDecimal("single_file_limit");
+		final BigDecimal limit = channel_setting.get("single_file_limit") == null ? new BigDecimal(ids.size()) :new BigDecimal(channel_setting.getInt("single_file_limit"));
 		final BigDecimal num = new BigDecimal(ids.size()).divide(limit, 0, BigDecimal.ROUND_UP);
 		logger.info("此渠道文件限制个数==" + limit + "分成的子批次个数==" + num);
 		// 主批次入xx表.主批次走审批流

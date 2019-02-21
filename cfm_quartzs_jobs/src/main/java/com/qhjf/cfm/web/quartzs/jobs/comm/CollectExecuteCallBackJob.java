@@ -29,7 +29,7 @@ public class CollectExecuteCallBackJob implements Job{
 	public void execute(JobExecutionContext context) throws JobExecutionException {
 		log.debug("CollectExecuteCallBackJob开始执行");
 		this.executeService = Executors.newFixedThreadPool(10);
-		List<Record> executeList = Db.find(Db.getSql("collect_view.findExecuteList"), 3);
+		List<Record> executeList = Db.find(Db.getSql("collect_view.findExecuteList"), WebConstant.CollOrPoolRunStatus.SENDING.getKey());
 		if(executeList == null || executeList.size() ==0){
 			return;
 		}
@@ -96,9 +96,9 @@ public class CollectExecuteCallBackJob implements Job{
 				execute.set("main_account_count",mainAccountCount);
 				execute.set("collect_amount",amount);
 				if (cancelCount != null && cancelCount > 0) {
-					execute.set("collect_status", 2);
+					execute.set("collect_status", WebConstant.CollOrPoolRunStatus.FAILED.getKey());
 				} else {
-					execute.set("collect_status", 1);
+					execute.set("collect_status", WebConstant.CollOrPoolRunStatus.SUCCESS.getKey());
 				}
 				Db.update("collect_execute", execute);
 			}

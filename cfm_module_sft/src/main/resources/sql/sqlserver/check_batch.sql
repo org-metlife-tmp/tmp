@@ -86,7 +86,7 @@ WHERE
               #end
             )
          #elseif("org_id".equals(x.key))
-           channel.org_id = #para(x.value)
+           pay.org_id = #para(x.value)
          #else
            pay.#(x.key) = #para(x.value)    
         #end
@@ -362,7 +362,7 @@ WHERE
               #end
             )
         #elseif("org_id".equals(x.key))
-           channel.org_id = #para(x.value)
+           pay.org_id = #para(x.value)
         #elseif("bank_key".equals(x.key))
            pay.recv_bank_type like convert(varchar(5),'%')+convert(varchar(255),#para(x.value))+convert(varchar(5),'%')
         #elseif("start_date".equals(x.key))
