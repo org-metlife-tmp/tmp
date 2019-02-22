@@ -20,7 +20,7 @@ public class BatchSqlTest {
 	ActiveRecordPlugin arp = null;
 	@Before
 	public void start(){
-		dp = new DruidPlugin("jdbc:sqlserver://10.1.1.2:1433;DatabaseName=corpzone_test", "sa", "Admin123");
+		dp = new DruidPlugin("jdbc:sqlserver://127.0.0.1:1433;DatabaseName=corpzone_test", "sa", "Admin123");
         arp = new ActiveRecordPlugin(dp);
         arp.setDevMode(true);
         arp.setDialect(new SqlServerDialect());
@@ -71,10 +71,23 @@ public class BatchSqlTest {
 		List<Record> find = Db.find(Db.getSql("batchpay.findInstrDetailByBaseId"),1);
 		System.out.println(find);
 	}
-	@Test
+	/*@Test
 	public void updOrginLaTest(){
 		SqlPara sqlPara = Db.getSqlPara("batchpay.updOrginLa", Kv.by("tb", "la_origin_pay_data"));
 		int find = Db.update(sqlPara.getSql(), 1);
+		System.out.println(find);
+	}*/
+	@Test
+	public void updOrginSuccLaTest(){
+		SqlPara sqlPara = Db.getSqlPara("batchpay.updOrginSuccLa");
+//		int find = Db.update(sqlPara.getSql(), "2019-10-10", "11:11:11", "1234", "65421389484733213789", 1);
+		int find = Db.update(sqlPara.getSql(), 1);
+		System.out.println(find);
+	}
+	@Test
+	public void updOrginSuccEbsTest(){
+		SqlPara sqlPara = Db.getSqlPara("batchpay.updOrginSuccEbs");
+		int find = Db.update(sqlPara.getSql(), "2019-10-10", "11:11:11", "1234", "65421389484733213789", 1);
 		System.out.println(find);
 	}
 	@Test
@@ -82,10 +95,22 @@ public class BatchSqlTest {
 		int find = Db.update(Db.getSql("batchpay.updBillTotalToFail"), 1);
 		System.out.println(find);
 	}
-	@Test
+	/*@Test
 	public void updOriginFailTest(){
 		SqlPara sqlPara = Db.getSqlPara("batchpay.updOriginFail", Kv.by("tb", "la_origin_pay_data"));
 		int find = Db.update(sqlPara.getSql(), 1);
+		System.out.println(find);
+	}*/
+	@Test
+	public void updOriginFailLaTest(){
+		SqlPara sqlPara = Db.getSqlPara("batchpay.updOriginFailLa");
+		int find = Db.update(sqlPara.getSql(), 1);
+		System.out.println(find);
+	}
+	@Test
+	public void updOriginFailEbsTest(){
+		SqlPara sqlPara = Db.getSqlPara("batchpay.updOriginFailEbs");
+		int find = Db.update(sqlPara.getSql(), "2019-10-10", "11:11:11", "1234", "65421389484733213789", 1);
 		System.out.println(find);
 	}
 	

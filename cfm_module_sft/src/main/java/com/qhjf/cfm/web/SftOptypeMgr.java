@@ -266,21 +266,23 @@ public class SftOptypeMgr extends AbstractOptypeMgr {
 
         /** ============================ 核对组批 start ============================ */
         optypes.add(new Optype(Optype.Mode.NORMAL, "checkbatch_list")
-                .registKeepParams(new String[]{"preinsure_bill_no","insure_bill_no","pay_mode","biz_type","recv_acc_name","bank_key","channel_id",
-                		     "status","source_sys","recv_acc_no","start_date","end_date","org_id","page_size", "page_num"})
+                .registKeepParams(new String[]{"preinsure_bill_no","insure_bill_no","biz_type","recv_acc_name","bank_key","channel_id",
+                		     "status","source_sys","recv_acc_no","start_date","end_date","org_id","page_size", "page_num","channel_desc"})
                 .registerValidate(new RequiredParamsValidate(new String[]{"source_sys","page_size", "page_num"})));
         
         optypes.add(new Optype(Optype.Mode.NORMAL, "checkbatch_listexport")
-                .registKeepParams(new String[]{"preinsure_bill_no","insure_bill_no","pay_mode","biz_type","recv_acc_name","bank_key","channel_id",
-                		     "status","source_sys","recv_acc_no","start_date","end_date","org_id"})
+                .registKeepParams(new String[]{"preinsure_bill_no","insure_bill_no","biz_type","recv_acc_name","bank_key","channel_id",
+                		     "status","source_sys","recv_acc_no","start_date","end_date","org_id","channel_desc"})
                 .registerValidate(new RequiredParamsValidate(new String[]{"source_sys"})));
         
         optypes.add(new Optype(Optype.Mode.NORMAL, "checkbatch_confirm")
                 .registerValidate(new RequiredParamsValidate(new String[]{
-                        "ids","persist_version","source_sys"
+                        "source_sys","channel_id"
                 }))
                 .registKeepParams(new String[]{
-                		"ids","persist_version","source_sys"
+                		"remove_ids","visit_time","source_sys","channel_id",
+                		"channel_desc","preinsure_bill_no","insure_bill_no","org_id","recv_acc_no"
+                		,"start_date","end_date","bank_key","status"
                 }));       
         
         optypes.add(new Optype(Optype.Mode.NORMAL, "checkbatch_revoke")

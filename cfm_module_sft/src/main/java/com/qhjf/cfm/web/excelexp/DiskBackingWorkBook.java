@@ -56,9 +56,11 @@ public class DiskBackingWorkBook extends AbstractWorkBook {
         }
         record.set("codes", codes);
     	List<Integer> status = record.get("status");
-    	if(status == null || status.size() == 0){
-    		record.remove("status");
-    	}
+    	if (status == null || status.size() == 0) {
+			record.set("status", new int[] { WebConstant.SftCheckBatchStatus.FSWHP.getKey(),
+					WebConstant.SftCheckBatchStatus.HPCG.getKey(), WebConstant.SftCheckBatchStatus.HPYC.getKey(),
+					WebConstant.SftCheckBatchStatus.YHT.getKey() });
+		}
         if(WebConstant.SftOsSource.LA.getKey() == source_sys){
             //LA
             this.fileName = "LA_Return_FH_"+ RedisSericalnoGenTool.genShortSerial() +"_"+DateKit.toStr(new Date(), "YYYYMMdd")+".xls";

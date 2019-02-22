@@ -381,7 +381,7 @@ public class CheckVoucherService {
 
             }else if(netMode == 1){
                 Date transS,transF;
-                Date periodS,periodF;
+                Date periodS=null, periodF=null;
                 List<Date> dateListS = new ArrayList<Date>();
                 List<Date> dateListF = new ArrayList<Date>();
                 for(Record r : tradRecordList){
@@ -393,25 +393,29 @@ public class CheckVoucherService {
                         dateListS.add(TypeUtils.castToDate(r.get("trans_date")));
                     }
                 }
-                transS = dateListS.get(dateListS.size()-1);
-                transF = dateListF.get(dateListF.size()-1);
-                periodS = CommonService.getPeriodByCurrentDay(transS);
-                periodF = CommonService.getPeriodByCurrentDay(transF);
+                if(dateListS.size() != 0){
+                    transS = dateListS.get(dateListS.size()-1);
+                    periodS = CommonService.getPeriodByCurrentDay(transS);
+                }
+                if(dateListF.size() != 0){
+                    transF = dateListF.get(dateListF.size()-1);
+                    periodF = CommonService.getPeriodByCurrentDay(transF);
+                }
 
                 for(Record detailRecord : detailLsit){
                     int status = TypeUtils.castToInt(detailRecord.get("status"));
                     if(status == WebConstant.SftInterfaceStatus.SFT_INTER_PROCESS_F.getKey()){
                         description = formatdsfTransRefer.format(transDate) + chann.getStr("bankcode") + "批量付款-银行全额模式-资金退回";
                         //凭证5
-                        list.add(CommonService.plfPayVorcher(acc, description, chann.getStr("channel_code")+chann.getStr("bankcode"), transactionReference, 5, periodDate, transDate, detailRecord, curr, orgcode));
+                        list.add(CommonService.plfPayVorcher(acc, description, "SYS", transactionReference, 5, periodS, transDate, detailRecord, curr, orgcode));
                         //凭证6
-                        list.add(CommonService.plfPayVorcher(acc, description, "SYS", transactionReference, 6, periodDate, transDate, detailRecord, curr, orgcode));
+                        list.add(CommonService.plfPayVorcher(acc, description, chann.getStr("channel_code")+chann.getStr("bankcode"), transactionReference, 6, periodS, transDate, detailRecord, curr, orgcode));
                     }
                     description = formatdsfTransRefer.format(transDate) + chann.getStr("bankcode") + "批量付款-银行全额模式-付款成功";
                     //凭证3
-                    list.add(CommonService.plfPayVorcher(acc, description, "SYS", transactionReference, 3, periodDate, transDate, detailRecord, curr, orgcode));
+                    list.add(CommonService.plfPayVorcher(acc, description, chann.getStr("channel_code")+chann.getStr("bankcode"), transactionReference, 3, periodF, transDate, detailRecord, curr, orgcode));
                     //凭证4
-                    list.add(CommonService.plfPayVorcher(acc, description, chann.getStr("channel_code")+chann.getStr("bankcode"), transactionReference, 4, periodDate, transDate, detailRecord, curr, orgcode));
+                    list.add(CommonService.plfPayVorcher(acc, description, "SYS", transactionReference, 4, periodF, transDate, detailRecord, curr, orgcode));
                 }
 
             }

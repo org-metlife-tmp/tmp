@@ -32,7 +32,7 @@ public class ExceptWorkBook extends AbstractWorkBook {
         };
         this.titles = new String[]{
                 "来源系统", "主批次号", "子批次号", "交互方式", "通道编码", "通道描述", "出盘日期", "总金额", "总笔数", "状态", "异常原因"
-                , "回退申请人", "申请日期"
+                , "回退申请人", "申请日期", "审批人", "审批日期"
         };
         this.sheetName = "批量付异常数据列表";
     }

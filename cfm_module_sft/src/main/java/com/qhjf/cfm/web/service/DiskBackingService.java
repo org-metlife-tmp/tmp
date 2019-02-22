@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alibaba.fastjson.util.TypeUtils;
+import com.ibm.icu.text.SimpleDateFormat;
 import com.jfinal.kit.Kv;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.IAtom;
@@ -115,7 +116,7 @@ public class DiskBackingService {
 		List<Integer> status = record.get("status");
 		if (status == null || status.size() == 0) {
 			record.set("status", new int[] { WebConstant.SftCheckBatchStatus.FSWHP.getKey(),
-					WebConstant.SftCheckBatchStatus.HPCG.getKey(), WebConstant.SftCheckBatchStatus.HTSPZ.getKey(),
+					WebConstant.SftCheckBatchStatus.HPCG.getKey(), WebConstant.SftCheckBatchStatus.HPYC.getKey(),
 					WebConstant.SftCheckBatchStatus.YHT.getKey() });
 		}
 		SqlPara sqlPara = Db.getSqlPara("disk_backing.findDiskBackingList", Kv.by("map", record.getColumns()));
@@ -181,11 +182,12 @@ public class DiskBackingService {
 		// 默认汇总信息总金额在第0列 ,
 		int total_amount = 0;
 		int total_num = 0;
-		// 默认详情信息 总金额在第0列 序列号在第0列 , 响应码在第0列
+		// 默认详情信息 总金额在第0列 序列号在第0列 , 响应码在第0列 , 响应码在第0列
 		int amount = 0;
 		int package_seq = 0;
 		int response_code = 0;
-
+		int response_message = 0;
+		
 		if (configs_tail == null || configs_tail.size() == 0) {
 			logger.error("=======此渠道回盘配置信息未进行初始化=========" + document_moudle);
 			result.put("success", false);
@@ -213,6 +215,9 @@ public class DiskBackingService {
 			}
 			if ("response_code".equals(configs_tail.get(0).getStr("field_" + i))) {
 				response_code = i;
+			}
+			if ("response_message".equals(configs_tail.get(0).getStr("field_" + i))) {
+				response_message = i;
 			}
 		}
 
@@ -292,6 +297,8 @@ public class DiskBackingService {
 							backnum_faild++;
 							backamount_faild = backamount_faild.add(new BigDecimal(linefile.split("\\|")[amount - 1]));
 						}
+						updateDetailRecord.set("bank_err_code", linefile.split("\\|")[response_code - 1]);
+						updateDetailRecord.set("bank_err_msg", linefile.split("\\|")[response_message - 1]);
 						updateDetailRecords.add(updateDetailRecord);
 						continue;
 					}
@@ -310,6 +317,8 @@ public class DiskBackingService {
 						backnum_faild++;
 						backamount_faild = backamount_faild.add(new BigDecimal(linefile.split("\\|")[amount - 1]));
 					}
+					updateDetailRecord.set("bank_err_code", linefile.split("\\|")[response_code - 1]);
+					updateDetailRecord.set("bank_err_msg", linefile.split("\\|")[response_message - 1]);
 					updateDetailRecord.set("child_batchno", pay_batch_total.getStr("child_batchno"));
 					updateDetailRecord.set("package_seq", linefile.split("\\|")[package_seq - 1]);
 					// 建行不校验了
@@ -350,6 +359,8 @@ public class DiskBackingService {
 					backamount_faild = backamount_faild.add(new BigDecimal(linefile.split(",")[amount - 1])
 							.divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP));
 				}
+				updateDetailRecord.set("bank_err_code", linefile.split(",")[response_code - 1]);
+				updateDetailRecord.set("bank_err_msg", linefile.split(",")[response_message - 1]);
 				updateDetailRecord.set("child_batchno", pay_batch_total.getStr("child_batchno"));
 				updateDetailRecord.set("package_seq", linefile.split(",")[package_seq - 1]);
 				backamount = backamount.add(new BigDecimal(linefile.split(",")[amount - 1])
@@ -412,7 +423,13 @@ public class DiskBackingService {
 							Record findById = Db.findById("all_bank_info", "cnaps_code", cnaps_code);
 							String bank_type = findById.getStr("bank_type");
 							List<Record> find = Db.find(Db.getSql("ebs_cfm.getRecvBankCode"), bank_type);
-							origin_flag = (Db.update(Db.getSql("disk_backing.updateEbsOriginData"), pay_acc_no , find.get(0).get("ebs_bank_code") ,child_batchno) == sendnum);
+							//支付时间 , 支付日期 为 当前日期
+							SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+							SimpleDateFormat sdf1 = new SimpleDateFormat("HH:mm:ss");
+							String pay_date = sdf.format(new Date());
+							String pay_time = sdf1.format(new Date());
+							origin_flag = (Db.update(Db.getSql("disk_backing.updateEbsOriginData"), pay_acc_no , 
+									                    find.get(0).get("ebs_bank_code") , pay_date ,pay_time , child_batchno) == sendnum);
 						}
 						logger.info("=====更新原始数据表结果===" + origin_flag);
 						if (origin_flag) {

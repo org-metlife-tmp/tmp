@@ -15,6 +15,8 @@ SELECT
 	child.revoke_user_name,
 	child.revoke_date,
 	child.is_revoke,
+	child.exam_position_name,
+	child.exam_time,
 	child.persist_version
 FROM
 	pay_batch_total child,
@@ -164,4 +166,16 @@ WHERE
 	and total.id = ?
 #end
 
+#sql("findFirstApprovePosition")
+SELECT
+	inst.assignee_id,inst.assignee,pos.pos_id,pos.name
+FROM
+	cfm_workflow_his_execute_inst inst,user_org_dept_pos uodp,position_info pos
+WHERE
+    inst.assignee_id = uodp.usr_id
+    and uodp.pos_id = pos.pos_id
+	and inst.biz_type = ?
+	and inst.bill_id = ?
+	and inst.step_number = 1
+#end
 

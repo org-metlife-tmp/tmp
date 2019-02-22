@@ -21,17 +21,18 @@ public class OaDataDoubtfulCache {
     public void addOaCacheValue(String key, String value){
         sAddValue(oa_prefix+key, value);
     }
-    private void sAddValue(String key , String value){
+    public void sAddValue(String key , String value){
         Jedis jedis = null;
         try{
             jedis = Redis.use(ini.getCacheName()).getJedis();
             jedis.sadd(key,value);
+            
         } finally {
             Redis.use(ini.getCacheName()).close(jedis);
         }
     }
 
-    private Set<Long> sGetValue(String key){
+    public Set<Long> sGetValue(String key){
         Jedis jedis = null;
         Set<Long> result = null;
         try{
@@ -48,5 +49,38 @@ public class OaDataDoubtfulCache {
         }
         return result;
     }
+    
+    public Set<String> GetValue(String key){
+        Jedis jedis = null;
+        Set<String> result = null;
+        try{
+            jedis = Redis.use(ini.getCacheName()).getJedis();
+            Set<String> source = jedis.smembers(key);
+            if(source != null && source.size() > 0){
+                result = new HashSet<>();
+                for (String value : source) {
+                    result.add(value);
+                }
+            }
+        }finally {
+            Redis.use(ini.getCacheName()).close(jedis);
+        }
+        return result;
+    }
+    /**
+     * 删除value中set集合中的特定值
+     * @param pre
+     * @param value
+     */
+	public void sremValue(String key, String value) {
+		Jedis jedis = null;
+        try{
+            jedis = Redis.use(ini.getCacheName()).getJedis();
+            jedis.srem(key,value);           
+        } finally {
+            Redis.use(ini.getCacheName()).close(jedis);
+        }
+		
+	}
 
 }

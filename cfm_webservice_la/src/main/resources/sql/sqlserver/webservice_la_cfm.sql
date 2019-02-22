@@ -10,7 +10,7 @@
 #end
 
 #sql("getPayLegalByPayCode")
-  select org_code,amount,channel_id from pay_legal_data
+  select * from pay_legal_data
   where source_sys = 0 and pay_code = ?
 #end
 

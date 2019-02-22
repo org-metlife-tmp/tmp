@@ -156,7 +156,7 @@
           #if("interactive_mode".equals(x.key))
              channel.interactive_mode = #para(x.value)
           #elseif("channel_desc".equals(x.key))
-             channel.channel_desc = #para(x.value)
+             channel.id = #para(x.value)
           #elseif("master_batchno".equals(x.key))
              pay_master.master_batchno like convert(varchar(5),'%')+convert(varchar(255),#para(x.value))+convert(varchar(5),'%')
           #elseif("start_date".equals(x.key))

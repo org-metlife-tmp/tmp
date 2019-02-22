@@ -1,14 +1,19 @@
 package com.qhjf.cfm.web.inter.impl.batch;
 
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+
 import com.alibaba.fastjson.util.TypeUtils;
 import com.jfinal.plugin.activerecord.IAtom;
 import com.qhjf.bankinterface.api.exceptions.BankInterfaceException;
 import com.qhjf.cfm.utils.ArrayUtil;
 import com.qhjf.cfm.utils.CommonService;
+import com.qhjf.cfm.utils.TableDataCacheUtil;
 import com.qhjf.cfm.web.constant.WebConstant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -180,14 +185,16 @@ public class SysBatchPayInter implements ISysAtomicInterface {
 								bill_setRecord.set( SysInterManager.getStatusFiled(billTable[0])
 										, SysInterManager.getSuccessStatusEnum(billTable[0]));
 								
-								instr_setRecord.set("status", SysInterManager.getSuccessStatusEnum(BATCH_PAY_INSTR_DETAIL_TALBE));
+								instr_setRecord.set("status", SysInterManager.getSuccessStatusEnum(BATCH_PAY_INSTR_DETAIL_TALBE))
+												.set("bank_back_time", new Date());
 							} else {
 								bill_setRecord.set( SysInterManager.getStatusFiled(billTable[0])
 										, SysInterManager.getFailStatusEnum(billTable[0]));
 								
 								instr_setRecord.set("status", SysInterManager.getFailStatusEnum(BATCH_PAY_INSTR_DETAIL_TALBE))
 												.set("bank_err_code", parseRecord.getInt("code"))
-												.set("bank_err_msg", parseRecord.getInt("message"));
+												.set("bank_err_msg", parseRecord.getInt("message"))
+												.set("bank_back_time", new Date());
 							}
 
 							// 1.更新单据状态；2.修改队列表状态
@@ -238,6 +245,8 @@ public class SysBatchPayInter implements ISysAtomicInterface {
 			final Long instrTotalId = TypeUtils.castToLong(instrTotal.get("id"));
 			final String billTotalTb = instrTotal.getStr("source_ref");
 			final Long billTotalId = instrTotal.getLong("bill_id");
+			final String payBankType = instrTotal.getStr("pay_bank_type");
+			final String payAccountNo = instrTotal.getStr("pay_account_no");
 			
 			Record billTotalRecord = getBillTotalRecord(billTotalTb, billTotalId);
 			if (null == billTotalRecord) {
@@ -262,7 +271,7 @@ public class SysBatchPayInter implements ISysAtomicInterface {
 					}
 					//2.更新batch_pay_instr_queue_detail
 					if(!CommonService.update(BATCH_PAY_INSTR_DETAIL_TALBE
-							, new Record().set("status", 2).set("bank_err_msg", "发送失败")
+							, new Record().set("status", 2).set("bank_err_msg", "发送失败").set("bank_back_time", new Date())
 							, new Record().set("base_id", instrTotalId))){
 						return false;
 					}
@@ -277,9 +286,29 @@ public class SysBatchPayInter implements ISysAtomicInterface {
 						return false;
 					}
 					//5.更新la_origin_pay_data|ebs_origin_pay_data
-					SqlPara updOriginFailSqlPara = Db.getSqlPara("batchpay.updOriginFail", Kv.by("tb", originTb));
-					if (Db.update(updOriginFailSqlPara.getSql(), instrTotalId) <= 0) {
-						return false;
+					if (LA_ORIGIN.equals(originTb)) {
+						SqlPara updOriginFailLaSqlPara = Db.getSqlPara("batchpay.updOriginFailLa");
+						if (Db.update(updOriginFailLaSqlPara.getSql(), instrTotalId) <= 0) {
+							return false;
+						}
+					}else {
+						//需求变更：ebs加四个非空字段，回传EBS：paydate 支付日期|paytime 支付时间|paybankcode 大都会支付银行编码 （需要做mapping）|paybankaccno 大都会支付银行账号
+						//paybankcode来源：cnaps---》all_bank_info.bank_type---》ebs_bank_mapping.ebs_bank_code
+						SqlPara updOriginFailEbsSqlPara = Db.getSqlPara("batchpay.updOriginFailEbs");
+						Calendar c = Calendar.getInstance();
+						String date = new SimpleDateFormat("yyyy-MM-dd").format(c.getTime());
+						String time = new SimpleDateFormat("HH:mm:ss").format(c.getTime());
+						String paybankcode = null;
+						Map<String, Object> ebsBankMapping = TableDataCacheUtil.getInstance()
+								.getARowData("ebs_bank_mapping", "tmp_bank_code", payBankType);
+						if (ebsBankMapping != null) {
+							paybankcode = TypeUtils.castToString(ebsBankMapping.get("ebs_bank_code"));
+						}else {
+							paybankcode = payBankType + "未匹配到ebs数据";
+						}
+						if (Db.update(updOriginFailEbsSqlPara.getSql(), date, time, paybankcode, payAccountNo, instrTotalId) <= 0) {
+							return false;
+						}
 					}
 					return true;
 				}
@@ -486,8 +515,28 @@ public class SysBatchPayInter implements ISysAtomicInterface {
 					//3.2.更新pay_batch_total
 					if (updBillTotal(instrTotalId, TypeUtils.castToLong(instrTotal.get("bill_id")), instrTotal.getStr("source_ref"))) {
 						//3.3.更新la_origin_pay_data|ebs_origin_pay_data
-						SqlPara updOrginLaSqlPara = Db.getSqlPara("batchpay.updOrginLa", Kv.by("tb", originTb));
-						int updOrigin = Db.update(updOrginLaSqlPara.getSql(), instrTotalId);
+						int updOrigin;
+						if (originTb.equals(LA_ORIGIN)) {
+							SqlPara updOrginLaSqlPara = Db.getSqlPara("batchpay.updOrginSuccLa", Kv.by("tb", originTb));
+							updOrigin = Db.update(updOrginLaSqlPara.getSql(), instrTotalId);
+						}else {
+							Calendar c = Calendar.getInstance();
+							String date = new SimpleDateFormat("yyyy-MM-dd").format(c.getTime());
+							String time = new SimpleDateFormat("HH:mm:ss").format(c.getTime());
+							String payBankType = instrTotal.getStr("pay_bank_type");
+							String payAccountNo = instrTotal.getStr("pay_account_no");
+							String paybankcode = null;
+							Map<String, Object> ebsBankMapping = TableDataCacheUtil.getInstance()
+									.getARowData("ebs_bank_mapping", "tmp_bank_code", payBankType);
+							if (ebsBankMapping != null) {
+								paybankcode = TypeUtils.castToString(ebsBankMapping.get("ebs_bank_code"));
+							}else {
+								paybankcode = payBankType + "未匹配到ebs数据";
+							}
+							SqlPara updOrginLaSqlPara = Db.getSqlPara("batchpay.updOrginSuccEbs");
+							updOrigin = Db.update(updOrginLaSqlPara.getSql(), date, time, paybankcode, payAccountNo, instrTotalId);
+							
+						}
 						if (updOrigin == instrTotal.getInt("total_num")) {
 							return true;
 						}else {

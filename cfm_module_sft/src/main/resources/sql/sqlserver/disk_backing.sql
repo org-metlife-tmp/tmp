@@ -1,30 +1,33 @@
 #sql("updateLaOriginData")
    update
-   la_origin_pay_data
+   la_origin_pay_data  
    set 
-   tmp_status = 1
+   tmp_status = [status] , 
+   tmp_err_message  = bank_err_msg
+   from
+	    pay_batch_detail  
    where
-   id
-   in
-   (
-   select  origin_id from pay_batch_detail where child_batchno = ?
-   )
+	 la_origin_pay_data.id = pay_batch_detail.origin_id  and
+   pay_batch_detail.child_batchno  = ? 
 #end
 
 
 #sql("updateEbsOriginData")
    update
-   ebs_origin_pay_data
+   ebs_origin_pay_data  
    set 
-   tmp_status = 1,
+   tmp_status = [status] , 
+   tmp_err_message  = bank_err_msg,
    paybankaccno = ?,
    paybankcode = ? ,
+   paydate = ? ,
+   paytime = ?
+   from
+	 pay_batch_detail  
    where
-   id
-   in
-   (
-   select  origin_id from pay_batch_detail where child_batchno = ?
-   )
+	 ebs_origin_pay_data.id = pay_batch_detail.origin_id  
+	 and
+     pay_batch_detail.child_batchno  = ? 
 #end
 
 
@@ -112,7 +115,7 @@
           #if("interactive_mode".equals(x.key))
              channel.interactive_mode = #para(x.value)
           #elseif("channel_desc".equals(x.key))
-             channel.channel_desc = #para(x.value)
+             channel.id = #para(x.value)
           #elseif("master_batchno".equals(x.key))
              pay_master.master_batchno like convert(varchar(5),'%')+convert(varchar(255),#para(x.value))+convert(varchar(5),'%')
           #elseif("start_date".equals(x.key))

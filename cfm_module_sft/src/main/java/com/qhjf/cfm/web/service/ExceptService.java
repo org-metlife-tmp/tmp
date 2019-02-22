@@ -175,15 +175,29 @@ public class ExceptService {
     }
 
     public boolean hookPass(Record record) {
+    	String positionName = null;
+    	Record position = Db.findFirst(Db.getSql("except.findFirstApprovePosition"), record.getInt("biz_type"),record.getLong("bill_id"));
+    	if(position != null){
+    		positionName = position.getStr("name");
+    	}
         return CommonService.update("pay_batch_total",
                 new Record().set("service_status", WebConstant.SftCheckBatchStatus.YHT.getKey())
+                        .set("exam_position_name", positionName)
+                        .set("exam_time", new Date())
                         .set("persist_version", TypeUtils.castToInt(record.get("persist_version"))+2),
                 new Record().set("id", TypeUtils.castToInt(record.get("id"))).set("persist_version", TypeUtils.castToInt(record.get("persist_version"))+1));
     }
 
     public boolean hookReject(Record record) {
+    	String positionName = null;
+    	Record position = Db.findFirst(Db.getSql("except.findFirstApprovePosition"), record.getInt("biz_type"),record.getLong("bill_id"));
+    	if(position != null){
+    		positionName = position.getStr("name");
+    	}
         return CommonService.update("pay_batch_total",
                 new Record().set("service_status", WebConstant.SftCheckBatchStatus.FSWHP.getKey())
+		                .set("exam_position_name", positionName)
+		                .set("exam_time", new Date())
                         .set("persist_version", TypeUtils.castToInt(record.get("persist_version"))+2),
                 new Record().set("id", TypeUtils.castToInt(record.get("id"))).set("persist_version", TypeUtils.castToInt(record.get("persist_version"))+1));
     }

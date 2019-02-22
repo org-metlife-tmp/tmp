@@ -1,6 +1,8 @@
 package com.qhjf.cfm.web.inter.impl;
 
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -9,13 +11,17 @@ import com.alibaba.fastjson.util.TypeUtils;
 import com.qhjf.cfm.queue.ProductQueue;
 import com.qhjf.cfm.queue.QueueBean;
 import com.qhjf.cfm.utils.CommonService;
+import com.qhjf.cfm.utils.TableDataCacheUtil;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.jfinal.ext.kit.DateKit;
+import com.jfinal.kit.Kv;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.IAtom;
 import com.jfinal.plugin.activerecord.Record;
+import com.jfinal.plugin.activerecord.SqlPara;
 import com.qhjf.bankinterface.api.ProcessEntrance;
 import com.qhjf.cfm.exceptions.DbProcessException;
 import com.qhjf.cfm.web.channel.inter.api.IChannelInter;
@@ -120,14 +126,16 @@ public class SysTradeResultBatchQueryInter implements ISysAtomicInterface {
 							bill_setRecord.set( SysInterManager.getStatusFiled(billTable[0])
 									, SysInterManager.getSuccessStatusEnum(billTable[0]));
 							
-							instr_setRecord.set("status", SysInterManager.getSuccessStatusEnum(SysBatchPayInter.BATCH_PAY_INSTR_DETAIL_TALBE));
+							instr_setRecord.set("status", SysInterManager.getSuccessStatusEnum(SysBatchPayInter.BATCH_PAY_INSTR_DETAIL_TALBE))
+											.set("bank_back_time", new Date());
 						} else {
 							bill_setRecord.set( SysInterManager.getStatusFiled(billTable[0])
 									, SysInterManager.getFailStatusEnum(billTable[0]));
 							
 							instr_setRecord.set("status", SysInterManager.getFailStatusEnum(SysBatchPayInter.BATCH_PAY_INSTR_DETAIL_TALBE))
 											.set("bank_err_code", parseRecord.getInt("code"))
-											.set("bank_err_msg", parseRecord.getInt("message"));
+											.set("bank_err_msg", parseRecord.getInt("message"))
+											.set("bank_back_time", new Date());
 						}
 
 						// 1.更新单据状态；2.修改队列表状态
@@ -207,8 +215,37 @@ public class SysTradeResultBatchQueryInter implements ISysAtomicInterface {
 				if (updInstrTotal == 1) {
 					//更新pay_batch_total
 					if (SysBatchPayInter.updBillTotal(instrTotalId, TypeUtils.castToLong(instrTotal.get("bill_id")), instrTotal.getStr("source_ref"))) {
-						//更新la_origin_pay_data|ebs_origin_pay_data
+						/*//更新la_origin_pay_data|ebs_origin_pay_data
 						int updOrigin = Db.update(Db.getSql("batchpay.updOrginLa"), originTb, instrTotalId);
+						if (updOrigin == instrTotal.getInt("total_num")) {
+							return true;
+						}else {
+							log.error("批量支付回写时，付款指令汇总信息表batch_pay_instr_queue_total.total_num与更新的原始数据条数[{}]不一致, instrTotalId={}", updOrigin, instrTotalId);
+							return false;
+						}*/
+						//3.3.更新la_origin_pay_data|ebs_origin_pay_data
+						int updOrigin;
+						if (originTb.equals(SysBatchPayInter.LA_ORIGIN)) {
+							SqlPara updOrginLaSqlPara = Db.getSqlPara("batchpay.updOrginSuccLa", Kv.by("tb", originTb));
+							updOrigin = Db.update(updOrginLaSqlPara.getSql(), instrTotalId);
+						}else {
+							Calendar c = Calendar.getInstance();
+							String date = new SimpleDateFormat("yyyy-MM-dd").format(c.getTime());
+							String time = new SimpleDateFormat("HH:mm:ss").format(c.getTime());
+							String payBankType = instrTotal.getStr("pay_bank_type");
+							String payAccountNo = instrTotal.getStr("pay_account_no");
+							String paybankcode = null;
+							Map<String, Object> ebsBankMapping = TableDataCacheUtil.getInstance()
+									.getARowData("ebs_bank_mapping", "tmp_bank_code", payBankType);
+							if (ebsBankMapping != null) {
+								paybankcode = TypeUtils.castToString(ebsBankMapping.get("ebs_bank_code"));
+							}else {
+								paybankcode = payBankType + "未匹配到ebs数据";
+							}
+							SqlPara updOrginLaSqlPara = Db.getSqlPara("batchpay.updOrginSuccEbs");
+							updOrigin = Db.update(updOrginLaSqlPara.getSql(), date, time, paybankcode, payAccountNo, instrTotalId);
+							
+						}
 						if (updOrigin == instrTotal.getInt("total_num")) {
 							return true;
 						}else {
