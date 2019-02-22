@@ -66,6 +66,11 @@
         .withdraw {
             background-position: -48px 0;
         }
+
+        /*数据展示区*/
+        .table-content {
+            height: 320px;
+        }
     }
 </style>
 <style lang="less" type="text/less">
@@ -186,7 +191,7 @@
         <!--数据展示区-->
         <section class="table-content">
             <el-table :data="tableList"
-                      border size="mini">
+                      border size="mini" height="100%">
                 <el-table-column prop="channel_code" label="通道编码" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="channel_desc" label="通道描述" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="pay_mode" label="支付方式" :show-overflow-tooltip="true"

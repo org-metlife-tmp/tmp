@@ -37,6 +37,11 @@
             margin-bottom: 20px;
         }
 
+        /*数据展示区*/
+        .table-content {
+            height: 66%;
+        }
+
         /*分页部分*/
         .botton-pag {
             position: absolute;
@@ -160,7 +165,7 @@
         <!--数据展示区-->
         <section class="table-content">
             <el-table :data="tableList"
-                      border size="mini">
+                      border size="mini" height="100%">
                 <el-table-column prop="source_sys" label="来源系统" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="master_batchno" label="主批次号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="child_batchno" label="子批次号" :show-overflow-tooltip="true"></el-table-column>

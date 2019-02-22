@@ -37,6 +37,11 @@
             margin-bottom: 20px;
         }
 
+        /*数据展示区*/
+        .table-content {
+            height: 320px;
+        }
+
         /*分页部分*/
         .botton-pag {
             position: absolute;
@@ -165,7 +170,7 @@
         <!--数据展示区-->
         <section class="table-content">
             <el-table :data="tableList"
-                      border size="mini">
+                      border size="mini" height="100%">
                 <el-table-column prop="source_sys" label="来源系统" :show-overflow-tooltip="true"
                                  :formatter="transitSource"></el-table-column>
                 <el-table-column prop="master_batchno" label="主批次号" :show-overflow-tooltip="true"></el-table-column>
@@ -183,6 +188,8 @@
                 <el-table-column prop="revoke_user_name" label="回退申请人" width="100px"
                                  :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="revoke_date" label="申请日期" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="exam_position_name" label="审批人" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="exam_time" label="审批日期" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column
                         label="操作" width="50"
                         fixed="right">

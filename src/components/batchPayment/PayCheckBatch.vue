@@ -255,8 +255,9 @@
         <div class="split-bar"></div>
         <!--数据展示区-->
         <section class="table-content">
-            <el-table :data="tableList"
+            <el-table :data="tableList" ref="contentTable"
                       height="100%" border size="mini"
+                      @select="setId"
                       @selection-change="selectChange">
                 <el-table-column type="selection" width="40"></el-table-column>
                 <el-table-column prop="create_time" label="日期" :show-overflow-tooltip="true"></el-table-column>
@@ -288,7 +289,8 @@
             </el-table>
             <div class="allData">
                 <div class="btn-left">
-                    <el-button type="warning" size="mini" @click="affirm">
+                    <el-button type="warning" size="mini" @click="affirm"
+                               :disabled="mayAffirm">
                         <span class="transmit-icon"><i></i></span>确认
                     </el-button>
                 </div>
@@ -356,7 +358,8 @@
                     org_id: "",
                     recv_acc_no: "",
                     bank_key: "",
-                    status: []
+                    status: [],
+                    visit_time: ""
                 },
                 dateValue: "", //时间控件
                 pickerOptions: {
@@ -377,7 +380,6 @@
                     total_num: ""
                 },
                 selectId: [], //选中数据
-                selectVersion: [],
             }
         },
         methods: {
@@ -429,6 +431,7 @@
                 }
                 this.dateValue = "";
                 this.tableList = [];
+                this.selectId = [];
             },
             //获取机构列表
             getOrgList: function () {
@@ -484,29 +487,45 @@
             selectChange: function (val) {
                 //计算汇总数据
                 var totalNum = 0;
-                this.selectId = [];
-                this.selectVersion = [];
                 for (var i = 0; i < val.length; i++) {
                     var item = val[i];
                     totalNum += item.amount;
-                    this.selectId.push(item.pay_id);
-                    this.selectVersion.push(item.persist_version);
                 }
                 this.totalData.total_num = val.length;
                 this.totalData.total_amount = this.$common.transitSeparator(totalNum);
             },
+            //设置未保存的id
+            setId: function(selection, row){
+                var selectId = this.selectId;
+                for(let i = 0; i < selection.length; i++){
+                    if(row.pay_id == selection[i].pay_id){
+                        for(let j = 0; j < selectId.length; j++){
+                            if(selectId[j] === row.pay_id){
+                                selectId.splice(j,1);
+                                break;
+                            }
+                        }
+                        return;
+                    }
+                }
+                selectId.push(row.pay_id);
+            },
             //确认
             affirm: function(){
+                let params = {
+                    remove_ids: this.selectId
+                };
+                let searchData = this.searchData;
+                for(let k in searchData){
+                    params[k] = searchData[k];
+                }
+
                 this.$axios({
                     url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "checkbatch_confirm",
-                        params: {
-                            ids: this.selectId,
-                            persist_version: this.selectVersion,
-                            source_sys: this.searchData.source_sys
-                        }
+                        params: params
                     }
                 }).then((result) => {
                     if (result.data.error_msg) {
@@ -579,8 +598,6 @@
 
                 });
             },
-
-
             //导出
             exportFun: function () {
                 if (!this.tableList.length) {
@@ -626,6 +643,28 @@
                     console.log(error);
                 })
             },
+            //设置当前页勾选情况
+            setSelect: function(){
+                if(this.tableList.length > 0){
+                    let selectId = this.selectId;
+                    let tableList = this.tableList;
+                    tableList.forEach((row) => {
+                        let flag = true;
+                        for(let i = 0; i < selectId.length; i++){
+                            if(row.pay_id == selectId[i]){
+                                flag = false;
+                                break;
+                            }
+                        }
+                        this.$refs.contentTable.toggleRowSelection(row,flag);
+                    })
+                }
+            }
+        },
+        computed: {
+            mayAffirm: function(){
+                return this.tableList.length === 0 || !this.routerMessage.params.channel_id;
+            }
         },
         watch: {
             tableData: function (val, oldVal) {
@@ -633,6 +672,11 @@
                 this.pagTotal = val.total_line;
                 this.tableList = val.data;
                 this.pagCurrent = val.page_num;
+                this.searchData.visit_time = val.data.length > 0 ? val.data[0].visit_time : "";
+
+                setTimeout(() => {
+                    this.setSelect();
+                },100);
             }
         }
     }

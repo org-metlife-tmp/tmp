@@ -26,6 +26,11 @@
             margin-bottom: 20px;
         }
 
+        /*数据展示区*/
+        .table-content {
+            height: 320px;
+        }
+
         /*分页部分*/
         .botton-pag {
             position: absolute;
@@ -150,7 +155,7 @@
         <!--数据展示区-->
         <section class="table-content">
             <el-table :data="tableList"
-                      border size="mini">
+                      border size="mini" height="100%">
                 <el-table-column prop="os_source" label="来源系统" :show-overflow-tooltip="true"
                                  :formatter="transitSource"></el-table-column>
                 <el-table-column prop="bankkey" label="bankkey" width="90px"
