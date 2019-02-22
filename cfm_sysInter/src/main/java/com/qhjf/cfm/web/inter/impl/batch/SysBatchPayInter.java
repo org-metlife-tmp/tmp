@@ -369,10 +369,10 @@ public class SysBatchPayInter implements ISysAtomicInterface {
 		}else {
 			Kv kv = Kv.create();
 			if (null != detailBankServiceNumber) {
-				kv.set("detail_bank_service_number", detailBankServiceNumber);
+				kv.set("detailBankServiceNumber", detailBankServiceNumber);
 			}
 			if (null != packageSeq) {
-				kv.set("package_seq", packageSeq);
+				kv.set("packageSeq", packageSeq);
 			}
 			SqlPara sqlPara = Db.getSqlPara("batchpay.findInstrTotalByDetail", Kv.by("map", kv));
 			r = Db.findFirst(sqlPara);
