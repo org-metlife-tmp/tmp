@@ -76,7 +76,7 @@ public class SysTradeResultBatchQueryInter implements ISysAtomicInterface {
     public void callBack(String jsonStr) throws Exception {
     	Db.delete("trade_result_query_batch_instr_queue_lock", instr);
     	
-        log.debug("查询交易状态指令回写开始");
+        log.debug("批量收付查询历史交易状态指令回写开始。。。");
         Db.delete("trade_result_query_instr_queue_lock", instr);
         int resultCount = channelInter.getResultCount(jsonStr);
         if (resultCount <= 0) {
@@ -96,7 +96,7 @@ public class SysTradeResultBatchQueryInter implements ISysAtomicInterface {
 			String detailBankServiceNumber = parseRecord.getStr("detail_bank_service_number");
 			String packageSeq = parseRecord.getStr("package_seq");
 			if (null == bankServiceNumber && null == detailBankServiceNumber) {
-				log.error("批量支付回写时，第[{}]笔即没有返回bank_service_number，又没有返回detail_bank_service_number，跳过该笔回写！", i+1);
+				log.error("批量收付查询历史交易状态指令回写，第[{}]笔即没有返回bank_service_number，又没有返回detail_bank_service_number，跳过该笔回写！", i+1);
 				continue;
 			}
 			
@@ -133,8 +133,8 @@ public class SysTradeResultBatchQueryInter implements ISysAtomicInterface {
 									, SysInterManager.getFailStatusEnum(billTable[0]));
 							
 							instr_setRecord.set("status", SysInterManager.getFailStatusEnum(SysBatchPayInter.BATCH_PAY_INSTR_DETAIL_TALBE))
-											.set("bank_err_code", parseRecord.getInt("code"))
-											.set("bank_err_msg", parseRecord.getInt("message"))
+											.set("bank_err_code", parseRecord.getStr("code"))
+											.set("bank_err_msg", parseRecord.getStr("message"))
 											.set("bank_back_time", new Date());
 						}
 
@@ -187,7 +187,7 @@ public class SysTradeResultBatchQueryInter implements ISysAtomicInterface {
 					, new Record().set("init_resp_time", new Date())
 					, new Record().set("id", instrTotal.get("id")));
 			if(upd != 1){
-				log.error("批量支付状态查询回写时，更新[{}.init_resp_time]失败, updateRows=[{}]", SysBatchPayInter.BATCH_PAY_INSTR_TOTLE_TALBE, upd);
+				log.error("批量收付查询历史交易状态指令原始数据回写，更新[{}.init_resp_time]失败, updateRows=[{}]", SysBatchPayInter.BATCH_PAY_INSTR_TOTLE_TALBE, upd);
 			}
 			return;
 		}
@@ -197,7 +197,7 @@ public class SysTradeResultBatchQueryInter implements ISysAtomicInterface {
 		
 		Record billTotalRecord = SysBatchPayInter.getBillTotalRecord(billTotalTbName, instrTotal.getLong("bill_id"));
 		if (null == billTotalRecord) {
-			log.error("批量支付回写时，通过source_ref=[{}],bill_id=[{}]未找到单据！", billTotalTbName, instrTotal.getLong("bill_id"));
+			log.error("批量收付查询历史交易状态指令原始数据回写，通过source_ref=[{}],bill_id=[{}]未找到单据！", billTotalTbName, instrTotal.getLong("bill_id"));
 			return;
 		}
 		Integer sourceSys = SysBatchPayInter.getSourceSys(billTotalTbName, billTotalRecord);
@@ -213,22 +213,18 @@ public class SysTradeResultBatchQueryInter implements ISysAtomicInterface {
 				//更新batch_pay_instr_queue_total：明细中有一条成功，汇总就更新为成功
 				int updInstrTotal = Db.update(Db.getSql("batchpay.updInstrTotal"), instrTotalId, instrTotalId);
 				if (updInstrTotal == 1) {
+					log.debug("批量收付查询历史交易状态指令原始数据回写，更新指令汇总表成功！");
 					//更新pay_batch_total
 					if (SysBatchPayInter.updBillTotal(instrTotalId, TypeUtils.castToLong(instrTotal.get("bill_id")), instrTotal.getStr("source_ref"))) {
-						/*//更新la_origin_pay_data|ebs_origin_pay_data
-						int updOrigin = Db.update(Db.getSql("batchpay.updOrginLa"), originTb, instrTotalId);
-						if (updOrigin == instrTotal.getInt("total_num")) {
-							return true;
-						}else {
-							log.error("批量支付回写时，付款指令汇总信息表batch_pay_instr_queue_total.total_num与更新的原始数据条数[{}]不一致, instrTotalId={}", updOrigin, instrTotalId);
-							return false;
-						}*/
-						//3.3.更新la_origin_pay_data|ebs_origin_pay_data
+						log.debug("批量收付查询历史交易状态指令原始数据回写，更新单据汇总表成功！");
+						//更新la_origin_pay_data|ebs_origin_pay_data
 						int updOrigin;
 						if (originTb.equals(SysBatchPayInter.LA_ORIGIN)) {
+							log.debug("批量收付查询历史交易状态指令原始数据回写，回写LA原始数据");
 							SqlPara updOrginLaSqlPara = Db.getSqlPara("batchpay.updOrginSuccLa", Kv.by("tb", originTb));
 							updOrigin = Db.update(updOrginLaSqlPara.getSql(), instrTotalId);
 						}else {
+							log.debug("批量收付查询历史交易状态指令原始数据回写，回写EBS原始数据");
 							Calendar c = Calendar.getInstance();
 							String date = new SimpleDateFormat("yyyy-MM-dd").format(c.getTime());
 							String time = new SimpleDateFormat("HH:mm:ss").format(c.getTime());
@@ -249,15 +245,15 @@ public class SysTradeResultBatchQueryInter implements ISysAtomicInterface {
 						if (updOrigin == instrTotal.getInt("total_num")) {
 							return true;
 						}else {
-							log.error("批量支付回写时，付款指令汇总信息表batch_pay_instr_queue_total.total_num与更新的原始数据条数[{}]不一致, instrTotalId={}", updOrigin, instrTotalId);
+							log.error("批量收付查询历史交易状态指令原始数据回写，付款指令汇总信息表batch_pay_instr_queue_total.total_num与更新的原始数据条数[{}]不一致, instrTotalId={}", updOrigin, instrTotalId);
 							return false;
 						}
 					}else {
-						log.error("批量支付回写时，更新{}失败", instrTotal.getStr("source_ref"));
+						log.error("批量收付查询历史交易状态指令原始数据回写，更新{}失败", instrTotal.getStr("source_ref"));
 						return false;
 					}
 				}
-				log.error("批量支付回写时，更新batch_pay_instr_queue_total失败！");
+				log.error("批量收付查询历史交易状态指令原始数据回写，更新batch_pay_instr_queue_total失败！");
 				return false;
 			}
 		});

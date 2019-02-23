@@ -129,7 +129,10 @@ public class SysBatchPayInter implements ISysAtomicInterface {
 	public void callBack(String jsonStr) throws Exception {
 		log.debug("交易回写开始...");
 		int resultCount = channelInter.getResultCount(jsonStr);
-		if (resultCount == 0) { }
+		if (resultCount == 0) {
+			log.error("银行返回数据条数为0，jsonStr = {}", jsonStr);
+			return;
+		}
 		
 		//是否进行回写batch_pay_instr_queue_total，pay_batch_total，la_origin_pay_data|ebs_origin_pay_data
 		//需要在回写时进行双重判断，明细是否已经全部为：成功/失败
@@ -160,17 +163,20 @@ public class SysBatchPayInter implements ISysAtomicInterface {
 				if (null == instrTotalRecord) {
 					//查询付款指令汇总信息表
 					instrTotalRecord = findInstrTotal(bankServiceNumber, detailBankServiceNumber, packageSeq);
+					log.debug("查询付款指令汇总信息表,bankServiceNumber={},detailBankServiceNumber={},packageSeq={}", bankServiceNumber, detailBankServiceNumber, packageSeq);
 					sourceRef = instrTotalRecord.getStr("source_ref");
 					billTable[0] = SysInterManager.getDetailTableName(sourceRef);
 					billTablePrimaryKey[0] = SysInterManager.getSourceRefPrimaryKey(billTable[0]);
+					log.debug("批付银行返回时，回写的单据表billTable={}，billTablePrimaryKey={}", billTable[0], billTablePrimaryKey[0]);
 				}
 				
 				// 成功、失败处理逻辑
 				if (status == WebConstant.PayStatus.SUCCESS.getKey()
 						|| status == WebConstant.PayStatus.FAILD.getKey()) {
+					log.debug("银行返回状态1成功2失败3处理中，state={}", status);
 					//1.查询付款指令明细信息
 					final Record instrDetailRecord = findInstryDetail(bankServiceNumber, detailBankServiceNumber, packageSeq);
-					
+					log.debug("查询付款指令明细信息,bankServiceNumber={},detailBankServiceNumber={},packageSeq={}", bankServiceNumber, detailBankServiceNumber, packageSeq);
 					Db.tx(new IAtom() {
 						@Override
 						public boolean run() throws SQLException {
@@ -192,26 +198,29 @@ public class SysBatchPayInter implements ISysAtomicInterface {
 										, SysInterManager.getFailStatusEnum(billTable[0]));
 								
 								instr_setRecord.set("status", SysInterManager.getFailStatusEnum(BATCH_PAY_INSTR_DETAIL_TALBE))
-												.set("bank_err_code", parseRecord.getInt("code"))
-												.set("bank_err_msg", parseRecord.getInt("message"))
+												.set("bank_err_code", parseRecord.getStr("code"))
+												.set("bank_err_msg", parseRecord.getStr("message"))
 												.set("bank_back_time", new Date());
 							}
 
 							// 1.更新单据状态；2.修改队列表状态
 							if (CommonService.updateRows(billTable[0], bill_setRecord, bill_whereRecord) == 1) { // 修改单据状态
+								log.debug("批付回写单据表{}回写成功！", billTable[0]);
 								boolean updDetail = CommonService.updateRows(BATCH_PAY_INSTR_DETAIL_TALBE, instr_setRecord, instr_whereRecord) == 1;
 								if (!updDetail) {
 									log.error("批量支付回写时，[{}]更新失败！instr_setRecord=【{}】，instr_whereRecord=【{}】", BATCH_PAY_INSTR_DETAIL_TALBE, instr_setRecord, instr_whereRecord);
 								}
+								log.error("批量支付回写时，[{}]更新成功！", BATCH_PAY_INSTR_DETAIL_TALBE);
 								return true;
 							} else {
-								log.error("批量支付回写时，[{}]更新失败！bill_setRecord=【{}】，bill_whereRecord=【{}】", billTable[0], bill_setRecord, bill_whereRecord);
+								log.error("批量支付回写时单据表{}失败！bill_setRecord=【{}】，bill_whereRecord=【{}】", billTable[0], bill_setRecord, bill_whereRecord);
 								return false;
 							}
 						}
 					});
 				
 				}else {
+					log.debug("银行返回状态1成功2失败3处理中：{}，非成功|失败！",status);
 					//处理中
 					isWriteBack = false;
 				}
@@ -486,6 +495,7 @@ public class SysBatchPayInter implements ISysAtomicInterface {
 	 * 单笔回写完毕，检查是否具备回写汇总表条件，具备则回写
 	 */
 	private void writeBack(final Record instrTotal){
+		log.debug("批付原始数据回写开始。。。");
 		final Long instrTotalId = TypeUtils.castToLong(instrTotal.get("id"));
 		//1.检查是否满足回写条件
 		Integer count = Db.queryInt(Db.getSql("batchpay.countInstrDetailInHandling"), instrTotalId);
@@ -540,15 +550,15 @@ public class SysBatchPayInter implements ISysAtomicInterface {
 						if (updOrigin == instrTotal.getInt("total_num")) {
 							return true;
 						}else {
-							log.error("批量支付回写时，付款指令汇总信息表batch_pay_instr_queue_total.total_num与更新的原始数据条数[{}]不一致, instrTotalId={}", updOrigin, instrTotalId);
+							log.error("批付原始数据回写，付款指令汇总信息表batch_pay_instr_queue_total.total_num与更新的原始数据条数[{}]不一致, instrTotalId={}", updOrigin, instrTotalId);
 							return false;
 						}
 					}else {
-						log.error("批量支付回写时，更新{}失败", instrTotal.getStr("source_ref"));
+						log.error("批付原始数据回写，更新{}失败", instrTotal.getStr("source_ref"));
 						return false;
 					}
 				}
-				log.error("批量支付回写时，更新batch_pay_instr_queue_total失败！");
+				log.error("批付原始数据回写，更新batch_pay_instr_queue_total失败！");
 				return false;
 			}
 		});

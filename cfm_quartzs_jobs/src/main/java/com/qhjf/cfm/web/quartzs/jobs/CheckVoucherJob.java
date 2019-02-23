@@ -219,7 +219,7 @@ public class CheckVoucherJob implements Job {
 
         builder.append("Fund,")//校验字段
                 .append(fileName).append(suffixXml).append(",")//接口XML文件名称
-                .append("CO").append(",")//校验字段值(比如涉及三个渠道则应该生成三行, AGY, BXS, TM…)
+                .append("G").append(",")//校验字段值(比如涉及三个渠道则应该生成三行, AGY, BXS, TM…)
                 .append(TypeUtils.castToInt(totalRec.get("totalDebitsCount"))).append(",")//借方行数
                 .append(TypeUtils.castToInt(totalRec.get("totalCreditsCount"))).append(",")//贷方行数
                 .append(TypeUtils.castToInt(totalRec.get("totalCount"))).append(",")//总行数

@@ -142,7 +142,15 @@ public class DiskSendingService {
 				//保存锁定表
 				boolean saveIntr = sysInter.saveIntr();
 				if(saveIntr){
-					return true;
+					//子批次汇总表状态改为：4已发送未回盘
+					int updPayBatchTotal = CommonService.updateRows("pay_batch_total"
+							, new Record().set("service_status", 4).set("persist_version", cbRecord.getInt("persist_version") + 1)
+							, new Record().set("id", id).set("persist_version", cbRecord.getInt("persist_version")));
+					if (updPayBatchTotal == 1) {
+						return true;
+					}else {
+						return false;
+					}
 				}
 				return false;
 			}

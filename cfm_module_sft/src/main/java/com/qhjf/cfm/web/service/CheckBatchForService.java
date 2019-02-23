@@ -14,6 +14,7 @@ import java.util.Set;
 
 import org.apache.commons.collections.IterableMap;
 import org.apache.commons.collections.MapIterator;
+import org.apache.commons.lang3.StringUtils;
 
 import com.alibaba.fastjson.util.TypeUtils;
 import com.jfinal.kit.Kv;
@@ -145,6 +146,11 @@ public class CheckBatchForService {
 				throw new ReqDataException("当前登录人未在用户信息表内配置");
 			}
 			List<Long> status = record.get("status");
+			
+			List<Long> remove_ids = record.get("remove_ids");
+			if( null ==remove_ids || remove_ids.size() == 0) {
+				record.remove("remove_ids");
+			}
 
 			final Record channel_setting = Db.findById("channel_setting", "id", channel_id);
 			Integer is_checkout = TypeUtils.castToInt(channel_setting.get("is_checkout"));
@@ -198,17 +204,21 @@ public class CheckBatchForService {
 				@Override
 				public boolean run() throws SQLException {
 					List<Record> ids = null ;
+					Record total_amount_master = null ;
 				   if( 0 == source_sys) {
 					   ids = Db
-							   .find(Db.getSqlPara("check_batch.checkBatchLAlist_confirm", Kv.by("map", record.getColumns())));					   
+							   .find(Db.getSqlPara("check_batch.checkBatchLAlist_confirm", Kv.by("map", record.getColumns())));	
+					   total_amount_master = Db
+							   .findFirst(Db.getSqlPara("check_batch.checkBatchLAlistAmount_confirm", Kv.by("map", record.getColumns())));
+				   
 				   } else {
 					   ids = Db
 							   .find(Db.getSqlPara("check_batch.checkBatchlist_confirm", Kv.by("map", record.getColumns())));				
+					   total_amount_master = Db
+							   .findFirst(Db.getSqlPara("check_batch.checkBatchEBSlistAmount_confirm", Kv.by("map", record.getColumns())));
 				   }
 
 					// 封装 pay_batch_total 和 pay_batch_detail
-					BigDecimal int_amount = new BigDecimal(0);
-					final BigDecimal total_amount_main = int_amount;
 					final Integer document_moudle = channel_setting.getInt("document_moudle");
 
 					final BigDecimal limit = channel_setting.get("single_file_limit") == null ? new BigDecimal(ids.size())
@@ -223,18 +233,18 @@ public class CheckBatchForService {
 							.set("org_id", curUodp.getOrg_id())
 							.set("dept_id", curUodp.getDept_id())
 							.set("total_num", ids.size())
-							.set("total_amount", total_amount_main)
+							.set("total_amount", total_amount_master.getBigDecimal("total_amount_master"))
 							.set("delete_flag", 0)
 							.set("process_bank_type", channel_setting.get("direct_channel"))
 							.set("is_checked", 0)
 							.set("pay_acc_no",
-									channel_setting.get("op_acc_no") == null ? channel_setting.get("acc_no")
+									StringUtils.isBlank(channel_setting.getStr("op_acc_no")) ? channel_setting.get("acc_no")
 											: channel_setting.get("op_acc_no"))
 							.set("pay_acc_name",
-									channel_setting.get("op_acc_name") == null ? channel_setting.get("acc_name")
+									StringUtils.isBlank(channel_setting.getStr("op_acc_name")) ? channel_setting.get("acc_name")
 											: channel_setting.get("op_acc_name"))
 							.set("pay_bank_name",
-									channel_setting.get("op_bank_name") == null ? channel_setting.get("bank_name")
+									StringUtils.isBlank(channel_setting.getStr("op_bank_name")) ? channel_setting.get("bank_name")
 											: channel_setting.get("op_bank_name"))
 							.set("create_by", userInfo.getUsr_id()).set("create_on", new Date())
 							.set("update_by", userInfo.getUsr_id()).set("update_on", new Date())

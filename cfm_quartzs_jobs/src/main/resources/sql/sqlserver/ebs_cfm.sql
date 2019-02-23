@@ -1,8 +1,34 @@
 #namespace("ebs_cfm")
 #sql("getEBSCallBackOriginList")
-  select id,source_sys,pay_code,branch_code,org_code,preinsure_bill_no,insure_bill_no,biz_type,pay_mode,pay_date,amount,recv_acc_name,recv_cert_type,recv_cert_code,recv_bank_name,recv_acc_no,bank_key,sale_code,sale_name,op_code,op_name,tmp_status,tmp_err_message,persist_version
+  select 
+  	 id,
+	 source_sys,
+	 pay_code,
+	 org_code,
+	 preinsure_bill_no,
+	 insure_bill_no,
+	 biz_type,
+	 pay_mode,
+	 pay_date,
+	 amount,
+	 recv_acc_name,
+	 recv_cert_type,
+	 recv_cert_code,
+	 recv_bank_name,
+	 recv_acc_no,
+	 sale_code,
+	 sale_name,
+	 op_code,
+	 op_name,
+	 tmp_status,
+	 tmp_err_message,
+	 persist_version,
+	 paydate,
+	 paytime,
+	 paybankcode,
+	 paybankaccno
   from ebs_origin_pay_data
-  where tmp_status in (?,?) and la_callback_status in (?,?)
+  where tmp_status in (?,?) and ebs_callback_status in (?,?)
 #end
 
 #sql("getEBSUnCheckedOriginList")

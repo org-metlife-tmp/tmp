@@ -95,8 +95,7 @@
 		origin.tmp_status = bill.status,
 		origin.tmp_err_message = bill.bank_err_msg
 	from
-		la_origin_pay_data origin
-	left join
+		la_origin_pay_data origin,
 		(
 			select 
 				a.origin_id, b.status, b.bank_err_msg 
@@ -109,7 +108,7 @@
 			where 
 				b.base_id = ?
 		) bill
-	on 
+	where 
 		origin.id = bill.origin_id
 #end
 
@@ -123,8 +122,7 @@
 		origin.paybankcode=?,
 		origin.paybankaccno=?
 	from
-		ebs_origin_pay_data origin
-	left join
+		ebs_origin_pay_data origin,
 		(
 			select 
 				a.origin_id, b.status, b.bank_err_msg 
@@ -137,7 +135,7 @@
 			where 
 				b.base_id = ?
 		) bill
-	on 
+	where 
 		origin.id = bill.origin_id
 #end
 
@@ -158,8 +156,7 @@
 		origin.tmp_status = 2,
 		origin.tmp_err_message = '发送失败'
 	from
-		la_origin_pay_data origin
-	left join
+		la_origin_pay_data origin,
 		(
 			select 
 				a.origin_id, b.status, b.bank_err_msg 
@@ -172,7 +169,7 @@
 			where 
 				b.base_id = ?
 		) bill
-	on 
+	where 
 		origin.id = bill.origin_id
 #end
 #sql("updOriginFailEbs")
@@ -185,8 +182,7 @@
 		origin.paybankcode=?,
 		origin.paybankaccno=?
 	from
-		ebs_origin_pay_data origin
-	left join
+		ebs_origin_pay_data origin,
 		(
 			select 
 				a.origin_id, b.status, b.bank_err_msg 
@@ -199,6 +195,6 @@
 			where 
 				b.base_id = ?
 		) bill
-	on 
+	where 
 		origin.id = bill.origin_id
 #end

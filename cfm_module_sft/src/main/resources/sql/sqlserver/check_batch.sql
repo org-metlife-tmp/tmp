@@ -699,49 +699,151 @@ WHERE
 #end
 
 
+#sql("checkBatchLAlistAmount_confirm")
+SELECT
+	SUM(pay.amount) AS total_amount_master 
+FROM
+	pay_legal_data AS pay,
+	channel_setting AS channel,
+	la_pay_legal_data_ext AS  la ,
+	organization AS org ,
+	organization AS org2 
+WHERE
+	pay.id = la.legal_id AND
+	channel.org_id = org.org_id AND
+	channel.id = pay.channel_id AND
+	org2.org_id = pay.org_id
+  #if(map != null)
+    #for(x : map)
+      #if(x.value&&x.value!="")
+         AND
+        #if("channel_desc".equals(x.key))
+        	channel.id = #para(x.value)
+        #elseif("start_date".equals(x.key))
+             DATEDIFF(day,#para(x.value),la.pay_date) >= 0
+        #elseif("visit_time".equals(x.key))
+              DATEDIFF(day,#para(x.value),pay.create_time) <= 0
+        #elseif("end_date".equals(x.key))
+              DATEDIFF(day,#para(x.value),la.pay_date) <= 0
+        #elseif("preinsure_bill_no".equals(x.key))
+            la.preinsure_bill_no  like convert(varchar(5),'%')+convert(varchar(255),#para(x.value))+convert(varchar(5),'%')
+        #elseif("insure_bill_no".equals(x.key))
+            la.insure_bill_no like convert(varchar(5),'%')+convert(varchar(255),#para(x.value))+convert(varchar(5),'%')
+        #elseif("biz_type".equals(x.key))
+            la.biz_type = #para(x.value)
+        #elseif("bank_key".equals(x.key))
+            la.bank_key  like convert(varchar(5),'%')+convert(varchar(255),#para(x.value))+convert(varchar(5),'%')
+        #elseif("status".equals(x.key))
+            pay.status in(
+              #for(y : map.status)
+                #if(for.index > 0)
+                  #(",")
+                #end
+                #(y)
+              #end
+            )
+        #elseif("codes".equals(x.key))
+            org.code in(
+              #for(z : map.codes)
+                #if(for.index > 0)
+                  #(",")
+                #end
+                #(z)
+              #end
+            )
+         #elseif("remove_ids".equals(x.key))
+            pay.id not in(
+              #for(n : map.remove_ids)
+                #if(for.index > 0)
+                  #(",")
+                #end
+                #(n)
+              #end
+            )
+         #else
+           pay.#(x.key) = #para(x.value)    
+        #end
+      #end
+    #end
+  #end
+#end
+
+
 
 #sql("checkBatchEBSlist_confirm")
 SELECT
-    pay.op_date ,
-    pay.op_user_name ,
-	pay.id AS pay_id ,
-	pay.source_sys,
-	pay.origin_id,
-	pay.pay_code,
-	pay.channel_id,
-	pay.org_id,
-	pay.org_code,
-	pay.amount,
-	pay.recv_acc_name,
-	pay.recv_cert_type,
-	pay.recv_cert_code,
-	pay.recv_bank_name,
-	pay.recv_acc_no,
-	case pay.status  when '0' then '未组批' when '1' then '已组批' when '2' then '已撤回' else '其他' end status,
-	pay.process_msg,
-	pay.bank_fb_msg,
-	pay.create_time,
-	pay.persist_version,
-	pay.recv_bank_type AS bank_key, 
-	ebs.id AS ebs_id, 
-	ebs.legal_id ,
-	case ebs.insure_type when '1' then '团险' when '2' then '极短险' when '3' then '赠险' else '其他' end insure_type ,
-	ebs.preinsure_bill_no ,
-	ebs.insure_bill_no ,
-	ebs.branch_bill_no ,
-	ebs.biz_type ,
-	ebs.pay_mode ,
-	ebs.pay_date ,
-	ebs.company_name ,
-	ebs.company_customer_no ,
-	ebs.biz_code ,
-	ebs.sale_code ,
-	ebs.sale_name ,
-	ebs.op_code ,
-	ebs.op_name ,
-	channel.channel_code ,
-	channel.channel_desc,
-	org2.name
+	pay.id AS pay_id 
+FROM
+	pay_legal_data AS pay,
+	channel_setting AS channel,
+	ebs_pay_legal_data_ext AS  ebs ,
+	organization AS org ,
+	organization AS org2 
+WHERE
+	pay.id = ebs.legal_id AND
+	channel.id = pay.channel_id AND
+	org.org_id = channel.org_id AND
+	org2.org_id = pay.org_id
+  #if(map != null)
+    #for(x : map)
+      #if(x.value&&x.value!="")
+        AND
+       #if("channel_desc".equals(x.key))
+        	channel.id = #para(x.value)
+        #elseif("preinsure_bill_no".equals(x.key))
+            ebs.preinsure_bill_no like convert(varchar(5),'%')+convert(varchar(255),#para(x.value))+convert(varchar(5),'%')
+        #elseif("visit_time".equals(x.key))
+            DATEDIFF(day,#para(x.value),pay.create_time) <= 0
+        #elseif("insure_bill_no".equals(x.key))
+            ebs.insure_bill_no like convert(varchar(5),'%')+convert(varchar(255),#para(x.value))+convert(varchar(5),'%')
+        #elseif("biz_type".equals(x.key))
+            ebs.biz_type = #para(x.value)
+        #elseif("status".equals(x.key))
+            pay.status in(
+              #for(y : map.status)
+                #if(for.index > 0)
+                  #(",")
+                #end
+                #(y)
+              #end
+            )
+        #elseif("bank_key".equals(x.key))
+           pay.recv_bank_type like convert(varchar(5),'%')+convert(varchar(255),#para(x.value))+convert(varchar(5),'%')
+        #elseif("start_date".equals(x.key))
+           DATEDIFF(day,#para(x.value),ebs.pay_date) >= 0
+        #elseif("end_date".equals(x.key))
+           DATEDIFF(day,#para(x.value),ebs.pay_date) <= 0
+        #elseif("codes".equals(x.key))
+            org.code in(
+              #for(z : map.codes)
+                #if(for.index > 0)
+                  #(",")
+                #end
+                #(z)
+              #end
+            )
+         #elseif("remove_ids".equals(x.key))
+            pay.id not in(
+              #for(n : map.remove_ids)
+                #if(for.index > 0)
+                  #(",")
+                #end
+                #(n)
+              #end
+            )
+         #else
+           pay.#(x.key) = #para(x.value)
+        #end
+      #end
+    #end
+  #end
+  order by pay.pay_code  asc
+#end
+
+
+#sql("checkBatchEBSlistAmount_confirm")
+SELECT
+    SUM(pay.amount) AS total_amount_master
 FROM
 	pay_legal_data AS pay,
 	channel_setting AS channel,

@@ -31,6 +31,8 @@ public class EbsCallbackBean {
 			throw new Exception(origin.getLong("id")+"EBS原始数据状态有误,无法回写,状态为"+origin.getInt("tmp_status"));
 		}
 		this.PayMoney = origin.getStr("amount");
+		this.PayDate = origin.getStr("paydate");
+		this.PayTime = origin.getStr("paytime");
 		this.PayBankAccNo = origin.getStr("paybankaccno");
 		this.PayBankCode = origin.getStr("paybankcode");
 	}
