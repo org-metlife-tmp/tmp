@@ -127,7 +127,7 @@ public class SysBatchPayInter implements ISysAtomicInterface {
 	 */
 	@Override
 	public void callBack(String jsonStr) throws Exception {
-		log.debug("交易回写开始...");
+		log.debug("交易回写开始...jsonStr={}", jsonStr);
 		int resultCount = channelInter.getResultCount(jsonStr);
 		if (resultCount == 0) {
 			log.error("银行返回数据条数为0，jsonStr = {}", jsonStr);
@@ -446,7 +446,7 @@ public class SysBatchPayInter implements ISysAtomicInterface {
 		total.set("pay_bank_prov", r.get("pay_bank_prov"));
 		total.set("pay_bank_city", r.get("pay_bank_city"));
 		total.set("pay_bank_type", r.get("pay_bank_type"));
-		total.set("status", 3);
+		total.set("status", 1);
 		total.set("trade_date", DateKit.toStr(new Date(), "yyyy-MM-dd"));
 		//发送时间不精确，从指令发送队列取指令时的时间更精确
 		total.set("init_send_time", new Date());
@@ -480,7 +480,7 @@ public class SysBatchPayInter implements ISysAtomicInterface {
 		detail.set("recv_bank_cnaps", batch.getStr("recv_bank_cnaps"));
 		detail.set("recv_bank_prov", batch.getStr("recv_bank_prov"));
 		detail.set("recv_bank_city", batch.getStr("recv_bank_city"));
-		detail.set("recv_bank_type", batch.getBigDecimal("recv_bank_type"));
+		detail.set("recv_bank_type", batch.getStr("recv_bank_type"));
 		
 		int isCrossBank = 0;
 		String cnaps = batch.getStr("recv_bank_cnaps");

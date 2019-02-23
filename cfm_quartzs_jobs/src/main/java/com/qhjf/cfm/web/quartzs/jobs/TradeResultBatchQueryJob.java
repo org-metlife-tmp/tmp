@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
 import com.qhjf.cfm.web.inter.api.ISysAtomicInterface;
+import com.qhjf.cfm.web.inter.impl.SysTradeResultBatchQueryInter;
 import com.qhjf.cfm.web.inter.impl.SysTradeResultQueryInter;
 import com.qhjf.cfm.web.quartzs.jobs.pub.PubJob;
 
@@ -70,9 +71,10 @@ public class TradeResultBatchQueryJob extends PubJob{
 						}
 						instrTotalId = source.getLong("base_id");
 						result.add(source);
+					}else {
+						instrTotalId = source.getLong("base_id");
+						result.add(source);
 					}
-					instrTotalId = source.getLong("base_id");
-					result.add(source);
 				}
 				
 				//招行取instrDetail
@@ -86,7 +88,7 @@ public class TradeResultBatchQueryJob extends PubJob{
 	}
 	@Override
 	public ISysAtomicInterface getSysInter() {
-		return new SysTradeResultQueryInter();
+		return new SysTradeResultBatchQueryInter();
 	}
 	@Override
 	public boolean needReTrySaveInstr(){

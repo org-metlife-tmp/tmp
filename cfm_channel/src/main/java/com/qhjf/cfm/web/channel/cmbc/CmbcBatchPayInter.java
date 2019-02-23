@@ -100,6 +100,7 @@ public class CmbcBatchPayInter implements IChannelBatchInter {
 		String isFinish = jo.getString("REQSTS");
 		if(!"FIN".equals(isFinish)){
 			record.set("status", 3);
+			return record;
 		}
 		
 		String result = jo.getString("RTNFLG");

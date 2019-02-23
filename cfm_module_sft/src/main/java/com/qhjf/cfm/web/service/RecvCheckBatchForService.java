@@ -50,15 +50,15 @@ import com.qhjf.cfm.web.webservice.sft.SftCallBack;
  * @author pc_liweibing
  *
  */
-public class CheckBatchForService {
+public class RecvCheckBatchForService {
 
-	private final static Log logger = LogbackLog.getLog(CheckBatchForService.class);
+	private final static Log logger = LogbackLog.getLog(RecvCheckBatchForService.class);
 	TxtDiskSendingService txtDiskSendingService = new TxtDiskSendingService();
 
 	private static String la_pre = "la_batch";
 	private static String ebs_pre = "ebs_batch";
 	/**
-	 * LA组批列表
+	 *    批收LA/EBS组批列表
 	 * @param pageSize 
 	 * @param pageNum 
 	 * 
@@ -93,36 +93,16 @@ public class CheckBatchForService {
 		SqlPara sqlPara = null;
 		if (0 == source_sys) {
 			logger.info("=======数据来源LA======");
-			sqlPara = Db.getSqlPara("check_batch.checkBatchLAlist", Kv.by("map", record.getColumns()));
+			sqlPara = Db.getSqlPara("recv_check_batch.checkBatchLAlist", Kv.by("map", record.getColumns()));
 		} else if (1 == source_sys) {
 			logger.info("=======数据来源EBS======");
-			sqlPara = Db.getSqlPara("check_batch.checkBatchEBSlist", Kv.by("map", record.getColumns()));
+			sqlPara = Db.getSqlPara("recv_check_batch.checkBatchEBSlist", Kv.by("map", record.getColumns()));
 		} else {
 			throw new ReqDataException("渠道传输不正确");
 		}
 		return Db.paginate(pageNum, pageSize, sqlPara);
 	}
 
-	/**
-	 * 获取根据条件查到的总金额 和 总个数
-	 * 
-	 * @param record
-	 * @return
-	 * @throws ReqDataException
-	 */
-	public Record total(Record record) throws ReqDataException {
-		Integer source_sys = record.getInt("source_sys");
-		logger.info("==========当前的source_sys" + source_sys);
-		SqlPara sqlPara = null;
-		if (0 == source_sys) {
-			sqlPara = Db.getSqlPara("check_batch.checkBatchLAFindAll", Kv.by("map", record.getColumns()));
-		} else if (1 == source_sys) {
-			sqlPara = Db.getSqlPara("check_batch.checkBatchEBSFindAll", Kv.by("map", record.getColumns()));
-		} else {
-			throw new ReqDataException("渠道传输不正确");
-		}
-		return Db.findFirst(sqlPara);
-	}
 
 	/**
 	 * 组批LA勾选后提交
@@ -438,7 +418,6 @@ public class CheckBatchForService {
 							.set("pay_account_no", payRec.get("acc_no"))
 							.set("pay_account_name", payRec.get("acc_name"))
 							.set("pay_account_cur", "CNY")
-							.set("recv_account_cur", "CNY")
 							.set("pay_account_bank", payRec.get("bank_name"))
 							.set("pay_bank_cnaps", payRec.get("cnaps_code"))
 							.set("pay_bank_prov", payRec.get("province"))
@@ -452,7 +431,6 @@ public class CheckBatchForService {
 							.set("create_on", new Date())
 							.set("apply_on", new Date())
 							.set("delete_flag", 0)
-							.set("pay_mode",1)
 							.set("persist_version", 0);
 
 					if (0 == is_inner) {
@@ -476,12 +454,13 @@ public class CheckBatchForService {
 						type = WebConstant.MajorBizType.INNERDB;
 						// 获取配置的调拨付款方账号
 						serviceSerialNumber = BizSerialnoGenTool.getInstance().getSerial(WebConstant.MajorBizType.INNERDB);
-						insertRecord.set("biz_id", "11e1d8f2dbe14c41a241e0a430743c6b")
-						            .set("biz_name", "第三方资金调拨")
-								    .set("service_serial_number", serviceSerialNumber);
+						insertRecord.set("biz_id", "03bead791d6244a9B513bb789799fa3a")
+						            .set("biz_name", "资金调拨")
+								    .set("service_serial_number", serviceSerialNumber)
+						            .set("pay_mode",1);
 						//封装 recv_account_id  
 						List<Record> find = Db.find(Db.getSql("acc.findAccountByAccNo"),main_record.get("pay_acc_no"));
-						insertRecord.set("recv_account_id", find.get(0).get("acc_id"));
+						insertRecord.set("recv_account_id", find.get(0).get("id"));
 						boolean save = Db.save("inner_db_payment", "id", insertRecord);
 						logger.info("===============入库调拨通的结果==="+ save + "==id=="+ insertRecord.getLong("id"));
 					}
