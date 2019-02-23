@@ -71,7 +71,7 @@ public class CollectExecuteCallBackJob implements Job{
 				execute.set("fail_count", failCount);
 				execute.set("collect_status", 1);
 				execute.set("child_account_count", childAccountCount);
-				execute.set("mainAccountCount", mainAccountCount);
+				execute.set("main_account_count", mainAccountCount);
 				Db.update("collect_execute", execute);
 				return "success";
 			}
