@@ -44,6 +44,7 @@ public class EbsConsumerQueue implements Runnable{
 				queueBean = EbsQueue.getInstance().getQueue().take();
 				log.debug("EBS回写发送参数="+queueBean.getParams());
 				String response = service.saveXML(queueBean.getParams());
+				response = response.replaceAll("\\r|\\n", "");
 				log.debug("EBS回写响应参数="+response);
 				JSONObject json = XmlTool.documentToJSONObject(response);
 				process(json);
@@ -83,6 +84,8 @@ public class EbsConsumerQueue implements Runnable{
 	            public boolean run() throws SQLException {
 	            	String processStatus = json.getString("ResultCode");
 	    			String payCode = json.getString("PayNo");
+	    			
+	    			
 	    			Record whereRecord = new Record().set("pay_code", payCode);
 	    			if(processStatus.equals("SUCCESS")){
 	    				Record setRecord = new Record().set("ebs_callback_status", SftCallbackStatus.SFT_CALLBACK_S.getKey())
@@ -120,5 +123,9 @@ public class EbsConsumerQueue implements Runnable{
 	    			return false;
 	            }
 	            });	
+			
+			if (!flag) {
+				log.error("EBS响应回写原始数据失败；response={}", json);
+			}
 	}
 }

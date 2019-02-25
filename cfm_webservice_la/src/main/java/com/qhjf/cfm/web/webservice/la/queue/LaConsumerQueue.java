@@ -54,7 +54,8 @@ public class LaConsumerQueue implements Runnable{
 				opts.setAction("http://eai.metlife.com/ESBWebEntry/ProcessMessage");
 				sc.setOptions(opts);
 				OMElement res = sc.sendReceive(queueBean.getoMElement());
-				log.debug("response="+res);
+
+				log.debug("response="+res.toString().replaceAll("\\r|\\n", ""));
 				JSONObject json = XmlTool.documentToJSONObject(res.toString());
 				JSONObject rec = json.getJSONArray("ESBEnvelopeResult").getJSONObject(0).getJSONArray("MsgBody").getJSONObject(0).getJSONArray("PMTUPDO_REC").getJSONObject(0);
 				String status = rec.getString("STATUS");
@@ -95,7 +96,10 @@ public class LaConsumerQueue implements Runnable{
 	}
 	
 	private void processSuccess(JSONObject resp){
-		JSONArray array = resp.getJSONArray("ESBEnvelopeResult").getJSONObject(0).getJSONArray("MsgBody").getJSONObject(0).getJSONArray("PMTUPDO_REC").getJSONObject(0).getJSONArray("ADDITIONAL_FIELDS").getJSONObject(0).getJSONArray("PMTOUT");
+		JSONArray array = resp.getJSONArray("ESBEnvelopeResult").getJSONObject(0)
+				.getJSONArray("MsgBody").getJSONObject(0).getJSONArray("PMTUPDO_REC").getJSONObject(0)
+				.getJSONArray("ADDITIONAL_FIELDS").getJSONObject(0).getJSONArray("PMTOUT");
+		
 		for(int i = 0;i<array.size();i++){
 			final JSONObject json = array.getJSONObject(i);
 			boolean flag = Db.tx(new IAtom() {
@@ -103,6 +107,11 @@ public class LaConsumerQueue implements Runnable{
 	            public boolean run() throws SQLException {
 	            	String processStatus = json.getString("STATUS");
 	    			String payCode = json.getString("REQNNO");
+	    			if (null == payCode || "".equals(payCode.trim())) {
+	    				log.debug("LA响应回写原始数据，payCode为空，节点<PMTOUT>=", json);
+						return true;
+					}
+	    			
 	    			Record whereRecord = new Record().set("pay_code", payCode);
 	    			if(processStatus.equals("SC")){
 	    				Record setRecord = new Record().set("la_callback_status", WebConstant.SftCallbackStatus.SFT_CALLBACK_S.getKey())
@@ -139,6 +148,10 @@ public class LaConsumerQueue implements Runnable{
 	    			return false;
 	            }
 	            });
+			
+			if (!flag) {
+				log.error("LA响应回写原始数据失败；节点<PMTOUT>=", json);
+			}
 		}
 		
 

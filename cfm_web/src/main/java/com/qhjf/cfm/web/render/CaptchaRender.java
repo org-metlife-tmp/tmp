@@ -168,6 +168,7 @@ public class CaptchaRender extends Render {
 		Cookie cookie = new Cookie(DEFAULT_CAPTCHA_MD5_CODE_KEY, md5RandonCode);
 		cookie.setMaxAge(-1);
 		cookie.setPath("/");
+		cookie.setSecure(true);
 		response.addCookie(cookie);
 		response.setHeader("Pragma","no-cache");
        	response.setHeader("Cache-Control","no-cache");

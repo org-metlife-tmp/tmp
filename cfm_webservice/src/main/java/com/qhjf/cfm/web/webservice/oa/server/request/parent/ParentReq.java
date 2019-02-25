@@ -23,7 +23,7 @@ public class ParentReq{
 	
 	private JSONObject json;
 	public ParentReq(String xml) throws Exception {
-		log.debug("参数xml="+xml);
+		log.debug("参数xml="+xml.replaceAll("\\r|\\n", ""));
 		try {
 			this.json = XmlTool.documentToJSONObject(xml);
 		} catch (Exception e) {
