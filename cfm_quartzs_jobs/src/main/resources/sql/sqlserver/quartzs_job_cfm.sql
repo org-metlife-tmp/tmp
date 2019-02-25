@@ -82,7 +82,7 @@
            a.is_close_confirm,a.deposits_mode,a.subject_code 
     from account a 
     where a.status != 2 and a.interactive_mode = 1 
-    	and a.is_activity = 1 and bank_cnaps_code not like '102%'
+    	and a.is_activity = 1
   #end
   #sql("get_account_list_balance_batch")
     select a.acc_id,a.acc_no,a.acc_name,a.acc_attr,a.acc_purpose,a.open_date,a.lawfull_man,a.cancel_date,

@@ -106,7 +106,6 @@ public class PayCheckController extends CFMBaseController {
     /**
      * 查找所有银行账号
      */
-    @Auth(hasForces = {"PayBatchCheck"})
     public void getallaccountno() {
         Record record = getRecordByParamsStrong();
         List<Record> page = service.getallaccountno(record);

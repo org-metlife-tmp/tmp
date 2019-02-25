@@ -57,7 +57,7 @@ public class TradeResultBatchQueryJob extends PubJob{
 		//Db.find的入参为查询多少个处理中的批次
 		List<Record> sourceList = Db.find(Db.getSql("batchpayjob.getTradeResultBatchQrySourceList"), 10);
 		
-		if (null != null && sourceList.size() > 0) {
+		if (null != sourceList && sourceList.size() > 0) {
 			result = new ArrayList<>();
 			
 			Long instrTotalId = null;

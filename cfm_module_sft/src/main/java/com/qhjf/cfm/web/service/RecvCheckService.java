@@ -37,7 +37,7 @@ public class RecvCheckService {
      * @return
      */
     public Page<Record> batchlist(int pageNum, int pageSize, final Record record) {
-        SqlPara sqlPara = Db.getSqlPara("paycheck.paylist", Kv.by("map", record.getColumns()));
+        SqlPara sqlPara = Db.getSqlPara("recvcheck.paylist", Kv.by("map", record.getColumns()));
         return Db.paginate(pageNum, pageSize, sqlPara);
     }
 
@@ -48,7 +48,7 @@ public class RecvCheckService {
      * @throws BusinessException
      */
     public List<Record> tradingList(final Record record) {
-        SqlPara sqlPara = Db.getSqlPara("paycheck.tradingList", Kv.by("map", record.getColumns()));
+        SqlPara sqlPara = Db.getSqlPara("recvcheck.tradingList", Kv.by("map", record.getColumns()));
         return Db.find(sqlPara);
     }
 
@@ -67,8 +67,8 @@ public class RecvCheckService {
         final ArrayList<Integer> persistVersion = record.get("persist_version");
 
         //获取勾选的交易和批次
-        final List<Record> batchList = Db.find(Db.getSqlPara("paycheck.findBatchList", Kv.by("batchNo", batchNo)));
-        final List<Record> tradList = Db.find(Db.getSqlPara("paycheck.findTradList", Kv.by("tradingNo", tradingNo)));
+        final List<Record> batchList = Db.find(Db.getSqlPara("recvcheck.findBatchList", Kv.by("batchNo", batchNo)));
+        final List<Record> tradList = Db.find(Db.getSqlPara("recvcheck.findTradList", Kv.by("tradingNo", tradingNo)));
 
         if(batchList.size()==0 || tradList.size()==0){
             throw new ReqDataException("请选择要核对的批次和交易！");
@@ -93,29 +93,15 @@ public class RecvCheckService {
         if(checkedSet.size() >= 1){
             throw new ReqDataException("已勾选的存在已核对的批次！");
         }
-        //0--第三方付款 1--内部调拨付款
-        int isInner = TypeUtils.castToInt(batchList.get(0).get("is_inner"));
-        List<Record> tradSize = null;
-        if(isInner == 0){
-            //第三方的根据business_check判断是否核对
-            tradSize = Db.find(Db.getSqlPara("paycheck.findTradListBusiness",
-                    Kv.by("map", new Record().set("business_check", 0).set("tradingNo", tradingNo).getColumns())));
-        }else if(isInner == 1){
-            //内部调拨的根据is_checked判断是否核对
-            tradSize = Db.find(Db.getSqlPara("paycheck.findTradListBusiness",
-                    Kv.by("map", new Record().set("is_checked", 0).set("tradingNo", tradingNo).getColumns())));
-        }else{
-            throw new ReqDataException("需要传对应的业务类型！");
-        }
+        //内部调拨的根据is_checked判断是否核对
+        List<Record> tradSize = Db.find(Db.getSqlPara("recvcheck.findTradListBusiness",
+                Kv.by("map", new Record().set("is_checked", 0).set("tradingNo", tradingNo).getColumns())));
         if(tradSize.size() != tradingNo.size()){
             throw new ReqDataException("存在已核对的交易再次进行核对！");
         }
 
         BigDecimal tradAmount = new BigDecimal(0);
-        //第三方的会记日期确认标记位
-        boolean directionFlag = false;
-        Date transDate = TypeUtils.castToDate(tradList.get(0).get("trans_date"));
-        //交易付方向总金额-交易收方向总金额=批次成功付款金额，才可核对
+        //交易收方向总金额-交易付方向总金额=批次成功付款金额，才可核对
         for(Record r : tradList){
             /**
              * 1、有收款记录 取收款记录较晚对账单日期作为会计日期。2、没有收款记录 取对账操作日期作为会计日期
@@ -123,35 +109,15 @@ public class RecvCheckService {
             int direction = TypeUtils.castToInt(r.get("direction"));
             //1付 2收
             if(direction == 1){
-                tradAmount = tradAmount.add(TypeUtils.castToBigDecimal(r.get("amount")));
-            }else if(direction == 2){
-                directionFlag = true;
                 tradAmount = tradAmount.subtract(TypeUtils.castToBigDecimal(r.get("amount")));
+            }else if(direction == 2){
+                tradAmount = tradAmount.add(TypeUtils.castToBigDecimal(r.get("amount")));
             }
         }
         if(batchAmount.compareTo(tradAmount) != 0){
             throw new ReqDataException("核对批次金额和交易金额不相同！");
         }
 
-        Date periodDate = null;
-        if(isInner == 0){
-            /**
-             * 如果是第三方付款且有收款记录的,取收款记录较晚对账单日期作为会计日期,否则取对账操作日期作为会计日期
-             */
-            if(directionFlag){
-                periodDate = CommonService.getPeriodByCurrentDay(transDate);
-            }else{
-                periodDate = CommonService.getPeriodByCurrentDay(new Date());
-            }
-        }else{
-            /**
-             * 内部账号付款取银行对账单最晚日期
-             */
-            periodDate = CommonService.getPeriodByCurrentDay(transDate);
-        }
-        final int inner = isInner;
-        final Date periodDatec = periodDate;
-        final Date transDatec  = transDate;
         //生成对账流水号
         final String checkSerialSeqNo = RedisSericalnoGenTool.genCheckSerialSeqNo();//生成十六进制流水号
 
@@ -162,24 +128,15 @@ public class RecvCheckService {
             @Override
             public boolean run() throws SQLException {
                 //更新交易
-                String checkName = "";
-                int biz_type;
-                if(inner == 0){
-                    checkName = "business_check";
-                    biz_type = WebConstant.MajorBizType.SFF_PLF_DSF.getKey();
-                }else{
-                    checkName = "is_checked";
-                    biz_type = WebConstant.MajorBizType.SFF_PLF_INNER.getKey();
-                }
                 for(Integer trad : tradingNo){
 
                     boolean s = CommonService.update("acc_his_transaction",
-                                    new Record().set(checkName, 1)
-                                                .set("check_service_number", checkSerialSeqNo)
-                                                .set("check_user_id", userInfo.getUsr_id())
-                                                .set("check_user_name", userInfo.getName())
-                                                .set("check_date", new Date()),
-                                    new Record().set("id", trad));
+                            new Record().set("is_checked", 1)
+                                    .set("check_service_number", checkSerialSeqNo)
+                                    .set("check_user_id", userInfo.getUsr_id())
+                                    .set("check_user_name", userInfo.getName())
+                                    .set("check_date", new Date()),
+                            new Record().set("id", trad));
                     if(!s){
                         return false;
                     }
@@ -187,14 +144,14 @@ public class RecvCheckService {
                 String seqnoOrstatmentCode = RedisSericalnoGenTool.genVoucherSeqNo();//生成十六进制序列号/凭证号
                 //更新批次
                 for(int num=0; num<batchNo.size(); num++){
-                    boolean s = CommonService.update("pay_batch_total",
+                    boolean s = CommonService.update("recv_batch_total",
                             new Record().set("is_checked", 1)
-                                        .set("persist_version", persistVersion.get(num)+1)
-                                        .set("statement_code", seqnoOrstatmentCode)
-                                        .set("check_service_number", checkSerialSeqNo)
-                                        .set("check_user_id", userInfo.getUsr_id())
-                                        .set("check_user_name", userInfo.getName())
-                                        .set("check_date", new Date()),
+                                    .set("persist_version", persistVersion.get(num)+1)
+                                    .set("statement_code", seqnoOrstatmentCode)
+                                    .set("check_service_number", checkSerialSeqNo)
+                                    .set("check_user_id", userInfo.getUsr_id())
+                                    .set("check_user_name", userInfo.getName())
+                                    .set("check_date", new Date()),
                             new Record().set("id", batchNo.get(num)).set("persist_version", persistVersion.get(num)));
                     if(!s){
                         return false;
@@ -203,15 +160,14 @@ public class RecvCheckService {
                 //存储关系
                 for (int num=0; num<records.size(); num++) {
                     Record r = records.get(num);
-                    boolean i = Db.save("pay_batch_checked", r);
+                    boolean i = Db.save("recv_batch_checked", r);
                     if (!i) {
                         return false;
                     }
                 }
                 try {
                     //生成凭证信息
-                    return CheckVoucherService.sunVoucherData(batchNo, tradingNo, batchList, tradList, biz_type,
-                            periodDatec, transDatec, seqnoOrstatmentCode);
+                    return CheckVoucherService.sunVoucherData(batchNo, tradingNo, batchList, tradList, WebConstant.MajorBizType.PLS.getKey(), seqnoOrstatmentCode);
                 } catch (BusinessException e) {
                     e.printStackTrace();
                     return false;
@@ -225,7 +181,7 @@ public class RecvCheckService {
             Record rd = new Record();
             rd.set("channel_id_one", batchList.get(0).get("channel_id"));
             AccCommonService.setSftCheckStatus(record, "service_status");
-            SqlPara sqlPara = Db.getSqlPara("paycheck.paylist", Kv.by("map", rd.getColumns()));
+            SqlPara sqlPara = Db.getSqlPara("recvcheck.paylist", Kv.by("map", rd.getColumns()));
             return Db.paginate(1, 10, sqlPara);
         }
     }
@@ -238,13 +194,7 @@ public class RecvCheckService {
      * @throws ReqDataException
      */
     public List<Record> getdetailbybaseid(Record record) throws BusinessException {
-        int source_sys = TypeUtils.castToInt(record.get("source_sys"));
-        String sql = "";
-        if(source_sys == WebConstant.SftOsSource.LA.getKey()){
-            sql = Db.getSql("paycheck.getladetailbybatchno");
-        }else if(source_sys == WebConstant.SftOsSource.EBS.getKey()){
-            sql = Db.getSql("paycheck.getebsdetailbybatchno");
-        }
+        String sql = Db.getSql("recvcheck.getladetailbybatchno");
         long base_id = TypeUtils.castToLong(record.get("id"));
         List<Record> records = Db.find(sql, base_id);
         return records;
@@ -259,16 +209,8 @@ public class RecvCheckService {
      */
     public Record gettradbybatchno(Record record) throws BusinessException {
         long batchNo = TypeUtils.castToLong(record.get("batchno"));
-        Record returnRecord = Db.findFirst(Db.getSql("paycheck.gettradbybatchno"), batchNo);
+        Record returnRecord = Db.findFirst(Db.getSql("recvcheck.gettradbybatchno"), batchNo);
         return returnRecord;
-    }
-
-    /**
-     * 查找所有银行账号
-     */
-    public List<Record> getallaccountno(Record record) {
-        List<Record> records = Db.find(Db.getSql("channel_setting.getallaccountno"));
-        return records;
     }
 
 }

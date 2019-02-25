@@ -381,5 +381,35 @@ public class SftOptypeMgr extends AbstractOptypeMgr {
                 .registerValidate(new RequiredParamsValidate(new String[]{"source_sys"})));
         
         /** ============================ 回盘列表 end ============================ */
+
+        /** ============================ 批量收结算对账 begin ============================ */
+        //查询所有批次
+        optypes.add(new Optype(Optype.Mode.NORMAL, "sftrecvcheck_batchlist")
+                .registKeepParams(new String[]{"channel_id_one", "channel_id_two", "is_checked", "start_date", "end_date",
+                        "page_size", "page_num"})
+                .registerValidate(new RequiredParamsValidate(new String[]{"channel_id_one"})));
+
+        //查找交易流水
+        optypes.add(new Optype(Optype.Mode.NORMAL, "sftrecvcheck_tradingList")
+                .registKeepParams(new String[]{"bankcode", "acc_no", "min", "max", "start_date", "end_date", "summary", "is_checked"})
+        );
+
+        //对账确认
+        optypes.add(new Optype(Optype.Mode.NORMAL, "sftrecvcheck_confirm")
+                .registKeepParams(new String[]{"batchid", "persist_version", "trading_no"})
+                .registerValidate(new RequiredParamsValidate(new String[]{"batchid", "persist_version", "trading_no"})));
+
+        //根据子批次id查询明细
+        optypes.add(new Optype(Optype.Mode.NORMAL, "sftrecvcheck_getdetailbybaseid")
+                .registKeepParams(new String[]{"id"})
+                .registerValidate(new RequiredParamsValidate(new String[]{"source_sys"})));
+
+        //根据批次查询交易
+        optypes.add(new Optype(Optype.Mode.NORMAL, "sftrecvcheck_gettradbybatchno")
+                .registKeepParams(new String[]{"batchno"})
+                .registerValidate(new RequiredParamsValidate(new String[]{"batchno"})));
+
+        /** ============================ 批量收结算对账 end ============================ */
+
     }
 }

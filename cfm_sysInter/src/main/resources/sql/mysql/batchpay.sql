@@ -89,17 +89,54 @@
 #end
 
 ###回写原始数据
-#sql("updOrginLa")
+#sql("updOrginSuccLa")
 	update origin
 	set
-		origin.tmp_status = detail.status,
-		origin.tmp_err_message = detail.bank_err_msg
+		origin.tmp_status = bill.status,
+		origin.tmp_err_message = bill.bank_err_msg
 	from
-		#(tb) origin
-	left join
-		batch_pay_instr_queue_detail detail
-		on origin.id = detail.origin_id
-	where detail.base_id = ?
+		la_origin_pay_data origin,
+		(
+			select 
+				a.origin_id, b.status, b.bank_err_msg 
+			from 
+				pay_batch_detail a 
+			left join 
+				batch_pay_instr_queue_detail b 
+			on 	
+				a.id=b.detail_id 
+			where 
+				b.base_id = ?
+		) bill
+	where 
+		origin.id = bill.origin_id
+#end
+
+#sql("updOrginSuccEbs")
+	update origin
+	set
+		origin.tmp_status = bill.status,
+		origin.tmp_err_message = bill.bank_err_msg,
+		origin.paydate=?,
+		origin.paytime=?,
+		origin.paybankcode=?,
+		origin.paybankaccno=?
+	from
+		ebs_origin_pay_data origin,
+		(
+			select 
+				a.origin_id, b.status, b.bank_err_msg 
+			from 
+				pay_batch_detail a 
+			left join 
+				batch_pay_instr_queue_detail b 
+			on 	
+				a.id=b.detail_id 
+			where 
+				b.base_id = ?
+		) bill
+	where 
+		origin.id = bill.origin_id
 #end
 
 #sql("updBillTotalToFail")
@@ -109,25 +146,56 @@
 		success_num = 0,
 		success_amount = 0,
 		fail_num = total_num,
-		fail_amount = total_amount
+		fail_amount = total_amount,
+		service_status = 6
 	where id = ?
 #end
 
-#sql("updOriginFail")
+#sql("updOriginFailLa")
 	update origin
 	set
 		origin.tmp_status = 2,
 		origin.tmp_err_message = '发送失败'
 	from
-		#(tb) origin
-	left join
-		pay_legal_data legal
-		on origin.id = legal.origin_id
-	left join
-		pay_batch_detail bill
-		on legal.id = bill.legal_id
-	left join
-		batch_pay_instr_queue_detail detail
-		on bill.id = detail.detail_id
-	where detail.base_id = ?
+		la_origin_pay_data origin,
+		(
+			select 
+				a.origin_id, b.status, b.bank_err_msg 
+			from 
+				pay_batch_detail a 
+			left join 
+				batch_pay_instr_queue_detail b 
+			on 	
+				a.id=b.detail_id 
+			where 
+				b.base_id = ?
+		) bill
+	where 
+		origin.id = bill.origin_id
+#end
+#sql("updOriginFailEbs")
+	update origin
+	set
+		origin.tmp_status = 2,
+		origin.tmp_err_message = '发送失败',
+		origin.paydate=?,
+		origin.paytime=?,
+		origin.paybankcode=?,
+		origin.paybankaccno=?
+	from
+		ebs_origin_pay_data origin,
+		(
+			select 
+				a.origin_id, b.status, b.bank_err_msg 
+			from 
+				pay_batch_detail a 
+			left join 
+				batch_pay_instr_queue_detail b 
+			on 	
+				a.id=b.detail_id 
+			where 
+				b.base_id = ?
+		) bill
+	where 
+		origin.id = bill.origin_id
 #end

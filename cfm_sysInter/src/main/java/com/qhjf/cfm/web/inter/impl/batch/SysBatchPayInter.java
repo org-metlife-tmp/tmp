@@ -634,7 +634,7 @@ public class SysBatchPayInter implements ISysAtomicInterface {
 			}
 		}
 		return CommonService.updateRows(sourceRef
-				, new Record().set("success_num", succ).set("success_amount", succAmount).set("fail_num", fail).set("fail_amount", failAmount)
+				, new Record().set("success_num", succ).set("success_amount", succAmount).set("fail_num", fail).set("fail_amount", failAmount).set("service_status", 5)
 				, new Record().set("id", billTotalId)) == 1;
 	}
 	/**

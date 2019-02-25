@@ -110,9 +110,8 @@ public class PayCheckService {
         }
 
         BigDecimal tradAmount = new BigDecimal(0);
-        //第三方的会记日期确认标记位
+        //收款记录的会记日期确认标记位
         boolean directionFlag = false;
-        Date transDate = TypeUtils.castToDate(tradList.get(0).get("trans_date"));
         //交易付方向总金额-交易收方向总金额=批次成功付款金额，才可核对
         for(Record r : tradList){
             /**
@@ -131,25 +130,7 @@ public class PayCheckService {
             throw new ReqDataException("核对批次金额和交易金额不相同！");
         }
 
-        Date periodDate = null;
-        if(isInner == 0){
-            /**
-             * 如果是第三方付款且有收款记录的,取收款记录较晚对账单日期作为会计日期,否则取对账操作日期作为会计日期
-             */
-            if(directionFlag){
-                periodDate = CommonService.getPeriodByCurrentDay(transDate);
-            }else{
-                periodDate = CommonService.getPeriodByCurrentDay(new Date());
-            }
-        }else{
-            /**
-             * 内部账号付款取银行对账单最晚日期
-             */
-            periodDate = CommonService.getPeriodByCurrentDay(transDate);
-        }
         final int inner = isInner;
-        final Date periodDatec = periodDate;
-        final Date transDatec  = transDate;
         //生成对账流水号
         final String checkSerialSeqNo = RedisSericalnoGenTool.genCheckSerialSeqNo();//生成十六进制流水号
 
@@ -208,8 +189,7 @@ public class PayCheckService {
                 }
                 try {
                     //生成凭证信息
-                    return CheckVoucherService.sunVoucherData(batchNo, tradingNo, batchList, tradList, biz_type,
-                            periodDatec, transDatec, seqnoOrstatmentCode);
+                    return CheckVoucherService.sunVoucherData(batchNo, tradingNo, batchList, tradList, biz_type, seqnoOrstatmentCode);
                 } catch (BusinessException e) {
                     e.printStackTrace();
                     return false;

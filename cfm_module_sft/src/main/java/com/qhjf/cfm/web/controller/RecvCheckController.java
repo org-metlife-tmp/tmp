@@ -35,11 +35,7 @@ public class RecvCheckController extends CFMBaseController {
         //状态为已成功的单据
         AccCommonService.setSftCheckStatus(record, "service_status");
         Page<Record> page = service.batchlist(pageNum, pageSize, record);
-        if(page.getList().size() != 0){
-            renderOkPage(page, new Record().set("is_inner", page.getList().get(0).get("is_inner")));
-        }else{
-            renderOkPage(page, new Record().set("is_inner", ""));
-        }
+        renderOkPage(page);
     }
 
 
@@ -96,15 +92,6 @@ public class RecvCheckController extends CFMBaseController {
             e.printStackTrace();
             renderFail(e);
         }
-    }
-
-    /**
-     * 查找所有银行账号
-     */
-    public void getallaccountno() {
-        Record record = getRecordByParamsStrong();
-        List<Record> page = service.getallaccountno(record);
-        renderOk(page);
     }
 
 }

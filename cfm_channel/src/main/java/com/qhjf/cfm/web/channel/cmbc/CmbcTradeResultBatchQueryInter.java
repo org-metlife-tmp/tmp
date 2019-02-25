@@ -2,6 +2,10 @@ package com.qhjf.cfm.web.channel.cmbc;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.jfinal.plugin.activerecord.Record;
@@ -19,11 +23,13 @@ import com.qhjf.cfm.web.config.CMBCTestConfigSection;
  *
  */
 public class CmbcTradeResultBatchQueryInter implements IMoreResultChannelInter {
+	private static final Logger log = LoggerFactory.getLogger(CmbcTradeResultBatchQueryInter.class);
 	private static CMBCTestConfigSection configSection = CMBCTestConfigSection.getInstance();
 
 	@Override
 	public Map<String, Object> genParamsMap(Record record) {
 		int preDay = configSection.getPreDay();
+		log.debug("招行读取配置文件preDay={}", preDay);
 		Map<String,Object> map = new HashMap<>();
         Map<String,Object> details = new HashMap<String,Object>();
 

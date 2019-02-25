@@ -18,6 +18,10 @@
   #include("paycheck.sql")
 #end
 
+#namespace("recvcheck")
+  #include("recvcheck.sql")
+#end
+
 #namespace("doubtful")
   #include("doubtful.sql")
 #end

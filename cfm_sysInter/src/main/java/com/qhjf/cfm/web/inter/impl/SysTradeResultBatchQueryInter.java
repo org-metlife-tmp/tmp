@@ -59,7 +59,7 @@ public class SysTradeResultBatchQueryInter implements ISysAtomicInterface {
         instr.set("bank_serial_number", record.getStr("bank_serial_number"));
         instr.set("detail_bank_service_number", detailBankServiceNumber);
         instr.set("package_seq", packageSeq);
-        instr.set("source_ref", record.getLong("source_ref"));
+        instr.set("source_ref", record.getStr("source_ref"));
         instr.set("bill_id", record.getLong("bill_id"));
         instr.set("process_bank_type", record.getStr("pay_bank_type"));
         instr.set("trade_date", record.get("trade_date"));
@@ -76,8 +76,7 @@ public class SysTradeResultBatchQueryInter implements ISysAtomicInterface {
     public void callBack(String jsonStr) throws Exception {
     	Db.delete("trade_result_query_batch_instr_queue_lock", instr);
     	
-        log.debug("批量收付查询历史交易状态指令回写开始。。。");
-        Db.delete("trade_result_query_instr_queue_lock", instr);
+        log.debug("批量收付查询历史交易状态指令回写开始。。。instr={}", instr);
         int resultCount = channelInter.getResultCount(jsonStr);
         if (resultCount <= 0) {
 			return;
@@ -260,13 +259,13 @@ public class SysTradeResultBatchQueryInter implements ISysAtomicInterface {
 		
 		if (flag) {
 			try {
-				Record originRecord = null;
+				List<Record> originRecord = null;
 				if (sourceSys == WebConstant.SftOsSource.LA.getKey()) {
 					log.info("======回调LA");
-					originRecord = Db.findFirst(Db.getSql("disk_backing.selectLaOriginData"), billTotalRecord.get("child_batchno"));
+					originRecord = Db.find(Db.getSql("disk_backing.selectLaOriginData"), billTotalRecord.get("child_batchno"));
 				} else if (sourceSys == WebConstant.SftOsSource.EBS.getKey()) {
 					log.info("======回调EBS");
-					originRecord = Db.findFirst(Db.getSql("disk_backing.selectEbsOriginData"), billTotalRecord.get("child_batchno"));
+					originRecord = Db.find(Db.getSql("disk_backing.selectEbsOriginData"), billTotalRecord.get("child_batchno"));
 				}
 				SftCallBack callback = new SftCallBack();
 				callback.callback(sourceSys, originRecord);

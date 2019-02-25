@@ -176,7 +176,7 @@ public class ExceptService {
 
     public boolean hookPass(Record record) {
     	String positionName = null;
-    	Record position = Db.findFirst(Db.getSql("except.findFirstApprovePosition"), WebConstant.MajorBizType.PLF_EXCEPT_BACK,record.getLong("id"));
+    	Record position = Db.findFirst(Db.getSql("except.findFirstApprovePosition"), WebConstant.MajorBizType.PLF_EXCEPT_BACK.getKey(),record.getLong("id"));
     	if(position != null){
     		positionName = position.getStr("name");
     	}
@@ -190,7 +190,7 @@ public class ExceptService {
 
     public boolean hookReject(Record record) {
     	String positionName = null;
-    	Record position = Db.findFirst(Db.getSql("except.findFirstApprovePosition"), WebConstant.MajorBizType.PLF_EXCEPT_BACK,record.getLong("id"));
+    	Record position = Db.findFirst(Db.getSql("except.findFirstApprovePosition"), WebConstant.MajorBizType.PLF_EXCEPT_BACK.getKey(),record.getLong("id"));
     	if(position != null){
     		positionName = position.getStr("name");
     	}

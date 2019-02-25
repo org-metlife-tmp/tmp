@@ -15,6 +15,7 @@ public class SftRoutes extends Routes {
         add("/normal/sftbankkey", BankkeySettingController.class);
         add("/normal/disksending", DiskSendingController.class);
         add("/normal/sftpaycheck", PayCheckController.class);
+        add("/normal/sftrecvcheck", RecvCheckController.class);
         add("/normal/sftdoubtful", DoubtfulController.class);
         add("/normal/checkbatch", CheckBatchForController.class);
         add("/normal/diskbacking", DiskBackingController.class);
