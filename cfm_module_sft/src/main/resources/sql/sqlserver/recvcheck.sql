@@ -75,7 +75,7 @@ FROM
 	account acc,
 	all_bank_info bank
 WHERE
-	his.opp_acc_no = acc.acc_no
+	his.acc_no = acc.acc_no
 	AND acc.bank_cnaps_code = bank.cnaps_code
   #if(map != null)
     #for(x : map)
@@ -212,5 +212,36 @@ WHERE
 	and his.acc_id = acc.acc_id
 	and acc.bank_cnaps_code = bank.cnaps_code
 	and recv.batch_id = ?
+#end
+
+#sql("findbatchdetail")
+SELECT
+	detail.*,
+	master.channel_id
+FROM
+	recv_batch_detail detail,
+	recv_batch_total child,
+	recv_batch_total_master master
+WHERE detail.child_batchno = child.child_batchno
+and child.master_batchno = master.master_batchno
+  #if(map != null)
+    #for(x : map)
+      #if(x.value&&x.value!="")
+        AND
+        #if("batchid".equals(x.key))
+        	  detail.base_id in(
+              #for(y : map.batchid)
+                #if(for.index > 0)
+                  #(",")
+                #end
+                #(y)
+              #end
+            )
+        #else
+          detail.#(x.key) = #para(x.value)
+        #end
+      #end
+    #end
+  #end
 #end
 
