@@ -310,6 +310,10 @@ public class ZftOptypeMgr extends AbstractOptypeMgr {
                 .registerValidate(new RequiredParamsValidate(new String[]{"biz_type"}))
                 .registKeepParams(new String[]{"page_size", "page_num", "biz_type"}));
 
+        optypes.add(new Optype(Optype.Mode.NORMAL, "zftbatch_processedtasks")
+                .registerValidate(new RequiredParamsValidate(new String[]{"biz_type"}))
+                .registKeepParams(new String[]{"page_size", "page_num", "biz_type"}));
+
         optypes.add(new Optype(Optype.Mode.NORMAL, "zft_detail")
                 .registKeepParams(new String[]{"id"})
                 .registerValidate(new RequiredParamsValidate(new String[]{"id"})));

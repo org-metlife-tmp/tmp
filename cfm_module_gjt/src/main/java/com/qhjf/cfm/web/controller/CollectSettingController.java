@@ -11,6 +11,7 @@ import com.qhjf.cfm.exceptions.BusinessException;
 import com.qhjf.cfm.exceptions.ReqDataException;
 import com.qhjf.cfm.exceptions.WorkflowException;
 import com.qhjf.cfm.utils.CommonService;
+import com.qhjf.cfm.web.IWfRequestExtQuery;
 import com.qhjf.cfm.web.WfRequestObj;
 import com.qhjf.cfm.web.constant.WebConstant;
 import com.qhjf.cfm.web.plugins.jwt.Auth;
@@ -87,7 +88,7 @@ public class CollectSettingController extends CFMBaseController {
 
     protected WfRequestObj genWfRequestObj() throws BusinessException {
         final Record record = getParamsToRecord();
-        return new WfRequestObj(WebConstant.MajorBizType.GJT, "collect_topic", record) {
+        WfRequestObj obj =  new WfRequestObj(WebConstant.MajorBizType.GJT, "collect_topic", record) {
             @Override
             public <T> T getFieldValue(WebConstant.WfExpressType type) throws WorkflowException {
                 Record bill_info = getBillRecord();
@@ -110,6 +111,26 @@ public class CollectSettingController extends CFMBaseController {
                 return service.hookPass(record);
             }
         };
+        obj.setExtQuery(new IWfRequestExtQuery() {
+            @Override
+            public String getExtendS() {
+                return  "gjt.service_serial_number,\n" +
+                        "gjt.topic,\n" +
+                        "gjt.collect_type,\n" +
+                        "gjt.collect_amount,\n" +
+                        "gjt.collect_frequency,\n" +
+                        "gjt.collect_main_account_count,\n" +
+                        "gjt.collect_child_account_count,\n" +
+                        "gjt.service_status,\n" +
+                        "gjt.summary\n";
+            }
+
+            @Override
+            public String getExtendJ() {
+                return " join collect_topic gjt on gjt.id = inst.bill_id ";
+            }
+        });
+        return obj;
     }
 
     @Override

@@ -11,6 +11,7 @@ import com.qhjf.cfm.exceptions.BusinessException;
 import com.qhjf.cfm.exceptions.ReqDataException;
 import com.qhjf.cfm.exceptions.WorkflowException;
 import com.qhjf.cfm.utils.CommonService;
+import com.qhjf.cfm.web.IWfRequestExtQuery;
 import com.qhjf.cfm.web.UodpInfo;
 import com.qhjf.cfm.web.UserInfo;
 import com.qhjf.cfm.web.WfRequestObj;
@@ -260,7 +261,7 @@ public class DbtController extends CFMBaseController {
     @Override
     protected WfRequestObj genWfRequestObj() throws BusinessException {
         final Record record = getParamsToRecord();
-        return new WfRequestObj(WebConstant.MajorBizType.INNERDB, "inner_db_payment", record) {
+        WfRequestObj obj =  new WfRequestObj(WebConstant.MajorBizType.INNERDB, "inner_db_payment", record) {
             @Override
             public <T> T getFieldValue(WebConstant.WfExpressType type) throws WorkflowException {
                 Record bill_info = getBillRecord();
@@ -277,12 +278,44 @@ public class DbtController extends CFMBaseController {
             public SqlPara getPendingWfSql(Long[] inst_id, Long[] exclude_inst_id) {
                 return getSqlPara(inst_id, exclude_inst_id, record);
             }
-
             @Override
             protected boolean hookPass() {
                 return pass(record);
             }
         };
+        obj.setExtQuery(new IWfRequestExtQuery() {
+            @Override
+            public String getExtendS() {
+                return  "dbt.pay_account_id,\n" +
+                        "dbt.pay_account_no,\n" +
+                        "dbt.pay_account_name,\n" +
+                        "dbt.pay_account_cur,\n" +
+                        "dbt.pay_account_bank,\n" +
+                        "dbt.pay_bank_cnaps,\n" +
+                        "dbt.pay_bank_prov,\n" +
+                        "dbt.pay_bank_city,\n" +
+                        "dbt.recv_account_id,\n" +
+                        "dbt.recv_account_no,\n" +
+                        "dbt.recv_account_name,\n" +
+                        "dbt.recv_account_cur,\n" +
+                        "dbt.recv_account_bank,\n" +
+                        "dbt.recv_bank_cnaps,\n" +
+                        "dbt.recv_bank_prov,\n" +
+                        "dbt.recv_bank_city,\n" +
+                        "dbt.payment_amount,\n" +
+                        "dbt.pay_mode,\n" +
+                        "dbt.payment_type,\n" +
+                        "dbt.payment_summary,\n" +
+                        "dbt.service_status,\n" +
+                        "dbt.service_serial_number ";
+            }
+
+            @Override
+            public String getExtendJ() {
+                return " join inner_db_payment dbt on dbt.id = inst.bill_id ";
+            }
+        });
+        return obj;
     }
 
     private boolean pass(Record record) {

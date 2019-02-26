@@ -12,6 +12,7 @@ import com.qhjf.cfm.exceptions.DbProcessException;
 import com.qhjf.cfm.exceptions.ReqDataException;
 import com.qhjf.cfm.exceptions.WorkflowException;
 import com.qhjf.cfm.utils.CommonService;
+import com.qhjf.cfm.web.IWfRequestExtQuery;
 import com.qhjf.cfm.web.UodpInfo;
 import com.qhjf.cfm.web.UserInfo;
 import com.qhjf.cfm.web.WfRequestObj;
@@ -339,7 +340,7 @@ public class DbtBatchController extends CFMBaseController {
     @Override
     protected WfRequestObj genWfRequestObj() throws BusinessException {
         final Record record = getParamsToRecord();
-        return new WfRequestObj(WebConstant.MajorBizType.INNERDB_BATCH, "inner_batchpay_baseinfo", record) {
+        WfRequestObj obj =  new WfRequestObj(WebConstant.MajorBizType.INNERDB_BATCH, "inner_batchpay_baseinfo", record) {
             @Override
             public <T> T getFieldValue(WebConstant.WfExpressType type) throws WorkflowException {
                 Record bill_info = getBillRecord();
@@ -362,6 +363,38 @@ public class DbtBatchController extends CFMBaseController {
                 return pass(record);
             }
         };
+
+        obj.setExtQuery(new IWfRequestExtQuery() {
+            @Override
+            public String getExtendS() {
+                return  "ibb.biz_id,\n" +
+                        "ibb.biz_name,\n" +
+                        "ibb.pay_account_id,\n" +
+                        "ibb.pay_account_no,\n" +
+                        "ibb.pay_account_name,\n" +
+                        "ibb.pay_account_cur,\n" +
+                        "ibb.pay_account_bank,\n" +
+                        "ibb.pay_bank_cnaps,\n" +
+                        "ibb.pay_bank_prov,\n" +
+                        "ibb.pay_bank_city,\n" +
+                        "ibb.process_bank_type,\n" +
+                        "ibb.total_num,\n" +
+                        "ibb.total_amount,\n" +
+                        "ibb.persist_version,\n" +
+                        "ibb.batchno,\n" +
+                        "ibb.payment_summary,\n" +
+                        "ibb.service_status,\n" +
+                        "ibb.attachment_count,\n" +
+                        "ibb.pay_mode ";
+            }
+
+            @Override
+            public String getExtendJ() {
+                return " join inner_batchpay_baseinfo ibb on ibb.id = inst.bill_id  ";
+            }
+        });
+
+        return obj;
     }
 
     private boolean pass(Record record) {

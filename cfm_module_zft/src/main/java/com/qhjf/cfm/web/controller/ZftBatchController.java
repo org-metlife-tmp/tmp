@@ -12,6 +12,7 @@ import com.qhjf.cfm.exceptions.BusinessException;
 import com.qhjf.cfm.exceptions.ReqDataException;
 import com.qhjf.cfm.exceptions.WorkflowException;
 import com.qhjf.cfm.utils.CommonService;
+import com.qhjf.cfm.web.IWfRequestExtQuery;
 import com.qhjf.cfm.web.UodpInfo;
 import com.qhjf.cfm.web.UserInfo;
 import com.qhjf.cfm.web.WfRequestObj;
@@ -239,7 +240,7 @@ public class ZftBatchController extends CFMBaseController {
 
     protected WfRequestObj genWfRequestObj() throws BusinessException {
         final Record record = getParamsToRecord();
-        return new WfRequestObj(WebConstant.MajorBizType.OBP, "outer_batchpay_baseinfo", record) {
+        WfRequestObj obj =  new WfRequestObj(WebConstant.MajorBizType.OBP, "outer_batchpay_baseinfo", record) {
             @Override
             public <T> T getFieldValue(WebConstant.WfExpressType type) throws WorkflowException {
                 Record bill_info = getBillRecord();
@@ -263,6 +264,37 @@ public class ZftBatchController extends CFMBaseController {
                 return service.hookPass(record);
             }
         };
+        obj.setExtQuery(new IWfRequestExtQuery() {
+            @Override
+            public String getExtendS() {
+                return  "obb.biz_id,\n" +
+                        "obb.biz_name,\n" +
+                        "obb.pay_account_id,\n" +
+                        "obb.pay_account_no,\n" +
+                        "obb.pay_account_name,\n" +
+                        "obb.pay_account_cur,\n" +
+                        "obb.pay_account_bank,\n" +
+                        "obb.pay_bank_cnaps,\n" +
+                        "obb.pay_bank_prov,\n" +
+                        "obb.pay_bank_city,\n" +
+                        "obb.process_bank_type,\n" +
+                        "obb.total_num,\n" +
+                        "obb.total_amount,\n" +
+                        "obb.persist_version,\n" +
+                        "obb.batchno,\n" +
+                        "obb.payment_summary,\n" +
+                        "obb.service_status,\n" +
+                        "obb.attachment_count,\n" +
+                        "obb.pay_mode ";
+            }
+
+            @Override
+            public String getExtendJ() {
+                return " join outer_batchpay_baseinfo obb on obb.id = inst.bill_id  ";
+            }
+        });
+
+        return obj;
     }
 
     @Override

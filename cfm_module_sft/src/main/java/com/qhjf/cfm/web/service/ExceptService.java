@@ -172,6 +172,9 @@ public class ExceptService {
                 return true;
             }
         });
+        if(!flag){
+            throw new DbProcessException("回退失败！");
+        }
     }
 
     public boolean hookPass(Record record) {

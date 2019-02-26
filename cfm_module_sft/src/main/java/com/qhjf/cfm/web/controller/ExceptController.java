@@ -102,7 +102,7 @@ public class ExceptController extends CFMBaseController {
     @Override
     protected WfRequestObj genWfRequestObj() throws BusinessException {
         final Record record = getParamsToRecord();
-        return new WfRequestObj(WebConstant.MajorBizType.PLF, "pay_batch_total", record) {
+        return new WfRequestObj(WebConstant.MajorBizType.PLF_EXCEPT_BACK, "pay_batch_total", record) {
             @Override
             public <T> T getFieldValue(WebConstant.WfExpressType type) throws WorkflowException {
                return null;
@@ -135,7 +135,7 @@ public class ExceptController extends CFMBaseController {
             return new ArrayList<WfRequestObj>() {
                 {
                     for (final Record rec : wfRequestObjs) {
-                        add(new WfRequestObj(WebConstant.MajorBizType.INNERDB_BATCH, "pay_batch_total", rec) {
+                        add(new WfRequestObj(WebConstant.MajorBizType.PLF_EXCEPT_BACK, "pay_batch_total", rec) {
                             @Override
                             public <T> T getFieldValue(WebConstant.WfExpressType type) throws WorkflowException {
                                 return null;

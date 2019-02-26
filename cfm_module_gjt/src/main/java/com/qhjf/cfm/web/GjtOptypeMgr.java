@@ -111,6 +111,10 @@ public class GjtOptypeMgr extends AbstractOptypeMgr {
                 .registerValidate(new RequiredParamsValidate(new String[]{"page_size", "page_num", "biz_type"}))
                 .registKeepParams(new String[]{"page_size", "page_num", "biz_type"}));
 
+        optypes.add(new Optype(Optype.Mode.NORMAL, "collectsetting_processedtasks")
+                .registerValidate(new RequiredParamsValidate(new String[]{"page_size", "page_num", "biz_type"}))
+                .registKeepParams(new String[]{"page_size", "page_num", "biz_type"}));
+
 
         optypes.add(new Optype(Optype.Mode.NORMAL, "collectsetting_detail")
                 .registKeepParams(new String[]{"id"})

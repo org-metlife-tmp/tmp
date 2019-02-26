@@ -164,6 +164,12 @@ public class DbtOptypeMgr extends AbstractOptypeMgr {
                 .registerValidate(new RequiredParamsValidate(new String[]{"biz_type"}))
                 .registKeepParams(new String[]{"page_size", "page_num", "biz_type"}));
 
+
+        optypes.add(new Optype(Optype.Mode.NORMAL, "dbt_processedtasks")
+                .registerValidate(new RequiredParamsValidate(new String[]{"biz_type"}))
+                .registKeepParams(new String[]{"page_size", "page_num", "biz_type"}));
+
+
         /** ============================ 工作流 end ============================ */
 
         /** ============================ 调拨通交易核对 begin ============================ */
@@ -489,6 +495,10 @@ public class DbtOptypeMgr extends AbstractOptypeMgr {
 
         //待办列表
         optypes.add(new Optype(Optype.Mode.NORMAL, "dbtbatch_pendingtasks")
+                .registerValidate(new RequiredParamsValidate(new String[]{"biz_type"}))
+                .registKeepParams(new String[]{"page_size", "page_num", "biz_type"}));
+
+        optypes.add(new Optype(Optype.Mode.NORMAL, "dbtbatch_processedtasks")
                 .registerValidate(new RequiredParamsValidate(new String[]{"biz_type"}))
                 .registKeepParams(new String[]{"page_size", "page_num", "biz_type"}));
 
