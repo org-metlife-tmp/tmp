@@ -1,0 +1,407 @@
+<style scoped lang="less" type="text/less">
+    #gatherDiskbacking {
+        width: 100%;
+        height: 100%;
+        box-sizing: border-box;
+        position: relative;
+
+        /*顶部按钮*/
+        .button-list-right {
+            position: absolute;
+            top: -60px;
+            right: -18px;
+        }
+        .button-list-left {
+            position: absolute;
+            top: -56px;
+            left: -21px;
+        }
+
+        /*搜索区*/
+        .search-setion {
+            text-align: left;
+
+            /*时间控件*/
+            .el-date-editor {
+                width: 100%;
+                max-width: 210px;
+            }
+        }
+
+        /*数据展示区*/
+        .table-content {
+            height: 70%;
+        }
+
+        /*分隔栏*/
+        .split-bar {
+            width: 106%;
+            height: 6px;
+            margin-left: -20px;
+            background-color: #E7E7E7;
+            margin-bottom: 20px;
+        }
+
+        /*分页部分*/
+        .botton-pag {
+            position: absolute;
+            width: 100%;
+            height: 8%;
+            bottom: -6px;
+        }
+
+        /*按钮样式*/
+        .on-copy, .withdraw {
+            width: 20px;
+            height: 20px;
+            background-image: url(../../assets/icon_common.png);
+            border: none;
+            padding: 0;
+            vertical-align: middle;
+        }
+        /*复制按钮*/
+        .on-copy {
+            background-position: -24px 1px;
+        }
+        /*撤回按钮*/
+        .withdraw {
+            background-position: -48px 0;
+        }
+    }
+</style>
+
+<template>
+    <div id="gatherDiskbacking">
+        <!-- 顶部按钮-->
+        <div class="button-list-left">
+            <el-select v-model="searchData.source_sys"
+                       filterable size="mini"
+                       @change="queryData">
+                <el-option v-for="(item,key) in sourceList"
+                           :key="key"
+                           :label="item"
+                           :value="key">
+                </el-option>
+            </el-select>
+        </div>
+        <div class="button-list-right">
+            <el-button type="warning" size="mini" @click="exportFun">导出</el-button>
+        </div>
+        <!--搜索区-->
+        <div class="search-setion">
+            <el-form :inline="true" :model="searchData" size="mini">
+                <el-row>
+                    <el-col :span="5">
+                        <el-form-item>
+                            <el-date-picker
+                                    v-model="dateValue"
+                                    type="daterange"
+                                    range-separator="至"
+                                    start-placeholder="开始日期"
+                                    end-placeholder="结束日期"
+                                    value-format="yyyy-MM-dd"
+                                    size="mini" clearable
+                                    unlink-panels
+                                    :picker-options="pickerOptions">
+                            </el-date-picker>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="4">
+                        <el-form-item>
+                            <el-input v-model="searchData.master_batchno" clearable placeholder="请输入主批次号"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="4">
+                        <el-form-item>
+                            <el-select v-model="searchData.channel_id" placeholder="请选择通道编码"
+                                       clearable filterable
+                                       style="width:100%">
+                                <el-option v-for="channel in channelList"
+                                           :key="channel.channel_id"
+                                           :label="channel.channel_code"
+                                           :value="channel.channel_id">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="4">
+                        <el-form-item>
+                            <el-select v-model="searchData.channel_desc" placeholder="请选择通道描述"
+                                       clearable filterable
+                                       style="width:100%">
+                                <el-option v-for="channel in channelList"
+                                           :key="channel.channel_id"
+                                           :label="channel.channel_desc"
+                                           :value="channel.channel_id">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="2">
+                        <el-form-item>
+                            <el-button type="primary" plain @click="queryData" size="mini">搜索</el-button>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="16">
+                        <el-form-item style="margin-bottom:0px">
+                            <el-checkbox-group v-model="searchData.status">
+                                <el-checkbox v-for="(name,k) in statusList"
+                                             :label="k" name="type" :key="k">
+                                    {{ name }}
+                                </el-checkbox>
+                            </el-checkbox-group>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+            </el-form>
+        </div>
+        <!--分隔栏-->
+        <div class="split-bar"></div>
+        <!--数据展示区-->
+        <section class="table-content">
+            <el-table :data="tableList"
+                      border size="mini" height="100%">
+                <el-table-column prop="source_sys" label="来源系统" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="master_batchno" label="主批次号" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="child_batchno" label="子批次号" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="interactive_mode" label="交互方式" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="channel_code" label="通道编码" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="channel_desc" label="通道描述" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="send_on" label="出盘日期" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="back_on" label="回盘日期" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="pay_total_amount" label="总金额" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="pay_total_num" label="总笔数" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="success_amount" label="成功金额" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="success_num" label="成功笔数" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="fail_amount" label="失败金额" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="fail_num" label="失败笔数" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="status" label="状态" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="send_user_name" label="操作人" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column
+                        label="操作" width="50"
+                        fixed="right">
+                    <template slot-scope="scope" class="operationBtn">
+                        <el-tooltip content="上传" placement="bottom" effect="light"
+                                    :enterable="false" :open-delay="500"
+                                    v-show="scope.row.interactive_mode=='报盘' && (scope.row.status=='已发送未回盘' || scope.row.status=='回盘异常')">
+                            <el-upload
+                                    class="upload-demo"
+                                    :action="queryUrl + 'normal/diskbacking/upload'"
+                                    :headers="{pay_master_id:scope.row.pay_master_id,
+                                    pay_id:scope.row.pay_id,
+                                    channel_id:scope.row.channel_id,
+                                    user_id:userId}"
+                                    :on-success="uploadSuccess"
+                                    multiple>
+                                <el-button type="warning" icon="el-icon-upload2" size="mini"></el-button>
+                            </el-upload>
+                        </el-tooltip>
+                    </template>
+                </el-table-column>
+            </el-table>
+        </section>
+        <!--分页部分-->
+        <div class="botton-pag">
+            <el-pagination
+                    background
+                    layout="sizes, prev, pager, next, jumper"
+                    :page-size="pagSize"
+                    :total="pagTotal"
+                    :page-sizes="[7, 50, 100, 500]"
+                    :pager-count="5"
+                    @current-change="getCurrentPage"
+                    @size-change="sizeChange"
+                    :current-page="pagCurrent">
+            </el-pagination>
+        </div>
+    </div>
+</template>
+
+<script>
+    export default {
+        name: "GatherDiskbacking",
+        created: function () {
+            this.$emit("transmitTitle", "盘片回盘");
+            this.$emit("getCommTable", this.routerMessage);
+
+            /*获取常量数据*/
+            var constants = JSON.parse(window.sessionStorage.getItem("constants"));
+            //来源系统
+            if (constants.SftOsSource) {
+                this.sourceList = constants.SftOsSource;
+            }
+            //交互方式
+            if (constants.SftInteractiveMode) {
+                this.interactiveList = constants.SftInteractiveMode;
+            }
+            //通道编码
+            this.getChannelList();
+            //用户id
+            var user = JSON.parse(window.sessionStorage.getItem("user"));
+            this.userId = user.usr_id;
+        },
+        props: ["tableData"],
+        data: function () {
+            return {
+                queryUrl: this.$store.state.queryUrl,
+                routerMessage: {
+                    optype: "diskbacking_list",
+                    params: {
+                        page_size: 7,
+                        page_num: 1,
+                        source_sys: "0"
+                    }
+                },
+                searchData: { //搜索条件
+                    source_sys: "0",
+                    master_batchno: "",
+                    channel_id: "",
+                    channel_desc: "",
+                    status: []
+                },
+                dateValue: "", //时间控件
+                pickerOptions: {
+                    disabledDate(time) {
+                        return time.getTime() > Date.now();
+                    }
+                },
+                tableList: [], //列表数据
+                pagSize: 8, //分页数据
+                pagTotal: 1,
+                pagCurrent: 1,
+                sourceList: {}, //常量数据
+                statusList: { //常量数据
+                    4: "已发送未回盘",
+                    5: "回盘成功",
+                    6: "回盘异常",
+                    8: "已回退",
+                },
+                interactiveList: {},
+                channelList: [],
+                userId: ""
+            }
+        },
+        methods: {
+            //根据条件查询数据
+            queryData: function () {
+                var searchData = this.searchData;
+                for (var k in searchData) {
+                    this.routerMessage.params[k] = searchData[k];
+                }
+                var val = this.dateValue;
+                this.routerMessage.params.start_date = val ? val[0] : "";
+                this.routerMessage.params.end_date = val ? val[1] : "";
+                this.routerMessage.params.page_num = 1;
+                this.$emit("getCommTable", this.routerMessage);
+            },
+            //换页后获取数据
+            getCurrentPage: function (currPage) {
+                this.routerMessage.params.page_num = currPage;
+                this.$emit("getCommTable", this.routerMessage);
+            },
+            //当前页数据条数发生变化
+            sizeChange: function (val) {
+                this.routerMessage.params.page_size = val;
+                this.routerMessage.params.page_num = 1;
+                this.$emit("getCommTable", this.routerMessage);
+            },
+            //获取通道编码
+            getChannelList: function () {
+                this.$axios({
+                    url: this.queryUrl + "normalProcess",
+                    method: "post",
+                    data: {
+                        optype: "checkbatch_channelCodeList",
+                        params: {}
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        });
+                    } else {
+                        var data = result.data.data;
+                        this.channelList = data;
+                    }
+
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            },
+            //导出
+            exportFun: function () {
+                if (!this.tableList.length) {
+                    this.$message({
+                        type: "warning",
+                        message: "当前数据为空",
+                        duration: 2000
+                    });
+                    return;
+                }
+                var params = this.routerMessage.params;
+                this.$axios({
+                    url: this.queryUrl + "normalProcess",
+                    method: "post",
+                    data: {
+                        optype: "diskbacking_listexport",
+                        params: params
+                    },
+                    responseType: 'blob'
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                    } else {
+                        var fileName = decodeURI(result.headers["content-disposition"]).split("=")[1];
+                        //ie兼容
+                        if (window.navigator && window.navigator.msSaveOrOpenBlob) {
+                            window.navigator.msSaveOrOpenBlob(new Blob([result.data]), fileName);
+                        } else {
+                            let url = window.URL.createObjectURL(new Blob([result.data]));
+                            let link = document.createElement('a');
+                            link.style.display = 'none';
+                            link.href = url;
+                            link.setAttribute('download', fileName);
+                            document.body.appendChild(link);
+                            link.click();
+                        }
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                })
+            },
+            //上传成功
+            uploadSuccess: function (response, file, fileList) {
+                if (response.error_message) {
+                    this.$message({
+                        type: "error",
+                        message: response.error_message,
+                        duration: 3000
+                    });
+                    return;
+                } else {
+                    this.$message({
+                        type: "success",
+                        message: "上传成功",
+                        duration: 2000
+                    });
+                    this.$emit("getCommTable", this.routerMessage);
+                }
+            },
+        },
+        watch: {
+            tableData: function (val, oldVal) {
+                this.pagSize = val.page_size;
+                this.pagTotal = val.total_line;
+                this.tableList = val.data;
+                this.pagCurrent = val.page_num;
+            }
+        }
+    }
+</script>
+

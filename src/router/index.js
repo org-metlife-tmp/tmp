@@ -126,13 +126,20 @@ import RefundInquiry from '@/components/RefundTicket/RefundInquiry'
 //系统设置
 import AisleSet from '@/components/systemSet/AisleSet'
 import BankkeySet from '@/components/systemSet/BankkeySet'
-//批量收付业务管理
+//批量付款
 import PreventRepet from '@/components/batchPayment/PreventRepet'
 import PayDiskSending from '@/components/batchPayment/PayDiskSending'
 import PayCheckBatch from '@/components/batchPayment/PayCheckBatch'
 import SettleAccounts from '@/components/batchPayment/SettleAccounts'
 import AbnormalDispose from '@/components/batchPayment/AbnormalDispose'
 import PayDiskbacking from '@/components/batchPayment/PayDiskbacking'
+//批量收款
+import GaterhPreventRepet from '@/components/batchGather/GaterhPreventRepet'
+import GatherAbnormal from '@/components/batchGather/GatherAbnormal'
+import GatherCheckBatch from '@/components/batchGather/GatherCheckBatch'
+import GatherDiskbacking from '@/components/batchGather/GatherDiskbacking'
+import GatherDiskSending from '@/components/batchGather/GatherDiskSending'
+import GatherSettleAccounts from '@/components/batchGather/GatherSettleAccounts'
 
 
 Vue.use(Router)
@@ -247,13 +254,20 @@ const router = new Router({
                         //系统设置
                         {path: '/system-set/aisle-set', name: 'AisleSet', component: AisleSet, meta: {requireAuth: true}},
                         {path: '/system-set/bankkey-set', name: 'BankkeySet', component: BankkeySet, meta: {requireAuth: true}},
-                        //批量首付款业务管理
+                        //批量付款
                         {path: '/batch-payment/prevent-repet', name: 'PreventRepet', component: PreventRepet, meta: {requireAuth: true}},
                         {path: '/batch-payment/pay-check-batch', name: 'PayCheckBatch', component: PayCheckBatch, meta: {requireAuth: true}},
                         {path: '/batch-payment/pay-disk-sending', name: 'PayDiskSending', component: PayDiskSending, meta: {requireAuth: true}},
                         {path: '/batch-payment/settle-accounts', name: 'SettleAccounts', component: SettleAccounts, meta: {requireAuth: true}},
                         {path: '/batch-payment/abnormal-dispose', name: 'AbnormalDispose', component: AbnormalDispose, meta: {requireAuth: true}},
                         {path: '/batch-payment/pay-diskbacking', name: 'PayDiskbacking', component: PayDiskbacking, meta: {requireAuth: true}},
+                        //批量收款
+                        {path: '/batch-gather/gaterh-prevent-repet', name: 'GaterhPreventRepet', component: GaterhPreventRepet, meta: {requireAuth: true}},
+                        {path: '/batch-gather/gather-abnormal', name: 'GatherAbnormal', component: GatherAbnormal, meta: {requireAuth: true}},
+                        {path: '/batch-gather/gather-check-batch', name: 'GatherCheckBatch', component: GatherCheckBatch, meta: {requireAuth: true}},
+                        {path: '/batch-gather/gather-diskbacking', name: 'GatherDiskbacking', component: GatherDiskbacking, meta: {requireAuth: true}},
+                        {path: '/batch-gather/gather-disk-sending', name: 'GatherDiskSending', component: GatherDiskSending, meta: {requireAuth: true}},
+                        {path: '/batch-gather/gather-settle-accounts', name: 'GatherSettleAccounts', component: GatherSettleAccounts, meta: {requireAuth: true}},
                     ]
                 },
                 //基础样式三（tab页）

@@ -616,6 +616,20 @@
                     <el-menu-item index="/batch-payment/abnormal-dispose" v-if="menuList.PayBatchDoExcp">异常处理</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
+            <el-submenu index="21">
+                <template slot="title" height="200px">
+                    <i class="icon-plfk"></i>
+                    <p class="mg-four">批量收款</p>
+                </template>
+                <el-menu-item-group>
+                    <!--<el-menu-item index="/batch-gather/gaterh-prevent-repet" >支付数据防重预警</el-menu-item>-->
+                    <el-menu-item index="/batch-gather/gather-check-batch" >核对组批</el-menu-item>
+                    <el-menu-item index="/batch-gather/gather-disk-sending" >盘片发送</el-menu-item>
+                    <el-menu-item index="/batch-gather/gather-diskbacking" >盘片回盘</el-menu-item>
+                    <el-menu-item index="/batch-gather/gather-settle-accounts" >结算对账</el-menu-item>
+                    <el-menu-item index="/batch-gather/gather-abnormal" >异常处理</el-menu-item>
+                </el-menu-item-group>
+            </el-submenu>
         </el-menu>
     </div>
 </template>
