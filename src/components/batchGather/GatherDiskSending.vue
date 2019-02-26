@@ -220,7 +220,7 @@
         name: "GatherDiskSending",
         created: function () {
             this.$emit("transmitTitle", "盘片发送");
-            this.$emit("getCommTable", this.routerMessage);
+            // this.$emit("getCommTable", this.routerMessage);
 
             /*获取常量数据*/
             var constants = JSON.parse(window.sessionStorage.getItem("constants"));
@@ -244,7 +244,7 @@
             return {
                 queryUrl: this.$store.state.queryUrl,
                 routerMessage: {
-                    optype: "disksending_list",
+                    optype: "recvdisksending_listexport",
                     params: {
                         page_size: 7,
                         page_num: 1,
@@ -331,7 +331,7 @@
             //下载
             downData: function (row) {
                 var params = {
-                    optype: "disksending_diskdownload",
+                    optype: "recvdisksending_diskdownload",
                     params: {
                         pay_master_id: row.pay_master_id,
                         channel_code: row.channel_code,
@@ -386,7 +386,7 @@
                     url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
-                        optype: "disksending_listexport",
+                        optype: "recvdisksending_listexport",
                         params: params
                     },
                     responseType: 'blob'

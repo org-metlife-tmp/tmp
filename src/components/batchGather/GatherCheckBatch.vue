@@ -418,8 +418,6 @@
                 this.routerMessage.params.page_num = 1;
                 this.$emit("getCommTable", this.routerMessage);
             },
-
-
             //切换标签
             switchTab: function(tab){
                 var searchData = this.searchData;
@@ -527,7 +525,7 @@
                     url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
-                        optype: "checkbatch_confirm",
+                        optype: "recvcheckbatch_confirm",
                         params: params
                     }
                 }).then((result) => {
@@ -570,7 +568,7 @@
                         url: this.queryUrl + "normalProcess",
                         method: "post",
                         data: {
-                            optype: "checkbatch_revokeToLaOrEbs",
+                            optype: "recvcheckbatch_revokeToLaOrEbs",
                             params: {
                                 id: row.pay_id,
                                 persist_version: row.persist_version,
@@ -616,7 +614,7 @@
                     url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
-                        optype: "checkbatch_listexport",
+                        optype: "recvcheckbatch_listexport",
                         params: params
                     },
                     responseType: 'blob'
