@@ -60,27 +60,6 @@
                     console.log(error);
                 })
 
-                //用户组
-                this.$axios({
-                    url: this.queryUrl + "adminProcess",
-                    method: "post",
-                    data: {
-                        optype: "usrgroup_list",
-                        params: {
-                            page_size: 1000,
-                            page_num: 1
-                        }
-                    }
-                }).then((result) => {
-                    if (result.data.error_msg) {
-                        return;
-                    } else {
-                        var data = result.data.data;
-                        window.sessionStorage.setItem("usrgroupList", JSON.stringify(data));
-                    }
-                }).catch(function (error) {
-                    console.log(error);
-                })
 
                 //币种
                 if (!window.sessionStorage.getItem("currencyList")) {

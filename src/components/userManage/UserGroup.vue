@@ -148,9 +148,6 @@
                 console.log(error);
             })
         },
-        destroyed: function(){
-            window.sessionStorage.setItem("usrgroupList",JSON.stringify(this.tableList));
-        },
         props: ["tableData"],
         data: function () {
             return {

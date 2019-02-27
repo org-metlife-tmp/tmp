@@ -345,10 +345,27 @@
                 })
             }
             //用户组
-            var usrgroupList = JSON.parse(window.sessionStorage.getItem("usrgroupList"));
-            if (usrgroupList) {
-                this.usrgroupList = usrgroupList;
-            }
+            this.$axios({
+                url: this.queryUrl + "adminProcess",
+                method: "post",
+                data: {
+                    optype: "usrgroup_list",
+                    params: {
+                        page_size: 1000,
+                        page_num: 1
+                    }
+                }
+            }).then((result) => {
+                if (result.data.error_msg) {
+                    return;
+                } else {
+                    var data = result.data.data;
+                    this.usrgroupList = data;
+                    window.sessionStorage.setItem("usrgroupList", JSON.stringify(data));
+                }
+            }).catch(function (error) {
+                console.log(error);
+            });
         },
         destroyed: function () {
             window.sessionStorage.removeItem("userList");
