@@ -188,8 +188,6 @@
                     <el-table-column prop="child_batchno" label="子批次号" :show-overflow-tooltip="true"></el-table-column>
                     <el-table-column prop="channel_code" label="通道编码" :show-overflow-tooltip="true"></el-table-column>
                     <el-table-column prop="channel_desc" label="通道描述" :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="net_mode" label="结算模式" :show-overflow-tooltip="true"
-                                     :formatter="transtMode"></el-table-column>
                     <el-table-column prop="total_amount" label="总金额" :show-overflow-tooltip="true"></el-table-column>
                     <el-table-column prop="total_num" label="总笔数" :show-overflow-tooltip="true"></el-table-column>
                     <el-table-column prop="success_amount" label="成功金额" :show-overflow-tooltip="true"></el-table-column>
@@ -334,12 +332,8 @@
                                      :show-overflow-tooltip="true"></el-table-column>
                     <el-table-column prop="amount" label="交易金额" :show-overflow-tooltip="true"></el-table-column>
                     <el-table-column prop="summary" label="摘要" :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column label="状态" :show-overflow-tooltip="true">
-                        <template slot-scope="scope">
-                            <span v-if="isInner == 1">{{ transitStatus(true,true,scope.row.is_checked) }}</span>
-                            <span v-if="isInner == 0">{{ transitStatus(true,true,scope.row.business_check)}}</span>
-                        </template>
-                    </el-table-column>
+                    <el-table-column prop="is_checked" label="状态" :show-overflow-tooltip="true"></el-table-column>
+
                     <el-table-column prop="check_service_number" label="对账流水号" width="100px"
                                      :show-overflow-tooltip="true"></el-table-column>
                     <el-table-column prop="check_user_name" label="操作人" :show-overflow-tooltip="true"></el-table-column>
