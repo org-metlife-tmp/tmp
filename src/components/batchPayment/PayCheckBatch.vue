@@ -258,8 +258,9 @@
             <el-table :data="tableList" ref="contentTable"
                       height="100%" border size="mini"
                       @select="setId"
+                      @select-all="allChange"
                       @selection-change="selectChange">
-                <el-table-column type="selection" width="40"></el-table-column>
+                <el-table-column type="selection" width="40" :selectable="isSelect"></el-table-column>
                 <el-table-column prop="create_time" label="日期" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="channel_code" label="通道编码" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="channel_desc" label="通道描述" :show-overflow-tooltip="true"></el-table-column>
@@ -347,6 +348,7 @@
                     params: {
                         page_size: 7,
                         page_num: 1,
+                        source_sys: "0",
                     }
                 },
                 searchData: { //搜索条件
@@ -393,10 +395,11 @@
                 this.routerMessage.params.start_date = val ? val[0] : "";
                 this.routerMessage.params.end_date = val ? val[1] : "";
                 this.routerMessage.params.page_num = 1;
+                this.selectId = [];
                 this.$emit("getCommTable", this.routerMessage);
             },
             //清空搜索条件
-            clearData: function(){
+            clearData: function() {
                 var searchData = this.searchData;
                 for (var k in searchData) {
                     if(k == "status"){
@@ -414,6 +417,7 @@
             },
             //当前页数据条数发生变化
             sizeChange: function (val) {
+                // this.selectId = [];
                 this.routerMessage.params.page_size = val;
                 this.routerMessage.params.page_num = 1;
                 this.$emit("getCommTable", this.routerMessage);
@@ -511,8 +515,51 @@
                 }
                 selectId.push(row.pay_id);
             },
+            //点击全选时设置取消勾选的id
+            allChange: function(selection,val){
+                let tableList = this.tableList;
+                let selectId = this.selectId;
+
+                if(selection.length === 0){
+                    tableList.forEach((item) => {
+                        let flag = true;
+                        for(let i = 0; i < selectId.length; i++){
+                            let idItem = selectId[i];
+                            if(item.pay_id === idItem){
+                                flag = false;
+                                break;
+                            }
+                        }
+                        if(flag) {
+                            selectId.push(item.pay_id);
+                        };
+                    });
+                }else{
+                    tableList.forEach((item) => {
+                        for(let i = 0; i < selectId.length; i++){
+                            let idItem = selectId[i];
+                            if(item.pay_id === idItem){
+                                selectId.splice(i,1);
+                                break;
+                            }
+                        }
+                    });
+                }
+            },
+            //当前列是否可以勾选
+            isSelect: function(row, index){
+                return !(row.status == "已组批" || row.status == "已撤回");
+            },
             //确认
             affirm: function(){
+                if(!this.routerMessage.params.channel_id){
+                    this.$message({
+                        type: "warning",
+                        message: "请选择通道编码",
+                        duration: 2000
+                    });
+                    return;
+                }
                 let params = {
                     remove_ids: this.selectId
                 };
@@ -651,10 +698,14 @@
                     let tableList = this.tableList;
                     tableList.forEach((row) => {
                         let flag = true;
-                        for(let i = 0; i < selectId.length; i++){
-                            if(row.pay_id == selectId[i]){
-                                flag = false;
-                                break;
+                        if(row.status == "已组批" || row.status == "已撤回"){
+                            flag = false;
+                        }else{
+                            for(let i = 0; i < selectId.length; i++){
+                                if(row.pay_id == selectId[i]){
+                                    flag = false;
+                                    break;
+                                }
                             }
                         }
                         this.$refs.contentTable.toggleRowSelection(row,flag);
@@ -664,7 +715,7 @@
         },
         computed: {
             mayAffirm: function(){
-                return this.tableList.length === 0 || !this.routerMessage.params.channel_id;
+                return this.tableList.length === 0;
             }
         },
         watch: {
