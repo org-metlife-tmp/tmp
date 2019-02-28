@@ -196,8 +196,8 @@
                     <el-table-column prop="success_num" label="成功笔数" :show-overflow-tooltip="true"></el-table-column>
                     <el-table-column prop="fail_amount" label="失败金额" :show-overflow-tooltip="true"></el-table-column>
                     <el-table-column prop="fail_num" label="失败笔数" :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="service_status" label="状态" :show-overflow-tooltip="true"
-                                     :formatter="transtSerStatus"></el-table-column>
+                    <el-table-column prop="is_checked" label="状态" :show-overflow-tooltip="true"
+                                     :formatter="transitStatus"></el-table-column>
                     <el-table-column prop="check_service_number" label="对账流水号" width="100px"
                                      :show-overflow-tooltip="true"></el-table-column>
                     <el-table-column prop="check_user_name" label="操作人" :show-overflow-tooltip="true"></el-table-column>
