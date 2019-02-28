@@ -249,7 +249,7 @@
             return {
                 queryUrl: this.$store.state.queryUrl,
                 routerMessage: {
-                    optype: "sfrecvtexcept_exceptlist",
+                    optype: "sftrecvexcept_exceptlist",
                     params: {
                         page_size: 7,
                         page_num: 1,
@@ -341,7 +341,7 @@
                         url: this.queryUrl + "normalProcess",
                         method: "post",
                         data: {
-                            optype: "sfrecvtexcept_revoke",
+                            optype: "sftrecvexcept_revoke",
                             params: {
                                 id: row.id,
                                 os_source: row.source_sys,
@@ -387,7 +387,7 @@
                     url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
-                        optype: "sfrecvtexcept_listexport",
+                        optype: "sftrecvexcept_listexport",
                         params: params
                     },
                     responseType: 'blob'

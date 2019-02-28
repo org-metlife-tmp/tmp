@@ -194,8 +194,8 @@
                     <el-table-column prop="success_num" label="成功笔数" :show-overflow-tooltip="true"></el-table-column>
                     <el-table-column prop="fail_amount" label="失败金额" :show-overflow-tooltip="true"></el-table-column>
                     <el-table-column prop="fail_num" label="失败笔数" :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="service_status" label="状态" :show-overflow-tooltip="true"
-                                     :formatter="transtSerStatus"></el-table-column>
+                    <el-table-column prop="is_checked" label="状态" :show-overflow-tooltip="true"
+                                     :formatter="transitStatus"></el-table-column>
                     <el-table-column prop="check_service_number" label="对账流水号" width="100px"
                                      :show-overflow-tooltip="true"></el-table-column>
                     <el-table-column prop="check_user_name" label="操作人" :show-overflow-tooltip="true"></el-table-column>
@@ -332,8 +332,12 @@
                                      :show-overflow-tooltip="true"></el-table-column>
                     <el-table-column prop="amount" label="交易金额" :show-overflow-tooltip="true"></el-table-column>
                     <el-table-column prop="summary" label="摘要" :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="is_checked" label="状态" :show-overflow-tooltip="true"></el-table-column>
-
+                    <el-table-column label="状态" :show-overflow-tooltip="true">
+                        <template slot-scope="scope">
+                            <span v-if="isInner == 1">{{ transitStatus(true,true,scope.row.is_checked) }}</span>
+                            <span v-if="isInner == 0">{{ transitStatus(true,true,scope.row.business_check)}}</span>
+                        </template>
+                    </el-table-column>
                     <el-table-column prop="check_service_number" label="对账流水号" width="100px"
                                      :show-overflow-tooltip="true"></el-table-column>
                     <el-table-column prop="check_user_name" label="操作人" :show-overflow-tooltip="true"></el-table-column>
@@ -700,11 +704,6 @@
             transtMode: function (row, column, cellValue, index) {
                 var constants = JSON.parse(window.sessionStorage.getItem("constants"));
                 return constants.SftNetMode[cellValue];
-            },
-            //展示格式转换-状态(上)
-            transtSerStatus: function (row, column, cellValue, index) {
-                var constants = JSON.parse(window.sessionStorage.getItem("constants"));
-                return constants.SftCheckBatchStatus[cellValue];
             },
             //展示格式转换-状态
             transitStatus: function (row, column, cellValue, index) {

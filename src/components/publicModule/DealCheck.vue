@@ -511,6 +511,11 @@
                             var data = result.data.data;
                             this.$emit("getTableData", this.routerMessage);
                             this.childList = [];
+                            this.$message({
+                                type: "success",
+                                message: "确认成功",
+                                duration: 2000
+                            })
                         }
                     }).catch(function (error) {
                         console.log(error);
