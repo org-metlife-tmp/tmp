@@ -232,7 +232,10 @@
             var constants = JSON.parse(window.sessionStorage.getItem("constants"));
             //来源系统
             if (constants.SftOsSource) {
-                this.sourceList = constants.SftOsSource;
+                this.sourceList = {
+                    0: "LA"
+                }
+                // this.sourceList = constants.SftOsSource;
             }
             //交互方式
             if (constants.SftInteractiveMode) {
@@ -246,7 +249,7 @@
             return {
                 queryUrl: this.$store.state.queryUrl,
                 routerMessage: {
-                    optype: "sftexcept_exceptlist",
+                    optype: "sfrecvtexcept_exceptlist",
                     params: {
                         page_size: 7,
                         page_num: 1,
@@ -338,7 +341,7 @@
                         url: this.queryUrl + "normalProcess",
                         method: "post",
                         data: {
-                            optype: "sftexcept_revoke",
+                            optype: "sfrecvtexcept_revoke",
                             params: {
                                 id: row.id,
                                 os_source: row.source_sys,
@@ -384,7 +387,7 @@
                     url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
-                        optype: "sftexcept_listexport",
+                        optype: "sfrecvtexcept_listexport",
                         params: params
                     },
                     responseType: 'blob'
