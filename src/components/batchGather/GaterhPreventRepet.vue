@@ -206,7 +206,7 @@
         <section class="table-content">
             <el-table :data="tableList"
                       border size="mini" height="100%">
-                <el-table-column prop="pay_date" label="应付日期" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="recv_date" label="应收日期" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="pay_code" label="支付号码" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="pay_mode" label="支付方式" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="bank_key" label="bankkey" width="90"
@@ -219,8 +219,8 @@
                 <el-table-column prop="insure_bill_no" label="保单号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="amount" label="金额" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="recv_acc_name" label="客户姓名" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="recv_cert_code" label="证件号码" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="recv_acc_no" label="银行账号" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="pay_cert_code" label="证件号码" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="pay_acc_no" label="客户账号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="status" label="状态" :show-overflow-tooltip="true"
                                  :formatter="transitStatus"></el-table-column>
                 <el-table-column prop="op_user_name" label="操作人" :show-overflow-tooltip="true"></el-table-column>
@@ -288,7 +288,7 @@
             return {
                 queryUrl: this.$store.state.queryUrl,
                 routerMessage: {
-                    optype: "sftdoubtful_doubtfullist",
+                    optype: "sftrecvdoubtful_doubtfullist",
                     params: {
                         page_size: 7,
                         page_num: 1,
@@ -411,7 +411,7 @@
                     url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
-                        optype: "sftdoubtful_listexport",
+                        optype: "sftrecvdoubtful_listexport",
                         params: params
                     },
                     responseType: 'blob'
@@ -468,7 +468,7 @@
                         url: this.queryUrl + "normalProcess",
                         method: "post",
                         data: {
-                            optype: "sftdoubtful_pass",
+                            optype: "sftrecvdoubtful_pass",
                             params: {
                                 id: row.id,
                                 os_source: row.os_source,
@@ -518,7 +518,7 @@
                         url: this.queryUrl + "normalProcess",
                         method: "post",
                         data: {
-                            optype: "sftdoubtful_reject",
+                            optype: "sftrecvdoubtful_reject",
                             params: {
                                 id: row.id,
                                 os_source: row.os_source,
