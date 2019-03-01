@@ -186,10 +186,9 @@
                                     v-show="scope.row.interactive_mode=='报盘' && (scope.row.status=='已发送未回盘' || scope.row.status=='回盘异常')">
                             <el-upload
                                     class="upload-demo"
-                                    :action="queryUrl + 'normal/diskbacking/upload'"
-                                    :headers="{pay_master_id:scope.row.pay_master_id,
-                                    pay_id:scope.row.pay_id,
-                                    channel_id:scope.row.channel_id,
+                                    :action="queryUrl + 'normal/recvdiskbacking/upload'"
+                                    :headers="{recv_master_id:scope.row.recv_master_id,
+                                    recv_id:scope.row.recv_id,
                                     user_id:userId}"
                                     :on-success="uploadSuccess"
                                     multiple>
@@ -245,7 +244,7 @@
             return {
                 queryUrl: this.$store.state.queryUrl,
                 routerMessage: {
-                    optype: "diskbacking_list",
+                    optype: "recvdisksending_list",
                     params: {
                         page_size: 7,
                         page_num: 1,
@@ -345,7 +344,7 @@
                     url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
-                        optype: "diskbacking_listexport",
+                        optype: "recvdiskbacking_listexport",
                         params: params
                     },
                     responseType: 'blob'

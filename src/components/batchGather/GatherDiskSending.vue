@@ -244,7 +244,7 @@
             return {
                 queryUrl: this.$store.state.queryUrl,
                 routerMessage: {
-                    optype: "recvdisksending_listexport",
+                    optype: "recvdisksending_list",
                     params: {
                         page_size: 7,
                         page_num: 1,

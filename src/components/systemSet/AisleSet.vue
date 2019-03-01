@@ -244,7 +244,7 @@
         </div>
         <!--新增/修改 弹出框-->
         <el-dialog :visible.sync="dialogVisible"
-                   width="860px"
+                   width="900px"
                    :close-on-click-modal="false"
                    top="56px">
             <h1 slot="title" v-text="dialogTitle" class="dialog-title"></h1>
@@ -273,19 +273,6 @@
                             </el-select>
                         </el-form-item>
                     </el-col>
-                    <el-col :span="12" v-if="dialogData.interactive_mode">
-                        <el-form-item label="报盘模板" prop="document_moudle">
-                            <el-select v-model="dialogData.document_moudle" placeholder="请选择模板"
-                                       clearable filterable
-                                       style="width:100%" :disabled="isLook">
-                                <el-option v-for="(moudle,key) in moudleList"
-                                           :key="key"
-                                           :label="moudle"
-                                           :value="key">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
                     <el-col :span="12">
                         <el-form-item label="通道编码" prop="channel_code">
                             <el-input v-model="dialogData.channel_code" placeholder="请输入通道编码"
@@ -302,6 +289,7 @@
                         <el-form-item label="支付方式" prop="pay_mode">
                             <el-select v-model="dialogData.pay_mode" placeholder="请选择支付方式"
                                        clearable filterable :disabled="isLook"
+                                       @change="setMoudle"
                                        style="width:100%">
                                 <el-option v-for="(payMode,key) in payModeList"
                                            :key="key"
@@ -315,11 +303,27 @@
                         <el-form-item label="收付属性" prop="pay_attr">
                             <el-select v-model="dialogData.pay_attr" placeholder="请选择收付属性"
                                        clearable filterable :disabled="isLook"
+                                       @change="setMoudle"
                                        style="width:100%">
                                 <el-option v-for="(payAttr,key) in payAttrList"
                                            :key="key"
                                            :label="payAttr"
                                            :value="key">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12" v-if="dialogData.interactive_mode">
+                        <el-form-item label="报盘模板" prop="document_moudle">
+                            <el-select v-model="dialogData.document_moudle" placeholder="请选择模板"
+                                       clearable filterable
+                                       style="width:100%"
+                                       @visible-change="getMoudle"
+                                       :disabled="isLook || !dialogData.pay_mode || !dialogData.pay_attr">
+                                <el-option v-for="moudle in moudleList"
+                                           :key="moudle.id"
+                                           :label="moudle.document_name"
+                                           :value="moudle.id">
                                 </el-option>
                             </el-select>
                         </el-form-item>
@@ -489,10 +493,6 @@
             if (constants.SftInteractiveMode) {
                 this.interactiveList = constants.SftInteractiveMode;
             }
-            //报盘模板
-            if (constants.Channel) {
-                this.moudleList = constants.Channel;
-            }
             //收付属性
             if (constants.SftPayAttr) {
                 this.payAttrList = constants.SftPayAttr;
@@ -542,7 +542,7 @@
                 pagCurrent: 1,
                 payModeList: {}, //常量数据
                 interactiveList: {},
-                moudleList: {},
+                moudleList: [],
                 payAttrList: {},
                 directList: {},
                 directsubList: {},
@@ -579,7 +579,7 @@
                     is_checkout: 1,
                     remark: "",
                 },
-                formLabelWidth: "110px",
+                formLabelWidth: "130px",
                 chargeMoney: {
                     percentage: "",
                     number: ""
@@ -863,6 +863,45 @@
                 }).catch(function (error) {
                     console.log(error);
                 });
+            },
+            //获取报盘模板
+            getMoudle: function(val){
+                if(val){
+                    this.moudleList = [];
+                    let dialogData = this.dialogData;
+
+                    this.$axios({
+                        url: this.queryUrl + "normalProcess",
+                        method: "post",
+                        data: {
+                            optype: "sftchannel_getdoucument",
+                            params: {
+                                pay_attr: dialogData.pay_attr,
+                                pay_mode: dialogData.pay_mode
+                            }
+                        }
+                    }).then((result) => {
+                        if (result.data.error_msg) {
+                            this.$message({
+                                type: "error",
+                                message: result.data.error_msg,
+                                duration: 2000
+                            });
+                        } else {
+                            var data = result.data.data;
+                            this.moudleList = data;
+                        }
+
+                    }).catch(function (error) {
+                        console.log(error);
+                    });
+                }
+            },
+            //选择支付方式和收付属性后设置报盘模板
+            setMoudle: function(val){
+                if(this.dialogData.document_moudle){
+                    this.dialogData.document_moudle = "";
+                }
             },
             //选择bankcode后设置相关值
             setBankcode: function (val) {
