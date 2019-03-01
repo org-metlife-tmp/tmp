@@ -258,8 +258,7 @@
             <el-table :data="tableList" ref="contentTable"
                       height="100%" border size="mini"
                       @select="setId"
-                      @select-all="allChange"
-                      @selection-change="selectChange">
+                      @select-all="allChange">
                 <el-table-column type="selection" width="40" :selectable="isSelect"></el-table-column>
                 <el-table-column prop="create_time" label="日期" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="channel_code" label="通道编码" :show-overflow-tooltip="true"></el-table-column>
@@ -281,7 +280,7 @@
                     <template slot-scope="scope" class="operationBtn">
                         <el-tooltip content="撤回" placement="bottom" effect="light"
                                     :enterable="false" :open-delay="500"
-                                    v-show="scope.row.status == '未组批'">
+                                    v-show="scope.row.status == '未提交'">
                             <el-button size="mini" class="withdraw"
                                        @click="withdrawBill(scope.row)"></el-button>
                         </el-tooltip>
@@ -382,6 +381,7 @@
                     total_num: ""
                 },
                 selectId: [], //选中数据
+                resetAllData: true
             }
         },
         methods: {
@@ -396,6 +396,7 @@
                 this.routerMessage.params.end_date = val ? val[1] : "";
                 this.routerMessage.params.page_num = 1;
                 this.selectId = [];
+                this.resetAllData = true;
                 this.$emit("getCommTable", this.routerMessage);
             },
             //清空搜索条件
@@ -412,12 +413,13 @@
             },
             //换页后获取数据
             getCurrentPage: function (currPage) {
+                this.resetAllData = false;
                 this.routerMessage.params.page_num = currPage;
                 this.$emit("getCommTable", this.routerMessage);
             },
             //当前页数据条数发生变化
             sizeChange: function (val) {
-                // this.selectId = [];
+                this.resetAllData = false;
                 this.routerMessage.params.page_size = val;
                 this.routerMessage.params.page_num = 1;
                 this.$emit("getCommTable", this.routerMessage);
@@ -507,12 +509,16 @@
                         for(let j = 0; j < selectId.length; j++){
                             if(selectId[j] === row.pay_id){
                                 selectId.splice(j,1);
+                                this.totalData.total_amount += row.amount;
+                                this.totalData.total_num++;
                                 break;
                             }
                         }
                         return;
                     }
                 }
+                this.totalData.total_num--;
+                this.totalData.total_amount -= row.amount;
                 selectId.push(row.pay_id);
             },
             //点击全选时设置取消勾选的id
@@ -523,14 +529,20 @@
                 if(selection.length === 0){
                     tableList.forEach((item) => {
                         let flag = true;
-                        for(let i = 0; i < selectId.length; i++){
-                            let idItem = selectId[i];
-                            if(item.pay_id === idItem){
-                                flag = false;
-                                break;
+                        if(item.status == "已提交" || item.status == "已作废"){
+                            flag = false;
+                        }else{
+                            for(let i = 0; i < selectId.length; i++){
+                                let idItem = selectId[i];
+                                if(item.pay_id === idItem){
+                                    flag = false;
+                                    break;
+                                }
                             }
                         }
                         if(flag) {
+                            this.totalData.total_num--;
+                            this.totalData.total_amount -= item.amount;
                             selectId.push(item.pay_id);
                         };
                     });
@@ -539,6 +551,8 @@
                         for(let i = 0; i < selectId.length; i++){
                             let idItem = selectId[i];
                             if(item.pay_id === idItem){
+                                this.totalData.total_amount += item.amount;
+                                this.totalData.total_num++;
                                 selectId.splice(i,1);
                                 break;
                             }
@@ -548,7 +562,7 @@
             },
             //当前列是否可以勾选
             isSelect: function(row, index){
-                return !(row.status == "已组批" || row.status == "已撤回");
+                return !(row.status == "已提交" || row.status == "已作废");
             },
             //确认
             affirm: function(){
@@ -698,7 +712,7 @@
                     let tableList = this.tableList;
                     tableList.forEach((row) => {
                         let flag = true;
-                        if(row.status == "已组批" || row.status == "已撤回"){
+                        if(row.status == "已提交" || row.status == "已作废"){
                             flag = false;
                         }else{
                             for(let i = 0; i < selectId.length; i++){
@@ -725,6 +739,10 @@
                 this.tableList = val.data;
                 this.pagCurrent = val.page_num;
                 this.searchData.visit_time = val.data.length > 0 ? val.data[0].visit_time : "";
+                if(this.resetAllData){
+                    this.totalData.total_num = val.total_num;
+                    this.totalData.total_amount = val.total_amount;
+                }
 
                 setTimeout(() => {
                     this.setSelect();
