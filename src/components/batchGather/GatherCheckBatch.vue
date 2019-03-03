@@ -144,7 +144,7 @@
             </el-select>-->
             <ul>
                 <li :class="{'active': searchData.source_sys == '0'}" @click="switchTab('0')">LA</li>
-                <li :class="{'active': searchData.source_sys == '1'}" @click="switchTab('1')">EBS</li>
+                <!--<li :class="{'active': searchData.source_sys == '1'}" @click="switchTab('1')">EBS</li>-->
             </ul>
         </div>
         <div class="button-list-right">
@@ -631,7 +631,7 @@
                         data: {
                             optype: "recvcheckbatch_revokeToLaOrEbs",
                             params: {
-                                id: row.pay_id,
+                                id: row.recv_id,
                                 persist_version: row.persist_version,
                                 source_sys: searData.source_sys,
                                 feed_back: value

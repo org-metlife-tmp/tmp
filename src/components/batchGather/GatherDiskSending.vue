@@ -234,7 +234,10 @@
             }
             //来源系统
             if (constants.SftOsSource) {
-                this.sourceList = constants.SftOsSource;
+                this.sourceList = {
+                    0: "LA"
+                };
+                // this.sourceList = constants.SftOsSource;
             }
             //通道编码
             this.getChannelList();

@@ -227,7 +227,10 @@
             var constants = JSON.parse(window.sessionStorage.getItem("constants"));
             //来源系统
             if (constants.SftOsSource) {
-                this.sourceList = constants.SftOsSource;
+                this.sourceList = {
+                    0: "LA"
+                };
+                // this.sourceList = constants.SftOsSource;
             }
             //交互方式
             if (constants.SftInteractiveMode) {
