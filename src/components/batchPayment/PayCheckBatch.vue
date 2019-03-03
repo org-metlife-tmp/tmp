@@ -280,7 +280,7 @@
                     <template slot-scope="scope" class="operationBtn">
                         <el-tooltip content="撤回" placement="bottom" effect="light"
                                     :enterable="false" :open-delay="500"
-                                    v-show="scope.row.status == '未组批'">
+                                    v-show="scope.row.status == '未提交'">
                             <el-button size="mini" class="withdraw"
                                        @click="withdrawBill(scope.row)"></el-button>
                         </el-tooltip>

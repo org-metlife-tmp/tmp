@@ -173,8 +173,8 @@
                 <el-table-column prop="channel_code" label="通道编码" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="channel_desc" label="通道描述" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="create_on" label="组批日期" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="pay_total_amount" label="总金额" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="pay_total_num" label="总笔数" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="recv_total_amount" label="总金额" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="recv_total_num" label="总笔数" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="status" label="状态" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="send_user_name" label="操作人" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="send_on" label="发送日期" :show-overflow-tooltip="true"></el-table-column>
@@ -333,9 +333,9 @@
                 var params = {
                     optype: "recvdisksending_diskdownload",
                     params: {
-                        pay_master_id: row.pay_master_id,
+                        recv_master_id: row.recv_master_id,
                         channel_code: row.channel_code,
-                        pay_id: row.pay_id
+                        recv_id: row.recv_id
                     }
                 }
                 this.$emit("downLoadData", params);

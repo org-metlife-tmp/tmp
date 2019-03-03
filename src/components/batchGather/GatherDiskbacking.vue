@@ -183,7 +183,7 @@
                     <template slot-scope="scope" class="operationBtn">
                         <el-tooltip content="上传" placement="bottom" effect="light"
                                     :enterable="false" :open-delay="500"
-                                    v-show="scope.row.interactive_mode=='报盘' && (scope.row.status=='已发送未回盘' || scope.row.status=='回盘异常')">
+                                    v-show="scope.row.interactive_mode=='报盘模式' && (scope.row.status=='已发送未回盘' || scope.row.status=='回盘成功')">
                             <el-upload
                                     class="upload-demo"
                                     :action="queryUrl + 'normal/recvdiskbacking/upload'"

@@ -1066,12 +1066,15 @@
                 <el-table-column prop="interactive_mode" label="交互方式" :show-overflow-tooltip="true"></el-table-column>
             </el-table>
             <el-table :data="sonTableList"
-                      v-if="batchNeedBiztype == 26"
+                      v-if="batchNeedBiztype == 26 || batchNeedBiztype == 31"
                       border size="mini">
                 <el-table-column prop="source_sys" label="来源系统" :show-overflow-tooltip="true"
                                  :formatter="transtSourceSys"></el-table-column>
                 <el-table-column prop="org_name" label="机构名称" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="pay_date" label="日期" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="pay_date" label="日期" :show-overflow-tooltip="true"
+                                 v-if="batchNeedBiztype == 26"></el-table-column>
+                <el-table-column prop="pay_date" label="日期" :show-overflow-tooltip="true"
+                                 v-if="batchNeedBiztype == 31"></el-table-column>
                 <el-table-column prop="recv_bank_name" label="银行名称" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="recv_cert_code" label="证件号码" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="recv_acc_name" label="客户姓名" :show-overflow-tooltip="true"></el-table-column>
@@ -2843,6 +2846,17 @@
                 this.lookSonVisible = true;
                 this.batchNeedBiztype = bizType;
                 this.sonTableList = [];
+                let optype = "";
+                switch(bizType){
+                    case 26:
+                        optype = "sftpaycheck_getdetailbybaseid";
+                        break;
+                    case 31:
+                        optype = "sftrecvcheck_getdetailbybaseid";
+                        break;
+                    default:
+                        return;
+                }
 
                 this.$axios({
                     url: this.queryUrl + "normalProcess",

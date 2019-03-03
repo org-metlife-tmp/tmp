@@ -332,12 +332,8 @@
                                      :show-overflow-tooltip="true"></el-table-column>
                     <el-table-column prop="amount" label="交易金额" :show-overflow-tooltip="true"></el-table-column>
                     <el-table-column prop="summary" label="摘要" :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column label="状态" :show-overflow-tooltip="true">
-                        <template slot-scope="scope">
-                            <span v-if="isInner == 1">{{ transitStatus(true,true,scope.row.is_checked) }}</span>
-                            <span v-if="isInner == 0">{{ transitStatus(true,true,scope.row.business_check)}}</span>
-                        </template>
-                    </el-table-column>
+                    <el-table-column prop="is_checked" label="状态" :show-overflow-tooltip="true"
+                                     :formatter="transitStatus"></el-table-column>
                     <el-table-column prop="check_service_number" label="对账流水号" width="100px"
                                      :show-overflow-tooltip="true"></el-table-column>
                     <el-table-column prop="check_user_name" label="操作人" :show-overflow-tooltip="true"></el-table-column>
