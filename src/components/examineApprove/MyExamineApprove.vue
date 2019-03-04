@@ -1073,7 +1073,7 @@
                 <el-table-column prop="org_name" label="机构名称" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="pay_date" label="日期" :show-overflow-tooltip="true"
                                  v-if="batchNeedBiztype == 26"></el-table-column>
-                <el-table-column prop="pay_date" label="日期" :show-overflow-tooltip="true"
+                <el-table-column prop="recv_date" label="日期" :show-overflow-tooltip="true"
                                  v-if="batchNeedBiztype == 31"></el-table-column>
                 <el-table-column prop="recv_bank_name" label="银行名称" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="recv_cert_code" label="证件号码" :show-overflow-tooltip="true"></el-table-column>
@@ -2862,7 +2862,7 @@
                     url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
-                        optype: "sftpaycheck_getdetailbybaseid",
+                        optype: optype,
                         params: {
                             source_sys: sourceSys,
                             id: childId
