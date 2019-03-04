@@ -1066,19 +1066,30 @@
                 <el-table-column prop="interactive_mode" label="交互方式" :show-overflow-tooltip="true"></el-table-column>
             </el-table>
             <el-table :data="sonTableList"
-                      v-if="batchNeedBiztype == 26 || batchNeedBiztype == 31"
+                      v-if="batchNeedBiztype == 26"
                       border size="mini">
                 <el-table-column prop="source_sys" label="来源系统" :show-overflow-tooltip="true"
                                  :formatter="transtSourceSys"></el-table-column>
                 <el-table-column prop="org_name" label="机构名称" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="pay_date" label="日期" :show-overflow-tooltip="true"
-                                 v-if="batchNeedBiztype == 26"></el-table-column>
-                <el-table-column prop="recv_date" label="日期" :show-overflow-tooltip="true"
-                                 v-if="batchNeedBiztype == 31"></el-table-column>
+                <el-table-column prop="pay_date" label="日期" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="recv_bank_name" label="银行名称" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="recv_cert_code" label="证件号码" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="recv_acc_name" label="客户姓名" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="recv_acc_no" label="客户账号" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="amount" label="金额" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="status" label="状态" :show-overflow-tooltip="true"></el-table-column>
+            </el-table>
+            <el-table :data="sonTableList"
+                      v-if="batchNeedBiztype == 31"
+                      border size="mini">
+                <el-table-column prop="source_sys" label="来源系统" :show-overflow-tooltip="true"
+                                 :formatter="transtSourceSys"></el-table-column>
+                <el-table-column prop="org_name" label="机构名称" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="recv_date" label="日期" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="pay_bank_name" label="银行名称" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="pay_cert_code" label="证件号码" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="pay_acc_name" label="客户姓名" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="pay_acc_no" label="客户账号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="amount" label="金额" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="status" label="状态" :show-overflow-tooltip="true"></el-table-column>
             </el-table>
