@@ -729,7 +729,7 @@
             },
             //展示格式转换-状态
             transitStatus: function (row, column, cellValue, index) {
-                return cellValue == 1 ? "启用" : "禁用";
+                return cellValue == 1 ? "启用" : "停用";
             },
             //展示格式转换-原通道退款
             transitSurce: function (row, column, cellValue, index) {
