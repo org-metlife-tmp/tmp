@@ -169,8 +169,8 @@
                 <el-table-column prop="channel_desc" label="通道描述" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="send_on" label="出盘日期" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="back_on" label="回盘日期" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="pay_total_amount" label="总金额" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="pay_total_num" label="总笔数" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="recv_total_amount" label="总金额" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="recv_total_num" label="总笔数" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="success_amount" label="成功金额" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="success_num" label="成功笔数" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="fail_amount" label="失败金额" :show-overflow-tooltip="true"></el-table-column>
@@ -189,6 +189,7 @@
                                     :action="queryUrl + 'normal/recvdiskbacking/upload'"
                                     :headers="{recv_master_id:scope.row.recv_master_id,
                                     recv_id:scope.row.recv_id,
+                                    channel_id:scope.row.channel_id,
                                     user_id:userId}"
                                     :on-success="uploadSuccess"
                                     multiple>
