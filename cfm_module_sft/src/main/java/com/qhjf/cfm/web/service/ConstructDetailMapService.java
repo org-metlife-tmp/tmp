@@ -21,6 +21,7 @@ public class ConstructDetailMapService {
 		detail_map.put("detail_cent", detail_cent);	
 		// 银行 type
 		detail_map.put("recv_bank_type", record.get("recv_bank_type"));
+		detail_map.put("pay_bank_type", record.get("pay_bank_type"));
 	}
 
 }

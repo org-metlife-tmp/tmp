@@ -124,6 +124,7 @@ public class CheckVoucherService {
                 break;
             case PLS:
                 flag = plsCheckVoucher(batchList, tradList, batchRecordList, tradRecordList, majorBizType, seqnoOrstatmentCode);
+                break;
             default:
                 throw new ReqDataException(majorBizType.getDesc() + "，未实现生成凭证方法！");
         }
@@ -577,6 +578,33 @@ public class CheckVoucherService {
             list.add(CommonService.plfLaBackCheckVoucher(payLegalRecord, 3, periodDate, seqnoOrstatmentCode));
             //凭证2
             list.add(CommonService.plfLaBackCheckVoucher(payLegalRecord, 4, periodDate, seqnoOrstatmentCode));
+        }
+
+        if (!CommonService.saveCheckVoucher(list)) {
+            throw new ReqDataException("生成凭证失败!");
+        }
+
+        return true;
+    }
+
+    /**
+     * 批量收LA回显TMP 核对生成凭证
+     * @param source
+     * @param recvLegalRecord
+     * @param periodDate
+     * @return
+     * @throws BusinessException
+     */
+    public static boolean plsLaBackCheckVoucher(String source, Record recvLegalRecord, Date periodDate) throws BusinessException {
+
+        String seqnoOrstatmentCode = RedisSericalnoGenTool.genVoucherSeqNo();//生成十六进制序列号/凭证号
+        List<Record> list = new ArrayList<>();
+        if("LA".equals(source)){
+            //凭证1
+            list.add(CommonService.plfLaBackCheckVoucher(recvLegalRecord, 1, periodDate, seqnoOrstatmentCode));
+            //凭证2
+            list.add(CommonService.plfLaBackCheckVoucher(recvLegalRecord, 2, periodDate, seqnoOrstatmentCode));
+
         }
 
         if (!CommonService.saveCheckVoucher(list)) {

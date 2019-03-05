@@ -26,10 +26,6 @@ public class SftEbsCallbackJob implements Job{
 			}
 		}
 		
-		
-		new LaCallback().callBack(list);
-		
-		
 	}
 
 }

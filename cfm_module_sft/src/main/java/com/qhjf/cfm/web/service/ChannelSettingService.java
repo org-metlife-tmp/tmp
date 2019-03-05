@@ -393,6 +393,7 @@ public class ChannelSettingService {
     public List<Record> getdoucument(Record record) throws BusinessException  {
 
         long payAttr = TypeUtils.castToLong(record.get("pay_attr"));
+        long payMode = TypeUtils.castToLong(record.get("pay_mode"));
         int documentType;
         if(payAttr == 0){
             documentType = 3;
@@ -402,7 +403,7 @@ public class ChannelSettingService {
             throw new ReqDataException("未找到有效的通道!");
         }
         // 根据通道id查询通道信息
-        List<Record> records = Db.find(Db.getSql("channel_setting.getdoucument"),documentType);
+        List<Record> records = Db.find(Db.getSql("channel_setting.getdoucument"),documentType,payMode);
         return records;
     }
 

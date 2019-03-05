@@ -43,13 +43,13 @@ public class ExcleDiskSendingService {
      *   盘片下载
 	 * @param pay_master_id   pay_id
 	 * @param document_type 
-	 * @param configs_tail 
+	 * @param config_tail 
      * @throws ReqDataException 
      * @throws DbProcessException 
      * @throws IOException 
      */
     @SuppressWarnings("resource")
-	public HSSFWorkbook diskDownLoad(Long pay_master_id, final Long pay_id, Integer document_moudle ,final UserInfo userInfo ,final String sheetName, Integer document_type, List<Record> configs_tail) throws ReqDataException, DbProcessException, IOException {
+	public HSSFWorkbook diskDownLoad(Long pay_master_id, final Long pay_id, Integer document_moudle ,final UserInfo userInfo ,final String sheetName, Integer document_type, Record config_tail) throws ReqDataException, DbProcessException, IOException {
     	int num = 0 ;
     	//TODO   
 		final Record user_record = Db.findById("user_info", "usr_id",userInfo.getUsr_id());
@@ -104,7 +104,6 @@ public class ExcleDiskSendingService {
 		          .set("create_by", userInfo.getUsr_id())
 		          .set("total_amount", record.get("pay_total_amount"))
 		          .set("total_num", record.get("pay_total_num"));
-    	Record config_tail = configs_tail.get(0);
     	logger.info("========当前excel表总行数==="+num);
     	if(!StringUtils.isBlank(config_tail.getStr("title"))){
     		logger.info("============网盘详情也有表头");

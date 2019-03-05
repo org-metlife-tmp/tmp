@@ -6,7 +6,8 @@ SELECT
 	channel.channel_desc,
 	channel.bankcode,
 	channel.acc_no,
-	bank.name bank_name
+	bank.name bank_name,
+	bank.name display_name
 FROM
 	bankkey_setting bankkey,
 	channel_setting channel,
@@ -62,13 +63,17 @@ SELECT
 	channel.channel_code,
 	channel.channel_desc,
 	channel.bankcode,
-	channel.acc_no
+	channel.acc_no,
+	bank.name bank_name,
+	bank.name display_name
 FROM
 	bankkey_setting bankkey,
 	channel_setting channel,
-	organization org
+	organization org,
+	const_bank_type bank
 where bankkey.channel_id = channel.id
 and bankkey.org_id = org.org_id
+and bankkey.bank_type = bank.code
 and bankkey.id = ?
 #end
 

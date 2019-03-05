@@ -100,7 +100,7 @@ public class SftLaDataCheckJob implements Job{
                         }
                     }
 
-                    boolean isChannelOnline = isChannelOnline(laOiriginData.getStr("channel_code"));
+                    /*boolean isChannelOnline = isChannelOnline(laOiriginData.getStr("channel_code"));
                     if(!isChannelOnline){
                     	int flag = Db.update(Db.getSql("la_cfm.updLaOriginStatus"),
                                 WebConstant.YesOrNo.YES.getKey(),
@@ -113,7 +113,7 @@ public class SftLaDataCheckJob implements Job{
                         }else{
                             return false;
                         }
-                    }
+                    }*/
                     try{
                         if (checkDoubtful(laOiriginData).equals(WebConstant.YesOrNo.NO)) {
                         	Record payLegal = new Record();
@@ -125,7 +125,7 @@ public class SftLaDataCheckJob implements Job{
                             payLegal.set("org_code", laOiriginData.getStr("tmp_org_code"));
                             payLegal.set("amount", laOiriginData.getBigDecimal("amount"));
                             payLegal.set("recv_acc_name", laOiriginData.getStr("recv_acc_name"));
-                            payLegal.set("recv_cert_type", laOiriginData.getStr("tmp_recv_cert_type"));
+                            payLegal.set("recv_cert_type", laOiriginData.getStr("recv_cert_type"));
                             payLegal.set("recv_cert_code", laOiriginData.getStr("recv_cert_code"));
                             payLegal.set("recv_bank_type", laOiriginData.getStr("recv_bank_type"));
                             payLegal.set("recv_bank_name", laOiriginData.getStr("recv_bank_name"));
@@ -193,18 +193,31 @@ public class SftLaDataCheckJob implements Job{
                 }
             }
             
-            List<Record> channels = Db.find(
-                    Db.getSql("la_cfm.getChannel"), 0, org.getLong("org_id"), laOiriginData.getStr("bank_key"), 1, 1);
+            List<Record> channels = Db.find(Db.getSql("la_cfm.getChannel")
+                    , 0
+                    , org.getLong("org_id")
+                    , laOiriginData.getStr("bank_key"));
             if (channels == null || channels.size() == 0) {
                 throw new ReqValidateException("未匹配到通道");
             }
             if (channels.size() > 1) {
                 throw new ReqValidateException("匹配到多个通道");
             }
-            laOiriginData.set("channel_id", channels.get(0).getLong("channel_id"));
-            laOiriginData.set("channel_code", channels.get(0).getStr("channel_code"));
-            laOiriginData.set("recv_bank_type", channels.get(0).getStr("bank_type"));
-            laOiriginData.set("recv_bank_name", channels.get(0).getStr("name"));
+            
+            Record channel = channels.get(0);
+            Integer bankkeyStatus = channel.getInt("bankkey_status");
+            if (null == bankkeyStatus || bankkeyStatus != 1) {
+            	throw new ReqValidateException("bankkey状态未启用");
+			}
+            Integer isCheckout = channel.getInt("is_checkout");
+            if (null == isCheckout || isCheckout != 1) {
+            	throw new ReqValidateException("通道状态未启用");
+			}
+            
+            laOiriginData.set("channel_id", channel.getLong("channel_id"));
+            laOiriginData.set("channel_code", channel.getStr("channel_code"));
+            laOiriginData.set("recv_bank_type", channel.getStr("bank_type"));
+            laOiriginData.set("recv_bank_name", channel.getStr("name"));
         }
 
         private WebConstant.YesOrNo checkDoubtful(Record originData) throws Exception {

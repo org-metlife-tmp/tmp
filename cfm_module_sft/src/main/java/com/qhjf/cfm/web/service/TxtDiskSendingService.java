@@ -65,7 +65,7 @@ public class TxtDiskSendingService {
      * @throws DbProcessException 
      * @throws IOException 
      */
-	public String diskDownLoad(Long pay_master_id,final Long pay_id,Integer document_moudle, final UserInfo userInfo, final String fileName, Integer document_type, List<Record> configs_tail) throws ReqDataException, DbProcessException, IOException {
+	public String diskDownLoad(Long pay_master_id,final Long pay_id,Integer document_moudle, final UserInfo userInfo, final String fileName, Integer document_type, Record configs_tail) throws ReqDataException, DbProcessException, IOException {
 		logger.info("==============生成txt样式的盘片");
 		final Record user_record = Db.findById("user_info", "usr_id",userInfo.getUsr_id());
 		if(null == user_record){
@@ -123,16 +123,16 @@ public class TxtDiskSendingService {
     			          .set("total_num", record.get("pay_total_num"));
    	
         //默认是一定有这个配置存在
-		if(null != configs_tail && configs_tail.size() == 1){			
+		if(null != configs_tail ){			
 			//详情的抬头处理
-			if(StringUtils.isNotBlank(configs_tail.get(0).getStr("title"))){
-				map.put("detail_title", configs_tail.get(0).getStr("title"));
+			if(StringUtils.isNotBlank(configs_tail.getStr("title"))){
+				map.put("detail_title", configs_tail.getStr("title"));
 			}		
-			Record detail_rec_config = configs_tail.get(0);
-			for (int i = 1; i <= detail_rec_config.getColumns().size(); i++) {
-				if(StringUtils.isNotBlank(detail_rec_config.getStr("field_"+i))){					
-					datail_titleNames = datail_titleNames == "" ? detail_rec_config.getStr("field_"+i) : 
-						datail_titleNames + "," +   detail_rec_config.getStr("field_"+i) ;
+			//Record detail_rec_config = configs_tail.get(0);
+			for (int i = 1; i <= configs_tail.getColumns().size(); i++) {
+				if(StringUtils.isNotBlank(configs_tail.getStr("field_"+i))){					
+					datail_titleNames = datail_titleNames == "" ? configs_tail.getStr("field_"+i) : 
+						datail_titleNames + "," +   configs_tail.getStr("field_"+i) ;
 				}else{
 					break ;
 				}
@@ -213,40 +213,45 @@ public class TxtDiskSendingService {
 	 * 广银联代付/代收文件名
 	 * @param document_type 
 	 * @param document_type
+	 * @param document_version 
 	 * @param channel_code
 	 * @return
 	 */
-	public String getFileName(Integer document_moudle, Integer document_type) {
+	public String getFileName(Integer document_moudle, Integer document_type, String version) {
 		String fileName = "";
+		//广银联/通联文件名称格式
+		StringBuffer  sb = new  StringBuffer();
+		//TODO 商户号
+		String  shh = SHH_Map.get(String.valueOf(document_moudle)+document_type);
+		// 代付 F , 代收 S
+		String sfFlag = this.getSfFlag(document_type);	
+		//提交日期
+		String time = DateKit.toStr(new Date(), DateKit.datePattern).replaceAll("-", "");
 		if( WebConstant.Channel.RP.getKey() == document_moudle
 				 ||WebConstant.Channel.GP.getKey() == document_moudle
-				 ||WebConstant.Channel.GX.getKey() == document_moudle
 				 ||WebConstant.Channel.GS.getKey() == document_moudle
 				 ||WebConstant.Channel.TP.getKey() == document_moudle
 				){
-			//广银联/通联文件名称格式
-			StringBuffer  sb = new  StringBuffer();
-			//TODO 商户号
-			String  shh = SHH_Map.get(String.valueOf(document_moudle)+document_type);
-			// 代付 F , 代收 S
-			String sfFlag = this.getSfFlag(document_type);
-			//版本号
-			String version = "02" ;
-			//提交日期
-			String time = DateKit.toStr(new Date(), DateKit.datePattern).replaceAll("-", "");
 			//5位的序列号
 			final String seq = RedisSericalnoGenTool.genDiskFileSeqNo();
 			fileName = sb.append(shh).append("_").append(sfFlag).append(version).append(time)
 					             .append("_").append(seq).toString();
 			logger.info("=========生成盘片的文件名==="+fileName);			
+		}else if(WebConstant.Channel.GX.getKey() == document_moudle) {
+			//广银联信用卡
+			//3位的序列号
+			final String seq = RedisSericalnoGenTool.genThreeDiskFileSeqNo();
+			fileName = sb.append(shh).append("_").append(sfFlag).append(version).append(time)
+		             .append("_").append("54").append(seq).toString();
+            logger.info("=========生成盘片的文件名==="+fileName);
 		}else{
 			// 建行   CCB_F_**********_++++++++.TXT
-			fileName = "CCB_"+ this.getSfFlag(document_type) + "_" + 
+			fileName = "CCB_"+ this.getSfFlag(document_type) + "_U9" + 
 			            RedisSericalnoGenTool.genCCBCDiskFileSeqNo() + "_" + 
 					    DateKit.toStr(new Date(), DateKit.datePattern).replaceAll("-", "");
 			logger.info("=========生成盘片的文件名==="+fileName);
 		}		
-		return fileName + ".txt" ;
+		return fileName + ".TXT" ;
 	}
 	
 	/**
@@ -285,6 +290,7 @@ public class TxtDiskSendingService {
 	public void diskSave(String sheetName , String genVelo) throws IOException  {
 		DiskDownLoadSection diskDownLoadSection = DiskDownLoadSection.getInstance();
 	    String path = diskDownLoadSection.getPath();
+	    //path = "D:\\";
 		File f = new File(path + sheetName);
 		logger.info("==========文件路径===="+path + sheetName);
 		if (!f.exists()) {
@@ -322,7 +328,7 @@ public class TxtDiskSendingService {
      * @throws DbProcessException 
      * @throws IOException 
      */
-	public String diskDownLoadNewThread(Long pay_master_id,final Long pay_id,Integer document_moudle, final String fileName, Integer document_type, List<Record> configs_tail) throws ReqDataException, DbProcessException, IOException {
+	public String diskDownLoadNewThread(Long pay_master_id,final Long pay_id,Integer document_moudle, final String fileName, Integer document_type, Record configs_tail) throws ReqDataException, DbProcessException, IOException {
 		logger.info("==============生成txt样式的盘片");
 		// .mv文件均放在common包的resource文件下
 		String filePath = String.valueOf(document_moudle)+ document_type +".vm";
@@ -376,16 +382,15 @@ public class TxtDiskSendingService {
     			          .set("create_on", new Date());
    	
         //默认是一定有这个配置存在
-		if(null != configs_tail && configs_tail.size() == 1){			
+		if(null != configs_tail){			
 			//详情的抬头处理
-			if(StringUtils.isNotBlank(configs_tail.get(0).getStr("title"))){
-				map.put("detail_title", configs_tail.get(0).getStr("title"));
+			if(StringUtils.isNotBlank(configs_tail.getStr("title"))){
+				map.put("detail_title", configs_tail.getStr("title"));
 			}		
-			Record detail_rec_config = configs_tail.get(0);
-			for (int i = 1; i <= detail_rec_config.getColumns().size(); i++) {
-				if(StringUtils.isNotBlank(detail_rec_config.getStr("field_"+i))){					
-					datail_titleNames = datail_titleNames == "" ? detail_rec_config.getStr("field_"+i) : 
-						datail_titleNames + "," +   detail_rec_config.getStr("field_"+i) ;
+			for (int i = 1; i <= configs_tail.getColumns().size(); i++) {
+				if(StringUtils.isNotBlank(configs_tail.getStr("field_"+i))){					
+					datail_titleNames = datail_titleNames == "" ? configs_tail.getStr("field_"+i) : 
+						datail_titleNames + "," +   configs_tail.getStr("field_"+i) ;
 				}else{
 					break ;
 				}

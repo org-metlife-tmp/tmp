@@ -53,6 +53,7 @@ public class DiskBackingService {
 	 * @throws IOException
 	 */
 	public void writeFileToDirection(UploadFileScaffold ufs) throws IOException {
+		
 		DiskUpLoadSection diskUpLoadSection = DiskUpLoadSection.getInstance();
 		String path = diskUpLoadSection.getPath();
 		byte[] content = ufs.getContent();
@@ -134,6 +135,7 @@ public class DiskBackingService {
 	 * @throws IOException
 	 * @throws ReqDataException
 	 */
+	@SuppressWarnings("unused")
 	public Map<String, Object> validateAndWriteToUrl(String user_id, final UploadFileScaffold ufs,
 			Map<String, Object> result, String pay_master_id, final String pay_id, String channel_id) throws IOException, ReqDataException {
 
@@ -147,7 +149,10 @@ public class DiskBackingService {
 		Record pay_batch_total = Db.findById("pay_batch_total", "id", pay_id);
 		final String child_batchno = pay_batch_total.getStr("child_batchno");
 		final Record channel_setting = Db.findById("channel_setting", "id", channel_id);
-		Integer document_moudle = channel_setting.getInt("document_moudle");
+		Integer detail_id = channel_setting.getInt("document_moudle");
+		final String bankcode = channel_setting.getStr("bankcode");
+		Record configs_tail = Db.findById("document_detail_config", "id", detail_id);
+    	int document_moudle = Integer.valueOf(configs_tail.getStr("document_moudle")) ;
 		final Integer source_sys = pay_batch_total_master.getInt("source_sys");
 		final String pay_acc_no = pay_batch_total_master.getStr("pay_acc_no");
 
@@ -175,8 +180,6 @@ public class DiskBackingService {
 		Integer pay_attr = channel_setting.getInt("pay_attr");
 		int document_type = pay_attr == 0 ? WebConstant.DocumentType.SH.getKey() : WebConstant.DocumentType.FH.getKey();
 		// 读取回盘的汇总(可能没有)/详情配置(必须有)信息
-		List<Record> configs_tail = Db.find(Db.getSql("disk_downloading.findDatailConfig"), document_type,
-				document_moudle);
 		List<Record> configs = Db.find(Db.getSql("disk_downloading.findTotalConfig"), document_type, document_moudle);
 
 		// 默认汇总信息总金额在第0列 ,
@@ -188,7 +191,7 @@ public class DiskBackingService {
 		int response_code = 0;
 		int response_message = 0;
 		
-		if (configs_tail == null || configs_tail.size() == 0) {
+		if (configs_tail == null) {
 			logger.error("=======此渠道回盘配置信息未进行初始化=========" + document_moudle);
 			result.put("success", false);
 			result.put("error_code", "ChannelConfigError");
@@ -206,17 +209,17 @@ public class DiskBackingService {
 			}
 		}
 
-		for (int i = 0; i < configs_tail.get(0).getColumns().size(); i++) {
-			if ("amount".equals(configs_tail.get(0).getStr("field_" + i))) {
+		for (int i = 0; i < configs_tail.getColumns().size(); i++) {
+			if ("amount".equals(configs_tail.getStr("field_" + i))) {
 				amount = i;
 			}
-			if ("package_seq".equals(configs_tail.get(0).getStr("field_" + i))) {
+			if ("package_seq".equals(configs_tail.getStr("field_" + i))) {
 				package_seq = i;
 			}
-			if ("response_code".equals(configs_tail.get(0).getStr("field_" + i))) {
+			if ("response_code".equals(configs_tail.getStr("field_" + i))) {
 				response_code = i;
 			}
-			if ("response_message".equals(configs_tail.get(0).getStr("field_" + i))) {
+			if ("response_message".equals(configs_tail.getStr("field_" + i))) {
 				response_message = i;
 			}
 		}
@@ -409,7 +412,7 @@ public class DiskBackingService {
 						if (source_sys == 0) {
 							origin_flag = (Db.update(Db.getSql("disk_backing.updateLaOriginData"),child_batchno) == sendnum);
 						} else {
-							Integer is_inner = channel_setting.getInt("is_inner");
+							/*Integer is_inner = channel_setting.getInt("is_inner");
 							String cnaps_code = null ;
 							if( 1 == is_inner) {
 								logger.info("=====内部调拨");
@@ -423,13 +426,13 @@ public class DiskBackingService {
 							Record findById = Db.findById("all_bank_info", "cnaps_code", cnaps_code);
 							String bank_type = findById.getStr("bank_type");
 							List<Record> find = Db.find(Db.getSql("ebs_cfm.getRecvBankCode"), bank_type);
-							//支付时间 , 支付日期 为 当前日期
-							SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+							支付时间 , 支付日期 为 当前日期
+*/							SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 							SimpleDateFormat sdf1 = new SimpleDateFormat("HH:mm:ss");
 							String pay_date = sdf.format(new Date());
 							String pay_time = sdf1.format(new Date());
 							origin_flag = (Db.update(Db.getSql("disk_backing.updateEbsOriginData"), pay_acc_no , 
-									                    find.get(0).get("ebs_bank_code") , pay_date ,pay_time , child_batchno) == sendnum);
+									bankcode , pay_date ,pay_time , child_batchno) == sendnum);
 						}
 						logger.info("=====更新原始数据表结果===" + origin_flag);
 						if (origin_flag) {

@@ -44,6 +44,19 @@
    )
 #end
 
+#sql("selectLaRecvOriginData")
+   select
+    *
+   from
+   la_origin_recv_data
+   where
+   id
+   in
+   (
+   select  origin_id from recv_batch_detail where child_batchno = ?
+   )
+#end
+
 #sql("selectEbsOriginData")
    select
     *
@@ -119,9 +132,9 @@
           #elseif("master_batchno".equals(x.key))
              pay_master.master_batchno like convert(varchar(5),'%')+convert(varchar(255),#para(x.value))+convert(varchar(5),'%')
           #elseif("start_date".equals(x.key))
-             DATEDIFF(day,#para(x.value),pay_master.back_on) >= 0
+             DATEDIFF(day,#para(x.value),pay.send_on) >= 0
           #elseif("end_date".equals(x.key))
-             DATEDIFF(day,#para(x.value),pay_master.back_on) <= 0
+             DATEDIFF(day,#para(x.value),pay.send_on) <= 0
           #elseif("status".equals(x.key))
              pay.service_status in(
               #for(y : map.status)

@@ -50,9 +50,16 @@
 #end
 
 #sql("getChannel")
-  select c.id as channel_id,c.channel_code,c.channel_desc
-  from bankkey_setting b,channel_setting c
-  where b.channel_id = c.id and b.os_source = ? and b.org_id = ? and b.bankkey = ? and b.bankkey_status = ? and c.is_checkout = ?
+  select 
+  	c.id as channel_id,c.channel_code,c.channel_desc
+  	,b.bankkey_status, c.is_checkout, b.bank_type
+  from 
+  	bankkey_setting b,channel_setting c
+  where 
+  	b.channel_id = c.id and 
+  	b.os_source = ? and 
+  	b.org_id = ? and 
+  	b.bankkey = ?
 #end
 
 #sql("updEbsOriginStatus")

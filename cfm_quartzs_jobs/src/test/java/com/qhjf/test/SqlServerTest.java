@@ -12,6 +12,8 @@ import com.qhjf.cfm.web.config.RedisCacheConfigSection;
 import com.qhjf.cfm.web.plugins.CfmRedisPlugin;
 import com.qhjf.cfm.web.quartzs.jobs.comm.SftEbsDataCheckJob;
 import com.qhjf.cfm.web.quartzs.jobs.comm.SftLaDataCheckJob;
+import com.qhjf.cfm.web.quartzs.jobs.comm.SftRecvLaDataCheckJob;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,6 +36,7 @@ public class SqlServerTest {
         arp.setBaseSqlTemplatePath(null);
         arp.getEngine().setSourceFactory(new ClassPathSourceFactory());
         arp.addSqlTemplate("/sql/sqlserver/la_cfm.sql");
+        arp.addSqlTemplate("/sql/sqlserver/la_recv_cfm.sql");
         cfmRedis = new CfmRedisPlugin("cfm", "192.168.62.91");
         cfmRedis.setSerializer(new JdkSerializer());
         dp.start();
@@ -54,5 +57,5 @@ public class SqlServerTest {
         SftLaDataCheckJob ebs = new SftLaDataCheckJob();
         ebs.execute(null);
     }
-
+    
 }

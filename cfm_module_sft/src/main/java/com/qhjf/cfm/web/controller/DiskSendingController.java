@@ -34,7 +34,8 @@ public class DiskSendingController extends CFMBaseController {
     /**
      * @盘片下载
      */
-    @Auth(hasForces = {"PayBatchSend"})
+    @SuppressWarnings("unused")
+	@Auth(hasForces = {"PayBatchSend"})
     public void diskdownload() {
     	try {		
     		Record record = getParamsToRecordStrong();
@@ -52,17 +53,18 @@ public class DiskSendingController extends CFMBaseController {
         		logger.error("============通道编码已过期"+record.get("channel_code"));
         		throw new ReqDataException("此条通道编码已过期,请刷新页面");
         	}
-        	Integer document_moudle = find.get(0).getInt("document_moudle"); //报盘模板
+        	Integer detail_id = find.get(0).getInt("document_moudle"); //报盘模板
         	Integer pay_attr = find.get(0).getInt("pay_attr");  //收付属性 0--收，1--付
         	Integer document_type = pay_attr == 0 ? WebConstant.DocumentType.SB.getKey() : WebConstant.DocumentType.FB.getKey();
-        	logger.info("============报盘模板类型==="+document_moudle);
+        	logger.info("============报盘模板详情表id==="+detail_id);
         	//默认详情配置是一定有的..如果没有说明此渠道未配置
-        	List<Record> configs_tail = Db.find(Db.getSql("disk_downloading.findDatailConfig"),document_type,document_moudle);
-            if(configs_tail == null || configs_tail.size() == 0){
+        	Record configs_tail = Db.findById("document_detail_config", "id", detail_id);
+        	String document_version = configs_tail.getStr("document_version");
+        	if(configs_tail == null){
             	logger.error("==========此渠道模板尚未初始化");
             	throw new ReqDataException("此渠道模板尚未配置,请联系管理员");
             }
-        	
+        	int document_moudle = Integer.valueOf(configs_tail.getStr("document_moudle")) ;
         	List<Record> offerDocument = Db.find(Db.getSql("disk_downloading.findOfferDocument"), pay_id);
             boolean is_download = false ;
             if(offerDocument != null && offerDocument.size() == 1){
@@ -85,7 +87,7 @@ public class DiskSendingController extends CFMBaseController {
         	}else{
         		logger.info("=========网盘是TXT格式的文件");
         		if(!is_download){
-        		    String fileName = txtservice.getFileName(document_moudle,document_type);
+        		    String fileName = txtservice.getFileName(document_moudle,document_type,document_version);
         		    String diskDownLoad = txtservice.diskDownLoad(pay_master_id,pay_id,document_moudle,userInfo,fileName,document_type,configs_tail);
         		    render(new ByteArrayRender(fileName,diskDownLoad.getBytes()));
         		}else{

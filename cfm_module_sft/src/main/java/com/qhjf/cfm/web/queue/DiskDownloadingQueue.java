@@ -51,20 +51,23 @@ public class DiskDownloadingQueue implements  Runnable {
 		Long channel_id = main_record.getLong("channel_id");
 		Record channel = Db.findById("channel_setting", "id", channel_id);
 		List<Record> find = Db.find(Db.getSql("disk_downloading.findTotalByMainBatchNo"),master_batchno);
-		Integer document_moudle = channel.getInt("document_moudle"); //报盘模板
+		Integer detail_id = channel.getInt("document_moudle"); //报盘模板
     	Integer pay_attr = channel.getInt("pay_attr");  //收付属性 0--收，1--付
     	Integer document_type = pay_attr == 0 ? WebConstant.DocumentType.SB.getKey() : WebConstant.DocumentType.FB.getKey();
-    	log.info("============报盘模板类型==="+document_moudle);
+    	log.info("============报盘模板详情Id==="+detail_id);
+    	Record configs_tail = Db.findById("document_detail_config", "id", detail_id);
+    	int document_moudle = Integer.valueOf(configs_tail.getStr("document_moudle")) ;
+    	String document_version = configs_tail.getStr("document_version");
     	//默认详情配置是一定有的..如果没有说明此渠道未配置
-    	List<Record> configs_tail = Db.find(Db.getSql("disk_downloading.findDatailConfig"),document_type,document_moudle);
-        if(configs_tail == null || configs_tail.size() == 0){
+    	//List<Record> configs_tail = Db.find(Db.getSql("disk_downloading.findDatailConfig"),document_type,document_moudle);
+        if(configs_tail == null){
         	log.error("==========此渠道模板尚未初始化");
         	return ;
         }   	    	
 		if(null != find  && find.size()> 0){
 			for (Record record : find) {				
 	        		log.info("=========网盘是TXT格式的文件");
-	        		String fileName = txtservice.getFileName(document_moudle,document_type);
+	        		String fileName = txtservice.getFileName(document_moudle,document_type,document_version);
 	        		try {
 						txtservice.diskDownLoadNewThread(main_record.getLong("id"),record.getLong("id"),document_moudle,fileName,document_type,configs_tail);
 					} catch (Exception e) {

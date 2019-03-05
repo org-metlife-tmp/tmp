@@ -2,27 +2,20 @@ package com.qhjf.cfm.web.service;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import com.alibaba.fastjson.util.TypeUtils;
 import com.jfinal.plugin.activerecord.*;
-import com.qhjf.cfm.utils.ArrayUtil;
 import com.qhjf.cfm.utils.CommonService;
 import com.qhjf.cfm.utils.TableDataCacheUtil;
 import com.qhjf.cfm.web.channel.inter.api.IChannelInter;
 import com.qhjf.cfm.web.channel.manager.ChannelManager;
-import com.qhjf.cfm.web.constant.WebConstant;
-import com.qhjf.cfm.web.inter.impl.SysSinglePayInter;
 import com.qhjf.cfm.web.inter.impl.batch.SysBatchPayInter;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.jfinal.kit.Kv;
-import com.qhjf.cfm.exceptions.DbProcessException;
 import com.qhjf.cfm.exceptions.ReqDataException;
 import com.qhjf.cfm.queue.ProductQueue;
 import com.qhjf.cfm.queue.QueueBean;
@@ -86,7 +79,7 @@ public class DiskSendingService {
 		//3. 根据子批次id查询pay_batch_detail所有的明细
 		final List<Record> detailRecords = Db.find(Db.getSql("disk_downloading.findDatailInfo"), id);
 		
-		Map<String, String> accountAndBankInfo = getPayAccountAndBankInfo(mbRecord.getStr("pay_acc_no"));
+		Map<String, String> accountAndBankInfo = getAccountAndBankInfo(mbRecord.getStr("pay_acc_no"));
 		
 		List<Record> list = new ArrayList<>();
 		for(Record r : detailRecords){
@@ -149,9 +142,11 @@ public class DiskSendingService {
 					if (updPayBatchTotal == 1) {
 						return true;
 					}else {
+						logger.error("批付单据发送时，更新子批次汇总表状态为‘已发送未回盘’失败。子批次汇总表id={}", id);
 						return false;
 					}
 				}
+				logger.error("批付单据发送时，保存批收指令表失败。子批次汇总表id={}", id);
 				return false;
 			}
 		});
@@ -172,7 +167,7 @@ public class DiskSendingService {
 	 * @return
 	 * @throws ReqDataException
 	 */
-	private Map<String, String> getPayAccountAndBankInfo(String accNo) throws ReqDataException {
+	public static Map<String, String> getAccountAndBankInfo(String accNo) throws ReqDataException {
 		// 1. 通过pay_acc_no查询 cnaps号
 		Map<String, Object> account = TableDataCacheUtil.getInstance().getARowData("account", "acc_no", accNo);
 		if (account == null) {

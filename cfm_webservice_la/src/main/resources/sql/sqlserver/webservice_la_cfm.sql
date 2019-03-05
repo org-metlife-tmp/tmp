@@ -10,8 +10,18 @@
 #end
 
 #sql("getPayLegalByPayCode")
-  select * from pay_legal_data
-  where source_sys = 0 and pay_code = ?
+  SELECT
+    legal.*,
+    total.back_on
+  FROM
+    pay_batch_total total,
+    pay_batch_detail detail,
+    pay_legal_data legal
+  WHERE
+    legal.org_id = detail.origin_id
+    AND detail.base_id = total.id
+    AND legal.source_sys = 0
+    AND legal.pay_code = ?
 #end
 
 #end

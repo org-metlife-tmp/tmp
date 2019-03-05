@@ -44,7 +44,9 @@ public class CheckBatchForController extends CFMBaseController{
         	int pageNum = getPageNum(record);
             int pageSize = getPageSize(record);
         	Page<Record> page = service.list(pageNum , pageSize ,record,getCurUodp());	
-        	renderOkPage(page);
+        	//查询所有单据总金额
+            Record totalRec = service.totalInfo(record,getCurUodp());
+        	renderOkPage(page,totalRec);
 		} catch (BusinessException e) {
 			logger.error("获取组批LA列表失败");
 			renderFail(e);
@@ -77,7 +79,7 @@ public class CheckBatchForController extends CFMBaseController{
 		logger.info("============撤回至LA/EBS");
 		Record record = getRecordByParamsStrong();
         try {
-        	service.revokeToLaOrEbs(record);	
+        	service.revokeToLaOrEbs(record,getUserInfo());	
         	renderOk(null);
 		} catch (BusinessException e) {
 			logger.error("核对组批撤回失败");

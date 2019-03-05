@@ -81,18 +81,18 @@ public class LaCallback {
 				WebConstant.SftCallbackStatus.SFT_NO_CALLBACK.getKey(),
 				WebConstant.SftCallbackStatus.SFT_CALLBACK_F.getKey(), origin.getStr("persist_version"));
 		if (updNum != 1) {
-			throw new Exception(origin.getLong("id") + "修改原始单据状态失败,不回写EBS");
+			throw new Exception(origin.getLong("id") + "修改原始单据状态失败,不回写LA");
 		}
 		return bean;
 	}
 
 	private OMElement createOMElement(List<LaCallbackBean> callbackBeans) throws Exception{
-		ServiceClient sc = new ServiceClient();
+		/*ServiceClient sc = new ServiceClient();
 		Options opts = new Options();
 		EndpointReference end = new EndpointReference(config.getUrl());
 		opts.setTo(end);
 		opts.setAction("http://eai.metlife.com/ESBWebEntry/ProcessMessage");
-		sc.setOptions(opts);
+		sc.setOptions(opts);*/
 
 		OMFactory fac = OMAbstractFactory.getOMFactory();
 

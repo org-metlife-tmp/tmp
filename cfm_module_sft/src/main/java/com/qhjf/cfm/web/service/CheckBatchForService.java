@@ -55,8 +55,8 @@ public class CheckBatchForService {
 	private final static Log logger = LogbackLog.getLog(CheckBatchForService.class);
 	TxtDiskSendingService txtDiskSendingService = new TxtDiskSendingService();
 
-	private static String la_pre = "la_batch";
-	private static String ebs_pre = "ebs_batch";
+	private static String la_pre = "pay_la_batch";
+	private static String ebs_pre = "pay_ebs_batch";
 	/**
 	 * LA组批列表
 	 * @param pageSize 
@@ -145,8 +145,7 @@ public class CheckBatchForService {
 			if (null == user_record) {
 				throw new ReqDataException("当前登录人未在用户信息表内配置");
 			}
-			List<Long> status = record.get("status");
-			
+			List<Integer> status = record.get("status");
 			List<Long> remove_ids = record.get("remove_ids");
 			if( null ==remove_ids || remove_ids.size() == 0) {
 				record.remove("remove_ids");
@@ -159,7 +158,7 @@ public class CheckBatchForService {
 			}
 
 			if (status != null && status.size() > 0) {
-				if (status.contains(1) || status.contains(2)) {
+				if (status.contains("1") || status.contains("2")) {
 					throw new ReqDataException("查询条件中请剔除已组批或者已撤回");
 				}
 			} else {
@@ -213,7 +212,7 @@ public class CheckBatchForService {
 				   
 				   } else {
 					   ids = Db
-							   .find(Db.getSqlPara("check_batch.checkBatchlist_confirm", Kv.by("map", record.getColumns())));				
+							   .find(Db.getSqlPara("check_batch.checkBatchEBSlist_confirm", Kv.by("map", record.getColumns())));				
 					   total_amount_master = Db
 							   .findFirst(Db.getSqlPara("check_batch.checkBatchEBSlistAmount_confirm", Kv.by("map", record.getColumns())));
 				   }
@@ -285,9 +284,15 @@ public class CheckBatchForService {
 								.set("success_amount", new BigDecimal(0)).set("fail_num", 0)
 								.set("fail_amount", new BigDecimal(0))
 								.set("service_status", WebConstant.SftCheckBatchStatus.SPZ.getKey())
-								.set("source_sys", source_sys);
+								.set("source_sys", source_sys)
+								.set("create_by", userInfo.getUsr_id())
+								.set("create_on", new Date());
 						logger.info("===============开始入库pay_batch_total");
 						boolean save = Db.save("pay_batch_total", "id", pay_batch_total);
+						logger.info("===============入库pay_batch_total==" + save);
+						if (!save) {
+							return false;
+						}
 						List<Record> find = null;
 						if (0 == source_sys) {
 							find = Db.find(Db.getSqlPara("check_batch.checkBatchLADetail", Kv.by("map", new_ids)));
@@ -322,10 +327,6 @@ public class CheckBatchForService {
 							lists.add(pay_batch_detail);
 						}
 
-						logger.info("===============入库pay_batch_total==" + save);
-						if (!save) {
-							return false;
-						}
 						int[] batchSave = Db.batchSave("pay_batch_detail", lists, 1000);
 						boolean save1 = ArrayUtil.checkDbResult(batchSave);
 						if (save1) {
@@ -548,14 +549,17 @@ public class CheckBatchForService {
 	 * 核对组批撤回
 	 * 
 	 * @param record
+	 * @param userInfo 
 	 * @return
 	 * @throws ReqDataException
 	 */
-	public void revokeToLaOrEbs(Record record) throws ReqDataException {
+	public void revokeToLaOrEbs(Record record, UserInfo userInfo) throws ReqDataException {
+		Long usr_id = userInfo.getUsr_id();
+		final Record user_record = Db.findById("user_info", "usr_id", usr_id);
 		final Integer source_sys = TypeUtils.castToInt(record.get("source_sys"));
 		final Integer id = TypeUtils.castToInt(record.get("id"));
 		final Integer persist_version = TypeUtils.castToInt(record.get("persist_version"));
-		final String feed_back = record.getStr("feed_back");
+		final String feed_back = record.getStr("feed_back");		
 		Record findById = Db.findById("pay_legal_data", "id", id);
 		if (null == findById) {
 			throw new ReqDataException("此条数据已经过期,请刷新页面");
@@ -571,7 +575,8 @@ public class CheckBatchForService {
 			public boolean run() throws SQLException {
 				boolean update = CommonService.update("pay_legal_data",
 						new Record().set("status", WebConstant.SftLegalData.REVOKE.getKey())
-								.set("process_msg", feed_back).set("persist_version", persist_version + 1),
+								.set("process_msg", feed_back).set("persist_version", persist_version + 1)
+								.set("op_date", new Date()).set("op_user_name", user_record.get("name")),
 						new Record().set("id", id).set("persist_version", persist_version));
 				if (update) {
 					logger.info("====撤回更新pay_legal_data====" + update);
@@ -683,6 +688,45 @@ public class CheckBatchForService {
 		return Db.find(Db.getSql("check_batch.selectSonByMasterno"), master_batchno);
 	}
 
-
-
+	/**
+	 * 获取总金额 , 总个数
+	 * @param record
+	 * @param uodpInfo 
+	 * @return
+	 * @throws ReqDataException 
+	 */
+	public Record totalInfo(Record record, UodpInfo uodpInfo) throws ReqDataException {
+		Long org_id = uodpInfo.getOrg_id();
+		Record findById = Db.findById("organization", "org_id", org_id);
+		if (null == findById) {
+			throw new ReqDataException("当前登录人的机构信息未维护");
+		}
+		List<String> codes = new ArrayList<>();
+		if (findById.getInt("level_num") == 1) {
+			logger.info("========目前登录机构为总公司");
+			codes = Arrays.asList("0102", "0101", "0201", "0202", "0203", "0204", "0205", "0500");
+		} else {
+			logger.info("========目前登录机构为分公司公司");
+			List<Record> rec = Db.find(Db.getSql("org.getCurrentUserOrgs"), org_id);
+			for (Record o : rec) {
+				codes.add(o.getStr("code"));
+			}
+		}
+		record.set("codes", codes);
+		record.set("status", new int[] {
+				WebConstant.SftLegalData.NOGROUP.getKey()
+		});
+		Integer source_sys = TypeUtils.castToInt(record.get("source_sys"));
+		SqlPara sqlPara = null;
+		if (0 == source_sys) {
+			logger.info("=======数据来源LA======");
+			sqlPara = Db.getSqlPara("check_batch.checkBatchLAAmount", Kv.by("map", record.getColumns()));
+		} else if (1 == source_sys) {
+			logger.info("=======数据来源EBS======");
+			sqlPara = Db.getSqlPara("check_batch.checkBatchEBSAmount", Kv.by("map", record.getColumns()));
+		} else {
+			throw new ReqDataException("渠道传输不正确");
+		}
+		return Db.findFirst(sqlPara);
+	}
 }

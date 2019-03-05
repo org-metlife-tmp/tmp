@@ -432,6 +432,7 @@ public class SysBatchPayInter implements ISysAtomicInterface {
 		total.set("repeat_count", r.getInt("repeat_count") == null ? 1 : r.getInt("repeat_count"));
 		String sourceRef = r.getStr("source_ref");
 		if (sourceRef == null || sourceRef.trim().equals("")) {
+			log.error("批付指令生成汇总表数据时，source_ref为空！");
 			return null;
 		}
 		total.set("source_ref", sourceRef);
@@ -634,7 +635,12 @@ public class SysBatchPayInter implements ISysAtomicInterface {
 			}
 		}
 		return CommonService.updateRows(sourceRef
-				, new Record().set("success_num", succ).set("success_amount", succAmount).set("fail_num", fail).set("fail_amount", failAmount).set("service_status", 5)
+				, new Record().set("success_num", succ)
+							  .set("success_amount", succAmount)
+							  .set("fail_num", fail)
+							  .set("fail_amount", failAmount)
+							  .set("service_status", 5)
+							  .set("back_on", new Date())
 				, new Record().set("id", billTotalId)) == 1;
 	}
 	/**

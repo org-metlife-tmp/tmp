@@ -26,6 +26,10 @@
   #include("doubtful.sql")
 #end
 
+#namespace("recvdoubtful")
+  #include("recvdoubtful.sql")
+#end
+
 #namespace("check_batch")
   #include("check_batch.sql")
 #end
@@ -33,3 +37,20 @@
 #namespace("except")
   #include("except.sql")
 #end
+
+#namespace("recvexcept")
+  #include("recvexcept.sql")
+#end
+
+#namespace("recv_check_batch")
+  #include("recv_check_batch.sql")
+#end
+
+#namespace("recv_disk_downloading")
+  #include("recv_disk_downloading.sql")
+#end
+
+#namespace("recv_disk_backing")
+  #include("recv_disk_backing.sql")
+#end
+

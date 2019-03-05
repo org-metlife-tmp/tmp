@@ -45,11 +45,11 @@ public class LaConsumerQueue implements Runnable{
 			try{
 				LaQueueBean queueBean = null;
 				queueBean = LaQueue.getInstance().getQueue().take();
-				log.debug("url="+config.getUrl());
+				log.debug("LA批付回调核心系统web url="+config.getUrl());
 				
 				ServiceClient sc = new ServiceClient();
 				Options opts = new Options();   
-				EndpointReference end = new EndpointReference("http://10.164.26.43/esbwebentry/ESBWebEntry.asmx?wsdl");   
+				EndpointReference end = new EndpointReference(config.getUrl());   
 				opts.setTo(end); 
 				opts.setAction("http://eai.metlife.com/ESBWebEntry/ProcessMessage");
 				sc.setOptions(opts);
@@ -126,12 +126,17 @@ public class LaConsumerQueue implements Runnable{
 											CommonService.getPeriodByCurrentDay(new Date())
 											);
 								} catch (BusinessException e) {
+									log.error("LA响应回写原始数据，LA接收成功，生成凭证失败！PMTOUT={}", json);
 									e.printStackTrace();
 									return false;
 								}
-	    					}
+	    					}else {
+								log.debug("LA响应回写原始数据，支付失败，不生成凭证；payCode={}", payCode);
+							}
 	    					return true;
-	    				}
+	    				}else {
+							log.error("LA响应回写原始数据，更新la_origin_pay_data失败！payCode={}", payCode);
+						}
 	    			}else{
 	    				String errField = json.getString("FLDNAM");
 	    				String errCode = json.getString("ERRCODE");

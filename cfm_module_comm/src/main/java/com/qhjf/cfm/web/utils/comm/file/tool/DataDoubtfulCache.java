@@ -12,7 +12,7 @@ public class DataDoubtfulCache {
     private RedisCacheConfigSection ini = GlobalConfigSection.getInstance().getExtraConfig(IConfigSectionType.DefaultConfigSectionType.Redis);
 
     public enum DoubtfulType {
-        OA, LA, EBS
+        OA, LA, EBS, LA_RECV
     }
 
     public Set<Long> getCacheValue(DoubtfulType type, String key) {

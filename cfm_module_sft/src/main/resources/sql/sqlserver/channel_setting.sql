@@ -162,11 +162,12 @@ WHERE is_checkout = 1
 #sql("getdoucument")
 SELECT
 	id,
-	channel_code document_moudle
+	document_name
 FROM
 	document_detail_config
 WHERE
 	document_type = ?
+	and pay_mode = ?
 #end
 
 #sql("getchanbypaymode")

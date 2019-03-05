@@ -25,6 +25,7 @@ import com.jfinal.plugin.activerecord.Record;
 import com.qhjf.cfm.exceptions.ReqValidateException;
 import com.qhjf.cfm.utils.CommonService;
 import com.qhjf.cfm.utils.MD5Kit;
+import com.qhjf.cfm.utils.TableDataCacheUtil;
 import com.qhjf.cfm.web.constant.WebConstant;
 import com.qhjf.cfm.web.quartzs.jobs.pub.PubJob;
 import com.qhjf.cfm.web.utils.comm.file.tool.DataDoubtfulCache;
@@ -98,7 +99,8 @@ public class SftEbsDataCheckJob implements Job{
                             return false;
                         }
                     }
-                    boolean isChannelOnline = isChannelOnline(ebsOriginData.getStr("channel_code"));
+                    
+                    /*boolean isChannelOnline = isChannelOnline(ebsOriginData.getStr("channel_code"));
                     if(!isChannelOnline){
                     	int flag = Db.update(Db.getSql("la_cfm.updLaOriginStatus"),
                                 WebConstant.YesOrNo.YES.getKey(),
@@ -111,50 +113,52 @@ public class SftEbsDataCheckJob implements Job{
                         }else{
                             return false;
                         }
-                    }
+                    }*/
+                    
                     try{
-                        if (checkDoubtful(ebsOriginData).equals(WebConstant.YesOrNo.YES)) {
-                            return true;
-                        }
-                        Record payLegal = new Record();
-                        payLegal.set("source_sys", "1");
-                        payLegal.set("origin_id", ebsOriginData.getLong("id"));
-                        payLegal.set("pay_code", ebsOriginData.getStr("pay_code"));
-                        payLegal.set("channel_id", ebsOriginData.getLong("channel_id"));
-                        payLegal.set("org_id", ebsOriginData.getLong("tmp_org_id"));
-                        payLegal.set("org_code", ebsOriginData.getStr("tmp_org_code"));
-                        payLegal.set("amount", ebsOriginData.getBigDecimal("amount"));
-                        payLegal.set("recv_acc_name", ebsOriginData.getStr("recv_acc_name"));
-                        payLegal.set("recv_cert_type", ebsOriginData.getStr("tmp_recv_cert_type"));
-                        payLegal.set("recv_cert_code", ebsOriginData.getStr("recv_cert_code"));
-                        payLegal.set("recv_bank_type", ebsOriginData.getStr("recv_bank_type"));
-                        payLegal.set("recv_bank_name", ebsOriginData.getStr("recv_bank_name"));
-                        payLegal.set("recv_acc_no", ebsOriginData.getStr("recv_acc_no"));
-                        if (!Db.save("pay_legal_data", payLegal)) {
-                            return false;
-                        }
-
-                        Record ebsPayLegalExt = new Record();
-                        ebsPayLegalExt.set("legal_id", payLegal.getLong("id"));
-                        ebsPayLegalExt.set("origin_id", ebsOriginData.getLong("id"));
-                        ebsPayLegalExt.set("insure_type", ebsOriginData.getStr("insure_type"));
-                        ebsPayLegalExt.set("org_code", ebsOriginData.getStr("org_code"));
-                        ebsPayLegalExt.set("preinsure_bill_no", ebsOriginData.getStr("preinsure_bill_no"));
-                        ebsPayLegalExt.set("insure_bill_no", ebsOriginData.getStr("insure_bill_no"));
-                        ebsPayLegalExt.set("branch_bill_no", ebsOriginData.getStr("branch_bill_no"));
-                        ebsPayLegalExt.set("biz_type", ebsOriginData.getStr("biz_type"));
-                        ebsPayLegalExt.set("pay_mode", ebsOriginData.getStr("pay_mode"));
-                        ebsPayLegalExt.set("pay_date", ebsOriginData.getStr("pay_date"));
-                        ebsPayLegalExt.set("recv_cert_type", ebsOriginData.getStr("recv_cert_type"));
-                        ebsPayLegalExt.set("company_name", ebsOriginData.getStr("company_name"));
-                        ebsPayLegalExt.set("company_customer_no", ebsOriginData.getStr("company_customer_no"));
-                        ebsPayLegalExt.set("biz_code", ebsOriginData.getStr("biz_code"));
-                        ebsPayLegalExt.set("sale_code", ebsOriginData.getStr("sale_code"));
-                        ebsPayLegalExt.set("sale_name", ebsOriginData.getStr("sale_name"));
-                        ebsPayLegalExt.set("op_code", ebsOriginData.getStr("op_code"));
-                        ebsPayLegalExt.set("op_name", ebsOriginData.getStr("op_name"));
-                        if (!Db.save("ebs_pay_legal_data_ext", ebsPayLegalExt)) {
-                            return false;
+                        if (checkDoubtful(ebsOriginData).equals(WebConstant.YesOrNo.NO)) {
+                            
+                        	Record payLegal = new Record();
+                        	payLegal.set("source_sys", "1");
+                        	payLegal.set("origin_id", ebsOriginData.getLong("id"));
+                        	payLegal.set("pay_code", ebsOriginData.getStr("pay_code"));
+                        	payLegal.set("channel_id", ebsOriginData.getLong("channel_id"));
+                        	payLegal.set("org_id", ebsOriginData.getLong("tmp_org_id"));
+                        	payLegal.set("org_code", ebsOriginData.getStr("tmp_org_code"));
+                        	payLegal.set("amount", ebsOriginData.getBigDecimal("amount"));
+                        	payLegal.set("recv_acc_name", ebsOriginData.getStr("recv_acc_name"));
+                        	payLegal.set("recv_cert_type", ebsOriginData.getStr("tmp_recv_cert_type"));
+                        	payLegal.set("recv_cert_code", ebsOriginData.getStr("recv_cert_code"));
+                        	payLegal.set("recv_bank_type", ebsOriginData.getStr("recv_bank_type"));
+                        	payLegal.set("recv_bank_name", ebsOriginData.getStr("recv_bank_name"));
+                        	payLegal.set("recv_acc_no", ebsOriginData.getStr("recv_acc_no"));
+                        	if (!Db.save("pay_legal_data", payLegal)) {
+                        		return false;
+                        	}
+                        	
+                        	Record ebsPayLegalExt = new Record();
+                        	ebsPayLegalExt.set("legal_id", payLegal.getLong("id"));
+                        	ebsPayLegalExt.set("origin_id", ebsOriginData.getLong("id"));
+                        	ebsPayLegalExt.set("insure_type", ebsOriginData.getStr("insure_type"));
+                        	ebsPayLegalExt.set("org_code", ebsOriginData.getStr("org_code"));
+                        	ebsPayLegalExt.set("preinsure_bill_no", ebsOriginData.getStr("preinsure_bill_no"));
+                        	ebsPayLegalExt.set("insure_bill_no", ebsOriginData.getStr("insure_bill_no"));
+                        	ebsPayLegalExt.set("branch_bill_no", ebsOriginData.getStr("branch_bill_no"));
+                        	ebsPayLegalExt.set("biz_type", ebsOriginData.getStr("biz_type"));
+                        	ebsPayLegalExt.set("pay_mode", ebsOriginData.getStr("pay_mode"));
+                        	ebsPayLegalExt.set("pay_date", ebsOriginData.getStr("pay_date"));
+                        	ebsPayLegalExt.set("recv_cert_type", ebsOriginData.getStr("recv_cert_type"));
+                        	ebsPayLegalExt.set("company_name", ebsOriginData.getStr("company_name"));
+                        	ebsPayLegalExt.set("company_customer_no", ebsOriginData.getStr("company_customer_no"));
+                        	ebsPayLegalExt.set("biz_code", ebsOriginData.getStr("biz_code"));
+                        	ebsPayLegalExt.set("sale_code", ebsOriginData.getStr("sale_code"));
+                        	ebsPayLegalExt.set("sale_name", ebsOriginData.getStr("sale_name"));
+                        	ebsPayLegalExt.set("op_code", ebsOriginData.getStr("op_code"));
+                        	ebsPayLegalExt.set("op_name", ebsOriginData.getStr("op_name"));
+                        	ebsPayLegalExt.set("bank_key", ebsOriginData.getStr("bank_key"));
+                        	if (!Db.save("ebs_pay_legal_data_ext", ebsPayLegalExt)) {
+                        		return false;
+                        	}
                         }
                         int updRows = Db.update(Db.getSql("ebs_cfm.updEbsOriginProcess"),
                                 WebConstant.YesOrNo.YES.getKey(),
@@ -196,23 +200,47 @@ public class SftEbsDataCheckJob implements Job{
                 }
             }
 
+            /*//EBS银行大类匹配
             Record recvBank = Db.findFirst(Db.getSql("ebs_cfm.getRecvBank"), ebsOriginData.getStr("recv_bank_name"));
             if(recvBank == null){
             	throw new ReqValidateException("未匹配到收款银行");
-            }
-            String bankKey = recvBank.getStr("code");
-            List<Record> channels = Db.find(
-                    Db.getSql("ebs_cfm.getChannel"), 1, org.getLong("org_id"), bankKey, 1, 1);
+            }*/
+            String bankKey = ebsOriginData.getStr("recv_bank_name");//recvBank.getStr("code");
+            ebsOriginData.set("bank_key", bankKey);
+            
+            List<Record> channels = Db.find(Db.getSql("ebs_cfm.getChannel")
+            		, 1
+            		, org.getLong("org_id")
+            		, bankKey);
             if (channels == null || channels.size() == 0) {
                 throw new ReqValidateException("未匹配到通道");
             }
             if (channels.size() > 1) {
                 throw new ReqValidateException("匹配到多个通道");
             }
-            ebsOriginData.set("channel_id", channels.get(0).getLong("channel_id"));
-            ebsOriginData.set("channel_code", channels.get(0).getStr("channel_code"));
+            
+            Record channel = channels.get(0);
+            Integer bankkeyStatus = channel.getInt("bankkey_status");
+            if (null == bankkeyStatus || bankkeyStatus != 1) {
+            	throw new ReqValidateException("bankkey状态未启用");
+			}
+            Integer isCheckout = channel.getInt("is_checkout");
+            if (null == isCheckout || isCheckout != 1) {
+            	throw new ReqValidateException("通道状态未启用");
+			}
+            
+            /*ebsOriginData.set("channel_id", channel.getLong("channel_id"));
+            ebsOriginData.set("channel_code", channel.getStr("channel_code"));
             ebsOriginData.set("recv_bank_type", bankKey);
-            ebsOriginData.set("recv_bank_name", recvBank.getStr("name"));
+            ebsOriginData.set("recv_bank_name", recvBank.getStr("name"));*/
+            
+            String bankType = channel.getStr("bank_type");
+            Map<String, Object> constBankType = TableDataCacheUtil.getInstance().getARowData("const_bank_type", "code", bankType);
+            
+            ebsOriginData.set("channel_id", channel.getLong("channel_id"));
+            ebsOriginData.set("channel_code", channel.getStr("channel_code"));
+            ebsOriginData.set("recv_bank_type", bankType);
+            ebsOriginData.set("recv_bank_name", TypeUtils.castToString(constBankType.get("name")));
         }
 
         private WebConstant.YesOrNo checkDoubtful(Record originData) throws Exception {
@@ -253,13 +281,13 @@ public class SftEbsDataCheckJob implements Job{
         }
     }
     
-    private boolean isChannelOnline(String channelCode){
+    /*private boolean isChannelOnline(String channelCode){
     	Record record = Db.findFirst(Db.getSql("ebs_cfm.getChannelOnline"), channelCode);
     	if(record == null){
     		return false;
     	}
     	return true;
-    }
+    }*/
 
 	
 }

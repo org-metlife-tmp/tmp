@@ -44,7 +44,9 @@ public class BankkeySettingWorkBook extends AbstractWorkBook {
             int is_source_back = TypeUtils.castToInt(record.get("is_source_back"));
             record.set("is_source_back_name", is_source_back==0? "否" : "是");
             int bankkey_status = TypeUtils.castToInt(record.get("bankkey_status"));
-            record.set("bankkey_status_name", is_source_back==0? "关闭" : "启用");
+            record.set("bankkey_status_name", bankkey_status==0? "关闭" : "启用");
+            int subordinate_channel = TypeUtils.castToInt(record.get("subordinate_channel"));
+            record.set("subordinate_channel", WebConstant.SftSubordinateChannel.getSftSubordinateChannel(subordinate_channel).getDesc());
 
         }
         return POIUtil.createExcel(recordList, this);
