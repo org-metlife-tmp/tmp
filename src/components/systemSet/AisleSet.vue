@@ -204,7 +204,7 @@
                                  :formatter="transitMode"></el-table-column>
                 <el-table-column prop="bankcode" label="bankcode" width="100px"
                                  :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="bank_name" label="银行账号" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="acc_no" label="银行账号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="org_name" label="文件生成归属地" width="120px"
                                  :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="single_file_limit" label="单批次文件笔数限制" width="150px"
