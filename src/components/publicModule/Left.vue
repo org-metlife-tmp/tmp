@@ -616,18 +616,18 @@
                     <el-menu-item index="/batch-payment/abnormal-dispose" v-if="menuList.PayBatchDoExcp">异常处理</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="21">
+            <el-submenu index="21" v-if="menuList.BATCHRECV">
                 <template slot="title" height="200px">
                     <i class="icon-plfk"></i>
                     <p class="mg-four">批量收款</p>
                 </template>
                 <el-menu-item-group>
-                    <el-menu-item index="/batch-gather/gaterh-prevent-repet" >支付数据防重预警</el-menu-item>
-                    <el-menu-item index="/batch-gather/gather-check-batch" >核对组批</el-menu-item>
-                    <el-menu-item index="/batch-gather/gather-disk-sending" >盘片发送</el-menu-item>
-                    <el-menu-item index="/batch-gather/gather-diskbacking" >盘片回盘</el-menu-item>
-                    <el-menu-item index="/batch-gather/gather-settle-accounts" >结算对账</el-menu-item>
-                    <el-menu-item index="/batch-gather/gather-abnormal" >异常处理</el-menu-item>
+                    <el-menu-item index="/batch-gather/gaterh-prevent-repet" v-if="menuList.RecvDataAntiDualWaring">支付数据防重预警</el-menu-item>
+                    <el-menu-item index="/batch-gather/gather-check-batch" v-if="menuList.RecvCheckAllot">核对组批</el-menu-item>
+                    <el-menu-item index="/batch-gather/gather-disk-sending" v-if="menuList.RecvBatchSend">盘片发送</el-menu-item>
+                    <el-menu-item index="/batch-gather/gather-diskbacking" v-if="menuList.RecvBatchResp">盘片回盘</el-menu-item>
+                    <el-menu-item index="/batch-gather/gather-settle-accounts" v-if="menuList.RecvBatchCheck">结算对账</el-menu-item>
+                    <el-menu-item index="/batch-gather/gather-abnormal" v-if="menuList.RecvBatchDoExcp">异常处理</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
         </el-menu>
@@ -780,6 +780,14 @@
                     PayBatchResp: false, //盘片回盘
                     PayBatchCheck: false, //结算对账
                     PayBatchDoExcp: false, //异常处理
+
+                    BATCHRECV: false, //批量收款
+                    RecvDataAntiDualWaring: false, //支付数据防重预警
+                    RecvCheckAllot: false, //核对组批
+                    RecvBatchSend: false, //盘片发送
+                    RecvBatchResp: false, //盘片回盘
+                    RecvBatchCheck: false, //结算对账
+                    RecvBatchDoExcp: false, //异常处理
                 }
             }
         },

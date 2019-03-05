@@ -170,6 +170,11 @@
                         </el-col>
                         <el-col :span="2">
                             <el-form-item>
+                                <el-button type="primary" plain @click="clearData" size="mini">清空筛选</el-button>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="2">
+                            <el-form-item>
                                 <el-button type="primary" plain @click="queryData" size="mini"
                                            :disabled="!searchData.channel_id_one && !searchData.channel_id_two">搜索</el-button>
                             </el-form-item>
@@ -223,7 +228,7 @@
                         layout="sizes, prev, pager, next, jumper"
                         :page-size="pagSize"
                         :total="pagTotal"
-                        :page-sizes="[7, 50, 100, 500]"
+                        :page-sizes="[20, 50, 100, 500]"
                         :pager-count="5"
                         @current-change="getCurrentPage"
                         @size-change="sizeChange"
@@ -296,16 +301,21 @@
                         </el-col>
                         <el-col :span="2">
                             <el-form-item>
-                                <el-button type="primary" plain @click="queryChildData" size="mini"
-                                           :disabled="tableList.length == 0">搜索</el-button>
+                                <el-button type="primary" plain @click="clearChildData" size="mini">清空筛选</el-button>
                             </el-form-item>
                         </el-col>
-                        <el-col :span="5">
+                        <el-col :span="22">
                             <el-form-item style="margin-bottom:0px">
                                 <el-checkbox-group v-model="childSearch.is_checked">
                                     <el-checkbox :label="0" name="未核对">未核对</el-checkbox>
                                     <el-checkbox :label="1" name="已核对">已核对</el-checkbox>
                                 </el-checkbox-group>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="2">
+                            <el-form-item>
+                                <el-button type="primary" plain @click="queryChildData" size="mini"
+                                           :disabled="tableList.length == 0">搜索</el-button>
                             </el-form-item>
                         </el-col>
                     </el-row>
@@ -382,7 +392,7 @@
                 routerMessage: {
                     optype: "sftrecvcheck_batchlist",
                     params: {
-                        page_size: 7,
+                        page_size: 20,
                         page_num: 1,
                         // source_sys: "0"
                     }
@@ -439,6 +449,29 @@
             }
         },
         methods: {
+            //清空搜索条件
+            clearData: function(){
+                var searchData = this.searchData;
+                for (var k in searchData) {
+                    if(k == "is_checked"){
+                        searchData[k] = [];
+                    }else{
+                        searchData[k] = "";
+                    }
+
+                }
+            },
+            clearChildData: function(){
+                var searchData = this.childSearch;
+                for (var k in searchData) {
+                    if(k == "is_checked"){
+                        searchData[k] = [];
+                    }else{
+                        searchData[k] = "";
+                    }
+
+                }
+            },
             //根据条件查询数据
             queryData: function () {
                 var searchData = this.searchData;

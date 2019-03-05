@@ -136,6 +136,11 @@
                     </el-col>
                     <el-col :span="2">
                         <el-form-item>
+                            <el-button type="primary" plain @click="clearData" size="mini">清空筛选</el-button>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="2">
+                        <el-form-item>
                             <el-button type="primary" plain @click="queryData" size="mini">搜索</el-button>
                         </el-form-item>
                     </el-col>
@@ -484,6 +489,18 @@
             }
         },
         methods: {
+            //清空搜索条件
+            clearData: function(){
+                var searchData = this.searchData;
+                for (var k in searchData) {
+                    if(k == "bankkey_status"){
+                        searchData[k] = [];
+                    }else{
+                        searchData[k] = "";
+                    }
+
+                }
+            },
             //根据条件查询数据
             queryData: function () {
                 var searchData = this.searchData;

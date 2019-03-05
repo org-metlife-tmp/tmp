@@ -149,10 +149,10 @@
                     </el-col>
                     <el-col :span="2">
                         <el-form-item>
-                            <el-button type="primary" plain @click="queryData" size="mini">搜索</el-button>
+                            <el-button type="primary" plain @click="clearData" size="mini">清空筛选</el-button>
                         </el-form-item>
                     </el-col>
-                    <el-col :span="16">
+                    <el-col :span="21">
                         <el-form-item style="margin-bottom:0px">
                             <el-checkbox-group v-model="searchData.service_status">
                                 <el-checkbox v-for="(name,k) in statusList"
@@ -160,6 +160,11 @@
                                     {{ name }}
                                 </el-checkbox>
                             </el-checkbox-group>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="2">
+                        <el-form-item>
+                            <el-button type="primary" plain @click="queryData" size="mini">搜索</el-button>
                         </el-form-item>
                     </el-col>
                 </el-row>
@@ -211,7 +216,7 @@
                     layout="sizes, prev, pager, next, jumper"
                     :page-size="pagSize"
                     :total="pagTotal"
-                    :page-sizes="[7, 50, 100, 500]"
+                    :page-sizes="[20, 50, 100, 500]"
                     :pager-count="5"
                     @current-change="getCurrentPage"
                     @size-change="sizeChange"
@@ -248,7 +253,7 @@
                 routerMessage: {
                     optype: "sftexcept_exceptlist",
                     params: {
-                        page_size: 7,
+                        page_size: 20,
                         page_num: 1,
                         source_sys: "0"
                     }
@@ -284,6 +289,18 @@
             }
         },
         methods: {
+            //清空搜索条件
+            clearData: function(){
+                var searchData = this.searchData;
+                for (var k in searchData) {
+                    if(k == "service_status"){
+                        searchData[k] = [];
+                    }else if (k != "source_sys"){
+                        searchData[k] = "";
+                    }
+
+                }
+            },
             //根据条件查询数据
             queryData: function () {
                 var searchData = this.searchData;
