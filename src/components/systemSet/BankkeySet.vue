@@ -613,7 +613,7 @@
                             return true;
                         });
                     } else {
-                        this.bankTypeList = this.bankAllTypeList.slice(0, 200);
+                        this.clearSearch(true);
                     }
                     this.bankLongding = false;
                 }, 1200);
