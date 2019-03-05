@@ -456,7 +456,7 @@
                                        active-value="1" :disabled="isLook"
                                        inactive-value="0"></el-switch>
                             <span v-show="dialogData.is_checkout == 1">启用</span><span
-                                v-show="dialogData.is_checkout == 0">禁用</span>
+                                v-show="dialogData.is_checkout == 0">停用</span>
                         </el-form-item>
                     </el-col>
                     <el-col :span="24">

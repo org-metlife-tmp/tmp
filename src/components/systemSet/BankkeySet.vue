@@ -272,7 +272,7 @@
                                        active-value="1" :disabled="isLook"
                                        inactive-value="0"></el-switch>
                             <span v-show="dialogData.bankkey_status == 1">启用</span><span
-                                v-show="dialogData.bankkey_status == 0">禁用</span>
+                                v-show="dialogData.bankkey_status == 0">停用</span>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
@@ -418,6 +418,7 @@
                 bankAllTypeList: [], //银行大类全部(不重复)
                 bankTypeList: [], //银行大类
                 bankLongding: false,
+                saveBank: {}, //当前项的银行
                 dialogVisible: false, //弹框数据
                 dialogTitle: "新增",
                 dialogData: {
@@ -621,6 +622,21 @@
             clearSearch: function (val) {
                 if (this.bankTypeList != this.bankAllTypeList && val) {
                     this.bankTypeList = this.bankAllTypeList.slice(0, 200);
+
+                    //判断是否需要追加当前保存的银行
+                    if(this.dialogTitle == "编辑"){
+                        let saveBank = this.saveBank;
+                        let bankTypeList = this.bankTypeList;
+                        let flag = true;
+                        bankTypeList.forEach((item) => {
+                            if(item.display_name == saveBank.display_name){
+                                return false;
+                            }
+                        });
+                        if(flag){
+                            this.bankTypeList.push(saveBank);
+                        }
+                    }
                 }
             },
             //选择通道
@@ -758,6 +774,21 @@
                         dialogData.channel_desc = channelList[i].channel_desc;
                         break;
                     }
+                }
+                //设置银行
+                let saveBank = this.saveBank;
+                saveBank.code = row.bank_type;
+                saveBank.name = row.bank_name;
+                saveBank.display_name = row.display_name;
+                let bankTypeList = this.bankTypeList;
+                let flag = true;
+                bankTypeList.forEach((item) => {
+                    if(item.display_name == saveBank.display_name){
+                        return false;
+                    }
+                });
+                if(flag){
+                    this.bankTypeList.push(saveBank);
                 }
             },
             //查看
