@@ -630,7 +630,7 @@
                         let flag = true;
                         bankTypeList.forEach((item) => {
                             if(item.display_name == saveBank.display_name){
-                                return false;
+                                flag = false;
                             }
                         });
                         if(flag){
@@ -784,7 +784,7 @@
                 let flag = true;
                 bankTypeList.forEach((item) => {
                     if(item.display_name == saveBank.display_name){
-                        return false;
+                        flag = false;
                     }
                 });
                 if(flag){
