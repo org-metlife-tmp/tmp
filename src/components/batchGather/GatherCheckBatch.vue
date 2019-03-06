@@ -503,22 +503,24 @@
             },
             //设置未保存的id
             setId: function(selection, row){
-                var selectId = this.selectId;
+                let selectId = this.selectId;
+                let totalData = this.totalData;
+
                 for(let i = 0; i < selection.length; i++){
                     if(row.pay_id == selection[i].pay_id){
                         for(let j = 0; j < selectId.length; j++){
                             if(selectId[j] === row.pay_id){
                                 selectId.splice(j,1);
-                                this.totalData.total_amount += row.amount;
-                                this.totalData.total_num++;
+                                totalData.total_num++;
+                                totalData.total_amount = this.$common.transitSeparator(totalData.total_amount*1 + row.amount);
                                 break;
                             }
                         }
                         return;
                     }
                 }
-                this.totalData.total_num--;
-                this.totalData.total_amount -= row.amount;
+                totalData.total_num--;
+                totalData.total_amount = this.$common.transitSeparator(totalData.total_amount*1 - row.amount);
                 selectId.push(row.pay_id);
             },
             //点击全选时设置取消勾选的id
@@ -541,8 +543,8 @@
                             }
                         }
                         if(flag) {
-                            this.totalData.total_num--;
-                            this.totalData.total_amount -= item.amount;
+                            totalData.total_num--;
+                            totalData.total_amount = this.$common.transitSeparator(totalData.total_amount*1 - item.amount);
                             selectId.push(item.pay_id);
                         };
                     });
@@ -551,8 +553,8 @@
                         for(let i = 0; i < selectId.length; i++){
                             let idItem = selectId[i];
                             if(item.pay_id === idItem){
-                                this.totalData.total_amount += item.amount;
-                                this.totalData.total_num++;
+                                totalData.total_num++;
+                                totalData.total_amount = this.$common.transitSeparator(totalData.total_amount*1 + item.amount);
                                 selectId.splice(i,1);
                                 break;
                             }

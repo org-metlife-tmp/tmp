@@ -204,7 +204,7 @@
                     layout="sizes, prev, pager, next, jumper"
                     :page-size="pagSize"
                     :total="pagTotal"
-                    :page-sizes="[7, 50, 100, 500]"
+                    :page-sizes="[20, 50, 100, 500]"
                     :pager-count="5"
                     @current-change="getCurrentPage"
                     @size-change="sizeChange"
@@ -397,7 +397,7 @@
                 routerMessage: {
                     optype: "sftbankkey_bankkeylist",
                     params: {
-                        page_size: 7,
+                        page_size: 20,
                         page_num: 1
                     }
                 },
@@ -785,13 +785,6 @@
                 }
                 this.getChannelList(true,dialogData.pay_mode);
 
-                var channelList = this.channelList;
-                for(var i = 0; i < channelList.length; i++){
-                    if(channelList[i].channel_id == row.channel_id){
-                        dialogData.channel_desc = channelList[i].channel_desc;
-                        break;
-                    }
-                }
                 //设置银行
                 let saveBank = this.saveBank;
                 saveBank.code = row.bank_type;

@@ -235,7 +235,7 @@
                     layout="sizes, prev, pager, next, jumper"
                     :page-size="pagSize"
                     :total="pagTotal"
-                    :page-sizes="[7, 50, 100, 500]"
+                    :page-sizes="[20, 50, 100, 500]"
                     :pager-count="5"
                     @current-change="getCurrentPage"
                     @size-change="sizeChange"
@@ -523,7 +523,7 @@
                 routerMessage: {
                     optype: "sftchannel_channellist",
                     params: {
-                        page_size: 7,
+                        page_size: 20,
                         page_num: 1
                     }
                 },
