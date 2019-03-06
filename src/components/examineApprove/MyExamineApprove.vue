@@ -1914,7 +1914,9 @@
                     {id:"15", lspan:4, label:"操作人"},
                     {id:"16", pspan:8, prop:"name"},
                     {id:"17", lspan:4, label:"状态"},
-                    {id:"18", pspan:8, prop:"service_status"}
+                    {id:"18", pspan:8, prop:"service_status"},
+                    {id:"19", lspan:4, label:"交互方式"},
+                    {id:"20", pspan:8, prop:"inter_mode"},
                 ],
                 "31":[
                     {id:"1", lspan:4, label:"来源系统"},
@@ -1934,7 +1936,9 @@
                     {id:"15", lspan:4, label:"操作人"},
                     {id:"16", pspan:8, prop:"name"},
                     {id:"17", lspan:4, label:"状态"},
-                    {id:"18", pspan:8, prop:"service_status"}
+                    {id:"18", pspan:8, prop:"service_status"},
+                    {id:"19", lspan:4, label:"交互方式"},
+                    {id:"20", pspan:8, prop:"inter_mode"},
                 ],
             }
         },
