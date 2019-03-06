@@ -1880,7 +1880,7 @@
                     {id:"3", lspan:4, label:"子批次号"},
                     {id:"4",pspan:8, prop:"child_batchno"},
                     {id:"5", lspan:4, label:"交互方式"},
-                    {id:"6", pspan:8, prop:"inter_mode"},
+                    {id:"6", pspan:8, prop:"interactive_mode"},
                     {id:"7", lspan:4, label:"组批时间"},
                     {id:"8", pspan:8, prop:"create_on"},
                     {id:"9", lspan:4, label:"操作人"},
