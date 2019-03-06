@@ -1051,7 +1051,7 @@
                 //设置数据
                 var dialogData = this.dialogData;
                 for (var k in dialogData) {
-                    if (k == "pay_mode" || k == "pay_attr" || k == "is_checkout" || k == "document_moudle" || k == "net_mode") {
+                    if (k == "pay_mode" || k == "pay_attr" || k == "is_checkout" || k == "net_mode") {
                         dialogData[k] = row[k] + "";
                     } else {
                         dialogData[k] = row[k];
