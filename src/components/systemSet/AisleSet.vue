@@ -1058,6 +1058,15 @@
                     }
                 }
 
+                //设置报盘模式数据
+                if(row.interactive_mode == "1"){
+                    let moudleList = this.moudleList;
+                    moudleList.splice(0,moudleList.length,{
+                        id: row.document_moudle,
+                        document_name: row.document_name
+                    });
+                }
+
                 switch (dialogData.charge_mode) {
                     case 0:
                         this.chargeMoney.percentage = dialogData.charge_amount;
