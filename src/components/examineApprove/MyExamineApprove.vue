@@ -626,7 +626,7 @@
                                 <template slot-scope="scope">
                                     <span style="color:blue;text-decoration:underline"
                                           @click="LookSonData(scope.row.source_sys,scope.row.id,scope.row.biz_type)"
-                                    >{{ scope.row.master_batchno }}</span>
+                                    >{{ scope.row.child_batchno }}</span>
                                 </template>
                             </el-table-column>
                             <!-- 来源系统 -->
