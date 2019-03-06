@@ -1880,7 +1880,7 @@
                     {id:"3", lspan:4, label:"子批次号"},
                     {id:"4",pspan:8, prop:"child_batchno"},
                     {id:"5", lspan:4, label:"交互方式"},
-                    {id:"6", pspan:8, prop:"interactive_mode"},
+                    {id:"6", pspan:8, prop:"inter_mode"},
                     {id:"7", lspan:4, label:"组批时间"},
                     {id:"8", pspan:8, prop:"create_on"},
                     {id:"9", lspan:4, label:"操作人"},
@@ -1909,8 +1909,12 @@
                     {id:"10", pspan:8, prop:"channel_desc"},
                     {id:"11", lspan:4, label:"总金额"},
                     {id:"12", pspan:8, prop:"total_amount"},
-                    {id:"13", lspan:4, label:"状态"},
-                    {id:"14", pspan:8, prop:"service_status"}
+                    {id:"13", lspan:4, label:"总笔数"},
+                    {id:"14", pspan:8, prop:"total_num"},
+                    {id:"15", lspan:4, label:"操作人"},
+                    {id:"16", pspan:8, prop:"name"},
+                    {id:"17", lspan:4, label:"状态"},
+                    {id:"18", pspan:8, prop:"service_status"}
                 ],
                 "31":[
                     {id:"1", lspan:4, label:"来源系统"},
@@ -1925,8 +1929,12 @@
                     {id:"10", pspan:8, prop:"channel_desc"},
                     {id:"11", lspan:4, label:"总金额"},
                     {id:"12", pspan:8, prop:"total_amount"},
-                    {id:"13", lspan:4, label:"状态"},
-                    {id:"14", pspan:8, prop:"service_status"}
+                    {id:"13", lspan:4, label:"总笔数"},
+                    {id:"14", pspan:8, prop:"total_num"},
+                    {id:"15", lspan:4, label:"操作人"},
+                    {id:"16", pspan:8, prop:"name"},
+                    {id:"17", lspan:4, label:"状态"},
+                    {id:"18", pspan:8, prop:"service_status"}
                 ],
             }
         },
@@ -2181,7 +2189,9 @@
                         {id:'5',prop:"channel_code",name:'通道编码'},
                         {id:'6',prop:"channel_desc",name:'通道描述'},
                         {id:'7',prop:"send_on",name:'出盘日期'},
-                        {id:'8',prop:"total_amount",name:'总金额'}
+                        {id:'8',prop:"total_amount",name:'总金额'},
+                        {id:'9',prop:"total_num",name:'总笔数'},
+                        {id:'10',prop:"name",name:'操作人'}
                     ],
                     "31":[
                         {id:'1',prop:"source_sys",name:'来源系统'},
@@ -2190,7 +2200,9 @@
                         {id:'5',prop:"channel_code",name:'通道编码'},
                         {id:'6',prop:"channel_desc",name:'通道描述'},
                         {id:'7',prop:"send_on",name:'出盘日期'},
-                        {id:'8',prop:"total_amount",name:'总金额'}
+                        {id:'8',prop:"total_amount",name:'总金额'},
+                        {id:'9',prop:"total_num",name:'总笔数'},
+                        {id:'10',prop:"name",name:'操作人'}
                     ]
                 },
                 editableTabsList: {},
