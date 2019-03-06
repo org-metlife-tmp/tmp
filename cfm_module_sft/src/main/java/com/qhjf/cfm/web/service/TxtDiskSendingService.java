@@ -67,6 +67,7 @@ public class TxtDiskSendingService {
      */
 	public String diskDownLoad(Long pay_master_id,final Long pay_id,Integer document_moudle, final UserInfo userInfo, final String fileName, Integer document_type, Record configs_tail) throws ReqDataException, DbProcessException, IOException {
 		logger.info("==============生成txt样式的盘片");
+		Record pay_total = Db.findById("pay_batch_total", "id", pay_id);
 		final Record user_record = Db.findById("user_info", "usr_id",userInfo.getUsr_id());
 		if(null == user_record){
 			throw new ReqDataException("当前登录人未在用户信息表内配置");
@@ -138,9 +139,16 @@ public class TxtDiskSendingService {
 				}
 			}
 			logger.info("===========详情datail_titleNames======" + datail_titleNames);
+			List<Record> detailRecords = null ;
+			if(0 == pay_total.getInt("source_sys")) {
+				logger.info("===============盘片来源系统LA");
+				detailRecords = Db.find(Db.getSql("disk_downloading.findDatailInfo"), pay_id);	       	          
+			}else{
+				logger.info("===============盘片来源系统EBS");
+				detailRecords = Db.find(Db.getSql("disk_downloading.findEBSDatailInfo"), pay_id);	       	          
+			}
 			
 			//根据 batch_id 查询 pay_batch_detail 表, 存在多条  base_id = batch_id
-	        List<Record> detailRecords = Db.find(Db.getSql("disk_downloading.findDatailInfo"), pay_id);	       	          
 	        for (int i = 0; i < detailRecords.size(); i++) {	        	
 	        	Record detailRecord = new Record();
 	        	detailRecord.set("package_seq", detailRecords.get(i).get("package_seq"))
@@ -396,9 +404,17 @@ public class TxtDiskSendingService {
 				}
 			}
 			logger.info("===========详情datail_titleNames======" + datail_titleNames);
-			
+			Record pay_total = Db.findById("pay_batch_total", "id", pay_id);
+			List<Record> detailRecords = null ;
 			//根据 batch_id 查询 pay_batch_detail 表, 存在多条  base_id = batch_id
-	        List<Record> detailRecords = Db.find(Db.getSql("disk_downloading.findDatailInfo"), pay_id);	       	          
+			if(0 == pay_total.getInt("source_sys")) {
+				logger.info("===============盘片来源系统LA");
+				detailRecords = Db.find(Db.getSql("disk_downloading.findDatailInfo"), pay_id);	       	          
+			}else{
+				logger.info("===============盘片来源系统EBS");
+				detailRecords = Db.find(Db.getSql("disk_downloading.findEBSDatailInfo"), pay_id);	       	          
+			}
+	        //List<Record> detailRecords = Db.find(Db.getSql("disk_downloading.findDatailInfo"), pay_id);	       	          
 	        for (int i = 0; i < detailRecords.size(); i++) {	        	
 	        	Record detailRecord = new Record();
 	        	detailRecord.set("package_seq", detailRecords.get(i).get("package_seq"))

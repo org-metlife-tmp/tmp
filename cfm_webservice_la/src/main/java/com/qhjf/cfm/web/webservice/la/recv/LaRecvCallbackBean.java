@@ -2,8 +2,10 @@ package com.qhjf.cfm.web.webservice.la.recv;
 
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.ibm.icu.text.SimpleDateFormat;
 import com.jfinal.plugin.activerecord.Db;
@@ -11,6 +13,7 @@ import com.jfinal.plugin.activerecord.Record;
 import com.qhjf.cfm.web.constant.WebConstant;
 
 public class LaRecvCallbackBean {
+	private static final Logger log = LoggerFactory.getLogger(LaRecvCallbackBean.class);
 	/**
 	 * 用于创建对象【LaRecvCallbackBean】失败时，回写la_origin_recv_data
 	 */
@@ -166,11 +169,20 @@ public class LaRecvCallbackBean {
 	
 	private String getBankCode(Record origin){
 		String bankcode = origin.getStr("bankcode");
+		
+		String err = origin.getStr("tmp_err_message");
+		if ("未匹配到机构".equals(err) || "未匹配到通道".equals(err) || "匹配到多个通道".equals(err)) {
+			return bankcode;
+		}
+		
 		if (null == bankcode || "".equals(bankcode.trim())) {
 			String sql = Db.getSql("webservice_la_recv_cfm.getBankCodeByOrgin");
-			List<Record> find = Db.find(sql, origin.getStr("bank_key"), origin.getStr("org_code"), origin.getStr("branch_code"));
-			if (null != find && find.size() == 1) {
-				bankcode = find.get(0).getStr("bankcode");
+			Record find = Db.findFirst(sql, origin.getStr("bank_key"), origin.getStr("org_code"), origin.getStr("branch_code"));
+			if (null != find) {
+				bankcode = find.getStr("bankcode");
+			}else {
+				log.error("bank_key={}，org_code={}，branch_code={}，未查询到bankcode", origin.getStr("bank_key")
+						,origin.getStr("org_code"), origin.getStr("branch_code"));
 			}
 		}
 		return bankcode;

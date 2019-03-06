@@ -153,7 +153,12 @@ public class RecvDiskBackingService {
 		Record configs_tail = Db.findById("document_detail_config", "id", detail_id);
     	int document_moudle = Integer.valueOf(configs_tail.getStr("document_moudle")) ;
 		final Integer source_sys = recv_batch_total_master.getInt("source_sys");
-
+		// 首付属性 0收 1付
+		Integer pay_attr = channel_setting.getInt("pay_attr");
+		int document_type = pay_attr == 0 ? WebConstant.DocumentType.SH.getKey() : WebConstant.DocumentType.FH.getKey();
+		//回盘配置信息 覆盖上面的报盘详情信息
+		configs_tail = Db.findFirst(Db.getSql("disk_downloading.findDatailConfig"), document_type,document_moudle);
+		
 		String filename = ufs.getFilename();
 		byte[] content = ufs.getContent();
 		logger.info("===========当前文件名====" + filename);
@@ -174,9 +179,7 @@ public class RecvDiskBackingService {
 			return result;
 		}
 
-		// 首付属性 0收 1付
-		Integer pay_attr = channel_setting.getInt("pay_attr");
-		int document_type = pay_attr == 0 ? WebConstant.DocumentType.SH.getKey() : WebConstant.DocumentType.FH.getKey();
+
 		// 读取回盘的汇总(可能没有)/详情配置(必须有)信息
 		List<Record> configs = Db.find(Db.getSql("disk_downloading.findTotalConfig"), document_type, document_moudle);
 		//Record configs_tail = Db.findById("document_detail_config", "id", detail_id);

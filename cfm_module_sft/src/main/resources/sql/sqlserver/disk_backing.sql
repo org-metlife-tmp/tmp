@@ -105,8 +105,8 @@
       pay.send_user_name ,
       pay.back_on ,
       pay.back_user_name ,
-      case pay.service_status when '1' then '审批中' when '2' then '已审批未发送' when '3' then '审批拒绝' 
-      when '4' then '已发送未回盘'  when '5' then '回盘成功' when '6' then '回盘异常'  when '7' then '回退审批中'  when '8' then '已回退' else '其他' end status,
+      case pay.service_status when '1' then '审批中' when '2' then '已审批未发送' when '7' then '审批拒绝' 
+      when '4' then '已发送未回盘'  when '5' then '回盘成功' when '6' then '回盘异常'  when '3' then '回退审批中'  when '8' then '已回退' else '其他' end status,
       channel.channel_code ,
       channel.channel_desc ,
       case channel.interactive_mode  when '0' then '直连' when '1' then '报盘' else '其他' end interactive_mode

@@ -149,13 +149,19 @@ public class DiskBackingService {
 		Record pay_batch_total = Db.findById("pay_batch_total", "id", pay_id);
 		final String child_batchno = pay_batch_total.getStr("child_batchno");
 		final Record channel_setting = Db.findById("channel_setting", "id", channel_id);
+		//这里存储的是报盘id 非回盘
 		Integer detail_id = channel_setting.getInt("document_moudle");
 		final String bankcode = channel_setting.getStr("bankcode");
+		//只能找到报盘模板,需要根据渠道 +  收付属性 +  回盘 找到回盘配置属性
 		Record configs_tail = Db.findById("document_detail_config", "id", detail_id);
     	int document_moudle = Integer.valueOf(configs_tail.getStr("document_moudle")) ;
 		final Integer source_sys = pay_batch_total_master.getInt("source_sys");
 		final String pay_acc_no = pay_batch_total_master.getStr("pay_acc_no");
-
+		// 首付属性 0收 1付
+		Integer pay_attr = channel_setting.getInt("pay_attr");
+		int document_type = pay_attr == 0 ? WebConstant.DocumentType.SH.getKey() : WebConstant.DocumentType.FH.getKey();
+		//回盘配置信息 覆盖上面的报盘详情信息
+		configs_tail = Db.findFirst(Db.getSql("disk_downloading.findDatailConfig"), document_type,document_moudle);
 		String filename = ufs.getFilename();
 		byte[] content = ufs.getContent();
 		logger.info("===========当前文件名====" + filename);
@@ -176,9 +182,6 @@ public class DiskBackingService {
 			return result;
 		}
 
-		// 首付属性 0收 1付
-		Integer pay_attr = channel_setting.getInt("pay_attr");
-		int document_type = pay_attr == 0 ? WebConstant.DocumentType.SH.getKey() : WebConstant.DocumentType.FH.getKey();
 		// 读取回盘的汇总(可能没有)/详情配置(必须有)信息
 		List<Record> configs = Db.find(Db.getSql("disk_downloading.findTotalConfig"), document_type, document_moudle);
 

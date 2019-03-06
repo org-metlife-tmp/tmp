@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.jfinal.plugin.activerecord.Record;
 
 public class ConstructDetailMapService {
@@ -22,6 +24,11 @@ public class ConstructDetailMapService {
 		// 银行 type
 		detail_map.put("recv_bank_type", record.get("recv_bank_type"));
 		detail_map.put("pay_bank_type", record.get("pay_bank_type"));
+		if(StringUtils.isNotBlank(record.getStr("insure_bill_no"))) {
+			detail_map.put("insure_bill_no", record.getStr("insure_bill_no"));
+		}else {
+			detail_map.put("insure_bill_no", record.getStr("preinsure_bill_no"));
+		}
 	}
 
 }

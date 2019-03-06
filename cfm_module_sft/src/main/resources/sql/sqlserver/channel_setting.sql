@@ -1,11 +1,14 @@
 #sql("channellist")
 SELECT
 	chan.*,
-	org.name org_name
+	org.name org_name,
+	config.document_name document_name
 FROM
 	channel_setting chan,
+	document_detail_config config,
 	organization org
 WHERE chan.org_id = org.org_id
+and chan.document_moudle = config.id
   #if(map != null)
     #for(x : map)
       #if(x.value&&x.value!=""&&(!"[]".equals(x.value.toString())))

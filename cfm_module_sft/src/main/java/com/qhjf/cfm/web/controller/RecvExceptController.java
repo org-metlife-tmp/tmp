@@ -36,6 +36,7 @@ public class RecvExceptController extends CFMBaseController {
     /**
      * 异常处理列表
      */
+    @Auth(hasForces = {"RecvBatchDoExcp"})
     public void exceptlist() {
         Record record = getRecordByParamsStrong();
         int pageNum = getPageNum(record);
@@ -59,7 +60,7 @@ public class RecvExceptController extends CFMBaseController {
         }
 
     }
-
+    @Auth(hasForces = {"RecvBatchDoExcp", "MyWFPLAT"})
     public void detail() {
         try {
             Record record = getRecordByParamsStrong();
@@ -76,6 +77,7 @@ public class RecvExceptController extends CFMBaseController {
     /**
      * 回退
      */
+    @Auth(hasForces = {"RecvBatchDoExcp"})
     public void revoke() {
         try {
             Record record = getRecordByParamsStrong();
@@ -178,6 +180,7 @@ public class RecvExceptController extends CFMBaseController {
     /**
      * 导出异常数据
      */
+    @Auth(hasForces = {"RecvBatchDoExcp"})
     public void listexport() {
         doExport();
     }

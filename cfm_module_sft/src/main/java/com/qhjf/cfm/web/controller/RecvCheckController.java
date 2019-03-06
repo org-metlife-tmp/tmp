@@ -27,6 +27,7 @@ public class RecvCheckController extends CFMBaseController {
     /**
      * 查询所有批次
      */
+    @Auth(hasForces = {"RecvBatchCheck"})
     public void batchlist() {
         Record record = getRecordByParamsStrong();
 
@@ -42,6 +43,7 @@ public class RecvCheckController extends CFMBaseController {
     /**
      * 查找交易流水
      */
+    @Auth(hasForces = {"RecvBatchCheck"})
     public void tradingList() {
         Record record = getRecordByParamsStrong();
         List<Record> page = service.tradingList(record);
@@ -51,6 +53,7 @@ public class RecvCheckController extends CFMBaseController {
     /**
      * 对账确认
      */
+    @Auth(hasForces = {"RecvBatchCheck"})
     public void confirm() {
         try {
             Record record = getRecordByParamsStrong();
@@ -69,6 +72,7 @@ public class RecvCheckController extends CFMBaseController {
     /**
      * 根据子批次id查询明细
      */
+    @Auth(hasForces = {"RecvBatchCheck", "MyWFPLAT"})
     public void getdetailbybaseid() {
         try {
             Record record = getRecordByParamsStrong();
@@ -83,6 +87,7 @@ public class RecvCheckController extends CFMBaseController {
     /**
      * 根据批次查询交易
      */
+    @Auth(hasForces = {"RecvBatchCheck"})
     public void gettradbybatchno() {
         try {
             Record record = getRecordByParamsStrong();

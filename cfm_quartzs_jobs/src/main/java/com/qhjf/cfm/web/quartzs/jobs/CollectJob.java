@@ -162,6 +162,10 @@ public class CollectJob extends PubJob{
 					log.error("=======账号=="+record.getStr("child_acc_no")+"余额小于要求的留存余额");
 					feedBack = feedBack == null ? "付款账户余额小于留存余额" : feedBack+",付款账户余额小于留存余额" ;
 					flag = false ;
+				}else if(amount.compareTo(topic.getBigDecimal("collect_amount")) == 0){
+					log.error("=======账号=="+record.getStr("child_acc_no")+"余额等于留存余额，不进行此次归集");
+					feedBack = feedBack == null ? "付款账户余额等于留存余额，不进行此次归集" : feedBack+",付款账户余额等于留存余额，不进行此次归集" ;
+					flag = false ;
 				}else{
 					BigDecimal collectAmount = amount.subtract(topic.getBigDecimal("collect_amount"));
 					instruction.set("collect_amount", collectAmount);

@@ -37,7 +37,7 @@ public class RecvCheckBatchForController extends CFMBaseController{
     /**
      *@ 批付组批LA列表
      */
-    //@Auth(hasForces = {"PayCheckAllot"})
+    @Auth(hasForces = {"RecvCheckAllot"})
 	public void  list(){
 		logger.info("============获取核对组批LA列表");
 		Record record = getRecordByParamsStrong();
@@ -59,7 +59,7 @@ public class RecvCheckBatchForController extends CFMBaseController{
 	 /**
      *@ 组批LA撤回
      */
-    //@Auth(hasForces = {"PayCheckAllot"})
+    @Auth(hasForces = {"RecvCheckAllot"})
 	public void  revokeToLaOrEbs(){
 		logger.info("============撤回至LA");
 		Record record = getRecordByParamsStrong();
@@ -78,7 +78,7 @@ public class RecvCheckBatchForController extends CFMBaseController{
 	/**
 	 * 组批确定按钮
 	 */
-    //@Auth(hasForces = {"PayCheckAllot"})
+    @Auth(hasForces = {"RecvCheckAllot"})
 	public void confirm() {
         try {
         	Record record = getRecordByParamsStrong(); 
@@ -110,7 +110,7 @@ public class RecvCheckBatchForController extends CFMBaseController{
     /**
       *@ 核对组批导出
       */
-    //@Auth(hasForces = {"PayCheckAllot"})
+    @Auth(hasForces = {"RecvCheckAllot"})
     public void listexport() {
         doExport();
     }
@@ -119,7 +119,7 @@ public class RecvCheckBatchForController extends CFMBaseController{
     /**
      * @审批平台页面_根据主批次号查找子批次
      */
-    @Auth(hasForces = {"PayCheckAllot", "MyWFPLAT"})
+    @Auth(hasForces = {"RecvCheckAllot", "MyWFPLAT"})
     public void findSonByMasterBatch() {
         Record record = getRecordByParamsStrong();
         List<Record> list = service.findSonByMasterBatch(record);

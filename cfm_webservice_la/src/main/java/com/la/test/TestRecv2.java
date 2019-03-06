@@ -1,37 +1,33 @@
-package com.qhjf.cfm.web.webservice.la.util;
+package com.la.test;
+
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.Map.Entry;
+
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.OMNamespace;
+import org.apache.axis2.AxisFault;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.client.Options;
 import org.apache.axis2.client.ServiceClient;
 
-import com.qhjf.cfm.web.config.DDHLARecvConfigSection;
-import com.qhjf.cfm.web.config.GlobalConfigSection;
-import com.qhjf.cfm.web.config.IConfigSectionType;
+import com.jfinal.plugin.activerecord.Record;
 import com.qhjf.cfm.web.webservice.la.recv.LaRecvCallbackBean;
-
 /**
- * 批付的报文格式
+ * 批付测试类
  * @author CHT
  *
  */
-@Deprecated
-public class LaRecvOMElementOldUtil {
-	private static DDHLARecvConfigSection config = GlobalConfigSection.getInstance()
-			.getExtraConfig(IConfigSectionType.DDHConfigSectionType.DDHLaRecv);
-
+public class TestRecv2 {
 	private static Map<String, String> headKv = new LinkedHashMap<>();
 	static{
 		Date currentTime = new Date();
@@ -45,7 +41,7 @@ public class LaRecvOMElementOldUtil {
 		
 		headKv.put("SenderID", "TMP");
 		headKv.put("ReceiverID", "LA");
-		headKv.put("SrvOpName", config.getSrvOpName());
+		headKv.put("SrvOpName", "DRNService");
 		headKv.put("SrvOpVer", "20120606_1.1");
 		headKv.put("MsgID", UUID.randomUUID().toString());
 		headKv.put("CorrID", UUID.randomUUID().toString());
@@ -57,36 +53,93 @@ public class LaRecvOMElementOldUtil {
 		headKv.put("ResField4", null);
 		headKv.put("ResField5", null);
 	}
-	/**
-	 * 创建WS请求报文
-	 * @param callbackBeans
-	 * @return
-	 * @throws Exception
-	 */
-	public OMElement createOMElement(List<LaRecvCallbackBean> callbackBeans) throws Exception{
-		OMFactory fac = OMAbstractFactory.getOMFactory();
-
-		//1 ProcessMessage
-		OMNamespace processNs = fac.createOMNamespace("http://eai.metlife.com/", "");
-		OMElement processMessage = fac.createOMElement("ProcessMessage", processNs);
-
-		//1.1 Envelope
-		OMElement esbenvelope = fac.createOMElement("ESBEnvelope", null);
-		OMNamespace esbenvelopeNs = fac.createOMNamespace("http://MetLifeEAI.EAISchema", "");
-		esbenvelope.setNamespace(esbenvelopeNs);
-
-		//1.1.1 ESBHeader
-		OMElement headerNs = setHeaderNs(fac);
-		//1.1.2 MsgBody
-		OMElement msgBodyNs = setBodyNs(fac,callbackBeans);
-		esbenvelope.addChild(headerNs);
-		esbenvelope.addChild(msgBodyNs);
-
-		processMessage.addChild(esbenvelope);
-		System.out.println(processMessage);
-		return processMessage;
+	
+	public List<LaRecvCallbackBean> getTestData(){
+		List<LaRecvCallbackBean> callbackBeans = new ArrayList<>();
+		Record origin = new Record();
+		origin.set("id", 21345l);
+		origin.set("branch_code", "1");
+		origin.set("org_code", "SH");
+		origin.set("fee_mode", "2");
+		origin.set("recv_date", "2");
+		origin.set("amount", "2");
+		origin.set("pay_acc_no", "2");
+		origin.set("pay_bank_name", "2");
+		origin.set("insure_bill_no", "2");
+		origin.set("pay_code", "2");
+		origin.set("pay_acc_name", "2");
+		origin.set("insure_bill_no", "2");
+		origin.set("job_no", "2");
+		origin.set("trans_code", "2");
+		origin.set("sacscode", "2");
+		origin.set("sacstyp", "2");
+		origin.set("tmp_status", 2);
+		origin.set("tmp_err_message", "测试错误信息");
+		origin.set("bankcode", "2");
+		Record origin1 = new Record();
+		origin1.set("id", 21346l);
+		origin1.set("branch_code", "1");
+		origin1.set("org_code", "SH");
+		origin1.set("fee_mode", "3");
+		origin1.set("recv_date", "3");
+		origin1.set("amount", "3");
+		origin1.set("pay_acc_no", "3");
+		origin1.set("pay_bank_name", "3");
+		origin1.set("insure_bill_no", "3");
+		origin1.set("pay_code", "3");
+		origin1.set("pay_acc_name", "3");
+		origin1.set("insure_bill_no", "3");
+		origin1.set("job_no", "3");
+		origin1.set("trans_code", "3");
+		origin1.set("sacscode", "3");
+		origin1.set("sacstyp", "3");
+		origin1.set("tmp_status", 2);
+		origin1.set("tmp_err_message", "测试错误信息3");
+		origin1.set("bankcode", "3");
+		try {
+			LaRecvCallbackBean bean = new LaRecvCallbackBean(origin);
+			callbackBeans.add(bean);
+			LaRecvCallbackBean bean1 = new LaRecvCallbackBean(origin1);
+			callbackBeans.add(bean1);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return callbackBeans;
 	}
+		
+	public void testCase() {
+		try {
+			ServiceClient sc = new ServiceClient();
+			Options opts = new Options();   
+			EndpointReference end = new EndpointReference("http://10.164.26.43/esbwebentry/ESBWebEntry.asmx?wsdl");   
+			opts.setTo(end); 
+			opts.setAction("http://eai.metlife.com/ESBWebEntry/ProcessMessage");
+			sc.setOptions(opts);
+			
+			OMFactory fac = OMAbstractFactory.getOMFactory();
 
+			OMNamespace processNs = fac.createOMNamespace("http://eai.metlife.com/","");
+			OMElement processMessage = fac.createOMElement("ProcessMessage", processNs);    
+			
+			OMNamespace soapenvNs = fac.createOMNamespace("http://MetLifeEAI.EAISchema","");  
+			OMElement envelopeNs = fac.createOMElement("ESBEnvelope",soapenvNs);
+			
+			OMElement headerNs = setHeaderNs(fac);
+			OMElement msgBodyNs = setBodyNs(fac, getTestData());
+			envelopeNs.addChild(headerNs);
+			envelopeNs.addChild(msgBodyNs);
+			
+			processMessage.addChild(envelopeNs);
+			System.out.println(processMessage);
+			//发送请求LA服务
+			OMElement res = sc.sendReceive(processMessage);
+			System.out.println(res);
+		} catch (AxisFault e) {
+			e.printStackTrace();
+		} 
+		
+	}
+	
 	/**
 	 * 请求头部参数设置
 	 * @param fac xml节点构造工厂
@@ -109,13 +162,8 @@ public class LaRecvOMElementOldUtil {
 		OMElement msgBody = fac.createOMElement("MsgBody", null);
 		
 		//1.1.2.1 要调用的接口方法名称
-//		OMNamespace prm = fac.createOMNamespace("http://www.csc.smart/bo/schemas/PMTUPDI", "prm");
-//		OMNamespace prm = fac.createOMNamespace("http://www.csc.smart/bo/schemas/DRNUPDI", "prm");
-//		OMNamespace prm = fac.createOMNamespace("", "prm");
-//		OMElement pmtupdiRec = fac.createOMElement("PMTUPDI_REC", prm);
-//		OMNamespace drn = fac.createOMNamespace("http://www.csc.smart/bo/schemas/DRNUPDI", "drn");
 		OMNamespace drn = fac.createOMNamespace("http://www.csc.smart/bo/schemas/DRNADDI", "drn");
-		OMElement pmtupdiRec = fac.createOMElement("DRNUPDI_REC", drn);
+		OMElement pmtupdiRec = fac.createOMElement("DRNADDI_REC", drn);
 
 		// 1.1.2.1.1 msp:MSPContext	第一个方法参数
 		OMElement mspContext = setMSPContext(fac, callbackBeans);
@@ -130,15 +178,15 @@ public class LaRecvOMElementOldUtil {
 	}
 	
 	private OMElement setMSPContext(OMFactory fac, List<LaRecvCallbackBean> callbackBeans){
-//		OMNamespace msp = fac.createOMNamespace("http://www.csc.smart/msp/schemas/MSPContext", "msp");
 		OMNamespace msp = fac.createOMNamespace("http://www.csc.smart/msp/schemas/MSPContext", "msp");
 		OMElement mspContextNs = fac.createOMElement("MSPContext", msp);
 		
 		OMElement userid = fac.createOMElement("UserId", msp);
-		userid.setText(config.getUserId());
-		
+		userid.setText("MSP");
 		OMElement userpassword = fac.createOMElement("UserPassword", msp);
-		userpassword.setText(config.getUserPassword());
+		userpassword.setText("");
+		
+		
 		
 		OMElement requestparameters = fac.createOMElement("RequestParameters", msp);
 
@@ -199,10 +247,21 @@ public class LaRecvOMElementOldUtil {
 			}
 		}
 	}
-	
+	/**
+	 * 
+	 * @param fac
+	 * @param parent	父标签
+	 * @param key	xml标签名
+	 * @param value	xml标签文本
+	 */
 	private void addChild(OMFactory fac, OMElement parent, String key, String value){
 		OMElement omElement = fac.createOMElement(key, null);
 		omElement.setText(value);
 		parent.addChild(omElement);
+	}
+	
+	public static void main(String[] args) {
+		TestRecv2 test =new TestRecv2();
+		test.testCase();
 	}
 }

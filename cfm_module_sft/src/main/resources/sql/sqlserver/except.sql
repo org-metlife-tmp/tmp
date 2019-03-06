@@ -113,7 +113,7 @@ FROM
 WHERE total.id = cwrei.bill_id
 and master.channel_id = channel.id
 and total.master_batchno = master.master_batchno
-and userinfo.usr_id = master.create_by
+and userinfo.usr_id = total.create_by
   #for(x : map)
     #if("in".equals(x.key))
       #if(map.in != null)
@@ -152,17 +152,20 @@ and userinfo.usr_id = master.create_by
 #sql("findbatchtotalbyid")
 SELECT
 	total.*,
-	case channel.interactive_mode when 0 then '直连' when 1 then '报盘' end interactive_mode,
+	case channel.interactive_mode when 0 then '直连' when 1 then '报盘' end inter_mode,
 	channel.channel_code,
 	channel.channel_desc,
-	master.org_id
+	master.org_id,
+	userinfo.name
 FROM
 	pay_batch_total total,
 	pay_batch_total_master master,
-	channel_setting channel
+	channel_setting channel,
+	user_info userinfo
 WHERE
 	total.master_batchno = master.master_batchno
 	and master.channel_id = channel.id
+	and userinfo.usr_id = total.create_by
 	and total.id = ?
 #end
 

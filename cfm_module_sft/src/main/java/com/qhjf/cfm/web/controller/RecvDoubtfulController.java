@@ -26,7 +26,7 @@ public class RecvDoubtfulController extends CFMBaseController {
     /**
      * 防重预警列表
      */
-    @Auth(hasForces = {"DataAntiDualWaring"})
+    @Auth(hasForces = {"RecvDataAntiDualWaring"})
     public void doubtfullist() {
         Record record = getRecordByParamsStrong();
         int pageNum = getPageNum(record);
@@ -54,7 +54,7 @@ public class RecvDoubtfulController extends CFMBaseController {
     /**
      * 拒绝打回，该数据反写到原始表，置状态为已失败
      */
-    @Auth(hasForces = {"DataAntiDualWaring"})
+    @Auth(hasForces = {"RecvDataAntiDualWaring"})
     public void reject() {
         try {
             Record record = getRecordByParamsStrong();
@@ -70,7 +70,7 @@ public class RecvDoubtfulController extends CFMBaseController {
     /**
      * 放行
      */
-    @Auth(hasForces = {"DataAntiDualWaring"})
+    @Auth(hasForces = {"RecvDataAntiDualWaring"})
     public void pass() {
         try {
             Record record = getRecordByParamsStrong();
@@ -86,7 +86,7 @@ public class RecvDoubtfulController extends CFMBaseController {
     /**
      * 导出可疑数据
      */
-    @Auth(hasForces = {"DataAntiDualWaring"})
+    @Auth(hasForces = {"RecvDataAntiDualWaring"})
     public void listexport() {
         doExport();
     }

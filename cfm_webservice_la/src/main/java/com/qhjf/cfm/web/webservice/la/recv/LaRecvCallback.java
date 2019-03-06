@@ -35,7 +35,7 @@ public class LaRecvCallback {
 	private static Logger log = LoggerFactory.getLogger(LaRecvCallback.class);
 	private static DDHLARecvConfigSection config = GlobalConfigSection.getInstance()
 			.getExtraConfig(IConfigSectionType.DDHConfigSectionType.DDHLaRecv);
-	private static final LaRecvOMElementOldUtil oldUtil= new LaRecvOMElementOldUtil();
+//	private static final LaRecvOMElementOldUtil oldUtil= new LaRecvOMElementOldUtil();
 	private static final LaRecvOMElementUtil util= new LaRecvOMElementUtil();
 
 	/**
@@ -57,7 +57,7 @@ public class LaRecvCallback {
 				LaRecvCallbackBean bean = createBean(origin);
 				callbackBeans.add(bean);
 				if (callbackBeans.size() == batchNum) {
-					OMElement oMElement = oldUtil.createOMElement(callbackBeans);
+					OMElement oMElement = util.createOMElement(callbackBeans);
 					LaRecvQueueBean queueBean = new LaRecvQueueBean(callbackBeans, oMElement);
 					LaRecvProductQueue productQueue = new LaRecvProductQueue(queueBean);
 					new Thread(productQueue).start();
@@ -71,7 +71,7 @@ public class LaRecvCallback {
 		if (callbackBeans.size() > 0) {
 			OMElement oMElement;
 			try {
-				oMElement = oldUtil.createOMElement(callbackBeans);
+				oMElement = util.createOMElement(callbackBeans);
 				LaRecvQueueBean queueBean = new LaRecvQueueBean(callbackBeans, oMElement);
 				LaRecvProductQueue productQueue = new LaRecvProductQueue(queueBean);
 				new Thread(productQueue).start();
@@ -99,7 +99,7 @@ public class LaRecvCallback {
 				WebConstant.SftCallbackStatus.SFT_CALLBACK_F.getKey(), 
 				origin.getStr("persist_version"));
 		if (updNum != 1) {
-			throw new Exception(origin.getLong("id") + "：修改批收原始单据状态失败,不回写LA");
+			throw new Exception(origin.getLong("id") + "：构造回调bean后，修改批收原始单据状态失败,不回写LA");
 		}
 		return bean;
 	}

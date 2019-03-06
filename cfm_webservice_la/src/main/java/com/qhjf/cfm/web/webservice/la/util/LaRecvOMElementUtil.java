@@ -3,6 +3,7 @@ package com.qhjf.cfm.web.webservice.la.util;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -27,7 +28,7 @@ public class LaRecvOMElementUtil {
 	private static DDHLARecvConfigSection config = GlobalConfigSection.getInstance()
 			.getExtraConfig(IConfigSectionType.DDHConfigSectionType.DDHLaRecv);
 	
-	private static Map<String, String> headKv = new HashMap<>();
+	private static Map<String, String> headKv = new LinkedHashMap<>();
 	static{
 		Date currentTime = new Date();
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
@@ -40,7 +41,7 @@ public class LaRecvOMElementUtil {
 		
 		headKv.put("SenderID", "TMP");
 		headKv.put("ReceiverID", "LA");
-		headKv.put("SrvOpName", config.getSrvOpName());
+		headKv.put("SrvOpName", config.getSrvOpName());//"DRNService"
 		headKv.put("SrvOpVer", "20120606_1.1");
 		headKv.put("MsgID", UUID.randomUUID().toString());
 		headKv.put("CorrID", UUID.randomUUID().toString());
@@ -52,6 +53,7 @@ public class LaRecvOMElementUtil {
 		headKv.put("ResField4", null);
 		headKv.put("ResField5", null);
 	}
+	
 	/**
 	 * 创建WS请求报文
 	 * @param callbackBeans
@@ -62,18 +64,13 @@ public class LaRecvOMElementUtil {
 		OMFactory fac = OMAbstractFactory.getOMFactory();
 
 		//1 ProcessMessage
-		OMNamespace processNs = fac.createOMNamespace("http://eai.metlife.com/", "");
-		OMElement processMessage = fac.createOMElement("ProcessMessage", processNs);
+		OMNamespace processNs = fac.createOMNamespace("http://eai.metlife.com/","");
+		OMElement processMessage = fac.createOMElement("ProcessMessage", processNs);  
 
 		//1.1 Envelope
-		OMElement envelopeNs = fac.createOMElement("Envelope", null);
-		OMNamespace soapenvNs = fac.createOMNamespace("http://schemas.xmlsoap.org/soap/envelope/", "soapenv");
-		OMNamespace drn = fac.createOMNamespace("http://www.csc.smart/bo/schemas/DRNADDI", "drn");
-		OMNamespace msp = fac.createOMNamespace("http://www.csc.smart/msp/schemas/MSPContext", "msp");
-		envelopeNs.setNamespace(msp);
-		envelopeNs.setNamespace(drn);
-		envelopeNs.setNamespace(soapenvNs);
-
+		OMNamespace soapenvNs = fac.createOMNamespace("http://MetLifeEAI.EAISchema","");  
+		OMElement envelopeNs = fac.createOMElement("ESBEnvelope",soapenvNs);
+		
 		//1.1.1 soapenv:Header
 		OMElement headerNs = setHeaderNs(fac);
 		//1.1.2 soapenv:Body
@@ -105,41 +102,65 @@ public class LaRecvOMElementUtil {
 	 */
 	private OMElement setBodyNs(OMFactory fac, List<LaRecvCallbackBean> callbackBeans) {
 		//1.1.2 soapenv:Body
-		OMElement msgBody = fac.createOMElement("soapenv:Body", null);
+		OMElement msgBody = fac.createOMElement("MsgBody", null);
 		
 		//1.1.2.1 要调用的接口方法名称
-		OMElement method = fac.createOMElement("drn:DRNADDI_REC", null);
+		OMNamespace drn = fac.createOMNamespace("http://www.csc.smart/bo/schemas/DRNADDI", "drn");
+		OMElement drnaddiRec = fac.createOMElement("DRNADDI_REC", drn);
 
 		// 1.1.2.1.1 msp:MSPContext	第一个方法参数
 		OMElement mspContext = setmspMSPContext(fac, callbackBeans);
-		method.addChild(mspContext);
+		drnaddiRec.addChild(mspContext);
 
 		// 1.1.2.1.2 ADDITIONAL_FIELDS	第二个方法参数
 		OMElement additionalFields = setAdditionalFields(fac, callbackBeans);
-		method.addChild(additionalFields);
+		drnaddiRec.addChild(additionalFields);
 
-		msgBody.addChild(method);
+		msgBody.addChild(drnaddiRec);
 		return msgBody;
 	}
 	
 	private OMElement setmspMSPContext(OMFactory fac, List<LaRecvCallbackBean> callbackBeans){
-		OMElement mspContextNs = fac.createOMElement("msp:MSPContext", null);
+		OMNamespace msp = fac.createOMNamespace("http://www.csc.smart/msp/schemas/MSPContext", "msp");
+		OMElement mspContextNs = fac.createOMElement("MSPContext", msp);
 		
-		OMElement mspUserId = fac.createOMElement("msp:UserId", null);
-		mspUserId.setText(config.getUserId());
+		OMElement userid = fac.createOMElement("UserId", msp);
+		userid.setText(config.getUserId());//测试：MSP；生产：MSPNCLA
+		OMElement userpassword = fac.createOMElement("UserPassword", msp);
+		userpassword.setText("");
 		
-		OMElement mspUserPassword = fac.createOMElement("msp:UserPassword", null);
-		mspUserPassword.setText(config.getUserPassword());
 		
-		OMElement mspRequestParameters = fac.createOMElement("msp:RequestParameters", null);
-		OMElement mspRequestParameter = fac.createOMElement("msp:RequestParameter", null);
-		mspRequestParameter.addAttribute("name", "BRANCH", null);
-		mspRequestParameter.addAttribute("value", callbackBeans.get(0).getBranch(), null);
-		mspRequestParameters.addChild(mspRequestParameter);
 		
-		mspContextNs.addChild(mspUserId);
-		mspContextNs.addChild(mspUserPassword);
-		mspContextNs.addChild(mspRequestParameters);
+		OMElement requestparameters = fac.createOMElement("RequestParameters", msp);
+
+		OMElement branch = fac.createOMElement("RequestParameter", msp);
+		branch.addAttribute("name", "BRANCH", null);
+		branch.addAttribute("value", callbackBeans.get(0).getBranch(), null);
+		OMElement company = fac.createOMElement("RequestParameter", msp);
+		company.addAttribute("name", "COMPANY", null);
+		company.addAttribute("value", callbackBeans.get(0).getCompany(), null);
+		OMElement language = fac.createOMElement("RequestParameter", msp);
+		language.addAttribute("name", "LANGUAGE", null);
+		language.addAttribute("value", "S", null);
+		OMElement commitflag = fac.createOMElement("RequestParameter", msp);
+		commitflag.addAttribute("name", "COMMIT_FLAG", null);
+		commitflag.addAttribute("value", "Y", null);
+		OMElement ignoredriverheld = fac.createOMElement("RequestParameter", msp);
+		ignoredriverheld.addAttribute("name", "IGNORE_DRIVER_HELD", null);
+		ignoredriverheld.addAttribute("value", "Y", null);
+		OMElement xsuppressrclrsc = fac.createOMElement("RequestParameter", msp);
+		xsuppressrclrsc.addAttribute("name", "SUPPRESS_RCLRSC", null);
+		xsuppressrclrsc.addAttribute("value", "N", null);
+		requestparameters.addChild(branch);
+		requestparameters.addChild(company);
+		requestparameters.addChild(language);
+		requestparameters.addChild(commitflag);
+		requestparameters.addChild(ignoredriverheld);
+		requestparameters.addChild(xsuppressrclrsc);
+		
+		mspContextNs.addChild(userid);
+		mspContextNs.addChild(userpassword);
+		mspContextNs.addChild(requestparameters);
 		return mspContextNs;
 	}
 	/**
@@ -148,17 +169,16 @@ public class LaRecvOMElementUtil {
 	 * @param callbackBeans
 	 * @return
 	 */
-	private OMElement setAdditionalFields(OMFactory fac, List<LaRecvCallbackBean> callbackBeans){
+	private OMElement setAdditionalFields(OMFactory fac, List<LaRecvCallbackBean> callbackBeans) {
 		OMElement additionalFields = fac.createOMElement("ADDITIONAL_FIELDS", null);
-		
-		OMElement drninrecs = fac.createOMElement("DRNINRECS", null);
-		
-		for(LaRecvCallbackBean callbackBean : callbackBeans){
+
+		for (LaRecvCallbackBean callbackBean : callbackBeans) {
+			OMElement drninrecs = fac.createOMElement("DRNINRECS", null);
 			Map<String, String> kvs = callbackBean.toMap();
 			addChildList(fac, drninrecs, kvs);
+			additionalFields.addChild(drninrecs);
 		}
-		
-		additionalFields.addChild(drninrecs);
+
 		return additionalFields;
 	}
 	

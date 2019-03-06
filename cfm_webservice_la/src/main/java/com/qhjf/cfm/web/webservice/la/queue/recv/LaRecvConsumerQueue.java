@@ -45,19 +45,21 @@ public class LaRecvConsumerQueue implements Runnable{
 				ServiceClient sc = new ServiceClient();
 				Options opts = new Options();
 				EndpointReference end = new EndpointReference(config.getUrl());
+//				EndpointReference end = new EndpointReference("http://10.164.26.43/esbwebentry/ESBWebEntry.asmx?wsdl");
 				opts.setTo(end); 
 				opts.setAction("http://eai.metlife.com/ESBWebEntry/ProcessMessage");
 				sc.setOptions(opts);
 				OMElement res = sc.sendReceive(queueBean.getoMElement());
-
+				
 				log.debug("response="+res.toString().replaceAll("\\r|\\n", ""));
 				JSONObject json = XmlTool.documentToJSONObject(res.toString());
-				JSONObject rec = json.getJSONArray("Envelope").getJSONObject(0)
-						.getJSONArray("Body").getJSONObject(0)
+				
+				JSONObject rec = json.getJSONArray("ESBEnvelopeResult").getJSONObject(0)
+						.getJSONArray("MsgBody").getJSONObject(0)
 						.getJSONArray("DRNADDO_REC").getJSONObject(0);
 				String status = rec.getString("STATUS");
 				if(status.equals("0")){
-					processSuccess(json);
+					processSuccess(json, queueBean);
 				}else{
 					processFail(queueBean);
 				}
@@ -94,32 +96,45 @@ public class LaRecvConsumerQueue implements Runnable{
 		}
 	}
 	
-	private void processSuccess(JSONObject resp){
+	private void processSuccess(JSONObject resp, LaRecvQueueBean queueBean){
 		log.debug("LA批收推送核心系统，核心系统接收成功！");
-		JSONArray array = resp.getJSONArray("Envelope").getJSONObject(0)
-				.getJSONArray("Body").getJSONObject(0)
+		
+		List<LaRecvCallbackBean> beans = queueBean.getBeans();
+		
+		JSONArray array = resp.getJSONArray("ESBEnvelopeResult").getJSONObject(0)
+				.getJSONArray("MsgBody").getJSONObject(0)
 				.getJSONArray("DRNADDO_REC").getJSONObject(0)
 				.getJSONArray("ADDITIONAL_FIELDS").getJSONObject(0)
 				.getJSONArray("DRNOUTRECS");
 		
 		for(int i = 0;i<array.size();i++){
+			final LaRecvCallbackBean bean = beans.get(i);
+			final String payCode = bean.getDdderef();
+			
 			final JSONObject json = array.getJSONObject(i);
 			boolean flag = Db.tx(new IAtom() {
 	            @Override
 	            public boolean run() throws SQLException {
 	            	String processStatus = json.getString("STATUS");
-	    			String payCode = json.getString("RECEIPT");
-	    			if (null == payCode || "".equals(payCode.trim())) {
+	    			String receipt = json.getString("RECEIPT");
+	    			
+	    			/*if (null == payCode || "".equals(payCode.trim())) {
 	    				log.debug("LA批收响应回写原始数据，payCode为空，响应数据节点<DRNOUTRECS>=", json);
 						return true;
+					}*/
+	    			if (null == processStatus || "".equals(processStatus.trim())) {
+	    				if (null == receipt || "".equals(receipt.trim())) {
+							return true;
+						}
 					}
 	    			
 	    			Record whereRecord = new Record().set("pay_code", payCode);
 	    			
-	    			if(processStatus.equals("SC")){
+	    			if(processStatus.equalsIgnoreCase("SC")){
 	    				Record setRecord = new Record()
 	    						.set("la_callback_status", WebConstant.SftCallbackStatus.SFT_CALLBACK_S.getKey())
-	    						.set("la_callback_resp_time", new Date());
+	    						.set("la_callback_resp_time", new Date())
+	    						.set("receipt", receipt);
 	    				
 	    				if(CommonService.updateRows("la_origin_recv_data", setRecord, whereRecord)==1){
 	    					Record record = Db.findFirst(Db.getSql("webservice_la_recv_cfm.getStatusByPayCode"), payCode);

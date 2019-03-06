@@ -39,7 +39,7 @@ public class RecvDiskSendingController extends CFMBaseController {
      * @throws ReqDataException 
      * @盘片发送列表
      */
-    //@Auth(hasForces = {"PayBatchSend"})
+    @Auth(hasForces = {"RecvBatchSend"})
     public  void  list() throws ReqDataException {
     	Record record = getRecordByParamsStrong();
     	int pageNum = getPageNum(record);
@@ -61,7 +61,7 @@ public class RecvDiskSendingController extends CFMBaseController {
     /**
      * 批付盘片下载列表导出
      */
-    //@Auth(hasForces = {"PayBatchSend"})
+    @Auth(hasForces = {"RecvBatchSend"})
     public void listexport() {
         doExport();
     }

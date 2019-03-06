@@ -133,8 +133,8 @@
       recv.send_user_name ,
       recv.back_on ,
       recv.back_user_name ,
-      case recv.service_status when '1' then '审批中' when '2' then '已审批未发送' when '3' then '审批拒绝' 
-      when '4' then '已发送未回盘'  when '5' then '回盘成功' when '6' then '回盘异常'  when '7' then '回退审批中'  when '8' then '已回退' 
+      case recv.service_status when '1' then '审批中' when '2' then '已审批未发送' when '7' then '审批拒绝' 
+      when '4' then '已发送未回盘'  when '5' then '回盘成功' when '6' then '回盘异常'  when '3' then '回退审批中'  when '8' then '已回退' 
       when '9' then '已组批未发送'  else '其他' end status,
       channel.channel_code ,
       channel.channel_desc ,

@@ -112,7 +112,6 @@ public class DiskSendingServiceTest {
 						record.set("pay_mode", "收".equals(payAttr)?0:1);
 						record.set("bankkey_status", "停用".equals(status)?0:1);
 						record.set("channel_id", Db.findById("channel_setting", "channel_code", channelCode).getStr("id"));
-						record.set("pay_mode", "是".equals(payAttr)?1:0);
 						record.set("is_source_back", "是".equals(tuikuan)?1:0);
 						String bank_type = Db.findById("const_bank_type", "name", bank).getStr("code");
 						record.set("bank_type", bank_type);

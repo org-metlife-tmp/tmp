@@ -35,7 +35,7 @@ public class RecvDiskBackingController extends CFMBaseController {
      * @throws ReqDataException 
      * @ 批收盘片回盘列表
      */
-    //@Auth(hasForces = {"PayBatchResp"})
+    @Auth(hasForces = {"RecvBatchResp"})
     public void list() throws ReqDataException{
     	logger.info("=========进入回盘列表页面");
     	Record record = getRecordByParamsStrong();
@@ -77,7 +77,7 @@ public class RecvDiskBackingController extends CFMBaseController {
     /**
      * 回盘列表导出
      */
-    //@Auth(hasForces = {"PayBatchResp"})
+    @Auth(hasForces = {"RecvBatchResp"})
     public void listexport() {
         doExport();
     }

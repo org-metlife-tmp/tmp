@@ -2,8 +2,10 @@ package com.qhjf.cfm.web.quartzs.jobs.comm;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -31,7 +33,14 @@ public class SftRecvLaDataCheckJob implements Job{
     private static Logger log = LoggerFactory.getLogger(PubJob.class);
     private ExecutorService executeService = Executors.newFixedThreadPool(100);
     private List<Future<String>> resultList = new ArrayList<Future<String>>();
-
+    
+    private static final String ORG_UNMATCH = "未匹配到机构";
+    private static final String CERT_UNMATCH = "未匹配到证件类型";
+    private static final String CHANNEL_UNMATCH = "未匹配到通道";
+    private static final String CHANNEL_MULTY_MATCH = "匹配到多个通道";
+    private static final String BK_UNENABLE = "bankkey状态未启用";
+    private static final String CHANNEL_UNENABLE = "通道状态未启用";
+    
     public void execute(JobExecutionContext context) throws JobExecutionException {
     	log.debug("LA批收原始数据校验任务开始");
     	//TODP:目前是全部未处理原始数据查询出来，未做数据量峰值处理
@@ -145,7 +154,7 @@ public class SftRecvLaDataCheckJob implements Job{
             Record org = Db.findFirst(
                     Db.getSql("la_cfm.getOrg"), laOiriginData.getStr("org_code"), laOiriginData.getStr("branch_code"));
             if (org == null) {
-                throw new ReqValidateException("未匹配到机构");
+                throw new ReqValidateException(ORG_UNMATCH);
             }
             laOiriginData.set("tmp_org_id", org.getLong("org_id"));
             laOiriginData.set("tmp_org_code", org.getStr("tmp_org_code"));
@@ -153,7 +162,7 @@ public class SftRecvLaDataCheckJob implements Job{
             if(recvCertType != null && recvCertType.length() > 0){
             	Record certType = Db.findFirst(Db.getSql("la_cfm.getCertType"), recvCertType);
                 if (certType == null) {
-                    throw new ReqValidateException("未匹配到证件类型");
+                    throw new ReqValidateException(CERT_UNMATCH);
                 }
             }
             
@@ -162,20 +171,20 @@ public class SftRecvLaDataCheckJob implements Job{
             		, org.getLong("org_id")
             		, laOiriginData.getStr("bank_key"));
             if (channels == null || channels.size() == 0) {
-                throw new ReqValidateException("未匹配到通道");
+                throw new ReqValidateException(CHANNEL_UNMATCH);
             }
             if (channels.size() > 1) {
-                throw new ReqValidateException("匹配到多个通道");
+                throw new ReqValidateException(CHANNEL_MULTY_MATCH);
             }
             
             Record channel = channels.get(0);
             Integer bankkeyStatus = channel.getInt("bankkey_status");
             if (null == bankkeyStatus || bankkeyStatus != 1) {
-            	throw new ReqValidateException("bankkey状态未启用");
+            	throw new ReqValidateException(BK_UNENABLE);
 			}
             Integer isCheckout = channel.getInt("is_checkout");
             if (null == isCheckout || isCheckout != 1) {
-            	throw new ReqValidateException("通道状态未启用");
+            	throw new ReqValidateException(CHANNEL_UNENABLE);
 			}
             
             //bankcode在回调LA批收时需要
@@ -203,6 +212,7 @@ public class SftRecvLaDataCheckJob implements Job{
                     laRecvOiriginData.getInt("persist_version"));
             if(flag == 1){
             	laRecvOiriginData.set("persist_version", laRecvOiriginData.getInt("persist_version") + 1);
+            	laRecvOiriginData.set("tmp_err_message", errMsg);
             	SftRecvCallBack callback = new SftRecvCallBack();
     			callback.callback(WebConstant.SftOsSource.LA.getKey(), laRecvOiriginData);
                 return true;

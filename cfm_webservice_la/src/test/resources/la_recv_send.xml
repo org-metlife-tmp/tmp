@@ -1,4 +1,6 @@
-<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:drn="http://www.csc.smart/bo/schemas/DRNADDI" xmlns:msp="http://www.csc.smart/msp/schemas/MSPContext">
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" 
+				xmlns:drn="http://www.csc.smart/bo/schemas/DRNADDI" 
+				xmlns:msp="http://www.csc.smart/msp/schemas/MSPContext">
 	<soapenv:Header/>
 	<soapenv:Body>
 		<drn:DRNADDI_REC>
