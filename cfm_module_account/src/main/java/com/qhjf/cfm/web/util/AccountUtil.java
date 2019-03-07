@@ -1,6 +1,5 @@
 package com.qhjf.cfm.web.util;
 
-import com.alibaba.fastjson.util.TypeUtils;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.IAtom;
 import com.jfinal.plugin.activerecord.Record;

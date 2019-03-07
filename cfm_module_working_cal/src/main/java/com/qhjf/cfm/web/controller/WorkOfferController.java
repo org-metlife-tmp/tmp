@@ -1,16 +1,13 @@
 package com.qhjf.cfm.web.controller;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.jfinal.log.Log;
 import com.jfinal.plugin.activerecord.Record;
 import com.qhjf.cfm.exceptions.BusinessException;
 import com.qhjf.cfm.web.plugins.jwt.Auth;
 import com.qhjf.cfm.web.plugins.log.LogbackLog;
 import com.qhjf.cfm.web.service.WorkOfferService;
+
+import java.util.Map;
 
 public class WorkOfferController extends CFMBaseController {
     private static final Log logger = LogbackLog.getLog(WorkWeekController.class);

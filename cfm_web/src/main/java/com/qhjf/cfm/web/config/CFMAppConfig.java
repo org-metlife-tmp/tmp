@@ -19,11 +19,10 @@ import com.qhjf.cfm.excel.config.parse.ICellConfigParseUtil;
 import com.qhjf.cfm.excel.config.parse.IColumnConfigParseUtil;
 import com.qhjf.cfm.excel.config.parse.impl.CellConfigParseUtil;
 import com.qhjf.cfm.excel.config.parse.impl.ColumnConfigParseUtil;
-
 import com.qhjf.cfm.queue.QueuePlugin;
 import com.qhjf.cfm.utils.ElectronicTemplateTool;
+import com.qhjf.cfm.utils.StringKit;
 import com.qhjf.cfm.web.BootScanRegisterMgr;
-
 import com.qhjf.cfm.web.controller.GlobalController;
 import com.qhjf.cfm.web.dialect.MySqlServerDialect;
 import com.qhjf.cfm.web.handler.CFSHandler;
@@ -87,7 +86,7 @@ public class CFMAppConfig extends JFinalConfig {
     @Override
     public void configPlugin(Plugins plugins) {
         log.debug("Enter into configPlugin(Plugins plugins)  .....");
-        log.debug("dburl is:" + iniMgr.getDbURL());
+        log.debug("dburl is: {}" , StringKit.removeControlCharacter(iniMgr.getDbURL()));
         DruidPlugin dp = new DruidPlugin(iniMgr.getDbURL(), iniMgr.getDbUser(), iniMgr.getDbPwd());
         Slf4jLogFilter slf4jLogFilter = new Slf4jLogFilter();
         slf4jLogFilter.setConnectionLogEnabled(false);
@@ -111,7 +110,7 @@ public class CFMAppConfig extends JFinalConfig {
         arp.addSqlTemplate("sql/" + iniMgr.dbType() + "/all_cfm.sql");
         //加载其他模块的sql template
         for (String sqlTemplate : bootScanRegisterMgr.getSqlTemplates()) {
-            log.debug("arp.addSqlTemplate(\"" + sqlTemplate + "\")");
+            log.debug("arp.addSqlTemplate({})",StringKit.removeControlCharacter(sqlTemplate));
             arp.addSqlTemplate(sqlTemplate);
         }
 

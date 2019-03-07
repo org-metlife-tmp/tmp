@@ -13,7 +13,6 @@ import com.qhjf.cfm.utils.CommonService;
 import com.qhjf.cfm.utils.QuartzKit;
 import com.qhjf.cfm.web.UserInfo;
 import com.qhjf.cfm.web.constant.WebConstant;
-import com.seeyon.ctp.common.authenticate.domain.xsd.User;
 
 import java.sql.SQLException;
 import java.util.ArrayList;

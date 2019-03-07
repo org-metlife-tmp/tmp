@@ -1,20 +1,20 @@
 package com.qhjf.cfm.web.webservice.oa.server.request.parent;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.alibaba.fastjson.JSONObject;
+import com.qhjf.cfm.utils.StringKit;
 import com.qhjf.cfm.web.webservice.ann.FieldValidate;
 import com.qhjf.cfm.web.webservice.oa.constant.ErrorCode;
 import com.qhjf.cfm.web.webservice.oa.exception.WebServiceException;
 import com.qhjf.cfm.web.webservice.tool.OminiUtils;
 import com.qhjf.cfm.web.webservice.tool.XmlTool;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @SuppressWarnings("rawtypes")
 public class ParentReq{
@@ -23,7 +23,7 @@ public class ParentReq{
 	
 	private JSONObject json;
 	public ParentReq(String xml) throws Exception {
-		log.debug("参数xml="+xml.replaceAll("\\r|\\n", ""));
+		log.debug("参数xml={}", StringKit.removeControlCharacter(xml));
 		try {
 			this.json = XmlTool.documentToJSONObject(xml);
 		} catch (Exception e) {
@@ -32,7 +32,6 @@ public class ParentReq{
 		}
 		
 		try{
-			@SuppressWarnings("unchecked")
 			Map<String,Object> map = JSONObject.parseObject(json.toJSONString(), Map.class);
 			initSet(this,map);
 		} catch(Exception e){
@@ -50,14 +49,13 @@ public class ParentReq{
 	public JSONObject getJson() {
 		return json;
 	}
-	
-	/**
+
+    /**
      * 初始化值
-     *
      * @param obj
      * @param map
      * @param <T>
-     * @throws BankInterfaceException
+     * @throws Exception
      */
     public  <T extends ParentReq> void initSet(T obj, Map<String, Object> map) throws Exception {
         if (!OminiUtils.isNullOrEmpty(map)) {
@@ -143,10 +141,9 @@ public class ParentReq{
 
     /**
      * 根据field对象u获取set方法
-     *
      * @param field
      * @return
-     * @throws BankInterfaceException
+     * @throws Exception
      */
     protected Method getSetMothod(Field field) throws Exception {
         String fieldName = field.getName();

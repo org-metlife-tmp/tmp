@@ -5,12 +5,9 @@ import com.jfinal.kit.Kv;
 import com.jfinal.plugin.activerecord.*;
 import com.qhjf.cfm.exceptions.BusinessException;
 import com.qhjf.cfm.exceptions.DbProcessException;
-import com.qhjf.cfm.utils.StringKit;
 import com.qhjf.cfm.web.constant.WebConstant;
 
 import java.sql.SQLException;
-
-import static com.qhjf.cfm.web.controller.CFMBaseController.*;
 
 /**
  * 基础数据 - 币种

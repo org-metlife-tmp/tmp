@@ -1,14 +1,5 @@
 package com.qhjf.cfm.web.service;
 
-import java.sql.SQLException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.jfinal.kit.Kv;
 import com.jfinal.kit.Ret;
 import com.jfinal.plugin.activerecord.Db;
@@ -18,8 +9,15 @@ import com.jfinal.plugin.activerecord.SqlPara;
 import com.qhjf.cfm.exceptions.BusinessException;
 import com.qhjf.cfm.exceptions.DbProcessException;
 import com.qhjf.cfm.exceptions.ReqDataException;
-import com.qhjf.cfm.utils.CommKit;
 import com.qhjf.cfm.web.util.CommonUtil;
+
+import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class WorkOfferService {
 	

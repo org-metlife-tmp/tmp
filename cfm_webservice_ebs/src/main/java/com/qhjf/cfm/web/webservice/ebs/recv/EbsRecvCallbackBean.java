@@ -1,10 +1,10 @@
 package com.qhjf.cfm.web.webservice.ebs.recv;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.jfinal.plugin.activerecord.Record;
 import com.qhjf.cfm.web.constant.WebConstant;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class EbsRecvCallbackBean {
 	private String PayNo;

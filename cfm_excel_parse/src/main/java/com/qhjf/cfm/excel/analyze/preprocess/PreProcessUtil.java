@@ -1,12 +1,11 @@
 package com.qhjf.cfm.excel.analyze.preprocess;
 
-import static org.apache.poi.ss.usermodel.CellType.STRING;
-
+import com.qhjf.cfm.excel.config.ExcelSheetConfig;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 
-import com.qhjf.cfm.excel.config.ExcelSheetConfig;
+import static org.apache.poi.ss.usermodel.CellType.STRING;
 
 /**
  * 解析Excel之前，预处理工具

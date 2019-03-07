@@ -1,11 +1,12 @@
 
 package com.seeyon.ctp.services.xsd;
 
+import com.seeyon.ctp.common.authenticate.domain.xsd.User;
+
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlElementDecl;
 import javax.xml.bind.annotation.XmlRegistry;
 import javax.xml.namespace.QName;
-import com.seeyon.ctp.common.authenticate.domain.xsd.User;
 
 
 /**

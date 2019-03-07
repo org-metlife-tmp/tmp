@@ -1,7 +1,5 @@
 package com.qhjf.cfm.web.webservice.la.queue.recv;
 
-import java.sql.SQLException;
-import java.util.*;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.jfinal.plugin.activerecord.Db;
@@ -10,6 +8,9 @@ import com.jfinal.plugin.activerecord.Record;
 import com.qhjf.cfm.exceptions.BusinessException;
 import com.qhjf.cfm.utils.CommonService;
 import com.qhjf.cfm.utils.XmlTool;
+import com.qhjf.cfm.web.config.DDHLARecvConfigSection;
+import com.qhjf.cfm.web.config.GlobalConfigSection;
+import com.qhjf.cfm.web.config.IConfigSectionType;
 import com.qhjf.cfm.web.constant.WebConstant;
 import com.qhjf.cfm.web.service.CheckVoucherService;
 import com.qhjf.cfm.web.webservice.la.recv.LaRecvCallbackBean;
@@ -19,9 +20,10 @@ import org.apache.axis2.client.Options;
 import org.apache.axis2.client.ServiceClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.qhjf.cfm.web.config.DDHLARecvConfigSection;
-import com.qhjf.cfm.web.config.GlobalConfigSection;
-import com.qhjf.cfm.web.config.IConfigSectionType;
+
+import java.sql.SQLException;
+import java.util.Date;
+import java.util.List;
 
 
 /**

@@ -1,7 +1,5 @@
 package com.qhjf.cfm.queue.patch;
 
-import java.util.HashMap;
-import java.util.Map;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -10,6 +8,9 @@ import com.qhjf.bankinterface.api.ProcessEntrance;
 import com.qhjf.bankinterface.api.exceptions.BankInterfaceException;
 import com.qhjf.bankinterface.api.exceptions.DataParseException;
 import com.qhjf.bankinterface.icbc.IcbcConstant;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 工行交易查询指令发送补丁

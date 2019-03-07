@@ -1,10 +1,5 @@
 package com.qhjf.cfm.web.channel.cmbc;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.jfinal.plugin.activerecord.Record;
@@ -12,6 +7,11 @@ import com.qhjf.bankinterface.api.AtomicInterfaceConfig;
 import com.qhjf.bankinterface.cmbc.CmbcConstant;
 import com.qhjf.cfm.utils.CommKit;
 import com.qhjf.cfm.web.channel.inter.api.ISingleResultChannelInter;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class CmbcSinglePayInter  implements ISingleResultChannelInter{
 

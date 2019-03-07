@@ -4,11 +4,10 @@ SELECT
 	org.name org_name,
 	config.document_name document_name
 FROM
-	channel_setting chan,
-	document_detail_config config,
-	organization org
-WHERE chan.org_id = org.org_id
-and chan.document_moudle = config.id
+	channel_setting chan
+	inner join organization org on chan.org_id = org.org_id
+	left join document_detail_config config on chan.document_moudle = config.id
+WHERE 1 = 1
   #if(map != null)
     #for(x : map)
       #if(x.value&&x.value!=""&&(!"[]".equals(x.value.toString())))

@@ -1,8 +1,9 @@
 package com.qhjf.cfm.web.webservice.la.queue.recv;
 
-import java.util.List;
-import org.apache.axiom.om.OMElement;
 import com.qhjf.cfm.web.webservice.la.recv.LaRecvCallbackBean;
+import org.apache.axiom.om.OMElement;
+
+import java.util.List;
 
 
 public class LaRecvQueueBean {

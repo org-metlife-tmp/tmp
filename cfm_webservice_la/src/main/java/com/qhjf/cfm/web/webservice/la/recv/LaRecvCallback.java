@@ -1,19 +1,5 @@
 package com.qhjf.cfm.web.webservice.la.recv;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.UUID;
-import org.apache.axiom.om.OMAbstractFactory;
-import org.apache.axiom.om.OMElement;
-import org.apache.axiom.om.OMFactory;
-import org.apache.axiom.om.OMNamespace;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
 import com.qhjf.cfm.web.config.DDHLARecvConfigSection;
@@ -22,8 +8,14 @@ import com.qhjf.cfm.web.config.IConfigSectionType;
 import com.qhjf.cfm.web.constant.WebConstant;
 import com.qhjf.cfm.web.webservice.la.queue.recv.LaRecvProductQueue;
 import com.qhjf.cfm.web.webservice.la.queue.recv.LaRecvQueueBean;
-import com.qhjf.cfm.web.webservice.la.util.LaRecvOMElementOldUtil;
 import com.qhjf.cfm.web.webservice.la.util.LaRecvOMElementUtil;
+import org.apache.axiom.om.OMElement;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * LA回调核心系统工具

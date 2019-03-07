@@ -1,13 +1,12 @@
 package com.qhjf.cfm.web.webservice.test;
 
-import java.net.MalformedURLException;
-
+import com.qhjf.cfm.web.webservice.oa.client.OAServer;
+import com.qhjf.cfm.web.webservice.oa.client.OAServerService;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.qhjf.cfm.web.webservice.oa.client.OAServer;
-import com.qhjf.cfm.web.webservice.oa.client.OAServerService;
+import java.net.MalformedURLException;
 
 
 

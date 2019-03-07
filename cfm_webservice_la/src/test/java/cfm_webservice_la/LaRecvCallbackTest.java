@@ -1,14 +1,6 @@
 package cfm_webservice_la;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
 import com.jfinal.plugin.activerecord.ActiveRecordPlugin;
-import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
 import com.jfinal.plugin.activerecord.dialect.SqlServerDialect;
 import com.jfinal.plugin.druid.DruidPlugin;
@@ -16,9 +8,14 @@ import com.jfinal.plugin.redis.RedisPlugin;
 import com.jfinal.plugin.redis.serializer.JdkSerializer;
 import com.jfinal.template.source.ClassPathSourceFactory;
 import com.qhjf.cfm.web.plugins.CfmRedisPlugin;
-import com.qhjf.cfm.web.webservice.la.LaCallback;
 import com.qhjf.cfm.web.webservice.la.queue.recv.LaRecvQueuePlugin;
 import com.qhjf.cfm.web.webservice.la.recv.LaRecvCallback;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 批收 回调核心系统测试

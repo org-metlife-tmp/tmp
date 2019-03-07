@@ -1,7 +1,6 @@
 package com.qhjf.cfm.utils;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.util.UUID;
 /**
  * "交易唯一标识"生成器,没有的字段传null。

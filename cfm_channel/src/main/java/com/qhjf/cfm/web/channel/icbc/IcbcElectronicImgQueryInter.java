@@ -1,9 +1,10 @@
 package com.qhjf.cfm.web.channel.icbc;
 
-import java.util.Map;
 import com.jfinal.plugin.activerecord.Record;
 import com.qhjf.bankinterface.api.AtomicInterfaceConfig;
 import com.qhjf.cfm.web.channel.inter.api.IMoreResultChannelInter;
+
+import java.util.Map;
 
 /**
  * 

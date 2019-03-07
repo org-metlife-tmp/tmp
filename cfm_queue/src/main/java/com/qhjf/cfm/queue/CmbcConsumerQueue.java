@@ -1,11 +1,10 @@
 package com.qhjf.cfm.queue;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.qhjf.bankinterface.api.ProcessEntrance;
 import com.qhjf.cfm.web.channel.inter.api.IChannelInter;
 import com.qhjf.cfm.web.inter.api.ISysAtomicInterface;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 队列消费者

@@ -12,8 +12,6 @@ import com.qhjf.cfm.web.constant.WebConstant;
 import java.sql.SQLException;
 import java.util.List;
 
-import static com.qhjf.cfm.web.controller.CFMBaseController.*;
-
 /**
  * 账户管理 - 商户号管理
  *

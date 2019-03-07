@@ -1,13 +1,13 @@
 package com.qhjf.cfm.web.channel.manager;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.qhjf.bankinterface.api.ChannelInfo;
 import com.qhjf.bankinterface.cmbc.CmbcChannel;
 import com.qhjf.bankinterface.icbc.IcbcChannel;
 import com.qhjf.cfm.utils.RedisSericalnoGenTool;
 import com.qhjf.cfm.web.channel.inter.api.IChannelInter;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 渠道管理

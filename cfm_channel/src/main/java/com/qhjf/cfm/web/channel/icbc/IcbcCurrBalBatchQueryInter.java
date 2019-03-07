@@ -1,24 +1,21 @@
 package com.qhjf.cfm.web.channel.icbc;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.jfinal.plugin.activerecord.Record;
 import com.qhjf.bankinterface.api.AtomicInterfaceConfig;
 import com.qhjf.bankinterface.icbc.IcbcConstant;
 import com.qhjf.cfm.web.channel.inter.api.IChannelBatchInter;
-import com.qhjf.cfm.web.channel.inter.api.IMoreResultChannelInter;
 import com.qhjf.cfm.web.channel.util.AmountUtil;
-import com.qhjf.cfm.web.channel.util.DateUtil;
 import com.qhjf.cfm.web.channel.util.IcbcResultParseUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 /**
  *当日余额查询
  */

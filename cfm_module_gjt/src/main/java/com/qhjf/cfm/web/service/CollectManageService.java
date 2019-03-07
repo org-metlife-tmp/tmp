@@ -1,11 +1,6 @@
 package com.qhjf.cfm.web.service;
 
-import java.math.BigDecimal;
-import java.sql.SQLException;
-import java.util.*;
-
 import com.alibaba.fastjson.util.TypeUtils;
-import com.jfinal.aop.Before;
 import com.jfinal.kit.Kv;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.IAtom;
@@ -14,26 +9,18 @@ import com.jfinal.plugin.activerecord.SqlPara;
 import com.qhjf.cfm.exceptions.BusinessException;
 import com.qhjf.cfm.exceptions.DbProcessException;
 import com.qhjf.cfm.exceptions.ReqDataException;
-import com.qhjf.cfm.utils.CommonService;
-import com.qhjf.cfm.web.constant.WebConstant;
-
-import java.sql.SQLException;
-import java.util.List;
-
-import com.jfinal.plugin.activerecord.Page;
-import com.jfinal.plugin.activerecord.Record;
-import com.jfinal.plugin.activerecord.SqlPara;
-import com.jfinal.plugin.activerecord.tx.Tx;
-import com.qhjf.cfm.exceptions.BusinessException;
-import com.qhjf.cfm.exceptions.DbProcessException;
-import com.qhjf.cfm.exceptions.ReqDataException;
 import com.qhjf.cfm.queue.ProductQueue;
 import com.qhjf.cfm.queue.QueueBean;
-import com.qhjf.cfm.utils.ArrayUtil;
+import com.qhjf.cfm.utils.CommonService;
 import com.qhjf.cfm.web.channel.inter.api.IChannelInter;
 import com.qhjf.cfm.web.channel.manager.ChannelManager;
 import com.qhjf.cfm.web.constant.WebConstant;
 import com.qhjf.cfm.web.inter.impl.SysSinglePayInter;
+
+import java.math.BigDecimal;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CollectManageService {
 

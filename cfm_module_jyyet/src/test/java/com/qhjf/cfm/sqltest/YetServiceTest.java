@@ -1,19 +1,18 @@
 package com.qhjf.cfm.sqltest;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
 import com.jfinal.plugin.activerecord.ActiveRecordPlugin;
-import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
 import com.jfinal.plugin.activerecord.dialect.SqlServerDialect;
 import com.jfinal.plugin.druid.DruidPlugin;
 import com.jfinal.template.source.ClassPathSourceFactory;
 import com.qhjf.cfm.exceptions.BusinessException;
 import com.qhjf.cfm.web.service.YetService;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class YetServiceTest {
 	DruidPlugin dp = null;

@@ -1,24 +1,6 @@
 package com.qhjf.cfm.web.service;
 
 
-import java.io.BufferedWriter;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import com.jfinal.ext.kit.DateKit;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.IAtom;
 import com.jfinal.plugin.activerecord.Record;
@@ -26,11 +8,17 @@ import com.qhjf.cfm.exceptions.DbProcessException;
 import com.qhjf.cfm.exceptions.ReqDataException;
 import com.qhjf.cfm.utils.ArrayUtil;
 import com.qhjf.cfm.utils.CommonService;
-import com.qhjf.cfm.utils.RedisSericalnoGenTool;
 import com.qhjf.cfm.utils.VelocityUtil;
 import com.qhjf.cfm.web.UserInfo;
 import com.qhjf.cfm.web.config.DiskDownLoadSection;
 import com.qhjf.cfm.web.constant.WebConstant;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.*;
+import java.sql.SQLException;
+import java.util.*;
 
 public class RecvTxtDiskSendingService {
 	

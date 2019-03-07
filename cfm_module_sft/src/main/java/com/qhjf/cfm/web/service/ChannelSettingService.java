@@ -3,7 +3,6 @@ package com.qhjf.cfm.web.service;
 import com.alibaba.fastjson.util.TypeUtils;
 import com.jfinal.kit.Kv;
 import com.jfinal.plugin.activerecord.*;
-import com.qhjf.bankinterface.api.utils.LoadAtomicInterfaceUtils;
 import com.qhjf.cfm.exceptions.BusinessException;
 import com.qhjf.cfm.exceptions.DbProcessException;
 import com.qhjf.cfm.exceptions.ReqDataException;
@@ -17,7 +16,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  * channel设置

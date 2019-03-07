@@ -1,12 +1,10 @@
 package com.qhjf.cfm.web.validator.impl;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
+import com.qhjf.cfm.excel.config.validator.impl.DateFormatValidator;
 import org.junit.Test;
 
-import com.qhjf.cfm.excel.config.validator.impl.DateFormatValidator;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * 日期校验器测试

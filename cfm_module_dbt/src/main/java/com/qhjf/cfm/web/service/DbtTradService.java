@@ -9,12 +9,11 @@ import com.qhjf.cfm.exceptions.ReqDataException;
 import com.qhjf.cfm.utils.CommonService;
 import com.qhjf.cfm.web.UserInfo;
 import com.qhjf.cfm.web.constant.WebConstant;
-import org.bouncycastle.ocsp.Req;
 
 import java.sql.SQLException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 调拨通交易核对

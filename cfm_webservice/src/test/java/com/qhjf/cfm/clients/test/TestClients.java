@@ -1,18 +1,15 @@
 package com.qhjf.cfm.clients.test;
 
+import com.qhjf.cfm.clients.MetlifeApplyPayService;
+import com.qhjf.cfm.clients.MetlifeApplyPayServicePortType;
+import org.junit.Test;
+
+import javax.xml.namespace.QName;
+import javax.xml.ws.BindingProvider;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Locale;
 import java.util.Map;
-
-import javax.xml.namespace.QName;
-import javax.xml.ws.BindingProvider;
-
-import org.junit.Test;
-
-import com.qhjf.cfm.clients.MetlifeApplyPayService;
-import com.qhjf.cfm.clients.MetlifeApplyPayServicePortType;
-import com.qhjf.cfm.clients.MetlifeApplyPayServicePortType_MetlifeApplyPayServiceHttpEndpoint_Client;
 
 public class TestClients {
 	@Test

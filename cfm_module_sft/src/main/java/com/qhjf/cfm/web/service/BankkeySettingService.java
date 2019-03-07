@@ -6,13 +6,8 @@ import com.jfinal.plugin.activerecord.*;
 import com.qhjf.cfm.exceptions.BusinessException;
 import com.qhjf.cfm.exceptions.DbProcessException;
 import com.qhjf.cfm.exceptions.ReqDataException;
-import com.qhjf.cfm.utils.BizSerialnoGenTool;
 import com.qhjf.cfm.utils.CommonService;
-import com.qhjf.cfm.web.UodpInfo;
 import com.qhjf.cfm.web.UserInfo;
-import com.qhjf.cfm.web.constant.WebConstant;
-import org.apache.commons.lang3.StringUtils;
-import org.jsoup.helper.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

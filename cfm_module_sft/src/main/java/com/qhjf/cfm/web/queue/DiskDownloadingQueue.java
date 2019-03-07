@@ -1,21 +1,14 @@
 package com.qhjf.cfm.web.queue;
 
-import java.io.IOException;
-import java.util.List;
-
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import com.jfinal.plugin.activerecord.Db;
+import com.jfinal.plugin.activerecord.Record;
+import com.qhjf.cfm.web.constant.WebConstant;
+import com.qhjf.cfm.web.service.ExcleDiskSendingService;
+import com.qhjf.cfm.web.service.TxtDiskSendingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.jfinal.plugin.activerecord.Db;
-import com.jfinal.plugin.activerecord.Record;
-import com.qhjf.cfm.exceptions.DbProcessException;
-import com.qhjf.cfm.exceptions.ReqDataException;
-import com.qhjf.cfm.web.constant.WebConstant;
-import com.qhjf.cfm.web.render.ByteArrayRender;
-import com.qhjf.cfm.web.render.FileRender;
-import com.qhjf.cfm.web.service.ExcleDiskSendingService;
-import com.qhjf.cfm.web.service.TxtDiskSendingService;
+import java.util.List;
 
 /**
  * 收付费审批流结束后,hookpass内开启一个异步的线程下载盘片

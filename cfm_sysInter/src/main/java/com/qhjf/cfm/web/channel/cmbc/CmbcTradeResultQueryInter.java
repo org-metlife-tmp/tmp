@@ -1,11 +1,5 @@
 package com.qhjf.cfm.web.channel.cmbc;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.jfinal.plugin.activerecord.Db;
@@ -14,13 +8,16 @@ import com.qhjf.bankinterface.api.AtomicInterfaceConfig;
 import com.qhjf.bankinterface.cmbc.CmbcConstant;
 import com.qhjf.cfm.queue.ProductQueue;
 import com.qhjf.cfm.queue.QueueBean;
-import com.qhjf.cfm.web.channel.icbc.IcbcSinglePayInter;
-import com.qhjf.cfm.web.channel.icbc.IcbcTradeResultQueryInter;
 import com.qhjf.cfm.web.channel.inter.api.ISingleResultChannelInter;
 import com.qhjf.cfm.web.channel.util.DateUtil;
 import com.qhjf.cfm.web.config.CMBCTestConfigSection;
 import com.qhjf.cfm.web.inter.impl.SysOaSinglePayInter;
 import com.qhjf.cfm.web.inter.impl.SysSinglePayInter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class CmbcTradeResultQueryInter  implements ISingleResultChannelInter{
 

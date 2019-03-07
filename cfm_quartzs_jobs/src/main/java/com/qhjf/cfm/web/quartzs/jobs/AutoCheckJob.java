@@ -4,7 +4,6 @@ import com.jfinal.kit.Kv;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.IAtom;
 import com.jfinal.plugin.activerecord.Record;
-import com.jfinal.plugin.activerecord.SqlPara;
 import com.qhjf.cfm.exceptions.BusinessException;
 import com.qhjf.cfm.utils.CommonService;
 import com.qhjf.cfm.web.constant.WebConstant;
@@ -17,8 +16,8 @@ import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 public class AutoCheckJob implements Job {

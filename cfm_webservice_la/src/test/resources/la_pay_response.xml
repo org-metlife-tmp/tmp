@@ -19,7 +19,7 @@
 			<ResField5/>
 		</ESBHeader>
 		<MsgBody xmlns="">
-			<b:PMTUPDO_REC xmlns:b="http://www.csc.smart/bo/schemas/PMTUPDO" xmlns:a="http://www.csc.smart/bo/schemas/PMTUPDI" xmlns:c="http://www.csc.smart/msp/schemas/MSPContext" xmlns:d="http://www.csc.smart/bo/schemas/Error">
+            <b:PMTUPDO_REC xmlns:b="http://www.csc.smart/bo/schemas/PMTUPDO">
 				<STATUS>0</STATUS>
 				<MORE_IND>N</MORE_IND>
 				<ADDITIONAL_FIELDS>

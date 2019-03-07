@@ -1,18 +1,7 @@
 package com.qhjf.cfm.web.webservice.ebs;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.jfinal.ext.kit.DateKit;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
-import com.qhjf.cfm.utils.UUIDUtil;
 import com.qhjf.cfm.utils.VelocityUtil;
 import com.qhjf.cfm.web.config.DDHLAConfigSection;
 import com.qhjf.cfm.web.config.GlobalConfigSection;
@@ -20,6 +9,13 @@ import com.qhjf.cfm.web.config.IConfigSectionType;
 import com.qhjf.cfm.web.constant.WebConstant;
 import com.qhjf.cfm.web.webservice.ebs.queue.EbsProductQueue;
 import com.qhjf.cfm.web.webservice.ebs.queue.EbsQueueBean;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 public class EbsCallback {
 	

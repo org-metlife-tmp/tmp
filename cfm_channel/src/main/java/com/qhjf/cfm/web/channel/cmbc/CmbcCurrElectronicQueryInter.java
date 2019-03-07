@@ -12,8 +12,6 @@ import com.qhjf.cfm.utils.UUIDUtil;
 import com.qhjf.cfm.web.channel.inter.api.IMoreResultChannelInter;
 import com.qhjf.cfm.web.channel.util.DateUtil;
 import com.qhjf.cfm.web.config.CMBCTestConfigSection;
-import com.qhjf.cfm.web.config.GlobalConfigSection;
-import com.qhjf.cfm.web.config.IConfigSectionType;
 
 import java.util.Date;
 import java.util.HashMap;

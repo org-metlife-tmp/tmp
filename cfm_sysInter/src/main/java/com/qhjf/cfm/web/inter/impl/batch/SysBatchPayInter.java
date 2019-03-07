@@ -1,33 +1,30 @@
 package com.qhjf.cfm.web.inter.impl.batch;
 
-import java.sql.SQLException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
 import com.alibaba.fastjson.util.TypeUtils;
-import com.jfinal.plugin.activerecord.IAtom;
-import com.qhjf.bankinterface.api.exceptions.BankInterfaceException;
-import com.qhjf.cfm.utils.ArrayUtil;
-import com.qhjf.cfm.utils.CommonService;
-import com.qhjf.cfm.utils.TableDataCacheUtil;
-import com.qhjf.cfm.web.constant.WebConstant;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.jfinal.ext.kit.DateKit;
 import com.jfinal.kit.Kv;
 import com.jfinal.plugin.activerecord.Db;
+import com.jfinal.plugin.activerecord.IAtom;
 import com.jfinal.plugin.activerecord.Record;
 import com.jfinal.plugin.activerecord.SqlPara;
+import com.qhjf.bankinterface.api.exceptions.BankInterfaceException;
+import com.qhjf.cfm.utils.ArrayUtil;
+import com.qhjf.cfm.utils.CommonService;
+import com.qhjf.cfm.utils.StringKit;
+import com.qhjf.cfm.utils.TableDataCacheUtil;
 import com.qhjf.cfm.web.channel.inter.api.IChannelBatchInter;
 import com.qhjf.cfm.web.channel.inter.api.IChannelInter;
 import com.qhjf.cfm.web.channel.manager.ChannelManager;
+import com.qhjf.cfm.web.constant.WebConstant;
 import com.qhjf.cfm.web.inter.api.ISysAtomicInterface;
 import com.qhjf.cfm.web.inter.manager.SysInterManager;
 import com.qhjf.cfm.web.webservice.sft.SftCallBack;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class SysBatchPayInter implements ISysAtomicInterface {
 
@@ -127,10 +124,10 @@ public class SysBatchPayInter implements ISysAtomicInterface {
 	 */
 	@Override
 	public void callBack(String jsonStr) throws Exception {
-		log.debug("交易回写开始...jsonStr={}", jsonStr);
+		log.debug("交易回写开始...jsonStr={}", StringKit.removeControlCharacter(jsonStr));
 		int resultCount = channelInter.getResultCount(jsonStr);
 		if (resultCount == 0) {
-			log.error("银行返回数据条数为0，jsonStr = {}", jsonStr);
+			log.error("银行返回数据条数为0");
 			return;
 		}
 		
@@ -226,10 +223,11 @@ public class SysBatchPayInter implements ISysAtomicInterface {
 				}
 			} catch (Exception e) {
 				isWriteBack = false;
-				log.error("批量支付回调,第【i={}】次循环交易回写失败，回调数据：【{}】", i, jsonStr);
+				log.error("批量支付回调,第【i={}】次循环交易回写失败，回调数据：【{}】", i, StringKit.removeControlCharacter(jsonStr));
 				e.printStackTrace();
 				continue;
 			}
+
 		}
 		
 		if (isWriteBack) {
@@ -357,7 +355,6 @@ public class SysBatchPayInter implements ISysAtomicInterface {
 		
 		if (save) {
 			//向付款指令明细信息表反写 上一步生成的汇总表主键
-			@SuppressWarnings("unchecked")
 			List<Record> detail = (List<Record>)this.instr.get("detail");
 			for (Record record : detail) {
 				record.set("base_id", total.get("id"));

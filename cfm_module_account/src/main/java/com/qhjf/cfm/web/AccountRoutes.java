@@ -2,10 +2,6 @@ package com.qhjf.cfm.web;
 
 import com.jfinal.config.Routes;
 import com.qhjf.cfm.web.controller.*;
-import com.qhjf.cfm.web.controller.CloseAccCompleteController;
-import com.qhjf.cfm.web.controller.CloseAccIntentionController;
-import com.qhjf.cfm.web.controller.OpenCompleteController;
-import com.qhjf.cfm.web.controller.OpenIntentionController;
 
 /**
  * Created by zhangsq on 2018/6/26.

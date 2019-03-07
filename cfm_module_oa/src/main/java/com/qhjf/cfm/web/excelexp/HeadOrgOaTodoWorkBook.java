@@ -5,18 +5,14 @@ import com.jfinal.kit.Kv;
 import com.jfinal.log.Log;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
-import com.qhjf.cfm.exceptions.WorkflowException;
-import com.qhjf.cfm.web.UserInfo;
 import com.qhjf.cfm.web.constant.WebConstant;
 import com.qhjf.cfm.web.plugins.excelexp.AbstractWorkBook;
 import com.qhjf.cfm.web.plugins.excelexp.POIUtil;
 import com.qhjf.cfm.web.plugins.log.LogbackLog;
 import com.qhjf.cfm.web.service.AccCommonService;
-import com.qhjf.cfm.web.service.BranchOrgOaService;
 import org.apache.poi.ss.usermodel.Workbook;
 
 import java.util.List;
-import java.util.Objects;
 
 /**
  * @Auther: zhangyuanyuan

@@ -1,9 +1,8 @@
 package com.qhjf.cfm.excel.config.validator.impl;
 
-import org.apache.poi.ss.usermodel.Cell;
-
 import com.qhjf.cfm.excel.config.validator.IValidator;
 import com.qhjf.cfm.utils.RegexUtils;
+import org.apache.poi.ss.usermodel.Cell;
 
 /**
  * 日期格式校验器，接收字符串格式的时间，格式如下：

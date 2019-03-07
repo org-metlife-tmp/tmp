@@ -3,11 +3,6 @@ package com.qhjf.cfm.web;
 import com.qhjf.cfm.web.validates.Optype;
 import com.qhjf.cfm.web.validates.RequiredParamsValidate;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 public class JyyetOptypeMgr extends AbstractOptypeMgr {
     @Override
     public void registe() {

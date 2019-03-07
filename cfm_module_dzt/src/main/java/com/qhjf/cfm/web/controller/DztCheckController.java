@@ -1,7 +1,5 @@
 package com.qhjf.cfm.web.controller;
 
-import java.util.List;
-
 import com.alibaba.fastjson.util.TypeUtils;
 import com.jfinal.log.Log;
 import com.jfinal.plugin.activerecord.Page;
@@ -10,6 +8,8 @@ import com.qhjf.cfm.exceptions.BusinessException;
 import com.qhjf.cfm.web.plugins.jwt.Auth;
 import com.qhjf.cfm.web.plugins.log.LogbackLog;
 import com.qhjf.cfm.web.service.DztCheckService;
+
+import java.util.List;
 
 /**
  * @Auther: zhangyuanyuan

@@ -8,8 +8,6 @@ import com.qhjf.cfm.exceptions.DbProcessException;
 import com.qhjf.cfm.exceptions.ReqDataException;
 import com.qhjf.cfm.utils.CommonService;
 import com.qhjf.cfm.utils.StringKit;
-import com.qhjf.cfm.web.UodpInfo;
-import com.qhjf.cfm.web.UserInfo;
 import com.qhjf.cfm.web.constant.WebConstant;
 import com.qhjf.cfm.web.plugins.log.LogbackLog;
 import com.qhjf.cfm.web.webservice.oa.callback.OaCallback;

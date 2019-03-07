@@ -1,29 +1,9 @@
 package com.qhjf.cfm.web.service;
 
-import java.math.BigDecimal;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.apache.commons.collections.IterableMap;
-import org.apache.commons.collections.MapIterator;
-import org.apache.commons.lang3.StringUtils;
-
 import com.alibaba.fastjson.util.TypeUtils;
 import com.jfinal.kit.Kv;
 import com.jfinal.log.Log;
-import com.jfinal.plugin.activerecord.Db;
-import com.jfinal.plugin.activerecord.IAtom;
-import com.jfinal.plugin.activerecord.Page;
-import com.jfinal.plugin.activerecord.Record;
-import com.jfinal.plugin.activerecord.SqlPara;
+import com.jfinal.plugin.activerecord.*;
 import com.qhjf.cfm.exceptions.BusinessException;
 import com.qhjf.cfm.exceptions.ReqDataException;
 import com.qhjf.cfm.exceptions.WorkflowException;
@@ -35,14 +15,17 @@ import com.qhjf.cfm.web.UserInfo;
 import com.qhjf.cfm.web.WfRequestObj;
 import com.qhjf.cfm.web.config.PlfConfigAccnoSection;
 import com.qhjf.cfm.web.constant.WebConstant;
-import com.qhjf.cfm.web.constant.WebConstant.COMMONUodp;
-import com.qhjf.cfm.web.constant.WebConstant.COMMONUser;
 import com.qhjf.cfm.web.constant.WebConstant.MajorBizType;
 import com.qhjf.cfm.web.constant.WebConstant.WfExpressType;
 import com.qhjf.cfm.web.plugins.log.LogbackLog;
 import com.qhjf.cfm.web.queue.DiskDownloadingQueue;
 import com.qhjf.cfm.web.webservice.oa.server.OaDataDoubtfulCache;
 import com.qhjf.cfm.web.webservice.sft.SftCallBack;
+import org.apache.commons.lang3.StringUtils;
+
+import java.math.BigDecimal;
+import java.sql.SQLException;
+import java.util.*;
 
 /**
  * 核对组批LA

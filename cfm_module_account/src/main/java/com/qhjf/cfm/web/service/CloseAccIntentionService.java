@@ -8,11 +8,10 @@ import com.qhjf.cfm.exceptions.DbProcessException;
 import com.qhjf.cfm.exceptions.ReqDataException;
 import com.qhjf.cfm.utils.ArrayUtil;
 import com.qhjf.cfm.utils.BizSerialnoGenTool;
+import com.qhjf.cfm.utils.CommonService;
 import com.qhjf.cfm.web.UserInfo;
 import com.qhjf.cfm.web.constant.WebConstant;
-import com.qhjf.cfm.utils.CommonService;
 import org.apache.commons.collections.CollectionUtils;
-import org.bouncycastle.ocsp.Req;
 
 import java.sql.SQLException;
 import java.util.ArrayList;

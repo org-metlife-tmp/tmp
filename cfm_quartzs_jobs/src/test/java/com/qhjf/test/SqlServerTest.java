@@ -1,24 +1,16 @@
 package com.qhjf.test;
 
-import com.jfinal.kit.Kv;
-import com.jfinal.plugin.activerecord.*;
+import com.jfinal.plugin.activerecord.ActiveRecordPlugin;
 import com.jfinal.plugin.activerecord.dialect.SqlServerDialect;
 import com.jfinal.plugin.druid.DruidPlugin;
 import com.jfinal.plugin.redis.RedisPlugin;
 import com.jfinal.plugin.redis.serializer.JdkSerializer;
 import com.jfinal.template.source.ClassPathSourceFactory;
-import com.qhjf.cfm.web.config.IConfigSectionType;
-import com.qhjf.cfm.web.config.RedisCacheConfigSection;
 import com.qhjf.cfm.web.plugins.CfmRedisPlugin;
-import com.qhjf.cfm.web.quartzs.jobs.comm.SftEbsDataCheckJob;
 import com.qhjf.cfm.web.quartzs.jobs.comm.SftLaDataCheckJob;
-import com.qhjf.cfm.web.quartzs.jobs.comm.SftRecvLaDataCheckJob;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.List;
 
 public class SqlServerTest {
     DruidPlugin dp = null;

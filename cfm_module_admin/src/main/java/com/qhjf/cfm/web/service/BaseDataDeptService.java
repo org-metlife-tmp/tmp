@@ -10,8 +10,6 @@ import com.qhjf.cfm.web.constant.WebConstant;
 
 import java.sql.SQLException;
 
-import static com.qhjf.cfm.web.controller.CFMBaseController.*;
-
 /**
  * 基础数据 - 部门
  *

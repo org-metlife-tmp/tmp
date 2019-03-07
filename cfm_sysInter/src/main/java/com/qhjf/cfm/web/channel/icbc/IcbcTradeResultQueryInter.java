@@ -1,12 +1,5 @@
 package com.qhjf.cfm.web.channel.icbc;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.jfinal.plugin.activerecord.Db;
@@ -17,9 +10,13 @@ import com.qhjf.cfm.queue.ProductQueue;
 import com.qhjf.cfm.queue.QueueBean;
 import com.qhjf.cfm.web.channel.inter.api.ISingleResultChannelInter;
 import com.qhjf.cfm.web.channel.util.IcbcResultParseUtil;
-import com.qhjf.cfm.web.inter.api.ISysAtomicInterface;
 import com.qhjf.cfm.web.inter.impl.SysOaSinglePayInter;
 import com.qhjf.cfm.web.inter.impl.SysSinglePayInter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class IcbcTradeResultQueryInter  implements ISingleResultChannelInter{
 	private static final Logger log = LoggerFactory.getLogger(IcbcTradeResultQueryInter.class);

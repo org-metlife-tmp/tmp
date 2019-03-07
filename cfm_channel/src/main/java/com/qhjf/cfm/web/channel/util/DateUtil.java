@@ -1,12 +1,12 @@
 package com.qhjf.cfm.web.channel.util;
 
+import com.jfinal.template.stat.ParseException;
+
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-
-import com.jfinal.template.stat.ParseException;
 
 public class DateUtil {
 	

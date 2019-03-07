@@ -19,7 +19,7 @@
 			<ResField5 />
 		</ESBHeader>
 		<MsgBody xmlns="">
-			<b:DRNADDO_REC xmlns:b="http://www.csc.smart/bo/schemas/DRNADDO" xmlns:a="http://www.csc.smart/bo/schemas/DRNADDI" xmlns:c="http://www.csc.smart/bo/schemas/DRNDELI" xmlns:d="http://www.csc.smart/bo/schemas/DRNDELO" xmlns:e="http://www.csc.smart/msp/schemas/MSPContext" xmlns:f="http://www.csc.smart/bo/schemas/Error">
+            <b:DRNADDO_REC xmlns:b="http://www.csc.smart/bo/schemas/DRNADDO">
 				<STATUS>0</STATUS>
 				<MORE_IND>N</MORE_IND>
 				<ADDITIONAL_FIELDS>

@@ -7,7 +7,6 @@ import com.jfinal.plugin.activerecord.Page;
 import com.jfinal.plugin.activerecord.Record;
 import com.jfinal.plugin.activerecord.SqlPara;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**

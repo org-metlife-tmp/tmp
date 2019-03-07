@@ -1,11 +1,11 @@
 package com.qhjf.cfm.excel.config;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.qhjf.cfm.excel.config.convertor.IConvertor;
 import com.qhjf.cfm.excel.config.statistic.IStatistics;
 import com.qhjf.cfm.excel.config.validator.IValidator;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Excel列配置/单元格配置

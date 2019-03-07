@@ -1,10 +1,10 @@
 package com.qhjf.cfm.web.utils.comm.file.tool;
 
-import java.io.InputStream;
-
 import com.qhjf.cfm.exceptions.AttachmentException;
 import com.qhjf.cfm.exceptions.BusinessException;
 import com.qhjf.cfm.web.utils.comm.file.info.FileInfo;
+
+import java.io.InputStream;
 
 /**
  * 文件保存、读取工具接口

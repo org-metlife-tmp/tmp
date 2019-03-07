@@ -1,23 +1,17 @@
 package com.qhjf.cfm.web.webservice.la.util;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-import java.util.Map.Entry;
+import com.qhjf.cfm.web.config.DDHLARecvConfigSection;
+import com.qhjf.cfm.web.config.GlobalConfigSection;
+import com.qhjf.cfm.web.config.IConfigSectionType;
+import com.qhjf.cfm.web.webservice.la.recv.LaRecvCallbackBean;
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.OMNamespace;
 
-import com.qhjf.cfm.web.config.DDHLARecvConfigSection;
-import com.qhjf.cfm.web.config.GlobalConfigSection;
-import com.qhjf.cfm.web.config.IConfigSectionType;
-import com.qhjf.cfm.web.webservice.la.recv.LaRecvCallbackBean;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * bobo给的报文格式

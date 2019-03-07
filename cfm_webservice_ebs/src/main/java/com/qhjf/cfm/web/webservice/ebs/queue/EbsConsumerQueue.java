@@ -1,29 +1,27 @@
 package com.qhjf.cfm.web.webservice.ebs.queue;
 
-import java.sql.SQLException;
-import java.util.Date;
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import cn.metlife.ebs_sit.services.FundingPlatformPayBack.FundingPlatformPayBackProxy;
 import com.alibaba.fastjson.JSONObject;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.IAtom;
 import com.jfinal.plugin.activerecord.Record;
 import com.qhjf.cfm.exceptions.BusinessException;
 import com.qhjf.cfm.utils.CommonService;
+import com.qhjf.cfm.utils.StringKit;
 import com.qhjf.cfm.utils.XmlTool;
 import com.qhjf.cfm.web.config.DDHEBSConfigSection;
-import com.qhjf.cfm.web.config.DDHLAConfigSection;
 import com.qhjf.cfm.web.config.GlobalConfigSection;
 import com.qhjf.cfm.web.config.IConfigSectionType;
 import com.qhjf.cfm.web.constant.WebConstant.SftCallbackStatus;
 import com.qhjf.cfm.web.constant.WebConstant.SftInterfaceStatus;
 import com.qhjf.cfm.web.service.CheckVoucherService;
 import com.qhjf.cfm.web.webservice.ebs.EbsCallbackBean;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import cn.metlife.ebs_sit.services.FundingPlatformPayBack.FundingPlatformPayBackProxy;
+import java.sql.SQLException;
+import java.util.Date;
+import java.util.List;
 
 /**
  * 队列消费者
@@ -42,10 +40,9 @@ public class EbsConsumerQueue implements Runnable{
 				FundingPlatformPayBackProxy service = new FundingPlatformPayBackProxy(config.getUrl());
 				EbsQueueBean queueBean = null;
 				queueBean = EbsQueue.getInstance().getQueue().take();
-				log.debug("EBS回写发送参数="+queueBean.getParams());
+				log.debug("EBS回写发送参数={}", StringKit.removeControlCharacter(queueBean.getParams()));
 				String response = service.saveXML(queueBean.getParams());
-				response = response.replaceAll("\\r|\\n", "");
-				log.debug("EBS回写响应参数="+response);
+				log.debug("EBS回写响应参数={}", StringKit.removeControlCharacter(response));
 				JSONObject json = XmlTool.documentToJSONObject(response);
 				process(json);
 			}catch(Exception e){
@@ -66,11 +63,11 @@ public class EbsConsumerQueue implements Runnable{
 	    				.set("la_callback_resp_time", new Date());
 	    		Record whereRecord = new Record().set("pay_code", bean.getPayNo());
 	    		if(CommonService.updateRows("la_origin_pay_data", setRecord, whereRecord) != 1){
-	    			log.debug("EBS回调接口回写数据库失败:"+bean.getPayNo());
+	    			log.debug("EBS回调接口回写数据库失败:{}",StringKit.removeControlCharacter(bean.getPayNo()));
 	    			continue;
 	    		};
 			}catch(Exception e){
-				log.debug("EBS回调接口回写数据库失败:"+bean.getPayNo());
+				log.debug("EBS回调接口回写数据库失败:{}",StringKit.removeControlCharacter(bean.getPayNo()));
 				e.printStackTrace();
 				continue;
 			}
@@ -119,13 +116,13 @@ public class EbsConsumerQueue implements Runnable{
 	    					return true;
 	    				}
 	    			}
-	    			log.debug("EBS回调接口回写数据库失败:"+payCode);
+	    			log.debug("EBS回调接口回写数据库失败:{}",StringKit.removeControlCharacter(payCode));
 	    			return false;
 	            }
 	            });	
 			
 			if (!flag) {
-				log.error("EBS响应回写原始数据失败；response={}", json);
+				log.error("EBS响应回写原始数据失败；response={}", StringKit.removeControlCharacter(json.toJSONString()));
 			}
 	}
 }

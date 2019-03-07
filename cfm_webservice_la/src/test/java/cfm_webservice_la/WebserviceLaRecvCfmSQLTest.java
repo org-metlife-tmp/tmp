@@ -1,12 +1,5 @@
 package cfm_webservice_la;
 
-import java.util.Date;
-import java.util.List;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
 import com.jfinal.plugin.activerecord.ActiveRecordPlugin;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
@@ -17,6 +10,12 @@ import com.jfinal.plugin.redis.serializer.JdkSerializer;
 import com.jfinal.template.source.ClassPathSourceFactory;
 import com.qhjf.cfm.web.constant.WebConstant;
 import com.qhjf.cfm.web.plugins.CfmRedisPlugin;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.Date;
+import java.util.List;
 
 public class WebserviceLaRecvCfmSQLTest {
 	DruidPlugin dp = null;

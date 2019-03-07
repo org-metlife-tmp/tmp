@@ -1,16 +1,15 @@
 package com.qhjf.cfm.web.webservice.sft;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
 import com.qhjf.cfm.web.constant.WebConstant;
 import com.qhjf.cfm.web.webservice.ebs.EbsCallback;
 import com.qhjf.cfm.web.webservice.la.LaCallback;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 /**
  * webservice回写LA/EBS
  * 

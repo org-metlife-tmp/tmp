@@ -1,13 +1,12 @@
 package com.qhjf.cfm.queue;
 
-import java.util.concurrent.TimeUnit;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.qhjf.bankinterface.api.ProcessEntrance;
 import com.qhjf.cfm.web.channel.inter.api.IChannelInter;
 import com.qhjf.cfm.web.inter.api.ISysAtomicInterface;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.TimeUnit;
 
 public class IcbcSignConsumerQueue implements Runnable{
 	

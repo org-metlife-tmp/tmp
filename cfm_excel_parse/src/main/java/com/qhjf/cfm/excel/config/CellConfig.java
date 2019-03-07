@@ -1,8 +1,8 @@
 package com.qhjf.cfm.excel.config;
 
-import java.io.Serializable;
-
 import com.qhjf.cfm.excel.config.validator.IValidator;
+
+import java.io.Serializable;
 
 /**
  * Excel单元格配置

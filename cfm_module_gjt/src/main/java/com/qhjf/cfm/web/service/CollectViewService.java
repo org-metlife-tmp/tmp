@@ -1,7 +1,5 @@
 package com.qhjf.cfm.web.service;
 
-import java.util.List;
-
 import com.alibaba.fastjson.util.TypeUtils;
 import com.jfinal.kit.Kv;
 import com.jfinal.log.Log;
@@ -14,6 +12,8 @@ import com.qhjf.cfm.utils.StringKit;
 import com.qhjf.cfm.web.UodpInfo;
 import com.qhjf.cfm.web.constant.WebConstant;
 import com.qhjf.cfm.web.plugins.log.LogbackLog;
+
+import java.util.List;
 
 public class CollectViewService {
 
@@ -86,9 +86,8 @@ public class CollectViewService {
 
     /**
      * 拼接查询语句参数
-     *
      * @param record
-     * @param string
+     * @param sql
      * @return
      */
     private SqlPara getlistparam(Record record, String sql) {

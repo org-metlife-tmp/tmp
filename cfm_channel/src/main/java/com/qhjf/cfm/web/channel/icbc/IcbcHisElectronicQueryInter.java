@@ -1,14 +1,5 @@
 package com.qhjf.cfm.web.channel.icbc;
 
-import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.jfinal.plugin.activerecord.Record;
@@ -22,9 +13,12 @@ import com.qhjf.cfm.web.channel.inter.api.IMoreResultChannelInter;
 import com.qhjf.cfm.web.channel.util.AmountUtil;
 import com.qhjf.cfm.web.channel.util.DateUtil;
 import com.qhjf.cfm.web.channel.util.IcbcResultParseUtil;
-import com.qhjf.cfm.web.config.CMBCTestConfigSection;
 import com.qhjf.cfm.web.config.ICBCTestConfigSection;
 import com.qhjf.cfm.web.constant.BasicTypeConstant;
+
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.Map.Entry;
 
 public class IcbcHisElectronicQueryInter implements IMoreResultChannelInter{
 	

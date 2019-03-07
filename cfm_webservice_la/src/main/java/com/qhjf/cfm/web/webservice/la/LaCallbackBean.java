@@ -1,15 +1,14 @@
 package com.qhjf.cfm.web.webservice.la;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.dom4j.DocumentException;
-
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.jfinal.plugin.activerecord.Record;
 import com.qhjf.cfm.utils.XmlTool;
 import com.qhjf.cfm.web.constant.WebConstant;
+import org.dom4j.DocumentException;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class LaCallbackBean {
 	

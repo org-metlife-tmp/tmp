@@ -3,7 +3,6 @@ package com.qhjf.cfm.web.controller;
 import com.jfinal.log.Log;
 import com.jfinal.plugin.activerecord.Page;
 import com.jfinal.plugin.activerecord.Record;
-import com.qhjf.cfm.exceptions.ReqDataException;
 import com.qhjf.cfm.web.plugins.jwt.Auth;
 import com.qhjf.cfm.web.plugins.log.LogbackLog;
 import com.qhjf.cfm.web.service.OriginDataOaService;

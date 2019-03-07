@@ -1,24 +1,22 @@
 package com.qhjf.cfm.web.inter.impl;
 
-import java.sql.SQLException;
-import java.util.Date;
-
 import com.alibaba.fastjson.util.TypeUtils;
+import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.IAtom;
+import com.jfinal.plugin.activerecord.Record;
 import com.qhjf.bankinterface.api.exceptions.BankInterfaceException;
 import com.qhjf.cfm.utils.CommonService;
-import com.qhjf.cfm.web.constant.WebConstant;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.jfinal.plugin.activerecord.Db;
-import com.jfinal.plugin.activerecord.Record;
-import com.qhjf.bankinterface.cmbc.CmbcChannel;
 import com.qhjf.cfm.utils.RedisSericalnoGenTool;
 import com.qhjf.cfm.web.channel.inter.api.IChannelInter;
 import com.qhjf.cfm.web.channel.inter.api.ISingleResultChannelInter;
+import com.qhjf.cfm.web.constant.WebConstant;
 import com.qhjf.cfm.web.inter.api.ISysAtomicInterface;
 import com.qhjf.cfm.web.inter.manager.SysInterManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.sql.SQLException;
+import java.util.Date;
 
 public class SysSinglePayInter implements ISysAtomicInterface {
 

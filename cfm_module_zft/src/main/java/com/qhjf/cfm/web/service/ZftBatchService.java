@@ -7,7 +7,6 @@ import com.jfinal.kit.StrKit;
 import com.jfinal.plugin.activerecord.*;
 import com.jfinal.plugin.redis.Redis;
 import com.qhjf.cfm.excel.bean.ExcelResultBean;
-import com.qhjf.cfm.utils.*;
 import com.qhjf.cfm.exceptions.BusinessException;
 import com.qhjf.cfm.exceptions.DbProcessException;
 import com.qhjf.cfm.exceptions.ReqDataException;
@@ -16,8 +15,8 @@ import com.qhjf.cfm.queue.QueueBean;
 import com.qhjf.cfm.utils.ArrayUtil;
 import com.qhjf.cfm.utils.CommonService;
 import com.qhjf.cfm.utils.StringKit;
+import com.qhjf.cfm.utils.TableDataCacheUtil;
 import com.qhjf.cfm.web.UodpInfo;
-
 import com.qhjf.cfm.web.UserInfo;
 import com.qhjf.cfm.web.channel.inter.api.IChannelInter;
 import com.qhjf.cfm.web.channel.manager.ChannelManager;

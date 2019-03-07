@@ -234,6 +234,29 @@ public class StringKit {
     }
 
 
+    /**
+     * 去除字符串里的特殊字符
+     * @param origin
+     * @return
+     */
+    public static String removeControlCharacter(String origin){
+        if(origin != null && !"".equals(origin)){
+            StringBuilder sb = new StringBuilder();
+            for (int i=0; i<origin.codePointCount(0, origin.length()); i++){
+                int codePoint = origin.codePointAt(i);
+                if(!Character.isISOControl(codePoint))
+                {
+                    sb.appendCodePoint(codePoint);
+                }
+            }
+            return sb.toString();
+        }else{
+            return origin;
+        }
+
+    }
+
+
     public static void main(String[] args){
 
         StringBuffer bb = new StringBuffer("From dd ( ?,");
@@ -242,6 +265,14 @@ public class StringKit {
         int d = 10000;
         System.out.println(formatCount(d));
         System.out.println(zeroPadding(1000,3));
+        String origin = "\r\n1234@#<!234\r\n";
+        System.out.println("#####################");
+        System.out.println(origin);
+        System.out.println("#####################");
+        System.out.println();
+        System.out.println("#####################");
+        System.out.println(removeControlCharacter(origin));
+        System.out.println("#####################");
     }
 
 }

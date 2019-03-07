@@ -14,7 +14,6 @@ import com.qhjf.cfm.queue.QueueBean;
 import com.qhjf.cfm.utils.TableDataCacheUtil;
 import com.qhjf.cfm.web.channel.inter.api.IChannelInter;
 import com.qhjf.cfm.web.channel.manager.ChannelManager;
-import com.qhjf.cfm.web.constant.WebConstant;
 import com.qhjf.cfm.web.inter.impl.batch.SysBatchPayInter;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
@@ -29,7 +28,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.net.SocketTimeoutException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;

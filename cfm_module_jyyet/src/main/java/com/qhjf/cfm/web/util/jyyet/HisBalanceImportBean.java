@@ -1,8 +1,9 @@
 package com.qhjf.cfm.web.util.jyyet;
 
+import com.jfinal.plugin.activerecord.Record;
+
 import java.util.HashMap;
 import java.util.Map;
-import com.jfinal.plugin.activerecord.Record;
 
 /**
  * 历史余额导入javaBean

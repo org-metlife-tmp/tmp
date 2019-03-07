@@ -1,17 +1,13 @@
 package com.qhjf.cfm.web.service;
 
 import com.alibaba.fastjson.util.TypeUtils;
-import com.jfinal.kit.Kv;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
-import com.jfinal.plugin.activerecord.SqlPara;
 import com.qhjf.cfm.exceptions.BusinessException;
 import com.qhjf.cfm.exceptions.ReqDataException;
-import com.qhjf.cfm.utils.ArrayUtil;
 import com.qhjf.cfm.web.constant.WebConstant;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 

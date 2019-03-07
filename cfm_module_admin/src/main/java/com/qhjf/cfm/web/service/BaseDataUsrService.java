@@ -12,7 +12,6 @@ import com.qhjf.cfm.exceptions.ReqDataException;
 import com.qhjf.cfm.utils.ArrayUtil;
 import com.qhjf.cfm.utils.MD5Kit;
 import com.qhjf.cfm.utils.RandomStrGenerator;
-import com.qhjf.cfm.web.UodpInfo;
 
 import java.sql.SQLException;
 import java.util.*;

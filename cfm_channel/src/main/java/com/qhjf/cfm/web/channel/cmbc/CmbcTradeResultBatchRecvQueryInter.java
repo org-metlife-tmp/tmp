@@ -8,6 +8,7 @@ import com.qhjf.bankinterface.cmbc.CmbcConstant;
 import com.qhjf.cfm.web.channel.inter.api.IMoreResultChannelInter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.util.HashMap;
 import java.util.Map;
 

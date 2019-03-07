@@ -1,11 +1,12 @@
 
 package com.seeyon.v3x.services.impl;
 
+import com.seeyon.ctp.services.xsd.UserToken;
+
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlElementDecl;
 import javax.xml.bind.annotation.XmlRegistry;
 import javax.xml.namespace.QName;
-import com.seeyon.ctp.services.xsd.UserToken;
 
 
 /**

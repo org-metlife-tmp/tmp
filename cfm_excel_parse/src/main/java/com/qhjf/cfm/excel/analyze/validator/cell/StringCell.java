@@ -1,9 +1,9 @@
 package com.qhjf.cfm.excel.analyze.validator.cell;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.ss.usermodel.Cell;
 import com.qhjf.cfm.excel.config.Config;
 import com.qhjf.cfm.excel.exception.CellValueUndesirableException;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.ss.usermodel.Cell;
 
 /**
  * String类型的Excel单元格

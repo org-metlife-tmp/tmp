@@ -1,11 +1,5 @@
 package com.qhjf.test;
 
-import java.util.List;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
 import com.jfinal.plugin.activerecord.ActiveRecordPlugin;
 import com.jfinal.plugin.activerecord.Record;
 import com.jfinal.plugin.activerecord.dialect.SqlServerDialect;
@@ -17,6 +11,11 @@ import com.qhjf.cfm.web.channel.cmbc.CmbcTradeResultBatchQueryInter;
 import com.qhjf.cfm.web.inter.impl.SysTradeResultBatchQueryInter;
 import com.qhjf.cfm.web.plugins.CfmRedisPlugin;
 import com.qhjf.cfm.web.quartzs.jobs.TradeResultBatchQueryJob;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.List;
 
 public class TradeResultBatchQueryJobTest {
 	DruidPlugin dp = null;

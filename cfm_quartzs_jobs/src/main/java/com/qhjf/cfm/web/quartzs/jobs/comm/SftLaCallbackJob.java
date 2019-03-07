@@ -1,16 +1,14 @@
 package com.qhjf.cfm.web.quartzs.jobs.comm;
 
-import java.util.List;
-
+import com.jfinal.plugin.activerecord.Db;
+import com.jfinal.plugin.activerecord.Record;
+import com.qhjf.cfm.web.constant.WebConstant;
+import com.qhjf.cfm.web.webservice.sft.SftCallBack;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
-import com.jfinal.plugin.activerecord.Db;
-import com.jfinal.plugin.activerecord.Record;
-import com.qhjf.cfm.web.constant.WebConstant;
-import com.qhjf.cfm.web.webservice.la.LaCallback;
-import com.qhjf.cfm.web.webservice.sft.SftCallBack;
+import java.util.List;
 /**
  *对完结的原始数据回调LA失败的情况，再次回调LA
  */

@@ -1,9 +1,5 @@
 package com.qhjf.test;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.quartz.JobExecutionException;
 import com.jfinal.plugin.activerecord.ActiveRecordPlugin;
 import com.jfinal.plugin.activerecord.dialect.SqlServerDialect;
 import com.jfinal.plugin.druid.DruidPlugin;
@@ -13,6 +9,10 @@ import com.jfinal.template.source.ClassPathSourceFactory;
 import com.qhjf.cfm.web.plugins.CfmRedisPlugin;
 import com.qhjf.cfm.web.quartzs.jobs.comm.SftRecvLaCallbackJob;
 import com.qhjf.cfm.web.webservice.la.queue.recv.LaRecvQueuePlugin;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.quartz.JobExecutionException;
 
 public class SftRecvLaCallbackJobTest {
 	DruidPlugin dp = null;

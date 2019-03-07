@@ -1,15 +1,14 @@
 package com.qhjf.cfm.excel.config.parse.impl;
 
-import java.util.Map;
-import java.util.Set;
-
-import org.apache.commons.lang3.StringUtils;
-
 import com.qhjf.cfm.excel.config.CellConfig;
 import com.qhjf.cfm.excel.config.parse.ConfigParseUtil;
 import com.qhjf.cfm.excel.config.parse.ICellConfigParseUtil;
 import com.qhjf.cfm.excel.exception.ExcelConfigParseException;
 import com.qhjf.cfm.excel.util.KeyValueSplitUtil;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.Map;
+import java.util.Set;
 
 public class CellConfigParseUtil implements ICellConfigParseUtil {
 	//个性配置数组：position单元格位置信息

@@ -1,8 +1,8 @@
 package com.qhjf.cfm.queue;
 
-import java.util.Map;
-
 import com.qhjf.cfm.web.inter.api.ISysAtomicInterface;
+
+import java.util.Map;
 
 /**
  * 队列发送bean

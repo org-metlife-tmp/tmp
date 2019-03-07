@@ -1,20 +1,12 @@
 package com.qhjf.cfm.excel.cache;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.ConcurrentHashMap;
-
-import org.apache.log4j.chainsaw.Main;
-
 import com.jfinal.log.Log;
 import com.qhjf.cfm.excel.bean.ExcelResultBean;
 import com.qhjf.cfm.web.constant.BasicTypeConstant;
 import com.qhjf.cfm.web.plugins.log.LogbackLog;
+
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 缓存Excel校验成功后的结果工具类

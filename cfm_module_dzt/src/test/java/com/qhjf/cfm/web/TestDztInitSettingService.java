@@ -1,10 +1,5 @@
 package com.qhjf.cfm.web;
 
-import java.util.ArrayList;
-import java.util.List;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
 import com.jfinal.plugin.activerecord.ActiveRecordPlugin;
 import com.jfinal.plugin.activerecord.Page;
 import com.jfinal.plugin.activerecord.Record;
@@ -13,6 +8,12 @@ import com.jfinal.plugin.druid.DruidPlugin;
 import com.jfinal.template.source.ClassPathSourceFactory;
 import com.qhjf.cfm.exceptions.BusinessException;
 import com.qhjf.cfm.web.service.DztInitSettingService;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class TestDztInitSettingService {
 	DruidPlugin dp = null;

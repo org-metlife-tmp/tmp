@@ -1,11 +1,5 @@
 package cfm_sysInter;
 
-import java.util.List;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
 import com.jfinal.kit.Kv;
 import com.jfinal.plugin.activerecord.ActiveRecordPlugin;
 import com.jfinal.plugin.activerecord.Db;
@@ -14,6 +8,11 @@ import com.jfinal.plugin.activerecord.SqlPara;
 import com.jfinal.plugin.activerecord.dialect.SqlServerDialect;
 import com.jfinal.plugin.druid.DruidPlugin;
 import com.jfinal.template.source.ClassPathSourceFactory;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.List;
 
 public class BatchSqlTest {
 	DruidPlugin dp = null;

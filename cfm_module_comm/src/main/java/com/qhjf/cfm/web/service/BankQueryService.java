@@ -9,9 +9,7 @@ import com.jfinal.plugin.activerecord.SqlPara;
 import com.qhjf.cfm.web.plugins.log.LogbackLog;
 import com.qhjf.cfm.web.utils.Query4PinYinTool;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class BankQueryService {
 

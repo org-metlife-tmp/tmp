@@ -1,17 +1,17 @@
 
 package com.seeyon.ctp.common.authenticate.domain.xsd;
 
+import com.seeyon.util.xsd.Locale;
+import com.seeyon.util.xsd.Map;
+import com.seeyon.util.xsd.Set;
+import com.seeyon.util.xsd.TimeZone;
+
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.datatype.XMLGregorianCalendar;
-
-import com.seeyon.util.xsd.Locale;
-import com.seeyon.util.xsd.Map;
-import com.seeyon.util.xsd.Set;
-import com.seeyon.util.xsd.TimeZone;
 
 
 /**

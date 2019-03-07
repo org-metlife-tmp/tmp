@@ -1,9 +1,8 @@
 package com.qhjf.cfm.excel.analyze.validator.cell;
 
-import org.apache.poi.ss.usermodel.Cell;
-
 import com.qhjf.cfm.excel.config.Config;
 import com.qhjf.cfm.excel.exception.CellValueUndesirableException;
+import org.apache.poi.ss.usermodel.Cell;
 
 public class ErrorCell extends CellValueGetterStrategy {
 

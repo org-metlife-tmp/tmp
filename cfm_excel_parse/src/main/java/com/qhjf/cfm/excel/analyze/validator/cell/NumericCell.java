@@ -1,10 +1,10 @@
 package com.qhjf.cfm.excel.analyze.validator.cell;
 
-import org.apache.poi.hssf.usermodel.HSSFDateUtil;
-import org.apache.poi.ss.usermodel.Cell;
 import com.qhjf.cfm.excel.config.Config;
 import com.qhjf.cfm.excel.exception.CellValueUndesirableException;
 import com.qhjf.cfm.excel.util.PoiDateFomatUtil;
+import org.apache.poi.hssf.usermodel.HSSFDateUtil;
+import org.apache.poi.ss.usermodel.Cell;
 
 public class NumericCell extends CellValueGetterStrategy {
 

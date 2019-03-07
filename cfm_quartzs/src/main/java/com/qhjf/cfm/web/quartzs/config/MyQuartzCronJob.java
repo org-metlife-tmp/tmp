@@ -1,23 +1,21 @@
 package com.qhjf.cfm.web.quartzs.config;
 
-import static org.quartz.CronScheduleBuilder.cronSchedule;
-import static org.quartz.JobBuilder.newJob;
-import static org.quartz.TriggerBuilder.newTrigger;
-
-import java.util.Map;
-
+import cn.dreampie.quartz.QuartzKey;
+import cn.dreampie.quartz.QuartzKit;
+import cn.dreampie.quartz.job.JobState;
+import cn.dreampie.quartz.job.QuartzCronJob;
+import com.alibaba.fastjson.JSONObject;
 import org.quartz.CronTrigger;
 import org.quartz.JobDataMap;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerFactory;
 import org.quartz.impl.JobDetailImpl;
 
-import com.alibaba.fastjson.JSONObject;
+import java.util.Map;
 
-import cn.dreampie.quartz.QuartzKey;
-import cn.dreampie.quartz.QuartzKit;
-import cn.dreampie.quartz.job.JobState;
-import cn.dreampie.quartz.job.QuartzCronJob;
+import static org.quartz.CronScheduleBuilder.cronSchedule;
+import static org.quartz.JobBuilder.newJob;
+import static org.quartz.TriggerBuilder.newTrigger;
 
 public class MyQuartzCronJob extends QuartzCronJob{
 	

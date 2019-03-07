@@ -11,8 +11,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import java.sql.BatchUpdateException;
-
 public class OptypeValidateTest {
 
     private JSONObject obj ;

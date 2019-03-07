@@ -1,18 +1,12 @@
 package com.qhjf.cfm.excel.config;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import com.qhjf.cfm.excel.config.validator.ICustomValidator;
 import com.qhjf.cfm.excel.config.validator.IValidator;
 import com.qhjf.cfm.excel.exception.ExcelConfigMergeException;
-import com.qhjf.cfm.utils.RegexUtils;
 
-import java.util.Set;
+import java.io.Serializable;
+import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * Excel解析规则 与 校验规则 bean

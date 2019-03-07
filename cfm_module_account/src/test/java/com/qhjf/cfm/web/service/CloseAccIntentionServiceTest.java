@@ -1,6 +1,5 @@
 package com.qhjf.cfm.web.service;
 
-import com.alibaba.druid.pool.DruidDataSource;
 import com.jfinal.kit.Kv;
 import com.jfinal.plugin.activerecord.ActiveRecordPlugin;
 import com.jfinal.plugin.activerecord.Db;
@@ -10,7 +9,8 @@ import com.jfinal.plugin.druid.DruidPlugin;
 import com.jfinal.template.source.ClassPathSourceFactory;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by zhangsq on 2018/6/26.

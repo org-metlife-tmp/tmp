@@ -1,21 +1,6 @@
 package com.qhjf.cfm.web.quartzs.jobs.comm;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import com.alibaba.fastjson.util.TypeUtils;
-import org.quartz.Job;
-import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.IAtom;
 import com.jfinal.plugin.activerecord.Record;
@@ -25,8 +10,21 @@ import com.qhjf.cfm.utils.MD5Kit;
 import com.qhjf.cfm.web.constant.WebConstant;
 import com.qhjf.cfm.web.quartzs.jobs.pub.PubJob;
 import com.qhjf.cfm.web.utils.comm.file.tool.DataDoubtfulCache;
-import com.qhjf.cfm.web.webservice.sft.SftCallBack;
 import com.qhjf.cfm.web.webservice.sft.SftRecvCallBack;
+import org.quartz.Job;
+import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class SftRecvLaDataCheckJob implements Job{
 

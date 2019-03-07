@@ -1,21 +1,18 @@
 package com.qhjf.cfm.web.validator.impl;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
 import com.jfinal.plugin.activerecord.ActiveRecordPlugin;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
 import com.jfinal.plugin.druid.DruidPlugin;
 import com.jfinal.template.source.ClassPathSourceFactory;
 import com.qhjf.cfm.excel.config.validator.impl.AccNoValidator;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 public class AccNoValidatorTest {
 	DruidPlugin dp = null;

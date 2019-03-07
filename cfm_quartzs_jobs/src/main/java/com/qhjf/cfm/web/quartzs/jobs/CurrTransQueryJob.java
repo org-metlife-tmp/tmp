@@ -1,15 +1,14 @@
 package com.qhjf.cfm.web.quartzs.jobs;
 
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
 import com.qhjf.cfm.web.inter.api.ISysAtomicInterface;
 import com.qhjf.cfm.web.inter.impl.SysCurrTransQueryInter;
 import com.qhjf.cfm.web.quartzs.jobs.pub.PubJob;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 public class CurrTransQueryJob extends PubJob{
 	

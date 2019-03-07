@@ -1,5 +1,9 @@
 package com.qhjf.cfm.web.webservice.tool;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.security.auth.x500.X500Principal;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,11 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
-
-import javax.security.auth.x500.X500Principal;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 
 public class OminiUtils {
@@ -235,22 +234,6 @@ public class OminiUtils {
         return result;
     }
 
-    /**
-     * 根据classname获取实例对象
-     *
-     * @param clzname
-     * @return
-     */
-    public static Class<?> getClz(String clzname) {
-        Class<?> clz = null;
-        try {
-            clz = Class.forName(clzname);
-            return clz;
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-        return clz;
-    }
 
     public static String getCNFromCertificate(X509Certificate cert) {
         X500Principal principal = cert.getSubjectX500Principal();

@@ -1,14 +1,13 @@
 package com.qhjf.cfm.web.webservice.oa.server;
 
-import com.jfinal.ext.kit.DateKit;
 import com.jfinal.plugin.redis.Redis;
 import com.qhjf.cfm.web.config.GlobalConfigSection;
 import com.qhjf.cfm.web.config.IConfigSectionType;
 import com.qhjf.cfm.web.config.RedisCacheConfigSection;
-import com.qhjf.cfm.workflow.api.WfAuthorizeRelation;
 import redis.clients.jedis.Jedis;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
 public class OaDataDoubtfulCache {
     private RedisCacheConfigSection ini = GlobalConfigSection.getInstance().getExtraConfig(IConfigSectionType.DefaultConfigSectionType.Redis);

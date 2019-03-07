@@ -1,17 +1,16 @@
 package com.qhjf.cfm.web.channel;
 
+import com.jfinal.plugin.redis.RedisPlugin;
+import com.jfinal.plugin.redis.serializer.JdkSerializer;
+import com.qhjf.cfm.web.channel.manager.ChannelManager;
+import com.qhjf.cfm.web.plugins.CfmRedisPlugin;
+import org.junit.Test;
+
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-import org.junit.Test;
-
-import com.jfinal.plugin.redis.RedisPlugin;
-import com.jfinal.plugin.redis.serializer.JdkSerializer;
-import com.qhjf.cfm.web.channel.manager.ChannelManager;
-import com.qhjf.cfm.web.plugins.CfmRedisPlugin;
 
 public class SerialNoTest {
 	

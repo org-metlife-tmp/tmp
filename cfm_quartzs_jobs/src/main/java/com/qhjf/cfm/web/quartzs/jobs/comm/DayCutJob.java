@@ -1,13 +1,12 @@
 package com.qhjf.cfm.web.quartzs.jobs.comm;
 
+import com.jfinal.plugin.activerecord.Db;
+import com.qhjf.cfm.web.quartzs.jobs.CurrBalQueryJob;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.jfinal.plugin.activerecord.Db;
-import com.qhjf.cfm.web.quartzs.jobs.CurrBalQueryJob;
 
 public class DayCutJob implements Job{
 	

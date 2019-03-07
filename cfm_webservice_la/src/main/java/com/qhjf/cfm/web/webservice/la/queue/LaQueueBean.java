@@ -1,10 +1,9 @@
 package com.qhjf.cfm.web.webservice.la.queue;
 
-import java.util.List;
-
+import com.qhjf.cfm.web.webservice.la.LaCallbackBean;
 import org.apache.axiom.om.OMElement;
 
-import com.qhjf.cfm.web.webservice.la.LaCallbackBean;
+import java.util.List;
 
 
 public class LaQueueBean {

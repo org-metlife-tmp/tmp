@@ -3,9 +3,7 @@ package com.qhjf.cfm.web.render;
 
 import com.jfinal.render.Render;
 import com.jfinal.render.RenderException;
-import com.qhjf.cfm.web.utils.MongoFileInfo;
 import com.qhjf.cfm.web.utils.comm.file.info.FileInfo;
-
 import org.apache.commons.codec.binary.Base64;
 
 import java.io.IOException;

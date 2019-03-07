@@ -1,8 +1,5 @@
 package com.qhjf.cfm.web.webservice.oa.service;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.jfinal.plugin.activerecord.Record;
 import com.qhjf.cfm.web.config.DDHOAWSConfigSection;
 import com.qhjf.cfm.web.config.GlobalConfigSection;
@@ -12,6 +9,8 @@ import com.seeyon.AuthorityService;
 import com.seeyon.AuthorityServicePortType;
 import com.seeyon.MetlifeApplyPayService;
 import com.seeyon.MetlifeApplyPayServicePortType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CallBackService {
 	

@@ -3,13 +3,10 @@ package com.qhjf.cfm.web.service;
 import com.jfinal.plugin.activerecord.ActiveRecordPlugin;
 import com.jfinal.plugin.activerecord.Record;
 import com.jfinal.plugin.druid.DruidPlugin;
-import com.jfinal.template.source.ClassPathSourceFactory;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.List;
-
-import static org.junit.Assert.*;
 
 public class BankQueryServiceTest {
 

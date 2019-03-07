@@ -1,10 +1,5 @@
 package com.qhjf.cfm.web.channel.icbc;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.jfinal.plugin.activerecord.Record;
@@ -13,6 +8,12 @@ import com.qhjf.bankinterface.icbc.IcbcConstant;
 import com.qhjf.cfm.web.channel.inter.api.ISingleResultChannelInter;
 import com.qhjf.cfm.web.channel.util.AmountUtil;
 import com.qhjf.cfm.web.channel.util.IcbcResultParseUtil;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 /**
  *当日余额查询
  */

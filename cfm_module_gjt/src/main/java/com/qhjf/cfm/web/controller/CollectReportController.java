@@ -1,10 +1,5 @@
 package com.qhjf.cfm.web.controller;
 
-import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.alibaba.fastjson.util.TypeUtils;
 import com.jfinal.log.Log;
 import com.jfinal.plugin.activerecord.Page;
@@ -14,6 +9,11 @@ import com.qhjf.cfm.exceptions.ReqDataException;
 import com.qhjf.cfm.web.plugins.jwt.Auth;
 import com.qhjf.cfm.web.plugins.log.LogbackLog;
 import com.qhjf.cfm.web.service.CollectReportService;
+
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class CollectReportController extends CFMBaseController {
 

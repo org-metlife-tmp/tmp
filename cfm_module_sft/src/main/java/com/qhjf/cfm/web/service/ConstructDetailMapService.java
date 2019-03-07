@@ -1,12 +1,10 @@
 package com.qhjf.cfm.web.service;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
-
+import com.jfinal.plugin.activerecord.Record;
 import org.apache.commons.lang.StringUtils;
 
-import com.jfinal.plugin.activerecord.Record;
+import java.math.BigDecimal;
+import java.util.Map;
 
 public class ConstructDetailMapService {
 

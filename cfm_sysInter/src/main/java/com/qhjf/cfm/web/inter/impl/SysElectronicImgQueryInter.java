@@ -3,7 +3,6 @@ package com.qhjf.cfm.web.inter.impl;
 import com.jfinal.plugin.activerecord.Record;
 import com.qhjf.cfm.web.channel.inter.api.IChannelInter;
 import com.qhjf.cfm.web.channel.inter.api.IMoreResultChannelInter;
-import com.qhjf.cfm.web.channel.inter.api.ISingleResultChannelInter;
 import com.qhjf.cfm.web.inter.api.ISysAtomicInterface;
 
 public class SysElectronicImgQueryInter implements ISysAtomicInterface{

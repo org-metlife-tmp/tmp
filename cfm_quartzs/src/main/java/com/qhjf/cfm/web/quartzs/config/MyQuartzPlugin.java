@@ -1,16 +1,14 @@
 package com.qhjf.cfm.web.quartzs.config;
 
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.jfinal.plugin.activerecord.Db;
-import com.jfinal.plugin.activerecord.Record;
-
 import cn.dreampie.quartz.QuartzKey;
 import cn.dreampie.quartz.QuartzKit;
 import cn.dreampie.quartz.QuartzPlugin;
+import com.jfinal.plugin.activerecord.Db;
+import com.jfinal.plugin.activerecord.Record;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 public class MyQuartzPlugin extends QuartzPlugin {
 	

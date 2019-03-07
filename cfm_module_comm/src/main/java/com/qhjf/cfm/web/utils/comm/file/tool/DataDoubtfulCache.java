@@ -6,7 +6,8 @@ import com.qhjf.cfm.web.config.IConfigSectionType;
 import com.qhjf.cfm.web.config.RedisCacheConfigSection;
 import redis.clients.jedis.Jedis;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
 public class DataDoubtfulCache {
     private RedisCacheConfigSection ini = GlobalConfigSection.getInstance().getExtraConfig(IConfigSectionType.DefaultConfigSectionType.Redis);

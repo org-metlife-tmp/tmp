@@ -10,8 +10,6 @@ import com.qhjf.cfm.utils.CommonService;
 import com.qhjf.cfm.web.UserInfo;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -28,7 +26,7 @@ public class PoolTradService {
 	 * @param record
 	 * @return
 	 */
-    public Page<Record> billList(int pageNum, int pageSize, final Record record) { 
+    public Page<Record> billList(int pageNum, int pageSize, final Record record) {
         SqlPara sqlPara = Db.getSqlPara("poolTrad.billList", Kv.by("map", record.getColumns()));
         return Db.paginate(pageNum, pageSize, sqlPara);
     }

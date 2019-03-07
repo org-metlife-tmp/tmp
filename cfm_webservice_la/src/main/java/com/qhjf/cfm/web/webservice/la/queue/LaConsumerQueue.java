@@ -1,7 +1,5 @@
 package com.qhjf.cfm.web.webservice.la.queue;
 
-import java.sql.SQLException;
-import java.util.*;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.jfinal.plugin.activerecord.Db;
@@ -9,7 +7,11 @@ import com.jfinal.plugin.activerecord.IAtom;
 import com.jfinal.plugin.activerecord.Record;
 import com.qhjf.cfm.exceptions.BusinessException;
 import com.qhjf.cfm.utils.CommonService;
+import com.qhjf.cfm.utils.StringKit;
 import com.qhjf.cfm.utils.XmlTool;
+import com.qhjf.cfm.web.config.DDHLAConfigSection;
+import com.qhjf.cfm.web.config.GlobalConfigSection;
+import com.qhjf.cfm.web.config.IConfigSectionType;
 import com.qhjf.cfm.web.constant.WebConstant;
 import com.qhjf.cfm.web.service.CheckVoucherService;
 import com.qhjf.cfm.web.webservice.la.LaCallbackBean;
@@ -19,9 +21,10 @@ import org.apache.axis2.client.Options;
 import org.apache.axis2.client.ServiceClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.qhjf.cfm.web.config.DDHLAConfigSection;
-import com.qhjf.cfm.web.config.GlobalConfigSection;
-import com.qhjf.cfm.web.config.IConfigSectionType;
+
+import java.sql.SQLException;
+import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -40,7 +43,7 @@ public class LaConsumerQueue implements Runnable{
 			try{
 				LaQueueBean queueBean = null;
 				queueBean = LaQueue.getInstance().getQueue().take();
-				log.debug("LA批付回调核心系统web url="+config.getUrl());
+				log.debug("LA批付回调核心系统web url={}", StringKit.removeControlCharacter(config.getUrl()));
 				
 				ServiceClient sc = new ServiceClient();
 				Options opts = new Options();   
@@ -50,7 +53,7 @@ public class LaConsumerQueue implements Runnable{
 				sc.setOptions(opts);
 				OMElement res = sc.sendReceive(queueBean.getoMElement());
 
-				log.debug("response="+res.toString().replaceAll("\\r|\\n", ""));
+				log.debug("response={}",StringKit.removeControlCharacter(res.toString()));
 				JSONObject json = XmlTool.documentToJSONObject(res.toString());
 				JSONObject rec = json.getJSONArray("ESBEnvelopeResult").getJSONObject(0).getJSONArray("MsgBody").getJSONObject(0).getJSONArray("PMTUPDO_REC").getJSONObject(0);
 				String status = rec.getString("STATUS");
@@ -78,11 +81,11 @@ public class LaConsumerQueue implements Runnable{
 	    				.set("la_callback_resp_time", new Date());
 	    		Record whereRecord = new Record().set("pay_code", bean.getReqnno());
 	    		if(CommonService.updateRows("la_origin_pay_data", setRecord, whereRecord) != 1){
-	    			log.debug("LA回调接口回写数据库失败:"+bean.getReqnno());
+	    			log.debug("LA回调接口回写数据库失败:{}",StringKit.removeControlCharacter(bean.getReqnno()));
 	    			continue;
 	    		};
 			}catch(Exception e){
-				log.debug("LA回调接口回写数据库失败:"+bean.getReqnno());
+				log.debug("LA回调接口回写数据库失败:{}",StringKit.removeControlCharacter(bean.getReqnno()));
 				e.printStackTrace();
 				continue;
 			}
@@ -103,7 +106,7 @@ public class LaConsumerQueue implements Runnable{
 	            	String processStatus = json.getString("STATUS");
 	    			String payCode = json.getString("REQNNO");
 	    			if (null == payCode || "".equals(payCode.trim())) {
-	    				log.debug("LA响应回写原始数据，payCode为空，节点<PMTOUT>=", json);
+	    				log.debug("LA响应回写原始数据，payCode为空，节点<PMTOUT>={}", StringKit.removeControlCharacter(json.toJSONString()));
 						return true;
 					}
 	    			
@@ -121,16 +124,16 @@ public class LaConsumerQueue implements Runnable{
 											CommonService.getPeriodByCurrentDay(new Date())
 											);
 								} catch (BusinessException e) {
-									log.error("LA响应回写原始数据，LA接收成功，生成凭证失败！PMTOUT={}", json);
+									log.error("LA响应回写原始数据，LA接收成功，生成凭证失败！PMTOUT={}", StringKit.removeControlCharacter(json.toJSONString()));
 									e.printStackTrace();
 									return false;
 								}
 	    					}else {
-								log.debug("LA响应回写原始数据，支付失败，不生成凭证；payCode={}", payCode);
+								log.debug("LA响应回写原始数据，支付失败，不生成凭证；payCode={}", StringKit.removeControlCharacter(payCode));
 							}
 	    					return true;
 	    				}else {
-							log.error("LA响应回写原始数据，更新la_origin_pay_data失败！payCode={}", payCode);
+							log.error("LA响应回写原始数据，更新la_origin_pay_data失败！payCode={}",  StringKit.removeControlCharacter(payCode));
 						}
 	    			}else{
 	    				String errField = json.getString("FLDNAM");
@@ -150,7 +153,7 @@ public class LaConsumerQueue implements Runnable{
 	            });
 			
 			if (!flag) {
-				log.error("LA响应回写原始数据失败；节点<PMTOUT>=", json);
+				log.error("LA响应回写原始数据失败；节点<PMTOUT>={}",  StringKit.removeControlCharacter(json.toJSONString()));
 			}
 		}
 		

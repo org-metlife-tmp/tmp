@@ -1,8 +1,5 @@
 package com.qhjf.cfm.web.webservice.oa.server.request;
 
-import java.math.BigDecimal;
-import java.util.List;
-
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
 import com.qhjf.cfm.web.constant.WebConstant;
@@ -11,6 +8,9 @@ import com.qhjf.cfm.web.webservice.ann.FieldValidate;
 import com.qhjf.cfm.web.webservice.oa.constant.ErrorCode;
 import com.qhjf.cfm.web.webservice.oa.exception.WebServiceException;
 import com.qhjf.cfm.web.webservice.oa.server.request.parent.ParentReq;
+
+import java.math.BigDecimal;
+import java.util.List;
 
 public class OAReciveDateReq extends ParentReq{
 	

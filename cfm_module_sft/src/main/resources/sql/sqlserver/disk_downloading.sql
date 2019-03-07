@@ -249,7 +249,7 @@
       channel.channel_code ,
       channel.channel_desc ,
       userinfo.name ,
-      channel.interactive_mode  AS inter_mode
+      case channel.interactive_mode  when '0' then '直连' when '1' then '报盘' else '其他' end inter_mode
     from
     pay_batch_total AS  pay ,
     channel_setting  AS channel ,

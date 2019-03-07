@@ -1,12 +1,13 @@
 
 package com.seeyon.v3x.services.xsd;
 
+import com.seeyon.v3x.services.impl.Exception;
+
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlType;
-import com.seeyon.v3x.services.impl.Exception;
 
 
 /**

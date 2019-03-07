@@ -17,7 +17,7 @@ SELECT
 	recv.pay_bank_type,
 	recv.pay_bank_name,
 	recv.pay_acc_no,	
-	case recv.status  when '0' then '未提交' when '1' then '已提交' when '2' then '已作废' else '其他' end status,
+	case recv.status  when '0' then '未提交' when '1' then '已提交' when '2' then '已拒绝' else '其他' end status,
 	recv.process_msg,
 	recv.bank_fb_msg,
 	recv.create_time,

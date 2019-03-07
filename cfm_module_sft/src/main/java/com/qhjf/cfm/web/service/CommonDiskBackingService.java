@@ -1,41 +1,20 @@
 package com.qhjf.cfm.web.service;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.math.BigDecimal;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.alibaba.fastjson.util.TypeUtils;
-import com.ibm.icu.text.SimpleDateFormat;
-import com.jfinal.kit.Kv;
 import com.jfinal.plugin.activerecord.Db;
-import com.jfinal.plugin.activerecord.IAtom;
-import com.jfinal.plugin.activerecord.Page;
 import com.jfinal.plugin.activerecord.Record;
-import com.jfinal.plugin.activerecord.SqlPara;
 import com.qhjf.cfm.exceptions.ReqDataException;
-import com.qhjf.cfm.utils.ArrayUtil;
-import com.qhjf.cfm.utils.CommonService;
-import com.qhjf.cfm.web.UodpInfo;
-import com.qhjf.cfm.web.UserInfo;
 import com.qhjf.cfm.web.config.DiskUpLoadSection;
 import com.qhjf.cfm.web.constant.WebConstant;
 import com.qhjf.cfm.web.plugins.excelup.UploadFileScaffold;
-import com.qhjf.cfm.web.webservice.sft.SftCallBack;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.*;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 

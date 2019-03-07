@@ -1,8 +1,7 @@
 package com.qhjf.cfm.web.validator.impl;
 
-import org.junit.Test;
-
 import com.qhjf.cfm.excel.config.validator.impl.DirectionValidator;
+import org.junit.Test;
 
 public class DirectionValidatorTest {
 

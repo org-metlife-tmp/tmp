@@ -1,9 +1,8 @@
 package com.qhjf.cfm.web.webservice.la.queue;
 
+import com.jfinal.plugin.IPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.jfinal.plugin.IPlugin;
 
 /**
  * 队列插件

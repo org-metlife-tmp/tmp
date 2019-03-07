@@ -1,10 +1,9 @@
 package com.qhjf.cfm.web.quartzs.config;
 
+import com.alibaba.fastjson.JSONObject;
 import com.jfinal.log.Log;
 import com.qhjf.cfm.web.plugins.log.LogbackLog;
 import org.quartz.Job;
-
-import com.alibaba.fastjson.JSONObject;
 
 public class MyQuartzBean{
 

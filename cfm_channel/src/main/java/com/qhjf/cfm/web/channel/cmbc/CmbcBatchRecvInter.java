@@ -7,7 +7,6 @@ import com.qhjf.bankinterface.api.AtomicInterfaceConfig;
 import com.qhjf.bankinterface.cmbc.CmbcConstant;
 import com.qhjf.cfm.web.channel.inter.api.IChannelBatchInter;
 import com.qhjf.cfm.web.channel.util.CmbcParamsUtil;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

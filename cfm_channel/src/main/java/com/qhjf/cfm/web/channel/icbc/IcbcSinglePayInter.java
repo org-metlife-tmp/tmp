@@ -1,26 +1,23 @@
 package com.qhjf.cfm.web.channel.icbc;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.jfinal.plugin.activerecord.Record;
 import com.qhjf.bankinterface.api.AtomicInterfaceConfig;
 import com.qhjf.bankinterface.icbc.IcbcConstant;
 import com.qhjf.cfm.utils.CommKit;
+import com.qhjf.cfm.utils.StringKit;
 import com.qhjf.cfm.web.channel.inter.api.ISingleResultChannelInter;
 import com.qhjf.cfm.web.channel.util.ChannelStringUtil;
-import com.qhjf.cfm.web.channel.util.DateUtil;
 import com.qhjf.cfm.web.channel.util.IcbcResultParseUtil;
-import com.qhjf.cfm.web.config.ICBCTestConfigSection;
 import com.qhjf.cfm.web.constant.WebConstant;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 /**
  * 单次支付
  */
@@ -116,7 +113,7 @@ public class IcbcSinglePayInter  implements ISingleResultChannelInter{
 		try {
 			out0 = IcbcResultParseUtil.parseResult(jsonStr);
 		} catch (Exception e) {
-			log.error("单笔支付指令发送失败，需要人工核查！！！银行响应结果:{}", jsonStr);
+			log.error("单笔支付指令发送失败，需要人工核查！！！银行响应结果:{}", StringKit.removeControlCharacter(jsonStr));
 			JSONObject json = JSONObject.parseObject(jsonStr);
 	        JSONArray ebArray = json.getJSONArray("eb");
 	        JSONObject eb0 = ebArray.getJSONObject(0);

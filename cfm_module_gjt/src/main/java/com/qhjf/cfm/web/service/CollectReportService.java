@@ -1,7 +1,5 @@
 package com.qhjf.cfm.web.service;
 
-import java.util.List;
-
 import com.alibaba.fastjson.util.TypeUtils;
 import com.jfinal.kit.Kv;
 import com.jfinal.log.Log;
@@ -11,8 +9,9 @@ import com.jfinal.plugin.activerecord.Record;
 import com.jfinal.plugin.activerecord.SqlPara;
 import com.qhjf.cfm.exceptions.ReqDataException;
 import com.qhjf.cfm.web.constant.WebConstant;
-import com.qhjf.cfm.web.controller.CollectViewController;
 import com.qhjf.cfm.web.plugins.log.LogbackLog;
+
+import java.util.List;
 
 public class CollectReportService {
 

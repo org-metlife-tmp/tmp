@@ -1,6 +1,7 @@
 package com.qhjf.cfm.sqlserver;
 
-import com.jfinal.plugin.activerecord.*;
+import com.jfinal.plugin.activerecord.ActiveRecordPlugin;
+import com.jfinal.plugin.activerecord.Record;
 import com.jfinal.plugin.activerecord.dialect.SqlServerDialect;
 import com.jfinal.plugin.druid.DruidPlugin;
 import com.jfinal.template.source.ClassPathSourceFactory;

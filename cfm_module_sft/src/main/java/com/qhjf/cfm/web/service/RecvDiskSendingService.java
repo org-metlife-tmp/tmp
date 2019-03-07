@@ -1,33 +1,25 @@
 package com.qhjf.cfm.web.service;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.alibaba.fastjson.util.TypeUtils;
-import com.jfinal.plugin.activerecord.*;
-import com.qhjf.cfm.utils.ArrayUtil;
-import com.qhjf.cfm.utils.CommonService;
-import com.qhjf.cfm.utils.TableDataCacheUtil;
-import com.qhjf.cfm.web.channel.inter.api.IChannelInter;
-import com.qhjf.cfm.web.channel.manager.ChannelManager;
-import com.qhjf.cfm.web.constant.WebConstant;
-import com.qhjf.cfm.web.inter.impl.SysSinglePayInter;
-import com.qhjf.cfm.web.inter.impl.batch.SysBatchPayInter;
-import com.qhjf.cfm.web.inter.impl.batch.SysBatchRecvInter;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.jfinal.kit.Kv;
-import com.qhjf.cfm.exceptions.DbProcessException;
+import com.jfinal.plugin.activerecord.*;
 import com.qhjf.cfm.exceptions.ReqDataException;
 import com.qhjf.cfm.queue.ProductQueue;
 import com.qhjf.cfm.queue.QueueBean;
+import com.qhjf.cfm.utils.CommonService;
 import com.qhjf.cfm.web.UodpInfo;
+import com.qhjf.cfm.web.channel.inter.api.IChannelInter;
+import com.qhjf.cfm.web.channel.manager.ChannelManager;
+import com.qhjf.cfm.web.constant.WebConstant;
+import com.qhjf.cfm.web.inter.impl.batch.SysBatchRecvInter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 
 

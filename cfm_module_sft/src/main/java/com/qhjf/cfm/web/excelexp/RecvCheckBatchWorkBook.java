@@ -1,14 +1,11 @@
 package com.qhjf.cfm.web.excelexp;
 
-import com.alibaba.fastjson.util.TypeUtils;
 import com.jfinal.ext.kit.DateKit;
 import com.jfinal.kit.Kv;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
 import com.jfinal.plugin.activerecord.SqlPara;
-import com.qhjf.cfm.exceptions.ReqDataException;
 import com.qhjf.cfm.utils.RedisSericalnoGenTool;
-import com.qhjf.cfm.web.constant.WebConstant;
 import com.qhjf.cfm.web.plugins.excelexp.AbstractWorkBook;
 import com.qhjf.cfm.web.plugins.excelexp.POIUtil;
 import org.apache.poi.ss.usermodel.Workbook;

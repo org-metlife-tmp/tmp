@@ -1,10 +1,9 @@
 package com.qhjf.cfm.web.inter.manager;
 
+import com.qhjf.cfm.web.constant.WebConstant;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import com.qhjf.cfm.utils.StringKit;
-import com.qhjf.cfm.web.constant.WebConstant;
 
 public class SysInterManager {
 	/**

@@ -1,7 +1,5 @@
 package com.qhjf.cfm.web.controller;
 
-import java.util.List;
-
 import com.jfinal.log.Log;
 import com.jfinal.plugin.activerecord.Page;
 import com.jfinal.plugin.activerecord.Record;
@@ -12,6 +10,8 @@ import com.qhjf.cfm.web.UserInfo;
 import com.qhjf.cfm.web.plugins.jwt.Auth;
 import com.qhjf.cfm.web.plugins.log.LogbackLog;
 import com.qhjf.cfm.web.service.GylCheckService;
+
+import java.util.List;
 
 public class GylCheckController extends CFMBaseController {
 

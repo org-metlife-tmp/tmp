@@ -1,18 +1,14 @@
 package com.qhjf.cfm.web.controller;
 
 import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.util.TypeUtils;
 import com.jfinal.aop.Clear;
 import com.jfinal.kit.Ret;
 import com.jfinal.log.Log;
-import com.jfinal.plugin.activerecord.Record;
 import com.qhjf.cfm.exceptions.BusinessException;
-import com.qhjf.cfm.exceptions.ReqDataException;
 import com.qhjf.cfm.utils.BeanKit;
 import com.qhjf.cfm.utils.RSAUtils;
 import com.qhjf.cfm.web.UserInfo;
 import com.qhjf.cfm.web.constant.ConstantCollectTool;
-import com.qhjf.cfm.web.constant.WebConstant;
 import com.qhjf.cfm.web.plugins.jwt.Auth;
 import com.qhjf.cfm.web.plugins.jwt.JwtKit;
 import com.qhjf.cfm.web.plugins.log.LogbackLog;

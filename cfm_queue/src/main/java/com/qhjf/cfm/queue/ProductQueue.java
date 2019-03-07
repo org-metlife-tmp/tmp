@@ -1,9 +1,8 @@
 package com.qhjf.cfm.queue;
 
+import com.qhjf.cfm.web.inter.api.ISysAtomicInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.qhjf.cfm.web.inter.api.ISysAtomicInterface;
 
 /**
  * 队列生产者

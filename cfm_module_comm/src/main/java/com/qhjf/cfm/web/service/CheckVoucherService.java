@@ -9,12 +9,10 @@ import com.qhjf.cfm.exceptions.ReqDataException;
 import com.qhjf.cfm.exceptions.ReqValidateException;
 import com.qhjf.cfm.utils.CommonService;
 import com.qhjf.cfm.utils.RedisSericalnoGenTool;
-import com.qhjf.cfm.web.UserInfo;
 import com.qhjf.cfm.web.constant.WebConstant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;

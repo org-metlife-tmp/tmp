@@ -8,8 +8,6 @@ import com.qhjf.bankinterface.cmbc.CmbcConstant;
 import com.qhjf.cfm.web.channel.inter.api.IMoreResultChannelInter;
 import com.qhjf.cfm.web.channel.util.DateUtil;
 import com.qhjf.cfm.web.config.CMBCTestConfigSection;
-import com.qhjf.cfm.web.config.GlobalConfigSection;
-import com.qhjf.cfm.web.config.IConfigSectionType;
 import com.qhjf.cfm.web.constant.WebConstant;
 
 import java.math.BigDecimal;

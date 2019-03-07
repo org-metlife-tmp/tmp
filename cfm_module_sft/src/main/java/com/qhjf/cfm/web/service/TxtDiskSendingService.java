@@ -1,20 +1,6 @@
 package com.qhjf.cfm.web.service;
 
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.jfinal.ext.kit.DateKit;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.IAtom;
@@ -28,6 +14,13 @@ import com.qhjf.cfm.utils.VelocityUtil;
 import com.qhjf.cfm.web.UserInfo;
 import com.qhjf.cfm.web.config.DiskDownLoadSection;
 import com.qhjf.cfm.web.constant.WebConstant;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.*;
+import java.sql.SQLException;
+import java.util.*;
 
 public class TxtDiskSendingService {
 	
@@ -52,18 +45,20 @@ public class TxtDiskSendingService {
     	//通联批量 收款报盘
     	SHH_Map.put("63", "200455500003685");
     }
-    
+
     /**
-     * @生成txt格式文档
-     * @param documentType
+     * 生成txt格式文档
+     * @param pay_master_id
+     * @param pay_id
+     * @param document_moudle
      * @param userInfo
-     * @param fileName 
      * @param fileName
-     * @param document_type 
-     * @param configs_tail 
-     * @throws ReqDataException 
-     * @throws DbProcessException 
-     * @throws IOException 
+     * @param document_type
+     * @param configs_tail
+     * @return
+     * @throws ReqDataException
+     * @throws DbProcessException
+     * @throws IOException
      */
 	public String diskDownLoad(Long pay_master_id,final Long pay_id,Integer document_moudle, final UserInfo userInfo, final String fileName, Integer document_type, Record configs_tail) throws ReqDataException, DbProcessException, IOException {
 		logger.info("==============生成txt样式的盘片");
@@ -101,8 +96,11 @@ public class TxtDiskSendingService {
         	}
         	for (int i = 1; i <= total_rec_config.getColumns().size(); i++) {
 				if(StringUtils.isNotBlank(total_rec_config.getStr("field_"+i))){
-					total_titleNames = total_titleNames == "" ? total_rec_config.getStr("field_"+i) :
-						total_titleNames +"," + total_rec_config.getStr("field_"+i);
+				    if(total_titleNames != null && !"".equals(total_titleNames)){
+                        total_titleNames += ("," + total_rec_config.getStr("field_"+i));
+                    }else{
+                        total_titleNames = total_rec_config.getStr("field_"+i);
+                    }
 				}else {
 					break ;
 				}
@@ -131,9 +129,12 @@ public class TxtDiskSendingService {
 			}		
 			//Record detail_rec_config = configs_tail.get(0);
 			for (int i = 1; i <= configs_tail.getColumns().size(); i++) {
-				if(StringUtils.isNotBlank(configs_tail.getStr("field_"+i))){					
-					datail_titleNames = datail_titleNames == "" ? configs_tail.getStr("field_"+i) : 
-						datail_titleNames + "," +   configs_tail.getStr("field_"+i) ;
+				if(StringUtils.isNotBlank(configs_tail.getStr("field_"+i))){
+				    if(datail_titleNames != null && !"".equals(datail_titleNames)){
+				        datail_titleNames += ("," +   configs_tail.getStr("field_"+i) );
+                    }else{
+                        datail_titleNames = configs_tail.getStr("field_"+i);
+                    }
 				}else{
 					break ;
 				}
@@ -217,14 +218,13 @@ public class TxtDiskSendingService {
 		}
 	}
 
-	/**
-	 * 广银联代付/代收文件名
-	 * @param document_type 
-	 * @param document_type
-	 * @param document_version 
-	 * @param channel_code
-	 * @return
-	 */
+    /**
+     * 广银联代付/代收文件名
+     * @param document_moudle
+     * @param document_type
+     * @param version
+     * @return
+     */
 	public String getFileName(Integer document_moudle, Integer document_type, String version) {
 		String fileName = "";
 		//广银联/通联文件名称格式
@@ -287,14 +287,14 @@ public class TxtDiskSendingService {
 
 		return t;
 
-		} 
-	
-	/**
-	 * Txt文档上传
-	 * @param sheetName
-	 * @param workbook
-	 * @throws IOException
-	 */
+		}
+
+    /**
+     * Txt文档上传
+     * @param sheetName
+     * @param genVelo
+     * @throws IOException
+     */
 	public void diskSave(String sheetName , String genVelo) throws IOException  {
 		DiskDownLoadSection diskDownLoadSection = DiskDownLoadSection.getInstance();
 	    String path = diskDownLoadSection.getPath();
@@ -323,18 +323,19 @@ public class TxtDiskSendingService {
 			}
 		}
 	}
-	
-	/**
-     * @异步新线程生成txt格式文档
-     * @param documentType
-     * @param userInfo
-     * @param fileName 
+
+    /**
+     * 异步新线程生成txt格式文档
+     * @param pay_master_id
+     * @param pay_id
+     * @param document_moudle
      * @param fileName
-     * @param document_type 
-     * @param configs_tail 
-     * @throws ReqDataException 
-     * @throws DbProcessException 
-     * @throws IOException 
+     * @param document_type
+     * @param configs_tail
+     * @return
+     * @throws ReqDataException
+     * @throws DbProcessException
+     * @throws IOException
      */
 	public String diskDownLoadNewThread(Long pay_master_id,final Long pay_id,Integer document_moudle, final String fileName, Integer document_type, Record configs_tail) throws ReqDataException, DbProcessException, IOException {
 		logger.info("==============生成txt样式的盘片");
@@ -367,8 +368,11 @@ public class TxtDiskSendingService {
         	}
         	for (int i = 1; i <= total_rec_config.getColumns().size(); i++) {
 				if(StringUtils.isNotBlank(total_rec_config.getStr("field_"+i))){
-					total_titleNames = total_titleNames == "" ? total_rec_config.getStr("field_"+i) :
-						total_titleNames +"," + total_rec_config.getStr("field_"+i);
+				    if(total_titleNames != null && !"".equals(total_titleNames)){
+                        total_titleNames += ("," + total_rec_config.getStr("field_"+i));
+                    }else{
+                        total_titleNames = total_rec_config.getStr("field_"+i);
+                    }
 				}else {
 					break ;
 				}
@@ -396,9 +400,12 @@ public class TxtDiskSendingService {
 				map.put("detail_title", configs_tail.getStr("title"));
 			}		
 			for (int i = 1; i <= configs_tail.getColumns().size(); i++) {
-				if(StringUtils.isNotBlank(configs_tail.getStr("field_"+i))){					
-					datail_titleNames = datail_titleNames == "" ? configs_tail.getStr("field_"+i) : 
-						datail_titleNames + "," +   configs_tail.getStr("field_"+i) ;
+				if(StringUtils.isNotBlank(configs_tail.getStr("field_"+i))){
+                    if(datail_titleNames != null && !"".equals(datail_titleNames)){
+                        datail_titleNames += ("," +   configs_tail.getStr("field_"+i));
+                    }else{
+                        datail_titleNames = configs_tail.getStr("field_"+i);
+                    }
 				}else{
 					break ;
 				}

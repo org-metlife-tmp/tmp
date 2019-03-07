@@ -18,8 +18,11 @@ import com.qhjf.cfm.web.inter.manager.SysInterManager;
 import com.qhjf.cfm.web.webservice.sft.SftRecvCallBack;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @Auther: CHT

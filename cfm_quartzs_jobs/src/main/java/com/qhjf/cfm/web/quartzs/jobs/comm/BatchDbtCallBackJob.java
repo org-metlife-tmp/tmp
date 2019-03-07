@@ -1,21 +1,20 @@
 package com.qhjf.cfm.web.quartzs.jobs.comm;
 
-import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-
+import com.jfinal.plugin.activerecord.Db;
+import com.jfinal.plugin.activerecord.Record;
+import com.qhjf.cfm.web.constant.WebConstant.BillStatus;
+import com.qhjf.cfm.web.constant.WebConstant.PayStatus;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.jfinal.plugin.activerecord.Db;
-import com.jfinal.plugin.activerecord.Record;
-import com.qhjf.cfm.web.constant.WebConstant.BillStatus;
-import com.qhjf.cfm.web.constant.WebConstant.PayStatus;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class BatchDbtCallBackJob implements Job{
 	

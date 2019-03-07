@@ -1,9 +1,9 @@
 package com.qhjf.cfm.web.channel.inter.api;
 
-import java.util.Map;
-
 import com.jfinal.plugin.activerecord.Record;
 import com.qhjf.bankinterface.api.AtomicInterfaceConfig;
+
+import java.util.Map;
 
 /**
  * 渠道接口

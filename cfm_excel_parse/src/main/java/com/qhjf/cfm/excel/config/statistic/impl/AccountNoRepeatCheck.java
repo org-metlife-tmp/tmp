@@ -1,8 +1,9 @@
 package com.qhjf.cfm.excel.config.statistic.impl;
 
+import com.qhjf.cfm.excel.config.statistic.IStatistics;
+
 import java.util.HashSet;
 import java.util.List;
-import com.qhjf.cfm.excel.config.statistic.IStatistics;
 /**
  * 银行账号重复性校验
  * @author CHT

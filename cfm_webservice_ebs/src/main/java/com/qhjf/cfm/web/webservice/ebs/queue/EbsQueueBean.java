@@ -1,8 +1,8 @@
 package com.qhjf.cfm.web.webservice.ebs.queue;
 
-import java.util.List;
-
 import com.qhjf.cfm.web.webservice.ebs.EbsCallbackBean;
+
+import java.util.List;
 
 public class EbsQueueBean {
 

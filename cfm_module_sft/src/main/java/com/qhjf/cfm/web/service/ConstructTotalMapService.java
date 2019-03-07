@@ -1,11 +1,11 @@
 package com.qhjf.cfm.web.service;
 
+import com.jfinal.ext.kit.DateKit;
+import com.jfinal.plugin.activerecord.Record;
+
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Map;
-
-import com.jfinal.ext.kit.DateKit;
-import com.jfinal.plugin.activerecord.Record;
 
 public class ConstructTotalMapService {
 
