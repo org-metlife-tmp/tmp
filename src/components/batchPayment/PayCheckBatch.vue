@@ -500,7 +500,7 @@
                             if(selectId[j] === row.pay_id){
                                 selectId.splice(j,1);
                                 totalData.total_num++;
-                                totalData.total_amount = this.$common.transitSeparator(totalData.total_amount*1 + row.amount);
+                                totalData.total_amount = this.$common.transitSeparator(this.$common.transitNumber(totalData.total_amount) + row.amount);
                                 break;
                             }
                         }
@@ -508,7 +508,7 @@
                     }
                 }
                 totalData.total_num--;
-                totalData.total_amount = this.$common.transitSeparator(totalData.total_amount*1 - row.amount);
+                totalData.total_amount = this.$common.transitSeparator(this.$common.transitNumber(totalData.total_amount) - row.amount);
                 selectId.push(row.pay_id);
             },
             //点击全选时设置取消勾选的id
@@ -517,7 +517,6 @@
                 let selectId = this.selectId;
                 let totalData = this.totalData;
 
-                debugger;
                 if(selection.length === 0){
                     tableList.forEach((item) => {
                         let flag = true;
@@ -535,7 +534,7 @@
 
                         if(flag) {
                             totalData.total_num--;
-                            totalData.total_amount = this.$common.transitSeparator(totalData.total_amount*1 - item.amount);
+                            totalData.total_amount = this.$common.transitSeparator(this.$common.transitNumber(totalData.total_amount) - item.amount);
                             selectId.push(item.pay_id);
                         };
                     });
@@ -545,7 +544,7 @@
                             let idItem = selectId[i];
                             if(item.pay_id === idItem){
                                 totalData.total_num++;
-                                totalData.total_amount = this.$common.transitSeparator(totalData.total_amount*1 + item.amount);
+                                totalData.total_amount = this.$common.transitSeparator(this.$common.transitNumber(totalData.total_amount) + item.amount);
                                 selectId.splice(i,1);
                                 break;
                             }

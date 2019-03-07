@@ -16,6 +16,10 @@ export default {
             }
         }
     },
+    /*将带千分符的字符串转换成数字*/
+    transitNumber: function(string){
+        return typeof string == "string" ? string.split(",").join("") * 1 : string;
+    },
     /*
     * 将数字转换成汉字格式
     *
