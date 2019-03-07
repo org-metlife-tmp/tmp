@@ -217,7 +217,8 @@
                 <el-table-column prop="org_name" label="机构名称" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="preinsure_bill_no" label="投保单号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="insure_bill_no" label="保单号" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="amount" label="金额" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="amount" label="金额" :show-overflow-tooltip="true"
+                                 :formatter="transitAmount"></el-table-column>
                 <el-table-column prop="recv_acc_name" label="客户姓名" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="recv_cert_code" label="证件号码" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="recv_acc_no" label="银行账号" :show-overflow-tooltip="true"></el-table-column>
@@ -370,6 +371,10 @@
                 }
                 this.dateValue = "";
                 this.queryData();
+            },
+            //展示格式转换-金额
+            transitAmount: function (row, column, cellValue, index) {
+                return this.$common.transitSeparator(cellValue);
             },
             //获取机构列表
             getOrgList: function () {

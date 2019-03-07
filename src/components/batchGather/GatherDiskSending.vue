@@ -178,7 +178,8 @@
                 <el-table-column prop="channel_code" label="通道编码" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="channel_desc" label="通道描述" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="create_on" label="组批日期" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="recv_total_amount" label="总金额" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="recv_total_amount" label="总金额" :show-overflow-tooltip="true"
+                                 :formatter="transitAmount"></el-table-column>
                 <el-table-column prop="recv_total_num" label="总笔数" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="status" label="状态" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="send_user_name" label="操作人" :show-overflow-tooltip="true"></el-table-column>
@@ -195,7 +196,7 @@
                         </el-tooltip>
                         <el-tooltip content="发送" placement="bottom" effect="light"
                                     :enterable="false" :open-delay="500"
-                                    v-if="scope.row.interactive_mode=='直连' && scope.row.status=='已审批未发送'">
+                                    v-if="scope.row.interactive_mode=='直连' && (scope.row.status=='已审批未发送' || scope.row.status=='已回退')">
                             <el-button class="send" size="mini"
                                        @click="sendData(scope.row)"></el-button>
                         </el-tooltip>
@@ -232,10 +233,6 @@
             //交互方式
             if (constants.SftInteractiveMode) {
                 this.interactiveList = constants.SftInteractiveMode;
-            }
-            //盘片
-            if (constants.SftCheckBatchStatus) {
-                this.statusList = constants.SftCheckBatchStatus;
             }
             //来源系统
             if (constants.SftOsSource) {
@@ -279,7 +276,14 @@
                 pagCurrent: 1,
                 sourceList: {}, //常量数据
                 interactiveList: {},
-                statusList: {},
+                statusList: {
+                    3: "回退审批中",
+                    4: "已发送未回盘",
+                    5: "回盘成功",
+                    6: "回盘异常",
+                    8: "已回退",
+                    9: "已组批未发送"
+                },
                 channelList: [],
             }
         },
@@ -317,6 +321,10 @@
                 this.routerMessage.params.page_size = val;
                 this.routerMessage.params.page_num = 1;
                 this.$emit("getCommTable", this.routerMessage);
+            },
+            //展示格式转换-金额
+            transitAmount: function (row, column, cellValue, index) {
+                return this.$common.transitSeparator(cellValue);
             },
             //获取通道编码
             getChannelList: function () {
@@ -358,6 +366,7 @@
                     }
                 }
                 this.$emit("downLoadData", params);
+                this.$emit("getCommTable", this.routerMessage);
             },
             //发送
             sendData: function (row) {

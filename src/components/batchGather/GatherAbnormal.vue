@@ -186,7 +186,8 @@
                 <el-table-column prop="channel_desc" label="通道描述" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="send_on" label="出盘日期" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="total_num" label="总笔数" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="total_amount" label="总金额" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="total_amount" label="总金额" :show-overflow-tooltip="true"
+                                 :formatter="transitAmount"></el-table-column>
                 <el-table-column prop="service_status" label="状态" :show-overflow-tooltip="true"
                                  :formatter="transitStatus"></el-table-column>
                 <el-table-column prop="error_msg" label="异常原因" :show-overflow-tooltip="true"></el-table-column>
@@ -338,6 +339,10 @@
             //展示格式转换-交互方式
             transitMode: function (row, column, cellValue, index) {
                 return this.interactiveList[cellValue];
+            },
+            //展示格式转换-金额
+            transitAmount: function (row, column, cellValue, index) {
+                return this.$common.transitSeparator(cellValue);
             },
             //申请回退
             rejectData: function (row) {

@@ -217,7 +217,8 @@
                 <el-table-column prop="org_name" label="机构名称" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="preinsure_bill_no" label="投保单号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="insure_bill_no" label="保单号" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="amount" label="金额" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="amount" label="金额" :show-overflow-tooltip="true"
+                                 :formatter="transitAmount"></el-table-column>
                 <el-table-column prop="pay_acc_name" label="客户姓名" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="pay_cert_code" label="证件号码" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="pay_acc_no" label="客户账号" :show-overflow-tooltip="true"></el-table-column>
@@ -440,6 +441,10 @@
                 }).catch(function (error) {
                     console.log(error);
                 })
+            },
+            //展示格式转换-金额
+            transitAmount: function (row, column, cellValue, index) {
+                return this.$common.transitSeparator(cellValue);
             },
             //展示格式转换-支付方式
             transitMode: function (row, column, cellValue, index) {

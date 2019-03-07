@@ -174,11 +174,14 @@
                 <el-table-column prop="channel_desc" label="通道描述" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="send_on" label="出盘日期" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="back_on" label="回盘日期" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="pay_total_amount" label="总金额" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="pay_total_amount" label="总金额" :show-overflow-tooltip="true"
+                                 :formatter="transitAmount"></el-table-column>
                 <el-table-column prop="pay_total_num" label="总笔数" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="success_amount" label="成功金额" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="success_amount" label="成功金额" :show-overflow-tooltip="true"
+                                 :formatter="transitAmount"></el-table-column>
                 <el-table-column prop="success_num" label="成功笔数" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="fail_amount" label="失败金额" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="fail_amount" label="失败金额" :show-overflow-tooltip="true"
+                                 :formatter="transitAmount"></el-table-column>
                 <el-table-column prop="fail_num" label="失败笔数" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="status" label="状态" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="send_user_name" label="操作人" :show-overflow-tooltip="true"></el-table-column>
@@ -321,6 +324,10 @@
                 this.routerMessage.params.page_size = val;
                 this.routerMessage.params.page_num = 1;
                 this.$emit("getCommTable", this.routerMessage);
+            },
+            //展示格式转换-金额
+            transitAmount: function (row, column, cellValue, index) {
+                return this.$common.transitSeparator(cellValue);
             },
             //获取通道编码
             getChannelList: function () {

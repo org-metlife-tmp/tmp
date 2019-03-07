@@ -195,11 +195,14 @@
                     <el-table-column prop="channel_desc" label="通道描述" :show-overflow-tooltip="true"></el-table-column>
                     <el-table-column prop="net_mode" label="结算模式" :show-overflow-tooltip="true"
                                      :formatter="transtMode"></el-table-column>
-                    <el-table-column prop="total_amount" label="总金额" :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column prop="total_amount" label="总金额" :show-overflow-tooltip="true"
+                                     :formatter="transitAmount"></el-table-column>
                     <el-table-column prop="total_num" label="总笔数" :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="success_amount" label="成功金额" :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column prop="success_amount" label="成功金额" :show-overflow-tooltip="true"
+                                     :formatter="transitAmount"></el-table-column>
                     <el-table-column prop="success_num" label="成功笔数" :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="fail_amount" label="失败金额" :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column prop="fail_amount" label="失败金额" :show-overflow-tooltip="true"
+                                     :formatter="transitAmount"></el-table-column>
                     <el-table-column prop="fail_num" label="失败笔数" :show-overflow-tooltip="true"></el-table-column>
                     <el-table-column prop="is_checked" label="状态" :show-overflow-tooltip="true"
                                      :formatter="transitStatus"></el-table-column>
@@ -342,7 +345,8 @@
                                      :show-overflow-tooltip="true"></el-table-column>
                     <el-table-column prop="opp_acc_bank" label="对方开户行" width="100px"
                                      :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="amount" label="交易金额" :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column prop="amount" label="交易金额" :show-overflow-tooltip="true"
+                                     :formatter="transitAmount"></el-table-column>
                     <el-table-column prop="summary" label="摘要" :show-overflow-tooltip="true"></el-table-column>
                     <el-table-column label="状态" :show-overflow-tooltip="true">
                         <template slot-scope="scope">
@@ -748,6 +752,10 @@
             //展示格式转换-状态
             transitStatus: function (row, column, cellValue, index) {
                 return cellValue == 0 ? "未核对" : "已核对";
+            },
+            //展示格式转换-金额
+            transitAmount: function (row, column, cellValue, index) {
+                return this.$common.transitSeparator(cellValue);
             },
         },
         watch: {

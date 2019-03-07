@@ -228,7 +228,20 @@
                             <el-input v-model="searchData.bank_key" clearable placeholder="请输入bankkey"></el-input>
                         </el-form-item>
                     </el-col>
-                    <el-col :span="11">
+                    <el-col :span="4">
+                        <el-form-item>
+                            <el-select v-model="searchData.biz_type" placeholder="请选择业务类型"
+                                       clearable filterable
+                                       style="width:100%">
+                                <el-option v-for="(item,key) in biztypeList"
+                                           :key="key"
+                                           :label="item"
+                                           :value="key">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="7">
                         <el-form-item style="margin-bottom:0px">
                             <el-checkbox-group v-model="searchData.status">
                                 <el-checkbox v-for="(name,k) in statusList"
@@ -266,7 +279,9 @@
                 <el-table-column prop="name" label="机构名称" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="preinsure_bill_no" label="投保单号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="insure_bill_no" label="保单号" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="amount" label="金额" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="biz_type" label="业务类型" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="amount" label="金额" :show-overflow-tooltip="true"
+                                 :formatter="transitAmount"></el-table-column>
                 <el-table-column prop="recv_acc_name" label="客户姓名" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="recv_cert_code" label="证件号码" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="recv_acc_no" label="客户账号" :show-overflow-tooltip="true"></el-table-column>
@@ -278,10 +293,16 @@
                         label="操作" width="50"
                         fixed="right">
                     <template slot-scope="scope" class="operationBtn">
-                        <el-tooltip content="撤回" placement="bottom" effect="light"
+                        <!--<el-tooltip content="撤回" placement="bottom" effect="light"
                                     :enterable="false" :open-delay="500"
                                     v-show="scope.row.status == '未提交'">
                             <el-button size="mini" class="withdraw"
+                                       @click="withdrawBill(scope.row)"></el-button>
+                        </el-tooltip>-->
+                        <el-tooltip content="拒绝" placement="bottom" effect="light"
+                                    :enterable="false" :open-delay="500"
+                                    v-show="scope.row.status == '未提交'">
+                            <el-button type="danger" icon="el-icon-close" size="mini"
                                        @click="withdrawBill(scope.row)"></el-button>
                         </el-tooltip>
                     </template>
@@ -333,6 +354,10 @@
             if (constants.SftOsSource) {
                 this.sourceList = constants.SftOsSource;
             }
+            //业务类型
+            if(constants.Sft_BizType){
+                this.biztypeList = constants.Sft_BizType;
+            }
             //机构列表
             this.getOrgList();
             //通道编码
@@ -359,6 +384,7 @@
                     org_id: "",
                     recv_acc_no: "",
                     bank_key: "",
+                    biz_type: "",
                     status: [],
                     visit_time: ""
                 },
@@ -376,6 +402,7 @@
                 channelList: [],
                 statusList: {},
                 sourceList: {},
+                biztypeList: {},
                 totalData: { //汇总数据
                     total_amount: "",
                     total_num: ""
@@ -439,6 +466,10 @@
                 this.dateValue = "";
                 this.tableList = [];
                 this.selectId = [];
+            },
+            //展示格式转换-金额
+            transitAmount: function (row, column, cellValue, index) {
+                return this.$common.transitSeparator(cellValue);
             },
             //获取机构列表
             getOrgList: function () {
@@ -743,7 +774,7 @@
                 this.searchData.visit_time = val.data.length > 0 ? val.data[0].visit_time : "";
                 if(this.resetAllData){
                     this.totalData.total_num = val.total_num;
-                    this.totalData.total_amount = val.total_amount;
+                    this.totalData.total_amount = this.$common.transitSeparator(val.total_amount);
                 }
 
                 setTimeout(() => {
