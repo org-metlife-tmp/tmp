@@ -195,6 +195,9 @@
                             width: 100%;
                             display: block;
                             text-align: left;
+                            text-overflow: ellipsis;
+                            overflow: hidden;
+                            white-space: nowrap;
                         }
                     }
                 }
@@ -320,7 +323,7 @@
                                         <span class="node-name"><el-tag size="small">{{history.assignee_name}}</el-tag></span>
                                         <span>自定义节点</span>
                                     </div>
-                                    <span class="message">{{history.assignee_memo}}</span>
+                                    <span class="message" :title="history.assignee_memo">{{history.assignee_memo}}</span>
                                 </div>
                             </el-col>
                         </template>
