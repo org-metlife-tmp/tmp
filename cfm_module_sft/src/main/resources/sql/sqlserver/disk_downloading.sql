@@ -267,7 +267,14 @@
 
 
 
-
+#sql("selAccNoBalence")
+    select
+      *
+    from
+    	acc_cur_balance
+    where
+    	acc_no = ?
+#end
 
 
 

@@ -55,23 +55,18 @@ public class EbsConsumerQueue implements Runnable{
 	
 	private void processFail(EbsQueueBean queueBean){
 		log.debug("Ebs接收回调数据失败");
-		List<EbsCallbackBean> beans = queueBean.getBeans();
-		for(EbsCallbackBean bean : beans){
-			try{
-				Record setRecord = new Record().set("la_callback_status", SftCallbackStatus.SFT_CALLBACK_F.getKey())
-	    				.set("la_callback_err_message", "EBS接收失败")
-	    				.set("la_callback_resp_time", new Date());
-	    		Record whereRecord = new Record().set("pay_code", bean.getPayNo());
-	    		if(CommonService.updateRows("la_origin_pay_data", setRecord, whereRecord) != 1){
-	    			log.debug("EBS回调接口回写数据库失败:{}",StringKit.removeControlCharacter(bean.getPayNo()));
-	    			continue;
-	    		};
-			}catch(Exception e){
-				log.debug("EBS回调接口回写数据库失败:{}",StringKit.removeControlCharacter(bean.getPayNo()));
-				e.printStackTrace();
-				continue;
-			}
-			
+		EbsCallbackBean bean = queueBean.getBeans();
+		try{
+			Record setRecord = new Record().set("la_callback_status", SftCallbackStatus.SFT_CALLBACK_F.getKey())
+    				.set("la_callback_err_message", "EBS接收失败")
+    				.set("la_callback_resp_time", new Date());
+    		Record whereRecord = new Record().set("pay_code", bean.getPayNo());
+    		if(CommonService.updateRows("la_origin_pay_data", setRecord, whereRecord) != 1){
+    			log.error("EBS回调接口回写数据库失败:{}",StringKit.removeControlCharacter(bean.getPayNo()));
+    		};
+		}catch(Exception e){
+			log.error("EBS回调接口回写数据库失败:{}",StringKit.removeControlCharacter(bean.getPayNo()));
+			e.printStackTrace();
 		}
 	}
 	

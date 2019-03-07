@@ -28,29 +28,17 @@ public class EbsCallback {
 			return;
 		}
 		log.debug("回写EBS,将回写数据写至队列开始。。。。。。。。。");
-		int batchNum = config.getBatchNum();
-		List<EbsCallbackBean> callbackBeans = new ArrayList<EbsCallbackBean>();
 		for(Record origin : records){
 			try {
 				EbsCallbackBean bean = createBean(origin);
-				callbackBeans.add(bean);
-				if(callbackBeans.size() == batchNum){
-					String params = createParams(callbackBeans);
-					EbsQueueBean queueBean = new EbsQueueBean(callbackBeans,params);
-					EbsProductQueue productQueue = new EbsProductQueue(queueBean);
-					new Thread(productQueue).start();
-					callbackBeans = new ArrayList<EbsCallbackBean>();
-				}
+				String params = createParams(bean);
+				EbsQueueBean queueBean = new EbsQueueBean(bean,params);
+				EbsProductQueue productQueue = new EbsProductQueue(queueBean);
+				new Thread(productQueue).start();
 			} catch (Exception e) {
 				e.printStackTrace();
 				continue;
 			}
-		}
-		if(callbackBeans.size()>0){
-			String params = createParams(callbackBeans);
-			EbsQueueBean queueBean = new EbsQueueBean(callbackBeans,params);
-			EbsProductQueue productQueue = new EbsProductQueue(queueBean);
-			new Thread(productQueue).start();
 		}
 		log.debug("回写EBS,将回写数据写至队列结束。。。。。。。。。");
 	}
@@ -65,11 +53,8 @@ public class EbsCallback {
 		return bean;
 	}
 	
-	private String createParams(List<EbsCallbackBean> beans){
-		if(beans == null || beans.size() == 0 || beans.size() > config.getBatchNum()){
-			return null;
-		}
-		Map<String,Object> map = beans.get(0).toMap();
+	private String createParams(EbsCallbackBean beans){
+		Map<String,Object> map = beans.toMap();
 		String params = VelocityUtil.genVelo("EBSCallback.vm", map);
 		return params;
 	}

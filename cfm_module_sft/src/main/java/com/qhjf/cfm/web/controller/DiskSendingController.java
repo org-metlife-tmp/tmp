@@ -126,7 +126,8 @@ public class DiskSendingController extends CFMBaseController {
     @Auth(hasForces = {"PayBatchSend"})
     public  void  sendbank() throws ReqDataException {
     	Record record = getRecordByParamsStrong();
-    	service.sendbank(record);
+    	UserInfo userInfo = getUserInfo();
+    	service.sendbank(record, userInfo);
 		renderOk(null);
     }
     

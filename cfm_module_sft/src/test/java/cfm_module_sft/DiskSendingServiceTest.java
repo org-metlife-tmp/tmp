@@ -28,6 +28,10 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
+
+import java.math.BigDecimal;
+import java.net.SocketTimeoutException;
+
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,7 +46,7 @@ public class DiskSendingServiceTest {
 
 	@Before
 	public void start() {
-		dp = new DruidPlugin("jdbc:sqlserver://10.164.25.42:1433;DatabaseName=TreasureDB", "tmpadmin", "User123$");
+		dp = new DruidPlugin("jdbc:sqlserver://10.164.26.24:1433;DatabaseName=TreasureDB", "tmpadmin", "User123$");
 		arp = new ActiveRecordPlugin(dp);
 		arp.setDevMode(true);
 		arp.setDialect(new SqlServerDialect());
@@ -300,5 +304,26 @@ public class DiskSendingServiceTest {
 		result.put("city", city);
 		result.put("bank_type", bankType);
 		return result;
+	}
+	
+	@Test
+	public void validateAvailableBalence(){
+		try {
+//			Record mbRecord = Db.findById("pay_batch_total_master", "id", 2084);
+			Record mbRecord = Db.findById("pay_batch_total_master", "id", 2044);
+			String payAccNo = "591902896710201";
+			Record accNoBalance = Db.findFirst(Db.getSql("disk_downloading.selAccNoBalence"), payAccNo);
+			if (null == accNoBalance) {
+				throw new ReqDataException(String.format("付款账号[%s]当日余额无数据！", payAccNo));
+			}
+			BigDecimal totalAmount = mbRecord.getBigDecimal("total_amount");
+			BigDecimal availableBal = accNoBalance.getBigDecimal("available_bal");
+			if (totalAmount.compareTo(availableBal) > 0) {
+				throw new ReqDataException(String.format("付款账号[%s]当日余额[%s]不足！", payAccNo, availableBal));
+			}
+			System.out.println("Sucess");
+		} catch (ReqDataException e) {
+			e.printStackTrace();
+		}
 	}
 }

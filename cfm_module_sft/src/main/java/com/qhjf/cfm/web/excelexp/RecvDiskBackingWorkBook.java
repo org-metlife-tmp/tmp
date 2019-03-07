@@ -35,7 +35,7 @@ public class RecvDiskBackingWorkBook extends AbstractWorkBook {
                 "来源系统", "主批次号", "子批次号", "交互方式", "通道编码", "通道描述", "出盘日期", "回盘日期" , "总金额", "总笔数",
                 "成功金额", "成功笔数","失败金额","失败笔数","状态","操作人"
         };
-        this.sheetName = "批量付款回盘列表";
+        this.sheetName = "盘片回盘列表";
     }
 
     @Override

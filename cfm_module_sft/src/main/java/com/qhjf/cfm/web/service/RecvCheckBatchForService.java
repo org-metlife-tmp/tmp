@@ -62,7 +62,7 @@ public class RecvCheckBatchForService {
 		record.set("codes", codes);
 		List<Integer> status = record.get("status");
 		if (status == null || status.size() == 0) {
-			record.remove("status");
+			record.set("status", new Integer[] {WebConstant.SftLegalData.NOGROUP.getKey()});
 		}
 		SqlPara sqlPara = Db.getSqlPara("recv_check_batch.recvcheckBatchLAlist", Kv.by("map", record.getColumns()));
 		return Db.paginate(pageNum, pageSize, sqlPara);
@@ -137,7 +137,8 @@ public class RecvCheckBatchForService {
 			    codes.add(rec.getStr("code"));
 			}
 			record.set("codes", codes);
-			
+			final Record error_message = new Record();
+			error_message.set("error_message", "组批数据库操作失败");
 			// 主批次入recv_batch_total_master表
 			// 子批次入pay_batch_total,pay_batch_detail ,并更新 pay_legal_data 表
 			boolean flag = Db.tx(new IAtom() {
@@ -148,7 +149,12 @@ public class RecvCheckBatchForService {
 							   .find(Db.getSqlPara("recv_check_batch.checkBatchLAlist_confirm", Kv.by("map", record.getColumns())));	
 					   total_amount_master = Db
 							   .findFirst(Db.getSqlPara("recv_check_batch.checkBatchLAlistAmount_confirm", Kv.by("map", record.getColumns())));			
-
+					   //页面上传输过来的数据,没有未提交的
+					   if(null == ids || ids.size() == 0){
+						   logger.error("============想要组批的内容未存在未提交状态的数据!");
+						   error_message.set("error_message", "请选择至少一条交易数据进行组批");
+						   return false ;
+					   }
 					// 封装 recv_batch_total 和 recv_batch_detail
 					final Integer document_moudle = channel_setting.getInt("document_moudle");
 
@@ -274,7 +280,8 @@ public class RecvCheckBatchForService {
 				}
 			});
 			if (!flag) {
-				throw new ReqDataException("组批失败");
+				String error_messages = error_message.getStr("error_message");
+				throw new ReqDataException(error_messages);
 			}
 		}  finally {
 			// 组批成功,删除redis中值
@@ -397,9 +404,8 @@ public class RecvCheckBatchForService {
 			}
 		}
 		record.set("codes", codes);
-		record.set("status", new int[] {
-				WebConstant.SftLegalData.NOGROUP.getKey()
-		});
+		//金额永远只展示未组批金额 . 已提交/已拒绝 条件下  未组批金额 0
+		record.set("amountstatus", new int[] {WebConstant.SftLegalData.NOGROUP.getKey()});
 		SqlPara sqlPara =
 	          Db.getSqlPara("recv_check_batch.checkBatchLAAmount", Kv.by("map", record.getColumns()));
 		return Db.findFirst(sqlPara);

@@ -10,6 +10,7 @@ import com.qhjf.cfm.utils.MD5Kit;
 import com.qhjf.cfm.utils.TableDataCacheUtil;
 import com.qhjf.cfm.web.constant.WebConstant;
 import com.qhjf.cfm.web.quartzs.jobs.pub.PubJob;
+import com.qhjf.cfm.web.quartzs.jobs.utils.ValidateUtil;
 import com.qhjf.cfm.web.utils.comm.file.tool.DataDoubtfulCache;
 import com.qhjf.cfm.web.webservice.sft.SftCallBack;
 import org.quartz.Job;
@@ -180,6 +181,12 @@ public class SftEbsDataCheckJob implements Job{
         }
 
         private void validate(Record ebsOriginData) throws Exception {
+        	//银行账号校验：recv_acc_no
+        	boolean accNoValidate = ValidateUtil.accNoValidate(ebsOriginData.getStr("recv_acc_no"));
+        	if (!accNoValidate) {
+        		throw new ReqValidateException("银行账号非法");
+			}
+        	
             Record org = Db.findFirst(Db.getSql("ebs_cfm.getOrg"),
                     TypeUtils.castToString(ebsOriginData.get("org_code")));
             if (org == null) {

@@ -1,5 +1,12 @@
 package com.qhjf.cfm.web.service;
 
+import java.math.BigDecimal;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import com.alibaba.fastjson.util.TypeUtils;
 import com.jfinal.kit.Kv;
 import com.jfinal.plugin.activerecord.*;
@@ -9,8 +16,10 @@ import com.qhjf.cfm.queue.QueueBean;
 import com.qhjf.cfm.utils.CommonService;
 import com.qhjf.cfm.utils.TableDataCacheUtil;
 import com.qhjf.cfm.web.UodpInfo;
+import com.qhjf.cfm.web.UserInfo;
 import com.qhjf.cfm.web.channel.inter.api.IChannelInter;
 import com.qhjf.cfm.web.channel.manager.ChannelManager;
+import com.qhjf.cfm.web.constant.WebConstant;
 import com.qhjf.cfm.web.inter.impl.batch.SysBatchPayInter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,19 +69,40 @@ public class DiskSendingService {
 			
 	}
 
-	public void sendbank(Record record) throws ReqDataException {
+	public void sendbank(Record record, final UserInfo userInfo) throws ReqDataException {
 		//1. 根据前端传入 子批次id查询子批次
 		final long id = TypeUtils.castToLong(record.get("id"));
 		final Record cbRecord = Db.findById("pay_batch_total", "id", id);
 		if(cbRecord == null){
 			throw new ReqDataException("未找到相应的子批次！");
 		}
+		//1.1 校验发送状态是否合法
+		Integer serviceStatus = cbRecord.getInt("service_status");
+		if (null == serviceStatus){
+			throw new ReqDataException("子批次状态为空！");
+		} 
+		if (serviceStatus != WebConstant.SftCheckBatchStatus.SPWFS.getKey()
+				&& serviceStatus != WebConstant.SftCheckBatchStatus.YHT.getKey()) {
+			throw new ReqDataException("子批次状态非法！");
+		}
+		
 		//2. 根据子批次记录中的主批次号查询 主批次
 		Record mbRecord = Db.findFirst(Db.getSql("disk_downloading.findMasterByBatchNo"),
 				TypeUtils.castToString(cbRecord.get("master_batchno")));
 		if(mbRecord == null){
 			throw new ReqDataException("未找到相应的主批次！");
 		}
+		//2.1 校验当前付款账户余额是否足够
+		Record accNoBalance = Db.findFirst(Db.getSql("disk_downloading.selAccNoBalence"), mbRecord.getStr("pay_acc_no"));
+		if (null == accNoBalance) {
+			throw new ReqDataException(String.format("付款账号[%s]当日余额无数据！", mbRecord.getStr("pay_acc_no")));
+		}
+		BigDecimal totalAmount = mbRecord.getBigDecimal("total_amount");
+		BigDecimal availableBal = accNoBalance.getBigDecimal("available_bal");
+		if (totalAmount.compareTo(availableBal) > 0) {
+			throw new ReqDataException(String.format("付款账号[%s]当日余额[%s]不足！", mbRecord.getStr("pay_acc_no"), availableBal));
+		}
+		
 		//3. 根据子批次id查询pay_batch_detail所有的明细
 		final List<Record> detailRecords = Db.find(Db.getSql("disk_downloading.findDatailInfo"), id);
 		
@@ -134,7 +164,10 @@ public class DiskSendingService {
 				if(saveIntr){
 					//子批次汇总表状态改为：4已发送未回盘
 					int updPayBatchTotal = CommonService.updateRows("pay_batch_total"
-							, new Record().set("service_status", 4).set("persist_version", cbRecord.getInt("persist_version") + 1)
+							, new Record().set("service_status", 4)
+										  .set("persist_version", cbRecord.getInt("persist_version") + 1)
+										  .set("send_user_name", userInfo.getName())
+										  .set("send_on", new Date())
 							, new Record().set("id", id).set("persist_version", cbRecord.getInt("persist_version")));
 					if (updPayBatchTotal == 1) {
 						return true;

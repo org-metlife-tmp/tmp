@@ -142,6 +142,15 @@ WHERE
                 #(y)
               #end
             )
+        #elseif("amountstatus".equals(x.key))
+            pay.status in(
+              #for(a : map.amountstatus)
+                #if(for.index > 0)
+                  #(",")
+                #end
+                #(a)
+              #end
+            )
         #elseif("codes".equals(x.key))
             org.code in(
               #for(z : map.codes)
@@ -488,6 +497,15 @@ WHERE
                   #(",")
                 #end
                 #(y)
+              #end
+            )
+        #elseif("amountstatus".equals(x.key))
+            pay.status in(
+              #for(a : map.amountstatus)
+                #if(for.index > 0)
+                  #(",")
+                #end
+                #(a)
               #end
             )
         #elseif("org_id".equals(x.key))

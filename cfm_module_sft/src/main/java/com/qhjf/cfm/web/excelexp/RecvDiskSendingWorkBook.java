@@ -32,7 +32,7 @@ public class RecvDiskSendingWorkBook extends AbstractWorkBook {
                  "来源系统", "主批次号", "子批次号", "交互方式", "通道编码", "通道描述", "组批日期", "总金额", "总笔数",
                  "状态", "操作人","发送日期"
          };
-         this.sheetName = "批付盘片下载列表";
+         this.sheetName = "盘片发送列表";
     }
 
     @Override

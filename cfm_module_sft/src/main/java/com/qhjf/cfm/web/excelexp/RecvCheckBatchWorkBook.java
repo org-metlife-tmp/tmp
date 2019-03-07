@@ -32,7 +32,7 @@ public class RecvCheckBatchWorkBook extends AbstractWorkBook {
                 "日期", "通道编码", "通道描述", "机构名称", "投保单号", "保单号", "业务类型" ,"金额", "客户姓名", "证件号码",
                 "客户帐号", "支付号码" ,"状态" ,"操作人","操作日期"
         };
-        this.sheetName = "批付核对组批列表";
+        this.sheetName = "核对组批列表";
     }
 
     @Override

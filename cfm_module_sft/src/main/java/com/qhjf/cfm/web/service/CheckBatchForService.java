@@ -70,7 +70,7 @@ public class CheckBatchForService {
 		record.set("codes", codes);
 		List<Integer> status = record.get("status");
 		if (status == null || status.size() == 0) {
-			record.remove("status");
+			record.set("status", new int[] {WebConstant.SftLegalData.NOGROUP.getKey()});
 		}
 		Integer source_sys = TypeUtils.castToInt(record.get("source_sys"));
 		SqlPara sqlPara = null;
@@ -179,7 +179,8 @@ public class CheckBatchForService {
 				}
 			}
 			record.set("codes", codes);
-			
+			final Record error_message = new Record();
+			error_message.set("error_message", "组批数据库操作失败");
 			// 主批次入xx表.主批次走审批流
 			// 子批次入pay_batch_total,pay_batch_detail ,并更新 pay_legal_data 表
 			boolean flag = Db.tx(new IAtom() {
@@ -198,6 +199,12 @@ public class CheckBatchForService {
 							   .find(Db.getSqlPara("check_batch.checkBatchEBSlist_confirm", Kv.by("map", record.getColumns())));				
 					   total_amount_master = Db
 							   .findFirst(Db.getSqlPara("check_batch.checkBatchEBSlistAmount_confirm", Kv.by("map", record.getColumns())));
+				   }
+				   //页面上传输过来的数据,没有未提交的
+				   if(null == ids || ids.size() == 0){
+					   logger.error("============想要组批的内容未存在未提交状态的数据!");
+					   error_message.set("error_message", "请选择至少一条交易数据进行组批");
+					   return false ;
 				   }
 
 					// 封装 pay_batch_total 和 pay_batch_detail
@@ -373,7 +380,8 @@ public class CheckBatchForService {
 				}
 			});
 			if (!flag) {
-				throw new ReqDataException("组批失败");
+				String error_messages = error_message.getStr("error_message");
+				throw new ReqDataException(error_messages);
 			}
 		}  finally {
 			// 组批成功,删除redis中值
@@ -696,9 +704,8 @@ public class CheckBatchForService {
 			}
 		}
 		record.set("codes", codes);
-		record.set("status", new int[] {
-				WebConstant.SftLegalData.NOGROUP.getKey()
-		});
+		//金额永远只展示未组批金额 . 已提交/已拒绝 条件下  未组批金额 0
+		record.set("amountstatus", new Integer[] {WebConstant.SftLegalData.NOGROUP.getKey()});
 		Integer source_sys = TypeUtils.castToInt(record.get("source_sys"));
 		SqlPara sqlPara = null;
 		if (0 == source_sys) {

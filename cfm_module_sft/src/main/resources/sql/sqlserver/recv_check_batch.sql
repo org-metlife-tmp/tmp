@@ -141,6 +141,15 @@ WHERE
                 #(y)
               #end
             )
+        #elseif("amountstatus".equals(x.key))
+            recv.status in(
+              #for(a : map.amountstatus)
+                #if(for.index > 0)
+                  #(",")
+                #end
+                #(a)
+              #end
+            )
         #elseif("codes".equals(x.key))
             org.code in(
               #for(z : map.codes)

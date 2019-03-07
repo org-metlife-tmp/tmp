@@ -9,6 +9,7 @@ import com.qhjf.cfm.utils.CommonService;
 import com.qhjf.cfm.utils.MD5Kit;
 import com.qhjf.cfm.web.constant.WebConstant;
 import com.qhjf.cfm.web.quartzs.jobs.pub.PubJob;
+import com.qhjf.cfm.web.quartzs.jobs.utils.ValidateUtil;
 import com.qhjf.cfm.web.utils.comm.file.tool.DataDoubtfulCache;
 import com.qhjf.cfm.web.webservice.sft.SftRecvCallBack;
 import org.quartz.Job;
@@ -149,6 +150,12 @@ public class SftRecvLaDataCheckJob implements Job{
         }
 
         private void validate(Record laOiriginData) throws ReqValidateException {
+        	//银行账号合法校验：pay_acc_no
+        	boolean accNoValidate = ValidateUtil.accNoValidate(laOiriginData.getStr("pay_acc_no"));
+        	if (!accNoValidate) {
+        		throw new ReqValidateException("银行账号非法");
+			}
+        	
             Record org = Db.findFirst(
                     Db.getSql("la_cfm.getOrg"), laOiriginData.getStr("org_code"), laOiriginData.getStr("branch_code"));
             if (org == null) {
