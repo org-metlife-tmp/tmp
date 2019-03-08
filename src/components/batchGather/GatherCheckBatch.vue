@@ -562,7 +562,7 @@
                 if(selection.length === 0){
                     tableList.forEach((item) => {
                         let flag = true;
-                        if(item.status == "已提交" || item.status == "已作废"){
+                        if(item.status == "已提交" || item.status == "已拒绝"){
                             flag = false;
                         }else{
                             for(let i = 0; i < selectId.length; i++){
