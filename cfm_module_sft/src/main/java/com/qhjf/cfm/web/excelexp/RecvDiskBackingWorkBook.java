@@ -26,7 +26,7 @@ public class RecvDiskBackingWorkBook extends AbstractWorkBook {
         this.optype = "recvdiskbacking_listexport";
         this.titleNames = new String[]{
                 "source_sys", "master_batchno", "child_batchno", "interactive_mode", "channel_code",
-                "channel_desc", "send_on", "back_on","pay_total_amount", "pay_total_num", "success_amount",
+                "channel_desc", "send_on", "back_on","recv_total_amount", "recv_total_num", "success_amount",
                 "success_num","fail_amount","fail_num","status", "back_user_name"
                
 

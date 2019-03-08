@@ -104,7 +104,7 @@ public class RecvDiskSendingController extends CFMBaseController {
         	//
         	logger.info("=========网盘是TXT格式的文件");
         	if(!is_download){
-        		String fileName = txtservice.getFileName(document_moudle,document_type,document_version);
+        		String fileName = txtservice.getSFileName(document_moudle,document_type,document_version);
         		String diskDownLoad = recvTxtDiskSendingService.diskDownLoadNewThread(pay_master_id,pay_id,document_moudle,fileName,document_type,configs_tail);
         		render(new ByteArrayRender(fileName,diskDownLoad.getBytes()));
         	}else{

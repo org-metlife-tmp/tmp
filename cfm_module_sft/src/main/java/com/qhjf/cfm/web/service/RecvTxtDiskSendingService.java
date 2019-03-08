@@ -85,8 +85,11 @@ public class RecvTxtDiskSendingService {
         	}
         	for (int i = 1; i <= total_rec_config.getColumns().size(); i++) {
 				if(StringUtils.isNotBlank(total_rec_config.getStr("field_"+i))){
-					total_titleNames = total_titleNames == "" ? total_rec_config.getStr("field_"+i) :
-						total_titleNames +"," + total_rec_config.getStr("field_"+i);
+					if(total_titleNames != null && !"".equals(total_titleNames)){
+						total_titleNames += "," + total_rec_config.getStr("field_"+i);
+					}else{
+						total_titleNames = total_rec_config.getStr("field_"+i);
+					}
 				}else {
 					break ;
 				}
@@ -114,9 +117,12 @@ public class RecvTxtDiskSendingService {
 				map.put("detail_title", configs_tail.getStr("title"));
 			}		
 			for (int i = 1; i <= configs_tail.getColumns().size(); i++) {
-				if(StringUtils.isNotBlank(configs_tail.getStr("field_"+i))){					
-					datail_titleNames = datail_titleNames == "" ? configs_tail.getStr("field_"+i) : 
-						datail_titleNames + "," +   configs_tail.getStr("field_"+i) ;
+				if(StringUtils.isNotBlank(configs_tail.getStr("field_"+i))){
+					if(datail_titleNames != null && !"".equals(datail_titleNames)){
+						datail_titleNames += "," +   configs_tail.getStr("field_"+i) ;
+					}else{
+						datail_titleNames = configs_tail.getStr("field_"+i);
+					}
 				}else{
 					break ;
 				}

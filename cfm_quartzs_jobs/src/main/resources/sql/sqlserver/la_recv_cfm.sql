@@ -12,12 +12,12 @@
 
 #sql("getLARecvUnCheckedOriginList")
   select 
-  	top 1000
-  	id,source_sys,pay_code,branch_code,org_code,preinsure_bill_no,insure_bill_no,biz_type,pay_mode,recv_date
-	,amount,pay_acc_name,pay_cert_type,pay_cert_code,pay_bank_name,pay_acc_no,bank_key,sale_code,sale_name
-	,op_code,op_name,persist_version,tmp_status 
-  from la_origin_recv_data
-  where is_process = ?
+	top 1000 * 
+  from 
+	la_origin_recv_data 
+  where 
+	job_no = (select JOBNO from ZDDHPF where [STATUS] = 1) 
+	and is_process = ?
 #end
 
 #sql("updLaOriginStatus")

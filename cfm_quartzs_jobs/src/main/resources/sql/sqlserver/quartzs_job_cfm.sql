@@ -148,5 +148,19 @@
   #sql("update_batch_zft_status")
     update outer_batchpay_baseinfo set service_status = ? where id = ? and persist_version = ?
   #end
+  
+  
+  #sql("selOneLaRecvTotal")
+    select * from ZDDHPF where [STATUS]=0
+  #end
+  
+  #sql("selOneBatchLaRecvDetail")
+    select 
+		count(1) size, sum(amount) sum_amount
+	from 
+		la_origin_recv_data 
+	where 
+		job_no = ?
+  #end
 #end
   

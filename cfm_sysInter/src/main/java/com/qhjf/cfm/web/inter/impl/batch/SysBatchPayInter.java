@@ -124,7 +124,8 @@ public class SysBatchPayInter implements ISysAtomicInterface {
 	 */
 	@Override
 	public void callBack(String jsonStr) throws Exception {
-		log.debug("交易回写开始...jsonStr={}", StringKit.removeControlCharacter(jsonStr));
+		String lbean = StringKit.removeControlCharacter(jsonStr);
+		log.debug("交易回写开始...jsonStr={}", lbean);
 		int resultCount = channelInter.getResultCount(jsonStr);
 		if (resultCount == 0) {
 			log.error("银行返回数据条数为0");
@@ -223,7 +224,7 @@ public class SysBatchPayInter implements ISysAtomicInterface {
 				}
 			} catch (Exception e) {
 				isWriteBack = false;
-				log.error("批量支付回调,第【i={}】次循环交易回写失败，回调数据：【{}】", i, StringKit.removeControlCharacter(jsonStr));
+				log.error("批量支付回调,第【i={}】次循环交易回写失败，回调数据：【{}】", i, lbean);
 				e.printStackTrace();
 				continue;
 			}

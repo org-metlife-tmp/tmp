@@ -41,9 +41,9 @@ public class EbsConsumerQueue implements Runnable{
 				EbsQueueBean queueBean = null;
 				queueBean = EbsQueue.getInstance().getQueue().take();
 				log.debug("EBS回写发送参数={}", StringKit.removeControlCharacter(queueBean.getParams()));
-				String response = service.saveXML(queueBean.getParams());
-				log.debug("EBS回写响应参数={}", StringKit.removeControlCharacter(response));
-				JSONObject json = XmlTool.documentToJSONObject(response);
+				String ebs_bean = service.saveXML(queueBean.getParams());
+				log.debug("EBS回写响应参数={}", StringKit.removeControlCharacter(ebs_bean));
+				JSONObject json = XmlTool.documentToJSONObject(ebs_bean);
 				process(json);
 			}catch(Exception e){
 				e.printStackTrace();

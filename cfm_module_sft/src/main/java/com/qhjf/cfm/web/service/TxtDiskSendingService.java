@@ -219,7 +219,7 @@ public class TxtDiskSendingService {
 	}
 
     /**
-     * 广银联代付/代收文件名
+     * 批量代付文件名
      * @param document_moudle
      * @param document_type
      * @param version
@@ -255,6 +255,50 @@ public class TxtDiskSendingService {
 		}else{
 			// 建行   CCB_F_**********_++++++++.TXT
 			fileName = "CCB_"+ this.getSfFlag(document_type) + "_U9" + 
+			            RedisSericalnoGenTool.genCCBCDiskFileSeqNo() + "_" + 
+					    DateKit.toStr(new Date(), DateKit.datePattern).replaceAll("-", "");
+			logger.info("=========生成盘片的文件名==="+fileName);
+		}		
+		return fileName + ".TXT" ;
+	}
+	
+	/**
+     * 批量代收文件名
+     * @param document_moudle
+     * @param document_type
+     * @param version
+     * @return
+     */
+	public String getSFileName(Integer document_moudle, Integer document_type, String version) {
+		String fileName = "";
+		//广银联/通联文件名称格式
+		StringBuffer  sb = new  StringBuffer();
+		//TODO 商户号
+		String  shh = SHH_Map.get(String.valueOf(document_moudle)+document_type);
+		// 代付 F , 代收 S
+		String sfFlag = this.getSfFlag(document_type);	
+		//提交日期
+		String time = DateKit.toStr(new Date(), DateKit.datePattern).replaceAll("-", "");
+		if(WebConstant.Channel.GP.getKey() == document_moudle
+				 ||WebConstant.Channel.GS.getKey() == document_moudle
+				 ||WebConstant.Channel.TP.getKey() == document_moudle
+				 ||WebConstant.Channel.GX.getKey() == document_moudle
+				){
+			//5位的序列号
+			final String seq = RedisSericalnoGenTool.genDiskFileSeqNo();
+			fileName = sb.append(shh).append("_").append(sfFlag).append(version).append(time)
+					             .append("_").append(seq).toString();
+			logger.info("=========生成盘片的文件名==="+fileName);			
+		}else if( WebConstant.Channel.RP.getKey() == document_moudle) {
+			//融汇通
+			//8位的序列号
+			final String seq = RedisSericalnoGenTool.genCCBCDiskFileSeqNo();
+			fileName = sb.append("FINGARD").append("_").append(sfFlag).append(version).append(time)
+		             .append("_").append(seq).toString();
+            logger.info("=========生成盘片的文件名==="+fileName);
+		}else{
+			// 建行   CCB_K_**********_++++++++.TXT
+			fileName = "CCB_K"+ "_T9" + 
 			            RedisSericalnoGenTool.genCCBCDiskFileSeqNo() + "_" + 
 					    DateKit.toStr(new Date(), DateKit.datePattern).replaceAll("-", "");
 			logger.info("=========生成盘片的文件名==="+fileName);

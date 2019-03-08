@@ -22,10 +22,10 @@ public class ParentReq{
 	private static Logger log = LoggerFactory.getLogger(ParentReq.class);
 	
 	private JSONObject json;
-	public ParentReq(String xml) throws Exception {
-		log.debug("参数xml={}", StringKit.removeControlCharacter(xml));
+	public ParentReq(String param) throws Exception {
+		log.debug("参数={}", StringKit.removeControlCharacter(param));
 		try {
-			this.json = XmlTool.documentToJSONObject(xml);
+			this.json = XmlTool.documentToJSONObject(param);
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new WebServiceException(ErrorCode.P0001);

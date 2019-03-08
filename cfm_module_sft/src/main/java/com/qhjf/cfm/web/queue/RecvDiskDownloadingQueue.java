@@ -62,7 +62,7 @@ public class RecvDiskDownloadingQueue implements  Runnable {
 		if(null != find  && find.size()> 0){
 			for (Record record : find) {				
 	        		log.info("=========网盘是TXT格式的文件");
-	        		String fileName = txtservice.getFileName(document_moudle,document_type,document_version);
+	        		String fileName = txtservice.getSFileName(document_moudle,document_type,document_version);
 	        		try {
 	        			recvTxtDiskSendingService.diskDownLoadNewThread(main_record.getLong("id"),record.getLong("id"),document_moudle,fileName,document_type,configs_tail);
 					} catch (Exception e) {

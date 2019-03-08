@@ -52,8 +52,8 @@ public class LaConsumerQueue implements Runnable{
 				opts.setAction("http://eai.metlife.com/ESBWebEntry/ProcessMessage");
 				sc.setOptions(opts);
 				OMElement res = sc.sendReceive(queueBean.getoMElement());
-
-				log.debug("response={}",StringKit.removeControlCharacter(res.toString()));
+				String laBean = StringKit.removeControlCharacter(res.toString());
+				log.debug("response={}",laBean);
 				JSONObject json = XmlTool.documentToJSONObject(res.toString());
 				JSONObject rec = json.getJSONArray("ESBEnvelopeResult").getJSONObject(0).getJSONArray("MsgBody").getJSONObject(0).getJSONArray("PMTUPDO_REC").getJSONObject(0);
 				String status = rec.getString("STATUS");

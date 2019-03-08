@@ -156,11 +156,14 @@ public class RecvCheckBatchForService {
 						   return false ;
 					   }
 					// 封装 recv_batch_total 和 recv_batch_detail
-					final Integer document_moudle = channel_setting.getInt("document_moudle");
-
-					final BigDecimal limit = channel_setting.get("single_file_limit") == null ? new BigDecimal(ids.size())
+					Integer detail_id = channel_setting.getInt("document_moudle");
+			    	logger.info("============报盘模板详情Id==="+detail_id);
+			    	Record configs_tail = Db.findById("document_detail_config", "id", detail_id);
+			    	int document_moudle = Integer.valueOf(configs_tail.getStr("document_moudle")) ;
+	
+					BigDecimal limit = channel_setting.get("single_file_limit") == null ? new BigDecimal(ids.size())
 							: new BigDecimal(channel_setting.getInt("single_file_limit"));
-					final BigDecimal num = new BigDecimal(ids.size()).divide(limit, 0, BigDecimal.ROUND_UP);
+					BigDecimal num = new BigDecimal(ids.size()).divide(limit, 0, BigDecimal.ROUND_UP);
 					logger.info("此渠道文件限制个数==" + limit + "分成的子批次个数==" + num);
 					
 					// 封装主批次对象
