@@ -186,8 +186,9 @@
             <section class="table-content">
                 <el-table :data="tableList" ref="tableRef"
                           @select="selectChange"
+                          @select-all="selectChange"
                           height="100%" border size="mini">
-                    <el-table-column type="selection" width="40"></el-table-column>
+                    <el-table-column type="selection" width="40" :selectable="isSelect"></el-table-column>
                     <el-table-column prop="send_on" label="出盘日期" :show-overflow-tooltip="true"></el-table-column>
                     <el-table-column prop="master_batchno" label="主批次号" :show-overflow-tooltip="true"></el-table-column>
                     <el-table-column prop="child_batchno" label="子批次号" :show-overflow-tooltip="true"></el-table-column>
@@ -330,6 +331,7 @@
             <section class="table-content">
                 <el-table :data="childList" border
                           @selection-change="childChange"
+                          @select-all="childChange"
                           height="100%" size="mini">
                     <el-table-column type="selection" width="40"></el-table-column>
                     <el-table-column prop="trans_date" label="交易日期" :show-overflow-tooltip="true"></el-table-column>
@@ -637,16 +639,12 @@
                     }
                 }
             },
+            //当前列是否可以勾选
+            isSelect: function(row, index){
+                return !(row.is_checked == 1);
+            },
             //列表选择框改变后
             selectChange: function (val,row) {
-                if(row.is_checked == 1){
-                    this.$refs.tableRef.toggleRowSelection(row,false);
-                    this.$message({
-                        message: '已核对数据不可勾选',
-                        type: 'warning'
-                    });
-                    return;
-                }
                 //计算汇总数据
                 var allAmount = 0;
                 var allNum = 0;
