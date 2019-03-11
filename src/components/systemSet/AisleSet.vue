@@ -198,10 +198,17 @@
                                  :formatter="transitPayMode"></el-table-column>
                 <el-table-column prop="pay_attr" label="收付属性" :show-overflow-tooltip="true"
                                  :formatter="transitPayAttr"></el-table-column>
-                <el-table-column prop="interactive_mode" label="交互方式" :show-overflow-tooltip="true"
-                                 :formatter="transitInteract"></el-table-column>
                 <el-table-column prop="net_mode" label="结算模式" :show-overflow-tooltip="true"
                                  :formatter="transitMode"></el-table-column>
+                <el-table-column prop="interactive_mode" label="交互方式" :show-overflow-tooltip="true"
+                                 :formatter="transitInteract"></el-table-column>
+                <el-table-column prop="card_type" label="支持卡种" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="single_amount_limit" label="单笔金额限制" width="110px"
+                                 :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="amount_percent" label="手续费(按金额)" width="120px"
+                                 :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="amount_number" label="手续费(按笔数)" width="120px"
+                                 :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="bankcode" label="bankcode" width="100px"
                                  :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="acc_no" label="银行账号" :show-overflow-tooltip="true"></el-table-column>
@@ -211,6 +218,8 @@
                                  :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="is_checkout" label="状态" :show-overflow-tooltip="true"
                                  :formatter="transitStatus"></el-table-column>
+                <el-table-column prop="update_user" label="操作人" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="update_on" label="操作日期" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column
                         label="操作" width="80"
                         fixed="right">
@@ -371,6 +380,12 @@
                                       :disabled="isLook">
                                 <i slot="suffix" style="color: #000000;">条</i>
                             </el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="支持卡种">
+                            <el-input v-model="dialogData.card_type" placeholder="请输入支持卡种"
+                                      :disabled="isLook"></el-input>
                         </el-form-item>
                     </el-col>
 
@@ -567,6 +582,7 @@
                     single_file_limit: "",
                     charge_mode: "",
                     charge_amount: "",
+                    card_type: "",
                     acc_id: "",
                     acc_no: "",
                     acc_name: "",

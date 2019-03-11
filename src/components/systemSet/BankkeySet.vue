@@ -169,6 +169,8 @@
                                  :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="channel_code" label="通道编码" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="channel_desc" label="通道描述" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="pay_mode" label="收付属性" :show-overflow-tooltip="true"
+                                 :formatter="transitPayAttr"></el-table-column>
                 <el-table-column prop="orgname" label="机构名称" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="bankcode" label="bankcode" width="100px"
                                  :show-overflow-tooltip="true"></el-table-column>
@@ -179,6 +181,8 @@
                                  width="96px" :formatter="transitSurce"></el-table-column>
                 <el-table-column prop="bankkey_status" label="状态" :show-overflow-tooltip="true"
                                  width="60px" :formatter="transitStatus"></el-table-column>
+                <el-table-column prop="update_user" label="操作人" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="update_on" label="操作日期" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column
                         label="操作" width="80"
                         fixed="right">
@@ -767,6 +771,10 @@
             //展示格式转换-原通道退款
             transitSurce: function (row, column, cellValue, index) {
                 return cellValue == 1 ? "是" : "否";
+            },
+            //展示格式转换-金额
+            transitPayAttr: function (row, column, cellValue, index) {
+                return this.payAttrList[cellValue];
             },
             //编辑
             editBankkey: function (row) {
