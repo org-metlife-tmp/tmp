@@ -331,7 +331,7 @@
                           @selection-change="childChange"
                           @select-all="childChange"
                           height="100%" size="mini">
-                    <el-table-column type="selection" width="40"></el-table-column>
+                    <el-table-column type="selection" width="40" :selectable="isSelect"></el-table-column>
                     <el-table-column prop="trans_date" label="交易日期" :show-overflow-tooltip="true"></el-table-column>
                     <el-table-column prop="bankcode" label="BankCode" width="100px"
                                      :show-overflow-tooltip="true"></el-table-column>

@@ -333,7 +333,7 @@
                           @selection-change="childChange"
                           @select-all="childChange"
                           height="100%" size="mini">
-                    <el-table-column type="selection" width="40"></el-table-column>
+                    <el-table-column type="selection" width="40" :selectable="isChildSelect"></el-table-column>
                     <el-table-column prop="trans_date" label="交易日期" :show-overflow-tooltip="true"></el-table-column>
                     <el-table-column prop="bankcode" label="BankCode" width="100px"
                                      :show-overflow-tooltip="true"></el-table-column>
@@ -642,6 +642,13 @@
             //当前列是否可以勾选
             isSelect: function(row, index){
                 return !(row.is_checked == 1);
+            },
+            isChildSelect: function(row, index){
+                if(this.isInner == 1){
+                    return !(row.is_checked == 1);
+                }else{
+                    return !(row.business_check == 1);
+                }
             },
             //列表选择框改变后
             selectChange: function (val,row) {
