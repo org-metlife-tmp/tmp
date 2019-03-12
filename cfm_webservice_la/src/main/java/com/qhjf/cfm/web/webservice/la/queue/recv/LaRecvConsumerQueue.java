@@ -145,10 +145,12 @@ public class LaRecvConsumerQueue implements Runnable{
 								Record payLegalRecord = Db.findFirst(Db.getSql("webservice_la_recv_cfm.getPayLegalByPayCode"), payCode);
 								try {
 									//TODO：
+									log.info("LA中批量收paycode为【"+payCode+"】的数据回调成功，生成凭证---begin");
 									CheckVoucherService.plsLaBackCheckVoucher("LA",
 											payLegalRecord,
 											CommonService.getPeriodByCurrentDay(new Date())
 											);
+									log.info("LA中批量收paycode为【"+payCode+"】的数据回调成功，生成凭证---end");
 								} catch (BusinessException e) {
 									log.error("LA批收响应回写原始数据，LA接收成功，生成凭证失败！响应数据节点DRNOUTRECS={}", json);
 									e.printStackTrace();

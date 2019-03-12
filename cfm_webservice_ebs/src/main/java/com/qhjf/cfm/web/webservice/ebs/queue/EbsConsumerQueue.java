@@ -90,10 +90,12 @@ public class EbsConsumerQueue implements Runnable{
 								Record payLegalRecord = Db.findFirst(Db.getSql("webservice_ebs_cfm.getPayLegalByPayCode"), payCode);
 								try {
 									//生成凭证信息
+									log.info("EBS中批量付paycode为【"+payCode+"】的数据回调成功，生成凭证---begin");
 									CheckVoucherService.plfLaEbsBackCheckVoucher("EBS",
 											payLegalRecord,
 											CommonService.getPeriodByCurrentDay(new Date())
 									);
+									log.info("EBS中批量付paycode为【"+payCode+"】的数据回调成功，生成凭证---end");
 								} catch (BusinessException e) {
 									e.printStackTrace();
 									return false;

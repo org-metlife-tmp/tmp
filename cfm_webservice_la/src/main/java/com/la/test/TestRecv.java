@@ -15,7 +15,7 @@ import org.apache.axis2.client.ServiceClient;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Map.Entry;
-@Deprecated
+
 public class TestRecv {
 	private static Map<String, String> headKv = new LinkedHashMap<>();
 	static{
@@ -30,7 +30,7 @@ public class TestRecv {
 		
 		headKv.put("SenderID", "TMP");
 		headKv.put("ReceiverID", "LA");
-		headKv.put("SrvOpName", "DRNService");
+		headKv.put("SrvOpName", "DRNService");//"DRNService"
 		headKv.put("SrvOpVer", "20120606_1.1");
 		headKv.put("MsgID", UUID.randomUUID().toString());
 		headKv.put("CorrID", UUID.randomUUID().toString());
@@ -46,25 +46,25 @@ public class TestRecv {
 	public List<LaRecvCallbackBean> getTestData(){
 		List<LaRecvCallbackBean> callbackBeans = new ArrayList<>();
 		Record origin = new Record();
-		origin.set("id", 987678l);
-		origin.set("branch_code", "BJ");
+		origin.set("id", 21345l);
+		origin.set("branch_code", "1");
 		origin.set("org_code", "SH");
-		origin.set("fee_mode", "987678");
-		origin.set("recv_date", "987678");
-		origin.set("amount", "987678");
-		origin.set("pay_acc_no", "987678");
-		origin.set("pay_bank_name", "987678");
-		origin.set("insure_bill_no", "987678");
-		origin.set("pay_code", "987678");
-		origin.set("pay_acc_name", "987678");
-		origin.set("insure_bill_no", "987678");
-		origin.set("job_no", "987678");
-		origin.set("trans_code", "987678");
-		origin.set("sacscode", "987678");
-		origin.set("sacstyp", "987678");
+		origin.set("fee_mode", "2");
+		origin.set("recv_date", "2");
+		origin.set("amount", "2");
+		origin.set("pay_acc_no", "6222000200129579199           ");
+		origin.set("pay_bank_name", "2");
+		origin.set("insure_bill_no", "2");
+		origin.set("pay_code", "2");
+		origin.set("pay_acc_name", "张艳涛                        ");
+		origin.set("insure_bill_no", "2");
+		origin.set("job_no", "2");
+		origin.set("trans_code", "2");
+		origin.set("sacscode", "2");
+		origin.set("sacstyp", "2");
 		origin.set("tmp_status", 2);
-		origin.set("tmp_err_message", "987678");
-		origin.set("bankcode", "987678");
+		origin.set("tmp_err_message", "测试错误信息");
+		origin.set("bankcode", "2");
 		try {
 			LaRecvCallbackBean bean = new LaRecvCallbackBean(origin);
 			callbackBeans.add(bean);
@@ -85,19 +85,21 @@ public class TestRecv {
 			
 			OMFactory fac = OMAbstractFactory.getOMFactory();
 
-			OMNamespace soapenvNs = fac.createOMNamespace("http://MetLifeEAI.EAISchema","");     
-     
-//			OMNamespace headNs = fac.createOMNamespace("http://www.w3.org/2001/XMLSchema","");
+			//1 ProcessMessage
 			OMNamespace processNs = fac.createOMNamespace("http://eai.metlife.com/","");
-			OMElement processMessage = fac.createOMElement("ProcessMessage",processNs);    
-			
+			OMElement processMessage = fac.createOMElement("ProcessMessage", processNs);  
+
+			//1.1 Envelope
+			OMNamespace soapenvNs = fac.createOMNamespace("http://MetLifeEAI.EAISchema","");  
 			OMElement envelopeNs = fac.createOMElement("ESBEnvelope",soapenvNs);
 			
+			//1.1.1 soapenv:Header
 			OMElement headerNs = setHeaderNs(fac);
-			OMElement msgBodyNs = setBodyNs(fac, getTestData());
+			//1.1.2 soapenv:Body
+			OMElement msgBodyNs = setBodyNs(fac,getTestData());
 			envelopeNs.addChild(headerNs);
 			envelopeNs.addChild(msgBodyNs);
-			
+
 			processMessage.addChild(envelopeNs);
 			System.out.println(processMessage);
 			//发送请求LA服务
@@ -109,6 +111,35 @@ public class TestRecv {
 		
 	}
 	
+	/**
+	 * 创建WS请求报文
+	 * @param callbackBeans
+	 * @return
+	 * @throws Exception
+	 */
+	public OMElement createOMElement(List<LaRecvCallbackBean> callbackBeans) throws Exception{
+		OMFactory fac = OMAbstractFactory.getOMFactory();
+
+		//1 ProcessMessage
+		OMNamespace processNs = fac.createOMNamespace("http://eai.metlife.com/","");
+		OMElement processMessage = fac.createOMElement("ProcessMessage", processNs);  
+
+		//1.1 Envelope
+		OMNamespace soapenvNs = fac.createOMNamespace("http://MetLifeEAI.EAISchema","");  
+		OMElement envelopeNs = fac.createOMElement("ESBEnvelope",soapenvNs);
+		
+		//1.1.1 soapenv:Header
+		OMElement headerNs = setHeaderNs(fac);
+		//1.1.2 soapenv:Body
+		OMElement msgBodyNs = setBodyNs(fac,callbackBeans);
+		envelopeNs.addChild(headerNs);
+		envelopeNs.addChild(msgBodyNs);
+
+		processMessage.addChild(envelopeNs);
+		System.out.println(processMessage);
+		return processMessage;
+	}
+
 	/**
 	 * 请求头部参数设置
 	 * @param fac xml节点构造工厂
@@ -127,40 +158,35 @@ public class TestRecv {
 	 * @return
 	 */
 	private OMElement setBodyNs(OMFactory fac, List<LaRecvCallbackBean> callbackBeans) {
-		//1.1.2 MsgBody
+		//1.1.2 soapenv:Body
 		OMElement msgBody = fac.createOMElement("MsgBody", null);
 		
 		//1.1.2.1 要调用的接口方法名称
-//		OMNamespace prm = fac.createOMNamespace("http://www.csc.smart/bo/schemas/PMTUPDI", "prm");
-//		OMNamespace prm = fac.createOMNamespace("http://www.csc.smart/bo/schemas/DRNUPDI", "prm");
-//		OMNamespace prm = fac.createOMNamespace("", "prm");
-//		OMElement pmtupdiRec = fac.createOMElement("PMTUPDI_REC", prm);
-//		OMNamespace drn = fac.createOMNamespace("http://www.csc.smart/bo/schemas/DRNUPDI", "drn");
 		OMNamespace drn = fac.createOMNamespace("http://www.csc.smart/bo/schemas/DRNADDI", "drn");
-		OMElement pmtupdiRec = fac.createOMElement("DRNUPDI_REC", drn);
+		OMElement drnaddiRec = fac.createOMElement("DRNADDI_REC", drn);
 
 		// 1.1.2.1.1 msp:MSPContext	第一个方法参数
-		OMElement mspContext = setMSPContext(fac, callbackBeans);
-		pmtupdiRec.addChild(mspContext);
+		OMElement mspContext = setmspMSPContext(fac, callbackBeans);
+		drnaddiRec.addChild(mspContext);
 
 		// 1.1.2.1.2 ADDITIONAL_FIELDS	第二个方法参数
 		OMElement additionalFields = setAdditionalFields(fac, callbackBeans);
-		pmtupdiRec.addChild(additionalFields);
+		drnaddiRec.addChild(additionalFields);
 
-		msgBody.addChild(pmtupdiRec);
+		msgBody.addChild(drnaddiRec);
 		return msgBody;
 	}
 	
-	private OMElement setMSPContext(OMFactory fac, List<LaRecvCallbackBean> callbackBeans){
-//		OMNamespace msp = fac.createOMNamespace("http://www.csc.smart/msp/schemas/MSPContext", "msp");
+	private OMElement setmspMSPContext(OMFactory fac, List<LaRecvCallbackBean> callbackBeans){
 		OMNamespace msp = fac.createOMNamespace("http://www.csc.smart/msp/schemas/MSPContext", "msp");
 		OMElement mspContextNs = fac.createOMElement("MSPContext", msp);
 		
 		OMElement userid = fac.createOMElement("UserId", msp);
-		userid.setText("MSP");
-		
+		userid.setText("MSP");//测试：MSP；生产：MSPNCLA
 		OMElement userpassword = fac.createOMElement("UserPassword", msp);
-		userpassword.setText("123");
+		userpassword.setText("");
+		
+		
 		
 		OMElement requestparameters = fac.createOMElement("RequestParameters", msp);
 
@@ -200,16 +226,16 @@ public class TestRecv {
 	 * @param callbackBeans
 	 * @return
 	 */
-	private OMElement setAdditionalFields(OMFactory fac, List<LaRecvCallbackBean> callbackBeans){
+	private OMElement setAdditionalFields(OMFactory fac, List<LaRecvCallbackBean> callbackBeans) {
 		OMElement additionalFields = fac.createOMElement("ADDITIONAL_FIELDS", null);
-		
-		for(LaRecvCallbackBean callbackBean : callbackBeans){
+
+		for (LaRecvCallbackBean callbackBean : callbackBeans) {
 			OMElement drninrecs = fac.createOMElement("DRNINRECS", null);
 			Map<String, String> kvs = callbackBean.toMap();
 			addChildList(fac, drninrecs, kvs);
 			additionalFields.addChild(drninrecs);
 		}
-		
+
 		return additionalFields;
 	}
 	

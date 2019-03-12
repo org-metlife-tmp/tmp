@@ -29,7 +29,7 @@
       recv_batch_detail detail,
       recv_legal_data legal
     WHERE
-      legal.org_id = detail.origin_id
+      legal.id = detail.legal_id
       AND detail.base_id = total.id
       AND legal.source_sys = 0
       AND legal.pay_code = ?

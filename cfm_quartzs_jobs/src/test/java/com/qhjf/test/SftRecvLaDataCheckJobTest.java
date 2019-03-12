@@ -23,7 +23,8 @@ public class SftRecvLaDataCheckJobTest {
 
 	@Before
 	public void before() {
-		dp = new DruidPlugin("jdbc:sqlserver://10.164.26.24:1433;DatabaseName=TreasureDB", "tmpadmin", "User123$");
+//		dp = new DruidPlugin("jdbc:sqlserver://10.164.26.24:1433;DatabaseName=TreasureDB", "tmpadmin", "User123$");
+		dp = new DruidPlugin("jdbc:sqlserver://127.0.0.1:1433;DatabaseName=corpzone_test", "sa", "Admin123");
 		arp = new ActiveRecordPlugin(dp);
 		arp.setDevMode(true);
 		arp.setDialect(new SqlServerDialect());
@@ -62,9 +63,9 @@ public class SftRecvLaDataCheckJobTest {
 	@Test
 	public void excuteTest(){
 		try {
-			String sql = "insert into la_origin_recv_data(la_callback_status,is_process,tmp_status,source_sys,pay_code,branch_code,org_code,preinsure_bill_no,insure_bill_no,biz_type,fee_mode,pay_mode,recv_date,amount,pay_acc_name,pay_cert_type,pay_cert_code,pay_bank_name,pay_acc_no,bank_key,sale_code,sale_name,op_code,op_name,sacscode,sacstyp,trans_code,job_no)values(1,0,2,'LA','1','1','1','1','1','1','1','1','2019-01-01',23,'张三','1','1','中国银行','651234254243','QQq','e','ee','地方','1','1','1','2','3')";
+			/*String sql = "insert into la_origin_recv_data(la_callback_status,is_process,tmp_status,source_sys,pay_code,branch_code,org_code,preinsure_bill_no,insure_bill_no,biz_type,fee_mode,pay_mode,recv_date,amount,pay_acc_name,pay_cert_type,pay_cert_code,pay_bank_name,pay_acc_no,bank_key,sale_code,sale_name,op_code,op_name,sacscode,sacstyp,trans_code,job_no)values(1,0,2,'LA','1','1','1','1','1','1','1','1','2019-01-01',23,'张三','1','1','中国银行','651234254243','QQq','e','ee','地方','1','1','1','2','3')";
 			int insert = Db.update(sql);
-			System.out.println("insert into ="+insert);
+			System.out.println("insert into ="+insert);*/
 			
 			SftRecvLaDataCheckJob job = new SftRecvLaDataCheckJob();
 			job.execute(null);
@@ -72,8 +73,8 @@ public class SftRecvLaDataCheckJobTest {
 		} catch (JobExecutionException e) {
 			e.printStackTrace();
 		}finally {
-			int delete = Db.update("delete from la_origin_recv_data where pay_code=1");
-			System.out.println("delete ="+delete);
+			/*int delete = Db.update("delete from la_origin_recv_data where pay_code=1");
+			System.out.println("delete ="+delete);*/
 		}
 	}
 	@Test

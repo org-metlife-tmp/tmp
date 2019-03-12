@@ -83,7 +83,7 @@ public class LaRecvOMElementUtil {
 	 * @return
 	 */
 	private OMElement setHeaderNs(OMFactory fac) {
-		OMElement headerNs = fac.createOMElement("soapenv:Header", null);
+		OMElement headerNs = fac.createOMElement("ESBHeader", null);
 		addChildList(fac, headerNs, headKv);
 		return headerNs;
 	}

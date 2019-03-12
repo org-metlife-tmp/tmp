@@ -119,10 +119,12 @@ public class LaConsumerQueue implements Runnable{
 	    					if(record.getInt("tmp_status") == WebConstant.SftInterfaceStatus.SFT_INTER_PROCESS_S.getKey()){
 								Record payLegalRecord = Db.findFirst(Db.getSql("webservice_la_cfm.getPayLegalByPayCode"), payCode);
 								try {
+									log.info("LA中批量付paycode为【"+payCode+"】的数据回调成功，生成凭证---begin");
 									CheckVoucherService.plfLaEbsBackCheckVoucher("LA",
 											payLegalRecord,
 											CommonService.getPeriodByCurrentDay(new Date())
 											);
+									log.info("LA中批量付paycode为【"+payCode+"】的数据回调成功，生成凭证---end");
 								} catch (BusinessException e) {
 									log.error("LA响应回写原始数据，LA接收成功，生成凭证失败！PMTOUT={}", StringKit.removeControlCharacter(json.toJSONString()));
 									e.printStackTrace();
