@@ -580,7 +580,7 @@
                 let params = {
                     remove_ids: this.selectId
                 };
-                let searchData = this.searchData;
+                let searchData = this.routerMessage.params;
                 for(let k in searchData){
                     params[k] = searchData[k];
                 }
