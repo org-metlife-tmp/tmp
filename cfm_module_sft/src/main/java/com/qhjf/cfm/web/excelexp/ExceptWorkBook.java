@@ -28,7 +28,7 @@ public class ExceptWorkBook extends AbstractWorkBook {
         this.titleNames = new String[]{
                 "source_sys", "master_batchno", "child_batchno", "interactive_mode", "channel_code",
                 "channel_desc", "send_on", "total_amount", "total_num", "service_status", "error_msg",
-                "revoke_user_name", "revoke_date"
+                "revoke_user_name", "revoke_date", "exam_position_name", "exam_time"
         };
         this.titles = new String[]{
                 "来源系统", "主批次号", "子批次号", "交互方式", "通道编码", "通道描述", "出盘日期", "总金额", "总笔数", "状态", "异常原因"

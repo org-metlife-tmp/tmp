@@ -1,11 +1,15 @@
 #sql("channellist")
 SELECT
 	chan.*,
+	case chan.charge_mode when 0 then charge_amount else null end amount_percent,
+	case chan.charge_mode when 1 then charge_amount else null end amount_number,
 	org.name org_name,
-	config.document_name document_name
+	config.document_name document_name,
+	ui.name update_user
 FROM
 	channel_setting chan
 	inner join organization org on chan.org_id = org.org_id
+	inner join user_info ui on chan.update_by = ui.usr_id
 	left join document_detail_config config on chan.document_moudle = config.id
 WHERE 1 = 1
   #if(map != null)

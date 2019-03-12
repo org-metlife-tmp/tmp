@@ -63,6 +63,9 @@ public class ChannelSettingService {
                 throw new ReqDataException("付方向结算模式不能为空!");
             }
         }
+        if(StringUtils.isEmpty(record.getStr("charge_mode"))){
+            record.set("charge_mode", null);
+        }
         if(StringUtils.isEmpty(record.getStr("charge_amount"))){
             record.set("charge_amount", null);
         }else{
@@ -92,6 +95,7 @@ public class ChannelSettingService {
         }
         //报盘的 报盘模板不能为空，直联的 直联通道不能为空
         if(interactiveMode == 0){
+            record.set("document_moudle", null);
             if(StringUtils.isEmpty(record.getStr("direct_channel"))){
                 throw new ReqDataException("直联通道不能为空!");
             }
@@ -186,7 +190,7 @@ public class ChannelSettingService {
             return Db.findFirst(Db.getSql("channel_setting.getchannelbyid"), record.get("id"));
         }
         if("error".equals(record.getStr("bankinfoFlag"))) {
-        	throw new DbProcessException("未在系统内查询到查询到此开户行信息,请确认");
+        	throw new DbProcessException("未在系统内查询到此开户行信息,请确认");
         }
         throw new DbProcessException("保存通道失败!");
     }
@@ -213,6 +217,9 @@ public class ChannelSettingService {
                 throw new ReqDataException("付方向结算模式不能为空!");
             }
         }
+        if(StringUtils.isEmpty(record.getStr("charge_mode"))){
+            record.set("charge_mode", null);
+        }
         if(StringUtils.isEmpty(record.getStr("charge_amount"))){
             record.set("charge_amount", null);
         }else{
@@ -236,6 +243,7 @@ public class ChannelSettingService {
         }
         //报盘的 报盘模板不能为空，直联的 直联通道不能为空
         if(interactiveMode == 0){
+            record.set("document_moudle", null);
             if(StringUtils.isEmpty(record.getStr("direct_channel"))){
                 throw new ReqDataException("直联通道不能为空!");
             }
@@ -334,7 +342,7 @@ public class ChannelSettingService {
             return Db.findFirst(Db.getSql("channel_setting.getchannelbyid"), id);
         }
         if("error".equals(record.getStr("bankinfoFlag"))) {
-        	throw new DbProcessException("未在系统内查询到查询到此开户行信息,请确认");
+        	throw new DbProcessException("未在系统内查询到此开户行信息,请确认");
         }
         throw new DbProcessException("更新通道失败!");
     }

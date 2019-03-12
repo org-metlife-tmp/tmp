@@ -10,6 +10,8 @@ import com.qhjf.cfm.utils.RedisSericalnoGenTool;
 import com.qhjf.cfm.web.constant.WebConstant;
 import com.qhjf.cfm.web.plugins.excelexp.AbstractWorkBook;
 import com.qhjf.cfm.web.plugins.excelexp.POIUtil;
+
+import org.apache.commons.lang.StringUtils;
 import org.apache.poi.ss.usermodel.Workbook;
 
 import java.util.ArrayList;
@@ -43,7 +45,14 @@ public class CheckBatchWorkBook extends AbstractWorkBook {
     	long source_sys = TypeUtils.castToLong(record.get("source_sys"));
         SqlPara sqlPara = null;
         Long org_id = getUodpInfo().getOrg_id();
-		Record findById = Db.findById("organization", "org_id", org_id);
+		Record findById = Db.findById("organization", "org_id", org_id);		
+		// 导出excel文件名,当传输渠道编码 .FH -- 渠道编码  . 否则文件名中 用 FH
+		String FH = "FH";
+		if(StringUtils.isNotBlank(record.getStr("channel_id"))) {
+			Record channel_setting = Db.findById("channel_setting", "id", record.getLong("channel_id"));
+			FH = channel_setting.getStr("channel_code");
+		}
+		
         List<String> codes = new ArrayList<>();
         if (findById.getInt("level_num") == 1) {
             codes = Arrays.asList("0102", "0101", "0201", "0202", "0203", "0204", "0205", "0500");
@@ -60,11 +69,11 @@ public class CheckBatchWorkBook extends AbstractWorkBook {
     	}
     	if(WebConstant.SftOsSource.LA.getKey() == source_sys){
             //LA
-            this.fileName = "LA_Package_FH_"+ RedisSericalnoGenTool.genShortSerial() +"_"+DateKit.toStr(new Date(), "YYYYMMdd")+".xls";
+            this.fileName = "LA_Package_"+ FH + "_" + RedisSericalnoGenTool.genShortSerial() +"_"+DateKit.toStr(new Date(), "YYYYMMdd")+".xls";
             sqlPara = Db.getSqlPara("check_batch.checkBatchLAlist", Kv.by("map", record.getColumns()));
         }else if(WebConstant.SftOsSource.EBS.getKey() == source_sys){
             //EBS
-            this.fileName = "EBS_Package_FH_"+ RedisSericalnoGenTool.genShortSerial() +"_"+DateKit.toStr(new Date(), "YYYYMMdd")+".xls";
+            this.fileName = "EBS_Package_"+ FH + "_" + RedisSericalnoGenTool.genShortSerial() +"_"+DateKit.toStr(new Date(), "YYYYMMdd")+".xls";
             sqlPara = Db.getSqlPara("check_batch.checkBatchEBSlist", Kv.by("map", record.getColumns()));
         }
         List<Record> recordList = Db.find(sqlPara);

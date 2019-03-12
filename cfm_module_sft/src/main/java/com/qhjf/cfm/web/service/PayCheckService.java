@@ -10,6 +10,7 @@ import com.qhjf.cfm.utils.CommonService;
 import com.qhjf.cfm.utils.RedisSericalnoGenTool;
 import com.qhjf.cfm.web.UserInfo;
 import com.qhjf.cfm.web.constant.WebConstant;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +37,11 @@ public class PayCheckService {
      * @param record
      * @return
      */
-    public Page<Record> batchlist(int pageNum, int pageSize, final Record record) {
+    public Page<Record> batchlist(int pageNum, int pageSize, final Record record) throws BusinessException {
+        if(StringUtils.isEmpty(record.getStr("channel_id_one")) &&
+                StringUtils.isEmpty(record.getStr("channel_id_two"))){
+            throw new ReqDataException("通道编码或通道描述不能为空!");
+        }
         SqlPara sqlPara = Db.getSqlPara("paycheck.paylist", Kv.by("map", record.getColumns()));
         return Db.paginate(pageNum, pageSize, sqlPara);
     }

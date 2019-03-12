@@ -28,6 +28,7 @@ FROM
 	organization org,
 	la_biz_type biz
 where la.bank_key = bankkey.bankkey
+and la.tmp_org_id = bankkey.org_id
 and la.channel_id = chan.id
 and chan.org_id = org.org_id
 and la.biz_type = biz.type_code
@@ -103,6 +104,7 @@ FROM
 	channel_setting chan,
 	organization org
 where ebs.bank_key = bankkey.bankkey
+and ebs.tmp_org_id = bankkey.org_id
 and ebs.channel_id = chan.id
 and chan.org_id = org.org_id
 and ebs.is_doubtful = 1

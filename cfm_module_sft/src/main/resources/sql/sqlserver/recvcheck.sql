@@ -38,9 +38,9 @@ WHERE master.channel_id = channel.id
         #elseif("source_sys".equals(x.key))
           master.source_sys = #para(x.value)
         #elseif("start_date".equals(x.key))
-          DATEDIFF(day,#para(x.value),CONVERT(DATE,pay.send_on,110)) >= 0
+          DATEDIFF(day,#para(x.value),CONVERT(DATE,recv.send_on,110)) >= 0
         #elseif("end_date".equals(x.key))
-          DATEDIFF(day,#para(x.value),CONVERT(DATE,pay.send_on,110)) <= 0
+          DATEDIFF(day,#para(x.value),CONVERT(DATE,recv.send_on,110)) <= 0
         #else
           recv.#(x.key) = #para(x.value)
         #end

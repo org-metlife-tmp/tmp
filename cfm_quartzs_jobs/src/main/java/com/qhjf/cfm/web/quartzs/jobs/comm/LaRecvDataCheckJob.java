@@ -68,11 +68,15 @@ public class LaRecvDataCheckJob implements Job{
 		if (zntotrec != size) {
 			log.error("LA批收数据校验，总笔数不一致id={}", total.getLong("id"));
 			updZDDHPF(LaRecvTotalStatus.SIZE_ERR.getKey(), total.getLong("id"));
+			return;
 		}
 		if (zntotamt.compareTo(sumAmount) != 0) {
 			log.error("LA批收数据校验，总笔数不一致id={}", total.getLong("id"));
 			updZDDHPF(LaRecvTotalStatus.AMOUNT_ERR.getKey(), total.getLong("id"));
+			return;
 		}
+		
+		updZDDHPF(LaRecvTotalStatus.NORMAL.getKey(), total.getLong("id"));
 	}
 	
 	

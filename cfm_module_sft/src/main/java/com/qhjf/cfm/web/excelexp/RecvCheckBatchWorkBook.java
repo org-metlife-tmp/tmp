@@ -8,6 +8,8 @@ import com.jfinal.plugin.activerecord.SqlPara;
 import com.qhjf.cfm.utils.RedisSericalnoGenTool;
 import com.qhjf.cfm.web.plugins.excelexp.AbstractWorkBook;
 import com.qhjf.cfm.web.plugins.excelexp.POIUtil;
+
+import org.apache.commons.lang.StringUtils;
 import org.apache.poi.ss.usermodel.Workbook;
 
 import java.util.ArrayList;
@@ -41,6 +43,14 @@ public class RecvCheckBatchWorkBook extends AbstractWorkBook {
         Long org_id = getUodpInfo().getOrg_id();
 		Record findById = Db.findById("organization", "org_id", org_id);
         List<String> codes = new ArrayList<>();
+        
+		// 导出excel文件名,当传输渠道编码 .FH -- 渠道编码  . 否则文件名中 用 FH
+		String FH = "FH";
+		if(StringUtils.isNotBlank(record.getStr("channel_id"))) {
+			Record channel_setting = Db.findById("channel_setting", "id", record.getLong("channel_id"));
+			FH = channel_setting.getStr("channel_code");
+		}
+        
         if (findById.getInt("level_num") == 1) {
             codes = Arrays.asList("0102", "0101", "0201", "0202", "0203", "0204", "0205", "0500");
         } else {
@@ -55,7 +65,7 @@ public class RecvCheckBatchWorkBook extends AbstractWorkBook {
     		record.remove("status");
     	}
         //LA
-        this.fileName = "LA_Package_FH_"+ RedisSericalnoGenTool.genShortSerial() +"_"+DateKit.toStr(new Date(), "YYYYMMdd")+".xls";
+        this.fileName = "LA_Package_"+FH+"_"+ RedisSericalnoGenTool.genShortSerial() +"_"+DateKit.toStr(new Date(), "YYYYMMdd")+".xls";
 		SqlPara sqlPara = Db.getSqlPara("recv_check_batch.recvcheckBatchLAlist", Kv.by("map", record.getColumns()));
         List<Record> recordList = Db.find(sqlPara);
         return POIUtil.createExcel(recordList, this);

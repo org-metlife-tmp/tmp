@@ -23,12 +23,14 @@ public class ChannelSettingWorkBook extends AbstractWorkBook {
         this.optype = "sftchannel_listexport";
         this.fileName = "FH_"+DateKit.toStr(new Date(), "YYYYMMdd")+".xls";
         this.titleNames = new String[]{
-                "channel_code", "channel_desc", "pay_mode_name", "pay_attr_name", "interactive_mode_name",
-                "bankcode", "acc_no", "org_name", "single_file_limit", "is_checkout_name", "net_mode"
+                "channel_code", "channel_desc", "pay_mode_name", "pay_attr_name", "interactive_mode_name", "card_type",
+                "single_amount_limit", "amount_percent", "amount_number", "bankcode", "acc_no", "org_name", "single_file_limit",
+                "is_checkout_name", "net_mode", "update_user", "update_on"
 
         };
         this.titles = new String[]{
-                "通道编码", "通道描述", "支付方式", "收付属性", "交互方式", "bankcode", "银行帐号", "文件生成归属地", "单批次文件笔数限制", "状态", "结算模式"
+                "通道编码", "通道描述", "支付方式", "收付属性", "交互方式", "支持卡种", "single_amount_limit", "手续费（按金额）", "手续费（按笔数）",
+                "bankcode", "银行帐号", "文件生成归属地", "单批次文件笔数限制", "状态", "结算模式", "操作人", "操作日期"
         };
         this.sheetName = "通道列表";
     }

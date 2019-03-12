@@ -16,7 +16,7 @@
   from 
 	la_origin_recv_data 
   where 
-	job_no = (select JOBNO from ZDDHPF where [STATUS] = 1) 
+	job_no = (select top 1 JOBNO from ZDDHPF where [STATUS] = 1) 
 	and is_process = ?
 #end
 

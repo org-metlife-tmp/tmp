@@ -17,7 +17,7 @@ public class SftOptypeMgr extends AbstractOptypeMgr {
         //新增通道
         optypes.add(new Optype(Optype.Mode.NORMAL, "sftchannel_addchannel")
                 .registKeepParams(new String[]{"interactive_mode", "channel_code", "channel_desc", "pay_mode", "pay_attr", "org_id",
-                        "direct_channel", "document_moudle", "single_amount_limit", "single_file_limit",
+                        "direct_channel", "document_moudle", "single_amount_limit", "single_file_limit", "card_type",
                         "charge_mode", "charge_amount", "bankcode", "op_acc_no", "op_acc_name", "op_bank_name", "is_checkout", "remark", "net_mode"})
                 .registerValidate(new RequiredParamsValidate(new String[]{"interactive_mode", "channel_code", "channel_desc", "pay_mode", "pay_attr", "org_id",
                         "bankcode", "is_checkout"})));
@@ -25,7 +25,7 @@ public class SftOptypeMgr extends AbstractOptypeMgr {
         //修改通道
         optypes.add(new Optype(Optype.Mode.NORMAL, "sftchannel_chgchannel")
                 .registKeepParams(new String[]{"id", "interactive_mode", "channel_code", "channel_desc", "pay_mode", "pay_attr", "org_id",
-                        "direct_channel", "document_moudle", "single_amount_limit", "single_file_limit",
+                        "direct_channel", "document_moudle", "single_amount_limit", "single_file_limit", "card_type",
                         "charge_mode", "charge_amount", "bankcode", "op_acc_no", "op_acc_name", "op_bank_name", "is_checkout", "remark", "net_mode", "persist_version"})
                 .registerValidate(new RequiredParamsValidate(new String[]{
                         "id", "interactive_mode", "channel_code", "channel_desc", "pay_mode", "pay_attr", "org_id",
@@ -136,8 +136,7 @@ public class SftOptypeMgr extends AbstractOptypeMgr {
         //查询所有批次
         optypes.add(new Optype(Optype.Mode.NORMAL, "sftpaycheck_batchlist")
                 .registKeepParams(new String[]{"channel_id_one", "channel_id_two", "is_checked", "start_date", "end_date",
-                        "page_size", "page_num"})
-                .registerValidate(new RequiredParamsValidate(new String[]{"channel_id_one"})));
+                        "page_size", "page_num"}));
 
         //查找交易流水
         optypes.add(new Optype(Optype.Mode.NORMAL, "sftpaycheck_tradingList")
@@ -386,8 +385,7 @@ public class SftOptypeMgr extends AbstractOptypeMgr {
         //查询所有批次
         optypes.add(new Optype(Optype.Mode.NORMAL, "sftrecvcheck_batchlist")
                 .registKeepParams(new String[]{"channel_id_one", "channel_id_two", "is_checked", "start_date", "end_date",
-                        "page_size", "page_num"})
-                .registerValidate(new RequiredParamsValidate(new String[]{"channel_id_one"})));
+                        "page_size", "page_num"}));
 
         //查找交易流水
         optypes.add(new Optype(Optype.Mode.NORMAL, "sftrecvcheck_tradingList")
@@ -447,22 +445,20 @@ public class SftOptypeMgr extends AbstractOptypeMgr {
         //批量收 盘片发送列表
         optypes.add(new Optype(Optype.Mode.NORMAL, "recvdisksending_list")
         		.registKeepParams(new String[]{"source_sys","page_num","page_size","master_batchno","start_date","end_date","interactive_mode","channel_id","channel_desc","status"})
-                .registerValidate(new RequiredParamsValidate(new String[]{"source_sys","page_size","page_num"})));	
+                .registerValidate(new RequiredParamsValidate(new String[]{"page_size","page_num"})));	
       //批量收 盘片发送列表导出
         optypes.add(new Optype(Optype.Mode.NORMAL, "recvdisksending_listexport")
-        		.registKeepParams(new String[]{"source_sys","master_batchno","start_date","end_date","interactive_mode","channel_id","channel_desc","status"})
-                .registerValidate(new RequiredParamsValidate(new String[]{"source_sys"})));  
+        		.registKeepParams(new String[]{"source_sys","master_batchno","start_date","end_date","interactive_mode","channel_id","channel_desc","status"}));  
 
-     // 批付回盘列表
+     // 批收回盘列表
         optypes.add(new Optype(Optype.Mode.NORMAL, "recvdiskbacking_list")
                 .registKeepParams(new String[]{"start_date","end_date","master_batchno","source_sys",
                 		"channel_id","channel_desc","status","page_size","page_num"})
-                .registerValidate(new RequiredParamsValidate(new String[]{"source_sys","page_size","page_num"})));
-       // 批付回盘列表导出 
+                .registerValidate(new RequiredParamsValidate(new String[]{"page_size","page_num"})));
+       // 批收回盘列表导出 
         optypes.add(new Optype(Optype.Mode.NORMAL, "recvdiskbacking_listexport")
                 .registKeepParams(new String[]{"start_date","end_date","master_batchno","source_sys",
-                		"channel_id","channel_desc","status"})
-                .registerValidate(new RequiredParamsValidate(new String[]{"source_sys"})));  
+                		"channel_id","channel_desc","status"}));  
 
         /** ============================ 批量收 end ============================ */
 

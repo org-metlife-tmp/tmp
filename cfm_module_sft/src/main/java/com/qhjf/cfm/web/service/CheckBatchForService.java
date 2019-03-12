@@ -209,10 +209,15 @@ public class CheckBatchForService {
 
 					// 封装 pay_batch_total 和 pay_batch_detail 
 				    // 这里拿到的 配置详情表id
-					Integer detail_id = channel_setting.getInt("document_moudle");
-			    	logger.info("============报盘模板详情Id==="+detail_id);
-			    	Record configs_tail = Db.findById("document_detail_config", "id", detail_id);
-			    	int document_moudle = Integer.valueOf(configs_tail.getStr("document_moudle")) ;
+				    Integer interactive_mode = channel_setting.getInt("interactive_mode");
+				    Integer document_moudle = null;
+				    if(interactive_mode == 1) {
+				    	logger.info("=========报盘模式");
+				    	Integer detail_id = channel_setting.getInt("document_moudle");
+				    	logger.info("============报盘模板详情Id==="+detail_id);
+				    	Record configs_tail = Db.findById("document_detail_config", "id", detail_id);
+				    	document_moudle = Integer.valueOf(configs_tail.getStr("document_moudle")) ;				    	
+				    }
 			    	
 					BigDecimal limit = channel_setting.get("single_file_limit") == null ? new BigDecimal(ids.size())
 							: new BigDecimal(channel_setting.getInt("single_file_limit"));
@@ -313,7 +318,7 @@ public class CheckBatchForService {
 									.set("recv_acc_no", rec.get("recv_acc_no"))
 									.set("master_batchno", main_record.get("master_batchno"))
 									.set("child_batchno", pay_batch_total.get("child_batchno"));
-							if (WebConstant.Channel.JP.getKey() == document_moudle) {
+							if ( null != document_moudle && WebConstant.Channel.JP.getKey() == document_moudle) {
 								pay_batch_detail.set("package_seq", i + 1);
 							} else {
 								pay_batch_detail.set("package_seq", txtDiskSendingService.getCode(i + 1, 6));
@@ -408,6 +413,7 @@ public class CheckBatchForService {
 			logger.error("===============此条数据数据库中未找到====" + master_id);
 		}
 		final Record channel = Db.findById("channel_setting", "id", TypeUtils.castToInt(main_record.get("channel_id")));
+		Integer interactive_mode = channel.getInt("interactive_mode");
 		boolean flag = Db.tx(new IAtom() {
 			@Override
 			public boolean run() throws SQLException {
@@ -532,11 +538,14 @@ public class CheckBatchForService {
 				return false;
 			}
 		});
-		//此时直接开启一个异步线程,下载盘片
-		DiskDownloadingQueue diskDownloadingQueue = new DiskDownloadingQueue();
-		diskDownloadingQueue.setMain_record(main_record);
-		Thread thread = new Thread(diskDownloadingQueue); 
-		thread.start();
+		if(interactive_mode == 1 ) {
+			logger.info("==========报盘,开启新线程产生报盘");
+			//此时直接开启一个异步线程,下载盘片
+			DiskDownloadingQueue diskDownloadingQueue = new DiskDownloadingQueue();
+			diskDownloadingQueue.setMain_record(main_record);
+			Thread thread = new Thread(diskDownloadingQueue); 
+			thread.start();
+		}
 		return flag;
 	}
 

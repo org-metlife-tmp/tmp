@@ -47,6 +47,7 @@ public class BankkeySettingService {
         long channelId = TypeUtils.castToLong(record.get("channel_id"));
         Record cahnnelRec = Db.findById("channel_setting", "id", channelId);
         String bankkey = TypeUtils.castToString(record.get("bankkey"));
+        String payMode = TypeUtils.castToString(record.get("pay_mode"));
         if (cahnnelRec == null) {
             throw new ReqDataException("未找到有效的通道!");
         }
@@ -58,7 +59,7 @@ public class BankkeySettingService {
         }
 
         //当前通道编码是否存在
-        Record code = Db.findById("bankkey_setting", "bankkey,org_id", bankkey, orgId);
+        Record code = Db.findById("bankkey_setting", "bankkey,org_id,pay_mode", bankkey, orgId, payMode);
         if(code != null){
             throw new ReqDataException("该BANKKEY已经存在!");
         }

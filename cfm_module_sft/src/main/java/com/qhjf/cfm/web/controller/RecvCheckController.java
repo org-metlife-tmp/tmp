@@ -34,8 +34,13 @@ public class RecvCheckController extends CFMBaseController {
         int pageSize = getPageSize(record);
         //状态为已成功的单据
         AccCommonService.setSftCheckStatus(record, "service_status");
-        Page<Record> page = service.batchlist(pageNum, pageSize, record);
-        renderOkPage(page);
+        try{
+            Page<Record> page = service.batchlist(pageNum, pageSize, record);
+            renderOkPage(page);
+        } catch (BusinessException e) {
+            e.printStackTrace();
+            renderFail(e);
+        }
     }
 
 

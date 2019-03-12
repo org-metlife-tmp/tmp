@@ -23,13 +23,13 @@ public class BankkeySettingWorkBook extends AbstractWorkBook {
         this.optype = "sftbankkey_listexport";
         this.fileName = "BANKKEY_"+DateKit.toStr(new Date(), "YYYYMMdd")+".xls";
         this.titleNames = new String[]{
-                "os_source", "bankkey", "bankkey_desc", "channel_code", "channel_desc",
-                "orgname", "bankcode", "acc_no", "subordinate_channel", "is_source_back_name", "bankkey_status_name"
+                "os_source", "bankkey", "bankkey_desc", "channel_code", "channel_desc", "pay_mode",
+                "orgname", "bankcode", "acc_no", "subordinate_channel", "is_source_back_name", "bankkey_status_name", "update_user", "update_on"
 
         };
         this.titles = new String[]{
-                "来源系统", "bankkey", "bankkey描述", "通道编码", "通道描述", "机构名称", "Bankcode", "银行帐号", "所属渠道",
-                "原通道退款", "状态"
+                "来源系统", "bankkey", "bankkey描述", "通道编码", "通道描述", "收付属性", "机构名称", "Bankcode", "银行帐号", "所属渠道",
+                "原通道退款", "状态", "操作人", "操作日期"
         };
         this.sheetName = "BANKKEY列表";
     }
@@ -47,6 +47,8 @@ public class BankkeySettingWorkBook extends AbstractWorkBook {
             record.set("bankkey_status_name", bankkey_status==0? "关闭" : "启用");
             int subordinate_channel = TypeUtils.castToInt(record.get("subordinate_channel"));
             record.set("subordinate_channel", WebConstant.SftSubordinateChannel.getSftSubordinateChannel(subordinate_channel).getDesc());
+            int pay_mode = TypeUtils.castToInt(record.get("pay_mode"));
+            record.set("pay_mode", WebConstant.SftPayAttr.getSftPayAttr(pay_mode).getDesc());
 
         }
         return POIUtil.createExcel(recordList, this);
