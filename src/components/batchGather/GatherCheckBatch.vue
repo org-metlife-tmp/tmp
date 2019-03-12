@@ -595,7 +595,7 @@
             },
             //当前列是否可以勾选
             isSelect: function(row, index){
-                return !(row.status == "已提交" || row.status == "已作废");
+                return !(row.status == "已提交" || row.status == "已拒绝");
             },
             //确认
             affirm: function(){
@@ -745,7 +745,7 @@
                     let tableList = this.tableList;
                     tableList.forEach((row) => {
                         let flag = true;
-                        if(row.status == "已提交" || row.status == "已作废"){
+                        if(row.status == "已提交" || row.status == "已拒绝"){
                             flag = false;
                         }else{
                             for(let i = 0; i < selectId.length; i++){
