@@ -70,7 +70,7 @@ public class CheckBatchForService {
 		record.set("codes", codes);
 		List<Integer> status = record.get("status");
 		if (status == null || status.size() == 0) {
-			record.set("status", new int[] {WebConstant.SftLegalData.NOGROUP.getKey()});
+			record.remove("status");
 		}
 		Integer source_sys = TypeUtils.castToInt(record.get("source_sys"));
 		SqlPara sqlPara = null;

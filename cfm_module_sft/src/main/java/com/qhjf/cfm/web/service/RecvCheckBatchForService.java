@@ -62,7 +62,7 @@ public class RecvCheckBatchForService {
 		record.set("codes", codes);
 		List<Integer> status = record.get("status");
 		if (status == null || status.size() == 0) {
-			record.set("status", new Integer[] {WebConstant.SftLegalData.NOGROUP.getKey()});
+			record.remove("status");
 		}
 		SqlPara sqlPara = Db.getSqlPara("recv_check_batch.recvcheckBatchLAlist", Kv.by("map", record.getColumns()));
 		return Db.paginate(pageNum, pageSize, sqlPara);
