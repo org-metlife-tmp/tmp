@@ -33,6 +33,20 @@
         </encoder>
     </appender>
 
+    <appender name="quartzs" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_HOME}/cfm_quartzs.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_HOME}/cfm_quartzs-%d{yyyy-MM-dd}.log</fileNamePattern>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{5} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="com.qhjf.cfm.web.quartzs.jobs" level="DEBUG" additivity="false">
+        <appender-ref ref="quartzs" />
+    </logger>
+
     <root level="debug">
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="ROLLING"/>
