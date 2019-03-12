@@ -413,6 +413,7 @@ public class CheckBatchForService {
 			logger.error("===============此条数据数据库中未找到====" + master_id);
 		}
 		final Record channel = Db.findById("channel_setting", "id", TypeUtils.castToInt(main_record.get("channel_id")));
+		final String channel_code = channel.getStr("channel_code");
 		Integer interactive_mode = channel.getInt("interactive_mode");
 		boolean flag = Db.tx(new IAtom() {
 			@Override
@@ -482,8 +483,18 @@ public class CheckBatchForService {
 						            .set("biz_name", "第三方资金调拨")
 								    .set("service_serial_number", serviceSerialNumber);
 						//封装 recv_account_id  
+						String payment_summary = "保费支出个险理赔" ;
+						if("B1".equals(channel_code)){
+							payment_summary = "000191400100081代付" ;
+						} else if ("54".equals(channel_code)) {
+							payment_summary = "000191400205608代付" ;
+						} else if("B3".equals(channel_code)) {
+							payment_summary = "TLT200455500003685" ;
+						}
+						
 						List<Record> find = Db.find(Db.getSql("acc.findAccountByAccNo"),main_record.get("pay_acc_no"));
 						insertRecord.set("recv_account_id", find.get(0).get("acc_id"));
+						insertRecord.set("payment_summary", payment_summary);
 						boolean save = Db.save("inner_db_payment", "id", insertRecord);
 						logger.info("===============入库调拨通的结果==="+ save + "==id=="+ insertRecord.getLong("id"));
 					}

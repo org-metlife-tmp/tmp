@@ -23,27 +23,27 @@ public class LaRecvDataCheckJob implements Job{
 	
 	@Override
 	public void execute(JobExecutionContext context) throws JobExecutionException {
-		log.debug("LA批收原始数据校验。。。。。。。。。");
+		log.debug("LA批收原始数据校验start。。。。。。。。。");
 		//查询父表一条状态为0的数据
 		List<Record> totalList = Db.find(Db.getSql("quartzs_job_cfm.selOneLaRecvTotal"));
 		if (null == totalList || totalList.size() == 0) {
+			log.debug("LA批收原始数据校验，头表没有为校验的数据！");
 			return ;
 		}
 		
 		for (Record total : totalList) {
-			if (null == total) {
-				return;
-			}
 			BigDecimal jobno = total.getBigDecimal("JOBNO");
 			//数据库查询汇总：同一批次子表数据的笔数、金额
 			Record details = Db.findFirst(Db.getSql("quartzs_job_cfm.selOneBatchLaRecvDetail"), jobno);
-			if (null == details) {
+			if (null == details || details.getBigDecimal("sum_amount") == null) {
+				log.debug("LA批收原始数据校验，明细表数据为空！jobno=", jobno);
 				updZDDHPF(LaRecvTotalStatus.SIZE_ERR.getKey(), total.getLong("id"));
+				continue;
 			}
 			checkSizeAndAmount(total, details);
 		}
 		
-		log.debug("LA批收原始数据校验。。。。。。。。。");
+		log.debug("LA批收原始数据校验end。。。。。。。。。");
 	}
 	
 	private void updZDDHPF(int status, long id){
