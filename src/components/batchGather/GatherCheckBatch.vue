@@ -385,7 +385,7 @@
                     recv_acc_no: "",
                     bank_key: "",
                     biz_type: "",
-                    status: [],
+                    status: ["0"],
                     visit_time: ""
                 },
                 dateValue: "", //时间控件
@@ -458,7 +458,7 @@
                     if(k == "source_sys"){
                         searchData[k] = tab;
                     }else if(k == "status"){
-                        searchData[k] = [];
+                        searchData[k] = ["0"];
                     }else{
                         searchData[k] = "";
                     }
