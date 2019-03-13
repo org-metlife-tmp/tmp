@@ -1301,7 +1301,7 @@
                     {id:"19", lspan:4, label:"币种"},
                     {id:"20", pspan:8, prop:"curr_name"},
                     {id:"21", lspan:4, label:"开户日期"},
-                    {id:"22", pspan:8, prop:"apply_on"},
+                    {id:"22", pspan:8, prop:"open_date"},
                     {id:"23", lspan:4, label:"账户性质"},
                     {id:"24", pspan:8, prop:"acc_attr_name"},
                     {id:"25", lspan:4, label:"账户用途"},
