@@ -365,8 +365,37 @@
                         recv_id: row.recv_id
                     }
                 }
-                this.$emit("downLoadData", params);
-                this.$emit("getCommTable", this.routerMessage);
+                this.$axios({
+                    url:this.queryUrl + "normalProcess",
+                    method: "post",
+                    data: params,
+                    responseType: 'blob'
+                }).then((result) => {
+                    if(result.error_msg){
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                    }else{
+                        var fileName = decodeURI(result.headers["content-disposition"]).split("=")[1];
+                        //ie兼容
+                        if (window.navigator && window.navigator.msSaveOrOpenBlob) {
+                            window.navigator.msSaveOrOpenBlob(new Blob([result.data]), fileName);
+                        } else {
+                            let url = window.URL.createObjectURL(new Blob([result.data]));
+                            let link = document.createElement('a');
+                            link.style.display = 'none';
+                            link.href = url;
+                            link.setAttribute('download', fileName);
+                            document.body.appendChild(link);
+                            link.click();
+                            this.$emit("getCommTable", this.routerMessage);
+                        }
+                    }
+                }).catch(function(error){
+                    console.log(error);
+                })
             },
             //发送
             sendData: function (row) {
@@ -378,8 +407,7 @@
                         params: {
                             id: row.pay_id
                         }
-                    },
-                    responseType: 'blob'
+                    }
                 }).then((result) => {
                     if (result.data.error_msg) {
                         this.$message({

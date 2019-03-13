@@ -612,12 +612,12 @@
                     console.log(error);
                 });
             },
-            //撤回
+            //拒绝
             withdrawBill: function (row) {
-                this.$prompt('请输入撤回原因', '提示', {
+                this.$prompt('请输入拒绝原因', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
-                    title: "撤回原因",
+                    title: "拒绝原因",
                     inputValidator: function (value) {
                         if (!value) {
                             return false;
@@ -625,7 +625,7 @@
                             return true;
                         }
                     },
-                    inputErrorMessage: '请输入撤回原因'
+                    inputErrorMessage: '请输入拒绝原因'
                 }).then(({value}) => {
                     var searData = this.searchData;
                     this.$axios({
@@ -651,7 +651,7 @@
                         } else {
                             this.$message({
                                 type: "success",
-                                message: "撤回成功",
+                                message: "拒绝成功",
                                 duration: 2000
                             });
                             this.$emit("getCommTable", this.routerMessage);
