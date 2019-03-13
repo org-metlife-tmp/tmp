@@ -125,7 +125,9 @@ public class SftOptypeMgr extends AbstractOptypeMgr {
                 .registKeepParams(new String[]{"id"})
                 .registerValidate(new RequiredParamsValidate(new String[]{"id"})));
 
-
+        optypes.add(new Optype(Optype.Mode.NORMAL, "disksending_detaillistexport")
+        		.registKeepParams(new String[]{"child_batchno"})
+                .registerValidate(new RequiredParamsValidate(new String[]{"child_batchno"})));
                 
         
 
@@ -458,7 +460,11 @@ public class SftOptypeMgr extends AbstractOptypeMgr {
        // 批收回盘列表导出 
         optypes.add(new Optype(Optype.Mode.NORMAL, "recvdiskbacking_listexport")
                 .registKeepParams(new String[]{"start_date","end_date","master_batchno","source_sys",
-                		"channel_id","channel_desc","status"}));  
+                		"channel_id","channel_desc","status"})); 
+        
+        optypes.add(new Optype(Optype.Mode.NORMAL, "recvdiskbacking_detaillistexport")
+        		.registKeepParams(new String[]{"child_batchno"})
+                .registerValidate(new RequiredParamsValidate(new String[]{"child_batchno"})));
 
         /** ============================ 批量收 end ============================ */
 

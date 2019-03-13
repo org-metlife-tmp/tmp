@@ -60,6 +60,7 @@ public class RecvCheckBatchForService {
 			}
 		}
 		record.set("codes", codes);
+		record.set("pay_mode", "C");
 		List<Integer> status = record.get("status");
 		if (status == null || status.size() == 0) {
 			record.remove("status");
@@ -82,6 +83,8 @@ public class RecvCheckBatchForService {
 		final Long channel_id = TypeUtils.castToLong(record.get("channel_id"));
 		OaDataDoubtfulCache oaDataDoubtfulCache = new OaDataDoubtfulCache();
 		final Record main_record = new Record(); // 主批次对象
+		final Record channel_setting = Db.findById("channel_setting", "id", channel_id);
+		Integer interactive_mode = channel_setting.getInt("interactive_mode");
 		try {
 			final Record user_record = Db.findById("user_info", "usr_id", userInfo.getUsr_id());
 			if (null == user_record) {
@@ -94,7 +97,6 @@ public class RecvCheckBatchForService {
 				record.remove("remove_ids");
 			}
 
-			final Record channel_setting = Db.findById("channel_setting", "id", channel_id);
 			Integer is_checkout = TypeUtils.castToInt(channel_setting.get("is_checkout"));
 			if (0 == is_checkout) {
 				throw new ReqDataException("此渠道设置还未启动");
@@ -137,6 +139,7 @@ public class RecvCheckBatchForService {
 			    codes.add(rec.getStr("code"));
 			}
 			record.set("codes", codes);
+			record.set("pay_mode", "C");
 			final Record error_message = new Record();
 			error_message.set("error_message", "组批数据库操作失败");
 			// 主批次入recv_batch_total_master表
@@ -219,6 +222,7 @@ public class RecvCheckBatchForService {
 						final Record recv_batch_total = new Record();
 						recv_batch_total.set("child_batchno", CommonService.getSftSonBatchno())
 								.set("master_batchno", main_record.get("master_batchno"))
+								.set("org_id", curUodp.getOrg_id())
 								.set("total_num", total_num)
 								.set("total_amount", sumamount_rec.getBigDecimal("sumAmount"))
 								.set("success_num", 0)
@@ -292,11 +296,14 @@ public class RecvCheckBatchForService {
 				oaDataDoubtfulCache.sremValue(recv_la_pre, String.valueOf(channel_id));				
 			}
 		}
-		//此时直接开启一个异步线程,下载盘片
-		RecvDiskDownloadingQueue recvDiskDownloadingQueue = new RecvDiskDownloadingQueue();
-		recvDiskDownloadingQueue.setMain_record(main_record);
-		Thread thread = new Thread(recvDiskDownloadingQueue); 
-		thread.start();
+		if(interactive_mode == 1 ) {
+			logger.info("==========报盘,开启新线程产生报盘");
+		    //此时直接开启一个异步线程,下载盘片
+		    RecvDiskDownloadingQueue recvDiskDownloadingQueue = new RecvDiskDownloadingQueue();
+		    recvDiskDownloadingQueue.setMain_record(main_record);
+		    Thread thread = new Thread(recvDiskDownloadingQueue); 
+		    thread.start();
+		}
 	}
 
 
@@ -395,18 +402,6 @@ public class RecvCheckBatchForService {
 		if (null == findById) {
 			throw new ReqDataException("当前登录人的机构信息未维护");
 		}
-		List<String> codes = new ArrayList<>();
-		if (findById.getInt("level_num") == 1) {
-			logger.info("========目前登录机构为总公司");
-			codes = Arrays.asList("0102", "0101", "0201", "0202", "0203", "0204", "0205", "0500");
-		} else {
-			logger.info("========目前登录机构为分公司公司");
-			List<Record> rec = Db.find(Db.getSql("org.getCurrentUserOrgs"), org_id);
-			for (Record o : rec) {
-				codes.add(o.getStr("code"));
-			}
-		}
-		record.set("codes", codes);
 		//金额永远只展示未组批金额 . 已提交/已拒绝 条件下  未组批金额 0
 		record.set("amountstatus", new int[] {WebConstant.SftLegalData.NOGROUP.getKey()});
 		SqlPara sqlPara =

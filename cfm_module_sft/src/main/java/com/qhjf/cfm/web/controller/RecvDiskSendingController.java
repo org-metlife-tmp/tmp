@@ -118,5 +118,13 @@ public class RecvDiskSendingController extends CFMBaseController {
 			e.printStackTrace();
 		}
     }
+   
+    /**
+     * 批付盘片下载列表导出
+     */
+    @Auth(hasForces = {"RecvBatchSend"})
+    public void detaillistexport() {
+        doExport();
+    }
     
 }

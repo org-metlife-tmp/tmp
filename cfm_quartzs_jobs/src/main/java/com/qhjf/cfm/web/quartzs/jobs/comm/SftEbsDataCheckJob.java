@@ -223,14 +223,14 @@ public class SftEbsDataCheckJob implements Job{
             }
             
             Record channel = channels.get(0);
-            Integer bankkeyStatus = channel.getInt("bankkey_status");
+           /* Integer bankkeyStatus = channel.getInt("bankkey_status");
             if (null == bankkeyStatus || bankkeyStatus != 1) {
             	throw new ReqValidateException("bankkey状态未启用");
 			}
             Integer isCheckout = channel.getInt("is_checkout");
             if (null == isCheckout || isCheckout != 1) {
             	throw new ReqValidateException("通道状态未启用");
-			}
+			}*/
             
             /*ebsOriginData.set("channel_id", channel.getLong("channel_id"));
             ebsOriginData.set("channel_code", channel.getStr("channel_code"));

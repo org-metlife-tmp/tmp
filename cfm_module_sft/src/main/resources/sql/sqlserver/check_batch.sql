@@ -173,61 +173,6 @@ WHERE
 
 
 
-#sql("checkBatchLAFindAll")
-SELECT
-    SUM(pay.amount) as total_amount,
-	COUNT(0) as total_num
-FROM
-	pay_legal_data AS pay,
-	channel_setting AS channel,
-	la_pay_legal_data_ext AS  la ,
-	organization AS org 
-WHERE
-	pay.id = la.legal_id AND
-	pay.org_id = org.org_id AND
-	channel.id = pay.channel_id 
-  #if(map != null)
-    #for(x : map)
-      #if(x.value&&x.value!="")
-        AND
-        #if("recv_acc_no".equals(x.key))
-        	pay.recv_acc_no = #para(x.value)
-        #elseif("start_date".equals(x.key))
-             DATEDIFF(day,#para(x.value),la.pay_date) >= 0
-        #elseif("end_date".equals(x.key))
-              DATEDIFF(day,#para(x.value),la.pay_date) <= 0
-        #elseif("preinsure_bill_no".equals(x.key))
-            la.preinsure_bill_no  like convert(varchar(5),'%')+convert(varchar(255),#para(x.value))+convert(varchar(5),'%')
-        #elseif("insure_bill_no".equals(x.key))
-            la.insure_bill_no like convert(varchar(5),'%')+convert(varchar(255),#para(x.value))+convert(varchar(5),'%')
-        #elseif("pay_mode".equals(x.key))
-            la.pay_mode = #para(x.value)
-        #elseif("biz_type".equals(x.key))
-            la.biz_type = #para(x.value)
-        #elseif("bank_key".equals(x.key))
-            la.bank_key  like convert(varchar(5),'%')+convert(varchar(255),#para(x.value))+convert(varchar(5),'%')
-        #elseif("channel_id".equals(x.key))
-            pay.channel_id = #para(x.value)
-        #elseif("status".equals(x.key))
-            pay.status in(
-              #for(y : map.status)
-                #if(for.index > 0)
-                  #(",")
-                #end
-                #(y)
-              #end
-            )
-        #elseif("source_sys".equals(x.key))
-           pay.source_sys = #para(x.value)
-         #elseif("org_id".equals(x.key))
-           pay.org_id = #para(x.value)
-        #end
-      #end
-    #end
-  #end
-#end
-
-
 #sql("checkBatchLADetail")
    select
     pay.op_date ,
@@ -534,49 +479,6 @@ WHERE
 #end
 
 
-#sql("checkBatchEBSFindAll")
-SELECT
-    SUM(pay.amount) as total_amount,
-	COUNT(0) as total_num
-FROM
-	pay_legal_data AS pay,
-	channel_setting AS channel,
-	ebs_pay_legal_data_ext AS  ebs 
-WHERE
-	pay.id = ebs.legal_id AND
-	channel.id = pay.channel_id 
-  #if(map != null)
-    #for(x : map)
-      #if(x.value&&x.value!="")
-        AND
-        #if("recv_acc_no".equals(x.key))
-        	pay.recv_acc_no =  #para(x.value)
-        #elseif("preinsure_bill_no".equals(x.key))
-            ebs.preinsure_bill_no like convert(varchar(5),'%')+convert(varchar(255),#para(x.value))+convert(varchar(5),'%')
-        #elseif("insure_bill_no".equals(x.key))
-            ebs.insure_bill_no like convert(varchar(5),'%')+convert(varchar(255),#para(x.value))+convert(varchar(5),'%')
-        #elseif("pay_mode".equals(x.key))
-            ebs.pay_mode = #para(x.value)
-        #elseif("biz_type".equals(x.key))
-            ebs.biz_type = #para(x.value)
-        #elseif("channel_id".equals(x.key))
-            pay.channel_id = #para(x.value)
-        #elseif("status".equals(x.key))
-           pay.status = #para(x.value)
-        #elseif("source_sys".equals(x.key))
-           pay.source_sys = #para(x.value)
-         #elseif("org_id".equals(x.key))
-           pay.org_id = #para(x.value)
-        #elseif("start_date".equals(x.key))
-           DATEDIFF(day,#para(x.value),ebs.pay_date) >= 0
-        #elseif("end_date".equals(x.key))
-           DATEDIFF(day,#para(x.value),ebs.pay_date) <= 0            
-        #end
-      #end
-    #end
-  #end
-#end
-
 
 #sql("findPendingList")
 SELECT
@@ -805,6 +707,8 @@ WHERE
             la.insure_bill_no like convert(varchar(5),'%')+convert(varchar(255),#para(x.value))+convert(varchar(5),'%')
         #elseif("biz_type".equals(x.key))
             la.biz_type = #para(x.value)
+        #elseif("pay_mode".equals(x.key))
+            la.pay_mode = #para(x.value)
         #elseif("bank_key".equals(x.key))
             la.bank_key  like convert(varchar(5),'%')+convert(varchar(255),#para(x.value))+convert(varchar(5),'%')
         #elseif("status".equals(x.key))
@@ -875,6 +779,8 @@ WHERE
             la.insure_bill_no like convert(varchar(5),'%')+convert(varchar(255),#para(x.value))+convert(varchar(5),'%')
         #elseif("biz_type".equals(x.key))
             la.biz_type = #para(x.value)
+        #elseif("pay_mode".equals(x.key))
+            la.pay_mode = #para(x.value)
         #elseif("bank_key".equals(x.key))
             la.bank_key  like convert(varchar(5),'%')+convert(varchar(255),#para(x.value))+convert(varchar(5),'%')
         #elseif("status".equals(x.key))
@@ -942,6 +848,8 @@ WHERE
             ebs.insure_bill_no like convert(varchar(5),'%')+convert(varchar(255),#para(x.value))+convert(varchar(5),'%')
         #elseif("biz_type".equals(x.key))
             ebs.biz_type = #para(x.value)
+        #elseif("pay_mode".equals(x.key))
+            ebs.pay_mode = #para(x.value)
         #elseif("status".equals(x.key))
             pay.status in(
               #for(y : map.status)
@@ -1012,6 +920,8 @@ WHERE
             ebs.insure_bill_no like convert(varchar(5),'%')+convert(varchar(255),#para(x.value))+convert(varchar(5),'%')
         #elseif("biz_type".equals(x.key))
             ebs.biz_type = #para(x.value)
+        #elseif("pay_mode".equals(x.key))
+            ebs.pay_mode = #para(x.value)
         #elseif("status".equals(x.key))
             pay.status in(
               #for(y : map.status)

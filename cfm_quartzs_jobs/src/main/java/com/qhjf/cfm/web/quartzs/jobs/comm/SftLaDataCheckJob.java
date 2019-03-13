@@ -198,7 +198,8 @@ public class SftLaDataCheckJob implements Job{
             List<Record> channels = Db.find(Db.getSql("la_cfm.getChannel")
                     , 0
                     , org.getLong("org_id")
-                    , laOiriginData.getStr("bank_key"));
+                    , laOiriginData.getStr("bank_key")
+                    , 1);
             if (channels == null || channels.size() == 0) {
                 throw new ReqValidateException("未匹配到通道");
             }
@@ -207,14 +208,14 @@ public class SftLaDataCheckJob implements Job{
             }
             
             Record channel = channels.get(0);
-            Integer bankkeyStatus = channel.getInt("bankkey_status");
+            /*Integer bankkeyStatus = channel.getInt("bankkey_status");
             if (null == bankkeyStatus || bankkeyStatus != 1) {
             	throw new ReqValidateException("bankkey状态未启用");
 			}
             Integer isCheckout = channel.getInt("is_checkout");
             if (null == isCheckout || isCheckout != 1) {
             	throw new ReqValidateException("通道状态未启用");
-			}
+			}*/
             
             laOiriginData.set("channel_id", channel.getLong("channel_id"));
             laOiriginData.set("channel_code", channel.getStr("channel_code"));

@@ -127,8 +127,13 @@ public class DiskSendingController extends CFMBaseController {
     public  void  sendbank() throws ReqDataException {
     	Record record = getRecordByParamsStrong();
     	UserInfo userInfo = getUserInfo();
-    	service.sendbank(record, userInfo);
-		renderOk(null);
+    	try {
+    		service.sendbank(record, userInfo);
+    		renderOk(null);
+		} catch (ReqDataException e) {
+			renderFail(e);
+		}
+		
     }
     
     /**
@@ -136,6 +141,14 @@ public class DiskSendingController extends CFMBaseController {
      */
     @Auth(hasForces = {"PayBatchSend"})
     public void listexport() {
+        doExport();
+    }
+    
+    /**
+     * 详情导出
+     */
+    @Auth(hasForces = {"PayBatchSend"})
+    public void detaillistexport() {
         doExport();
     }
 }

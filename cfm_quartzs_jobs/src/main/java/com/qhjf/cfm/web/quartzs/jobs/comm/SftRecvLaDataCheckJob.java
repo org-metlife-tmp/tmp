@@ -174,7 +174,8 @@ public class SftRecvLaDataCheckJob implements Job{
             List<Record> channels = Db.find(Db.getSql("la_cfm.getChannel")
             		, 0
             		, org.getLong("org_id")
-            		, laOiriginData.getStr("bank_key"));
+            		, laOiriginData.getStr("bank_key")
+            		, 0);
             if (channels == null || channels.size() == 0) {
                 throw new ReqValidateException(CHANNEL_UNMATCH);
             }
@@ -183,14 +184,14 @@ public class SftRecvLaDataCheckJob implements Job{
             }
             
             Record channel = channels.get(0);
-            Integer bankkeyStatus = channel.getInt("bankkey_status");
+            /*Integer bankkeyStatus = channel.getInt("bankkey_status");
             if (null == bankkeyStatus || bankkeyStatus != 1) {
             	throw new ReqValidateException(BK_UNENABLE);
 			}
             Integer isCheckout = channel.getInt("is_checkout");
             if (null == isCheckout || isCheckout != 1) {
             	throw new ReqValidateException(CHANNEL_UNENABLE);
-			}
+			}*/
             
             //bankcode在回调LA批收时需要
             Db.update(Db.getSql("la_recv_cfm.updLaRecvOrigin")
@@ -218,6 +219,7 @@ public class SftRecvLaDataCheckJob implements Job{
             if(flag == 1){
             	laRecvOiriginData.set("persist_version", laRecvOiriginData.getInt("persist_version") + 1);
             	laRecvOiriginData.set("tmp_err_message", errMsg);
+            	laRecvOiriginData.set("tmp_status", WebConstant.SftInterfaceStatus.SFT_INTER_PROCESS_F.getKey());
             	SftRecvCallBack callback = new SftRecvCallBack();
     			callback.callback(WebConstant.SftOsSource.LA.getKey(), laRecvOiriginData);
                 return true;
@@ -246,7 +248,10 @@ public class SftRecvLaDataCheckJob implements Job{
                     checkDoubtful.set("origin_id", entry.getValue());
                     continue;
                 }
-                if (key.equals("persist_version") || key.equals("source_sys") || key.equals("channel_code")) {
+                if (key.equals("persist_version") || key.equals("source_sys") || key.equals("channel_code")
+                		||key.equals("trans_code") || key.equals("receipt") || key.equals("bankcode")
+                		||key.equals("fee_mode") || key.equals("sacscode") || key.equals("sacstyp")
+                		|| key.equals("job_no")) {
                     continue;
                 }
                 checkDoubtful.set(key, entry.getValue());

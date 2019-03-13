@@ -34,7 +34,10 @@
   	b.bank_type=d.code and 
   	b.os_source = ? and 
   	b.org_id = ? and 
-  	b.bankkey = ?
+  	b.bankkey = ? and
+  	b.bankkey_status = 1 and 
+  	c.is_checkout = 1 and 
+  	c.pay_attr = ?
 #end
 
 #sql("updLaOriginStatus")

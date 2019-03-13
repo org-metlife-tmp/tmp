@@ -68,6 +68,7 @@ public class CheckBatchForService {
 			}
 		}
 		record.set("codes", codes);
+		record.set("pay_mode", "C");
 		List<Integer> status = record.get("status");
 		if (status == null || status.size() == 0) {
 			record.remove("status");
@@ -86,27 +87,7 @@ public class CheckBatchForService {
 		return Db.paginate(pageNum, pageSize, sqlPara);
 	}
 
-	/**
-	 * 获取根据条件查到的总金额 和 总个数
-	 * 
-	 * @param record
-	 * @return
-	 * @throws ReqDataException
-	 */
-	public Record total(Record record) throws ReqDataException {
-		Integer source_sys = record.getInt("source_sys");
-		logger.info("==========当前的source_sys" + source_sys);
-		SqlPara sqlPara = null;
-		if (0 == source_sys) {
-			sqlPara = Db.getSqlPara("check_batch.checkBatchLAFindAll", Kv.by("map", record.getColumns()));
-		} else if (1 == source_sys) {
-			sqlPara = Db.getSqlPara("check_batch.checkBatchEBSFindAll", Kv.by("map", record.getColumns()));
-		} else {
-			throw new ReqDataException("渠道传输不正确");
-		}
-		return Db.findFirst(sqlPara);
-	}
-
+	
 	/**
 	 * 组批LA勾选后提交
 	 * 
@@ -178,6 +159,7 @@ public class CheckBatchForService {
 					codes.add(o.getStr("code"));
 				}
 			}
+			record.set("pay_mode", "C");
 			record.set("codes", codes);
 			final Record error_message = new Record();
 			error_message.set("error_message", "组批数据库操作失败");
@@ -277,6 +259,7 @@ public class CheckBatchForService {
 						final Record pay_batch_total = new Record();
 						pay_batch_total.set("child_batchno", CommonService.getSftSonBatchno())
 								.set("master_batchno", main_record.get("master_batchno"))
+								.set("org_id", curUodp.getOrg_id())
 								.set("total_num", total_num)
 								.set("total_amount", sumamount_rec.getBigDecimal("sumAmount"))
 								.set("success_num", 0)
@@ -716,18 +699,6 @@ public class CheckBatchForService {
 		if (null == findById) {
 			throw new ReqDataException("当前登录人的机构信息未维护");
 		}
-		List<String> codes = new ArrayList<>();
-		if (findById.getInt("level_num") == 1) {
-			logger.info("========目前登录机构为总公司");
-			codes = Arrays.asList("0102", "0101", "0201", "0202", "0203", "0204", "0205", "0500");
-		} else {
-			logger.info("========目前登录机构为分公司公司");
-			List<Record> rec = Db.find(Db.getSql("org.getCurrentUserOrgs"), org_id);
-			for (Record o : rec) {
-				codes.add(o.getStr("code"));
-			}
-		}
-		record.set("codes", codes);
 		//金额永远只展示未组批金额 . 已提交/已拒绝 条件下  未组批金额 0
 		record.set("amountstatus", new Integer[] {WebConstant.SftLegalData.NOGROUP.getKey()});
 		Integer source_sys = TypeUtils.castToInt(record.get("source_sys"));

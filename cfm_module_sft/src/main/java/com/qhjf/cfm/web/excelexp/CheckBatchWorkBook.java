@@ -63,6 +63,7 @@ public class CheckBatchWorkBook extends AbstractWorkBook {
             }
         }
         record.set("codes", codes);
+        record.set("pay_mode", "C");
     	List<Integer> status = record.get("status");
     	if(status == null || status.size() == 0){
     		record.remove("status");

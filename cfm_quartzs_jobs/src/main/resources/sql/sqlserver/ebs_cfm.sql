@@ -59,7 +59,9 @@
   	b.channel_id = c.id and 
   	b.os_source = ? and 
   	b.org_id = ? and 
-  	b.bankkey = ?
+  	b.bankkey = ? and
+  	b.bankkey_status = 1 and 
+  	c.is_checkout = 1
 #end
 
 #sql("updEbsOriginStatus")

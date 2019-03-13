@@ -47,8 +47,10 @@ public class CmbcBatchPayInter implements IChannelBatchInter {
                 detailMap.put("CRTACC", r.getStr("recv_account_no"));
                 detailMap.put("CRTNAM", r.getStr("recv_account_name"));
                 detailMap.put("BNKFLG", r.getStr("is_cross_bank"));
-                detailMap.put("CRTBNK", r.getStr("recv_account_bank"));
-                detailMap.put("CRTADR", r.getStr("recv_bank_prov")+"省"+r.getStr("recv_bank_city")+"市");
+                if ("1".equals(r.getStr("is_cross_bank"))) {
+                	detailMap.put("CRTBNK", r.getStr("recv_account_bank"));
+                	detailMap.put("CRTADR", r.getStr("recv_bank_prov")+"省"+r.getStr("recv_bank_city")+"市");
+				}
 
                 details.add(detailMap);
 			}

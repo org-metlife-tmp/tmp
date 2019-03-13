@@ -248,7 +248,32 @@
 #end
 
 
-
+#sql("selectDetailByChildno")
+    select
+      detail.child_batchno,
+      detail.pay_acc_name ,
+      detail.pay_acc_no ,
+      detail.bank_err_code ,
+      detail.bank_err_msg ,
+      detail.amount ,
+      total.back_on ,
+      channel.channel_code,
+      case channel.interactive_mode  when '0' then '直连' when '1' then '报盘' else '其他' end interactive_mode ,
+      channel.channel_desc     
+    from
+        recv_batch_detail AS detail,
+        channel_setting AS channel,
+        recv_batch_total AS total ,
+        recv_batch_total_master AS master   	
+    where
+    	detail.child_batchno = total.child_batchno 
+    	and
+    	master.master_batchno = total.master_batchno
+    	and 
+    	master.channel_id = channel.id
+    	and 
+    	detail.child_batchno = ? 
+#end
 
 
 

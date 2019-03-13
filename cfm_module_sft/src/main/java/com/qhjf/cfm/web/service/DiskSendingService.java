@@ -97,7 +97,7 @@ public class DiskSendingService {
 		if (null == accNoBalance) {
 			throw new ReqDataException(String.format("付款账号[%s]当日余额无数据！", mbRecord.getStr("pay_acc_no")));
 		}
-		BigDecimal totalAmount = mbRecord.getBigDecimal("total_amount");
+		BigDecimal totalAmount = cbRecord.getBigDecimal("total_amount");
 		BigDecimal availableBal = accNoBalance.getBigDecimal("available_bal");
 		if (totalAmount.compareTo(availableBal) > 0) {
 			throw new ReqDataException(String.format("付款账号[%s]当日余额[%s]不足！", mbRecord.getStr("pay_acc_no"), availableBal));

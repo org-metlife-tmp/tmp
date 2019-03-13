@@ -23,8 +23,8 @@ public class SftRecvLaDataCheckJobTest {
 
 	@Before
 	public void before() {
-//		dp = new DruidPlugin("jdbc:sqlserver://10.164.26.24:1433;DatabaseName=TreasureDB", "tmpadmin", "User123$");
-		dp = new DruidPlugin("jdbc:sqlserver://127.0.0.1:1433;DatabaseName=corpzone_test", "sa", "Admin123");
+		dp = new DruidPlugin("jdbc:sqlserver://10.164.26.24:1433;DatabaseName=TreasureDB", "tmpadmin", "User123$");
+//		dp = new DruidPlugin("jdbc:sqlserver://127.0.0.1:1433;DatabaseName=corpzone_test", "sa", "Admin123");
 		arp = new ActiveRecordPlugin(dp);
 		arp.setDevMode(true);
 		arp.setDialect(new SqlServerDialect());
@@ -34,13 +34,13 @@ public class SftRecvLaDataCheckJobTest {
 		arp.addSqlTemplate("/sql/sqlserver/la_cfm.sql");
 		arp.addSqlTemplate("/sql/sqlserver/la_recv_cfm.sql");
 		arp.addSqlTemplate("/sql/sqlserver/webservice_la_recv_cfm.sql");
-		cfmRedis = new CfmRedisPlugin("cfm", "192.168.62.91");
+		cfmRedis = new CfmRedisPlugin("cfm", "10.164.26.48");
 		cfmRedis.setSerializer(new JdkSerializer());
 		
 		LaRecvQueuePlugin la = new LaRecvQueuePlugin();
 		dp.start();
 		arp.start();
-		cfmRedis.start();
+//		cfmRedis.start();
 		la.start();
 	}
 
