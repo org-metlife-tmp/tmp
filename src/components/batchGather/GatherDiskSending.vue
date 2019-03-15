@@ -73,7 +73,8 @@
         <!-- 顶部按钮-->
         <div class="button-list-left">
             <el-select v-model="searchData.source_sys"
-                       clearable filterable size="mini">
+                       clearable filterable size="mini"
+                       placeholder="请选择业务系统">
                 <el-option v-for="(item,key) in sourceList"
                            :key="key"
                            :label="item"
