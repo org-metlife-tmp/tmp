@@ -1,6 +1,7 @@
 package com.qhjf.cfm.web.webservice.oa.server.request.parent;
 
 import com.alibaba.fastjson.JSONObject;
+import com.qhjf.cfm.utils.CommKit;
 import com.qhjf.cfm.utils.StringKit;
 import com.qhjf.cfm.web.webservice.ann.FieldValidate;
 import com.qhjf.cfm.web.webservice.oa.constant.ErrorCode;
@@ -23,7 +24,7 @@ public class ParentReq{
 	
 	private JSONObject json;
 	public ParentReq(String param) throws Exception {
-		log.debug("参数={}", StringKit.removeControlCharacter(param));
+        CommKit.debugPrint(log,"参数={}",param);
 		try {
 			this.json = XmlTool.documentToJSONObject(param);
 		} catch (Exception e) {

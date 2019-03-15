@@ -8,6 +8,7 @@ import com.jfinal.plugin.activerecord.Record;
 import com.jfinal.plugin.activerecord.SqlPara;
 import com.qhjf.bankinterface.api.exceptions.BankInterfaceException;
 import com.qhjf.cfm.utils.ArrayUtil;
+import com.qhjf.cfm.utils.CommKit;
 import com.qhjf.cfm.utils.CommonService;
 import com.qhjf.cfm.utils.StringKit;
 import com.qhjf.cfm.web.channel.inter.api.IChannelBatchInter;
@@ -103,8 +104,7 @@ public class SysBatchRecvInter implements ISysAtomicInterface {
 
     @Override
     public void callBack(String jsonStr) throws Exception {
-        String lbean = StringKit.removeControlCharacter(jsonStr);
-        log.debug("交易回写开始...lbean={}", lbean);
+        CommKit.debugPrint(log,"交易回写开始...jsonStr={}",jsonStr);
         int resultCount = channelInter.getResultCount(jsonStr);
         if (resultCount == 0) {
             log.error("银行返回数据条数为0");
@@ -148,7 +148,7 @@ public class SysBatchRecvInter implements ISysAtomicInterface {
 				}
                 
             } catch (Exception e) {
-                log.error("批量收付回调,第【i={}】次循环交易回写失败，回调数据：【{}】", i, lbean);
+                CommKit.errorPrint(log,"批量收付回调,第【i={}】次循环交易回写失败，回调数据：【{}】",jsonStr);
                 e.printStackTrace();
                 continue;
             }

@@ -45,7 +45,7 @@ public class IcbcCurrTransQueryInter  implements IMoreResultChannelInter{
         result.put("BeginDate", preDate);//工行测试环境与当前时间相差7天，故需要做转换
         result.put("EndDate", preDate);
         result.put("MinAmt", "0");
-        result.put("MaxAmt", String.valueOf(Integer.MAX_VALUE));
+        result.put("MaxAmt", "99999999999999999");
         result.put("pub", pub);
 		return result;
 	}

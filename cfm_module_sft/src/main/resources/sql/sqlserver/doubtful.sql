@@ -30,8 +30,9 @@ FROM
 where la.bank_key = bankkey.bankkey
 and la.tmp_org_id = bankkey.org_id
 and la.channel_id = chan.id
-and chan.org_id = org.org_id
+and la.tmp_org_id = org.org_id
 and la.biz_type = biz.type_code
+and bankkey.pay_mode = 1
 and biz.type = 1
 and la.is_doubtful = 1
   #if(map != null)

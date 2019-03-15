@@ -114,7 +114,7 @@ public class IcbcSinglePayInter  implements ISingleResultChannelInter{
 			out0 = IcbcResultParseUtil.parseResult(jsonStr);
 		} catch (Exception e) {
 			String jl = StringKit.removeControlCharacter(jsonStr);
-			log.error("单笔支付指令发送失败，需要人工核查！！！ bean is: {}",jl );
+			log.info("单笔支付指令发送失败，需要人工核查！！！ bean is: {}",jl );
 			JSONObject json = JSONObject.parseObject(jsonStr);
 	        JSONArray ebArray = json.getJSONArray("eb");
 	        JSONObject eb0 = ebArray.getJSONObject(0);

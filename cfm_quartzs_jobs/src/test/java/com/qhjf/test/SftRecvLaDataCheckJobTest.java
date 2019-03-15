@@ -2,15 +2,20 @@ package com.qhjf.test;
 
 import com.jfinal.plugin.activerecord.ActiveRecordPlugin;
 import com.jfinal.plugin.activerecord.Db;
+import com.jfinal.plugin.activerecord.Record;
 import com.jfinal.plugin.activerecord.dialect.SqlServerDialect;
 import com.jfinal.plugin.druid.DruidPlugin;
 import com.jfinal.plugin.redis.RedisPlugin;
 import com.jfinal.plugin.redis.serializer.JdkSerializer;
 import com.jfinal.template.source.ClassPathSourceFactory;
 import com.qhjf.cfm.utils.TableDataCacheUtil;
+import com.qhjf.cfm.web.constant.WebConstant;
 import com.qhjf.cfm.web.plugins.CfmRedisPlugin;
 import com.qhjf.cfm.web.quartzs.jobs.comm.SftRecvLaDataCheckJob;
 import com.qhjf.cfm.web.webservice.la.queue.recv.LaRecvQueuePlugin;
+
+import java.util.List;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -54,11 +59,11 @@ public class SftRecvLaDataCheckJobTest {
 			dp.stop();
 	}
 	
-	@Test
+	/*@Test
 	public void delete(){
 		int delete = Db.update("delete from la_origin_recv_data where pay_code=1");
 		System.out.println("delete ="+delete);
-	}
+	}*/
 	
 	@Test
 	public void excuteTest(){
@@ -80,5 +85,22 @@ public class SftRecvLaDataCheckJobTest {
 	@Test
 	public void test1(){
 		System.out.println(TableDataCacheUtil.getInstance().getARowData("const_bank_type", "code", "001"));
+	}
+	@Test
+	public void updTotle(){
+		List<Record> list = Db.find(Db.getSql("la_recv_cfm.getLARecvUnCheckedOriginList"), WebConstant.YesOrNo.NO.getKey());
+        if (list == null || list.size() == 0) {
+        	if (Db.update(Db.getSql("la_recv_cfm.updLARecvTotle")) > 0) {
+				System.out.println("LA批收校验主子表数据，更新主表状态为4成功");
+				list = Db.find(Db.getSql("la_recv_cfm.getLARecvUnCheckedOriginList"), WebConstant.YesOrNo.NO.getKey());
+				if (list == null || list.size() == 0) {
+					return;
+				}
+        	}else {
+				System.out.println("LA批收校验主子表数据，更新主表状态为4失败");
+				return;
+			}
+        }
+        System.out.println(list);
 	}
 }

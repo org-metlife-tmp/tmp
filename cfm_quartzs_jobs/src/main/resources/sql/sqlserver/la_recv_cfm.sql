@@ -23,6 +23,17 @@
 	and is_process = ?
 #end
 
+#sql("updLARecvTotle")
+	update 
+		ZDDHPF 
+	set [STATUS] = 4 
+	where 
+		JOBNO not in(
+						select distinct job_no from la_origin_recv_data where is_process=0
+					) and 
+		[STATUS]=1
+#end
+
 #sql("updLaOriginStatus")
   update la_origin_recv_data set is_process = ?,tmp_status = ?,tmp_err_message = ?, persist_version = persist_version + 1
   where id = ? and persist_version = ?
@@ -55,6 +66,25 @@
   	bankcode = ?
   where 
   	id = ? and persist_version = ?
+#end
+
+#sql("getrecvlegal")
+  SELECT
+    legal.id,
+    legal.origin_id
+  FROM
+    recv_legal_data legal,
+    la_recv_legal_data_ext ext
+  WHERE
+    legal.id = ext.legal_id
+    AND legal.source_sys = 0
+    AND legal.status = 0
+    AND ext.insure_bill_no =?
+    AND legal.recv_acc_name =?
+    AND legal.amount =?
+#end
+#sql("dellarecvlegalext")
+  delete from la_recv_legal_data_ext where legal_id=?
 #end
 
 #end

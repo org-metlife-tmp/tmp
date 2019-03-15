@@ -25,6 +25,6 @@ public class SftRoutes extends Routes {
         add("/normal/recvcheckbatch", RecvCheckBatchForController.class);
         add("/normal/recvdisksending", RecvDiskSendingController.class);
         add("/normal/recvdiskbacking", RecvDiskBackingController.class);
-
+        add("/normal/paycounter", PayCounterController.class);
     }
 }

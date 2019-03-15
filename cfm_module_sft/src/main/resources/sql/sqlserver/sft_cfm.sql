@@ -54,3 +54,7 @@
   #include("recv_disk_backing.sql")
 #end
 
+#namespace("pay_counter")
+  #include("pay_counter.sql")
+#end
+

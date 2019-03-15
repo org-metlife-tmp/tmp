@@ -60,10 +60,14 @@
 
 #sql("findDatailInfo")
     select 
-      *
-    from
-    recv_batch_detail  pbd
+      pbd.* ,
+      la.insure_bill_no ,
+      la.preinsure_bill_no
+     from
+    recv_batch_detail  pbd ,
+    la_recv_legal_data_ext  la
    where 
+   pbd.legal_id = la.legal_id AND
    pbd.base_id = ? 
 #end
 

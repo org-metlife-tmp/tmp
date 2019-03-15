@@ -2,7 +2,9 @@ package com.qhjf.cfm.web.controller;
 
 
 import com.jfinal.log.Log;
+import com.jfinal.plugin.activerecord.Page;
 import com.jfinal.plugin.activerecord.Record;
+import com.qhjf.cfm.exceptions.BusinessException;
 import com.qhjf.cfm.exceptions.ReqDataException;
 import com.qhjf.cfm.web.plugins.log.LogbackLog;
 import com.qhjf.cfm.web.service.CheckBatchForService;
@@ -25,14 +27,52 @@ public class PayCounterController extends CFMBaseController{
     */
     
 	public  void  list() throws ReqDataException {
-		Record record = getRecordByParamsStrong();
 		try {
-			service.list(record);
-			
-		} catch (Exception e) {
-			// TODO: handle exception
+			Record record = getRecordByParamsStrong();
+	    	int pageNum = getPageNum(record);
+	        int pageSize = getPageSize(record);   		
+	    	Page<Record> page = service.list(pageNum,pageSize,record,getCurUodp().getOrg_id());
+	    	renderOkPage(page);			
+		} catch (BusinessException e) {
+			logger.error("柜面列表获取失败");
+			e.printStackTrace();
+			renderFail(e);
 		}
 		
 	}
     
+	
+	
+	  /**
+	    * 柜面补录
+	    */	    
+		public  void  supplement() {		
+			try {
+				Record record = getRecordByParamsStrong();	
+				service.supplement(record,getUserInfo());
+				renderOk(null);
+			}catch (BusinessException e) {
+				logger.error("=====柜面补录失败");
+				e.printStackTrace();
+				renderFail(e);
+			}			
+		}
+		
+		
+		  /**
+		    * 柜面拒绝
+		    */	    
+			public  void  revokeToLaOrEbs() {		
+				try {
+					Record record = getRecordByParamsStrong();	
+					service.revokeToLaOrEbs(record,getUserInfo());
+					renderOk(null);
+				}catch (BusinessException e) {
+					logger.error("=====柜面付拒绝失败");
+					e.printStackTrace();
+					renderFail(e);
+				}			
+			}
+			
+			
 }

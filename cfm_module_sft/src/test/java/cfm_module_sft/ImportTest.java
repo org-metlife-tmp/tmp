@@ -30,7 +30,7 @@ public class ImportTest {
 
 	@Before
 	public void start() {
-		dp = new DruidPlugin("jdbc:sqlserver://10.164.25.42:1433;DatabaseName=TreasureDB", "tmpadmin", "User123$");
+		dp = new DruidPlugin("jdbc:sqlserver://10.164.26.24:1433;DatabaseName=TreasureDB", "tmpadmin", "User123$");
 		arp = new ActiveRecordPlugin(dp);
 		arp.setDevMode(true);
 		arp.setDialect(new SqlServerDialect());
@@ -47,7 +47,7 @@ public class ImportTest {
 	@Test
 	public void findMasterByBatchNoTest() {
 		//excel文件路径
-		String excelPath = "D:\\Company\\工作安排\\2018-12-24 收付费\\资金平台通UAT配置.xlsx";
+		String excelPath = "D:\\Company\\工作安排\\2018-12-24 收付费\\资金平台通UAT配置0308.xlsx";
 
 		try {
 			//String encoding = "GBK";

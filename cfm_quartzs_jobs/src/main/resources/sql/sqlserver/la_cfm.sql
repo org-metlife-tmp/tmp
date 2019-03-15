@@ -55,5 +55,24 @@
   where channel_code = ?
 #end
 
+#sql("getpaylegal")
+  SELECT
+    legal.id,
+    legal.origin_id
+  FROM
+    pay_legal_data legal,
+    la_pay_legal_data_ext ext
+  WHERE
+    legal.id = ext.legal_id
+    AND legal.source_sys = 0
+    AND legal.status = 0
+    AND ext.insure_bill_no =?
+    AND legal.recv_acc_name =?
+    AND legal.amount =?
+#end
+#sql("dellapaylegalext")
+  delete from la_pay_legal_data_ext where legal_id=?
+#end
+
 
 #end

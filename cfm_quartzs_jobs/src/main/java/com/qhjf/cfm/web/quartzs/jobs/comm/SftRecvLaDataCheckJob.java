@@ -42,10 +42,18 @@ public class SftRecvLaDataCheckJob implements Job{
     
     public void execute(JobExecutionContext context) throws JobExecutionException {
     	log.debug("LA批收原始数据校验任务开始");
-    	//TODP:目前是全部未处理原始数据查询出来，未做数据量峰值处理
         List<Record> list = Db.find(Db.getSql("la_recv_cfm.getLARecvUnCheckedOriginList"), WebConstant.YesOrNo.NO.getKey());
         if (list == null || list.size() == 0) {
-            return;
+        	if (Db.update(Db.getSql("la_recv_cfm.updLARecvTotle")) > 0) {
+				log.debug("LA批收校验主子表数据，更新主表状态为4成功");
+				list = Db.find(Db.getSql("la_recv_cfm.getLARecvUnCheckedOriginList"), WebConstant.YesOrNo.NO.getKey());
+				if (list == null || list.size() == 0) {
+					return;
+				}
+        	}else {
+				log.debug("LA批收校验主子表数据，更新主表状态为4失败");
+				return;
+			}
         }
         
         log.debug("LA批收原始数据校验,待校验数据条数size = {}", list.size());
@@ -267,14 +275,26 @@ public class SftRecvLaDataCheckJob implements Job{
 
             Db.save("la_recv_check_doubtful", checkDoubtful);
 
-            DataDoubtfulCache doubtful = new DataDoubtfulCache();
-            doubtful.addCacheValue(DataDoubtfulCache.DoubtfulType.LA_RECV, identification, checkDoubtful.getLong("id").toString());
-            if (doubtful.getCacheValue(DataDoubtfulCache.DoubtfulType.LA_RECV, identification).size() > 1) {
+            /**
+             * 根据保单号，收款人，金额查询合法表中是否存在数据，如果存在视为可疑数据，将合法表中的数据删除，更新可疑表数据状态为可疑
+             */
+            List<Record> legalRecordList = Db.find(Db.getSql("la_recv_cfm.getrecvlegal"),originData.getStr("insure_bill_no"),originData.getStr("recv_acc_name"),
+                    originData.getStr("amount"),originData.getStr("recv_date"));
+            if(legalRecordList!=null && legalRecordList.size()!=0){
+                Record legalRecord = legalRecordList.get(0);
                 //可疑数据
                 CommonService.update("la_recv_check_doubtful",
                         new Record().set("is_doubtful", 1),
                         new Record().set("id", checkDoubtful.getLong("id")));
+                //删除合法表中数据和合法扩展表数据
+                Db.deleteById("recv_legal_data","id",legalRecord.getLong("id"));
+                Db.delete(Db.getSql("la_recv_cfm.dellarecvlegalext"),legalRecord.getLong("id"));
+
+                CommonService.update("la_recv_check_doubtful",
+                        new Record().set("is_doubtful", 1),
+                        new Record().set("origin_id", legalRecord.getLong("origin_id")));
                 return WebConstant.YesOrNo.YES;
+
             }
             return WebConstant.YesOrNo.NO;
         }

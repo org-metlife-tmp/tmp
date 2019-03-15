@@ -252,14 +252,25 @@ public class SftLaDataCheckJob implements Job{
 
             Db.save("la_check_doubtful", checkDoubtful);
 
-            DataDoubtfulCache doubtful = new DataDoubtfulCache();
-            doubtful.addCacheValue(DataDoubtfulCache.DoubtfulType.LA, identification, checkDoubtful.getLong("id").toString());
-            if (doubtful.getCacheValue(DataDoubtfulCache.DoubtfulType.LA, identification).size() > 1) {
+            /**
+             * 根据保单号，收款人，金额查询合法表中是否存在数据，如果存在视为可疑数据，将合法表中的数据删除，更新可疑表数据状态为可疑
+             */
+            List<Record> legalRecordList = Db.find(Db.getSql("la_cfm.getpaylegal"),originData.getStr("insure_bill_no"),originData.getStr("recv_acc_name"),
+                    originData.getStr("amount"));
+            if(legalRecordList!=null && legalRecordList.size()!=0){
+                Record legalRecord = legalRecordList.get(0);
                 //可疑数据
                 CommonService.update("la_check_doubtful",
                         new Record().set("is_doubtful", 1),
                         new Record().set("id", checkDoubtful.getLong("id")));
+                //删除合法表中数据和合法扩展表数据
+                Db.deleteById("pay_legal_data","id",legalRecord.getLong("id"));
+                Db.delete(Db.getSql("la_cfm.dellapaylegalext"),legalRecord.getLong("id"));
+                CommonService.update("la_check_doubtful",
+                        new Record().set("is_doubtful", 1),
+                        new Record().set("origin_id", legalRecord.getLong("origin_id")));
                 return WebConstant.YesOrNo.YES;
+
             }
             return WebConstant.YesOrNo.NO;
         }

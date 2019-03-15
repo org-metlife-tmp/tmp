@@ -6,6 +6,7 @@ import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.IAtom;
 import com.jfinal.plugin.activerecord.Record;
 import com.qhjf.cfm.exceptions.BusinessException;
+import com.qhjf.cfm.utils.CommKit;
 import com.qhjf.cfm.utils.CommonService;
 import com.qhjf.cfm.utils.StringKit;
 import com.qhjf.cfm.utils.XmlTool;
@@ -53,8 +54,9 @@ public class LaRecvConsumerQueue implements Runnable{
 				opts.setAction("http://eai.metlife.com/ESBWebEntry/ProcessMessage");
 				sc.setOptions(opts);
 				OMElement res = sc.sendReceive(queueBean.getoMElement());
-				String larecvBean = StringKit.removeControlCharacter(res.toString());
-				log.debug("response="+larecvBean);
+				CommKit.debugPrint(log,"response={}",res.toString());
+
+
 				JSONObject json = XmlTool.documentToJSONObject(res.toString());
 				
 				JSONObject rec = json.getJSONArray("ESBEnvelopeResult").getJSONObject(0)

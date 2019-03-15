@@ -272,7 +272,7 @@ SELECT
   acc.bank_cnaps_code as main_acc_bank_cnaps_code,
   acc.org_id as main_acc_org_id,
   bank.name AS main_acc_bank_name,
-  curr.id AS main_acc_cur,
+  curr.iso_code AS main_acc_cur,
 	bank.province AS main_acc_bank_prov,
 	bank.city AS main_acc_bank_city
 FROM

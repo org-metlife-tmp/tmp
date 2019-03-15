@@ -60,7 +60,7 @@ public class RecvCheckBatchForService {
 			}
 		}
 		record.set("codes", codes);
-		record.set("pay_mode", "C");
+		record.set("pay_mode",  WebConstant.SftDoubtRecvMode.PLSF.getKeyc());
 		List<Integer> status = record.get("status");
 		if (status == null || status.size() == 0) {
 			record.remove("status");
@@ -139,7 +139,7 @@ public class RecvCheckBatchForService {
 			    codes.add(rec.getStr("code"));
 			}
 			record.set("codes", codes);
-			record.set("pay_mode", "C");
+			record.set("pay_mode", WebConstant.SftDoubtRecvMode.PLSF.getKeyc() );
 			final Record error_message = new Record();
 			error_message.set("error_message", "组批数据库操作失败");
 			// 主批次入recv_batch_total_master表

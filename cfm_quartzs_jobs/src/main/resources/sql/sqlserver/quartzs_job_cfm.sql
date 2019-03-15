@@ -162,5 +162,13 @@
 	where 
 		job_no = ?
   #end
+  
+  #sql("ddhEncrypt")
+    Exec jam ?
+  #end
+  
+  #sql("ddhDecrypt")
+    Exec jem ?
+  #end
 #end
   

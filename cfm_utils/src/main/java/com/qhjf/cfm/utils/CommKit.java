@@ -1,5 +1,7 @@
 package com.qhjf.cfm.utils;
 
+import org.slf4j.Logger;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
@@ -48,5 +50,13 @@ public class CommKit {
             e.printStackTrace();
         }
         return clz;
+    }
+
+    public static void debugPrint(Logger log, String format, String arg){
+        log.debug(format,StringKit.removeControlCharacter(arg));
+    }
+
+    public static void errorPrint(Logger log, String format, String arg){
+        log.error(format,StringKit.removeControlCharacter(arg));
     }
 }

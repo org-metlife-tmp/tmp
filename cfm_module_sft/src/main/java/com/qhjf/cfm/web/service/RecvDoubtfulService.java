@@ -173,7 +173,7 @@ public class RecvDoubtfulService {
         }
 
         legalRecord.set("source_sys", osSource);
-        legalRecord.set("origin_id", id);
+        legalRecord.set("origin_id", TypeUtils.castToLong(doubtfulRecord.get("origin_id")));
         legalRecord.set("pay_code", TypeUtils.castToString(doubtfulRecord.get("pay_code")));
         legalRecord.set("channel_id", TypeUtils.castToString(doubtfulRecord.get("channel_id")));
         legalRecord.set("org_id", TypeUtils.castToInt(doubtfulRecord.get("tmp_org_id")));

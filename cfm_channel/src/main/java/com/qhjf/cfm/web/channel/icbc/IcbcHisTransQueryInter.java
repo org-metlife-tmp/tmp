@@ -46,7 +46,7 @@ public class IcbcHisTransQueryInter  implements IMoreResultChannelInter{
         result.put("BeginDate", times.get("start"));
         result.put("EndDate", times.get("end"));
         result.put("MinAmt", "0");
-        result.put("MaxAmt", String.valueOf(Integer.MAX_VALUE));
+        result.put("MaxAmt", "99999999999999999");
         result.put("pub", pub);
 		return result;
 	}

@@ -6,6 +6,7 @@ import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
 import com.jfinal.plugin.activerecord.SqlPara;
 import com.qhjf.cfm.utils.RedisSericalnoGenTool;
+import com.qhjf.cfm.web.constant.WebConstant;
 import com.qhjf.cfm.web.plugins.excelexp.AbstractWorkBook;
 import com.qhjf.cfm.web.plugins.excelexp.POIUtil;
 
@@ -56,11 +57,11 @@ public class RecvCheckBatchWorkBook extends AbstractWorkBook {
         } else {
             List<Record> rec = Db.find(Db.getSql("org.getCurrentUserOrgs"), org_id);
             for (Record o : rec) {
-                codes.add(o.getStr("code"));
+                codes.add(o.getStr("code"));;
             }
         }
         record.set("codes", codes);
-        record.set("pay_mode", "C");
+        record.set("pay_mode", WebConstant.SftDoubtRecvMode.PLSF.getKeyc());
     	List<Integer> status = record.get("status");
     	if(status == null || status.size() == 0){
     		record.remove("status");

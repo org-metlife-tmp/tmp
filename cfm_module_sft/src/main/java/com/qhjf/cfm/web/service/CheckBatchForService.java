@@ -68,7 +68,7 @@ public class CheckBatchForService {
 			}
 		}
 		record.set("codes", codes);
-		record.set("pay_mode", "C");
+		record.set("pay_mode", WebConstant.SftDoubtPayMode.PLSF.getKeyc());
 		List<Integer> status = record.get("status");
 		if (status == null || status.size() == 0) {
 			record.remove("status");
@@ -159,7 +159,7 @@ public class CheckBatchForService {
 					codes.add(o.getStr("code"));
 				}
 			}
-			record.set("pay_mode", "C");
+			record.set("pay_mode", WebConstant.SftDoubtPayMode.PLSF.getKeyc());
 			record.set("codes", codes);
 			final Record error_message = new Record();
 			error_message.set("error_message", "组批数据库操作失败");
@@ -453,6 +453,7 @@ public class CheckBatchForService {
 									.set("bankcode", channel.getStr("bankcode"));
 						//封装 recv_account_id
 						List<Record> find = Db.find(Db.getSql("supplier.querySupplier"),main_record.get("pay_acc_no"));
+						insertRecord.set("recv_bank_cnaps", find.get(0).get("cnaps_code"));
 						insertRecord.set("recv_account_id", find.get(0).get("id"));
 						boolean save = Db.save("outer_zf_payment", "id", insertRecord);
 						logger.info("===============入库支付通的结果==="+ save + "==id=="+ insertRecord.getLong("id"));
@@ -477,6 +478,7 @@ public class CheckBatchForService {
 						
 						List<Record> find = Db.find(Db.getSql("acc.findAccountByAccNo"),main_record.get("pay_acc_no"));
 						insertRecord.set("recv_account_id", find.get(0).get("acc_id"));
+						insertRecord.set("recv_bank_cnaps", find.get(0).get("bank_cnaps_code"));
 						insertRecord.set("payment_summary", payment_summary);
 						boolean save = Db.save("inner_db_payment", "id", insertRecord);
 						logger.info("===============入库调拨通的结果==="+ save + "==id=="+ insertRecord.getLong("id"));

@@ -160,6 +160,10 @@ public class RecvExceptService {
                 boolean flag = CommonService.update("recv_batch_total",
                         new Record().set("service_status", WebConstant.SftCheckBatchStatus.HTSPZ.getKey())
                                 .set("persist_version", TypeUtils.castToInt(childRecord.get("persist_version"))+2)
+                                .set("error_msg", TypeUtils.castToString(record.getStr("op_reason")))
+                                .set("revoke_user_id", userInfo.getUsr_id())
+                                .set("revoke_user_name", userInfo.getName())
+                                .set("revoke_date", new Date())
                                 .set("create_by", userInfo.getUsr_id())
                                 .set("create_on", new Date())
                                 .set("update_by", userInfo.getUsr_id())

@@ -32,7 +32,8 @@
     obp.feed_back,
      CONVERT(varchar(100), obp.create_on, 23) as create_on,
      CONVERT(varchar(100), obp.update_on, 23) as update_on,
-     org.name as org_name
+     org.name as org_name,
+     obpi.bank_serial_number
   FROM
      oa_branch_payment  obp
      left join oa_branch_payment_item obpi

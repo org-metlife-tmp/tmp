@@ -42,9 +42,17 @@ public class DetailExportWorkBook extends AbstractWorkBook {
     public Workbook getWorkbook() {
     	Record record = getRecord();
     	String child_batchno = record.getStr("child_batchno"); 
+    	Integer type = record.getInt("type");
     	String sql = Db.getSql("disk_downloading.selectDetailByChildno");
         List<Record> recordList = Db.find(sql,child_batchno);
-        this.fileName = "12o3jmsef"+".xls" ; 
+        String channel_code = recordList.get(0).getStr("channel_code");
+        String sbdxfnmb = null  ;
+        if(1 == type) {
+        	sbdxfnmb = "_Send_";
+        }else if(2 == type) {
+        	sbdxfnmb = "_Return_";
+        }
+        this.fileName = child_batchno+sbdxfnmb+channel_code+".xls" ; 
         return POIUtil.createExcel(recordList, this);
     }
 }

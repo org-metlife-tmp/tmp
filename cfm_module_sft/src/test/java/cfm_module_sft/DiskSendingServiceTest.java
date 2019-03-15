@@ -63,7 +63,7 @@ public class DiskSendingServiceTest {
 	@Test
 	public void findMasterByBatchNoTest() {
 		//excel文件路径
-		String excelPath = "D:\\Company\\工作安排\\2018-12-24 收付费\\资金平台通UAT-BANKKEY初始化导入.xlsx";
+		String excelPath = "D:\\Company\\工作安排\\2018-12-24 收付费\\资金平台通UAT配置0308.xlsx";
 
 		try {
 			//String encoding = "GBK";
@@ -84,7 +84,7 @@ public class DiskSendingServiceTest {
 				}
 
 				//开始解析
-				Sheet sheet = wb.getSheetAt(0);     //读取sheet 0
+				Sheet sheet = wb.getSheetAt(1);     //读取sheet 0
 				List<Record> list = new ArrayList<>();
 
 				int firstRowIndex = sheet.getFirstRowNum()+1;   //第一行是列名，所以不读

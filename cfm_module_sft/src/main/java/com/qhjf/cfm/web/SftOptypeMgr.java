@@ -115,7 +115,7 @@ public class SftOptypeMgr extends AbstractOptypeMgr {
         
         optypes.add(new Optype(Optype.Mode.NORMAL, "disksending_list")
         		.registKeepParams(new String[]{"source_sys","page_num","page_size","master_batchno","start_date","end_date","interactive_mode","channel_id","channel_desc","status"})
-                .registerValidate(new RequiredParamsValidate(new String[]{"source_sys","page_size","page_num"})));	
+                .registerValidate(new RequiredParamsValidate(new String[]{"page_size","page_num"})));	
         
         optypes.add(new Optype(Optype.Mode.NORMAL, "disksending_listexport")
         		.registKeepParams(new String[]{"source_sys","master_batchno","start_date","end_date","interactive_mode","channel_id","channel_desc","status"})
@@ -126,8 +126,8 @@ public class SftOptypeMgr extends AbstractOptypeMgr {
                 .registerValidate(new RequiredParamsValidate(new String[]{"id"})));
 
         optypes.add(new Optype(Optype.Mode.NORMAL, "disksending_detaillistexport")
-        		.registKeepParams(new String[]{"child_batchno"})
-                .registerValidate(new RequiredParamsValidate(new String[]{"child_batchno"})));
+        		.registKeepParams(new String[]{"child_batchno","type"})
+                .registerValidate(new RequiredParamsValidate(new String[]{"child_batchno","type"})));
                 
         
 
@@ -374,7 +374,7 @@ public class SftOptypeMgr extends AbstractOptypeMgr {
         optypes.add(new Optype(Optype.Mode.NORMAL, "diskbacking_list")
                 .registKeepParams(new String[]{"start_date","end_date","master_batchno","source_sys",
                 		"channel_id","channel_desc","status","page_size","page_num"})
-                .registerValidate(new RequiredParamsValidate(new String[]{"source_sys","page_size","page_num"})));
+                .registerValidate(new RequiredParamsValidate(new String[]{"page_size","page_num"})));
         
         optypes.add(new Optype(Optype.Mode.NORMAL, "diskbacking_listexport")
                 .registKeepParams(new String[]{"start_date","end_date","master_batchno","source_sys",
@@ -462,9 +462,9 @@ public class SftOptypeMgr extends AbstractOptypeMgr {
                 .registKeepParams(new String[]{"start_date","end_date","master_batchno","source_sys",
                 		"channel_id","channel_desc","status"})); 
         
-        optypes.add(new Optype(Optype.Mode.NORMAL, "recvdiskbacking_detaillistexport")
-        		.registKeepParams(new String[]{"child_batchno"})
-                .registerValidate(new RequiredParamsValidate(new String[]{"child_batchno"})));
+        optypes.add(new Optype(Optype.Mode.NORMAL, "recvdisksending_detaillistexport")
+        		.registKeepParams(new String[]{"child_batchno","type"})
+                .registerValidate(new RequiredParamsValidate(new String[]{"child_batchno","type"})));
 
         /** ============================ 批量收 end ============================ */
 
