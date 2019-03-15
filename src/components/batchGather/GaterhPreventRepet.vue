@@ -279,7 +279,7 @@
             }
             //支付方式
             if (constants.SftDoubtPayMode) {
-                this.payModeList = constants.SftDoubtPayMode;
+                this.payModeList = constants.SftDoubtRecvMode;
             }
             //机构列表
             this.getOrgList();

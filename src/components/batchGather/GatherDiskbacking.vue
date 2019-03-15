@@ -67,6 +67,10 @@
         .withdraw {
             background-position: -48px 0;
         }
+        /*导出*/
+        .export {
+            background-position: -513px -62px;
+        }
     }
 </style>
 
@@ -75,7 +79,7 @@
         <!-- 顶部按钮-->
         <div class="button-list-left">
             <el-select v-model="searchData.source_sys"
-                       filterable size="mini"
+                       clearable filterable size="mini"
                        @change="queryData">
                 <el-option v-for="(item,key) in sourceList"
                            :key="key"
@@ -186,9 +190,14 @@
                 <el-table-column prop="status" label="状态" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="send_user_name" label="操作人" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column
-                        label="操作" width="50"
+                        label="操作" width="80"
                         fixed="right">
                     <template slot-scope="scope" class="operationBtn">
+                        <el-tooltip content="导出" placement="bottom" effect="light"
+                                    :enterable="false" :open-delay="500">
+                            <el-button class="export" size="mini"
+                                       @click="exportData(scope.row)"></el-button>
+                        </el-tooltip>
                         <el-tooltip content="上传" placement="bottom" effect="light"
                                     :enterable="false" :open-delay="500"
                                     v-show="scope.row.interactive_mode=='报盘' && (scope.row.status=='已发送未回盘' || scope.row.status=='回盘成功')">
@@ -259,12 +268,11 @@
                     optype: "recvdiskbacking_list",
                     params: {
                         page_size: 20,
-                        page_num: 1,
-                        source_sys: "0"
+                        page_num: 1
                     }
                 },
                 searchData: { //搜索条件
-                    source_sys: "0",
+                    source_sys: "",
                     master_batchno: "",
                     channel_id: "",
                     channel_desc: "",
@@ -299,7 +307,7 @@
                 for (var k in searchData) {
                     if(k == "status"){
                         searchData[k] = [];
-                    }else if(k != "source_sys"){
+                    }else{
                         searchData[k] = "";
                     }
 
@@ -356,6 +364,44 @@
                 }).catch(function (error) {
                     console.log(error);
                 });
+            },
+            //单条导出
+            exportData: function (row) {
+                this.$axios({
+                    url: this.queryUrl + "normalProcess",
+                    method: "post",
+                    data: {
+                        optype: "recvdiskbacking_detaillistexport",
+                        params: {
+                            child_batchno: row.child_batchno
+                        }
+                    },
+                    responseType: 'blob'
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                    } else {
+                        var fileName = decodeURI(result.headers["content-disposition"]).split("=")[1];
+                        //ie兼容
+                        if (window.navigator && window.navigator.msSaveOrOpenBlob) {
+                            window.navigator.msSaveOrOpenBlob(new Blob([result.data]), fileName);
+                        } else {
+                            let url = window.URL.createObjectURL(new Blob([result.data]));
+                            let link = document.createElement('a');
+                            link.style.display = 'none';
+                            link.href = url;
+                            link.setAttribute('download', fileName);
+                            document.body.appendChild(link);
+                            link.click();
+                        }
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                })
             },
             //导出
             exportFun: function () {

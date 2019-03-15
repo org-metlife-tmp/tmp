@@ -50,8 +50,8 @@
             bottom: -6px;
         }
 
-        /*按钮样式*/
-        .send {
+        /*按钮样式-发送*/
+        .send,.export {
             width: 20px;
             height: 20px;
             background-image: url(../../assets/icon_common.png);
@@ -59,6 +59,11 @@
             padding: 0;
             background-position: -440px -62px;
             vertical-align: middle;
+        }
+
+        /*导出*/
+        .export {
+            background-position: -513px -62px;
         }
     }
 </style>
@@ -68,7 +73,7 @@
         <!-- 顶部按钮-->
         <div class="button-list-left">
             <el-select v-model="searchData.source_sys"
-                       filterable size="mini">
+                       clearable filterable size="mini">
                 <el-option v-for="(item,key) in sourceList"
                            :key="key"
                            :label="item"
@@ -185,12 +190,12 @@
                 <el-table-column prop="send_user_name" label="操作人" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="send_on" label="发送日期" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column
-                        label="操作" width="50"
+                        label="操作" width="80"
                         fixed="right">
                     <template slot-scope="scope" class="operationBtn">
                         <el-tooltip content="下载" placement="bottom" effect="light"
                                     :enterable="false" :open-delay="500"
-                                    v-if="scope.row.interactive_mode=='报盘' && ((scope.row.status=='已审批未发送' && scope.row.file_name) || scope.row.status=='已发送未回盘')">
+                                    v-if="scope.row.interactive_mode=='报盘' && ((scope.row.status=='已审批未发送' && scope.row.file_name) || scope.row.status=='已发送未回盘' || scope.row.status=='已回退')">
                             <el-button type="info" icon="el-icon-download" size="mini"
                                        @click="downData(scope.row)"></el-button>
                         </el-tooltip>
@@ -199,6 +204,11 @@
                                     v-if="scope.row.interactive_mode=='直连' && (scope.row.status=='已审批未发送' || scope.row.status=='已回退')">
                             <el-button class="send" size="mini"
                                        @click="sendData(scope.row)"></el-button>
+                        </el-tooltip>
+                        <el-tooltip content="导出" placement="bottom" effect="light"
+                                    :enterable="false" :open-delay="500">
+                            <el-button class="export" size="mini"
+                                       @click="exportData(scope.row)"></el-button>
                         </el-tooltip>
                     </template>
                 </el-table-column>
@@ -249,12 +259,11 @@
                     optype: "disksending_list",
                     params: {
                         page_size: 20,
-                        page_num: 1,
-                        source_sys: "0",
+                        page_num: 1
                     }
                 },
                 searchData: { //搜索条件
-                    source_sys: "0",
+                    source_sys: "",
                     master_batchno: "",
                     channel_id: "",
                     channel_desc: "",
@@ -293,7 +302,7 @@
                 for (var k in searchData) {
                     if(k == "status"){
                         searchData[k] = [];
-                    }else if (k != "source_sys"){
+                    }else{
                         searchData[k] = "";
                     }
                 }
@@ -421,6 +430,44 @@
                             duration: 2000
                         });
                         this.$emit("getCommTable", this.routerMessage);
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                })
+            },
+            //单条导出
+            exportData: function (row) {
+                this.$axios({
+                    url: this.queryUrl + "normalProcess",
+                    method: "post",
+                    data: {
+                        optype: "disksending_detaillistexport",
+                        params: {
+                            child_batchno: row.child_batchno
+                        }
+                    },
+                    responseType: 'blob'
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                    } else {
+                        var fileName = decodeURI(result.headers["content-disposition"]).split("=")[1];
+                        //ie兼容
+                        if (window.navigator && window.navigator.msSaveOrOpenBlob) {
+                            window.navigator.msSaveOrOpenBlob(new Blob([result.data]), fileName);
+                        } else {
+                            let url = window.URL.createObjectURL(new Blob([result.data]));
+                            let link = document.createElement('a');
+                            link.style.display = 'none';
+                            link.href = url;
+                            link.setAttribute('download', fileName);
+                            document.body.appendChild(link);
+                            link.click();
+                        }
                     }
                 }).catch(function (error) {
                     console.log(error);

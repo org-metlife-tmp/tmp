@@ -282,9 +282,9 @@
                 <el-table-column prop="biz_type" label="业务类型" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="amount" label="金额" :show-overflow-tooltip="true"
                                  :formatter="transitAmount"></el-table-column>
-                <el-table-column prop="recv_acc_name" label="客户姓名" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="recv_cert_code" label="证件号码" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="recv_acc_no" label="客户账号" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="pay_acc_name" label="客户姓名" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="pay_cert_code" label="证件号码" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="pay_acc_no" label="客户账号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="pay_code" label="支付号码" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="status" label="状态" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="op_user_name" label="操作人" :show-overflow-tooltip="true"></el-table-column>

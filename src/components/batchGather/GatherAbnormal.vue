@@ -75,7 +75,7 @@
         <!-- 顶部按钮-->
         <div class="button-list-left">
             <el-select v-model="searchData.source_sys"
-                       filterable size="mini"
+                       clearable filterable size="mini"
                        @change="queryData">
                 <el-option v-for="(item,key) in sourceList"
                            :key="key"
@@ -258,12 +258,11 @@
                     optype: "sftrecvexcept_exceptlist",
                     params: {
                         page_size: 20,
-                        page_num: 1,
-                        source_sys: "0"
+                        page_num: 1
                     }
                 },
                 searchData: { //搜索条件
-                    source_sys: "0",
+                    source_sys: "",
                     master_batchno: "",
                     channel_id_one: "",
                     channel_id_two: "",
@@ -299,7 +298,7 @@
                 for (var k in searchData) {
                     if(k == "service_status"){
                         searchData[k] = [];
-                    }else if(k != "source_sys"){
+                    }else{
                         searchData[k] = "";
                     }
 
