@@ -444,7 +444,8 @@
                     data: {
                         optype: "disksending_detaillistexport",
                         params: {
-                            child_batchno: row.child_batchno
+                            child_batchno: row.child_batchno,
+                            typa: 1
                         }
                     },
                     responseType: 'blob'
