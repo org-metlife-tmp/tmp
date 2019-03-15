@@ -3,7 +3,7 @@ SELECT
 	la.id,
 	la.recv_date,
 	la.pay_code,
-	case la.pay_mode when 'C' then '批量收付' when 'Q' then '实时收付' when 'H' then '第三方' when '0' then '网银' end pay_mode,
+	case la.pay_mode when 'D' then '批量收付' when 'C' then '网银' end pay_mode,
 	la.bank_key,
   biz.type_name biz_type,
 	la.tmp_org_id,

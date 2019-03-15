@@ -192,8 +192,7 @@ public class SftOptypeMgr extends AbstractOptypeMgr {
         /** ============================ 批量付异常数据管理 begin ============================ */
         optypes.add(new Optype(Optype.Mode.NORMAL, "sftexcept_exceptlist")
                 .registKeepParams(new String[]{"source_sys", "start_date", "end_date", "master_batchno", "channel_id_one", "channel_id_two",
-                        "is_revoke", "service_status", "page_size", "page_num"})
-                .registerValidate(new RequiredParamsValidate(new String[]{"source_sys"})));
+                        "is_revoke", "service_status", "page_size", "page_num"}));
 
         //详细
         optypes.add(new Optype(Optype.Mode.NORMAL, "sftexcept_detail")
@@ -207,8 +206,7 @@ public class SftOptypeMgr extends AbstractOptypeMgr {
         //批量付异常数据导出
         optypes.add(new Optype(Optype.Mode.NORMAL, "sftexcept_listexport")
                 .registKeepParams(new String[]{"source_sys", "start_date", "end_date", "master_batchno", "channel_id_one", "channel_id_two",
-                        "is_revoke", "status"})
-                .registerValidate(new RequiredParamsValidate(new String[]{"source_sys"})));
+                        "is_revoke", "status"}));
 
 
         //审批同意
@@ -471,8 +469,7 @@ public class SftOptypeMgr extends AbstractOptypeMgr {
         /** ============================ 批量收异常数据管理 begin ============================ */
         optypes.add(new Optype(Optype.Mode.NORMAL, "sftrecvexcept_exceptlist")
                 .registKeepParams(new String[]{"source_sys", "start_date", "end_date", "master_batchno", "channel_id_one", "channel_id_two",
-                        "is_revoke", "service_status", "page_size", "page_num"})
-                .registerValidate(new RequiredParamsValidate(new String[]{"source_sys"})));
+                        "is_revoke", "service_status", "page_size", "page_num"}));
 
         //详细
         optypes.add(new Optype(Optype.Mode.NORMAL, "sftrecvexcept_detail")
@@ -486,8 +483,7 @@ public class SftOptypeMgr extends AbstractOptypeMgr {
         //批量付异常数据导出
         optypes.add(new Optype(Optype.Mode.NORMAL, "sftrecvexcept_listexport")
                 .registKeepParams(new String[]{"source_sys", "start_date", "end_date", "master_batchno", "channel_id_one", "channel_id_two",
-                        "is_revoke", "status"})
-                .registerValidate(new RequiredParamsValidate(new String[]{"source_sys"})));
+                        "is_revoke", "status"}));
 
 
         //审批同意

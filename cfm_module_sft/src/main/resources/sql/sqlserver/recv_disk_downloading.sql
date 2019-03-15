@@ -257,7 +257,8 @@
       detail.child_batchno,
       detail.pay_acc_name ,
       detail.pay_acc_no ,
-      detail.bank_err_code ,
+      case isnull(detail.bank_err_code,'-1') when '0000' then '交易成功' when '成功' then '交易成功'  when 'S0000' then '交易成功'
+       when '-1' then ''  else '交易失败' end bank_err_code,
       detail.bank_err_msg ,
       detail.amount ,
       total.back_on ,

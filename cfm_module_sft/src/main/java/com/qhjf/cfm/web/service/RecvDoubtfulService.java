@@ -38,7 +38,7 @@ public class RecvDoubtfulService {
     public Page<Record> doubtfullist(int pageNum, int pageSize, final Record record, UodpInfo uodpInfo) throws BusinessException {
         long osSource = TypeUtils.castToLong(record.get("os_source"));
         if(record.get("pay_mode")!=null && !"".equals(TypeUtils.castToString(record.get("pay_mode")))){
-            record.set("pay_mode", WebConstant.SftDoubtPayMode.getSftDoubtPayModeByKey(
+            record.set("pay_mode", WebConstant.SftDoubtRecvMode.getSftDoubtRecvModeByKey(
                     TypeUtils.castToInt(record.get("pay_mode"))).getKeyc());
         }
         SqlPara sqlPara = null;

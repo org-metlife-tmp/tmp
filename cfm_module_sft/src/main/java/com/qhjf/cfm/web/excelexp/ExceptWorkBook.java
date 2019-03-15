@@ -11,6 +11,7 @@ import com.qhjf.cfm.web.constant.WebConstant;
 import com.qhjf.cfm.web.plugins.excelexp.AbstractWorkBook;
 import com.qhjf.cfm.web.plugins.excelexp.POIUtil;
 import com.qhjf.cfm.web.service.AccCommonService;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Workbook;
 
 import java.util.ArrayList;
@@ -40,7 +41,10 @@ public class ExceptWorkBook extends AbstractWorkBook {
     @Override
     public Workbook getWorkbook() {
         Record record = getRecord();
-        int osSource = TypeUtils.castToInt(record.get("source_sys"));
+        int osSource = -1;
+        if(!StringUtils.isEmpty(record.getStr("source_sys"))){
+            osSource = TypeUtils.castToInt(record.get("source_sys"));
+        }
         SqlPara sqlPara = null;
 
         Long org_id = getUodpInfo().getOrg_id();
@@ -65,10 +69,13 @@ public class ExceptWorkBook extends AbstractWorkBook {
             //EBS
             this.fileName = "EBS_Abnormal_FH_" + RedisSericalnoGenTool.genShortSerial() + "_"
                     +DateKit.toStr(new Date(), "YYYYMMdd")+".xls";
+        }else{
+            this.fileName = "Abnormal_FH_" + RedisSericalnoGenTool.genShortSerial() + "_"
+                    +DateKit.toStr(new Date(), "YYYYMMdd")+".xls";
         }
         List<Record> recordList = Db.find(Db.getSqlPara("except.exceptlist", Kv.by("map", record.getColumns())));
         for(Record rd : recordList){
-            rd.set("source_sys", WebConstant.SftOsSource.getSftOsSource(osSource).getDesc());
+            rd.set("source_sys", WebConstant.SftOsSource.getSftOsSource(rd.getInt("source_sys")).getDesc());
             int interactive_mode = TypeUtils.castToInt(rd.get("interactive_mode"));
             rd.set("interactive_mode", WebConstant.SftInteractiveMode.getSftInteractiveMode(interactive_mode).getDesc());
             int status = TypeUtils.castToInt(rd.get("service_status"));
