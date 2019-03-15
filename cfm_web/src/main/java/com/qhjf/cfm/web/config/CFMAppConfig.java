@@ -110,7 +110,7 @@ public class CFMAppConfig extends JFinalConfig {
         arp.addSqlTemplate("sql/" + iniMgr.dbType() + "/all_cfm.sql");
         //加载其他模块的sql template
         for (String sqlTemplate : bootScanRegisterMgr.getSqlTemplates()) {
-            log.debug("arp.addSqlTemplate({})",StringKit.removeControlCharacter(sqlTemplate));
+            log.info("arp.addSqlTemplate({})",StringKit.removeControlCharacter(sqlTemplate));
             arp.addSqlTemplate(sqlTemplate);
         }
 
