@@ -200,7 +200,10 @@ public class SysTradeResultBatchQueryInter implements ISysAtomicInterface {
 			@Override
 			public boolean run() throws SQLException {
 				//更新batch_pay_instr_queue_total：明细中有一条成功，汇总就更新为成功
-				int updInstrTotal = Db.update(Db.getSql("batchpay.updInstrTotal"), instrTotalId, instrTotalId);
+//				int updInstrTotal = Db.update(Db.getSql("batchpay.updInstrTotal"), instrTotalId, instrTotalId);
+				int updInstrTotal = CommonService.updateRows("batch_pay_instr_queue_total"
+						, new Record().set("status", 2)
+						, new Record().set("id", instrTotalId));
 				if (updInstrTotal == 1) {
 					log.debug("批量收付查询历史交易状态指令原始数据回写，更新指令汇总表成功！");
 					//更新pay_batch_total
@@ -210,8 +213,7 @@ public class SysTradeResultBatchQueryInter implements ISysAtomicInterface {
 						int updOrigin;
 						if (originTb.equals(SysBatchPayInter.LA_ORIGIN)) {
 							log.debug("批量收付查询历史交易状态指令原始数据回写，回写LA原始数据");
-							SqlPara updOrginLaSqlPara = Db.getSqlPara("batchpay.updOrginSuccLa", Kv.by("tb", originTb));
-							updOrigin = Db.update(updOrginLaSqlPara.getSql(), instrTotalId);
+							updOrigin = Db.update(Db.getSql("batchpay.updOrginSuccLa"), instrTotalId);
 						}else {
 							log.debug("批量收付查询历史交易状态指令原始数据回写，回写EBS原始数据");
 							Calendar c = Calendar.getInstance();

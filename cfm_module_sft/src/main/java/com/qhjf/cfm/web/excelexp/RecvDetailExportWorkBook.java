@@ -5,13 +5,16 @@ import com.jfinal.kit.Kv;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
 import com.jfinal.plugin.activerecord.SqlPara;
+import com.qhjf.cfm.exceptions.BusinessException;
 import com.qhjf.cfm.utils.RedisSericalnoGenTool;
+import com.qhjf.cfm.utils.SymmetricEncryptUtil;
 import com.qhjf.cfm.web.plugins.excelexp.AbstractWorkBook;
 import com.qhjf.cfm.web.plugins.excelexp.POIUtil;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.ss.usermodel.Workbook;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -23,10 +26,10 @@ import java.util.List;
 public class RecvDetailExportWorkBook extends AbstractWorkBook {
 
     public RecvDetailExportWorkBook() {
-    	 this.optype = "recvdisksending_detaillistexport";
+    	 this.optype = "recvdiskbacking_detaillistexport";
     	 this.titleNames = new String[]{
                 "child_batchno", "back_on","interactive_mode", "channel_code",
-                "channel_desc", "recv_acc_name", "recv_acc_no", "amount", "bank_err_code", "bank_err_msg"
+                "channel_desc", "pay_acc_name", "pay_acc_no", "amount", "bank_err_code", "bank_err_msg"
 
         };
         this.titles = new String[]{
@@ -43,6 +46,9 @@ public class RecvDetailExportWorkBook extends AbstractWorkBook {
     	Integer type = record.getInt("type");
     	String sql = Db.getSql("recv_disk_downloading.selectDetailByChildno");
         List<Record> recordList = Db.find(sql,child_batchno);
+        if(null == recordList || recordList.size() == 0) {
+        	return null;
+        }
         String channel_code = recordList.get(0).getStr("channel_code");
         String sbdxfnmb = null  ;
         if(1 == type) {
@@ -51,6 +57,12 @@ public class RecvDetailExportWorkBook extends AbstractWorkBook {
         	sbdxfnmb = "_Return_";
         }
         this.fileName = child_batchno+sbdxfnmb+channel_code+".xls" ; 
+        SymmetricEncryptUtil  util = new SymmetricEncryptUtil();
+        try {
+			util.paymask(recordList);
+		} catch (UnsupportedEncodingException | BusinessException e) {
+			e.printStackTrace();
+		}
         return POIUtil.createExcel(recordList, this);
     }
 }

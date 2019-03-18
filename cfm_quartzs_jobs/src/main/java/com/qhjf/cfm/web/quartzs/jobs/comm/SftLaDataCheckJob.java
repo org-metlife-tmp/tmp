@@ -4,11 +4,15 @@ import com.alibaba.fastjson.util.TypeUtils;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.IAtom;
 import com.jfinal.plugin.activerecord.Record;
+import com.qhjf.cfm.exceptions.BusinessException;
+import com.qhjf.cfm.exceptions.EncryAndDecryException;
 import com.qhjf.cfm.exceptions.ReqValidateException;
 import com.qhjf.cfm.utils.CommonService;
 import com.qhjf.cfm.utils.MD5Kit;
+import com.qhjf.cfm.utils.SymmetricEncryptUtil;
 import com.qhjf.cfm.web.constant.WebConstant;
 import com.qhjf.cfm.web.quartzs.jobs.pub.PubJob;
+import com.qhjf.cfm.web.quartzs.jobs.utils.DDHSafeUtil;
 import com.qhjf.cfm.web.quartzs.jobs.utils.ValidateUtil;
 import com.qhjf.cfm.web.utils.comm.file.tool.DataDoubtfulCache;
 import com.qhjf.cfm.web.webservice.sft.SftCallBack;
@@ -94,7 +98,10 @@ public class SftLaDataCheckJob implements Job{
                         }else{
                             return false;
                         }
-                    }
+                    } catch (EncryAndDecryException e) {
+						e.printStackTrace();
+						return false;
+					}
 
                     /*boolean isChannelOnline = isChannelOnline(laOiriginData.getStr("channel_code"));
                     if(!isChannelOnline){
@@ -173,12 +180,9 @@ public class SftLaDataCheckJob implements Job{
 
         }
 
-        private void validate(Record laOiriginData) throws ReqValidateException {
+        private void validate(Record laOiriginData) throws ReqValidateException, EncryAndDecryException {
         	//银行账号校验：recv_acc_no
-        	boolean accNoValidate = ValidateUtil.accNoValidate(laOiriginData.getStr("recv_acc_no"));
-        	if (!accNoValidate) {
-        		throw new ReqValidateException("银行账号非法");
-			}
+        	accNoValidate(laOiriginData);
         	
             Record org = Db.findFirst(
                     Db.getSql("la_cfm.getOrg"), laOiriginData.getStr("org_code"), laOiriginData.getStr("branch_code"));
@@ -221,6 +225,27 @@ public class SftLaDataCheckJob implements Job{
             laOiriginData.set("channel_code", channel.getStr("channel_code"));
             laOiriginData.set("recv_bank_type", channel.getStr("bank_type"));
             laOiriginData.set("recv_bank_name", channel.getStr("name"));
+        }
+        /**
+         * 银行账号解密-》校验-》加密
+         * @param r
+         * @throws ReqValidateException
+         * @throws EncryAndDecryException
+         */
+        private void accNoValidate(Record r) throws ReqValidateException, EncryAndDecryException{
+        	String oldRecvAccNo = r.getStr("recv_acc_no");
+        	//数据库解密
+        	String recvAccNo = DDHSafeUtil.decrypt(oldRecvAccNo);
+        	log.debug("数据库解密[{}]=[{}]", oldRecvAccNo, SymmetricEncryptUtil.accNoAddMask(recvAccNo));
+        	boolean accNoValidate = ValidateUtil.accNoValidate(recvAccNo);
+        	if (!accNoValidate) {
+        		throw new ReqValidateException("银行账号非法");
+			}
+        	
+        	//对称加密
+        	String newRecvAccNo = SymmetricEncryptUtil.getInstance().encrypt(recvAccNo);
+        	log.debug("对称加密后的密文=[{}]", newRecvAccNo);
+        	r.set("recv_acc_no", newRecvAccNo);
         }
 
         private WebConstant.YesOrNo checkDoubtful(Record originData) throws Exception {

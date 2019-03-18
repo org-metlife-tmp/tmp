@@ -23,10 +23,11 @@ public class RecvCheckBatchForController extends CFMBaseController{
     RecvCheckBatchForService service = new  RecvCheckBatchForService();
     
     /**
-     *@ 批付组批LA列表
+     *@throws Exception 
+     * @ 批付组批LA列表
      */
     @Auth(hasForces = {"RecvCheckAllot"})
-	public void  list(){
+	public void  list() throws Exception{
 		logger.info("============获取核对组批LA列表");
 		Record record = getRecordByParamsStrong();
         try {            	

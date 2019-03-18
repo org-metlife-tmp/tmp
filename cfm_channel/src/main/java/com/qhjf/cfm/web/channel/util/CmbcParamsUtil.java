@@ -8,6 +8,13 @@ package com.qhjf.cfm.web.channel.util;
  */
 public interface CmbcParamsUtil {
 	public enum TranType {
+		/**
+		 * 批量代付
+		 */
+		DFBXF("N03020", "代发保险费", "BYSU=代发保险费"),
+		/**
+		 * 批量代收
+		 */
 		DKBXF("N03030", "代扣保险费", "AYIS");
 		String busCod;
 		String cTrstyp;

@@ -77,5 +77,13 @@ public class RecvDiskBackingController extends CFMBaseController {
     public void listexport() {
         doExport();
     }
+    
+    /**
+     * 批付盘片下载列表导出
+     */
+    @Auth(hasForces = {"RecvBatchSend"})
+    public void detaillistexport() {
+        doExport();
+    }
 
 }

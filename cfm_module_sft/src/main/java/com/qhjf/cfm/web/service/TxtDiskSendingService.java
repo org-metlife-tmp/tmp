@@ -5,11 +5,13 @@ import com.jfinal.ext.kit.DateKit;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.IAtom;
 import com.jfinal.plugin.activerecord.Record;
+import com.qhjf.cfm.exceptions.BusinessException;
 import com.qhjf.cfm.exceptions.DbProcessException;
 import com.qhjf.cfm.exceptions.ReqDataException;
 import com.qhjf.cfm.utils.ArrayUtil;
 import com.qhjf.cfm.utils.CommonService;
 import com.qhjf.cfm.utils.RedisSericalnoGenTool;
+import com.qhjf.cfm.utils.SymmetricEncryptUtil;
 import com.qhjf.cfm.utils.VelocityUtil;
 import com.qhjf.cfm.web.UserInfo;
 import com.qhjf.cfm.web.config.DiskDownLoadSection;
@@ -56,11 +58,10 @@ public class TxtDiskSendingService {
      * @param document_type
      * @param configs_tail
      * @return
-     * @throws ReqDataException
-     * @throws DbProcessException
      * @throws IOException
+     * @throws BusinessException 
      */
-	public String diskDownLoad(Long pay_master_id,final Long pay_id,Integer document_moudle, final UserInfo userInfo, final String fileName, Integer document_type, Record configs_tail) throws ReqDataException, DbProcessException, IOException {
+	public String diskDownLoad(Long pay_master_id,final Long pay_id,Integer document_moudle, final UserInfo userInfo, final String fileName, Integer document_type, Record configs_tail) throws IOException, BusinessException {
 		logger.info("==============生成txt样式的盘片");
 		Record pay_total = Db.findById("pay_batch_total", "id", pay_id);
 		final Record user_record = Db.findById("user_info", "usr_id",userInfo.getUsr_id());
@@ -169,7 +170,14 @@ public class TxtDiskSendingService {
 	        	constructDetailMapService.constructDetailRecord(detail_map,detailRecords.get(i),document_moudle);	        	
 	        	//detail_map.put("serialnum", detailRecords.get(i).get("serialnum"));
 	        	for(int j = 0; j < datail_titleNames.split(",").length; j++) {
-	        		detail_map.put(datail_titleNames.split(",")[j], detailRecords.get(i).getStr(datail_titleNames.split(",")[j]));
+	        		if("recv_acc_no".equals(datail_titleNames.split(",")[j])) {
+	        			SymmetricEncryptUtil util = new SymmetricEncryptUtil();
+	        			String str = detailRecords.get(i).getStr(datail_titleNames.split(",")[j]);
+	        			String acc_no = new String(util.decrypt(str),"utf-8");
+	        			detail_map.put(datail_titleNames.split(",")[j],acc_no );	        			
+	        		}else {
+	        			detail_map.put(datail_titleNames.split(",")[j], detailRecords.get(i).getStr(datail_titleNames.split(",")[j]));	        			
+	        		}
 				}
 	        	datail_list.add(detail_map);
 			}
@@ -377,11 +385,10 @@ public class TxtDiskSendingService {
      * @param document_type
      * @param configs_tail
      * @return
-     * @throws ReqDataException
-     * @throws DbProcessException
      * @throws IOException
+     * @throws BusinessException 
      */
-	public String diskDownLoadNewThread(Long pay_master_id,final Long pay_id,Integer document_moudle, final String fileName, Integer document_type, Record configs_tail) throws ReqDataException, DbProcessException, IOException {
+	public String diskDownLoadNewThread(Long pay_master_id,final Long pay_id,Integer document_moudle, final String fileName, Integer document_type, Record configs_tail) throws IOException, BusinessException {
 		logger.info("==============生成txt样式的盘片");
 		// .mv文件均放在common包的resource文件下
 		String filePath = String.valueOf(document_moudle)+ document_type +".vm";
@@ -485,7 +492,14 @@ public class TxtDiskSendingService {
 	        	constructDetailMapService.constructDetailRecord(detail_map,detailRecords.get(i),document_moudle);	        	
 	        	//detail_map.put("serialnum", detailRecords.get(i).get("serialnum"));
 	        	for(int j = 0; j < datail_titleNames.split(",").length; j++) {
-	        		detail_map.put(datail_titleNames.split(",")[j], detailRecords.get(i).getStr(datail_titleNames.split(",")[j]));
+	        		if("recv_acc_no".equals(datail_titleNames.split(",")[j])) {
+	        			SymmetricEncryptUtil util = new SymmetricEncryptUtil();
+	        			String str = detailRecords.get(i).getStr(datail_titleNames.split(",")[j]);
+	        			String acc_no = new String(util.decrypt(str),"utf-8");
+	        			detail_map.put(datail_titleNames.split(",")[j],acc_no );	        			
+	        		}else {
+	        			detail_map.put(datail_titleNames.split(",")[j], detailRecords.get(i).getStr(datail_titleNames.split(",")[j]));	        			
+	        		}
 				}
 	        	datail_list.add(detail_map);
 			}

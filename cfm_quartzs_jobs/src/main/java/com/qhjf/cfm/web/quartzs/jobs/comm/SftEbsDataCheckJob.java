@@ -4,12 +4,16 @@ import com.alibaba.fastjson.util.TypeUtils;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.IAtom;
 import com.jfinal.plugin.activerecord.Record;
+import com.qhjf.cfm.exceptions.BusinessException;
+import com.qhjf.cfm.exceptions.EncryAndDecryException;
 import com.qhjf.cfm.exceptions.ReqValidateException;
 import com.qhjf.cfm.utils.CommonService;
 import com.qhjf.cfm.utils.MD5Kit;
+import com.qhjf.cfm.utils.SymmetricEncryptUtil;
 import com.qhjf.cfm.utils.TableDataCacheUtil;
 import com.qhjf.cfm.web.constant.WebConstant;
 import com.qhjf.cfm.web.quartzs.jobs.pub.PubJob;
+import com.qhjf.cfm.web.quartzs.jobs.utils.DDHSafeUtil;
 import com.qhjf.cfm.web.quartzs.jobs.utils.ValidateUtil;
 import com.qhjf.cfm.web.utils.comm.file.tool.DataDoubtfulCache;
 import com.qhjf.cfm.web.webservice.sft.SftCallBack;
@@ -80,22 +84,27 @@ public class SftEbsDataCheckJob implements Job{
                     boolean returnFlag = false;
                     try {
                         validate(ebsOriginData);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        int flag = Db.update(Db.getSql("ebs_cfm.updEbsOriginStatus"),
-                                WebConstant.YesOrNo.YES.getKey(),
-                                WebConstant.SftInterfaceStatus.SFT_INTER_PROCESS_F.getKey(),
-                                e.getMessage(),
-                                ebsOriginData.getLong("id"),
-                                ebsOriginData.getInt("persist_version"));
-                        if(flag == 1){
-                        	SftCallBack callback = new SftCallBack();
+                    } catch (ReqValidateException e) {
+                    	e.printStackTrace();
+                    	log.error("原始数据校验失败，开始回调EBS！");
+                		int flag = Db.update(Db.getSql("ebs_cfm.updEbsOriginStatus"),
+                				WebConstant.YesOrNo.YES.getKey(),
+                				WebConstant.SftInterfaceStatus.SFT_INTER_PROCESS_F.getKey(),
+                				e.getMessage(),
+                				ebsOriginData.getLong("id"),
+                				ebsOriginData.getInt("persist_version"));
+                		if(flag == 1){
+                			ebsOriginData.set("persist_version", ebsOriginData.getInt("persist_version") + 1);
+                			SftCallBack callback = new SftCallBack();
                 			callback.callback(WebConstant.SftOsSource.EBS.getKey(), ebsOriginData);
-                            return true;
-                        }else{
-                            return false;
-                        }
-                    }
+                			return true;
+                		}else{
+                			return false;
+                		}
+                    } catch (EncryAndDecryException e) {
+						e.printStackTrace();
+						return false;
+					}
                     
                     /*boolean isChannelOnline = isChannelOnline(ebsOriginData.getStr("channel_code"));
                     if(!isChannelOnline){
@@ -180,12 +189,9 @@ public class SftEbsDataCheckJob implements Job{
 
         }
 
-        private void validate(Record ebsOriginData) throws Exception {
+        private void validate(Record ebsOriginData) throws ReqValidateException, EncryAndDecryException {
         	//银行账号校验：recv_acc_no
-        	boolean accNoValidate = ValidateUtil.accNoValidate(ebsOriginData.getStr("recv_acc_no"));
-        	if (!accNoValidate) {
-        		throw new ReqValidateException("银行账号非法");
-			}
+        	accNoValidate(ebsOriginData);
         	
             Record org = Db.findFirst(Db.getSql("ebs_cfm.getOrg"),
                     TypeUtils.castToString(ebsOriginData.get("org_code")));
@@ -244,6 +250,28 @@ public class SftEbsDataCheckJob implements Job{
             ebsOriginData.set("channel_code", channel.getStr("channel_code"));
             ebsOriginData.set("recv_bank_type", bankType);
             ebsOriginData.set("recv_bank_name", TypeUtils.castToString(constBankType.get("name")));
+        }
+        /**
+         * 银行账号解密-》校验-》加密
+         * @param r
+         * @throws ReqValidateException
+         * @throws EncryAndDecryException
+         */
+        private void accNoValidate(Record r) throws ReqValidateException, EncryAndDecryException{
+        	String oldRecvAccNo = r.getStr("recv_acc_no");
+        	//数据库解密
+        	String recvAccNo = DDHSafeUtil.decrypt(oldRecvAccNo);
+        	log.debug("数据库解密[{}]=[{}]", oldRecvAccNo, SymmetricEncryptUtil.accNoAddMask(recvAccNo));
+        	boolean accNoValidate = ValidateUtil.accNoValidate(recvAccNo);
+        	if (!accNoValidate) {
+        		throw new ReqValidateException("银行账号非法");
+			}
+        	
+        	//对称加密
+        	String newRecvAccNo = null;
+        	newRecvAccNo = SymmetricEncryptUtil.getInstance().encrypt(recvAccNo);
+        	log.debug("对称加密后的密文=[{}]", newRecvAccNo);
+        	r.set("recv_acc_no", newRecvAccNo);
         }
 
         private WebConstant.YesOrNo checkDoubtful(Record originData) throws Exception {

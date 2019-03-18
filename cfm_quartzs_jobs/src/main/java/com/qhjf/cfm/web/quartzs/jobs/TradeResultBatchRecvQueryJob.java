@@ -15,6 +15,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
+ * 实现原子接口：代收
  * @Auther: cht
  * @Date: 2019/2/27
  * @Description:
@@ -48,27 +49,7 @@ public class TradeResultBatchRecvQueryJob extends PubJob {
 
     @Override
     public List<Record> getSourceDataList() throws JobExecutionException {
-        List<Record> result = null;
-
-        //Db.find的入参为查询多少个处理中的批次
-        List<Record> sourceList = Db.find(Db.getSql("batchrecvjob.getTradeResultBatchQrySourceList"));
-
-        if (null != sourceList && sourceList.size() > 0) {
-            result = new ArrayList<>();
-
-            for (Record source : sourceList) {
-            	Date initSendTime = source.getDate("init_send_time");
-                Calendar c = Calendar.getInstance();
-                c.setTime(initSendTime);
-                c.add(Calendar.MINUTE, 10);
-                //指令发出后10分钟才能查询指令状态
-                if (c.getTime().compareTo(new Date()) < 0 ) {
-                	source.set("bank_cnaps_code", source.getStr("recv_bank_cnaps"));
-                	result.add(source);
-				}
-            }
-        }
-        return result;
+        return Db.find(Db.getSql("batchrecvjob.getTradeResultBatchQrySourceList"));
     }
 
     @Override

@@ -33,10 +33,11 @@ public class CheckBatchForController extends CFMBaseController{
     CheckBatchForService service = new  CheckBatchForService();
     
     /**
-     *@ 组批LA/EBS列表
+     *@throws Exception 
+     * @ 组批LA/EBS列表
      */
     @Auth(hasForces = {"PayCheckAllot"})
-	public void  list(){
+	public void  list() throws Exception{
 		logger.info("============获取核对组批LA/EBS列表");
 		Record record = getRecordByParamsStrong();
         try {            	

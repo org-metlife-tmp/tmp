@@ -97,6 +97,20 @@ WHERE
     #end
   #end
   order by pay.pay_code asc
-
 #end
 
+#sql("findDistinctStatus")
+SELECT
+  DISTINCT(status) AS status
+FROM
+  pay_legal_data AS pay
+WHERE 
+pay.id  in (
+      #for(y : map)
+          #if(for.index > 0)
+            #(",")
+          #end
+          #(y.pay_id)
+     #end
+     )
+#end

@@ -1,6 +1,7 @@
 package com.qhjf.cfm.web.quartzs.jobs.comm;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 import org.quartz.Job;
@@ -47,7 +48,9 @@ public class LaRecvDataCheckJob implements Job{
 	}
 	
 	private void updZDDHPF(int status, long id){
-		boolean update = CommonService.update("ZDDHPF", new Record().set("STATUS", status), new Record().set("id", id));
+		boolean update = CommonService.update("ZDDHPF"
+				, new Record().set("STATUS", status).set("DATIME", new Date())
+				, new Record().set("id", id));
 		if (!update) {
 			log.error("更新ZDDHPF失败！");
 		}

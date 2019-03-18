@@ -64,21 +64,6 @@
 		and status=3
 #end
 
-###更新支付指令汇总表
-#sql("updInstrTotal")
-	update
-		batch_pay_instr_queue_total
-	set
-		status=(
-			case when 
-				(select count(*) from batch_pay_instr_queue_detail where base_id=? and status=1)>0 
-			then 1 
-			else 2 
-			end
-		)
-	where id=?
-#end
-
 ###查询支付指令明细表
 #sql("findInstrDetailByBaseId")
 	select
@@ -198,4 +183,24 @@
 		) bill
 	where 
 		origin.id = bill.origin_id
+#end
+
+#sql("qryIntrTotalByBSN")
+	select 
+		*
+	from
+		batch_pay_instr_queue_total
+	where
+		bank_serial_number = ?
+#end
+
+#sql("selIntrDetailByAcc")
+   select
+   	*
+   from
+   	batch_pay_instr_queue_detail
+   where
+   	base_id = ? and
+   	recv_account_no = ? and
+   	amount = ?
 #end

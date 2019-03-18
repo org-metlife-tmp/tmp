@@ -61,11 +61,6 @@ public class BatchSqlTest {
 		System.out.println(findFirst);
 	}
 	@Test
-	public void updInstrTotalTest(){
-		int findFirst = Db.update(Db.getSql("batchpay.updInstrTotal"),1,1);
-		System.out.println(findFirst);
-	}
-	@Test
 	public void findInstrDetailByBaseIdTest(){
 		List<Record> find = Db.find(Db.getSql("batchpay.findInstrDetailByBaseId"),1);
 		System.out.println(find);

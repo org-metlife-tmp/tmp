@@ -7,7 +7,9 @@ import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.IAtom;
 import com.jfinal.plugin.activerecord.Record;
 import com.jfinal.plugin.activerecord.SqlPara;
+import com.qhjf.cfm.exceptions.EncryAndDecryException;
 import com.qhjf.cfm.utils.CommonService;
+import com.qhjf.cfm.utils.SymmetricEncryptUtil;
 import com.qhjf.cfm.web.channel.inter.api.IChannelInter;
 import com.qhjf.cfm.web.channel.inter.api.IMoreResultChannelInter;
 import com.qhjf.cfm.web.constant.WebConstant;
@@ -66,10 +68,13 @@ public class SysTradeResultRecvBatchQueryInter implements ISysAtomicInterface {
             return;
         }
 
-        Record instrTotalRecord = null;
-        String sourceRef = null;
-        final String billTable[] = new String[1];
-        final String billTablePrimaryKey[] = new String[1];
+        Record instrTotalRecord = findInstrTotal(instr.getStr("bank_serial_number"));
+        if (null == instrTotalRecord) {
+        	log.error("批量收付查询历史交易状态指令回写，通过bank_serial_number=[{}]未查询到指令！", instr.getStr("bank_serial_number"));
+        	return;
+		}
+        final String billTable = instrTotalRecord.getStr("source_ref");
+        final String billTablePrimaryKey = SysInterManager.getSourceRefPrimaryKey(billTable);
 
         for (int i = 0; i < resultCount; i++) {
             Record parseRecord = channelInter.parseResult(jsonStr, i);
@@ -79,22 +84,11 @@ public class SysTradeResultRecvBatchQueryInter implements ISysAtomicInterface {
 				continue;
 			}
             
-            if (null == instrTotalRecord) {
-                //查询收款指令汇总信息表
-                instrTotalRecord = findInstrTotal(instr.getStr("bank_serial_number"));
-                sourceRef = instrTotalRecord.getStr("source_ref");
-                //获取单据明细表
-                billTable[0] = SysInterManager.getDetailTableName(sourceRef);
-                billTablePrimaryKey[0] = SysInterManager.getSourceRefPrimaryKey(billTable[0]);
-            }
-            
-
             if (status == WebConstant.PayStatus.SUCCESS.getKey() || status == WebConstant.PayStatus.FAILD.getKey()) {
             	//查询收款指令明细信息：通过 银行账号+金额+收款指令汇总表主键查询
                 final Record instrDetailRecord = Db.findFirst(Db.getSql("batchrecv.selIntrDetailByAcc")
                 		, instrTotalRecord.getLong("id")
                 		, TypeUtils.castToString(bankData.get("pay_account_no"))
-                		, TypeUtils.castToString(bankData.get("pay_account_name"))
                 		, TypeUtils.castToDouble(bankData.get("amount")));
                 if (null == instrDetailRecord) {
                 	log.error("*****************下面error需人工排查************************");
@@ -108,19 +102,19 @@ public class SysTradeResultRecvBatchQueryInter implements ISysAtomicInterface {
                     public boolean run() throws SQLException {
                         Long detailId = TypeUtils.castToLong(instrDetailRecord.get("detail_id"));
                         Record bill_setRecord = new Record();
-                        Record bill_whereRecord = new Record().set(billTablePrimaryKey[0], detailId);
+                        Record bill_whereRecord = new Record().set(billTablePrimaryKey, detailId);
 
                         Record instr_setRecord = new Record();
                         Record instr_whereRecord = new Record().set("id", instrDetailRecord.getLong("id"));
 
                         if (status == WebConstant.PayStatus.SUCCESS.getKey()) {
-                            bill_setRecord.set(SysInterManager.getStatusFiled(billTable[0])
-                                    , SysInterManager.getSuccessStatusEnum(billTable[0]));
+                            bill_setRecord.set(SysInterManager.getStatusFiled(billTable)
+                                    , SysInterManager.getSuccessStatusEnum(billTable));
 
                             instr_setRecord.set("status", SysInterManager.getSuccessStatusEnum(SysBatchRecvInter.BATCH_RECV_INSTR_DETAIL_TALBE))
                                     .set("bank_back_time", new Date());
                         } else {
-                            bill_setRecord.set(SysInterManager.getStatusFiled(billTable[0]), SysInterManager.getFailStatusEnum(billTable[0]))
+                            bill_setRecord.set(SysInterManager.getStatusFiled(billTable), SysInterManager.getFailStatusEnum(billTable))
                             			  .set("bank_err_msg", TypeUtils.castToString(bankData.get("bank_err_msg")))
                             			  .set("bank_err_code", TypeUtils.castToString(bankData.get("bank_err_code")));
 
@@ -131,14 +125,14 @@ public class SysTradeResultRecvBatchQueryInter implements ISysAtomicInterface {
                         }
 
                         // 1.更新单据状态；2.修改队列表状态
-                        if (CommonService.updateRows(billTable[0], bill_setRecord, bill_whereRecord) == 1) { // 修改单据状态
+                        if (CommonService.updateRows(billTable, bill_setRecord, bill_whereRecord) == 1) { // 修改单据状态
                             boolean updDetail = CommonService.updateRows(SysBatchRecvInter.BATCH_RECV_INSTR_DETAIL_TALBE, instr_setRecord, instr_whereRecord) == 1;
                             if (!updDetail) {
                                 log.error("批量收付状态查询回写时，[{}]更新失败！instr_setRecord=【{}】，instr_whereRecord=【{}】", SysBatchRecvInter.BATCH_RECV_INSTR_DETAIL_TALBE, instr_setRecord, instr_whereRecord);
                             }
                             return true;
                         } else {
-                            log.error("批量收付状态查询回写时，[{}]更新失败！bill_setRecord=【{}】，bill_whereRecord=【{}】", billTable[0], bill_setRecord, bill_whereRecord);
+                            log.error("批量收付状态查询回写时，[{}]更新失败！bill_setRecord=【{}】，bill_whereRecord=【{}】", billTable, bill_setRecord, bill_whereRecord);
                             return false;
                         }
                     }
@@ -197,11 +191,13 @@ public class SysTradeResultRecvBatchQueryInter implements ISysAtomicInterface {
             log.error("批量收付查询历史交易状态指令原始数据回写，通过source_ref=[{}],bill_id=[{}]未找到单据！", billTotalTbName, instrTotal.getLong("bill_id"));
             return;
         }
-        Integer sourceSys = SysBatchRecvInter.getSourceSys(billTotalTbName, billTotalRecord);
+        
+        //批收没有EBS，不判断数据源
+        /*Integer sourceSys = SysBatchRecvInter.getSourceSys(billTotalTbName, billTotalRecord);
         if (null == sourceSys) {
         	log.error("*****************上面error需人工处理************************");
             return;
-        }
+        }*/
         final String originTb = SysBatchRecvInter.LA_ORIGIN;
 
         //3.更新汇总表与原始数据
@@ -219,8 +215,7 @@ public class SysTradeResultRecvBatchQueryInter implements ISysAtomicInterface {
                         int updOrigin = 0;
                         if (originTb.equals(SysBatchRecvInter.LA_ORIGIN)) {
                             log.debug("批量收付查询历史交易状态指令原始数据回写，回写LA原始数据");
-                            SqlPara updOrginLaSqlPara = Db.getSqlPara("batchrecv.updOrginSuccLa", Kv.by("tb", originTb));
-                            updOrigin = Db.update(updOrginLaSqlPara.getSql(), instrTotalId);
+                            updOrigin = Db.update(Db.getSql("batchrecv.updOrginSuccLa"), instrTotalId);
                         }
                         if (updOrigin == instrTotal.getInt("total_num")) {
                             return true;
@@ -243,12 +238,13 @@ public class SysTradeResultRecvBatchQueryInter implements ISysAtomicInterface {
         	log.info("批量收付查询历史交易状态指令原始数据回写，回写成功，开始回调LA。。。");
             try {
                 List<Record> originRecord = null;
-                if (sourceSys == WebConstant.SftOsSource.LA.getKey()) {
+                /*if (sourceSys == WebConstant.SftOsSource.LA.getKey()) {
                     log.info("======回调LA");
                     originRecord = Db.find(Db.getSql("disk_backing.selectLaRecvOriginData"), billTotalRecord.get("child_batchno"));
-                }
+                }*/
+                originRecord = Db.find(Db.getSql("disk_backing.selectLaRecvOriginData"), billTotalRecord.get("child_batchno"));
                 SftRecvCallBack callback = new SftRecvCallBack();
-                callback.callback(sourceSys, originRecord);
+                callback.callback(WebConstant.SftOsSource.LA.getKey(), originRecord);
             } catch (Exception e) {
                 e.printStackTrace();
                 log.error("===============回调失败");
@@ -260,31 +256,47 @@ public class SysTradeResultRecvBatchQueryInter implements ISysAtomicInterface {
     
     
     private Record findInstrTotal(String bankSerialNumber){
-    	return Db.findFirst(Db.getSql("batchpay.findInstrTotal"), bankSerialNumber);
+    	return Db.findFirst(Db.getSql("batchrecv.findInstrTotal"), bankSerialNumber);
     }
+    
+    /**
+     * 银行返回数据进行校验
+     * @param bankRcord
+     * @return
+     */
     private Map<String,Object> handleBankData(Record bankRcord){
     	Map<String, Object> result = new HashMap<>();
         
+    	//付方账号存在校验
         String payAccountNo = bankRcord.getStr("pay_account_no");
         if (null == payAccountNo || "".equals(payAccountNo.trim())) {
         	log.error("*****************下面error需人工排查************************");
             log.error("批量收付查询历史交易状态指令回写，【{}】没有返回pay_account_no，跳过该笔回写！", bankRcord);
             return null;
         }
-        result.put("pay_account_no", payAccountNo.trim());
         
+        String encPayAccNo = null;
+		try {
+			encPayAccNo = SymmetricEncryptUtil.getInstance().encrypt(payAccountNo.trim());
+		} catch (EncryAndDecryException e1) {
+			log.error("*****************下面error需人工排查************************");
+            log.error("批量收付查询历史交易状态指令回写，付款人账号[{}]加密失败，跳过该笔回写！", SymmetricEncryptUtil.accNoAddMask(payAccountNo.trim()));
+			e1.printStackTrace();
+			return null;
+		}
+		
+        result.put("pay_account_no", encPayAccNo);
+        
+        //付款金额校验
         try {
 			Double amount = TypeUtils.castToDouble(bankRcord.get("amount"));
 			result.put("amount", amount);
 		} catch (Exception e) {
 			log.error("*****************下面error需人工排查************************");
-			log.error("批量收付查询历史交易状态指令回写，【{}】金额转换为double失败，跳过该笔回写！", bankRcord);
+			log.error("批量收付查询历史交易状态指令回写，【{}】金额转换为double失败，跳过该笔回写！", bankRcord.get("amount"));
 			e.printStackTrace();
 			return null;
 		}
-        
-        String payAccountName = bankRcord.getStr("pay_account_name");
-        result.put("pay_account_name", payAccountName == null ? "" : payAccountName.trim());
         
         String bankErrMsg = bankRcord.getStr("bank_err_msg");
         result.put("bank_err_msg", bankErrMsg.length() > 200 ? bankErrMsg.substring(0, 200) : bankErrMsg);

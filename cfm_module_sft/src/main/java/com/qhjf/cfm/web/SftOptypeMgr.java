@@ -168,7 +168,7 @@ public class SftOptypeMgr extends AbstractOptypeMgr {
         /** ============================ 收付数据防重预警 begin ============================ */
         //防重预警列表
         optypes.add(new Optype(Optype.Mode.NORMAL, "sftdoubtful_doubtfullist")
-                .registKeepParams(new String[]{"os_source", "start_date", "end_date", "pay_mode", "bank_key", "bankkey_desc",
+                .registKeepParams(new String[]{"os_source", "start_date", "end_date", "channel_id_one", "channel_id_two", "pay_mode", "bank_key", "bankkey_desc",
                         "tmp_org_id", "preinsure_bill_no", "insure_bill_no", "status", "page_size", "page_num"})
                 .registerValidate(new RequiredParamsValidate(new String[]{"os_source"})));
 
@@ -460,7 +460,7 @@ public class SftOptypeMgr extends AbstractOptypeMgr {
                 .registKeepParams(new String[]{"start_date","end_date","master_batchno","source_sys",
                 		"channel_id","channel_desc","status"})); 
         
-        optypes.add(new Optype(Optype.Mode.NORMAL, "recvdisksending_detaillistexport")
+        optypes.add(new Optype(Optype.Mode.NORMAL, "recvdiskbacking_detaillistexport")
         		.registKeepParams(new String[]{"child_batchno","type"})
                 .registerValidate(new RequiredParamsValidate(new String[]{"child_batchno","type"})));
 
@@ -543,7 +543,7 @@ public class SftOptypeMgr extends AbstractOptypeMgr {
         /** ============================ 收付数据收防重预警 begin ============================ */
         //防重预警列表
         optypes.add(new Optype(Optype.Mode.NORMAL, "sftrecvdoubtful_doubtfullist")
-                .registKeepParams(new String[]{"os_source", "start_date", "end_date", "pay_mode", "bank_key", "bankkey_desc",
+                .registKeepParams(new String[]{"os_source", "start_date", "end_date", "channel_id_one", "channel_id_two", "pay_mode", "bank_key", "bankkey_desc",
                         "tmp_org_id", "preinsure_bill_no", "insure_bill_no", "status", "page_size", "page_num"})
                 .registerValidate(new RequiredParamsValidate(new String[]{"os_source"})));
 

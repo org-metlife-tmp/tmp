@@ -23,6 +23,7 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+@Deprecated
 public class SysBatchPayInter implements ISysAtomicInterface {
 
 	private static Logger log = LoggerFactory.getLogger(SysBatchPayInter.class);
@@ -515,15 +516,17 @@ public class SysBatchPayInter implements ISysAtomicInterface {
 			@Override
 			public boolean run() throws SQLException {
 				//3.1.更新batch_pay_instr_queue_total：明细中有一条成功，汇总就更新为成功
-				int updInstrTotal = Db.update(Db.getSql("batchpay.updInstrTotal"), instrTotalId, instrTotalId);
+//				int updInstrTotal = Db.update(Db.getSql("batchpay.updInstrTotal"), instrTotalId, instrTotalId);
+				int updInstrTotal = CommonService.updateRows("batch_pay_instr_queue_total"
+						, new Record().set("status", 2)
+						, new Record().set("id", instrTotalId));
 				if (updInstrTotal == 1) {
 					//3.2.更新pay_batch_total
 					if (updBillTotal(instrTotalId, TypeUtils.castToLong(instrTotal.get("bill_id")), instrTotal.getStr("source_ref"))) {
 						//3.3.更新la_origin_pay_data|ebs_origin_pay_data
 						int updOrigin;
 						if (originTb.equals(LA_ORIGIN)) {
-							SqlPara updOrginLaSqlPara = Db.getSqlPara("batchpay.updOrginSuccLa", Kv.by("tb", originTb));
-							updOrigin = Db.update(updOrginLaSqlPara.getSql(), instrTotalId);
+							updOrigin = Db.update(Db.getSql("batchpay.updOrginSuccLa"), instrTotalId);
 						}else {
 							Calendar c = Calendar.getInstance();
 							String date = new SimpleDateFormat("yyyy-MM-dd").format(c.getTime());

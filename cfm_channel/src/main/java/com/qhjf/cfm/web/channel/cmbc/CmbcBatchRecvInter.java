@@ -5,6 +5,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.jfinal.plugin.activerecord.Record;
 import com.qhjf.bankinterface.api.AtomicInterfaceConfig;
 import com.qhjf.bankinterface.cmbc.CmbcConstant;
+import com.qhjf.cfm.exceptions.EncryAndDecryException;
+import com.qhjf.cfm.utils.SymmetricEncryptUtil;
 import com.qhjf.cfm.web.channel.inter.api.IChannelBatchInter;
 import com.qhjf.cfm.web.channel.util.CmbcParamsUtil;
 import org.slf4j.Logger;
@@ -58,7 +60,7 @@ public class CmbcBatchRecvInter implements IChannelBatchInter {
             log.debug("CMB批量收付：条数=【{}】；list=【{}】", detail.size(), detail);
             for (Record r : detail) {
                 Map<String, Object> detailMap = new HashMap<String, Object>();
-                detailMap.put("ACCNBR", r.get("pay_account_no"));//收款账号/被扣款账号
+                detailMap.put("ACCNBR", decryptAccNo(r.getStr("pay_account_no")));//收款账号/被扣款账号
                 detailMap.put("CLTNAM", r.get("pay_account_name"));//户名
                 detailMap.put("TRSAMT", r.get("amount"));//金额
 //                detailMap.put("BNKFLG", r.get("is_cross_bank"));//系统内标志
@@ -73,6 +75,16 @@ public class CmbcBatchRecvInter implements IChannelBatchInter {
         map.put("SDKATDRQX", details);
         return map;
     }
+    //解密
+  	private String decryptAccNo(String accNo){
+  		String recvAccountNo = null;
+  		try {
+  			recvAccountNo = SymmetricEncryptUtil.getInstance().decryptToStr(accNo);
+  		} catch (EncryAndDecryException e) {
+  			e.printStackTrace();
+  		}
+  		return recvAccountNo;
+  	}
 
     @Override
     public AtomicInterfaceConfig getInter() {
@@ -111,23 +123,6 @@ public class CmbcBatchRecvInter implements IChannelBatchInter {
         JSONObject jo = this.rsArray.getJSONObject(index);
         record.set("reqnbr", jo.getString("REQNBR"));
 
-        /*String isFinish = jo.getString("REQSTS");
-        if (!"FIN".equals(isFinish)) {
-            record.set("status", 3);
-            return record;
-        }
-
-        String result = jo.getString("RTNFLG");
-        if ("S".equals(result)) {
-            record.set("status", 1);
-            return record;
-        } else {
-            record.set("status", 2);
-            record.set("message", jo.getString("ERRTXT"));
-            record.set("code", jo.getString("ERRCOD"));
-            return record;
-        }*/
-        
         return record;
     }
 

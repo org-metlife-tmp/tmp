@@ -6,7 +6,10 @@ import com.jfinal.kit.Kv;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
 import com.jfinal.plugin.activerecord.SqlPara;
+import com.qhjf.cfm.exceptions.BusinessException;
+import com.qhjf.cfm.exceptions.EncryAndDecryException;
 import com.qhjf.cfm.utils.RedisSericalnoGenTool;
+import com.qhjf.cfm.utils.SymmetricEncryptUtil;
 import com.qhjf.cfm.web.constant.WebConstant;
 import com.qhjf.cfm.web.plugins.excelexp.AbstractWorkBook;
 import com.qhjf.cfm.web.plugins.excelexp.POIUtil;
@@ -14,6 +17,7 @@ import com.qhjf.cfm.web.plugins.excelexp.POIUtil;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.ss.usermodel.Workbook;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -62,6 +66,15 @@ public class CheckBatchWorkBook extends AbstractWorkBook {
                 codes.add(o.getStr("code"));
             }
         }
+        SymmetricEncryptUtil  util = new SymmetricEncryptUtil();
+		String recv_acc_no = record.getStr("recv_acc_no");
+		try {
+			recv_acc_no = util.encrypt(recv_acc_no);
+		} catch (EncryAndDecryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		record.set("recv_acc_no", recv_acc_no);
         record.set("codes", codes);
         record.set("pay_mode", WebConstant.SftDoubtPayMode.PLSF.getKeyc());
     	List<Integer> status = record.get("status");
@@ -78,6 +91,11 @@ public class CheckBatchWorkBook extends AbstractWorkBook {
             sqlPara = Db.getSqlPara("check_batch.checkBatchEBSlist", Kv.by("map", record.getColumns()));
         }
         List<Record> recordList = Db.find(sqlPara);
+        try {
+			util.recvmask(recordList);
+		} catch (UnsupportedEncodingException | BusinessException e) {
+			e.printStackTrace();
+		}
         return POIUtil.createExcel(recordList, this);
     }
 }

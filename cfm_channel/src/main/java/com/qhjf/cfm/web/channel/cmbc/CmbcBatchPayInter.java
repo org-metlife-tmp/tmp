@@ -5,6 +5,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.jfinal.plugin.activerecord.Record;
 import com.qhjf.bankinterface.api.AtomicInterfaceConfig;
 import com.qhjf.bankinterface.cmbc.CmbcConstant;
+import com.qhjf.cfm.exceptions.EncryAndDecryException;
+import com.qhjf.cfm.utils.SymmetricEncryptUtil;
 import com.qhjf.cfm.web.channel.inter.api.IChannelBatchInter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +16,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * 批付:直接支付接口实现版本
+ * @author CHT
+ *
+ */
+@Deprecated
 public class CmbcBatchPayInter implements IChannelBatchInter {
 	
 	private static final Logger log = LoggerFactory.getLogger(CmbcBatchPayInter.class);
@@ -44,7 +52,8 @@ public class CmbcBatchPayInter implements IChannelBatchInter {
                 //摘要长度：Z（62） 
                 //String summary = r.getStr("instruct_code")+(CommKit.isNullOrEmpty(r.get("summary"))? "cfm" : r.getStr("summary"));
                 detailMap.put("NUSAGE", "批量支付");
-                detailMap.put("CRTACC", r.getStr("recv_account_no"));
+                
+                detailMap.put("CRTACC", decryptAccNo(r.getStr("recv_account_no")));
                 detailMap.put("CRTNAM", r.getStr("recv_account_name"));
                 detailMap.put("BNKFLG", r.getStr("is_cross_bank"));
                 if ("1".equals(r.getStr("is_cross_bank"))) {
@@ -59,6 +68,16 @@ public class CmbcBatchPayInter implements IChannelBatchInter {
         map.put("SDKPAYRQX", totMap);
         map.put("DCOPDPAYX", details);
         return map;
+	}
+	//解密
+	private String decryptAccNo(String accNo){
+		String recvAccountNo = null;
+		try {
+			recvAccountNo = SymmetricEncryptUtil.getInstance().decryptToStr(accNo);
+		} catch (EncryAndDecryException e) {
+			e.printStackTrace();
+		}
+		return recvAccountNo;
 	}
 
 	@Override

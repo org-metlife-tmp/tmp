@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
+@Deprecated
 public class TradeResultBatchQueryJob extends PubJob{
 	
 	private static Logger log = LoggerFactory.getLogger(TradeResultBatchQueryJob.class);

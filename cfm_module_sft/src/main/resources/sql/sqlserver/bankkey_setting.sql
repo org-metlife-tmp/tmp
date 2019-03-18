@@ -68,15 +68,18 @@ SELECT
 	channel.bankcode,
 	channel.acc_no,
 	bank.name bank_name,
-	bank.name display_name
+	bank.name display_name,
+	ui.name update_user
 FROM
 	bankkey_setting bankkey,
 	channel_setting channel,
 	organization org,
-	const_bank_type bank
+	const_bank_type bank,
+	user_info ui
 where bankkey.channel_id = channel.id
 and bankkey.org_id = org.org_id
 and bankkey.bank_type = bank.code
+and ui.usr_id = bankkey.update_by
 and bankkey.id = ?
 #end
 

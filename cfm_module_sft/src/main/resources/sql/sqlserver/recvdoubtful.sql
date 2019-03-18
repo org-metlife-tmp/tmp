@@ -43,6 +43,10 @@ and la.is_doubtful = 1
           la.bank_key like convert(varchar(5),'%')+convert(varchar(255),#para(x.value))+convert(varchar(5),'%')
         #elseif("bankkey_desc".equals(x.key))
           bankkey.bankkey_desc like convert(varchar(5),'%')+convert(varchar(255),#para(x.value))+convert(varchar(5),'%')
+        #elseif("channel_id_one".equals(x.key))
+          la.channel_id = #para(x.value)
+        #elseif("channel_id_two".equals(x.key))
+          la.channel_id = #para(x.value)
         #elseif("start_date".equals(x.key))
           DATEDIFF(day,#para(x.value),recv_date) >= 0
         #elseif("end_date".equals(x.key))

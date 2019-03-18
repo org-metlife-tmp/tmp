@@ -156,6 +156,14 @@
    where
    	base_id = ? and
    	pay_account_no = ? and
-   	pay_account_name = ? and
    	amount = ?
+#end
+
+#sql("qryIntrTotalByBSN")
+	select 
+		*
+	from
+		batch_recv_instr_queue_total
+	where
+		bank_serial_number = ?
 #end

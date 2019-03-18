@@ -10,6 +10,7 @@ import com.qhjf.cfm.exceptions.WorkflowException;
 import com.qhjf.cfm.utils.ArrayUtil;
 import com.qhjf.cfm.utils.BizSerialnoGenTool;
 import com.qhjf.cfm.utils.CommonService;
+import com.qhjf.cfm.utils.SymmetricEncryptUtil;
 import com.qhjf.cfm.web.UodpInfo;
 import com.qhjf.cfm.web.UserInfo;
 import com.qhjf.cfm.web.WfRequestObj;
@@ -23,6 +24,7 @@ import com.qhjf.cfm.web.webservice.oa.server.OaDataDoubtfulCache;
 import com.qhjf.cfm.web.webservice.sft.SftCallBack;
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.*;
@@ -48,9 +50,10 @@ public class CheckBatchForService {
 	 * @param record
 	 * @param uodpInfo
 	 * @return
-	 * @throws ReqDataException
+	 * @throws BusinessException 
+	 * @throws UnsupportedEncodingException 
 	 */
-	public Page<Record> list(int pageNum, int pageSize, Record record, UodpInfo uodpInfo) throws ReqDataException {
+	public Page<Record> list(int pageNum, int pageSize, Record record, UodpInfo uodpInfo) throws Exception, BusinessException {
 		Long org_id = uodpInfo.getOrg_id();
 		Record findById = Db.findById("organization", "org_id", org_id);
 		if (null == findById) {
@@ -67,6 +70,10 @@ public class CheckBatchForService {
 				codes.add(o.getStr("code"));
 			}
 		}
+		SymmetricEncryptUtil  util = new SymmetricEncryptUtil();
+		String recv_acc_no = record.getStr("recv_acc_no");
+		recv_acc_no = util.encrypt(recv_acc_no);
+		record.set("recv_acc_no", recv_acc_no);
 		record.set("codes", codes);
 		record.set("pay_mode", WebConstant.SftDoubtPayMode.PLSF.getKeyc());
 		List<Integer> status = record.get("status");
@@ -84,7 +91,10 @@ public class CheckBatchForService {
 		} else {
 			throw new ReqDataException("渠道传输不正确");
 		}
-		return Db.paginate(pageNum, pageSize, sqlPara);
+		 Page<Record> paginate = Db.paginate(pageNum, pageSize, sqlPara);
+		 List<Record> list = paginate.getList();
+		 util.recvmask(list);
+		 return paginate ;
 	}
 
 	
@@ -94,9 +104,9 @@ public class CheckBatchForService {
 	 * @param record
 	 * @param curUodp
 	 * @param userInfo
-	 * @throws ReqDataException
+	 * @throws BusinessException 
 	 */
-	public void confirm(final Record record, final UodpInfo curUodp, final UserInfo userInfo) throws ReqDataException {
+	public void confirm(final Record record, final UodpInfo curUodp, final UserInfo userInfo) throws BusinessException {
 		int flag_redis = 0 ;  // 是否确实有人在组批此渠道数据
 		final Integer source_sys = TypeUtils.castToInt(record.get("source_sys"));
 		final Long channel_id = TypeUtils.castToLong(record.get("channel_id"));
@@ -161,6 +171,11 @@ public class CheckBatchForService {
 			}
 			record.set("pay_mode", WebConstant.SftDoubtPayMode.PLSF.getKeyc());
 			record.set("codes", codes);
+			SymmetricEncryptUtil  util = new SymmetricEncryptUtil();
+			String recv_acc_no = record.getStr("recv_acc_no");
+			recv_acc_no = util.encrypt(recv_acc_no);
+			record.set("recv_acc_no", recv_acc_no);		
+			
 			final Record error_message = new Record();
 			error_message.set("error_message", "组批数据库操作失败");
 			// 主批次入xx表.主批次走审批流

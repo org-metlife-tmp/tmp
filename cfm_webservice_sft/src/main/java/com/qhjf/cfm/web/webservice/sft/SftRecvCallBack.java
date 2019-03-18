@@ -34,8 +34,8 @@ public class SftRecvCallBack {
 			callback.callBack(originDatas);
 		} else if (sftOsSource == WebConstant.SftOsSource.EBS.getKey()) {
 			//TODO：目前没有EBS批收业务
-			EbsRecvCallback callback = new EbsRecvCallback();
-			callback.callBack(originDatas);
+			/*EbsRecvCallback callback = new EbsRecvCallback();
+			callback.callBack(originDatas);*/
 		}
 	}
 

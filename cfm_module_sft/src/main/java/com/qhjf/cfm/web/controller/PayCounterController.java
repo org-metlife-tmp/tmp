@@ -74,5 +74,18 @@ public class PayCounterController extends CFMBaseController{
 				}			
 			}
 			
-			
+			/**
+			    * 柜面确认/提交
+			    */	    
+				public  void  confirm() {		
+					try {
+						Record record = getRecordByParamsStrong();	
+						service.confirm(record,getUserInfo(),getCurUodp());
+						renderOk(null);
+					}catch (BusinessException e) {
+						logger.error("=====柜面确认失败");
+						e.printStackTrace();
+						renderFail(e);
+					}			
+				}	
 }

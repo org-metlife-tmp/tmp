@@ -48,6 +48,18 @@
 	order by t.id
 #end
 
+#sql("getTradeResultBatchQrySourceListNew")
+	select 
+		* 
+	from 
+		batch_pay_instr_queue_total
+	where 
+		status = 1 and 
+		reqsta = 1 and
+		reqnbr <> null and 
+		reqnbr <> ''
+#end
+
 #sql('getOldBatchTrade')
 	select
 		*
@@ -58,5 +70,17 @@
 		and detail_bank_service_number = ?
 		and package_seq = ?
 #end
+
+#sql('getNeedQueryStatusBatchPay')
+	select
+		top 1 *
+	from
+		batch_pay_instr_queue_total
+	where
+		status = 1 and
+		reqsta = 0 and
+		rtnflg = 0
+#end
+
 
 #end

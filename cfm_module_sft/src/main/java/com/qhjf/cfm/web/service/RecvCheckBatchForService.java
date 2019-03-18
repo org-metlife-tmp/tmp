@@ -4,9 +4,11 @@ import com.alibaba.fastjson.util.TypeUtils;
 import com.jfinal.kit.Kv;
 import com.jfinal.log.Log;
 import com.jfinal.plugin.activerecord.*;
+import com.qhjf.cfm.exceptions.BusinessException;
 import com.qhjf.cfm.exceptions.ReqDataException;
 import com.qhjf.cfm.utils.ArrayUtil;
 import com.qhjf.cfm.utils.CommonService;
+import com.qhjf.cfm.utils.SymmetricEncryptUtil;
 import com.qhjf.cfm.web.UodpInfo;
 import com.qhjf.cfm.web.UserInfo;
 import com.qhjf.cfm.web.constant.WebConstant;
@@ -16,6 +18,7 @@ import com.qhjf.cfm.web.webservice.oa.server.OaDataDoubtfulCache;
 import com.qhjf.cfm.web.webservice.sft.SftRecvCallBack;
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.*;
@@ -40,9 +43,10 @@ public class RecvCheckBatchForService {
 	 * @param record
 	 * @param uodpInfo
 	 * @return
-	 * @throws ReqDataException
+	 * @throws BusinessException 
+	 * @throws Exception 
 	 */
-	public Page<Record> list(int pageNum, int pageSize, Record record, UodpInfo uodpInfo) throws ReqDataException {
+	public Page<Record> list(int pageNum, int pageSize, Record record, UodpInfo uodpInfo) throws Exception, BusinessException {
 		Long org_id = uodpInfo.getOrg_id();
 		Record findById = Db.findById("organization", "org_id", org_id);
 		if (null == findById) {
@@ -59,6 +63,10 @@ public class RecvCheckBatchForService {
 				codes.add(o.getStr("code"));
 			}
 		}
+		SymmetricEncryptUtil  util = new SymmetricEncryptUtil();
+		String pay_acc_no = record.getStr("pay_acc_no");
+		pay_acc_no = util.encrypt(pay_acc_no);
+		record.set("pay_acc_no", pay_acc_no);
 		record.set("codes", codes);
 		record.set("pay_mode",  WebConstant.SftDoubtRecvMode.PLSF.getKeyc());
 		List<Integer> status = record.get("status");
@@ -66,7 +74,11 @@ public class RecvCheckBatchForService {
 			record.remove("status");
 		}
 		SqlPara sqlPara = Db.getSqlPara("recv_check_batch.recvcheckBatchLAlist", Kv.by("map", record.getColumns()));
-		return Db.paginate(pageNum, pageSize, sqlPara);
+		
+		Page<Record> paginate = Db.paginate(pageNum, pageSize, sqlPara);
+		List<Record> list = paginate.getList();
+		util.paymask(list);
+		return paginate ;
 	}
 
 
@@ -76,9 +88,9 @@ public class RecvCheckBatchForService {
 	 * @param record
 	 * @param curUodp
 	 * @param userInfo
-	 * @throws ReqDataException
+	 * @throws BusinessException 
 	 */
-	public void confirm(final Record record, final UodpInfo curUodp, final UserInfo userInfo) throws ReqDataException {
+	public void confirm(final Record record, final UodpInfo curUodp, final UserInfo userInfo) throws BusinessException {
 		int flag_redis = 0 ;  // 是否确实有人在组批此渠道数据
 		final Long channel_id = TypeUtils.castToLong(record.get("channel_id"));
 		OaDataDoubtfulCache oaDataDoubtfulCache = new OaDataDoubtfulCache();
@@ -138,6 +150,11 @@ public class RecvCheckBatchForService {
 				Record rec = Db.findFirst(Db.getSql("org.getCurrentUserOrgs"), org_id);
 			    codes.add(rec.getStr("code"));
 			}
+			SymmetricEncryptUtil  util = new SymmetricEncryptUtil();
+			String pay_acc_no = record.getStr("pay_acc_no");
+			pay_acc_no = util.encrypt(pay_acc_no);
+			record.set("pay_acc_no", pay_acc_no);		
+			
 			record.set("codes", codes);
 			record.set("pay_mode", WebConstant.SftDoubtRecvMode.PLSF.getKeyc() );
 			final Record error_message = new Record();

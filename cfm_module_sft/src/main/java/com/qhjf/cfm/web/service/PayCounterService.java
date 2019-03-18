@@ -17,6 +17,7 @@ import com.jfinal.plugin.activerecord.Page;
 import com.jfinal.plugin.activerecord.Record;
 import com.jfinal.plugin.activerecord.SqlPara;
 import com.qhjf.cfm.exceptions.ReqDataException;
+import com.qhjf.cfm.utils.ArrayUtil;
 import com.qhjf.cfm.utils.CommonService;
 import com.qhjf.cfm.web.UodpInfo;
 import com.qhjf.cfm.web.UserInfo;
@@ -48,7 +49,13 @@ public class PayCounterService {
 	public Page<Record> list(int pageNum, int pageSize, Record record, Long org_id) throws ReqDataException {
 		
 		// 获取付款账号
-		String pay_acc_no = GmfConfigAccnoSection.getInstance().getAccno();	
+		String pay_account_no = GmfConfigAccnoSection.getInstance().getAccno();
+		logger.info("============配置文件中柜面付账号=="+pay_account_no);
+		Record payRec = Db.findFirst(Db.getSql("nbdb.findAccountByAccno"), pay_account_no);
+		if (payRec == null) {
+			logger.error("=============未在系统内找到此账户======" + pay_account_no);
+		}
+		String pay_account_bank = payRec.getStr("pay_account_bank");
 		logger.info("=====当前登录人org_id==="+org_id);  
     	Record findById = Db.findById("organization", "org_id", org_id);
 		if(null == findById){
@@ -81,7 +88,15 @@ public class PayCounterService {
 		}else {
 			
 		}
-		return Db.paginate(pageNum, pageSize, sqlPara);		
+		 Page<Record> paginate = Db.paginate(pageNum, pageSize, sqlPara);
+		 List<Record> list = paginate.getList();
+		 if(null != list && list.size() > 0) {
+			 for (Record rec : list) {
+				 rec.set("pay_account_no", pay_account_no);
+				 rec.set("pay_account_bank", pay_account_bank);
+			}
+		 }
+		 return paginate ;
 	}
 
 	/**
@@ -207,7 +222,97 @@ public class PayCounterService {
 		
 	}
 
-	
-	
-	
+	/**
+	 * 柜面确认
+	 * @param record
+	 * @param userInfo
+	 * @param uodpInfo 
+	 * @throws ReqDataException
+	 */
+	public void confirm (Record record, UserInfo userInfo, UodpInfo uodpInfo) throws ReqDataException{
+		
+		// 获取付款账号
+				String pay_account_no = GmfConfigAccnoSection.getInstance().getAccno();
+				logger.info("============配置文件中柜面付账号=="+pay_account_no);
+				Record payRec = Db.findFirst(Db.getSql("nbdb.findAccountByAccno"), pay_account_no);
+				if (payRec == null) {
+					logger.error("=============未在系统内找到此账户======" + pay_account_no);
+				}
+		
+		Integer source_sys = record.getInt("source_sys");
+		List<Integer> pay_ids = record.get("pay_id");
+		Long org_id = uodpInfo.getOrg_id();
+		List<Record> statuss = Db.find(Db.getSqlPara("pay_counter.findDistinctStatus", Kv.by("map", pay_ids)));
+		if(null != statuss && statuss.size() > 0) {
+			for (Record sta : statuss) {
+				if(sta.getInt("status") == WebConstant.SftLegalData.GROUPBATCH.getKey() 
+						|| sta.getInt("status") == WebConstant.SftLegalData.REVOKE.getKey() ) {
+					throw new ReqDataException("选中提交的数据中包含已提交/已作废数据");
+				}
+			}
+		}		
+		List<Record> Details = null ;
+		if(0 == source_sys) {
+			logger.info("===========LA数据进行提交");
+			Details = Db.find(Db.getSqlPara("check_batch.checkBatchLADetail", Kv.by("map", pay_ids)));			
+		}else {
+			logger.info("===========EBS数据进行提交");
+			Details = Db.find(Db.getSqlPara("check_batch.checkBatchEBSDetail", Kv.by("map", pay_ids)));			
+		}
+        if(null == Details || pay_ids.size() != Details.size()) {
+        	throw new ReqDataException("勾选数据中部分数据已过期,请刷新页面");
+        }
+        final List<Record>  insertRecords = new ArrayList<>();
+        final List<Record>  updateLegalRecords = new ArrayList<>();
+        //产生单据,并开启审批流
+        for (Record rec : Details) {
+        	Record updateLegalRecord  = new Record();
+        	Record insertrec  = new Record();
+        	Record cnapsRecord = Db.findById("all_bank_info", "cnaps_code", rec.get("recv_bank_cnaps"));
+        	insertrec.set("legal_id", rec.get("pay_id"))
+        	          .set("origin_id", rec.get("origin_id"))
+        	          .set("source_sys", source_sys)
+        	          .set("org_id", org_id)
+        	          .set("dept_id",uodpInfo.getDept_id())
+        	          .set("amount", rec.get("amount"))
+        	          .set("pay_account_no", pay_account_no)
+        	          .set("pay_account_name", payRec.get("acc_name"))
+        	          .set("pay_account_cur", payRec.get("curr_code"))
+        	          .set("pay_bank_name", payRec.get("bank_name"))
+        	          .set("pay_bank_cnaps", payRec.get("cnaps_code"))
+        	          .set("pay_bank_prov", payRec.get("province"))
+        	          .set("pay_bank_city", payRec.get("city"))
+        	          .set("pay_bank_type", payRec.get("bank_type"))
+        	          .set("recv_account_no", rec.get("recv_acc_no"))
+        	          .set("recv_account_name", rec.get("recv_acc_name"))
+        	          .set("recv_account_cur", "CNY")
+        	          .set("recv_bank_prov", cnapsRecord.get("province"))
+        	          .set("recv_bank_city", cnapsRecord.get("city"))
+        	          .set("recv_bank_name", rec.get("recv_bank_name"))
+        	          .set("recv_bank_cnaps", rec.get("recv_bank_cnaps"))
+        	          .set("recv_bank_type", rec.get("recv_bank_type"))
+        	          .set("create_by", userInfo.getUsr_id())
+        	          .set("create_on", new Date());
+        	updateLegalRecord.set("id", rec.get("pay_id"))
+        	                 .set("status", WebConstant.SftLegalData.GROUPBATCH.getKey());
+        	insertRecords.add(insertrec);
+        	updateLegalRecords.add(updateLegalRecord);
+		}	
+        // 单据入库 ,合法数据表更新状态
+      /*  boolean flag = Db.tx(new IAtom() {			
+			@Override
+			public boolean run() throws SQLException {
+				
+				// 先更新合法数据为已提交 , 入库单据表 , 将补录的附件关联到单据上 , 所有单据开启审批流  
+			    int[] batchUpdate = Db.batchUpdate("pay_legal_data", "id", updateLegalRecords, 1000);
+			    boolean updateResult = ArrayUtil.checkDbResult(batchUpdate);
+				int[] batchSave = Db.batchSave("gmf_bill", insertRecords, 1000);
+				boolean checkDbResult = ArrayUtil.checkDbResult(batchSave);
+			}   
+		});
+        if(!flag) {
+        	throw new ReqDataException("柜面付页面确认失败");
+        }*/
+	}
+		
 }

@@ -14,6 +14,8 @@ import com.qhjf.cfm.utils.StringKit;
 import com.qhjf.cfm.web.channel.inter.api.IChannelBatchInter;
 import com.qhjf.cfm.web.channel.inter.api.IChannelInter;
 import com.qhjf.cfm.web.channel.manager.ChannelManager;
+import com.qhjf.cfm.web.channel.util.DateUtil;
+import com.qhjf.cfm.web.config.CMBCTestConfigSection;
 import com.qhjf.cfm.web.constant.WebConstant;
 import com.qhjf.cfm.web.inter.api.ISysAtomicInterface;
 import com.qhjf.cfm.web.inter.manager.SysInterManager;
@@ -33,6 +35,7 @@ import java.util.List;
  */
 public class SysBatchRecvInter implements ISysAtomicInterface {
     private static Logger log = LoggerFactory.getLogger(SysBatchRecvInter.class);
+    private static CMBCTestConfigSection configSection = CMBCTestConfigSection.getInstance();
     private IChannelBatchInter channelInter;
     private Record instr;
 
@@ -209,23 +212,25 @@ public class SysBatchRecvInter implements ISysAtomicInterface {
                         return false;
                     }
                     //4.更新recv_batch_total
-                    if (Db.update(Db.getSql("batchrecv.updBillTotalToFail"), billTotalTb) != 1) {
+                    if (Db.update(Db.getSql("batchrecv.updBillTotalToFail"), billTotalId) != 1) {
                     	log.error("批收发送银行指令失败回写，更新子批次汇总表失败");
                         return false;
                     }
                     //5.更新la_origin_recv_data
+                    SqlPara updOriginFailLaSqlPara = null;
                     if (LA_ORIGIN.equals(originTb)) {
-                        SqlPara updOriginFailLaSqlPara = Db.getSqlPara("batchrecv.updOriginFailLa");
-                        int updOrigin = Db.update(updOriginFailLaSqlPara.getSql(), instrTotalId);
-                        if (updOrigin <= 0) {
-                        	log.error("批收发送银行指令失败回写，更新原始数据表失败");
-                            return false;
-                        }
-                        log.debug("批收发送银行指令失败回写，更新原始数据表条数：{},instrTotalId={}", updOrigin, instrTotalId);
+                        updOriginFailLaSqlPara = Db.getSqlPara("batchrecv.updOriginFailLa");
                     }else {
 						log.error("批量收直连账户不支持EBS");
-						return false;
+						return true;
 					}
+                    int updOrigin = Db.update(updOriginFailLaSqlPara.getSql(), instrTotalId);
+                    if (updOrigin <= 0) {
+                    	log.error("批收发送银行指令失败回写，更新原始数据表失败");
+                        return false;
+                    }
+                    log.debug("批收发送银行指令失败回写，更新原始数据表条数：{},instrTotalId={}", updOrigin, instrTotalId);
+                    
                     return true;
                 }
             });
@@ -299,11 +304,24 @@ public class SysBatchRecvInter implements ISysAtomicInterface {
         total.set("recv_bank_city", r.get("recv_bank_city"));
         total.set("recv_bank_type", r.get("recv_bank_type"));
         total.set("status", 1);
-        total.set("trade_date", DateKit.toStr(new Date(), "yyyy-MM-dd"));
+        total.set("trade_date", genTradeDate(recvBankCode));
         //发送时间不精确，从指令发送队列取指令时的时间更精确
         total.set("init_send_time", new Date());
         return total;
     }
+    /**
+	 * 生成发送日期
+	 * @param cnaps
+	 * @return
+	 */
+	private String genTradeDate(String cnaps){
+		String result = null;
+		if ("308".equals(cnaps)) {
+			int preDay = configSection.getPreDay();
+			result = DateUtil.getSpecifiedDayAfter(new Date(), preDay, "yyyyMMdd");
+		}
+		return result == null ? DateKit.toStr(new Date(), "yyyy-MM-dd") : result;
+	}
 
     /**
      * 生成收款指令明细信息 ： batch_recv_instr_queue_detail

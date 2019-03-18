@@ -20,11 +20,11 @@ import com.qhjf.cfm.web.UserInfo;
 import com.qhjf.cfm.web.channel.inter.api.IChannelInter;
 import com.qhjf.cfm.web.channel.manager.ChannelManager;
 import com.qhjf.cfm.web.constant.WebConstant;
-import com.qhjf.cfm.web.inter.impl.batch.SysBatchPayInter;
+import com.qhjf.cfm.web.inter.impl.batch.SysBatchPayNewInter;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.SQLException;
 import java.util.*;
 
 
@@ -145,11 +145,11 @@ public class DiskSendingService {
 		String shortPayCnaps = accountAndBankInfo.get("bank_cnaps_code").substring(0, 3);
 		IChannelInter channelInter = null;
 		try {
-			channelInter = ChannelManager.getInter(shortPayCnaps, "BatchPay");
+			channelInter = ChannelManager.getInter(shortPayCnaps, "BatchPayNew");
 		} catch (Exception e) {
 			logger.error("获取银行原子接口失败！", e);
 		}
-		final SysBatchPayInter sysInter = new SysBatchPayInter();
+		final SysBatchPayNewInter sysInter = new SysBatchPayNewInter();
         sysInter.setChannelInter(channelInter);
         final Record instr = sysInter.genInstr(instrRecord);
         if (instr == null) {
