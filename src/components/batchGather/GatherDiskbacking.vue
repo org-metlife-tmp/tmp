@@ -200,7 +200,7 @@
                         </el-tooltip>
                         <el-tooltip content="上传" placement="bottom" effect="light"
                                     :enterable="false" :open-delay="500"
-                                    v-show="scope.row.interactive_mode=='报盘' && (scope.row.status=='已发送未回盘' || scope.row.status=='回盘成功')">
+                                    v-show="scope.row.interactive_mode=='报盘' && scope.row.status=='已发送未回盘'">
                             <el-upload
                                     class="upload-demo"
                                     :action="queryUrl + 'normal/recvdiskbacking/upload'"

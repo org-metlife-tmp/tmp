@@ -133,6 +133,32 @@
                     </el-col>
                     <el-col :span="4">
                         <el-form-item>
+                            <el-select v-model="searchData.channel_id_one" placeholder="请选择通道编码"
+                                       clearable filterable
+                                       style="width:100%">
+                                <el-option v-for="channel in channelList"
+                                           :key="channel.channel_id"
+                                           :label="channel.channel_code"
+                                           :value="channel.channel_id">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="4">
+                        <el-form-item>
+                            <el-select v-model="searchData.channel_id_two" placeholder="请选择通道描述"
+                                       clearable filterable
+                                       style="width:100%">
+                                <el-option v-for="channel in channelList"
+                                           :key="channel.channel_id"
+                                           :label="channel.channel_desc"
+                                           :value="channel.channel_id">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="4">
+                        <el-form-item>
                             <el-input v-model="searchData.bank_key" clearable placeholder="请输入bankkey"></el-input>
                         </el-form-item>
                     </el-col>
@@ -154,16 +180,6 @@
                             </el-select>
                         </el-form-item>
                     </el-col>
-                    <el-col :span="4">
-                        <el-form-item>
-                            <el-input v-model="searchData.preinsure_bill_no" clearable placeholder="请输入投保单号"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="4">
-                        <el-form-item>
-                            <el-input v-model="searchData.insure_bill_no" clearable placeholder="请输入保单号"></el-input>
-                        </el-form-item>
-                    </el-col>
                     <el-col :span="5">
                         <el-form-item>
                             <el-date-picker
@@ -179,7 +195,17 @@
                             </el-date-picker>
                         </el-form-item>
                     </el-col>
-                    <el-col :span="15">
+                    <el-col :span="4">
+                        <el-form-item>
+                            <el-input v-model="searchData.preinsure_bill_no" clearable placeholder="请输入投保单号"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="4">
+                        <el-form-item>
+                            <el-input v-model="searchData.insure_bill_no" clearable placeholder="请输入保单号"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="7">
                         <el-form-item style="margin-bottom:0px">
                             <el-checkbox-group v-model="searchData.status">
                                 <el-checkbox :label="1" name="已处理">已处理</el-checkbox>
@@ -283,6 +309,8 @@
             }
             //机构列表
             this.getOrgList();
+            //通道编码
+            this.getChannelList();
         },
         props: ["tableData"],
         data: function () {
@@ -293,18 +321,21 @@
                     params: {
                         page_size: 20,
                         page_num: 1,
-                        os_source: "0"
+                        os_source: "0",
+                        status: [0]
                     }
                 },
                 searchData: { //搜索条件
                     os_source: "0",
                     pay_mode: "",
+                    channel_id_one: "",
+                    channel_id_two: "",
                     bank_key: "",
                     bankkey_desc: "",
                     tmp_org_id: "",
                     preinsure_bill_no: "",
                     insure_bill_no: "",
-                    status: []
+                    status: [0]
                 },
                 dateValue: "", //时间控件
                 pickerOptions: {
@@ -318,7 +349,8 @@
                 pagCurrent: 1,
                 sourceList: {}, //常量数据
                 payModeList: {},
-                orgList: []
+                orgList: [],
+                channelList: [],
             }
         },
         methods: {
@@ -364,7 +396,7 @@
                     if(k == "os_source"){
                         searchData[k] = tab;
                     }else if(k == "status"){
-                        searchData[k] = [];
+                        searchData[k] = [0];
                     }else{
                         searchData[k] = "";
                     }
@@ -395,6 +427,31 @@
                     } else {
                         var data = result.data.data;
                         this.orgList = data;
+                    }
+
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            },
+            //获取通道编码
+            getChannelList: function () {
+                this.$axios({
+                    url: this.queryUrl + "normalProcess",
+                    method: "post",
+                    data: {
+                        optype: "sftchannel_getallchannel",
+                        params: {}
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        });
+                    } else {
+                        var data = result.data.data;
+                        this.channelList = data;
                     }
 
                 }).catch(function (error) {
