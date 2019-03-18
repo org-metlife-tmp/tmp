@@ -71,6 +71,10 @@
         .export {
             background-position: -513px -62px;
         }
+        /*上传*/
+        .upload-demo{
+            display: inline-block;
+        }
     }
 </style>
 
