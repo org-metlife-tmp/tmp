@@ -51,7 +51,7 @@
         }
 
         /*按钮样式*/
-        .on-copy, .withdraw {
+        .on-copy, .withdraw, .export {
             width: 20px;
             height: 20px;
             background-image: url(../../assets/icon_common.png);
