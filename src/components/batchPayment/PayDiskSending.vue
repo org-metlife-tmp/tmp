@@ -391,6 +391,7 @@
                         //ie兼容
                         if (window.navigator && window.navigator.msSaveOrOpenBlob) {
                             window.navigator.msSaveOrOpenBlob(new Blob([result.data]), fileName);
+                            this.$emit("getCommTable", this.routerMessage);
                         } else {
                             let url = window.URL.createObjectURL(new Blob([result.data]));
                             let link = document.createElement('a');
