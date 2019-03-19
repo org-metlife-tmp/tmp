@@ -178,8 +178,8 @@
                                  width="120"></el-table-column>
                 <el-table-column prop="create_on" label="申请日期" :show-overflow-tooltip="true"
                                  width="100"></el-table-column>
-                <el-table-column prop="update_on" label="发送日期" :show-overflow-tooltip="true"
-                                 width="100" v-if="!isPending"></el-table-column>
+                <el-table-column prop="bank_serial_number" label="发送日期" :show-overflow-tooltip="true"
+                                 width="100" v-if="!isPending" :formatter="transitionDate"></el-table-column>
                 <el-table-column prop="pay_account_no" label="付款方账号" :show-overflow-tooltip="true"
                                  width="120"></el-table-column>
                 <el-table-column prop="pay_account_bank" label="付款方银行" :show-overflow-tooltip="true"
@@ -415,6 +415,12 @@
             }
         },
         methods: {
+            //转换日期
+            transitionDate: function (row, column, cellValue, index) {
+                if(cellValue){
+                    return cellValue.slice(0,4)+"-"+cellValue.slice(4,6)+"-"+cellValue.slice(6,8);
+                }
+            },
             //导出
             exportFun: function(){
                 if(this.tableList.length == 0){
