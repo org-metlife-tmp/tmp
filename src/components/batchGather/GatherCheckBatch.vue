@@ -538,9 +538,9 @@
                 let totalData = this.totalData;
 
                 for(let i = 0; i < selection.length; i++){
-                    if(row.pay_id == selection[i].pay_id){
+                    if(row.recv_id == selection[i].recv_id){
                         for(let j = 0; j < selectId.length; j++){
-                            if(selectId[j] === row.pay_id){
+                            if(selectId[j] === row.recv_id){
                                 selectId.splice(j,1);
                                 totalData.total_num++;
                                 totalData.total_amount = this.$common.transitSeparator(this.$common.transitNumber(totalData.total_amount) + row.amount);
@@ -552,7 +552,7 @@
                 }
                 totalData.total_num--;
                 totalData.total_amount = this.$common.transitSeparator(this.$common.transitNumber(totalData.total_amount) - row.amount);
-                selectId.push(row.pay_id);
+                selectId.push(row.recv_id);
             },
             //点击全选时设置取消勾选的id
             allChange: function(selection,val){
@@ -567,7 +567,7 @@
                         }else{
                             for(let i = 0; i < selectId.length; i++){
                                 let idItem = selectId[i];
-                                if(item.pay_id === idItem){
+                                if(item.recv_id === idItem){
                                     flag = false;
                                     break;
                                 }
@@ -576,14 +576,14 @@
                         if(flag) {
                             totalData.total_num--;
                             totalData.total_amount = this.$common.transitSeparator(this.$common.transitNumber(totalData.total_amount) - item.amount);
-                            selectId.push(item.pay_id);
+                            selectId.push(item.recv_id);
                         };
                     });
                 }else{
                     tableList.forEach((item) => {
                         for(let i = 0; i < selectId.length; i++){
                             let idItem = selectId[i];
-                            if(item.pay_id === idItem){
+                            if(item.recv_id === idItem){
                                 totalData.total_num++;
                                 totalData.total_amount = this.$common.transitSeparator(this.$common.transitNumber(totalData.total_amount) + item.amount);
                                 selectId.splice(i,1);
@@ -749,7 +749,7 @@
                             flag = false;
                         }else{
                             for(let i = 0; i < selectId.length; i++){
-                                if(row.pay_id == selectId[i]){
+                                if(row.recv_id == selectId[i]){
                                     flag = false;
                                     break;
                                 }
