@@ -493,7 +493,9 @@
             //查询交易流水
             queryChildData: function(){
                 var searchData = this.childSearch;
-                var params = {};
+                var params = {
+                    is_inner: this.isInner
+                };
                 for (var k in searchData) {
                     params[k] = searchData[k];
                 }
