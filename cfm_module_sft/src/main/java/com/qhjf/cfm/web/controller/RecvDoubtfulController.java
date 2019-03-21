@@ -5,6 +5,7 @@ import com.jfinal.plugin.activerecord.Page;
 import com.jfinal.plugin.activerecord.Record;
 import com.qhjf.cfm.exceptions.BusinessException;
 import com.qhjf.cfm.exceptions.ReqDataException;
+import com.qhjf.cfm.utils.SymmetricEncryptUtil;
 import com.qhjf.cfm.web.UodpInfo;
 import com.qhjf.cfm.web.UserInfo;
 import com.qhjf.cfm.web.plugins.jwt.Auth;
@@ -26,7 +27,7 @@ public class RecvDoubtfulController extends CFMBaseController {
      * 防重预警列表
      */
     @Auth(hasForces = {"RecvDataAntiDualWaring"})
-    public void doubtfullist() {
+    public void doubtfullist() throws Exception {
         Record record = getRecordByParamsStrong();
         int pageNum = getPageNum(record);
         int pageSize = getPageSize(record);
@@ -41,6 +42,8 @@ public class RecvDoubtfulController extends CFMBaseController {
 
         try{
             Page<Record> page = service.doubtfullist(pageNum, pageSize, record, uodpInfo);
+            SymmetricEncryptUtil util = SymmetricEncryptUtil.getInstance();
+            util.paymask(page.getList());
             renderOkPage(page);
         }catch(BusinessException e){
             e.printStackTrace();
