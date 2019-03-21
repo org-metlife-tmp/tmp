@@ -126,7 +126,7 @@
                     </el-col>
                     <el-col :span="4">
                         <el-form-item>
-                            <el-select v-model="searchData.channel_id_two" placeholder="请选择通道描述"
+                            <el-select v-model="searchData.channel_id_one" placeholder="请选择通道描述"
                                        clearable filterable
                                        style="width:100%">
                                 <el-option v-for="channel in channelList"
