@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.alibaba.fastjson.util.TypeUtils;
 import com.jfinal.kit.Kv;
 import com.jfinal.log.Log;
 import com.jfinal.plugin.activerecord.Db;
@@ -16,11 +17,15 @@ import com.jfinal.plugin.activerecord.IAtom;
 import com.jfinal.plugin.activerecord.Page;
 import com.jfinal.plugin.activerecord.Record;
 import com.jfinal.plugin.activerecord.SqlPara;
+import com.qhjf.cfm.exceptions.BusinessException;
 import com.qhjf.cfm.exceptions.ReqDataException;
+import com.qhjf.cfm.exceptions.WorkflowException;
 import com.qhjf.cfm.utils.ArrayUtil;
+import com.qhjf.cfm.utils.BizSerialnoGenTool;
 import com.qhjf.cfm.utils.CommonService;
 import com.qhjf.cfm.web.UodpInfo;
 import com.qhjf.cfm.web.UserInfo;
+import com.qhjf.cfm.web.WfRequestObj;
 import com.qhjf.cfm.web.config.GmfConfigAccnoSection;
 import com.qhjf.cfm.web.constant.WebConstant;
 import com.qhjf.cfm.web.plugins.log.LogbackLog;
@@ -55,7 +60,7 @@ public class PayCounterService {
 		if (payRec == null) {
 			logger.error("=============未在系统内找到此账户======" + pay_account_no);
 		}
-		String pay_account_bank = payRec.getStr("pay_account_bank");
+		String pay_account_bank = payRec.getStr("bank_name");
 		logger.info("=====当前登录人org_id==="+org_id);  
     	Record findById = Db.findById("organization", "org_id", org_id);
 		if(null == findById){
@@ -74,8 +79,12 @@ public class PayCounterService {
 		}
 		record.set("codes", codes);
 		List<Integer> status = record.get("status");
+		List<Integer> service_status = record.get("service_status");
 		if(null == status) {
 			record.remove("status");			
+		}
+		if(null == service_status) {
+			record.remove("service_status");			
 		}
 		String pay_mode = record.getStr("pay_mode");
 		//柜面付  默认网银
@@ -84,9 +93,11 @@ public class PayCounterService {
 		}
 		SqlPara sqlPara = null;
 		if(source_sys == 0) {
-			sqlPara = Db.getSqlPara("pay_counter.findPayCounterList", Kv.by("map", record.getColumns()));				
+			logger.info("======LA系统数据");
+			sqlPara = Db.getSqlPara("pay_counter.findLAPayCounterList", Kv.by("map", record.getColumns()));				
 		}else {
-			
+			logger.info("======EBS系统数据");
+			sqlPara = Db.getSqlPara("pay_counter.findEBSPayCounterList", Kv.by("map", record.getColumns()));				
 		}
 		 Page<Record> paginate = Db.paginate(pageNum, pageSize, sqlPara);
 		 List<Record> list = paginate.getList();
@@ -130,8 +141,8 @@ public class PayCounterService {
 						 new Record().set("op_date", new Date()).set("op_user_name", user_record.get("name"))
 						.set("supply_status", WebConstant.Sft_supplyStatus.YBL.getKey()).set("recv_acc_no", record.get("recv_acc_no"))
 						.set("recv_bank_name", record.get("recv_bank_name")).set("recv_bank_cnaps", record.get("recv_cnaps_code"))
-						.set("payment_summary", record.get("payment_summary")).set("persist_version", persist_version+1), 
-						 new Record().set("id", record.get("pay_id")));
+						.set("payment_summary", record.get("payment_summary")).set("persist_version", persist_version+1).set("recv_acc_name", record.get("recv_acc_name")), 
+						 new Record().set("id", record.get("pay_id")).set("persist_version", persist_version));
 					if(update) {
 						// 删除附件  暂时将附件与合法数据id关联 ===提交后将附件与单据关联
 						CommonService.delFileRef(WebConstant.MajorBizType.GMF.getKey(), record.getInt("pay_id"));
@@ -229,19 +240,19 @@ public class PayCounterService {
 	 * @param uodpInfo 
 	 * @throws ReqDataException
 	 */
-	public void confirm (Record record, UserInfo userInfo, UodpInfo uodpInfo) throws ReqDataException{
+	public void confirm (Record record, final UserInfo userInfo, UodpInfo uodpInfo) throws ReqDataException{
 		
 		// 获取付款账号
-				String pay_account_no = GmfConfigAccnoSection.getInstance().getAccno();
-				logger.info("============配置文件中柜面付账号=="+pay_account_no);
-				Record payRec = Db.findFirst(Db.getSql("nbdb.findAccountByAccno"), pay_account_no);
-				if (payRec == null) {
-					logger.error("=============未在系统内找到此账户======" + pay_account_no);
-				}
+		String pay_account_no = GmfConfigAccnoSection.getInstance().getAccno();
+		logger.info("============配置文件中柜面付账号=="+pay_account_no);
+		Record payRec = Db.findFirst(Db.getSql("nbdb.findAccountByAccno"), pay_account_no);
+		if (payRec == null) {
+			logger.error("=============未在系统内找到此账户======" + pay_account_no);
+		}
 		
 		Integer source_sys = record.getInt("source_sys");
 		List<Integer> pay_ids = record.get("pay_id");
-		Long org_id = uodpInfo.getOrg_id();
+		final Long org_id = uodpInfo.getOrg_id();
 		List<Record> statuss = Db.find(Db.getSqlPara("pay_counter.findDistinctStatus", Kv.by("map", pay_ids)));
 		if(null != statuss && statuss.size() > 0) {
 			for (Record sta : statuss) {
@@ -266,6 +277,7 @@ public class PayCounterService {
         final List<Record>  updateLegalRecords = new ArrayList<>();
         //产生单据,并开启审批流
         for (Record rec : Details) {
+            String serviceSerialNumber = BizSerialnoGenTool.getInstance().getSerial(WebConstant.MajorBizType.GMF);
         	Record updateLegalRecord  = new Record();
         	Record insertrec  = new Record();
         	Record cnapsRecord = Db.findById("all_bank_info", "cnaps_code", rec.get("recv_bank_cnaps"));
@@ -292,6 +304,8 @@ public class PayCounterService {
         	          .set("recv_bank_cnaps", rec.get("recv_bank_cnaps"))
         	          .set("recv_bank_type", rec.get("recv_bank_type"))
         	          .set("create_by", userInfo.getUsr_id())
+        	          .set("service_serial_number", serviceSerialNumber)
+        	          .set("service_status", WebConstant.BillStatus.AUDITING.getKey())
         	          .set("create_on", new Date());
         	updateLegalRecord.set("id", rec.get("pay_id"))
         	                 .set("status", WebConstant.SftLegalData.GROUPBATCH.getKey());
@@ -299,20 +313,139 @@ public class PayCounterService {
         	updateLegalRecords.add(updateLegalRecord);
 		}	
         // 单据入库 ,合法数据表更新状态
-      /*  boolean flag = Db.tx(new IAtom() {			
+      boolean flag = Db.tx(new IAtom() {			
 			@Override
 			public boolean run() throws SQLException {
 				
 				// 先更新合法数据为已提交 , 入库单据表 , 将补录的附件关联到单据上 , 所有单据开启审批流  
 			    int[] batchUpdate = Db.batchUpdate("pay_legal_data", "id", updateLegalRecords, 1000);
 			    boolean updateResult = ArrayUtil.checkDbResult(batchUpdate);
-				int[] batchSave = Db.batchSave("gmf_bill", insertRecords, 1000);
-				boolean checkDbResult = ArrayUtil.checkDbResult(batchSave);
+			    logger.info("======更新pay_legal_data结果====="+updateResult);
+			    if(updateResult) {
+			    	int[] batchSave = Db.batchSave("gmf_bill", insertRecords, 1000);
+			    	boolean checkDbResult = ArrayUtil.checkDbResult(batchSave);
+			    	logger.info("=======插入gmf_bill表结果==="+checkDbResult);
+			    	if(checkDbResult) {
+			    		for (Record rec : insertRecords) {
+			    			Db.update("pay_counter.updateFileRef", rec.get("id")  , WebConstant.MajorBizType.GMF.getKey(),rec.get("legal_id"));						     
+			    		    //开启审批流
+			    			List<Record> flows = null;
+							try {
+								flows = CommonService.displayPossibleWf(WebConstant.MajorBizType.GMF.getKey(),
+										org_id, null);
+							} catch (BusinessException e) {
+								e.printStackTrace();
+								logger.error("============获取柜面付审批流异常");
+								return false;
+							}
+							if (flows == null || flows.size() == 0) {
+								logger.error("============未查询到柜面付审批流");
+								return false;
+							}
+							Record flow = flows.get(0);
+							rec.set("define_id", flow.getLong("define_id"));
+							rec.set("service_serial_number", rec.get("service_serial_number"));
+							// TODO
+							WfRequestObj wfRequestObj = new WfRequestObj(WebConstant.MajorBizType.GMF, "gmf_bill",
+									rec) {
+								@Override
+								public <T> T getFieldValue(WebConstant.WfExpressType type) {
+									return null;
+								}
+
+								@Override
+								public SqlPara getPendingWfSql(Long[] inst_id, Long[] exclude_inst_id) {
+									return null;
+								}
+
+							};
+							WorkflowProcessService workflowProcessService = new WorkflowProcessService();
+							boolean submitFlowFlg;
+							try {
+								submitFlowFlg = workflowProcessService.startWorkflow(wfRequestObj, userInfo);
+							} catch (WorkflowException e) {
+								e.printStackTrace();
+								logger.error("=========柜面付审批流提交失败");
+								return false;
+							}
+							if (!submitFlowFlg) {
+								return false;
+							}
+			    		}
+			    		return true ;
+			    	}
+			    }
+			    return false ;		    	
 			}   
 		});
         if(!flag) {
         	throw new ReqDataException("柜面付页面确认失败");
-        }*/
+        }
+	}
+
+	/**
+	 * 获取柜面付列表详情
+	 * @param long1
+	 * @return
+	 */
+	public Record detail(Long id) {
+		Record findById = Db.findById("gmf_bill", "id", id);
+		return findById;
+	}
+
+	/**
+	 * 
+	 * 审批通过  同时生成指令 , 存入指令表 , 回写 actual_payment_date 
+	 * @param record
+	 * @param userInfo
+	 * @return
+	 */
+	public boolean hookPass(Record record, UserInfo userInfo) {
+		
+		
+		
+		
+		return false;
+	}
+
+	/**
+	 * 审批拒绝  单据表的delete_num 修改成 id . 更新合法数据为未组批
+	 * @param record
+	 * @param userInfo 
+	 * @return
+	 */
+	public boolean hookReject(Record record, final UserInfo userInfo) {
+		
+		final Integer id = TypeUtils.castToInt(record.get("id"));
+		logger.info("======单据表gmf_bill==id=="+id);
+		final Record rec = Db.findById("gmf_bill", "id", id);
+		if(null == rec ) {
+			logger.error("===========根据id未在表中查找到此单据");
+			return false ;
+		}
+		boolean flag = Db.tx(new IAtom() {
+			
+			@Override
+			public boolean run() throws SQLException {
+				
+				boolean update  = CommonService.update("gmf_bill", 
+				   new Record().set("update_by", userInfo.getUsr_id()).set("update_on", new Date()).set("delete_num", id)
+				   .set("persist_version", rec.getInt("persist_version")+1 ), 
+				   new Record().set("id", id));
+				logger.info("========更新gmf_bill状态====="+update);
+				if(update) {
+					return CommonService.update("pay_legal_data", 
+							new Record().set("status", WebConstant.SftLegalData.NOGROUP.getKey()),
+							new Record().set("id", rec.get("legal_id")));					
+				}
+				return false;
+			}
+		});
+		if(!flag) {
+			logger.error("====更新单据表 或者 合法数据表失败====");
+			return flag ;
+		}		
+		return true;
 	}
 		
 }

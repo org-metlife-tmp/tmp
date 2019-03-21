@@ -94,6 +94,15 @@ WHERE
               #(y)
             #end
           )
+        #elseif("business_check".equals(x.key))
+          his.business_check in(
+            #for(y : map.business_check)
+              #if(for.index > 0)
+                #(",")
+              #end
+              #(y)
+            #end
+          )
         #elseif("min".equals(x.key))
           his.amount >= #para(x.value)
         #elseif("max".equals(x.key))

@@ -143,7 +143,7 @@ public class SftOptypeMgr extends AbstractOptypeMgr {
         //查找交易流水
         optypes.add(new Optype(Optype.Mode.NORMAL, "sftpaycheck_tradingList")
                 .registKeepParams(new String[]{"bankcode", "acc_no", "min", "max", "start_date", "end_date", "summary", "is_checked"})
-                );
+                .registerValidate(new RequiredParamsValidate(new String[]{"is_inner"})));
 
         //对账确认
         optypes.add(new Optype(Optype.Mode.NORMAL, "sftpaycheck_confirm")
@@ -390,7 +390,7 @@ public class SftOptypeMgr extends AbstractOptypeMgr {
         //查找交易流水
         optypes.add(new Optype(Optype.Mode.NORMAL, "sftrecvcheck_tradingList")
                 .registKeepParams(new String[]{"bankcode", "acc_no", "min", "max", "start_date", "end_date", "summary", "is_checked"})
-        );
+                .registerValidate(new RequiredParamsValidate(new String[]{"is_inner"})));
 
         //对账确认
         optypes.add(new Optype(Optype.Mode.NORMAL, "sftrecvcheck_confirm")
@@ -564,5 +564,17 @@ public class SftOptypeMgr extends AbstractOptypeMgr {
 
         /** ============================ 收付数据收防重预警 end ============================ */
 
+        
+        /** ============================ 柜面付 付款工作台 start ============================ */
+        
+        //列表
+        optypes.add(new Optype(Optype.Mode.NORMAL, "paycounter_list")
+                .registKeepParams(new String[]{"source_sys", "page_size", "page_num", "start_date", "end_date", "insure_bill_no", "preinsure_bill_no"
+                		, "org_id", "recv_cert_code", "recv_acc_name", "pay_mode", "status", "service_status", "biz_code"})
+                .registerValidate(new RequiredParamsValidate(new String[]{"source_sys", "page_size", "page_num"})));
+       
+        
+        
+        /** ============================ 柜面付 付款工作台 end ============================ */
     }
 }

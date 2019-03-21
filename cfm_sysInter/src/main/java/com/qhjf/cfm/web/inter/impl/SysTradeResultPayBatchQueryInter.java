@@ -7,8 +7,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.alibaba.fastjson.util.TypeUtils;
 import com.jfinal.ext.kit.DateKit;
 import com.jfinal.plugin.activerecord.Db;
@@ -20,6 +22,9 @@ import com.qhjf.cfm.utils.SymmetricEncryptUtil;
 import com.qhjf.cfm.utils.TableDataCacheUtil;
 import com.qhjf.cfm.web.channel.inter.api.IChannelInter;
 import com.qhjf.cfm.web.channel.inter.api.IMoreResultChannelInter;
+import com.qhjf.cfm.web.config.GlobalConfigSection;
+import com.qhjf.cfm.web.config.IConfigSectionType;
+import com.qhjf.cfm.web.config.PlfConfigAccnoSection;
 import com.qhjf.cfm.web.constant.WebConstant;
 import com.qhjf.cfm.web.inter.api.ISysAtomicInterface;
 import com.qhjf.cfm.web.inter.impl.batch.SysBatchRecvInter;
@@ -29,6 +34,8 @@ import com.qhjf.cfm.web.webservice.sft.SftCallBack;
 public class SysTradeResultPayBatchQueryInter implements ISysAtomicInterface {
 
 	private static Logger log = LoggerFactory.getLogger(SysTradeResultPayBatchQueryInter.class);
+	private PlfConfigAccnoSection section = GlobalConfigSection.getInstance()
+			.getExtraConfig(IConfigSectionType.DDHConfigSectionType.VOUCHER);
 	private static String INSTR_TOTAL = "batch_pay_instr_queue_total";
 	private static String INSTR_DETAIL = "batch_pay_instr_queue_detail";
 	private static String LA_ORIGIN = "la_origin_pay_data";
@@ -227,18 +234,18 @@ public class SysTradeResultPayBatchQueryInter implements ISysAtomicInterface {
                         	Calendar c = Calendar.getInstance();
 							String date = new SimpleDateFormat("yyyy-MM-dd").format(c.getTime());
 							String time = new SimpleDateFormat("HH:mm:ss").format(c.getTime());
-							String payBankType = instrTotal.getStr("pay_bank_type");
-							String payAccountNo = instrTotal.getStr("pay_account_no");
+							
+							String accno = section.getAccno();
+							Map<String, Object> aRowData = TableDataCacheUtil.getInstance().getARowData("account", "acc_no", accno);
 							String paybankcode = null;
-							Map<String, Object> ebsBankMapping = TableDataCacheUtil.getInstance()
-									.getARowData("ebs_bank_mapping", "tmp_bank_code", payBankType);
-							if (ebsBankMapping != null) {
-								paybankcode = TypeUtils.castToString(ebsBankMapping.get("ebs_bank_code"));
+							if (null != aRowData) {
+								paybankcode = TypeUtils.castToString(aRowData.get("bankcode"));
 							}else {
-								paybankcode = payBankType + "未匹配到ebs数据";
+								paybankcode = String.format("银行账号：(%s)未维护到account表", accno);
 							}
+							
 							updOrigin = Db.update(Db.getSql("batchpay.updOrginSuccEbs")
-									, date, time, paybankcode, payAccountNo, instrTotalId);
+									, date, time, paybankcode, accno, instrTotalId);
 						}
                         
                         if (updOrigin == instrTotal.getInt("total_num")) {

@@ -27,13 +27,16 @@ public class PayCounterCheckController extends CFMBaseController {
     /**
      * 查询所有批次
      */
-    @Auth(hasForces = {"PayBatchCheck"})
+    @Auth(hasForces = {"PayCounterCheck"})
     public void batchlist() {
         Record record = getRecordByParamsStrong();
 
         int pageNum = getPageNum(record);
         int pageSize = getPageSize(record);
+        //状态为已成功的单据
+        AccCommonService.setInnerTradStatus(record, "service_status");
         try {
+
             Page<Record> page = service.batchlist(pageNum, pageSize, record);
             renderOkPage(page);
         } catch (BusinessException e) {
@@ -44,19 +47,34 @@ public class PayCounterCheckController extends CFMBaseController {
 
 
     /**
-     * 查找交易流水
+     * 查找交易流水 自动匹配勾选
      */
-    @Auth(hasForces = {"PayBatchCheck"})
-    public void tradingList() {
+    @Auth(hasForces = {"PayCounterCheck"})
+    public void tradingListNoAuto() {
         Record record = getRecordByParamsStrong();
-        List<Record> page = service.tradingList(record);
+        List<Record> page = service.tradingListNoAuto(record);
         renderOk(page);
+    }
+
+    /**
+     * 查找交易流水 非自动匹配勾选
+     */
+    @Auth(hasForces = {"PayCounterCheck"})
+    public void tradingListAuto() {
+        try {
+            Record record = getRecordByParamsStrong();
+            List<Record> page = service.tradingListAuto(record);
+            renderOk(page);
+        } catch (BusinessException e) {
+            e.printStackTrace();
+            renderFail(e);
+        }
     }
 
     /**
      * 对账确认
      */
-    @Auth(hasForces = {"PayBatchCheck"})
+    @Auth(hasForces = {"PayCounterCheck"})
     public void confirm() {
         try {
             Record record = getRecordByParamsStrong();
@@ -70,45 +88,6 @@ public class PayCounterCheckController extends CFMBaseController {
             e.printStackTrace();
             renderFail(e);
         }
-    }
-
-    /**
-     * 根据子批次id查询明细
-     */
-    @Auth(hasForces = {"PayBatchCheck", "MyWFPLAT"})
-    public void getdetailbybaseid() {
-        try {
-            Record record = getRecordByParamsStrong();
-            List<Record> returnRecord = service.getdetailbybaseid(record);
-            renderOk(returnRecord);
-        } catch (BusinessException e) {
-            e.printStackTrace();
-            renderFail(e);
-        }
-    }
-
-    /**
-     * 根据批次查询交易
-     */
-    @Auth(hasForces = {"PayBatchCheck"})
-    public void gettradbybatchno() {
-        try {
-            Record record = getRecordByParamsStrong();
-            Record returnRecord = service.gettradbybatchno(record);
-            renderOk(returnRecord);
-        } catch (BusinessException e) {
-            e.printStackTrace();
-            renderFail(e);
-        }
-    }
-
-    /**
-     * 查找所有银行账号
-     */
-    public void getallaccountno() {
-        Record record = getRecordByParamsStrong();
-        List<Record> page = service.getallaccountno(record);
-        renderOk(page);
     }
 
 }

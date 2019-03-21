@@ -52,7 +52,29 @@ public class PayCheckService {
      * @return
      * @throws BusinessException
      */
-    public List<Record> tradingList(final Record record) {
+    public List<Record> tradingList(final Record record){
+        /**
+         * 如果有bankcode，根据bankcode找对应的通道，如果是第三方的走business_check否则走is_checked
+         * 如果没有bankcode，看传过来的is_inner 根据上面的通道来判断应该是走第三方的business_check还是is_checked
+         */
+        String bankcode = TypeUtils.castToString(record.get("bankcode"));
+        if(StringUtils.isNotEmpty(bankcode)){
+            Record chan = Db.findFirst(Db.getSql("channel_setting.getchannelbybankcode"), record.get("bankcode"));
+            if(chan == null){
+                return null;
+            }
+            if(chan.getInt("is_inner") == 0){
+                record.set("business_check", record.get("is_checked"));
+                record.remove("is_checked");
+            }
+        }else{
+            int isInner = TypeUtils.castToInt(record.get("is_inner"));
+            if(isInner == 0){
+                record.set("business_check", record.get("is_checked"));
+                record.remove("is_checked");
+            }
+        }
+        record.remove("is_inner");
         SqlPara sqlPara = Db.getSqlPara("paycheck.tradingList", Kv.by("map", record.getColumns()));
         return Db.find(sqlPara);
     }
@@ -211,7 +233,7 @@ public class PayCheckService {
             rd.set("channel_id_one", batchList.get(0).get("channel_id"));
             AccCommonService.setSftCheckStatus(record, "service_status");
             SqlPara sqlPara = Db.getSqlPara("paycheck.paylist", Kv.by("map", rd.getColumns()));
-            return Db.paginate(1, 10, sqlPara);
+            return Db.paginate(1, 20, sqlPara);
         }
     }
 

@@ -198,4 +198,11 @@ WHERE chan.org_id = org.org_id
   AND chan.id = ?
 #end
 
+#sql("getchannelbybankcode")
+SELECT
+	*
+FROM
+	channel_setting
+WHERE bankcode = ?
+#end
 

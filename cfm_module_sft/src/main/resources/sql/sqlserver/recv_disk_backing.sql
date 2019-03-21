@@ -148,3 +148,30 @@
     #end
   #end
 #end
+
+
+#sql("findDetail")
+   select 
+      *
+    from
+      recv_batch_detail AS  detail
+    where 
+      delete_num = 0
+    #if(map != null)
+    #for(x : map)
+          AND
+          #if("amount".equals(x.key))
+             detail.amount = #para(x.value)
+          #elseif("pay_code".equals(x.key))
+             detail.pay_code = #para(x.value)
+          #elseif("child_batchno".equals(x.key))
+             detail.child_batchno = #para(x.value)
+          #elseif("package_seq".equals(x.key))
+             detail.package_seq = #para(x.value) 
+          #else
+             1 = 1
+        #end
+    #end
+  #end
+#end
+

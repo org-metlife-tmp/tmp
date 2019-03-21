@@ -49,7 +49,7 @@ public class ChannelSettingWorkBook extends AbstractWorkBook {
             int is_checkout = TypeUtils.castToInt(record.get("is_checkout"));
             record.set("is_checkout_name", is_checkout==0? "关闭" : "启用");
             int net_mode = TypeUtils.castToInt(record.get("net_mode"));
-            record.set("net_mode", is_checkout==0? "净额模式" : "全额模式");
+            record.set("net_mode", net_mode==0? "净额模式" : "全额模式");
 
         }
         return POIUtil.createExcel(recordList, this);

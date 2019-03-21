@@ -236,6 +236,11 @@ public class SftLaDataCheckJob implements Job{
         	String oldRecvAccNo = r.getStr("recv_acc_no");
         	//数据库解密
         	String recvAccNo = DDHSafeUtil.decrypt(oldRecvAccNo);
+        	if (null == recvAccNo) {
+        		throw new ReqValidateException("银行账号数据库解密失败");
+			}
+        	
+        	//账号非法校验
         	log.debug("数据库解密[{}]=[{}]", oldRecvAccNo, SymmetricEncryptUtil.accNoAddMask(recvAccNo));
         	boolean accNoValidate = ValidateUtil.accNoValidate(recvAccNo);
         	if (!accNoValidate) {

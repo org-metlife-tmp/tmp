@@ -3,9 +3,7 @@
 	
 #sql("getLARecvCallBackOriginList")
   select 
-  	id,source_sys,pay_code,branch_code,org_code,preinsure_bill_no,insure_bill_no,biz_type,pay_mode
-	,recv_date,amount,pay_acc_name,pay_cert_type,pay_cert_code,pay_bank_name,pay_acc_no,bank_key
-	,sale_code,sale_name,op_code,op_name,tmp_status,tmp_err_message,persist_version
+  	*
   from la_origin_recv_data
   where tmp_status in (?,?) and la_callback_status in (?,?)
 #end
@@ -19,7 +17,7 @@
   from 
 	la_origin_recv_data 
   where 
-	job_no = (select top 1 JOBNO from ZDDHPF where [STATUS] = 1) 
+	job_no = ?
 	and is_process = ?
 #end
 
@@ -28,9 +26,7 @@
 		ZDDHPF 
 	set [STATUS] = 4 
 	where 
-		JOBNO not in(
-						select distinct job_no from la_origin_recv_data where is_process=0
-					) and 
+		JOBNO = ? and 
 		[STATUS]=1
 #end
 
@@ -80,8 +76,9 @@
     AND legal.source_sys = 0
     AND legal.status = 0
     AND ext.insure_bill_no =?
-    AND legal.recv_acc_name =?
+    AND legal.pay_acc_name =?
     AND legal.amount =?
+    AND ext.recv_date =?
 #end
 #sql("dellarecvlegalext")
   delete from la_recv_legal_data_ext where legal_id=?

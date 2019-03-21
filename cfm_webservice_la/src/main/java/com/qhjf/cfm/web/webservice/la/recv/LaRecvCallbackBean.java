@@ -101,10 +101,13 @@ public class LaRecvCallbackBean {
 		this.company = origin.getStr("branch_code");
 		this.branch = origin.getStr("org_code");
 		this.cownsel = origin.getStr("insure_bill_no");
-		this.paytype = origin.getStr("fee_mode");
-		this.tchqdate = origin.getStr("recv_date");
+//		this.paytype = origin.getStr("fee_mode");
+		this.paytype = origin.getStr("pay_mode");
+		this.tchqdate = origin.getStr("recv_date") != null ? origin.getStr("recv_date").replaceAll("-", "") : null;
+//		this.tchqdate = origin.getStr("recv_date");
 		this.docorigamt = origin.getStr("amount");
-		this.bankacckey = origin.getStr("pay_acc_no");
+		
+		this.bankacckey = decrypt(origin.getStr("pay_acc_no"));
 		//银行名称（付方银行大类）
 		this.znbnkkey = origin.getStr("pay_bank_name");
 		//开户行（收方）：付方账户名
@@ -170,13 +173,26 @@ public class LaRecvCallbackBean {
 		String bankcode = origin.getStr("bankcode");
 		
 		String err = origin.getStr("tmp_err_message");
-		if ("未匹配到机构".equals(err) || "未匹配到通道".equals(err) || "匹配到多个通道".equals(err)) {
+		if ("未匹配到机构".equals(err) || "未匹配到通道".equals(err) || "匹配到多个通道".equals(err)
+				|| "未匹配到证件类型".equals(err) ||"银行账号非法".equals(err) ||"银行账号数据库解密失败".equals(err)) {
 			return bankcode;
 		}
 		
 		if (null == bankcode || "".equals(bankcode.trim())) {
-			String sql = Db.getSql("webservice_la_recv_cfm.getBankCodeByOrgin");
-			Record find = Db.findFirst(sql, origin.getStr("bank_key"), origin.getStr("org_code"), origin.getStr("branch_code"));
+//			String sql = Db.getSql("webservice_la_recv_cfm.getBankCodeByOrgin");
+//			Record find = Db.findFirst(sql, origin.getStr("bank_key"), origin.getStr("org_code"), origin.getStr("branch_code"));
+			
+			Record org = Db.findFirst(
+	                    Db.getSql("la_cfm.getOrg"), origin.getStr("org_code"), origin.getStr("branch_code"));
+			if (null == org) {
+				return bankcode;
+			}
+			
+			Record find = Db.findFirst(Db.getSql("la_cfm.getChannel")
+            		, 0
+            		, org.getLong("org_id")
+            		, origin.getStr("bank_key")
+            		, 0);
 			if (null != find) {
 				bankcode = find.getStr("bankcode");
 			}else {
@@ -351,5 +367,16 @@ public class LaRecvCallbackBean {
 
 	public void setDdderef(String ddderef) {
 		this.ddderef = ddderef;
+	}
+	
+	public String decrypt(String source) {
+		String result = null;
+		try {
+			result = Db.queryStr(Db.getSql("webservice_la_recv_cfm.ddhDecryptD"), source);
+		} catch (Exception e) {
+			log.error("大都会数据库解密[{}]异常！", source);
+			e.printStackTrace();
+		}
+		return result;
 	}
 }

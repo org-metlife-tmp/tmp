@@ -37,6 +37,7 @@ public class LaRecvConsumerQueue implements Runnable{
 	private static Logger log = LoggerFactory.getLogger(LaRecvConsumerQueue.class);
 	private static DDHLARecvConfigSection config = GlobalConfigSection.getInstance()
 			.getExtraConfig(IConfigSectionType.DDHConfigSectionType.DDHLaRecv);
+	private static final String LA_ORIGIN = "la_origin_recv_data";
 
 	@Override
 	public void run() {
@@ -88,7 +89,7 @@ public class LaRecvConsumerQueue implements Runnable{
 	    				.set("la_callback_resp_time", new Date());
 	    		Record whereRecord = new Record()
 	    				.set("pay_code", bean.getDdderef());
-	    		if(CommonService.updateRows("la_origin_recv_data", setRecord, whereRecord) != 1){
+	    		if(CommonService.updateRows(LA_ORIGIN, setRecord, whereRecord) != 1){
 	    			log.debug("LA批收回调接口回写数据库失败:"+bean.getDdderef());
 	    			continue;
 	    		};
@@ -113,6 +114,11 @@ public class LaRecvConsumerQueue implements Runnable{
 				.getJSONArray("DRNOUTRECS");
 		
 		for(int i = 0;i<array.size();i++){
+			if (beans.size() <= i) {
+				log.debug("LA批付回写跳过：{}", i);
+				CommKit.debugPrint(log,"LA批付回写跳过：{}",array.getString(i));
+				continue;
+			}
 			final LaRecvCallbackBean bean = beans.get(i);
 			final String payCode = bean.getDdderef();
 			
@@ -123,15 +129,12 @@ public class LaRecvConsumerQueue implements Runnable{
 	            	String processStatus = json.getString("STATUS");
 	    			String receipt = json.getString("RECEIPT");
 	    			
-	    			/*if (null == payCode || "".equals(payCode.trim())) {
-	    				log.debug("LA批收响应回写原始数据，payCode为空，响应数据节点<DRNOUTRECS>=", json);
+	    			if (null == processStatus || "".equals(processStatus.trim())) {
+	    				return true;
+					}
+	    			/*if (null == receipt || "".equals(receipt.trim())) {
 						return true;
 					}*/
-	    			if (null == processStatus || "".equals(processStatus.trim())) {
-	    				if (null == receipt || "".equals(receipt.trim())) {
-							return true;
-						}
-					}
 	    			
 	    			Record whereRecord = new Record().set("pay_code", payCode);
 	    			
@@ -141,12 +144,11 @@ public class LaRecvConsumerQueue implements Runnable{
 	    						.set("la_callback_resp_time", new Date())
 	    						.set("receipt", receipt);
 	    				
-	    				if(CommonService.updateRows("la_origin_recv_data", setRecord, whereRecord)==1){
+	    				if(CommonService.updateRows(LA_ORIGIN, setRecord, whereRecord)==1){
 	    					Record record = Db.findFirst(Db.getSql("webservice_la_recv_cfm.getStatusByPayCode"), payCode);
 	    					if(record.getInt("tmp_status") == WebConstant.SftInterfaceStatus.SFT_INTER_PROCESS_S.getKey()){
 								Record payLegalRecord = Db.findFirst(Db.getSql("webservice_la_recv_cfm.getPayLegalByPayCode"), payCode);
 								try {
-									//TODO：
 									log.info("LA中批量收paycode为【"+payCode+"】的数据回调成功，生成凭证---begin");
 									CheckVoucherService.plsLaBackCheckVoucher("LA",
 											payLegalRecord,
@@ -175,7 +177,7 @@ public class LaRecvConsumerQueue implements Runnable{
 	    						.set("la_callback_err_code", errCode)
 	    						.set("la_callback_err_message", errMessage)
 	    						.set("la_callback_resp_time", new Date());
-	    				if(CommonService.updateRows("la_origin_recv_data", setRecord, whereRecord)==1){
+	    				if(CommonService.updateRows(LA_ORIGIN, setRecord, whereRecord)==1){
 	    					return true;
 	    				}
 	    			}

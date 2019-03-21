@@ -10,10 +10,12 @@ import com.qhjf.cfm.utils.CommonService;
 import com.qhjf.cfm.utils.RedisSericalnoGenTool;
 import com.qhjf.cfm.web.UserInfo;
 import com.qhjf.cfm.web.constant.WebConstant;
+import edu.emory.mathcs.backport.java.util.Arrays;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -48,9 +50,41 @@ public class PayCounterCheckService {
      * @return
      * @throws BusinessException
      */
-    public List<Record> tradingList(final Record record) {
-        SqlPara sqlPara = Db.getSqlPara("paycheck.tradingList", Kv.by("map", record.getColumns()));
+    public List<Record> tradingListNoAuto(final Record record) {
+        SqlPara sqlPara = Db.getSqlPara("paycountercheck.tradingList", Kv.by("map", record.getColumns()));
         return Db.find(sqlPara);
+    }
+
+    /**
+     * 查找交易流水
+     * @param record
+     * @return
+     * @throws BusinessException
+     */
+    public List<Record> tradingListAuto(final Record record) throws BusinessException {
+        /**
+         * (1)当业务流水记录行被选中时，银行流水表中按照以下先后顺序查询，如查到记录则完成匹配查询，把结果显示在银行流水表中
+         *     (a) 按照指令码匹配查询。
+         *     (b) 当(a)没有查到记录，按“付款银行+付款金额+对方银行账号+银行流水中的交易日期晚于等于业务流水操作日期”查询。
+         * (2)当查询到单条记录时，流水银行表中该记录自动勾选（可手工撤销勾选）;
+         * (3)当查询到多条记录，流水银行表中多条记录均不自动勾选（可手工勾选）;
+         */
+        //根据单据id获取对账码
+        Record bill = Db.findById("gmf_bill","id",TypeUtils.castToInt(record.get("id")));
+        List<Record> hisList = null;
+        if(bill == null){
+            throw new ReqDataException("未找到匹配的单据！");
+        }
+        String instructCode = TypeUtils.castToString(bill.get("instruct_code"));
+        if(StringUtils.isNotEmpty(instructCode)){
+            //根据指令码查询交易表数据
+            hisList = Db.find(Db.getSql("paycountercheck.getHisByInstructCode"), bill.get("amount"),
+                    instructCode, bill.get("send_on"));
+            if(hisList!=null && hisList.size()>0){
+                return hisList;
+            }
+        }
+        return Db.find(Db.getSqlPara("paycountercheck.getHisByInfos", Kv.by("map", bill.getColumns())));
     }
 
     /**
@@ -63,100 +97,54 @@ public class PayCounterCheckService {
     public Page<Record> confirm(final Record record, final UserInfo userInfo) throws BusinessException {
         //交易id
         final ArrayList<Integer> tradingNo = record.get("trading_no");
-        //批次号
-        final ArrayList<Integer> batchNo = record.get("batchid");
-        final ArrayList<Integer> persistVersion = record.get("persist_version");
-
-        //获取勾选的交易和批次
-        final List<Record> batchList = Db.find(Db.getSqlPara("paycheck.findBatchList", Kv.by("batchNo", batchNo)));
+        //单据
+        final Record bill = Db.findById("gmf_bill","id",TypeUtils.castToInt(record.get("id")));
+        //获取勾选的交易
         final List<Record> tradList = Db.find(Db.getSqlPara("paycheck.findTradList", Kv.by("tradingNo", tradingNo)));
 
-        if(batchList.size()==0 || tradList.size()==0){
+        if(bill==null || tradList.size()==0){
             throw new ReqDataException("请选择要核对的批次和交易！");
         }
 
-        //判断勾选的批次是否是同一通道
-        HashSet<String> codeSet = new HashSet<>();
-        //判断是否已核对过
-        HashSet<Integer> checkedSet = new HashSet<>();
-        BigDecimal batchAmount = new BigDecimal(0);
-        for(Record r : batchList){
-            codeSet.add(TypeUtils.castToString(r.get("channel_code")));
-            int isChecked = TypeUtils.castToInt(r.get("is_checked"));
-            if(isChecked == 1){
-                checkedSet.add(isChecked);
-            }
-            batchAmount = batchAmount.add(TypeUtils.castToBigDecimal(r.get("success_amount")));
+        BigDecimal billAmount = TypeUtils.castToBigDecimal(bill.get("amount"));
+        int isChecked = TypeUtils.castToInt(bill.get("is_checked"));
+        if(isChecked == 1){
+            throw new ReqDataException("已勾选的存在已核对的单据！");
         }
-        if(codeSet.size() != 1){
-            throw new ReqDataException("请选择同一通道！");
-        }
-        if(checkedSet.size() >= 1){
-            throw new ReqDataException("已勾选的存在已核对的批次！");
-        }
-        //0--第三方付款 1--内部调拨付款
-        int isInner = TypeUtils.castToInt(batchList.get(0).get("is_inner"));
-        List<Record> tradSize = null;
-        if(isInner == 0){
-            //第三方的根据business_check判断是否核对
-            tradSize = Db.find(Db.getSqlPara("paycheck.findTradListBusiness",
-                    Kv.by("map", new Record().set("business_check", 0).set("tradingNo", tradingNo).getColumns())));
-        }else if(isInner == 1){
-            //内部调拨的根据is_checked判断是否核对
-            tradSize = Db.find(Db.getSqlPara("paycheck.findTradListBusiness",
-                    Kv.by("map", new Record().set("is_checked", 0).set("tradingNo", tradingNo).getColumns())));
-        }else{
-            throw new ReqDataException("需要传对应的业务类型！");
-        }
+        List<Record> tradSize = Db.find(Db.getSqlPara("paycheck.findTradListBusiness",
+                Kv.by("map", new Record().set("is_checked", 0).set("tradingNo", tradingNo).getColumns())));
+
         if(tradSize.size() != tradingNo.size()){
             throw new ReqDataException("存在已核对的交易再次进行核对！");
         }
 
         BigDecimal tradAmount = new BigDecimal(0);
-        //收款记录的会记日期确认标记位
-        boolean directionFlag = false;
         //交易付方向总金额-交易收方向总金额=批次成功付款金额，才可核对
         for(Record r : tradList){
-            /**
-             * 1、有收款记录 取收款记录较晚对账单日期作为会计日期。2、没有收款记录 取对账操作日期作为会计日期
-             */
             int direction = TypeUtils.castToInt(r.get("direction"));
             //1付 2收
             if(direction == 1){
                 tradAmount = tradAmount.add(TypeUtils.castToBigDecimal(r.get("amount")));
             }else if(direction == 2){
-                directionFlag = true;
                 tradAmount = tradAmount.subtract(TypeUtils.castToBigDecimal(r.get("amount")));
             }
         }
-        if(batchAmount.compareTo(tradAmount) != 0){
-            throw new ReqDataException("核对批次金额和交易金额不相同！");
+        if(billAmount.compareTo(tradAmount) != 0){
+            throw new ReqDataException("单据金额和交易金额不相同！");
         }
 
-        final int inner = isInner;
         //生成对账流水号
         final String checkSerialSeqNo = RedisSericalnoGenTool.genCheckSerialSeqNo();//生成十六进制流水号
-
-        final List<Record> records = CommonService.genPayConfirmRecords(batchNo, tradingNo, userInfo, checkSerialSeqNo);
+        final List<Record> records = CommonService.genPayConfirmRecords(Arrays.asList(new Integer[]{TypeUtils.castToInt(record.get("id"))}), tradingNo, userInfo, checkSerialSeqNo);
 
         //进行数据新增操作
         boolean flag = Db.tx(new IAtom() {
             @Override
             public boolean run() throws SQLException {
                 //更新交易
-                String checkName = "";
-                int biz_type;
-                if(inner == 0){
-                    checkName = "business_check";
-                    biz_type = WebConstant.MajorBizType.SFF_PLF_DSF.getKey();
-                }else{
-                    checkName = "is_checked";
-                    biz_type = WebConstant.MajorBizType.SFF_PLF_INNER.getKey();
-                }
                 for(Integer trad : tradingNo){
-
                     boolean s = CommonService.update("acc_his_transaction",
-                                    new Record().set(checkName, 1)
+                                    new Record().set("is_checked", 1)
                                                 .set("check_service_number", checkSerialSeqNo)
                                                 .set("check_user_id", userInfo.getUsr_id())
                                                 .set("check_user_name", userInfo.getName())
@@ -167,32 +155,30 @@ public class PayCounterCheckService {
                     }
                 }
                 String seqnoOrstatmentCode = RedisSericalnoGenTool.genVoucherSeqNo();//生成十六进制序列号/凭证号
-                //更新批次
-                for(int num=0; num<batchNo.size(); num++){
-                    boolean s = CommonService.update("pay_batch_total",
-                            new Record().set("is_checked", 1)
-                                        .set("persist_version", persistVersion.get(num)+1)
-                                        .set("statement_code", seqnoOrstatmentCode)
-                                        .set("check_service_number", checkSerialSeqNo)
-                                        .set("check_user_id", userInfo.getUsr_id())
-                                        .set("check_user_name", userInfo.getName())
-                                        .set("check_date", new Date()),
-                            new Record().set("id", batchNo.get(num)).set("persist_version", persistVersion.get(num)));
-                    if(!s){
-                        return false;
-                    }
+                //更新单据
+                boolean s = CommonService.update("gmf_bill",
+                        new Record().set("is_checked", 1)
+                                .set("persist_version", bill.getInt("persist_version")+1)
+                                .set("statement_code", seqnoOrstatmentCode)
+                                .set("check_service_number", checkSerialSeqNo)
+                                .set("check_user_id", userInfo.getUsr_id())
+                                .set("check_user_name", userInfo.getName())
+                                .set("check_date", new Date()),
+                        new Record().set("id", bill.getInt("id")).set("persist_version", bill.getInt("persist_version")));
+                if(!s){
+                    return false;
                 }
                 //存储关系
                 for (int num=0; num<records.size(); num++) {
                     Record r = records.get(num);
-                    boolean i = Db.save("pay_batch_checked", r);
+                    boolean i = Db.save("pay_gmf_checked", r);
                     if (!i) {
                         return false;
                     }
                 }
                 try {
                     //生成凭证信息
-                    return CheckVoucherService.sunVoucherData(batchNo, tradingNo, batchList, tradList, biz_type, seqnoOrstatmentCode);
+                    return CheckVoucherService.sunVoucherData(bill, tradingNo, tradList, WebConstant.MajorBizType.GMF.getKey(), seqnoOrstatmentCode);
                 } catch (BusinessException e) {
                     e.printStackTrace();
                     return false;
@@ -204,10 +190,9 @@ public class PayCounterCheckService {
         } else {
             //返回批次列表
             Record rd = new Record();
-            rd.set("channel_id_one", batchList.get(0).get("channel_id"));
             AccCommonService.setSftCheckStatus(record, "service_status");
-            SqlPara sqlPara = Db.getSqlPara("paycheck.paylist", Kv.by("map", rd.getColumns()));
-            return Db.paginate(1, 10, sqlPara);
+            SqlPara sqlPara = Db.getSqlPara("paycountercheck.paylist", Kv.by("map", rd.getColumns()));
+            return Db.paginate(1, 20, sqlPara);
         }
     }
 

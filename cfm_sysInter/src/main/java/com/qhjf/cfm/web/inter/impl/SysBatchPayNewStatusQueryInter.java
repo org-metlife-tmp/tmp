@@ -10,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.alibaba.fastjson.util.TypeUtils;
 import com.jfinal.ext.kit.DateKit;
-import com.jfinal.kit.Kv;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.IAtom;
 import com.jfinal.plugin.activerecord.Record;
@@ -19,6 +18,9 @@ import com.qhjf.cfm.utils.CommonService;
 import com.qhjf.cfm.utils.TableDataCacheUtil;
 import com.qhjf.cfm.web.channel.inter.api.IChannelInter;
 import com.qhjf.cfm.web.channel.inter.api.IMoreResultChannelInter;
+import com.qhjf.cfm.web.config.GlobalConfigSection;
+import com.qhjf.cfm.web.config.IConfigSectionType;
+import com.qhjf.cfm.web.config.PlfConfigAccnoSection;
 import com.qhjf.cfm.web.constant.WebConstant;
 import com.qhjf.cfm.web.inter.api.ISysAtomicInterface;
 import com.qhjf.cfm.web.inter.manager.SysInterManager;
@@ -33,6 +35,8 @@ import com.qhjf.cfm.web.webservice.sft.SftCallBack;
 public class SysBatchPayNewStatusQueryInter implements ISysAtomicInterface {
 
 	private static Logger log = LoggerFactory.getLogger(SysBatchPayNewStatusQueryInter.class);
+	PlfConfigAccnoSection section = GlobalConfigSection.getInstance()
+			.getExtraConfig(IConfigSectionType.DDHConfigSectionType.VOUCHER);
 	private static final String LA_ORIGIN = "la_origin_pay_data";
 	private static final String EBS_ORIGIN = "ebs_origin_pay_data";
 	private static final String BILL_NOT_EXIST = "批量支付回写时，通过source_ref=[{}],bill_id=[{}]未找到单据！";
@@ -127,8 +131,6 @@ public class SysBatchPayNewStatusQueryInter implements ISysAtomicInterface {
 		final Long instrTotalId = TypeUtils.castToLong(instrTotal.get("id"));
 		final String billTotalTb = instrTotal.getStr("source_ref");
 		final Long billTotalId = instrTotal.getLong("bill_id");
-		final String payBankType = instrTotal.getStr("pay_bank_type");
-		final String payAccountNo = instrTotal.getStr("pay_account_no");
 		
 		Record billTotalRecord = getBillTotalRecord(billTotalTb, billTotalId);
 		if (null == billTotalRecord) {
@@ -175,20 +177,22 @@ public class SysBatchPayNewStatusQueryInter implements ISysAtomicInterface {
 					}
 				}else {
 					//需求变更：ebs加四个非空字段，回传EBS：paydate 支付日期|paytime 支付时间|paybankcode 大都会支付银行编码 （需要做mapping）|paybankaccno 大都会支付银行账号
-					//paybankcode来源：cnaps---》all_bank_info.bank_type---》ebs_bank_mapping.ebs_bank_code
+					//paybankcode来源：拿到PlfConfigAccnoSection配置中配置的银行账号，查询account表，得到bankcode	
 					SqlPara updOriginFailEbsSqlPara = Db.getSqlPara("batchpay.updOriginFailEbs");
 					Calendar c = Calendar.getInstance();
 					String date = new SimpleDateFormat("yyyy-MM-dd").format(c.getTime());
 					String time = new SimpleDateFormat("HH:mm:ss").format(c.getTime());
+					
+					String accno = section.getAccno();
+					Map<String, Object> aRowData = TableDataCacheUtil.getInstance().getARowData("account", "acc_no", accno);
 					String paybankcode = null;
-					Map<String, Object> ebsBankMapping = TableDataCacheUtil.getInstance()
-							.getARowData("ebs_bank_mapping", "tmp_bank_code", payBankType);
-					if (ebsBankMapping != null) {
-						paybankcode = TypeUtils.castToString(ebsBankMapping.get("ebs_bank_code"));
+					if (null != aRowData) {
+						paybankcode = TypeUtils.castToString(aRowData.get("bankcode"));
 					}else {
-						paybankcode = payBankType + "未匹配到ebs数据";
+						paybankcode = String.format("银行账号：(%s)未维护到account表", accno);
 					}
-					if (Db.update(updOriginFailEbsSqlPara.getSql(), date, time, paybankcode, payAccountNo, instrTotalId) <= 0) {
+					
+					if (Db.update(updOriginFailEbsSqlPara.getSql(), date, time, paybankcode, accno, instrTotalId) <= 0) {
 						return false;
 					}
 				}

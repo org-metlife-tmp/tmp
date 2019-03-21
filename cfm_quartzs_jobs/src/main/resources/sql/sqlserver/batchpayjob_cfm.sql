@@ -20,7 +20,7 @@
 				trade_date 
 			from 
 				batch_pay_instr_queue_total 
-			where status=1
+			where status=1 and reqnbr is null
 		) t
 		join 
 		(

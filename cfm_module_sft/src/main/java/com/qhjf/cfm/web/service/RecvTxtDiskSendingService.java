@@ -152,9 +152,9 @@ public class RecvTxtDiskSendingService {
 	        	//detail_map.put("serialnum", detailRecords.get(i).get("serialnum"));
 	        	for(int j = 0; j < datail_titleNames.split(",").length; j++) {
 	        		if("pay_acc_no".equals(datail_titleNames.split(",")[j])) {
-	        			SymmetricEncryptUtil util = new SymmetricEncryptUtil();
+	        			SymmetricEncryptUtil util = SymmetricEncryptUtil.getInstance();
 	        			String str = detailRecords.get(i).getStr(datail_titleNames.split(",")[j]);
-	        			String acc_no = new String(util.decrypt(str),"utf-8");
+	        			String acc_no = util.decryptToStr(str);
 	        			detail_map.put(datail_titleNames.split(",")[j],acc_no );	        			
 	        		}else {
 	        			detail_map.put(datail_titleNames.split(",")[j], detailRecords.get(i).getStr(datail_titleNames.split(",")[j]));	        			

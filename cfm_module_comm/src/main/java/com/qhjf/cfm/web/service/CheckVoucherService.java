@@ -122,6 +122,19 @@ public class CheckVoucherService {
                 break;
             case PLS:
                 flag = plsCheckVoucher(batchList, tradList, batchRecordList, tradRecordList, majorBizType, seqnoOrstatmentCode);
+            default:
+                throw new ReqDataException(majorBizType.getDesc() + "，未实现生成凭证方法！");
+        }
+        return flag;
+    }
+
+    public static boolean sunVoucherData(Record billRecord, List<Integer> tradNoList, List<Record> tradRecordList,
+                                      int biz_type, String seqnoOrstatmentCode) throws BusinessException {
+        WebConstant.MajorBizType majorBizType = WebConstant.MajorBizType.getBizType(biz_type);
+        boolean flag = false;
+        switch (majorBizType) {
+            case GMF:
+                flag = gmfCheckVoucher(billRecord, tradNoList, tradRecordList, seqnoOrstatmentCode);
                 break;
             default:
                 throw new ReqDataException(majorBizType.getDesc() + "，未实现生成凭证方法！");
@@ -370,6 +383,17 @@ public class CheckVoucherService {
                 allLastDate = tempDate;
             }
         }
+        /**
+         * （1）  如果对账单日期与实际对账日期（收付费对账操作日期）为同一财务月内，则财务记账日期为交易流水日期；
+         * （2）  如果对账单日期与实际对账日期（收付费对账操作日期）为非同一财务月，则财务记账日期为操作日期。
+         */
+        periodDate = CommonService.getPeriodByCurrentDay(allLastDate);
+        Date periodCurr = CommonService.getPeriodByCurrentDay(new Date());
+        if(periodDate.getTime() == periodCurr.getTime()){
+            periodDate = periodDate;
+        }else{
+            periodDate = periodCurr;
+        }
         if(bizType == WebConstant.MajorBizType.SFF_PLF_INNER){
             Record chann=null, acc=null;
             String description=null, code6=null, transactionReference=null;
@@ -390,10 +414,6 @@ public class CheckVoucherService {
             //内部调拨的分全额模式和净额模式两种 batchList 净额模式 0--净额模式 1--全额模式
             int netMode = TypeUtils.castToInt(detailLsit.get(0).get("net_mode"));
             if(netMode == 0){
-                /**
-                 * 会计日期 取当日银行对账单最晚日期  所有交易最晚的
-                 */
-                periodDate = CommonService.getPeriodByCurrentDay(allLastDate);
 
                 for(Record detailRecord : detailLsit){
                     int status = TypeUtils.castToInt(detailRecord.get("status"));
@@ -407,42 +427,25 @@ public class CheckVoucherService {
                 }
 
             }else if(netMode == 1){
-                /**
-                 * 1、付款：会计日期取付款银行对账单较晚的日期 2、收款：会计日期取收款银行对账单较晚日期  各取方向最晚日期
-                 */
-                Date periodS=null, periodF=null;
-                periodF = CommonService.getPeriodByCurrentDay(allLastDate);
-                if(recvLastDate != null){
-                    periodS = CommonService.getPeriodByCurrentDay(recvLastDate);
-                }
 
                 for(Record detailRecord : detailLsit){
                     int status = TypeUtils.castToInt(detailRecord.get("status"));
                     if(status == WebConstant.SftInterfaceStatus.SFT_INTER_PROCESS_F.getKey()){
                         description = formatdsfTransRefer.format(recvLastDate) + chann.getStr("bankcode") + "批量付款-银行全额模式-资金退回";
                         //凭证5
-                        list.add(CommonService.plfPayVorcher(acc, description, "SYS", transactionReference, 5, periodS, recvLastDate, detailRecord, curr, orgcode));
+                        list.add(CommonService.plfPayVorcher(acc, description, "SYS", transactionReference, 5, periodDate, recvLastDate, detailRecord, curr, orgcode));
                         //凭证6
-                        list.add(CommonService.plfPayVorcher(acc, description, chann.getStr("channel_code")+chann.getStr("bankcode"), transactionReference, 6, periodS, recvLastDate, detailRecord, curr, orgcode));
+                        list.add(CommonService.plfPayVorcher(acc, description, chann.getStr("channel_code")+chann.getStr("bankcode"), transactionReference, 6, periodDate, recvLastDate, detailRecord, curr, orgcode));
                     }
                     description = formatdsfTransRefer.format(allLastDate) + chann.getStr("bankcode") + "批量付款-银行全额模式-付款成功";
                     //凭证3
-                    list.add(CommonService.plfPayVorcher(acc, description, chann.getStr("channel_code")+chann.getStr("bankcode"), transactionReference, 3, periodF, allLastDate, detailRecord, curr, orgcode));
+                    list.add(CommonService.plfPayVorcher(acc, description, chann.getStr("channel_code")+chann.getStr("bankcode"), transactionReference, 3, periodDate, allLastDate, detailRecord, curr, orgcode));
                     //凭证4
-                    list.add(CommonService.plfPayVorcher(acc, description, "SYS", transactionReference, 4, periodF, allLastDate, detailRecord, curr, orgcode));
+                    list.add(CommonService.plfPayVorcher(acc, description, "SYS", transactionReference, 4, periodDate, allLastDate, detailRecord, curr, orgcode));
                 }
 
             }
         }else if(bizType == WebConstant.MajorBizType.SFF_PLF_DSF){
-            /**
-             * 1、有收款记录 取收款记录较晚对账单日期作为会计日期（所有收付记录的最晚的）。2、没有收款记录 取对账操作日期作为会计日期
-             */
-            Date periodS=null, periodF=null;
-            periodF = CommonService.getPeriodByCurrentDay(allLastDate);
-            if(recvLastDate != null){
-                periodS = CommonService.getPeriodByCurrentDay(new Date());
-            }
-
             Record chann=null, acc=null;
             String description=null, code6=null, transactionReference=null;
             //根据通道找对应的bankcode和channel_code，然后根据channel_code找对应的账号
@@ -467,16 +470,16 @@ public class CheckVoucherService {
                     code6 = chann.getStr("channel_code")+chann.getStr("bankcode");
                     //处理成功的
                     //凭证1
-                    list.add(CommonService.plfPayVorcher(acc, description, code6, transactionReference, 7, periodF, allLastDate, detailRecord, curr, orgcode));
+                    list.add(CommonService.plfPayVorcher(acc, description, code6, transactionReference, 7, periodDate, allLastDate, detailRecord, curr, orgcode));
                     //凭证2
-                    list.add(CommonService.plfPayVorcher(acc, description, code6, transactionReference, 8, periodF, allLastDate, detailRecord, curr, orgcode));
+                    list.add(CommonService.plfPayVorcher(acc, description, code6, transactionReference, 8, periodDate, allLastDate, detailRecord, curr, orgcode));
                 }else if(status == WebConstant.SftInterfaceStatus.SFT_INTER_PROCESS_F.getKey()){
                     //处理失败的
                     //凭证1
                     description = formatdsfTransRefer.format(new Date()) + chann.getStr("bankcode") + "第三方结算-批量付款-付款失败退款";
-                    list.add(CommonService.plfPayVorcher(acc, description, "SYS", transactionReference, 9, periodS, new Date(), detailRecord, curr, orgcode));
+                    list.add(CommonService.plfPayVorcher(acc, description, "SYS", transactionReference, 9, periodDate, new Date(), detailRecord, curr, orgcode));
                     //凭证2
-                    list.add(CommonService.plfPayVorcher(acc, description, chann.getStr("channel_code")+chann.getStr("bankcode"), transactionReference, 10, periodS, new Date(), detailRecord, curr, orgcode));
+                    list.add(CommonService.plfPayVorcher(acc, description, chann.getStr("channel_code")+chann.getStr("bankcode"), transactionReference, 10, periodDate, new Date(), detailRecord, curr, orgcode));
                 }
             }
         }
@@ -516,9 +519,16 @@ public class CheckVoucherService {
             }
         }
         /**
-         * 记录较晚对账单日期作为会计日期（所有收付记录的最晚的）。
+         * （1）  如果对账单日期与实际对账日期（收付费对账操作日期）为同一财务月内，则财务记账日期为交易流水日期；
+         * （2）  如果对账单日期与实际对账日期（收付费对账操作日期）为非同一财务月，则财务记账日期为操作日期。
          */
         periodDate = CommonService.getPeriodByCurrentDay(allLastDate);
+        Date periodCurr = CommonService.getPeriodByCurrentDay(new Date());
+        if(periodDate.getTime() == periodCurr.getTime()){
+            periodDate = periodDate;
+        }else{
+            periodDate = periodCurr;
+        }
 
         Record chann=null, acc=null;
         String description=null, code6=null, transactionReference=null;
@@ -544,6 +554,68 @@ public class CheckVoucherService {
             //凭证2
             list.add(CommonService.plsPayVorcher(acc, description, chann.getStr("channel_code")+chann.getStr("bankcode"), transactionReference, 2, periodDate, allLastDate, detailRecord, curr, orgcode));
         }
+
+        if (!CommonService.saveCheckVoucher(list)) {
+            throw new ReqDataException("生成凭证失败!");
+        }
+
+
+        return true;
+    }
+
+    /**
+     * 柜面付 核对生成凭证
+     * @param billRecord
+     * @param tradList
+     * @param tradRecordList
+     * @param seqnoOrstatmentCode
+     * @return
+     * @throws BusinessException
+     */
+    private static boolean gmfCheckVoucher(Record billRecord, List<Integer> tradList,
+                                           List<Record> tradRecordList,String seqnoOrstatmentCode) throws BusinessException {
+
+        String curr="",orgcode="";
+        List<Record> list = new ArrayList<>();
+        //所有交易的最晚日期
+        Date allLastDate = TypeUtils.castToDate(tradRecordList.get(0).get("trans_date")), periodDate=null;
+        Date tempDate = null;
+        for(Record r : tradRecordList){
+            tempDate = TypeUtils.castToDate(r.get("trans_date"));
+            if(tempDate.after(allLastDate)){
+                allLastDate = tempDate;
+            }
+        }
+        /**
+         * （1）  如果对账单日期与实际对账日期（收付费对账操作日期）为同一财务月内，则财务记账日期为交易流水日期；
+         * （2）  如果对账单日期与实际对账日期（收付费对账操作日期）为非同一财务月，则财务记账日期为操作日期。
+         */
+        periodDate = CommonService.getPeriodByCurrentDay(allLastDate);
+        Date periodCurr = CommonService.getPeriodByCurrentDay(new Date());
+        if(periodDate.getTime() == periodCurr.getTime()){
+            periodDate = periodDate;
+        }else{
+            periodDate = periodCurr;
+        }
+
+        Record acc=null;
+        String description=null, code6=null, transactionReference=null;
+        //根据账号找对应的bankcode
+        acc = Db.findById("account", "acc_id", TypeUtils.castToLong(tradRecordList.get(0).get("acc_id")));
+        //根据机构id查询机构信息
+        curr = TypeUtils.castToString(
+                Db.findById("currency","id", TypeUtils.castToLong(acc.get("curr_id")))
+                        .get("iso_code"));
+        orgcode = TypeUtils.castToString(
+                Db.findById("organization","org_id", TypeUtils.castToLong(acc.get("org_id")))
+                        .get("code"));
+        Record sftcheck = Db.findById("sftcheck_org_mapping", "tmp_org_code", orgcode);
+        transactionReference = "SS" + sftcheck.getStr("code_abbre") + formatTransRefer.format(new Date()) + seqnoOrstatmentCode;
+        description = formatdsfTransRefer.format(allLastDate) + acc.getStr("bankcode") + "柜面付款资金到帐";
+        //凭证1
+        list.add(CommonService.gmfPayVorcher(acc, description, "SYS", transactionReference, 1, periodDate, allLastDate, billRecord, curr, orgcode));
+        //凭证2
+        list.add(CommonService.gmfPayVorcher(acc, description, acc.getStr("bankcode"), transactionReference, 2, periodDate, allLastDate, billRecord, curr, orgcode));
 
         if (!CommonService.saveCheckVoucher(list)) {
             throw new ReqDataException("生成凭证失败!");

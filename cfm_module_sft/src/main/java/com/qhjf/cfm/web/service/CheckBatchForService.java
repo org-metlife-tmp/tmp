@@ -70,7 +70,7 @@ public class CheckBatchForService {
 				codes.add(o.getStr("code"));
 			}
 		}
-		SymmetricEncryptUtil  util = new SymmetricEncryptUtil();
+		SymmetricEncryptUtil  util = SymmetricEncryptUtil.getInstance();
 		String recv_acc_no = record.getStr("recv_acc_no");
 		recv_acc_no = util.encrypt(recv_acc_no);
 		record.set("recv_acc_no", recv_acc_no);
@@ -107,6 +107,10 @@ public class CheckBatchForService {
 	 * @throws BusinessException 
 	 */
 	public void confirm(final Record record, final UodpInfo curUodp, final UserInfo userInfo) throws BusinessException {
+		
+	    long start_TimeMillis = System.currentTimeMillis();	
+	    logger.info("============组批开始时间=="+start_TimeMillis);
+	    
 		int flag_redis = 0 ;  // 是否确实有人在组批此渠道数据
 		final Integer source_sys = TypeUtils.castToInt(record.get("source_sys"));
 		final Long channel_id = TypeUtils.castToLong(record.get("channel_id"));
@@ -171,7 +175,7 @@ public class CheckBatchForService {
 			}
 			record.set("pay_mode", WebConstant.SftDoubtPayMode.PLSF.getKeyc());
 			record.set("codes", codes);
-			SymmetricEncryptUtil  util = new SymmetricEncryptUtil();
+			SymmetricEncryptUtil  util = SymmetricEncryptUtil.getInstance();
 			String recv_acc_no = record.getStr("recv_acc_no");
 			recv_acc_no = util.encrypt(recv_acc_no);
 			record.set("recv_acc_no", recv_acc_no);		
@@ -313,6 +317,7 @@ public class CheckBatchForService {
 									.set("recv_cert_code", rec.get("recv_cert_code"))
 									.set("recv_bank_name", rec.get("recv_bank_name"))
 									.set("recv_bank_type", rec.get("recv_bank_type"))
+									.set("pay_code", rec.get("pay_code"))
 									.set("recv_acc_no", rec.get("recv_acc_no"))
 									.set("master_batchno", main_record.get("master_batchno"))
 									.set("child_batchno", pay_batch_total.get("child_batchno"));
@@ -396,6 +401,9 @@ public class CheckBatchForService {
 				oaDataDoubtfulCache.sremValue(pre, value);				
 			}
 		}
+	    long end_TimeMillis = System.currentTimeMillis();	
+	    logger.info("============组批结束时间=="+end_TimeMillis);
+        logger.info("============组批共耗时毫秒数====="+(end_TimeMillis-start_TimeMillis));
 	}
 
 	/**

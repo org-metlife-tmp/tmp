@@ -63,7 +63,7 @@ public class RecvCheckBatchForService {
 				codes.add(o.getStr("code"));
 			}
 		}
-		SymmetricEncryptUtil  util = new SymmetricEncryptUtil();
+		SymmetricEncryptUtil  util = SymmetricEncryptUtil.getInstance();
 		String pay_acc_no = record.getStr("pay_acc_no");
 		pay_acc_no = util.encrypt(pay_acc_no);
 		record.set("pay_acc_no", pay_acc_no);
@@ -150,7 +150,7 @@ public class RecvCheckBatchForService {
 				Record rec = Db.findFirst(Db.getSql("org.getCurrentUserOrgs"), org_id);
 			    codes.add(rec.getStr("code"));
 			}
-			SymmetricEncryptUtil  util = new SymmetricEncryptUtil();
+			SymmetricEncryptUtil  util = SymmetricEncryptUtil.getInstance();
 			String pay_acc_no = record.getStr("pay_acc_no");
 			pay_acc_no = util.encrypt(pay_acc_no);
 			record.set("pay_acc_no", pay_acc_no);		
@@ -274,6 +274,7 @@ public class RecvCheckBatchForService {
 									.set("pay_bank_name", rec.get("pay_bank_name"))
 									.set("pay_bank_type", rec.get("pay_bank_type"))
 									.set("pay_acc_no", rec.get("pay_acc_no"))
+									.set("pay_code", rec.get("pay_code"))
 									.set("master_batchno", main_record.get("master_batchno"))
 									.set("child_batchno", recv_batch_total.get("child_batchno"));
 							if (WebConstant.Channel.JP.getKey() == document_moudle) {

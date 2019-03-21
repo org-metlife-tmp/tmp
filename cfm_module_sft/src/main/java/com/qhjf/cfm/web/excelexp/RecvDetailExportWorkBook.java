@@ -57,7 +57,7 @@ public class RecvDetailExportWorkBook extends AbstractWorkBook {
         	sbdxfnmb = "_Return_";
         }
         this.fileName = child_batchno+sbdxfnmb+channel_code+".xls" ; 
-        SymmetricEncryptUtil  util = new SymmetricEncryptUtil();
+        SymmetricEncryptUtil  util = SymmetricEncryptUtil.getInstance();
         try {
 			util.paymask(recordList);
 		} catch (UnsupportedEncodingException | BusinessException e) {

@@ -43,19 +43,11 @@ public class SftRecvLaDataCheckJob implements Job{
     
     public void execute(JobExecutionContext context) throws JobExecutionException {
     	log.debug("LA批收原始数据校验任务开始");
-        List<Record> list = Db.find(Db.getSql("la_recv_cfm.getLARecvUnCheckedOriginList"), WebConstant.YesOrNo.NO.getKey());
-        if (list == null || list.size() == 0) {
-        	if (Db.update(Db.getSql("la_recv_cfm.updLARecvTotle")) > 0) {
-				log.debug("LA批收校验主子表数据，更新主表状态为4成功");
-				list = Db.find(Db.getSql("la_recv_cfm.getLARecvUnCheckedOriginList"), WebConstant.YesOrNo.NO.getKey());
-				if (list == null || list.size() == 0) {
-					return;
-				}
-        	}else {
-				log.debug("LA批收校验主子表数据，更新主表状态为4失败");
-				return;
-			}
-        }
+    	
+        List<Record> list = getList();
+        if (null == list || list.size() == 0) {
+			return;
+		}
         
         log.debug("LA批收原始数据校验,待校验数据条数size = {}", list.size());
         for (Record record : list) {
@@ -77,8 +69,30 @@ public class SftRecvLaDataCheckJob implements Job{
         }
         
         log.debug("LA批收原始数据校验任务结束");
-
-
+    }
+    /**
+     * 获取LA批收未校验数据的列表
+     * @return
+     */
+    private List<Record> getList(){
+    	Record total = Db.findFirst("select top 1 JOBNO from ZDDHPF where [STATUS] = 1");
+    	if (null == total) {
+			return null;
+		}
+    	
+    	List<Record> list =  Db.find(Db.getSql("la_recv_cfm.getLARecvUnCheckedOriginList")
+        		,total.get("JOBNO")
+        		, WebConstant.YesOrNo.NO.getKey());
+    	
+    	if (list == null || list.size() == 0) {
+        	if (Db.update(Db.getSql("la_recv_cfm.updLARecvTotle"), total.get("JOBNO")) > 0) {
+				log.debug("LA批收校验主子表数据，更新主表状态为4成功");
+        	}else {
+				log.debug("LA批收校验主子表数据，更新主表状态为4失败");
+			}
+        }
+    	
+    	return list;
     }
 
     public class ExecuteThread implements Callable<String> {
@@ -196,20 +210,15 @@ public class SftRecvLaDataCheckJob implements Job{
             }
             
             Record channel = channels.get(0);
-            /*Integer bankkeyStatus = channel.getInt("bankkey_status");
-            if (null == bankkeyStatus || bankkeyStatus != 1) {
-            	throw new ReqValidateException(BK_UNENABLE);
-			}
-            Integer isCheckout = channel.getInt("is_checkout");
-            if (null == isCheckout || isCheckout != 1) {
-            	throw new ReqValidateException(CHANNEL_UNENABLE);
-			}*/
             
             //bankcode在回调LA批收时需要
-            Db.update(Db.getSql("la_recv_cfm.updLaRecvOrigin")
+            int i = Db.update(Db.getSql("la_recv_cfm.updLaRecvOrigin")
             		, channel.getStr("bankcode")
-            		, channel.getLong("id")
-            		, channel.getInt("persist_version"));
+            		, laOiriginData.getLong("id")
+            		, laOiriginData.getInt("persist_version"));
+            if (1 != i) {
+				log.debug("LA批收原始数据bankcode upd失败");
+			}
             
             laOiriginData.set("channel_id", channel.getLong("channel_id"));
             laOiriginData.set("channel_code", channel.getStr("channel_code"));
@@ -223,9 +232,14 @@ public class SftRecvLaDataCheckJob implements Job{
          * @throws EncryAndDecryException
          */
         private void accNoValidate(Record r) throws ReqValidateException, EncryAndDecryException{
-        	String oldRecvAccNo = r.getStr("recv_acc_no");
+        	String oldRecvAccNo = r.getStr("pay_acc_no");
         	//数据库解密
         	String recvAccNo = DDHSafeUtil.decrypt(oldRecvAccNo);
+        	if (null == recvAccNo) {
+        		throw new ReqValidateException("银行账号数据库解密失败");
+			}
+        	
+        	//账号非法校验
         	log.debug("数据库解密[{}]=[{}]", oldRecvAccNo, SymmetricEncryptUtil.accNoAddMask(recvAccNo));
         	boolean accNoValidate = ValidateUtil.accNoValidate(recvAccNo);
         	if (!accNoValidate) {
@@ -235,7 +249,7 @@ public class SftRecvLaDataCheckJob implements Job{
         	//对称加密
         	String newRecvAccNo = SymmetricEncryptUtil.getInstance().encrypt(recvAccNo);
         	log.debug("对称加密后的密文=[{}]", newRecvAccNo);
-        	r.set("recv_acc_no", newRecvAccNo);
+        	r.set("pay_acc_no", newRecvAccNo);
         }
         /**
          * 合法校验失败，回写原始数据，并推送LA核心系统
@@ -303,8 +317,11 @@ public class SftRecvLaDataCheckJob implements Job{
             /**
              * 根据保单号，收款人，金额查询合法表中是否存在数据，如果存在视为可疑数据，将合法表中的数据删除，更新可疑表数据状态为可疑
              */
-            List<Record> legalRecordList = Db.find(Db.getSql("la_recv_cfm.getrecvlegal"),originData.getStr("insure_bill_no"),originData.getStr("recv_acc_name"),
-                    originData.getStr("amount"),originData.getStr("recv_date"));
+            List<Record> legalRecordList = Db.find(Db.getSql("la_recv_cfm.getrecvlegal")
+            		,originData.getStr("insure_bill_no")
+            		,originData.getStr("pay_acc_name")
+                    ,originData.getStr("amount")
+                    ,originData.getStr("recv_date"));
             if(legalRecordList!=null && legalRecordList.size()!=0){
                 Record legalRecord = legalRecordList.get(0);
                 //可疑数据
@@ -340,7 +357,7 @@ public class SftRecvLaDataCheckJob implements Job{
             payLegal.set("pay_bank_name", laRecvOiriginData.getStr("pay_bank_name"));
             payLegal.set("pay_acc_no", laRecvOiriginData.getStr("pay_acc_no"));
             
-            if (Db.save("recv_legal_data", payLegal)) {
+            if (!Db.save("recv_legal_data", payLegal)) {
             	log.error("LA批收原始数据校验，recv_legal_data保存失败！payLegal={}", payLegal);
                 return false;
             }

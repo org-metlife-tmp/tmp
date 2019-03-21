@@ -10,6 +10,8 @@ import com.jfinal.template.source.ClassPathSourceFactory;
 import com.qhjf.cfm.web.plugins.CfmRedisPlugin;
 import com.qhjf.cfm.web.webservice.la.queue.recv.LaRecvQueuePlugin;
 import com.qhjf.cfm.web.webservice.la.recv.LaRecvCallback;
+import com.qhjf.cfm.web.webservice.la.recv.LaRecvCallbackBean;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -152,5 +154,33 @@ public class LaRecvCallbackTest {
 				dp.stop();
 		}
 	}*/
-
+	@Test
+	public void tt(){
+		Record origin = new Record();
+		origin.set("id", 21345l);
+		origin.set("branch_code", "1");
+		origin.set("org_code", "SH");
+		origin.set("fee_mode", "1");
+		origin.set("recv_date", "2019-11-05");
+		origin.set("amount", "72.20");
+		origin.set("pay_acc_no", "1235786754321434265543");
+		origin.set("pay_bank_name", null);
+		origin.set("insure_bill_no", "01285168");
+		origin.set("pay_code", "20");
+		origin.set("pay_acc_name", "张亮星");
+		origin.set("insure_bill_no", "01285168");
+		origin.set("job_no", "5");
+		origin.set("trans_code", "B521");
+		origin.set("sacscode", "LP");
+		origin.set("sacstyp", "S");
+		origin.set("tmp_status", 1);
+		origin.set("tmp_err_message", "0::成功::交易成功");
+		origin.set("bankcode", "LU");
+		try {
+			String s = new LaRecvCallbackBean(origin).decrypt("0x00B84F0E73331A29DBEB513B4EFB19210100000021C77BCDC9B718F674241024A432DCED21E3466A03AFB4EB620AAE82A64BD0C5FD0B606B22342C7E95D524EF499D78F8");
+			System.out.println(s);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 }

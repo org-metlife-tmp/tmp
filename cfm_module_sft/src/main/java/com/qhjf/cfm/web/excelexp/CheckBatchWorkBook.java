@@ -3,6 +3,7 @@ package com.qhjf.cfm.web.excelexp;
 import com.alibaba.fastjson.util.TypeUtils;
 import com.jfinal.ext.kit.DateKit;
 import com.jfinal.kit.Kv;
+import com.jfinal.log.Log;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
 import com.jfinal.plugin.activerecord.SqlPara;
@@ -11,8 +12,10 @@ import com.qhjf.cfm.exceptions.EncryAndDecryException;
 import com.qhjf.cfm.utils.RedisSericalnoGenTool;
 import com.qhjf.cfm.utils.SymmetricEncryptUtil;
 import com.qhjf.cfm.web.constant.WebConstant;
+import com.qhjf.cfm.web.controller.CheckBatchForController;
 import com.qhjf.cfm.web.plugins.excelexp.AbstractWorkBook;
 import com.qhjf.cfm.web.plugins.excelexp.POIUtil;
+import com.qhjf.cfm.web.plugins.log.LogbackLog;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -27,6 +30,7 @@ import java.util.List;
  * @Description: 组批数据导出
  */
 public class CheckBatchWorkBook extends AbstractWorkBook {
+    private final static Log logger = LogbackLog.getLog(CheckBatchWorkBook.class);
 
     public CheckBatchWorkBook() {
         this.optype = "checkbatch_listexport";
@@ -45,6 +49,8 @@ public class CheckBatchWorkBook extends AbstractWorkBook {
 
     @Override
     public Workbook getWorkbook() {
+    	long start_Millis = System.currentTimeMillis() ;
+    	logger.info("=======批付导出开始时间======"+start_Millis);
     	Record record = getRecord();
     	long source_sys = TypeUtils.castToLong(record.get("source_sys"));
         SqlPara sqlPara = null;
@@ -66,7 +72,7 @@ public class CheckBatchWorkBook extends AbstractWorkBook {
                 codes.add(o.getStr("code"));
             }
         }
-        SymmetricEncryptUtil  util = new SymmetricEncryptUtil();
+        SymmetricEncryptUtil  util = SymmetricEncryptUtil.getInstance();
 		String recv_acc_no = record.getStr("recv_acc_no");
 		try {
 			recv_acc_no = util.encrypt(recv_acc_no);
@@ -96,6 +102,10 @@ public class CheckBatchWorkBook extends AbstractWorkBook {
 		} catch (UnsupportedEncodingException | BusinessException e) {
 			e.printStackTrace();
 		}
-        return POIUtil.createExcel(recordList, this);
+         Workbook createExcel = POIUtil.createExcel(recordList, this);
+         long end_Millis = System.currentTimeMillis();
+     	logger.info("=======批付导出结束时间======"+end_Millis);
+     	logger.info("=======批付共用时间===" + (end_Millis - start_Millis) );
+         return createExcel ;
     }
 }

@@ -169,6 +169,7 @@ public class RecvDiskBackingService {
 		int total_amount = 0;
 		int total_num = 0;
 		// 默认详情信息 总金额在第0列 序列号在第0列 , 响应码在第0列 , 响应码在第0列
+		int pay_code = 0;
 		int amount = 0;
 		int package_seq = 0;
 		int response_code = 0;
@@ -193,6 +194,9 @@ public class RecvDiskBackingService {
 		}
 
 		for (int i = 0; i < configs_tail.getColumns().size(); i++) {
+			if ("pay_code".equals(configs_tail.getStr("field_" + i))) {
+				pay_code = i;
+			}
 			if ("amount".equals(configs_tail.getStr("field_" + i))) {
 				amount = i;
 			}
@@ -238,7 +242,7 @@ public class RecvDiskBackingService {
 					if (configs != null && configs.size() == 1) {
 						// 开始校验汇总信息.列数 . 总金额 . 总笔数
 						// 只有建行批量不存在汇总信息.
-						if (linefile.split(",").length != 6) {
+						if (linefile.split(",",-1).length != 6) {
 							// 汇总信息列数不正确
 							logger.error("===========首行汇总信息列数不对");
 							result.put("success", false);
@@ -247,8 +251,8 @@ public class RecvDiskBackingService {
 							return result;
 						} else {							
 							// 汇总信息列数正确 ..只有建行单位是元
-							Integer file_total_num = TypeUtils.castToInt(linefile.split(",")[total_num - 1]);
-							BigDecimal file_total_amount = new BigDecimal(linefile.split(",")[total_amount - 1]).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP);
+							Integer file_total_num = TypeUtils.castToInt(linefile.split(",",-1)[total_num - 1]);
+							BigDecimal file_total_amount = new BigDecimal(linefile.split(",",-1)[total_amount - 1]).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP);
 							if (file_total_num != sendnum || file_total_amount.compareTo(sendamount) != 0) {
 								logger.error("=============回盘文件首行汇总金额或者笔数与表中报盘记录不一致");
 								result.put("success", false);
@@ -261,7 +265,7 @@ public class RecvDiskBackingService {
 					} else {
 						sonnum ++ ;
 						// 建行直接开始校验详情列数
-						if (linefile.split("\\|").length != 12) {
+						if (linefile.split("\\|",-1).length != 12) {
 							// 汇总信息列数不正确
 							logger.error("===========建行详情列数不对");
 							result.put("success", false);
@@ -269,22 +273,24 @@ public class RecvDiskBackingService {
 							result.put("error_message", "文件格式错误");
 							return result;
 						}
-						backamount = backamount.add(new BigDecimal(linefile.split("\\|")[amount - 1]));
+						backamount = backamount.add(new BigDecimal(linefile.split("\\|",-1)[amount - 1]));
 						updateDetailRecord.set("child_batchno", recv_batch_total.getStr("child_batchno"));
-						updateDetailRecord.set("package_seq", linefile.split("\\|")[package_seq - 1]);
-						if (linefile.split("\\|")[response_code - 1].contains("0000")
-								|| linefile.split("\\|")[response_code - 1].contains("成功")) {
+						updateDetailRecord.set("package_seq", linefile.split("\\|",-1)[package_seq - 1]);
+						if (linefile.split("\\|",-1)[response_code - 1].contains("0000")
+								|| linefile.split("\\|",-1)[response_code - 1].contains("成功")) {
 							// 0000 S0000 F0000 成功 都表示交易成功
 							updateDetailRecord.set("status", 1);
 							backnum_success++;
-							backamount_success = backamount_success.add(new BigDecimal(linefile.split("\\|")[amount - 1]));
+							backamount_success = backamount_success.add(new BigDecimal(linefile.split("\\|",-1)[amount - 1]));
 						} else {
 							updateDetailRecord.set("status", 2);
 							backnum_faild++;
-							backamount_faild = backamount_faild.add(new BigDecimal(linefile.split("\\|")[amount - 1]));
+							backamount_faild = backamount_faild.add(new BigDecimal(linefile.split("\\|",-1)[amount - 1]));
 						}
-						updateDetailRecord.set("bank_err_code", linefile.split("\\|")[response_code - 1]);
-						updateDetailRecord.set("bank_err_msg", linefile.split("\\|")[response_message - 1]);
+						updateDetailRecord.set("amount", linefile.split("\\|",-1)[amount - 1]);
+						updateDetailRecord.set("pay_code", linefile.split("\\|",-1)[pay_code - 1]);
+						updateDetailRecord.set("bank_err_code", linefile.split("\\|",-1)[response_code - 1]);
+						updateDetailRecord.set("bank_err_msg", linefile.split("\\|",-1)[response_message - 1]);
 						updateDetailRecords.add(updateDetailRecord);
 						continue;
 					}
@@ -292,28 +298,30 @@ public class RecvDiskBackingService {
 				sonnum ++ ;
 				// 非第一行
 				if (document_moudle == WebConstant.Channel.JP.getKey()) {
-					if (linefile.split("\\|")[response_code - 1].contains("0000")
-							|| linefile.split("\\|")[response_code - 1].contains("成功")) {
+					if (linefile.split("\\|",-1)[response_code - 1].contains("0000")
+							|| linefile.split("\\|",-1)[response_code - 1].contains("成功")) {
 						// 0000 S0000 F0000 成功 都表示交易成功
 						updateDetailRecord.set("status", 1);
 						backnum_success++;
-						backamount_success = backamount_success.add(new BigDecimal(linefile.split("\\|")[amount - 1]));
+						backamount_success = backamount_success.add(new BigDecimal(linefile.split("\\|",-1)[amount - 1]));
 					} else {
 						updateDetailRecord.set("status", 2);
 						backnum_faild++;
-						backamount_faild = backamount_faild.add(new BigDecimal(linefile.split("\\|")[amount - 1]));
+						backamount_faild = backamount_faild.add(new BigDecimal(linefile.split("\\|",-1)[amount - 1]));
 					}
-					updateDetailRecord.set("bank_err_code", linefile.split("\\|")[response_code - 1]);
-					updateDetailRecord.set("bank_err_msg", linefile.split("\\|")[response_message - 1]);
+					updateDetailRecord.set("amount", linefile.split("\\|",-1)[amount - 1]);
+					updateDetailRecord.set("pay_code", linefile.split("\\|",-1)[pay_code - 1]);
+					updateDetailRecord.set("bank_err_code", linefile.split("\\|",-1)[response_code - 1]);
+					updateDetailRecord.set("bank_err_msg", linefile.split("\\|",-1)[response_message - 1]);
 					updateDetailRecord.set("child_batchno", recv_batch_total.getStr("child_batchno"));
-					updateDetailRecord.set("package_seq", linefile.split("\\|")[package_seq - 1]);
+					updateDetailRecord.set("package_seq", linefile.split("\\|",-1)[package_seq - 1]);
 					// 建行不校验了
-					backamount = backamount.add(new BigDecimal(linefile.split("\\|")[amount - 1]));
+					backamount = backamount.add(new BigDecimal(linefile.split("\\|",-1)[amount - 1]));
 					updateDetailRecords.add(updateDetailRecord);
 					continue;
 				} else if (document_moudle == WebConstant.Channel.RP.getKey()) {
 					// 融汇通详情列数 24
-					if (linefile.split(",").length != 24) {
+					if (linefile.split(",",-1).length != 24) {
 						// 汇总信息列数不正确
 						logger.error("===========融汇通详情列数不对,行数为===" + backnum);
 						result.put("success", false);
@@ -323,7 +331,7 @@ public class RecvDiskBackingService {
 					}
 				} else {
 					// 广银联批量 ,广银联信用卡 , 通联批量 详情21列
-					if (linefile.split(",").length != 21) {
+					if (linefile.split(",",-1).length != 21) {
 						// 汇总信息列数不正确
 						logger.error("===========详情列数不对,行数为===" + backnum);
 						result.put("success", false);
@@ -332,24 +340,27 @@ public class RecvDiskBackingService {
 						return result;
 					}
 				}
-				if (linefile.split(",")[response_code - 1].contains("0000")
-						|| linefile.split(",")[response_code - 1].contains("成功")) {
+				if (linefile.split(",",-1)[response_code - 1].contains("0000")
+						|| linefile.split(",",-1)[response_code - 1].contains("成功")) {
 					// 0000, S0000, F0000 ,成功 ,都表示交易成功
 					updateDetailRecord.set("status", 1);
 					backnum_success++;
-					backamount_success = backamount_success.add(new BigDecimal(linefile.split(",")[amount - 1])
+					backamount_success = backamount_success.add(new BigDecimal(linefile.split(",",-1)[amount - 1])
 							.divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP));
 				} else {
 					updateDetailRecord.set("status", 2);
 					backnum_faild++;
-					backamount_faild = backamount_faild.add(new BigDecimal(linefile.split(",")[amount - 1])
+					backamount_faild = backamount_faild.add(new BigDecimal(linefile.split(",",-1)[amount - 1])
 							.divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP));
 				}
-				updateDetailRecord.set("bank_err_code", linefile.split(",")[response_code - 1]);
-				updateDetailRecord.set("bank_err_msg", linefile.split(",")[response_message - 1]);
+				updateDetailRecord.set("amount", new BigDecimal(linefile.split(",",-1)[amount - 1])
+						.divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP));
+				updateDetailRecord.set("pay_code", linefile.split(",",-1)[pay_code - 1]);
+				updateDetailRecord.set("bank_err_code", linefile.split(",",-1)[response_code - 1]);
+				updateDetailRecord.set("bank_err_msg", linefile.split(",",-1)[response_message - 1]);
 				updateDetailRecord.set("child_batchno", recv_batch_total.getStr("child_batchno"));
-				updateDetailRecord.set("package_seq", linefile.split(",")[package_seq - 1]);
-				backamount = backamount.add(new BigDecimal(linefile.split(",")[amount - 1])
+				updateDetailRecord.set("package_seq", linefile.split(",",-1)[package_seq - 1]);
+				backamount = backamount.add(new BigDecimal(linefile.split(",",-1)[amount - 1])
 						.divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP));
 				updateDetailRecords.add(updateDetailRecord);
 			}
@@ -359,6 +370,7 @@ public class RecvDiskBackingService {
 			input.close();
 			bufferedReader.close();
 		}
+		final int final_sonnum = sonnum;
 		final int final_backnum_faild = backnum_faild;
 		final BigDecimal final_backamount_faild = backamount_faild;
 		final int final_backnum_success = backnum_success;
@@ -368,12 +380,17 @@ public class RecvDiskBackingService {
 		logger.info("======总行数==" + backnum + "===总金额===" + backamount+ "===明细总行数===" + sonnum);
 		final int compareStatus = this.compareStatus(sonnum, backamount, sendnum, sendamount);
 		if (WebConstant.SftCheckBatchStatus.HPYC.getKey() == compareStatus) {
-			logger.error("========回盘文件中详情累加总金额或者总笔数与报盘不一致");
+			logger.error("========回盘文件中详情累加总金额或者总笔数与报盘不一致");		
+			//循环查找
+			String package_seq_faild = this.circleSelect(updateDetailRecords);			
 			result.put("success", false);
 			result.put("error_code", "FileDetailDataError");
-			result.put("error_message", "文件详情数据错误");
+			result.put("error_message", "序号为"+package_seq_faild+"的详情数据错误");
 			return result;
 		}
+		
+		final Record   detail_flag = new Record();
+		
 		// 开始更新表状态
 		boolean updateflag = Db.tx(new IAtom() {
 			@Override
@@ -386,10 +403,14 @@ public class RecvDiskBackingService {
 						new Record().set("id", recv_id));
 				logger.info("=====更新recv_batch_total结果===" + update);
 				if (update) {
-					int[] batchUpdate = Db.batchUpdate("recv_batch_detail", "package_seq,child_batchno",updateDetailRecords, 1000);
-					boolean checkDbResult = ArrayUtil.checkDbResult(batchUpdate);
-					logger.info("=====更新pay_batch_detail结果===" + checkDbResult);
-					if (checkDbResult) {
+					int[] batchUpdate = Db.batchUpdate("recv_batch_detail", "package_seq,child_batchno,amount,pay_code",updateDetailRecords, 1000);
+					
+					logger.info("=====更新pay_batch_detail结果===" + batchUpdate.length + "==文件中跑出的详情个数=="+final_sonnum);
+					if( batchUpdate.length != final_sonnum || !ArrayUtil.checkDbResult(batchUpdate)) {
+						detail_flag.set("detail_flag", "faild") ;
+						return false ;
+					}
+					if ( batchUpdate.length == final_sonnum && ArrayUtil.checkDbResult(batchUpdate)) {
 						// 开始更新原始数据状态
 						Boolean origin_flag = false;
 						if (source_sys == 0) {
@@ -412,6 +433,15 @@ public class RecvDiskBackingService {
 				return false;
 			}
 		});
+		
+		if("faild".equals(detail_flag.getStr("detail_flag"))) {
+			String package_seq_faild = this.circleSelect(updateDetailRecords);			
+			result.put("success", false);
+			result.put("error_code", "FileDetailDataError");
+			result.put("error_message", "序号为"+package_seq_faild+"的详情数据错误");
+			return result;
+		}
+		
 		if (!updateflag) {
 			logger.error("========详情表或者原始数据表 更新错误");
 			result.put("success", false);
@@ -435,6 +465,24 @@ public class RecvDiskBackingService {
 			}
 		}
 		return result;
+	}
+
+	
+	/**
+	 * 循环查找
+	 * @param updateDetailRecords
+	 * @return
+	 */
+	private String circleSelect(List<Record> updateDetailRecords) {
+		String package_seq = null ;
+		for (Record record : updateDetailRecords) {
+			List<Record> find = Db.find(Db.getSqlPara("recv_disk_backing.findDetail", Kv.by("map", record.getColumns()))) ;			
+		    if( null == find || find.size() == 0) {
+		    	package_seq = record.getStr("package_seq");
+		    	break ;
+		    }
+		}
+		return package_seq ;
 	}
 
 	/**

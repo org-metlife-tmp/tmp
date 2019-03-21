@@ -104,6 +104,9 @@ public class LaConsumerQueue implements Runnable{
 	            @Override
 	            public boolean run() throws SQLException {
 	            	String processStatus = json.getString("STATUS");
+	            	if (null == processStatus || "".equals(processStatus.trim())) {
+						return true;
+					}
 	    			String payCode = json.getString("REQNNO");
 	    			if (null == payCode || "".equals(payCode.trim())) {
 	    				track.debug("LA响应回写原始数据，payCode为空，节点<PMTOUT>={}", StringKit.removeControlCharacter(json.toJSONString()));

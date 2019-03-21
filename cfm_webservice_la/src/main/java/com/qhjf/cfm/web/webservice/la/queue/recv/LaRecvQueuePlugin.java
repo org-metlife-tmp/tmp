@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
  */
 public class LaRecvQueuePlugin implements IPlugin{
 	private static Logger log = LoggerFactory.getLogger(LaRecvQueuePlugin.class);
-private static final String threadName = "LA消费者队列";
+private static final String threadName = "LA批收消费者队列";
 	
     private static int consumerCount = 10;   //定义最大的消费线程数
 

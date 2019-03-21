@@ -64,7 +64,7 @@ public class RecvCheckBatchWorkBook extends AbstractWorkBook {
                 codes.add(o.getStr("code"));;
             }
         }
-        SymmetricEncryptUtil  util = new SymmetricEncryptUtil();
+        SymmetricEncryptUtil  util = SymmetricEncryptUtil.getInstance();
 		String pay_acc_no = record.getStr("pay_acc_no");
 		try {
 			pay_acc_no = util.encrypt(pay_acc_no);

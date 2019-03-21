@@ -39,6 +39,7 @@ public class SftRecvLaDataCheckJobTest {
 		arp.addSqlTemplate("/sql/sqlserver/la_cfm.sql");
 		arp.addSqlTemplate("/sql/sqlserver/la_recv_cfm.sql");
 		arp.addSqlTemplate("/sql/sqlserver/webservice_la_recv_cfm.sql");
+		arp.addSqlTemplate("/sql/sqlserver/quartzs_job_cfm.sql");
 		cfmRedis = new CfmRedisPlugin("cfm", "10.164.26.48");
 		cfmRedis.setSerializer(new JdkSerializer());
 		
@@ -88,17 +89,20 @@ public class SftRecvLaDataCheckJobTest {
 	}
 	@Test
 	public void updTotle(){
-		List<Record> list = Db.find(Db.getSql("la_recv_cfm.getLARecvUnCheckedOriginList"), WebConstant.YesOrNo.NO.getKey());
-        if (list == null || list.size() == 0) {
-        	if (Db.update(Db.getSql("la_recv_cfm.updLARecvTotle")) > 0) {
+		Record total = Db.findFirst("select top 1 JOBNO from ZDDHPF where [STATUS] = 1");
+    	if (null == total) {
+			System.out.println("total = null");
+		}
+    	
+    	List<Record> list =  Db.find(Db.getSql("la_recv_cfm.getLARecvUnCheckedOriginList")
+        		,total.get("JOBNO")
+        		, WebConstant.YesOrNo.NO.getKey());
+    	
+    	if (list == null || list.size() == 0) {
+        	if (Db.update(Db.getSql("la_recv_cfm.updLARecvTotle"), total.get("JOBNO")) > 0) {
 				System.out.println("LA批收校验主子表数据，更新主表状态为4成功");
-				list = Db.find(Db.getSql("la_recv_cfm.getLARecvUnCheckedOriginList"), WebConstant.YesOrNo.NO.getKey());
-				if (list == null || list.size() == 0) {
-					return;
-				}
         	}else {
 				System.out.println("LA批收校验主子表数据，更新主表状态为4失败");
-				return;
 			}
         }
         System.out.println(list);

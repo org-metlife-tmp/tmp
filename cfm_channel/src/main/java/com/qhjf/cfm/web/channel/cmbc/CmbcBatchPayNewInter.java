@@ -52,7 +52,7 @@ public class CmbcBatchPayNewInter implements IChannelBatchInter {
             log.debug("CMB批量收付：条数=【{}】；list=【{}】", detail.size(), detail);
             for (Record r : detail) {
                 Map<String, Object> detailMap = new HashMap<String, Object>();
-                detailMap.put("ACCNBR", decryptAccNo(r.getStr("pay_account_no")));//收款账号/被扣款账号
+                detailMap.put("ACCNBR", decryptAccNo(r.getStr("recv_account_no")));//收款账号/被扣款账号
                 detailMap.put("CLTNAM", r.get("recv_account_name"));//户名
                 detailMap.put("TRSAMT", r.get("amount"));//金额
 

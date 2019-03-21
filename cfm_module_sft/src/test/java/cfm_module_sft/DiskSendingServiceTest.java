@@ -14,7 +14,7 @@ import com.qhjf.cfm.queue.QueueBean;
 import com.qhjf.cfm.utils.TableDataCacheUtil;
 import com.qhjf.cfm.web.channel.inter.api.IChannelInter;
 import com.qhjf.cfm.web.channel.manager.ChannelManager;
-import com.qhjf.cfm.web.inter.impl.batch.SysBatchPayInter;
+import com.qhjf.cfm.web.inter.impl.batch.SysBatchPayNewInter;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -25,13 +25,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.io.FileInputStream;
-
 import java.math.BigDecimal;
-import java.net.SocketTimeoutException;
-
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -203,11 +199,11 @@ public class DiskSendingServiceTest {
 		String shortPayCnaps = accountAndBankInfo.get("bank_cnaps_code").substring(0, 3);
 		IChannelInter channelInter = null;
 		try {
-			channelInter = ChannelManager.getInter(shortPayCnaps, "BatchPay");
+			channelInter = ChannelManager.getInter(shortPayCnaps, "BatchPayNew");
 		} catch (Exception e) {
 			logger.error("获取银行原子接口失败！", e);
 		}
-		final SysBatchPayInter sysInter = new SysBatchPayInter();
+		final SysBatchPayNewInter sysInter = new SysBatchPayNewInter();
         sysInter.setChannelInter(channelInter);
         final Record instr = sysInter.genInstr(instrRecord);
         if (instr == null) {

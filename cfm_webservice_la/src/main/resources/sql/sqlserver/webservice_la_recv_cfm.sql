@@ -66,4 +66,7 @@
 		) and is_checkout = 1
 	#end
 	
+	#sql("ddhDecryptD")
+	    Exec jem ?
+	#end
 #end

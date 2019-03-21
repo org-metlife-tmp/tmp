@@ -32,7 +32,7 @@ public class TradeResultBatchQueryJob extends PubJob{
 		//批量收付查询状态指令表
 		return "trade_result_query_batch_instr_queue_lock";
 	}
-	@Override
+	/*@Override
 	public Record getOldInstr(Record currInstr) {
 		String cnaps = currInstr.getStr("pay_bank_cnaps");
 		String packageSeq = currInstr.getStr("package_seq");
@@ -46,7 +46,7 @@ public class TradeResultBatchQueryJob extends PubJob{
 				, currInstr.getStr("bank_serial_number")
 				, detailBankServiceNumber
 				, packageSeq);
-	}
+	}*/
 	/**
 	 * 招行先单笔查询;
 	 * 批量查询还未验证，验证通过在这里修改，通过修改CmbcTradeResultBatchQueryInter.genParamsMap
@@ -91,9 +91,9 @@ public class TradeResultBatchQueryJob extends PubJob{
 	public ISysAtomicInterface getSysInter() {
 		return new SysTradeResultBatchQueryInter();
 	}
-	@Override
+	/*@Override
 	public boolean needReTrySaveInstr(){
 		return true;
-	}
+	}*/
 	
 }
