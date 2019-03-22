@@ -254,7 +254,7 @@
             </div>
             <el-row class="nodeBox">
                 <el-col :span="divideCol" class="node-item" v-show="submiter.show">
-                    <span class="name">{{submiter.submitter_name}}</span>
+                    <span class="name">{{submiter.init_user_name}}</span>
                     <span class="pointCon"><em class="pointer parse"></em></span>
                     <span class="node-name"><el-tag type="info" size="mini">提交</el-tag></span>
                     <span class="time">{{submiter.lastSubmit_time}}</span>
@@ -301,7 +301,7 @@
                                 </span>
                             </div>
                             <div class="main">
-                                <span class="name">{{submiter.submitter_name}}</span>
+                                <span class="name">{{submiter.init_user_name}}</span>
                                 <div>
                                     <span class="node-name"><el-tag size="small">发起</el-tag></span>
                                     <span>提交</span>
