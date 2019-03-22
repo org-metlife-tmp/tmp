@@ -450,8 +450,7 @@
                     totalAmount: ""
                 },
                 isPay: false,
-                isZero: true,
-                isInner: ""
+                isZero: true
             }
         },
         methods: {
@@ -493,9 +492,7 @@
             //查询交易流水
             queryChildData: function(){
                 var searchData = this.childSearch;
-                var params = {
-                    is_inner: this.isInner
-                };
+                var params = {};
                 for (var k in searchData) {
                     params[k] = searchData[k];
                 }
@@ -753,7 +750,6 @@
                 this.pagTotal = val.total_line;
                 this.tableList = val.data;
                 this.pagCurrent = val.page_num;
-                this.isInner = val.ext.is_inner;
             }
         }
     }
