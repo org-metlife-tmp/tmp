@@ -273,7 +273,7 @@
                       @select="setId"
                       @select-all="allChange">
                 <el-table-column type="selection" width="40" :selectable="isSelect"></el-table-column>
-                <el-table-column prop="create_time" label="日期" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="recv_date" label="日期" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="channel_code" label="通道编码" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="channel_desc" label="通道描述" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="name" label="机构名称" :show-overflow-tooltip="true"></el-table-column>
