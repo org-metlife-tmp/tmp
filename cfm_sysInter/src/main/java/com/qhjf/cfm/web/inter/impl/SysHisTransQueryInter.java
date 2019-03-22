@@ -110,14 +110,7 @@ public class SysHisTransQueryInter implements ISysAtomicInterface {
 				accHisTrans.set("bank_type", account.getStr("bank_cnaps_code").substring(0, 3));
 				accHisTrans.set("data_source", WebConstant.DataSource.DIRECTCONN.getKey());
 				accHisTrans.setColumns(parseRecord);
-				String summary = accHisTrans.getStr("summary");
-				if (summary != null && summary.length() >= 6) {
-					String instructCode = summary.substring(0, 6);
-					if(isValidInstructCode(instructCode)){
-						accHisTrans.set("instruct_code", instructCode);
-						accHisTrans.set("summary", summary.substring(6, summary.length()));
-					}
-				}
+
 				StringBuffer inedtifierPlain = new StringBuffer();
 				inedtifierPlain.append(accHisTrans.getStr("acc_no"));
 				inedtifierPlain.append(accHisTrans.getStr("acc_name"));

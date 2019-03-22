@@ -30,8 +30,7 @@ import java.util.*;
 public class SysBatchPayInter implements ISysAtomicInterface {
 
 	private static Logger log = LoggerFactory.getLogger(SysBatchPayInter.class);
-	private PlfConfigAccnoSection section = GlobalConfigSection.getInstance()
-			.getExtraConfig(IConfigSectionType.DDHConfigSectionType.VOUCHER);
+	private PlfConfigAccnoSection section = PlfConfigAccnoSection.getInstance();
 	private IChannelBatchInter channelInter;
 	
 	private Record instr;

@@ -60,4 +60,15 @@
 		and package_seq = ?
 #end
 
+#sql('getNeedQueryStatusBatchPay')
+	select
+		top *
+	from
+		batch_pay_instr_queue_total
+	where
+		status = 1 and
+		reqsta = 0 and
+		rtnflg = 0
+#end
+
 #end

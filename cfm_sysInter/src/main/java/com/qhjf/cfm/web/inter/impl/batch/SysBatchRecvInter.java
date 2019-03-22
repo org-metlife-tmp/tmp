@@ -409,6 +409,7 @@ public class SysBatchRecvInter implements ISysAtomicInterface {
                 			  .set("fail_num", fail)
                 			  .set("fail_amount", failAmount)
                 			  .set("service_status", 5)
+                			  .set("back_on", new Date())
                 , new Record().set("id", billTotalId)) == 1;
     }
 

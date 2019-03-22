@@ -86,16 +86,26 @@ public class SysTradeResultRecvBatchQueryInter implements ISysAtomicInterface {
             
             if (status == WebConstant.PayStatus.SUCCESS.getKey() || status == WebConstant.PayStatus.FAILD.getKey()) {
             	//查询收款指令明细信息：通过 银行账号+金额+收款指令汇总表主键查询
-                final Record instrDetailRecord = Db.findFirst(Db.getSql("batchrecv.selIntrDetailByAcc")
+            	List<Record> instrDetailRecordList = Db.find(Db.getSql("batchrecv.selIntrDetailByAcc")
                 		, instrTotalRecord.getLong("id")
                 		, TypeUtils.castToString(bankData.get("pay_account_no"))
                 		, TypeUtils.castToDouble(bankData.get("amount")));
-                if (null == instrDetailRecord) {
+                
+            	if (null == instrDetailRecordList || instrDetailRecordList.size() == 0) {
                 	log.error("*****************下面error需人工排查************************");
                 	bankData.put("id", instrTotalRecord.get("id"));
                 	log.error("批量收付查询历史交易状态指令回写，通过【{}】未查询到单据详情！", bankData);
                 	continue;
 				}
+                
+                if (instrDetailRecordList.size() > 1) {
+                	log.error("*****************下面error需人处理************************");
+                	bankData.put("id", instrTotalRecord.get("id"));
+                	log.error("批量收查询历史交易状态指令回写，指令汇总主键=【{}】通过银行账号=【{}】，金额=【{}】查询到多条数据！", instrTotalRecord.get("id"), bankData.get("pay_account_no"), bankData.get("amount"));
+                	continue;
+				}
+                
+                final Record instrDetailRecord = instrDetailRecordList.get(0);
                 
                 boolean flag = Db.tx(new IAtom() {
                     @Override
@@ -124,7 +134,7 @@ public class SysTradeResultRecvBatchQueryInter implements ISysAtomicInterface {
                             			   .set("bank_back_time", new Date());
                         }
 
-                        // 1.更新单据状态；2.修改队列表状态
+                        // 1.更新单据状态；2.修改指令表状态
                         if (CommonService.updateRows(billTable, bill_setRecord, bill_whereRecord) == 1) { // 修改单据状态
                             boolean updDetail = CommonService.updateRows(SysBatchRecvInter.BATCH_RECV_INSTR_DETAIL_TALBE, instr_setRecord, instr_whereRecord) == 1;
                             if (!updDetail) {

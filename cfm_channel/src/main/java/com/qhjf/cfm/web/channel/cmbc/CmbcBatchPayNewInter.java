@@ -6,10 +6,16 @@ import com.jfinal.plugin.activerecord.Record;
 import com.qhjf.bankinterface.api.AtomicInterfaceConfig;
 import com.qhjf.bankinterface.cmbc.CmbcConstant;
 import com.qhjf.cfm.exceptions.EncryAndDecryException;
+import com.qhjf.cfm.utils.StringKit;
 import com.qhjf.cfm.utils.SymmetricEncryptUtil;
 import com.qhjf.cfm.web.channel.inter.api.IChannelBatchInter;
 import com.qhjf.cfm.web.channel.util.CmbcParamsUtil;
+import com.qhjf.cfm.web.channel.util.CmbcParamsUtil.TranType;
+import com.qhjf.cfm.web.config.DDHLAConfigSection;
+import com.qhjf.cfm.web.config.GlobalConfigSection;
+import com.qhjf.cfm.web.config.IConfigSectionType;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,24 +33,29 @@ public class CmbcBatchPayNewInter implements IChannelBatchInter {
 	private static final Logger log = LoggerFactory.getLogger(CmbcBatchPayNewInter.class);
 	public static final String ERROR_MSG = "批量支付回写，银行处理失败,失败原因:%s-%s";
 	private JSONArray rsArray;
+	private static DDHLAConfigSection section = GlobalConfigSection.getInstance()
+			.getExtraConfig(IConfigSectionType.DDHConfigSectionType.DDHLA);
 
 	@Override
 	public Map<String, Object> genParamsMap(Record record) {
+		TranType tranType = StringUtils.isBlank(section.getTranType()) ? 
+				TranType.BYSA : TranType.getTranType(section.getTranType());
+		
 		Map<String, Object> map = new HashMap<>();
         Map<String, Object> totMap = new HashMap<>();
         List<Map<String, Object>> details = new ArrayList<Map<String, Object>>();
 
         Record totalRec = (Record) record.get("total");
 
-        totMap.put("BUSCOD", CmbcParamsUtil.TranType.DFBXF.getBusCod());
+        totMap.put("BUSCOD", tranType.getBusCod());
 		totMap.put("BUSMOD", "00001");// 业务模式编号
-		totMap.put("TRSTYP", CmbcParamsUtil.TranType.DFBXF.getTrstyp());//交易代码
+		totMap.put("TRSTYP", tranType.getTrstyp());//交易代码
         totMap.put("DBTACC", totalRec.get("pay_account_no"));//转出账号/转入账号(代发为转出账号；代扣为转入账号)
-        totMap.put("BBKNBR", totalRec.get("pay_bank_type"));//分行代码
-        totMap.put("SUM", totalRec.get("total_num"));//总笔数
-        totMap.put("TOTAL", totalRec.get("total_amount"));//总金额
+        totMap.put("BBKNBR", totalRec.getStr("pay_bank_cnaps").substring(3, 7));//分行代码
+        totMap.put("SUM", String.valueOf(totalRec.get("total_amount")));//总金额
+        totMap.put("TOTAL", String.valueOf(totalRec.get("total_num")));//总笔数
         totMap.put("YURREF", totalRec.get("bank_serial_number"));//业务参考号
-        totMap.put("MEMO", CmbcParamsUtil.TranType.DKBXF.getCTrstyp());//用途
+        totMap.put("MEMO", tranType.getCTrstyp());//用途
 
         @SuppressWarnings("unchecked")
         List<Record> detail = (List<Record>) record.get("detail");
@@ -54,7 +65,7 @@ public class CmbcBatchPayNewInter implements IChannelBatchInter {
                 Map<String, Object> detailMap = new HashMap<String, Object>();
                 detailMap.put("ACCNBR", decryptAccNo(r.getStr("recv_account_no")));//收款账号/被扣款账号
                 detailMap.put("CLTNAM", r.get("recv_account_name"));//户名
-                detailMap.put("TRSAMT", r.get("amount"));//金额
+                detailMap.put("TRSAMT", String.valueOf(r.get("amount")));//金额
 
                 details.add(detailMap);
             }

@@ -30,8 +30,7 @@ import java.util.Map;
 public class SysTradeResultBatchQueryInter implements ISysAtomicInterface {
 
     private static Logger log = LoggerFactory.getLogger(SysTradeResultBatchQueryInter.class);
-    private PlfConfigAccnoSection section = GlobalConfigSection.getInstance()
-			.getExtraConfig(IConfigSectionType.DDHConfigSectionType.VOUCHER);
+    private PlfConfigAccnoSection section = PlfConfigAccnoSection.getInstance();
     private IMoreResultChannelInter channelInter;
     private Record instr;
 

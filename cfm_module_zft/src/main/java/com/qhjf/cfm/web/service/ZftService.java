@@ -161,11 +161,13 @@ public class ZftService {
         paramsToRecord.set("update_on", new Date());
         paramsToRecord.set("update_by", userInfo.getUsr_id());
         paramsToRecord.set("persist_version", persist_version + 1);
-        boolean flag = chgRevDbIdAndVersion(paramsToRecord,
+
+        //TODO 大都会临时去除此逻辑
+        /*boolean flag = chgRevDbIdAndVersion(paramsToRecord,
                 new Record().set("id", supplier_acc_id).set("persist_version", persist_version));
         if (!flag) {
             throw new DbProcessException("更新收款人信息失败!");
-        }
+        }*/
         // 获取收款人信息
         Record supplier_info = Db.findById("supplier_acc_info", "id", supplier_acc_id);
         if (null == supplier_info) {

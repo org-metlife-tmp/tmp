@@ -6,6 +6,7 @@ import com.jfinal.plugin.activerecord.Record;
 import com.qhjf.bankinterface.api.AtomicInterfaceConfig;
 import com.qhjf.bankinterface.cmbc.CmbcConstant;
 import com.qhjf.cfm.utils.CommKit;
+import com.qhjf.cfm.utils.StringKit;
 import com.qhjf.cfm.web.channel.inter.api.ISingleResultChannelInter;
 
 import java.util.ArrayList;
@@ -30,7 +31,14 @@ public class CmbcSinglePayInter  implements ISingleResultChannelInter{
         detailMap1.put("TRSAMT", record.getStr("payment_amount"));
         detailMap1.put("CCYNBR", record.getStr("pay_account_cur"));
         detailMap1.put("STLCHN", "N");
-        detailMap1.put("NUSAGE", record.getStr("instruct_code")+(CommKit.isNullOrEmpty(record.get("summary"))? "cfm" : record.getStr("summary")));
+
+        //摘要处理
+		String summary = CommKit.isNullOrEmpty(record.getStr("summary")) ? "cfm" : record.getStr("summary");
+		summary = StringKit.cutString(StringKit.filterSpecialChar(summary),62);
+		detailMap1.put("NUSAGE",summary);
+		//指令码放到招行接口接口的BUSNAR字段，做自动核对用，同交易信息中的BUSNAR比对
+		detailMap1.put("BUSNAR", record.getStr("instruct_code"));
+
         detailMap1.put("CRTACC", record.getStr("recv_account_no"));
         detailMap1.put("CRTNAM", record.getStr("recv_account_name"));
         detailMap1.put("BNKFLG", record.getStr("is_cross_bank"));

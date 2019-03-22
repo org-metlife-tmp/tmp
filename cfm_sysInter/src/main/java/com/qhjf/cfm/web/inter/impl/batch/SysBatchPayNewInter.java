@@ -11,8 +11,6 @@ import com.qhjf.cfm.utils.*;
 import com.qhjf.cfm.web.channel.inter.api.IChannelBatchInter;
 import com.qhjf.cfm.web.channel.inter.api.IChannelInter;
 import com.qhjf.cfm.web.channel.manager.ChannelManager;
-import com.qhjf.cfm.web.channel.util.DateUtil;
-import com.qhjf.cfm.web.config.CMBCTestConfigSection;
 import com.qhjf.cfm.web.constant.WebConstant;
 import com.qhjf.cfm.web.inter.api.ISysAtomicInterface;
 import com.qhjf.cfm.web.inter.manager.SysInterManager;
@@ -25,7 +23,6 @@ import java.util.*;
 public class SysBatchPayNewInter implements ISysAtomicInterface {
 
 	private static Logger log = LoggerFactory.getLogger(SysBatchPayNewInter.class);
-	private static CMBCTestConfigSection configSection = CMBCTestConfigSection.getInstance();
 	private IChannelBatchInter channelInter;
 	
 	private Record instr;
@@ -380,7 +377,7 @@ public class SysBatchPayNewInter implements ISysAtomicInterface {
 		total.set("pay_bank_city", r.get("pay_bank_city"));
 		total.set("pay_bank_type", r.get("pay_bank_type"));
 		total.set("status", 1);
-		total.set("trade_date", genTradeDate(payBankCode));
+		total.set("trade_date", DateKit.toStr(new Date(), "yyyy-MM-dd"));
 		//发送时间不精确，从指令发送队列取指令时的时间更精确
 		total.set("init_send_time", new Date());
 		return total;
@@ -390,14 +387,14 @@ public class SysBatchPayNewInter implements ISysAtomicInterface {
 	 * @param cnaps
 	 * @return
 	 */
-	private String genTradeDate(String cnaps){
+	/*private String genTradeDate(String cnaps){
 		String result = null;
 		if ("308".equals(cnaps)) {
 			int preDay = configSection.getPreDay();
 			result = DateUtil.getSpecifiedDayAfter(new Date(), preDay, "yyyyMMdd");
 		}
 		return result == null ? DateKit.toStr(new Date(), "yyyy-MM-dd") : result;
-	}
+	}*/
 	/**
 	 * 生成付款指令明细信息 ： batch_pay_instr_queue_detail
 	 */

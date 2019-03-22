@@ -30,7 +30,7 @@ public class TradeResultBatchRecvQueryJob extends PubJob {
 
     @Override
     public String getJobName() {
-        return "批量收付状态查询";
+        return "批量收明细查询";
     }
 
     @Override

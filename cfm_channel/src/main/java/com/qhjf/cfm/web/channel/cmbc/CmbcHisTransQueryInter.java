@@ -59,6 +59,9 @@ public class CmbcHisTransQueryInter  implements IMoreResultChannelInter{
 		record.set("trans_date", afterDate);
 		record.set("trans_time", DateUtil.formatDate(detail.getString("ETYTIM"),"hhmmss"));
 		record.set("identifier", detail.getString("YURREF"));
+
+		//获取指令码，在BUSNAR中
+		record.set("instruct_code",detail.get("BUSNAR"));
 		return record;
 
 	}

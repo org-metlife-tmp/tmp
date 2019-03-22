@@ -2,6 +2,8 @@ package com.qhjf.cfm.web.channel.cmbc;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.alibaba.fastjson.JSONArray;
@@ -10,6 +12,14 @@ import com.jfinal.plugin.activerecord.Record;
 import com.qhjf.bankinterface.api.AtomicInterfaceConfig;
 import com.qhjf.bankinterface.cmbc.CmbcConstant;
 import com.qhjf.cfm.web.channel.inter.api.IChannelBatchInter;
+import com.qhjf.cfm.web.channel.inter.api.IMoreResultChannelInter;
+import com.qhjf.cfm.web.channel.util.DateUtil;
+import com.qhjf.cfm.web.channel.util.CmbcParamsUtil.TranType;
+import com.qhjf.cfm.web.config.CMBCTestConfigSection;
+import com.qhjf.cfm.web.config.DDHLAConfigSection;
+import com.qhjf.cfm.web.config.DDHLARecvConfigSection;
+import com.qhjf.cfm.web.config.GlobalConfigSection;
+import com.qhjf.cfm.web.config.IConfigSectionType;
 
 /**
  * 
@@ -17,13 +27,20 @@ import com.qhjf.cfm.web.channel.inter.api.IChannelBatchInter;
  * @author CHT
  *
  */
-public class CmbcBatchPayRecvStatusQueryInter  implements IChannelBatchInter {
+public class CmbcBatchPayRecvStatusQueryInter  implements IMoreResultChannelInter {
 	private static Logger log = LoggerFactory.getLogger(CmbcBatchPayRecvStatusQueryInter.class);
+	private static CMBCTestConfigSection configSection = CMBCTestConfigSection.getInstance();
 	public static final String ERROR_MSG = "批量收付状态查询，银行处理失败,失败原因:%s-%s";
 	private JSONArray rsArray;
+	private static DDHLAConfigSection paySection = GlobalConfigSection.getInstance()
+			.getExtraConfig(IConfigSectionType.DDHConfigSectionType.DDHLA);
+	private static DDHLARecvConfigSection recvSection = GlobalConfigSection.getInstance()
+			.getExtraConfig(IConfigSectionType.DDHConfigSectionType.DDHLaRecv);
 	
 	@Override
 	public Map<String, Object> genParamsMap(Record record) {
+		int preDay = configSection.getPreDay();
+		
 		Map<String,Object> map = new HashMap<>();
         Map<String,Object> details = new HashMap<String,Object>();
         
@@ -33,11 +50,21 @@ public class CmbcBatchPayRecvStatusQueryInter  implements IChannelBatchInter {
 			return null;
 		}
         
-        details.put("BUSCOD", bizType == 1 ? "N03020" : "N03030");
+        TranType tranType = null;
+        if (bizType == 1) {
+        	tranType = StringUtils.isBlank(paySection.getTranType()) ? 
+    				TranType.AYBK : TranType.getTranType(paySection.getTranType());
+		}else {
+			tranType = StringUtils.isBlank(recvSection.getTranType()) ? 
+    				TranType.AYBK : TranType.getTranType(recvSection.getTranType());
+		}
+        
+        //N03010: 代发工资, N03020: 代发, N03030: 代扣
+        details.put("BUSCOD", tranType.getBusCod());
         details.put("BUSMOD", "00001");
         //起始结束日期间隔不可超过一周
-        details.put("BGNDAT", record.getStr("begin_date"));
-        details.put("ENDDAT", record.getStr("begin_date"));
+        details.put("BGNDAT", DateUtil.getSpecifiedDayBefore(record.getDate("begin_date"), preDay+2, "yyyyMMdd"));
+        details.put("ENDDAT", DateUtil.getSpecifiedDayBefore(record.getDate("end_date"), preDay-2, "yyyyMMdd"));
 
         map.put("NTAGCINNY1", details);
 		return map;
@@ -45,7 +72,7 @@ public class CmbcBatchPayRecvStatusQueryInter  implements IChannelBatchInter {
 	
 	@Override
 	public AtomicInterfaceConfig getInter() {
-		return CmbcConstant.NTQRYSTN;
+		return CmbcConstant.NTAGCINN;
 	}
 
 	@Override
@@ -84,11 +111,6 @@ public class CmbcBatchPayRecvStatusQueryInter  implements IChannelBatchInter {
 		result.set("bank_err_msg", jo.getString("ERRDSP"));
 		
 		return result;
-	}
-
-	@Override
-	public int getBatchSize() {
-		return 1;
 	}
 
 }

@@ -1,10 +1,12 @@
 package com.qhjf.cfm.web.channel.icbc;
 
+
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.jfinal.plugin.activerecord.Record;
 import com.qhjf.bankinterface.api.AtomicInterfaceConfig;
 import com.qhjf.bankinterface.icbc.IcbcConstant;
+import com.qhjf.cfm.utils.CommKit;
 import com.qhjf.cfm.web.channel.inter.api.IMoreResultChannelInter;
 import com.qhjf.cfm.web.channel.util.DateUtil;
 import com.qhjf.cfm.web.channel.util.IcbcResultParseUtil;
@@ -67,6 +69,15 @@ public class IcbcCurrTransQueryInter  implements IMoreResultChannelInter{
 		record.set("trans_date", parseTransDate(rd));
 		record.set("trans_time", DateUtil.formatDate(parseTransTime(rd), "HH:mm:ss"));
 		record.set("identifier", rd.getString("OnlySequence"));
+
+
+		//获取指令码，在Ref1 和 Oref1中
+		if(!CommKit.isNullOrEmpty(rd.get("Ref1"))){
+			record.set("instruct_code",rd.get("Ref1"));
+		}else if(!CommKit.isNullOrEmpty(rd.get("Oref1"))){
+			record.set("instruct_code",rd.get("Oref1"));
+		}
+
 		log.debug(String.format("渠道返回数据处理parseResult（）=[%s]", record.toJson()));
 		return record;
 	}

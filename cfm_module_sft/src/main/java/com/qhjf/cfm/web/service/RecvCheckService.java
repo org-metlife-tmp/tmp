@@ -53,27 +53,6 @@ public class RecvCheckService {
      * @throws BusinessException
      */
     public List<Record> tradingList(final Record record) {
-        /**
-         * 如果有bankcode，根据bankcode找对应的通道，如果是第三方的走business_check否则走is_checked
-         */
-        String bankcode = TypeUtils.castToString(record.get("bankcode"));
-        if(StringUtils.isNotEmpty(bankcode)){
-            Record chan = Db.findFirst(Db.getSql("channel_setting.getchannelbybankcode"), record.get("bankcode"));
-            if(chan == null){
-                return null;
-            }
-            if(chan.getInt("is_inner") == 0){
-                record.set("business_check", record.get("is_checked"));
-                record.remove("is_checked");
-            }
-        }else{
-            int isInner = TypeUtils.castToInt(record.get("is_inner"));
-            if(isInner == 0){
-                record.set("business_check", record.get("is_checked"));
-                record.remove("is_checked");
-            }
-        }
-        record.remove("is_inner");
         SqlPara sqlPara = Db.getSqlPara("recvcheck.tradingList", Kv.by("map", record.getColumns()));
         return Db.find(sqlPara);
     }

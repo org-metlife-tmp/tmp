@@ -34,8 +34,7 @@ import com.qhjf.cfm.web.webservice.sft.SftCallBack;
 public class SysTradeResultPayBatchQueryInter implements ISysAtomicInterface {
 
 	private static Logger log = LoggerFactory.getLogger(SysTradeResultPayBatchQueryInter.class);
-	private PlfConfigAccnoSection section = GlobalConfigSection.getInstance()
-			.getExtraConfig(IConfigSectionType.DDHConfigSectionType.VOUCHER);
+	private PlfConfigAccnoSection section = PlfConfigAccnoSection.getInstance();
 	private static String INSTR_TOTAL = "batch_pay_instr_queue_total";
 	private static String INSTR_DETAIL = "batch_pay_instr_queue_detail";
 	private static String LA_ORIGIN = "la_origin_pay_data";
@@ -52,7 +51,7 @@ public class SysTradeResultPayBatchQueryInter implements ISysAtomicInterface {
 		instr.set("reqnbr", record.getStr("reqnbr"));
 		instr.set("source_ref", record.getStr("source_ref"));
 		instr.set("bill_id", record.getLong("bill_id"));
-		instr.set("process_bank_type", record.getStr("recv_bank_type"));
+		instr.set("process_bank_type", record.getStr("pay_bank_type"));
 		instr.set("trade_date", record.get("trade_date"));
 		instr.set("pre_query_time", DateKit.toDate(DateKit.toStr(date, DateKit.timeStampPattern)));
 		return this.instr;
@@ -95,16 +94,26 @@ public class SysTradeResultPayBatchQueryInter implements ISysAtomicInterface {
             
             if (status == WebConstant.PayStatus.SUCCESS.getKey() || status == WebConstant.PayStatus.FAILD.getKey()) {
             	//查询收款指令明细信息：通过 银行账号+金额+收款指令汇总表主键查询
-                final Record instrDetailRecord = Db.findFirst(Db.getSql("batchpay.selIntrDetailByAcc")
+                List<Record> instrDetailRecordList = Db.find(Db.getSql("batchpay.selIntrDetailByAcc")
                 		, instrTotalRecord.getLong("id")
                 		, TypeUtils.castToString(bankData.get("pay_account_no"))
                 		, TypeUtils.castToDouble(bankData.get("amount")));
-                if (null == instrDetailRecord) {
+                
+                if (null == instrDetailRecordList || instrDetailRecordList.size() == 0) {
                 	log.error("*****************下面error需人工排查************************");
                 	bankData.put("id", instrTotalRecord.get("id"));
                 	log.error("批量付查询历史交易状态指令回写，通过【{}】未查询到单据详情！", bankData);
                 	continue;
 				}
+                
+                if (instrDetailRecordList.size() > 1) {
+                	log.error("*****************下面error需人处理************************");
+                	bankData.put("id", instrTotalRecord.get("id"));
+                	log.error("批量付查询历史交易状态指令回写，指令汇总主键=【{}】通过银行账号=【{}】，金额=【{}】查询到多条数据！", instrTotalRecord.get("id"), bankData.get("pay_account_no"), bankData.get("amount"));
+                	continue;
+				}
+                
+                final Record instrDetailRecord = instrDetailRecordList.get(0);
                 
                 boolean flag = Db.tx(new IAtom() {
                     @Override
@@ -241,11 +250,13 @@ public class SysTradeResultPayBatchQueryInter implements ISysAtomicInterface {
 							if (null != aRowData) {
 								paybankcode = TypeUtils.castToString(aRowData.get("bankcode"));
 							}else {
-								paybankcode = String.format("银行账号：(%s)未维护到account表", accno);
+								log.error("银行账号：({})未维护到account表", accno);
+								paybankcode = "";
 							}
 							
 							updOrigin = Db.update(Db.getSql("batchpay.updOrginSuccEbs")
 									, date, time, paybankcode, accno, instrTotalId);
+							
 						}
                         
                         if (updOrigin == instrTotal.getInt("total_num")) {
@@ -313,6 +324,7 @@ public class SysTradeResultPayBatchQueryInter implements ISysAtomicInterface {
                 			  .set("fail_num", fail)
                 			  .set("fail_amount", failAmount)
                 			  .set("service_status", 5)
+                			  .set("back_on", new Date())//生成凭证时需要，否则报NPE
                 , new Record().set("id", billTotalId)) == 1;
     }
     

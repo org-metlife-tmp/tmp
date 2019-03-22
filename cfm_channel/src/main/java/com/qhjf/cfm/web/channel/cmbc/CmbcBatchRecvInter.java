@@ -9,6 +9,13 @@ import com.qhjf.cfm.exceptions.EncryAndDecryException;
 import com.qhjf.cfm.utils.SymmetricEncryptUtil;
 import com.qhjf.cfm.web.channel.inter.api.IChannelBatchInter;
 import com.qhjf.cfm.web.channel.util.CmbcParamsUtil;
+import com.qhjf.cfm.web.channel.util.CmbcParamsUtil.TranType;
+import com.qhjf.cfm.web.config.DDHLAConfigSection;
+import com.qhjf.cfm.web.config.DDHLARecvConfigSection;
+import com.qhjf.cfm.web.config.GlobalConfigSection;
+import com.qhjf.cfm.web.config.IConfigSectionType;
+
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,30 +34,35 @@ public class CmbcBatchRecvInter implements IChannelBatchInter {
     private static final Logger log = LoggerFactory.getLogger(CmbcBatchRecvInter.class);
     public static final String ERROR_MSG = "批量收付回写，银行处理失败,失败原因:%s-%s";
     private JSONArray rsArray;
+    private static DDHLARecvConfigSection section = GlobalConfigSection.getInstance()
+			.getExtraConfig(IConfigSectionType.DDHConfigSectionType.DDHLaRecv);
 
     @Override
     public Map<String, Object> genParamsMap(Record record) {
+    	TranType tranType = StringUtils.isBlank(section.getTranType()) ? 
+				TranType.AYBK : TranType.getTranType(section.getTranType());
+    	
         Map<String, Object> map = new HashMap<>();
         Map<String, Object> totMap = new HashMap<>();
         List<Map<String, Object>> details = new ArrayList<Map<String, Object>>();
 
         Record totalRec = (Record) record.get("total");
 
-        totMap.put("BUSCOD", CmbcParamsUtil.TranType.DKBXF.getBusCod());
+        totMap.put("BUSCOD", tranType.getBusCod());
 		totMap.put("BUSMOD", "00001");// 业务模式编号
 //		totMap.put("MODALS", "代扣");// 业务模式名称
 //		totMap.put("C_TRSTYP", CmbcParamsUtil.TranType.DKBXF.getCTrstyp());//交易代码名称
-		totMap.put("TRSTYP", CmbcParamsUtil.TranType.DKBXF.getTrstyp());//交易代码
+		totMap.put("TRSTYP", tranType.getTrstyp());//交易代码
 //      totMap.put("EPTDAT", "");//期望日期
         totMap.put("DBTACC", totalRec.get("recv_account_no"));//转出账号/转入账号(代发为转出账号；代扣为转入账号)
-        totMap.put("BBKNBR", totalRec.get("recv_bank_type"));//分行代码
+        totMap.put("BBKNBR", totalRec.getStr("recv_bank_cnaps").substring(3, 7));//分行代码
 //      totMap.put("BANKAREA", "");//分行名称
-        totMap.put("SUM", totalRec.get("total_num"));//总笔数
-        totMap.put("TOTAL", totalRec.get("total_amount"));//总金额
+        totMap.put("SUM", String.valueOf(totalRec.get("total_amount")));//总金额
+        totMap.put("TOTAL", String.valueOf(totalRec.get("total_num")));//总笔数
 //      totMap.put("CCYNBR", "");//币种代码
 //      totMap.put("CURRENCY", "");//币种名称
         totMap.put("YURREF", totalRec.get("bank_serial_number"));//业务参考号
-        totMap.put("MEMO", CmbcParamsUtil.TranType.DKBXF.getCTrstyp());//用途
+        totMap.put("MEMO", tranType.getCTrstyp());//用途
 //      totMap.put("DMANBR", "");//虚拟户编号
 //      totMap.put("GRTFLG", "");//直连经办网银审批标志
 
@@ -62,7 +74,7 @@ public class CmbcBatchRecvInter implements IChannelBatchInter {
                 Map<String, Object> detailMap = new HashMap<String, Object>();
                 detailMap.put("ACCNBR", decryptAccNo(r.getStr("pay_account_no")));//收款账号/被扣款账号
                 detailMap.put("CLTNAM", r.get("pay_account_name"));//户名
-                detailMap.put("TRSAMT", r.get("amount"));//金额
+                detailMap.put("TRSAMT", String.valueOf(r.get("amount")));//金额
 //                detailMap.put("BNKFLG", r.get("is_cross_bank"));//系统内标志
 //                detailMap.put("EACBNK", r.get("pay_account_bank"));//他行户口开户行
 //                detailMap.put("TRSDSP", r.get("pay_account_no"));//注释  该号为扣款方的客户标识ID

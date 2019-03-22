@@ -141,6 +141,7 @@ FROM
 	la_pay_legal_data_ext ext
 WHERE detail.child_batchno = total.child_batchno
 and total.master_batchno = master.master_batchno
+and detail.delete_num = 0
 and detail.org_code = org.code
 and detail.legal_id = leg.id
 and leg.origin_id = ext.origin_id
@@ -169,6 +170,7 @@ FROM
 WHERE detail.child_batchno = total.child_batchno
 and total.master_batchno = master.master_batchno
 and detail.org_code = org.code
+and detail.delete_num = 0
 and detail.legal_id = leg.id
 and leg.origin_id = ext.origin_id
 and detail.base_id = ?
@@ -275,6 +277,7 @@ FROM
 	pay_batch_total_master master
 WHERE detail.child_batchno = child.child_batchno
 and child.master_batchno = master.master_batchno
+and detail.delete_num = 0
   #if(map != null)
     #for(x : map)
       #if(x.value&&x.value!="")

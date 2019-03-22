@@ -2,6 +2,8 @@ package com.qhjf.cfm.utils;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class StringKit {
 
@@ -38,6 +40,7 @@ public class StringKit {
      */
     private static final String CN_ZEOR_FULL = "零元" + CN_FULL;
 
+    private static final Pattern SPCIALCHARTAB =  Pattern.compile("[`~☆★!@#$%^&*()+=|{}':;,\\[\\]》·.<>/?~！@#￥%……（）——+|{}【】‘；：”“’。，、？]");
 
     private enum FlushDirection {
         LEFT, RIGHT;
@@ -215,6 +218,31 @@ public class StringKit {
 
 
     /**
+     * 去除原始串中的特殊字符
+     * @param source 原始字符串
+     * @return 去除特殊字符的原始字符串
+     */
+    public static String filterSpecialChar(String source){
+        Matcher m = SPCIALCHARTAB.matcher(source);
+        return m.replaceAll("").trim().replace(" ", "").replace("\\", "");
+    }
+
+
+    /**
+     * 按最大长度截取字符串
+     * @param source
+     * @param maxLength
+     * @return
+     */
+    public static String cutString(String source , int maxLength){
+        if(source != null && source.length() > maxLength){
+            return source.substring(0,maxLength);
+        }
+        return source;
+    }
+
+
+    /**
      * 对数字进行补零
      * @param number
      *         正整数
@@ -265,6 +293,7 @@ public class StringKit {
         int d = 10000;
         System.out.println(formatCount(d));
         System.out.println(zeroPadding(1000,3));
+        
         String origin = "\r\n1234@#<!234\r\n";
         System.out.println("#####################");
         System.out.println(origin);
@@ -273,6 +302,11 @@ public class StringKit {
         System.out.println("#####################");
         System.out.println(removeControlCharacter(origin));
         System.out.println("#####################");
+
+        String str = "wo k我是\\“·”》☆斩断★ *adCVs*34_a _09_b5*[/435^*&城池()^$$&*).{}+.|.)%%*(*.中国}34{45[]12.fd'*&999下面是中文的字符￥……{}【】。，；’“‘”？";
+        System.out.println(str);
+        System.out.println(filterSpecialChar(str));
+
     }
 
 }

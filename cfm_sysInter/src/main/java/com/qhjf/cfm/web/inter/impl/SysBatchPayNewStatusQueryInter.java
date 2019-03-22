@@ -6,6 +6,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.alibaba.fastjson.util.TypeUtils;
@@ -35,8 +37,7 @@ import com.qhjf.cfm.web.webservice.sft.SftCallBack;
 public class SysBatchPayNewStatusQueryInter implements ISysAtomicInterface {
 
 	private static Logger log = LoggerFactory.getLogger(SysBatchPayNewStatusQueryInter.class);
-	PlfConfigAccnoSection section = GlobalConfigSection.getInstance()
-			.getExtraConfig(IConfigSectionType.DDHConfigSectionType.VOUCHER);
+	PlfConfigAccnoSection section = PlfConfigAccnoSection.getInstance();
 	private static final String LA_ORIGIN = "la_origin_pay_data";
 	private static final String EBS_ORIGIN = "ebs_origin_pay_data";
 	private static final String BILL_NOT_EXIST = "批量支付回写时，通过source_ref=[{}],bill_id=[{}]未找到单据！";
@@ -47,10 +48,10 @@ public class SysBatchPayNewStatusQueryInter implements ISysAtomicInterface {
 	public Record genInstr(Record record) {
 		this.instr = new Record();
 		// 1:批付；2：批收
-		instr.set("biz_type", 1);
+		instr.set("biz_type", record.get("biz_type"));
 		instr.set("begin_date", record.getStr("begin_date"));
 		instr.set("end_date", record.getStr("end_date"));
-		instr.set("process_bank_type", record.getStr("pay_bank_type"));
+		instr.set("process_bank_type", record.getStr("process_bank_type"));
 		instr.set("trade_date", record.get("trade_date"));
 		instr.set("pre_query_time", DateKit.toDate(DateKit.toStr(new Date(), DateKit.timeStampPattern)));
 		return this.instr;
@@ -65,7 +66,7 @@ public class SysBatchPayNewStatusQueryInter implements ISysAtomicInterface {
 	public void callBack(String jsonStr) throws Exception {
 		Db.delete("batch_pay_recv_status_queue_lock", instr);
 
-		log.debug("批量收付交易状态指令查询回写开始。。。");
+		log.debug("批量付交易状态指令查询回写开始。。。");
 		int resultCount = channelInter.getResultCount(jsonStr);
 		if (resultCount <= 0) {
 			return;
@@ -76,25 +77,29 @@ public class SysBatchPayNewStatusQueryInter implements ISysAtomicInterface {
 			String reqnbr = parseRecord.getStr("reqnbr");
 			Integer reqsta = parseRecord.getInt("reqsta");
 			Integer rtnflg = parseRecord.getInt("rtnflg");
-			Integer bankErrMsg = parseRecord.getInt("bank_err_msg");
+			String bankErrMsg = parseRecord.getStr("bank_err_msg");
 			String bankServiceNumber = parseRecord.getStr("bank_service_number");
-			log.debug("批量收付交易状态指令查询回写，bankServiceNumber={}", bankServiceNumber);
+			log.debug("批量付交易状态指令查询回写，bankServiceNumber={}", bankServiceNumber);
 
 			Record intrTotal = Db.findFirst(Db.getSql("batchpay.qryIntrTotalByBSN"), bankServiceNumber);
 			if (null == intrTotal) {
-				log.error("批量收付交易状态指令查询回写，通过bank_service_number={}查询instrTotal为空", bankServiceNumber);
+				log.error("批量付交易状态指令查询回写，通过bank_service_number={}查询instrTotal为空", bankServiceNumber);
 				continue;
 			}
-			if (intrTotal.getInt("reqsta") == 1) {
-				log.debug("批量收付交易状态指令查询回写，reqsta=1");
+			Integer sta = TypeUtils.castToInt(intrTotal.get("reqsta"));
+			if (sta != null && sta == 1) {
+				log.debug("批量付交易状态指令查询回写,reqsta已回写，reqsta=1");
 				continue;
 			}
 			
 			Record setRecord = new Record();
 			String oldReqnbr = intrTotal.getStr("reqnbr");
-			if (null == oldReqnbr) {
+			if (StringUtils.isBlank(oldReqnbr)) {
 				setRecord.set("reqnbr", reqnbr);
+			} else if (!oldReqnbr.equals(reqnbr)) {
+				throw new Exception("批量付交易状态指令查询回写，返回得reqnbr与批付指令发送时，银行返回得reqnbr不一样，请联系银行处理！");
 			}
+			
 			setRecord.set("reqsta", reqsta);
 			setRecord.set("rtnflg", rtnflg);
 			setRecord.set("init_resp_time", new Date());
@@ -111,11 +116,11 @@ public class SysBatchPayNewStatusQueryInter implements ISysAtomicInterface {
 					, setRecord
 					, new Record().set("bank_serial_number", bankServiceNumber).set("status", 1));
 			if (!update) {
-				log.error("批量收付交易状态指令查询回写，更新指令汇总表失败bank_serial_number=", bankServiceNumber);
+				log.error("批量付交易状态指令查询回写，更新指令汇总表失败bank_serial_number=", bankServiceNumber);
 			}
 		}
 		
-		log.debug("批量收付交易状态指令查询回写结束。。。");
+		log.debug("批量付交易状态指令查询回写结束。。。");
 	}
 	
 	/**

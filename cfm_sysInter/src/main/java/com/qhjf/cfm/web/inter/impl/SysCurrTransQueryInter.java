@@ -105,13 +105,6 @@ public class SysCurrTransQueryInter implements ISysAtomicInterface{
 				accCurTrans.set("bank_type", account.getStr("bank_cnaps_code").substring(0,3));
 				accCurTrans.set("data_source", WebConstant.DataSource.DIRECTCONN.getKey());
 				accCurTrans.setColumns(parseRecord);
-				String summary = accCurTrans.getStr("summary");
-				if (summary != null && summary.length() >= 6) {
-					String instructCode = summary.substring(0, 6);
-					if(isValidInstructCode(instructCode)){
-						accCurTrans.set("summary", summary.substring(6, summary.length()));
-					}
-				}
 				StringBuffer inedtifierPlain = new StringBuffer();
 				inedtifierPlain.append(accCurTrans.getStr("acc_no"));
 				inedtifierPlain.append(accCurTrans.getStr("acc_name"));

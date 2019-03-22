@@ -26,7 +26,7 @@ public class TradeResultBatchPayQueryJob extends PubJob {
 
 	@Override
 	public String getJobName() {
-		return "批量付状态查询";
+		return "批量付明细查询";
 	}
 
 	@Override

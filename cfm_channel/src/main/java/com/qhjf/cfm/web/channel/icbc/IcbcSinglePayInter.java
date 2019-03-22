@@ -8,7 +8,9 @@ import com.qhjf.bankinterface.icbc.IcbcConstant;
 import com.qhjf.cfm.utils.CommKit;
 import com.qhjf.cfm.utils.StringKit;
 import com.qhjf.cfm.web.channel.inter.api.ISingleResultChannelInter;
+
 import com.qhjf.cfm.web.channel.util.ChannelStringUtil;
+
 import com.qhjf.cfm.web.channel.util.IcbcResultParseUtil;
 import com.qhjf.cfm.web.constant.WebConstant;
 import org.slf4j.Logger;
@@ -65,15 +67,17 @@ public class IcbcSinglePayInter  implements ISingleResultChannelInter{
 		rd.put("SysIOFlg", SysIOFlg);// 系统内外标志:1：系统内2：系统外
 		rd.put("CurrType", record.getStr("pay_account_cur"));// 币种
 		rd.put("PayAmt", record.getStr("payment_amount"));// 金额
+
 		String summary = CommKit.isNullOrEmpty(record.getStr("summary")) ? "cfm" : record.getStr("summary");
-		//摘要里面加指令码  做自动核对用的
-		String smr = record.getStr("instruct_code")+summary;
-		
-		rd.put("Summary", ChannelStringUtil.getFixLenStr(smr, 20));//摘要，工行要求上送20字节
-		
-		rd.put("UseCN", ChannelStringUtil.getFixLenStr(summary, 10));//用途中文描述
-		
-		
+		summary = StringKit.filterSpecialChar(summary);
+		rd.put("Summary",ChannelStringUtil.getFixLenStr(summary,20)); //摘要，工行要求上送20字节
+		rd.put("UseCN", ChannelStringUtil.getFixLenStr(summary,10)) ;//用途中文描述
+
+
+		//指令码放到工行接口的Ref字段，做自动核对用
+		rd.put("Ref",record.getStr("instruct_code"));
+
+
 		rdList.add(rd);
 
 		result.put("SettleMode", "0");//2：并笔记账 0：逐笔记账

@@ -50,13 +50,14 @@
 
 #sql("getTradeResultBatchQrySourceListNew")
 	select 
-		* 
+		id,reqnbr,bank_serial_number,source_ref,bill_id,pay_bank_type,trade_date,
+		pay_bank_cnaps as bank_cnaps_code
 	from 
 		batch_pay_instr_queue_total
 	where 
 		status = 1 and 
 		reqsta = 1 and
-		reqnbr <> null and 
+		reqnbr is not null and
 		reqnbr <> ''
 #end
 
@@ -73,7 +74,14 @@
 
 #sql('getNeedQueryStatusBatchPay')
 	select
-		top 1 *
+		top 1 
+		id,
+		1 as biz_type,
+		pay_bank_cnaps as bank_cnaps_code,
+		trade_date,
+		trade_date as begin_date,
+		trade_date as end_date,
+		pay_bank_type as process_bank_type
 	from
 		batch_pay_instr_queue_total
 	where

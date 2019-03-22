@@ -3,6 +3,8 @@ package com.qhjf.cfm.web.inter.impl;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.alibaba.fastjson.util.TypeUtils;
@@ -36,10 +38,10 @@ public class SysBatchRecvStatusQueryInter implements ISysAtomicInterface {
 	public Record genInstr(Record record) {
 		this.instr = new Record();
 		// 1:批付；2：批收
-		instr.set("biz_type", 2);
+		instr.set("biz_type", record.get("biz_type"));
 		instr.set("begin_date", record.getStr("begin_date"));
 		instr.set("end_date", record.getStr("end_date"));
-		instr.set("process_bank_type", record.getStr("recv_bank_type"));
+		instr.set("process_bank_type", record.getStr("process_bank_type"));
 		instr.set("trade_date", record.get("trade_date"));
 		instr.set("pre_query_time", DateKit.toDate(DateKit.toStr(new Date(), DateKit.timeStampPattern)));
 		return this.instr;
@@ -65,25 +67,29 @@ public class SysBatchRecvStatusQueryInter implements ISysAtomicInterface {
 			String reqnbr = parseRecord.getStr("reqnbr");
 			Integer reqsta = parseRecord.getInt("reqsta");
 			Integer rtnflg = parseRecord.getInt("rtnflg");
-			Integer bankErrMsg = parseRecord.getInt("bank_err_msg");
+			String bankErrMsg = parseRecord.getStr("bank_err_msg");
 			String bankServiceNumber = parseRecord.getStr("bank_service_number");
-			log.debug("批量收付交易状态指令查询回写，bankServiceNumber={}", bankServiceNumber);
+			log.debug("批量收交易状态指令查询回写，bankServiceNumber={}", bankServiceNumber);
 
 			Record intrTotal = Db.findFirst(Db.getSql("batchrecv.qryIntrTotalByBSN"), bankServiceNumber);
 			if (null == intrTotal) {
-				log.error("批量收付交易状态指令查询回写，通过bank_service_number={}查询instrTotal为空", bankServiceNumber);
+				log.error("批量收交易状态指令查询回写，通过bank_service_number={}查询instrTotal为空", bankServiceNumber);
 				continue;
 			}
-			if (intrTotal.getInt("reqsta") == 1) {
-				log.debug("批量收付交易状态指令查询回写，reqsta=1");
+			Integer sta = TypeUtils.castToInt(intrTotal.get("reqsta"));
+			if (sta != null && sta == 1) {
+				log.debug("批量收交易状态指令查询回写,reqsta已回写，reqsta=1");
 				continue;
 			}
 			
 			Record setRecord = new Record();
 			String oldReqnbr = intrTotal.getStr("reqnbr");
-			if (null == oldReqnbr) {
+			if (StringUtils.isBlank(oldReqnbr)) {
 				setRecord.set("reqnbr", reqnbr);
+			} else if (!oldReqnbr.equals(reqnbr)) {
+				throw new Exception("批量收交易状态指令查询回写，返回得reqnbr与批收指令发送时，银行返回得reqnbr不一样，请联系银行处理！");
 			}
+			
 			setRecord.set("reqsta", reqsta);
 			setRecord.set("rtnflg", rtnflg);
 			setRecord.set("init_resp_time", new Date());
