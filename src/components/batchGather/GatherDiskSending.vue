@@ -416,7 +416,8 @@
                     data: {
                         optype: "disksending_sendbank",
                         params: {
-                            id: row.pay_id
+                            id: row.pay_id,
+                            persist_version: row.persist_version
                         }
                     }
                 }).then((result) => {
