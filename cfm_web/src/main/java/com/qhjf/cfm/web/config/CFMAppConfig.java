@@ -38,6 +38,7 @@ import com.qhjf.cfm.web.quartzs.config.MyQuartzPlugin;
 import com.qhjf.cfm.web.services.UserLoginService;
 import com.qhjf.cfm.web.webservice.ebs.queue.EbsQueuePlugin;
 import com.qhjf.cfm.web.webservice.la.queue.LaQueuePlugin;
+import com.qhjf.cfm.web.webservice.la.queue.recv.LaRecvQueuePlugin;
 import com.qhjf.cfm.web.webservice.oa.server.processQueue.WebServiceQueuePlugin;
 import com.qhjf.cfm.workflow.api.WfApprovePermissionTool;
 import org.slf4j.Logger;
@@ -142,6 +143,7 @@ public class CFMAppConfig extends JFinalConfig {
         plugins.add(new QueuePlugin());
         plugins.add(new LaQueuePlugin());
         plugins.add(new EbsQueuePlugin());
+        plugins.add(new LaRecvQueuePlugin());
         
 
 
