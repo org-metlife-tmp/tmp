@@ -47,7 +47,7 @@ public class PayCounterCheckController extends CFMBaseController {
 
 
     /**
-     * 查找交易流水 自动匹配勾选
+     * 查找交易流水 非自动匹配勾选
      */
     @Auth(hasForces = {"PayCounterCheck"})
     public void tradingListNoAuto() {
@@ -57,7 +57,7 @@ public class PayCounterCheckController extends CFMBaseController {
     }
 
     /**
-     * 查找交易流水 非自动匹配勾选
+     * 查找交易流水 自动匹配勾选
      */
     @Auth(hasForces = {"PayCounterCheck"})
     public void tradingListAuto() {

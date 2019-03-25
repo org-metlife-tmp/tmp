@@ -463,7 +463,14 @@ public class CheckBatchForService {
 							.set("delete_flag", 0)
 							.set("pay_mode",1)
 							.set("persist_version", 0);
-
+					String payment_summary = "保费支出个险理赔" ;
+					if("B1".equals(channel_code)){
+						payment_summary = "000191400100081代付" ;
+					} else if ("54".equals(channel_code)) {
+						payment_summary = "000191400205608代付" ;
+					} else if("B3".equals(channel_code)) {
+						payment_summary = "TLT200455500003685" ;
+					}
 					if (0 == is_inner) {
 						logger.info("===============此处需要开启一个对外支付的审批流");
 						type = WebConstant.MajorBizType.ZFT;
@@ -478,6 +485,7 @@ public class CheckBatchForService {
 						List<Record> find = Db.find(Db.getSql("supplier.querySupplier"),main_record.get("pay_acc_no"));
 						insertRecord.set("recv_bank_cnaps", find.get(0).get("cnaps_code"));
 						insertRecord.set("recv_account_id", find.get(0).get("id"));
+						insertRecord.set("payment_summary", payment_summary);
 						boolean save = Db.save("outer_zf_payment", "id", insertRecord);
 						logger.info("===============入库支付通的结果==="+ save + "==id=="+ insertRecord.getLong("id"));
 						
@@ -489,16 +497,7 @@ public class CheckBatchForService {
 						insertRecord.set("biz_id", "11e1d8f2dbe14c41a241e0a430743c6b")
 						            .set("biz_name", "第三方资金调拨")
 								    .set("service_serial_number", serviceSerialNumber);
-						//封装 recv_account_id  
-						String payment_summary = "保费支出个险理赔" ;
-						if("B1".equals(channel_code)){
-							payment_summary = "000191400100081代付" ;
-						} else if ("54".equals(channel_code)) {
-							payment_summary = "000191400205608代付" ;
-						} else if("B3".equals(channel_code)) {
-							payment_summary = "TLT200455500003685" ;
-						}
-						
+						//封装 recv_account_id  		
 						List<Record> find = Db.find(Db.getSql("acc.findAccountByAccNo"),main_record.get("pay_acc_no"));
 						insertRecord.set("recv_account_id", find.get(0).get("acc_id"));
 						insertRecord.set("recv_bank_cnaps", find.get(0).get("bank_cnaps_code"));

@@ -135,10 +135,10 @@ FROM
 WHERE
 	his.acc_id = acc.acc_id
 	AND acc.bank_cnaps_code = bank.cnaps_code
-  AND is_checked = 0
-  AND amount = ?
-  AND instruct_code = ?
-  AND DATEDIFF(day,?,trans_date) = 0
+  AND his.is_checked = 0
+  AND his.amount = ?
+  AND his.instruct_code = ?
+  AND DATEDIFF(day,?,his.trans_date) = 0
 #end
 
 #sql("getHisByInfos")
@@ -168,11 +168,11 @@ FROM
 WHERE
 	his.acc_id = acc.acc_id
 	AND acc.bank_cnaps_code = bank.cnaps_code
-  AND is_checked = 0
-  AND acc_no = #para(map.pay_account_no)
-  AND amount = #para(map.amount)
-  AND opp_acc_no = #para(map.recv_account_no)
-  AND convert(varchar,trans_date)+' '+convert(varchar,trans_time) >= #para(map.send_on)
+  AND his.is_checked = 0
+  AND his.acc_no = #para(map.pay_account_no)
+  AND his.amount = #para(map.amount)
+  AND his.opp_acc_no = #para(map.recv_account_no)
+  AND convert(varchar,his.trans_date)+' '+convert(varchar,his.trans_time) >= #para(map.send_on)
 #end
 
 

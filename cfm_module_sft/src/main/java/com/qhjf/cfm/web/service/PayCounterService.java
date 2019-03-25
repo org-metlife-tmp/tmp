@@ -33,6 +33,7 @@ import com.qhjf.cfm.web.channel.inter.api.IChannelInter;
 import com.qhjf.cfm.web.channel.manager.ChannelManager;
 import com.qhjf.cfm.web.config.GmfConfigAccnoSection;
 import com.qhjf.cfm.web.constant.WebConstant;
+import com.qhjf.cfm.web.inter.impl.SysSftSinglePayInter;
 import com.qhjf.cfm.web.inter.impl.SysSinglePayInter;
 import com.qhjf.cfm.web.plugins.log.LogbackLog;
 import com.qhjf.cfm.web.webservice.sft.SftCallBack;
@@ -509,7 +510,7 @@ public class PayCounterService {
         innerRec.set("repeat_count", old_repeat_count + 1);
         innerRec.set("bank_serial_number", ChannelManager.getSerianlNo(payBankCode));
         innerRec.set("payment_amount", innerRec.get("amount"));
-        SysSinglePayInter sysInter = new SysSinglePayInter();
+        SysSftSinglePayInter sysInter = new SysSftSinglePayInter();
         sysInter.setChannelInter(channelInter);
         final Record instr = sysInter.genInstr(innerRec);
 

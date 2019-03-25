@@ -58,3 +58,7 @@
   #include("pay_counter.sql")
 #end
 
+#namespace("paycountercheck")
+  #include("paycountercheck.sql")
+#end
+

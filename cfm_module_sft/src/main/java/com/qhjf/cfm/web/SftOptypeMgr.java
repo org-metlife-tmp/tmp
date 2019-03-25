@@ -575,5 +575,28 @@ public class SftOptypeMgr extends AbstractOptypeMgr {
         
         
         /** ============================ 柜面付 付款工作台 end ============================ */
+
+        /** ============================ 柜面付结算对账 begin ============================ */
+        //查询所有批次
+        optypes.add(new Optype(Optype.Mode.NORMAL, "sftpaycountercheck_batchlist")
+                .registKeepParams(new String[]{"source_sys", "start_date", "end_date", "preinsure_bill_no", "insure_bill_no",
+                        "recv_acc_name", "recv_account_no", "min", "max", "is_checked", "page_size", "page_num"}));
+
+        //查找交易流水 非自动
+        optypes.add(new Optype(Optype.Mode.NORMAL, "sftpaycountercheck_tradingListNoAuto")
+                .registKeepParams(new String[]{"min", "max", "start_date", "end_date", "summary", "is_checked"}));
+
+        //查找交易流水 自动
+        optypes.add(new Optype(Optype.Mode.NORMAL, "sftpaycountercheck_tradingListAuto")
+                .registKeepParams(new String[]{"id"})
+                .registerValidate(new RequiredParamsValidate(new String[]{"id"})));
+
+        //对账确认
+        optypes.add(new Optype(Optype.Mode.NORMAL, "sftpaycountercheck_confirm")
+                .registKeepParams(new String[]{"id", "trading_no"})
+                .registerValidate(new RequiredParamsValidate(new String[]{"id", "trading_no"})));
+
+        /** ============================ 柜面付结算对账 end ============================ */
+
     }
 }

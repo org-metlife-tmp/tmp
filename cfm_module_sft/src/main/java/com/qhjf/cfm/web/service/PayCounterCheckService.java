@@ -135,7 +135,7 @@ public class PayCounterCheckService {
 
         //生成对账流水号
         final String checkSerialSeqNo = RedisSericalnoGenTool.genCheckSerialSeqNo();//生成十六进制流水号
-        final List<Record> records = CommonService.genPayConfirmRecords(Arrays.asList(new Integer[]{TypeUtils.castToInt(record.get("id"))}), tradingNo, userInfo, checkSerialSeqNo);
+        final List<Record> records = CommonService.genPayCounterConfirmRecords(TypeUtils.castToInt(record.get("id")), tradingNo, userInfo, checkSerialSeqNo);
 
         //进行数据新增操作
         boolean flag = Db.tx(new IAtom() {
