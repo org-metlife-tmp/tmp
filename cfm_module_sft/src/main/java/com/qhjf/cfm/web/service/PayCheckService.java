@@ -87,6 +87,8 @@ public class PayCheckService {
      * @throws BusinessException
      */
     public Page<Record> confirm(final Record record, final UserInfo userInfo) throws BusinessException {
+        long startTime = System.currentTimeMillis();
+        log.info("批量付开始核对---【begin】");
         //交易id
         final ArrayList<Integer> tradingNo = record.get("trading_no");
         //批次号
@@ -233,6 +235,8 @@ public class PayCheckService {
             rd.set("channel_id_one", batchList.get(0).get("channel_id"));
             AccCommonService.setSftCheckStatus(record, "service_status");
             SqlPara sqlPara = Db.getSqlPara("paycheck.paylist", Kv.by("map", rd.getColumns()));
+            long endTime = System.currentTimeMillis();
+            log.info("批量付核对结束---【end】，耗时【"+(endTime-startTime)/1000+"】秒");
             return Db.paginate(1, 20, sqlPara);
         }
     }

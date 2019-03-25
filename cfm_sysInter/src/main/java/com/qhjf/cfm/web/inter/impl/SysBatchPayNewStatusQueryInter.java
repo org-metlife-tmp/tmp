@@ -68,6 +68,7 @@ public class SysBatchPayNewStatusQueryInter implements ISysAtomicInterface {
 
 		log.debug("批量付交易状态指令查询回写开始。。。");
 		int resultCount = channelInter.getResultCount(jsonStr);
+		log.debug("批量付交易状态指令查询回写，查回条数size = {}", resultCount);
 		if (resultCount <= 0) {
 			return;
 		}
@@ -79,11 +80,11 @@ public class SysBatchPayNewStatusQueryInter implements ISysAtomicInterface {
 			Integer rtnflg = parseRecord.getInt("rtnflg");
 			String bankErrMsg = parseRecord.getStr("bank_err_msg");
 			String bankServiceNumber = parseRecord.getStr("bank_service_number");
-			log.debug("批量付交易状态指令查询回写，bankServiceNumber={}", bankServiceNumber);
+			log.debug("批量付交易状态指令查询回写，回写第{}条，bankServiceNumber={}", i, bankServiceNumber);
 
 			Record intrTotal = Db.findFirst(Db.getSql("batchpay.qryIntrTotalByBSN"), bankServiceNumber);
 			if (null == intrTotal) {
-				log.error("批量付交易状态指令查询回写，通过bank_service_number={}查询instrTotal为空", bankServiceNumber);
+				log.debug("批量付交易状态指令查询回写，通过bank_service_number={}查询instrTotal为空", bankServiceNumber);
 				continue;
 			}
 			Integer sta = TypeUtils.castToInt(intrTotal.get("reqsta"));
@@ -156,28 +157,33 @@ public class SysBatchPayNewStatusQueryInter implements ISysAtomicInterface {
 				if( CommonService.updateRows("batch_pay_instr_queue_total"
 						, new Record().setColumns(instrTotalSetRecord.getColumns()).set("status", 2)
 						, new Record().set("id", instrTotalId)) != 1){
+					log.error("批量付交易状态指令查询回写，交易失败回写，intrTotal更新失败！");
 					return false;
 				}
 				//2.更新batch_pay_instr_queue_detail
 				if(!CommonService.update("batch_pay_instr_queue_detail"
 						, new Record().set("status", 2).set("bank_err_msg", "交易失败").set("bank_back_time", new Date())
 						, new Record().set("base_id", instrTotalId))){
+					log.error("批量付交易状态指令查询回写，交易失败回写，intrDetail更新失败！");
 					return false;
 				}
 				//3.更新pay_batch_detail
 				if (!CommonService.update(SysInterManager.getDetailTableName(billTotalTb)
-						, new Record().set("status", 2)
+						, new Record().set("status", 2).set("bank_err_msg", instrTotalSetRecord.getStr("bank_err_msg"))
 						, new Record().set("base_id", billTotalId))) {
+					log.error("批量付交易状态指令查询回写，交易失败回写，billDetail更新失败！");
 					return false;
 				}
 				//4.更新pay_batch_total
-				if (Db.update(Db.getSql("batchpay.updBillTotalToFail"), billTotalTb) != 1) {
+				if (Db.update(Db.getSql("batchpay.updBillTotalToFail"), billTotalId) != 1) {
+					log.error("批量付交易状态指令查询回写，交易失败回写，billTotal更新失败！");
 					return false;
 				}
 				//5.更新la_origin_pay_data|ebs_origin_pay_data
 				if (LA_ORIGIN.equals(originTb)) {
 					SqlPara updOriginFailLaSqlPara = Db.getSqlPara("batchpay.updOriginFailLa");
 					if (Db.update(updOriginFailLaSqlPara.getSql(), instrTotalId) <= 0) {
+						log.error("批量付交易状态指令查询回写，交易失败回写，laOrigin更新失败！");
 						return false;
 					}
 				}else {
@@ -198,6 +204,7 @@ public class SysBatchPayNewStatusQueryInter implements ISysAtomicInterface {
 					}
 					
 					if (Db.update(updOriginFailEbsSqlPara.getSql(), date, time, paybankcode, accno, instrTotalId) <= 0) {
+						log.error("批量付交易状态指令查询回写，交易失败回写，ebsOrigin更新失败！");
 						return false;
 					}
 				}

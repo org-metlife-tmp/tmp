@@ -18,16 +18,22 @@ import com.jfinal.plugin.activerecord.Page;
 import com.jfinal.plugin.activerecord.Record;
 import com.jfinal.plugin.activerecord.SqlPara;
 import com.qhjf.cfm.exceptions.BusinessException;
+import com.qhjf.cfm.exceptions.DbProcessException;
 import com.qhjf.cfm.exceptions.ReqDataException;
 import com.qhjf.cfm.exceptions.WorkflowException;
+import com.qhjf.cfm.queue.ProductQueue;
+import com.qhjf.cfm.queue.QueueBean;
 import com.qhjf.cfm.utils.ArrayUtil;
 import com.qhjf.cfm.utils.BizSerialnoGenTool;
 import com.qhjf.cfm.utils.CommonService;
 import com.qhjf.cfm.web.UodpInfo;
 import com.qhjf.cfm.web.UserInfo;
 import com.qhjf.cfm.web.WfRequestObj;
+import com.qhjf.cfm.web.channel.inter.api.IChannelInter;
+import com.qhjf.cfm.web.channel.manager.ChannelManager;
 import com.qhjf.cfm.web.config.GmfConfigAccnoSection;
 import com.qhjf.cfm.web.constant.WebConstant;
+import com.qhjf.cfm.web.inter.impl.SysSinglePayInter;
 import com.qhjf.cfm.web.plugins.log.LogbackLog;
 import com.qhjf.cfm.web.webservice.sft.SftCallBack;
 
@@ -401,10 +407,43 @@ public class PayCounterService {
 	 * @return
 	 */
 	public boolean hookPass(Record record, UserInfo userInfo) {
-		
-		
-		
-		
+		final Long id = record.getLong("id");
+        try {
+            sendPayDetail(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+            String errMsg = null;
+            if (e.getMessage() == null || e.getMessage().length() > 1000) {
+                errMsg = "发送银行失败！";
+            } else {
+                errMsg = e.getMessage();
+            }
+
+            final Record innerRec = Db.findById("gmf_bill", "id", id);
+            final Integer status = innerRec.getInt("service_status");
+            final int persist_version = TypeUtils.castToInt(innerRec.get("persist_version"));
+            final String feedBack = errMsg;
+            boolean flag = Db.tx(new IAtom() {
+                @Override
+                public boolean run() throws SQLException {
+
+                    if (WebConstant.BillStatus.PASS.getKey() != status && WebConstant.BillStatus.FAILED.getKey() != status) {
+                        logger.error("单据状态有误!======"+status);
+                        return false;
+                    }
+                    Record setRecord = new Record();
+                    Record whereRecord = new Record();
+
+                    setRecord.set("service_status", WebConstant.BillStatus.FAILED.getKey()).set("feed_back", feedBack)
+                            .set("persist_version", persist_version + 1);
+                    whereRecord.set("id", id).set("service_status", status).set("persist_version", persist_version);
+                    return CommonService.updateRows("gmf_bill", setRecord, whereRecord) == 1;
+                }
+            });
+            if (!flag) {
+                logger.error("数据过期！,更新单据表gmf_bill失败");
+            }
+        }				
 		return false;
 	}
 
@@ -448,4 +487,50 @@ public class PayCounterService {
 		return true;
 	}
 		
+	/**
+	 * 开始封装指令对象
+	 * @param id
+	 * @throws Exception
+	 */
+    private void sendPayDetail(final Long id) throws Exception {
+        Record innerRec = Db.findById("gmf_bill", "id", id);
+        if (innerRec == null) {
+            throw new Exception("数据过期,未查询到此单据");
+        }
+        final Integer status = innerRec.getInt("service_status");
+        if (status != WebConstant.BillStatus.FAILED.getKey() && status != WebConstant.BillStatus.PASS.getKey()) {
+            throw new Exception("单据状态有误!:" + id);
+        }
+        String payCnaps = innerRec.getStr("pay_bank_cnaps");
+        String payBankCode = payCnaps.substring(0, 3);
+        IChannelInter channelInter = ChannelManager.getInter(payBankCode, "SinglePay");    
+        innerRec.set("source_ref", "gmf_bill");
+        final int old_repeat_count = TypeUtils.castToInt(innerRec.get("repeat_count"));
+        innerRec.set("repeat_count", old_repeat_count + 1);
+        innerRec.set("bank_serial_number", ChannelManager.getSerianlNo(payBankCode));
+        innerRec.set("payment_amount", innerRec.get("amount"));
+        SysSinglePayInter sysInter = new SysSinglePayInter();
+        sysInter.setChannelInter(channelInter);
+        final Record instr = sysInter.genInstr(innerRec);
+
+        boolean flag = Db.tx(new IAtom() {
+            @Override
+            public boolean run() throws SQLException {
+                boolean save = Db.save("single_pay_instr_queue", instr);
+                if (save) {
+                    return Db.update(Db.getSql("zjzf.updBillById"), instr.getStr("bank_serial_number"),
+                            instr.getInt("repeat_count"), WebConstant.BillStatus.PROCESSING.getKey(), instr.getStr("instruct_code"), id,
+                            status, old_repeat_count) == 1;
+                }
+                return save;
+            }
+        });
+        if (flag) {
+            QueueBean bean = new QueueBean(sysInter, channelInter.genParamsMap(instr), payBankCode);
+            ProductQueue productQueue = new ProductQueue(bean);
+            new Thread(productQueue).start();
+        } else {
+            throw new DbProcessException("发送失败，请联系管理员！");
+        }
+    }
 }

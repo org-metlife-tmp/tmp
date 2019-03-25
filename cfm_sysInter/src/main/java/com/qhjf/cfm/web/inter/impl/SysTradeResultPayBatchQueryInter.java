@@ -126,11 +126,12 @@ public class SysTradeResultPayBatchQueryInter implements ISysAtomicInterface {
                         Record instr_whereRecord = new Record().set("id", instrDetailRecord.getLong("id"));
 
                         if (status == WebConstant.PayStatus.SUCCESS.getKey()) {
-                            bill_setRecord.set(SysInterManager.getStatusFiled(billDetailTable)
-                                    , SysInterManager.getSuccessStatusEnum(billDetailTable));
+                            bill_setRecord.set(SysInterManager.getStatusFiled(billDetailTable) , SysInterManager.getSuccessStatusEnum(billDetailTable))
+                            			  .set("bank_err_msg", TypeUtils.castToString(bankData.get("bank_err_msg")));
 
                             instr_setRecord.set("status", SysInterManager.getSuccessStatusEnum(INSTR_DETAIL))
-                                    .set("bank_back_time", new Date());
+                            			   .set("bank_err_msg", TypeUtils.castToString(bankData.get("bank_err_msg")))
+                                           .set("bank_back_time", new Date());
                         } else {
                             bill_setRecord.set(SysInterManager.getStatusFiled(billDetailTable), SysInterManager.getFailStatusEnum(billDetailTable))
                             			  .set("bank_err_msg", TypeUtils.castToString(bankData.get("bank_err_msg")))

@@ -52,6 +52,8 @@ public class DiskBackingController extends CFMBaseController {
      * @throws ReqDataException 
       */
     public void upload() throws IOException, ReqDataException {
+    	long start_Millis = System.currentTimeMillis();
+    	logger.info("===========上传盘片开始时间======="+start_Millis);
     	String pay_master_id = getHeader("pay_master_id");
     	String pay_id = getHeader("pay_id");
     	String channel_id = getHeader("channel_id");
@@ -67,6 +69,7 @@ public class DiskBackingController extends CFMBaseController {
 			return;
 		}
 		result = service.validateAndWriteToUrl(user_id,ufs,result,pay_master_id,pay_id,channel_id);
+		logger.info("===========截止上传盘片结束总耗时======="+(System.currentTimeMillis() - start_Millis));
 		renderJson(result);
     }   
     

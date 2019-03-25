@@ -73,6 +73,18 @@ public class RecvCheckBatchForService {
 		if (status == null || status.size() == 0) {
 			record.remove("status");
 		}
+		// 首期  :  biz_Type : IP  ,  续期 : biz_Type : MP ,PP ,RP ,TP
+		if(StringUtils.isNotBlank(record.getStr("biz_type"))) {
+			if(WebConstant.Sft_BizType.SQ.getKey() ==  record.getInt("biz_type")) {
+				record.set("biz_type", new String[]{
+						"IP"
+				});
+			}else {
+				record.set("biz_type", new String[]{
+						"MP" ,"PP" ,"RP" ,"TP"
+				});
+			}
+		}				
 		SqlPara sqlPara = Db.getSqlPara("recv_check_batch.recvcheckBatchLAlist", Kv.by("map", record.getColumns()));
 		
 		Page<Record> paginate = Db.paginate(pageNum, pageSize, sqlPara);

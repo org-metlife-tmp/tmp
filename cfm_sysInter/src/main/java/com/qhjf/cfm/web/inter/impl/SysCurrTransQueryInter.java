@@ -91,6 +91,7 @@ public class SysCurrTransQueryInter implements ISysAtomicInterface{
 		private Record account;
 
 		public ExecuteThread(Record parseRecord,Record account) {
+			parseRecord.remove("instruct_code");//当日交易里没有对账码
 			this.parseRecord = parseRecord;
 			this.account = account;
 		}

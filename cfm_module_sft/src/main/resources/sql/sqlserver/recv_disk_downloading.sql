@@ -69,6 +69,7 @@
    where 
    pbd.legal_id = la.legal_id AND
    pbd.base_id = ? 
+   order by pbd.package_seq asc
 #end
 
 #sql("findOfferDocument")

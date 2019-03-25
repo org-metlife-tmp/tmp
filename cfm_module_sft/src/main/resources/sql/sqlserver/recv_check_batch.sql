@@ -22,7 +22,8 @@ SELECT
 	recv.bank_fb_msg,
 	recv.create_time,
 	recv.persist_version,
-	case la.biz_type  when '0' then '首期' when '1' then '续期'  else '其他'  end  biz_type ,
+	case la.biz_type  when 'IP' then '首期保费' when 'MP' then '月月加保'   when 'PP' then '保全保费' 
+	 when 'RP' then '续期保费'   when 'TP' then '投资保费' else '其他'  end  biz_type ,
 	la.bank_key,
 	la.id AS la_id,
 	la.legal_id ,
@@ -66,7 +67,14 @@ WHERE
         #elseif("pay_mode".equals(x.key))
             la.pay_mode = #para(x.value)
         #elseif("biz_type".equals(x.key))
-            la.biz_type = #para(x.value)
+            la.biz_type in(
+              #for(y : map.biz_type)
+                #if(for.index > 0)
+                  #(",")
+                #end
+                #(y)
+              #end
+            )
         #elseif("bank_key".equals(x.key))
             la.bank_key  like convert(varchar(5),'%')+convert(varchar(255),#para(x.value))+convert(varchar(5),'%')
         #elseif("status".equals(x.key))

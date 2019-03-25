@@ -102,7 +102,7 @@
 	update origin
 	set
 		origin.tmp_status = 2,
-		origin.tmp_err_message = '发送失败'
+		origin.tmp_err_message = bill.bank_err_msg
 	from
 		la_origin_recv_data origin,
 		(
@@ -165,5 +165,7 @@
 	from
 		batch_recv_instr_queue_total
 	where
-		bank_serial_number = ?
+		bank_serial_number = ? and
+		status = 1 and
+		reqsta = 0
 #end
