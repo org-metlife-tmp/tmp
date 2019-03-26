@@ -467,10 +467,7 @@
             //付款方式
             var constants = JSON.parse(window.sessionStorage.getItem("constants"));
             if(constants.PayMode){
-                var data = constants.PayMode;
-                delete data['8'];//删除自动扣款
-                this.payModeList = data;
-                // this.payModeList = constants.PayMode;
+                this.payModeList = constants.PayMode;
             }
 
             //业务类型
@@ -954,7 +951,7 @@
                         //将数据传递给子组件
                         this.flowList = define;
                         this.isEmptyFlow = false;
-                        
+
                     }
                 })
             },

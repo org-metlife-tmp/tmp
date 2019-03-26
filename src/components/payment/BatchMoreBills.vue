@@ -499,10 +499,7 @@
 
             var constants = JSON.parse(window.sessionStorage.getItem("constants"));
             if (constants.PayMode) {
-                var data = constants.PayMode;
-                delete data['8'];//删除自动扣款
-                this.payModeList = data;
-                // this.payModeList = constants.PayMode;
+                this.payModeList = constants.PayMode;
             }
         },
         components: {

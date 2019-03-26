@@ -574,7 +574,7 @@
                 </el-tooltip>
             </div>
             <el-select class="head-select2" v-model="billData.pay_mode" placeholder="请选择付款方式"
-                           filterable size="mini" @change="changePayMode"> 
+                           filterable size="mini" @change="changePayMode">
                 <el-option v-for="(name,k) in payModeList"
                             :key="k"
                             :label="name"
@@ -589,7 +589,7 @@
             <div class="title-date">
                 <el-date-picker
                         v-model="billData.apply_on"
-                        type="date" 
+                        type="date"
                         placeholder="请选择申请日期"
                         value-format="yyyy-MM-dd"
                         size="mini">
@@ -847,7 +847,7 @@
                         data.pay_account = {
                             acc_id:data.pay_account_id,
                             acc_no:data.pay_account_no
-                        }   
+                        }
                         data.bizObj ={
                             biz_id: data.biz_id,
                             biz_name: data.biz_name
@@ -877,7 +877,7 @@
                             }
                         }).then((result) =>{
                             this.accOptions = result.data.data;
-                            
+
                         });
                     }
                 }).catch(function (error) {
@@ -920,10 +920,10 @@
                     }
                 }).then((result) =>{
                     this.accOptions = result.data.data;
-                    
+
                 });
             }
-            
+
             //业务类型
             this.$axios({
                 url: this.queryUrl + "commProcess",
@@ -962,10 +962,7 @@
             //付款方式
             var constants = JSON.parse(window.sessionStorage.getItem("constants"));
             if(constants.PayMode){
-                var data = constants.PayMode;
-                delete data['8'];//删除自动扣款
-                this.payModeList = data;
-                // this.payModeList = constants.PayMode;
+                this.payModeList = constants.PayMode;
             }
         },
         components: {
@@ -1580,7 +1577,7 @@
                     }
                 }).then((result) =>{
                     this.accOptions = result.data.data;
-                    
+
                 });
             },
             //展示提交流程详情
@@ -1609,7 +1606,7 @@
                         //将数据传递给子组件
                         this.flowList = define;
                         this.isEmptyFlow = false;
-                        
+
                     }
                 })
             },

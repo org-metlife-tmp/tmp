@@ -108,7 +108,7 @@
             border-top: 1px solid #e2e2e2;
             border-left: 1px solid #e2e2e2;
             overflow: hidden;
-            
+
 
             li {
                 float: left;
@@ -702,10 +702,7 @@
             }
             var constants = JSON.parse(window.sessionStorage.getItem("constants"));
             if (constants.PayMode) {
-                var data = constants.PayMode;
-                delete data['8'];//删除自动扣款
-                this.payModeList = data;
-                // this.payModeList = constants.PayMode;
+                this.payModeList = constants.PayMode;
             }
         },
         components: {
