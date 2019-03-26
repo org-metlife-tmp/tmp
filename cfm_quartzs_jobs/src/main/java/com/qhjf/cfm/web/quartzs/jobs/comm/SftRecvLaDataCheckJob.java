@@ -367,11 +367,11 @@ public class SftRecvLaDataCheckJob implements Job{
      * @param channelCode	渠道号
      * @return
      */
-    private boolean isChannelOnline(String channelCode){
+    /*private boolean isChannelOnline(String channelCode){
         Record record = Db.findFirst(Db.getSql("la_cfm.getChannelOnline"), channelCode);
         if(record == null){
             return false;
         }
         return true;
-    }
+    }*/
 }

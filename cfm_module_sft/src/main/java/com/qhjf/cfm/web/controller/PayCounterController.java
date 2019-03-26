@@ -171,4 +171,12 @@ public class PayCounterController extends CFMBaseController{
 			        kv.set("biz_type", rec.get("biz_type"));
 			        return Db.getSqlPara("pay_counter.findPendingList", Kv.by("map", kv));
 			    }
+			    
+			    /**
+			     * 柜台付列表导出
+			     */
+			    //@Auth(hasForces = {"PayBatchResp"})
+			    public void listexport() {
+			        doExport();
+			    }
 }

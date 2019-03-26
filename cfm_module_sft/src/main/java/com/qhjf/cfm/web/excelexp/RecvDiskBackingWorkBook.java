@@ -43,7 +43,6 @@ public class RecvDiskBackingWorkBook extends AbstractWorkBook {
     @Override
     public Workbook getWorkbook() {
     	Record record = getRecord();
-    	long source_sys = TypeUtils.castToLong(record.get("source_sys"));
         SqlPara sqlPara = null;
         Long org_id = getUodpInfo().getOrg_id();
 		Record findById = Db.findById("organization", "org_id", org_id);

@@ -77,23 +77,11 @@ public class RecvCheckBatchForController extends CFMBaseController{
             renderFail(e);
             logger.error("=======组批确认失败");
         }
-    }
+    } 
 	
 	
     
    
-    /**
-     * 通道编码列表
-     * @throws ReqDataException 
-     */
-    public void channelCodeList() throws ReqDataException {   	
-    	logger.info("===========进入通道编码列表");
-    	Record record = getRecordByParamsStrong();
-    	//Long org_id = getCurUodp().getOrg_id();
-    	//record.set("org_id", org_id);
-        List<Record> lists = service.channelCodeList(record);	
-        renderOk(lists);    	
-    }
     
     
     /**

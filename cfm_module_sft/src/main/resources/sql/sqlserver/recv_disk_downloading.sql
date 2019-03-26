@@ -124,7 +124,7 @@
       recv_master.create_on ,
       recv_master.update_by ,
       recv_master.update_on ,
-      recv_master.persist_version ,
+      recv.persist_version ,
       recv_master.service_status ,
       recv.id AS recv_id ,
       recv.child_batchno ,

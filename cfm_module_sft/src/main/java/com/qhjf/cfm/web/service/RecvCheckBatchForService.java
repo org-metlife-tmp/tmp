@@ -393,15 +393,7 @@ public class RecvCheckBatchForService {
 
 	}
 
-	/**
-	 * 获取渠道编码列表
-	 * 
-	 * @param record
-	 * @return
-	 */
-	public List<Record> channelCodeList(Record record) {
-		return Db.find(Db.getSqlPara("check_batch.selectChannelCodeList", Kv.by("map", record.getColumns())));
-	}
+
 
 
 

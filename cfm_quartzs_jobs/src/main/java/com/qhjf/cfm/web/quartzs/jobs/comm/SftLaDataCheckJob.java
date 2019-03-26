@@ -267,11 +267,11 @@ public class SftLaDataCheckJob implements Job{
         return WebConstant.YesOrNo.NO;
     }
 
-    private boolean isChannelOnline(String channelCode){
+    /*private boolean isChannelOnline(String channelCode){
         Record record = Db.findFirst(Db.getSql("la_cfm.getChannelOnline"), channelCode);
         if(record == null){
             return false;
         }
         return true;
-    }
+    }*/
 }

@@ -639,15 +639,7 @@ public class CheckBatchForService {
 
 	}
 
-	/**
-	 * 获取渠道编码列表
-	 * 
-	 * @param record
-	 * @return
-	 */
-	public List<Record> channelCodeList(Record record) {
-		return Db.find(Db.getSqlPara("check_batch.selectChannelCodeList", Kv.by("map", record.getColumns())));
-	}
+
 
 	/**
 	 * 审批拒绝通过后,修改相关表状态 更新合法数据表状态为未组批.更新组批详情表的delete_num为此条数据id

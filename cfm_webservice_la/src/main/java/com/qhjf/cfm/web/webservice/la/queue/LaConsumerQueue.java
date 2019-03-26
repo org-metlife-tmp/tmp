@@ -2,6 +2,7 @@ package com.qhjf.cfm.web.webservice.la.queue;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.util.TypeUtils;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.IAtom;
 import com.jfinal.plugin.activerecord.Record;
@@ -120,12 +121,22 @@ public class LaConsumerQueue implements Runnable{
 	    				if(CommonService.updateRows("la_origin_pay_data", setRecord, whereRecord)==1){
 	    					Record record = Db.findFirst(Db.getSql("webservice_la_cfm.getStatusByPayCode"), payCode);
 	    					if(record.getInt("tmp_status") == WebConstant.SftInterfaceStatus.SFT_INTER_PROCESS_S.getKey()){
-								Record payLegalRecord = Db.findFirst(Db.getSql("webservice_la_cfm.getPayLegalByPayCode"), payCode);
+	    						//根据pay_mode判断是批量付还是柜面付
+								String payMode = TypeUtils.castToString(record.get("pay_mode"));
+								Record payLegalRecord = null;
+								if(payMode.equals(WebConstant.SftDoubtPayMode.PLSF.getKeyc())){
+									payLegalRecord = Db.findFirst(Db.getSql("webservice_la_cfm.getPayLegalByPayCode"), payCode);
+								}else if(payMode.equals(WebConstant.SftDoubtPayMode.WY.getKeyc())){
+									payLegalRecord = Db.findFirst(Db.getSql("webservice_la_cfm.getPayGmLegalByPayCode"), payCode);
+								}else{
+									track.info("LA中批量付paycode为【"+payCode+"】的数据支付方式错误");
+								}
 								try {
 									track.info("LA中批量付paycode为【"+payCode+"】的数据回调成功，生成凭证---begin");
 									CheckVoucherService.plfLaEbsBackCheckVoucher("LA",
 											payLegalRecord,
-											CommonService.getPeriodByCurrentDay(new Date())
+											CommonService.getPeriodByCurrentDay(new Date()),
+											payMode
 											);
 									track.info("LA中批量付paycode为【"+payCode+"】的数据回调成功，生成凭证---end");
 								} catch (BusinessException e) {

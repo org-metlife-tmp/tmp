@@ -633,21 +633,36 @@ public class CheckVoucherService {
      * @return
      * @throws BusinessException
      */
-    public static boolean plfLaEbsBackCheckVoucher(String source, Record payLegalRecord, Date periodDate) throws BusinessException {
+    public static boolean plfLaEbsBackCheckVoucher(String source, Record payLegalRecord, Date periodDate, String payMode) throws BusinessException {
 
         String seqnoOrstatmentCode = RedisSericalnoGenTool.genVoucherSeqNo();//生成十六进制序列号/凭证号
         List<Record> list = new ArrayList<>();
-        if("LA".equals(source)){
-            //凭证1
-            list.add(CommonService.plfLaBackCheckVoucher(payLegalRecord, 1, periodDate, seqnoOrstatmentCode));
-            //凭证2
-            list.add(CommonService.plfLaBackCheckVoucher(payLegalRecord, 2, periodDate, seqnoOrstatmentCode));
+        if(payMode.equals(WebConstant.SftDoubtPayMode.PLSF.getKeyc())){
+            if("LA".equals(source)){
+                //凭证1
+                list.add(CommonService.plfLaBackCheckVoucher(payLegalRecord, 1, periodDate, seqnoOrstatmentCode));
+                //凭证2
+                list.add(CommonService.plfLaBackCheckVoucher(payLegalRecord, 2, periodDate, seqnoOrstatmentCode));
 
-        }else if("EBS".equals(source)){
-            //凭证1
-            list.add(CommonService.plfLaBackCheckVoucher(payLegalRecord, 3, periodDate, seqnoOrstatmentCode));
-            //凭证2
-            list.add(CommonService.plfLaBackCheckVoucher(payLegalRecord, 4, periodDate, seqnoOrstatmentCode));
+            }else if("EBS".equals(source)){
+                //凭证1
+                list.add(CommonService.plfLaBackCheckVoucher(payLegalRecord, 3, periodDate, seqnoOrstatmentCode));
+                //凭证2
+                list.add(CommonService.plfLaBackCheckVoucher(payLegalRecord, 4, periodDate, seqnoOrstatmentCode));
+            }
+        }else if(payMode.equals(WebConstant.SftDoubtPayMode.WY.getKeyc())){
+            if("LA".equals(source)){
+                //凭证1
+                list.add(CommonService.gmfLaBackCheckVoucher(payLegalRecord, 1, periodDate, seqnoOrstatmentCode));
+                //凭证2
+                list.add(CommonService.gmfLaBackCheckVoucher(payLegalRecord, 2, periodDate, seqnoOrstatmentCode));
+
+            }else if("EBS".equals(source)){
+                //凭证1
+                list.add(CommonService.gmfLaBackCheckVoucher(payLegalRecord, 3, periodDate, seqnoOrstatmentCode));
+                //凭证2
+                list.add(CommonService.gmfLaBackCheckVoucher(payLegalRecord, 4, periodDate, seqnoOrstatmentCode));
+            }
         }
 
         if (!CommonService.saveCheckVoucher(list)) {

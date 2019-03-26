@@ -118,12 +118,11 @@ public class SftOptypeMgr extends AbstractOptypeMgr {
                 .registerValidate(new RequiredParamsValidate(new String[]{"page_size","page_num"})));	
         
         optypes.add(new Optype(Optype.Mode.NORMAL, "disksending_listexport")
-        		.registKeepParams(new String[]{"source_sys","master_batchno","start_date","end_date","interactive_mode","channel_id","channel_desc","status"})
-                .registerValidate(new RequiredParamsValidate(new String[]{"source_sys"})));
+        		.registKeepParams(new String[]{"source_sys","master_batchno","start_date","end_date","interactive_mode","channel_id","channel_desc","status"}));
 
         optypes.add(new Optype(Optype.Mode.NORMAL, "disksending_sendbank")
-                .registKeepParams(new String[]{"id"})
-                .registerValidate(new RequiredParamsValidate(new String[]{"id"})));
+                .registKeepParams(new String[]{"id","persist_version"})
+                .registerValidate(new RequiredParamsValidate(new String[]{"id","persist_version"})));
 
         optypes.add(new Optype(Optype.Mode.NORMAL, "disksending_detaillistexport")
         		.registKeepParams(new String[]{"child_batchno","type"})
@@ -376,8 +375,7 @@ public class SftOptypeMgr extends AbstractOptypeMgr {
         
         optypes.add(new Optype(Optype.Mode.NORMAL, "diskbacking_listexport")
                 .registKeepParams(new String[]{"start_date","end_date","master_batchno","source_sys",
-                		"channel_id","channel_desc","status"})
-                .registerValidate(new RequiredParamsValidate(new String[]{"source_sys"})));
+                		"channel_id","channel_desc","status"}));
         
         /** ============================ 回盘列表 end ============================ */
 
@@ -572,6 +570,75 @@ public class SftOptypeMgr extends AbstractOptypeMgr {
                 		, "org_id", "recv_cert_code", "recv_acc_name", "pay_mode", "status", "service_status", "biz_code"})
                 .registerValidate(new RequiredParamsValidate(new String[]{"source_sys", "page_size", "page_num"})));
        
+        //列表导出
+        optypes.add(new Optype(Optype.Mode.NORMAL, "paycounter_listexport")
+                .registKeepParams(new String[]{"source_sys",  "start_date", "end_date", "insure_bill_no", "preinsure_bill_no"
+                		, "org_id", "recv_cert_code", "recv_acc_name", "pay_mode", "status", "service_status", "biz_code"})
+                .registerValidate(new RequiredParamsValidate(new String[]{"source_sys"})));
+        
+        //补录保存按钮
+        optypes.add(new Optype(Optype.Mode.NORMAL, "paycounter_supplement")
+                .registKeepParams(new String[]{"source_sys", "pay_id", "recv_bank_name", "recv_cnaps_code", "recv_acc_no", "recv_acc_name", "payment_summary"
+                		, "files", "persist_version"})
+                .registerValidate(new RequiredParamsValidate(new String[]{"source_sys", "pay_id", "recv_bank_name", "recv_cnaps_code", "recv_acc_no", "persist_version"})));
+        //作废按钮
+        optypes.add(new Optype(Optype.Mode.NORMAL, "paycounter_revokeToLaOrEbs")
+                .registKeepParams(new String[]{"source_sys", "pay_id", "feed_back", "persist_version"})
+                .registerValidate(new RequiredParamsValidate(new String[]{"source_sys", "pay_id", "persist_version"})));
+        
+        //提交按钮
+        optypes.add(new Optype(Optype.Mode.NORMAL, "paycounter_confirm")
+                .registKeepParams(new String[]{"source_sys", "pay_id"})
+                .registerValidate(new RequiredParamsValidate(new String[]{"source_sys", "pay_id"})));
+        
+        optypes.add(new Optype(Optype.Mode.NORMAL, "paycounter_pendingtasks")
+                .registerValidate(new RequiredParamsValidate(new String[]{"biz_type"}))
+                .registKeepParams(new String[]{"page_size", "page_num", "biz_type"}));
+        
+        optypes.add(new Optype(Optype.Mode.NORMAL, "paycounter_agree")
+                .registKeepParams(new String[]{
+                        "wf_inst_id", "define_id", "id", "service_status", "persist_version", "assignee_memo"
+                })
+                .registerValidate(new RequiredParamsValidate(new String[]{
+                        "wf_inst_id", "define_id", "id", "service_status", "persist_version"
+                })));
+                                                    
+        optypes.add(new Optype(Optype.Mode.NORMAL, "paycounter_batchagree")
+                .registKeepParams(new String[]{
+                        "batch_list"
+                })
+                .registerValidate(new RequiredParamsValidate(new String[]{
+                        "batch_list"
+                })));
+        
+       //拒绝
+        optypes.add(new Optype(Optype.Mode.NORMAL, "paycounter_reject")
+                .registKeepParams(new String[]{
+                        "wf_inst_id", "define_id", "id", "service_status", "persist_version", "assignee_memo"
+                })
+                .registerValidate(new RequiredParamsValidate(new String[]{
+                        "wf_inst_id", "define_id", "id", "service_status", "persist_version", "assignee_memo"
+                })));
+        
+        //加签
+        optypes.add(new Optype(Optype.Mode.NORMAL, "paycounter_append")
+                .registKeepParams(new String[]{
+                        "wf_inst_id", "define_id", "id", "service_status", "persist_version",
+                        "shadow_user_id", "shadow_user_name", "assignee_memo"
+                })
+                .registerValidate(new RequiredParamsValidate(new String[]{
+                        "wf_inst_id", "define_id", "id", "service_status", "persist_version",
+                        "shadow_user_id", "shadow_user_name"
+                })));
+
+        //批量加签
+        optypes.add(new Optype(Optype.Mode.NORMAL, "paycounter_batchappend")
+                .registKeepParams(new String[]{
+                        "batch_list"
+                })
+                .registerValidate(new RequiredParamsValidate(new String[]{
+                        "batch_list"
+                })));
         
         
         /** ============================ 柜面付 付款工作台 end ============================ */

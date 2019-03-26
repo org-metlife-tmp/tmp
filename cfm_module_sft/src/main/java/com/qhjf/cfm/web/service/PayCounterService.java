@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -86,12 +87,41 @@ public class PayCounterService {
 		}
 		record.set("codes", codes);
 		List<Integer> status = record.get("status");
-		List<Integer> service_status = record.get("service_status");
-		if(null == status) {
+		List<Integer> service_status_origin = record.get("service_status");
+		if(null == status || status.size() == 0) {
 			record.remove("status");			
 		}
-		if(null == service_status) {
+		if(null == service_status_origin || service_status_origin.size() == 0) {
 			record.remove("service_status");			
+		}else {
+		List<Integer> service_status = new ArrayList<>();
+		for (int i = 0; i < service_status_origin.size(); i++) {
+			WebConstant.Sft_Billstatus.WJF.getKey();
+			switch (service_status_origin.get(i)) {
+			case 0 :  //WebConstant.Sft_Billstatus.WJF.getKey()
+				service_status.add(1);  //WebConstant.BillStatus.SUBMITED.getKey()
+				service_status.add(2);
+				break;
+			case 1 :
+				service_status.add(3);
+				break;
+			case 2 :
+				service_status.add(5);
+				break;
+			case 3 :
+				service_status.add(4);
+				break;
+			case 4 :
+				service_status.add(7);
+				break;
+			case 5 :
+				service_status.add(8);
+				break;
+			default:
+				break;
+			}
+		 }
+		record.set("service_status", service_status);
 		}
 		String pay_mode = record.getStr("pay_mode");
 		//柜面付  默认网银
@@ -229,7 +259,6 @@ public class PayCounterService {
 			throw new ReqDataException("撤回失败");
 		}
 		try {
-			//TODO
 			SftCallBack callback = new SftCallBack();
 			callback.callback(source_sys, origin_id);
 		} catch (Exception e) {
@@ -519,8 +548,8 @@ public class PayCounterService {
             public boolean run() throws SQLException {
                 boolean save = Db.save("single_pay_instr_queue", instr);
                 if (save) {
-                    return Db.update(Db.getSql("zjzf.updBillById"), instr.getStr("bank_serial_number"),
-                            instr.getInt("repeat_count"), WebConstant.BillStatus.PROCESSING.getKey(), instr.getStr("instruct_code"), id,
+                    return Db.update(Db.getSql("pay_counter.updBillById"), instr.getStr("bank_serial_number"),
+                            instr.getInt("repeat_count"), WebConstant.BillStatus.PROCESSING.getKey(), instr.getStr("instruct_code"), new Date() , id,
                             status, old_repeat_count) == 1;
                 }
                 return save;

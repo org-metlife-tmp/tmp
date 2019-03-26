@@ -134,7 +134,7 @@ select
 	tab.amount,
 	tab.recv_acc_name,
 	tab.recv_cert_type,
-	case  tab.insure_type when  '1'  then  tab.company_customer_no  else  tab.recv_cert_code end  recv_cert_code,
+	(case  tab.insure_type when  '1'  then  tab.company_customer_no  else  tab.recv_cert_code end ) recv_cert_code,
 	tab.recv_bank_name,
 	tab.recv_acc_no,	
 	tab.status ,
@@ -146,7 +146,6 @@ select
 	tab.id AS la_id,
 	tab.legal_id ,
 	tab.insure_type ,	
-	tab.branch_code ,
 	tab.preinsure_bill_no ,
 	tab.insure_bill_no ,
 	CASE tab.biz_type  WHEN 1 THEN '定期结算退费' WHEN 5 THEN '理赔给付' WHEN 10 THEN '保全退费' WHEN 12 THEN
@@ -194,7 +193,6 @@ SELECT
 	ebs.id AS la_id,
 	ebs.legal_id ,
 	ebs.insure_type ,	
-	ebs.branch_code ,
 	ebs.preinsure_bill_no ,
 	ebs.insure_bill_no ,
 	ebs.biz_type ,
@@ -207,9 +205,8 @@ SELECT
 	ebs.company_name ,
 	ebs.company_customer_no ,
 	ebs.biz_code ,
-	org.name,
-	biztype.type_name
-FROM
+	org.name
+	FROM
 	pay_legal_data AS pay,
 	ebs_pay_legal_data_ext AS  ebs ,
 	organization AS org 
@@ -233,7 +230,7 @@ WHERE
         #elseif("pay_mode".equals(x.key))
             ebs.pay_mode = #para(x.value)
         #elseif("recv_cert_code".equals(x.key))
-            (case ebs.insure_type  when  '1' then  ebs.company_customer_no  else  pay.recv_cert_code ) = #para(x.value)
+            (case ebs.insure_type  when  '1' then  ebs.company_customer_no  else  pay.recv_cert_code end) = #para(x.value)
         #elseif("biz_code".equals(x.key))
             ebs.biz_code  like convert(varchar(5),'%')+convert(varchar(255),#para(x.value))+convert(varchar(5),'%')
         #elseif("status".equals(x.key))
@@ -259,7 +256,7 @@ WHERE
          #elseif("org_id".equals(x.key))
            pay.org_id = #para(x.value)
          #else
-           pay.#(x.key) = #para(x.value)    
+           1 =1 
         #end
       #end
     #end
@@ -419,3 +416,33 @@ WHERE ozp.id = cwrei.bill_id
   #end
   order by ipd_id
 #end
+
+#sql("updateLaOriginData")
+   update
+   la_origin_pay_data  
+   set 
+   tmp_status = ? , 
+   tmp_err_message  = ?  
+   where
+   id  = ? 
+#end
+
+#sql("updateEbsOriginData")
+   update
+   ebs_origin_pay_data  
+   set 
+   tmp_status = ? , 
+   tmp_err_message  = ?,
+   paybankaccno = ?,
+   paybankcode = ? ,
+   paydate = ? ,
+   paytime = ? 
+   where
+     id  = ? 
+#end
+
+#sql("updBillById")
+   update gmf_bill set bank_serial_number = ?,repeat_count = ?,service_status = ? ,instruct_code = ?,actual_payment_date = ?
+   where id =  ? and service_status = ? and repeat_count = ?
+#end
+

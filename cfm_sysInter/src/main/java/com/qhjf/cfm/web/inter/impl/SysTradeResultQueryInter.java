@@ -2,6 +2,7 @@ package com.qhjf.cfm.web.inter.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.util.TypeUtils;
+import com.ibm.icu.text.SimpleDateFormat;
 import com.jfinal.ext.kit.DateKit;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.IAtom;
@@ -9,18 +10,23 @@ import com.jfinal.plugin.activerecord.Record;
 import com.qhjf.cfm.queue.ProductQueue;
 import com.qhjf.cfm.queue.QueueBean;
 import com.qhjf.cfm.utils.CommonService;
+import com.qhjf.cfm.utils.TableDataCacheUtil;
 import com.qhjf.cfm.web.channel.inter.api.IChannelInter;
 import com.qhjf.cfm.web.channel.inter.api.ISingleResultChannelInter;
 import com.qhjf.cfm.web.channel.manager.ChannelManager;
+import com.qhjf.cfm.web.config.GmfConfigAccnoSection;
 import com.qhjf.cfm.web.constant.WebConstant;
 import com.qhjf.cfm.web.inter.api.ISysAtomicInterface;
 import com.qhjf.cfm.web.inter.manager.SysInterManager;
 import com.qhjf.cfm.web.webservice.oa.callback.OaCallback;
+import com.qhjf.cfm.web.webservice.sft.SftCallBack;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
 import java.util.Date;
+import java.util.Map;
 
 public class SysTradeResultQueryInter implements ISysAtomicInterface {
 
@@ -81,7 +87,9 @@ public class SysTradeResultQueryInter implements ISysAtomicInterface {
             if ("oa_head_payment".equals(instrRecord.getStr("source_ref")) ||
                     "oa_branch_payment_item".equals(instrRecord.getStr("source_ref"))) {
                 oaCallBack(billRecord, instrRecord, status, parseRecord);
-            } else {
+            } else if("gmf_bill".equals(instrRecord.getStr("source_ref"))){
+            	gmfCallBack(billRecord, instrRecord, status, parseRecord);
+            }else {
 
                 boolean flag = Db.tx(new IAtom() {
                     @Override
@@ -126,8 +134,9 @@ public class SysTradeResultQueryInter implements ISysAtomicInterface {
         }
         log.debug("查询交易状态指令回写结束");
     }
+   
 
-    @Override
+	@Override
     public void setChannelInter(IChannelInter channelInter) {
         this.channelInter = (ISingleResultChannelInter) channelInter;
     }
@@ -270,6 +279,97 @@ public class SysTradeResultQueryInter implements ISysAtomicInterface {
 
     }
 
+    /**
+     * 柜面付更新表数据
+     * @param billRecord  单据数据
+     * @param instrRecord  指令数据
+     * @param status  银行返回状态
+     * @param parseRecord  返回报文
+     */
+    private void gmfCallBack(final Record billRecord, final Record instrRecord, final int status, final Record parseRecord) {
+    	log.info("=========定时任务查询柜面付指令结果");
+		boolean flag = Db.tx(new IAtom() {			
+			@Override
+			public boolean run() throws SQLException {
+				String source_ref = instrRecord.getStr("source_ref");
+                String statusField = SysInterManager.getStatusFiled(source_ref);
+                final String primaryKey = SysInterManager.getSourceRefPrimaryKey(source_ref);
+
+                int persist_version = TypeUtils.castToInt(billRecord.get("persist_version"));
+                Record bill_setRecord = new Record().set("persist_version", persist_version + 1);
+                Record bill_whereRecord = new Record().set(primaryKey, billRecord.get(primaryKey))
+                        .set("persist_version", persist_version);
+
+                Record instr_setRecord = new Record().set("status", status).set("init_resp_time", new Date()); //添加初始反馈时间;;
+                Record instr_whereRecord = new Record().set("id", instr.getLong("id"))
+                        .set("status", WebConstant.PayStatus.HANDLE.getKey());
+
+                Integer statusEnum = null;
+                int origin_status = 1;
+                if (status == WebConstant.PayStatus.SUCCESS.getKey()) {
+                    statusEnum = SysInterManager.getSuccessStatusEnum(source_ref);
+                    bill_setRecord.set(statusField, statusEnum);
+                    bill_setRecord.set("feed_back", "success");
+                } else {
+                    statusEnum = SysInterManager.getFailStatusEnum(source_ref);
+                    bill_setRecord.set(statusField, statusEnum);
+                    bill_setRecord.set("feed_back", parseRecord.getStr("message"));
+                    origin_status = 2 ;
+                }
+
+                if (CommonService.updateRows(source_ref, bill_setRecord, bill_whereRecord) == 1) { //修改单据状态
+                    if (CommonService.updateRows("single_pay_instr_queue", instr_setRecord, instr_whereRecord) == 1) {                        	                       	
+                    	if(0 == billRecord.getInt("source_sys")) {
+                    		log.info("====LA系统数据");
+                    		int update = Db.update(Db.getSql("pay_counter.updateLaOriginData"), origin_status ,bill_setRecord.get("feed_back") ,billRecord.get("origin_id"));
+                    		return  update > 0 ;
+                    	} else {
+                    		log.info("====EBS系统数据");
+                    		String pay_acc_no = GmfConfigAccnoSection.getInstance().getAccno();
+							log.info("===========配置文件获取到的账号======="+pay_acc_no);
+							
+							final Map<String, Object> aRowData = TableDataCacheUtil.getInstance().getARowData("account", "acc_no", pay_acc_no);
+
+							String bankcode = null;
+							if (null != aRowData) {
+								bankcode = TypeUtils.castToString(aRowData.get("bankcode"));
+							}else {
+								log.error("=====未查询到此账号");
+								bankcode = String.format("银行账号：(%s)未维护到account表", pay_acc_no);
+							}
+							SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+							SimpleDateFormat sdf1 = new SimpleDateFormat("HH:mm:ss");
+							String pay_date = sdf.format(new Date());
+							String pay_time = sdf1.format(new Date());
+							int update = Db.update(Db.getSql("pay_counter.updateEbsOriginData"), origin_status ,bill_setRecord.get("feed_back"), pay_acc_no , 
+									bankcode , pay_date ,pay_time , billRecord.get("origin_id")) ;
+                    		return update > 0 ;
+                    	}
+                    };
+                    log.error("=======更新指令表失败");
+                    return false ;
+                } else {
+                    log.error("数据过期！");
+                    return false;
+                }			
+			}
+		});
+		if (!flag) {
+            log.error("回写更新数据库失败！");
+        }
+        //将回调写在事物外,回调失败,不影响表的回写
+        Record originRecord = null ;
+        if(0 == billRecord.getInt("source_sys")) {
+			originRecord = Db.findById("la_origin_pay_data", "id", billRecord.getInt("origin_id"));                        			
+        }else {
+			originRecord = Db.findById("ebs_origin_pay_data", "id", billRecord.getInt("origin_id"));                        			
+        }
+        SftCallBack callback = new SftCallBack();
+		callback.callback(billRecord.getInt("source_sys"), originRecord);
+	}
+    
+    
+    
     private void sendBanchPayment(final Record record)  {
         final Record branchRecord = Db.findFirst(Db.getSql("branch_org_oa.findDetailByItem"), 2, record.get("base_id"));
         final int oldRepearCount = branchRecord.getInt("repeat_count");

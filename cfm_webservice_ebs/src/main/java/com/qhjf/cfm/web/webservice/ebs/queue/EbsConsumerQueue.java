@@ -2,6 +2,7 @@ package com.qhjf.cfm.web.webservice.ebs.queue;
 
 import cn.metlife.ebs_sit.services.FundingPlatformPayBack.FundingPlatformPayBackProxy;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.util.TypeUtils;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.IAtom;
 import com.jfinal.plugin.activerecord.Record;
@@ -12,6 +13,7 @@ import com.qhjf.cfm.utils.XmlTool;
 import com.qhjf.cfm.web.config.DDHEBSConfigSection;
 import com.qhjf.cfm.web.config.GlobalConfigSection;
 import com.qhjf.cfm.web.config.IConfigSectionType;
+import com.qhjf.cfm.web.constant.WebConstant;
 import com.qhjf.cfm.web.constant.WebConstant.SftCallbackStatus;
 import com.qhjf.cfm.web.constant.WebConstant.SftInterfaceStatus;
 import com.qhjf.cfm.web.service.CheckVoucherService;
@@ -87,13 +89,23 @@ public class EbsConsumerQueue implements Runnable{
 	    					Record record = Db.findFirst(Db.getSql("webservice_ebs_cfm.getStatusByPayCode"), payCode);
 	    					if(record.getInt("tmp_status") == SftInterfaceStatus.SFT_INTER_PROCESS_S.getKey()){
 	    						//记账
-								Record payLegalRecord = Db.findFirst(Db.getSql("webservice_ebs_cfm.getPayLegalByPayCode"), payCode);
+								//根据pay_mode判断是批量付还是柜面付
+								String payMode = TypeUtils.castToString(record.get("pay_mode"));
+								Record payLegalRecord = null;
+								if(payMode.equals(WebConstant.SftDoubtPayMode.PLSF.getKeyc())){
+									payLegalRecord = Db.findFirst(Db.getSql("webservice_ebs_cfm.getPayLegalByPayCode"), payCode);
+								}else if(payMode.equals(WebConstant.SftDoubtPayMode.WY.getKeyc())){
+									payLegalRecord = Db.findFirst(Db.getSql("webservice_ebs_cfm.getPayGmLegalByPayCode"), payCode);
+								}else{
+									log.info("EBS中批量付paycode为【"+payCode+"】的数据支付方式错误");
+								}
 								try {
 									//生成凭证信息
 									log.info("EBS中批量付paycode为【"+payCode+"】的数据回调成功，生成凭证---begin");
 									CheckVoucherService.plfLaEbsBackCheckVoucher("EBS",
 											payLegalRecord,
-											CommonService.getPeriodByCurrentDay(new Date())
+											CommonService.getPeriodByCurrentDay(new Date()),
+											payMode
 									);
 									log.info("EBS中批量付paycode为【"+payCode+"】的数据回调成功，生成凭证---end");
 								} catch (BusinessException e) {

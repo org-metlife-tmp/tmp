@@ -6,6 +6,8 @@ import com.jfinal.kit.Kv;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
 import com.jfinal.plugin.activerecord.SqlPara;
+import com.qhjf.cfm.exceptions.BusinessException;
+import com.qhjf.cfm.utils.SymmetricEncryptUtil;
 import com.qhjf.cfm.web.constant.WebConstant;
 import com.qhjf.cfm.web.plugins.excelexp.AbstractWorkBook;
 import com.qhjf.cfm.web.plugins.excelexp.POIUtil;
@@ -24,8 +26,8 @@ public class DoubtfulWorkBook extends AbstractWorkBook {
     public DoubtfulWorkBook() {
         this.optype = "sftdoubtful_listexport";
         this.titleNames = new String[]{
-                "pay_date", "pay_code", "pay_mode", "bank_key", "bank_key_desc",
-                "biz_type", "tmp_org_id", "preinsure_bill_no", "insure_bill_no", "amount",
+                "pay_date", "pay_code", "pay_mode", "bank_key", "bankkey_desc",
+                "biz_type", "org_name", "preinsure_bill_no", "insure_bill_no", "amount",
                 "recv_acc_name", "recv_cert_code", "recv_acc_no", "status", "op_user_name", "op_date", "op_reason"
 
         };
@@ -69,6 +71,12 @@ public class DoubtfulWorkBook extends AbstractWorkBook {
             int status = TypeUtils.castToInt(rd.get("status"));
             rd.set("status", status==0? "未处理" : "已处理");
 
+        }
+        try{
+            SymmetricEncryptUtil util = SymmetricEncryptUtil.getInstance();
+            util.recvmask(recordList);
+        }catch (Exception e){
+            e.printStackTrace();
         }
         return POIUtil.createExcel(recordList, this);
     }

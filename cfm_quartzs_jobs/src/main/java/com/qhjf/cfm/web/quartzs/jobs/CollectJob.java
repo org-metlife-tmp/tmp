@@ -20,6 +20,10 @@ import java.util.List;
 import java.util.Map;
 
 public class CollectJob extends PubJob{
+
+	enum ProcessStatus{
+		SUCCESS,FAILED,CANCEL;
+	}
 	
 	private static Logger log = LoggerFactory.getLogger(CollectJob.class);
 	private Record topic;
@@ -85,7 +89,8 @@ public class CollectJob extends PubJob{
 	@Override
 	public Boolean beforeProcess(Record record){
 		
-		Boolean flag = true ;
+		//Boolean flag = true ;
+		ProcessStatus flag = ProcessStatus.SUCCESS;
 
 		String bankSerialNumber = null;
 		int repeatCount = 0;
@@ -105,7 +110,7 @@ public class CollectJob extends PubJob{
                  errMsg = e.getMessage();
              }
             feedBack = errMsg;
-			flag = false ;
+			flag = ProcessStatus.FAILED ;
 		}
 		Integer collect_type = TypeUtils.castToInt(topic.get("collect_type"));
 		log.info("归集类型====collect_type="+collect_type);
@@ -158,11 +163,11 @@ public class CollectJob extends PubJob{
 				if(amount.compareTo(topic.getBigDecimal("collect_amount")) < 0){
 					log.error("=======账号=="+record.getStr("child_acc_no")+"余额小于要求的留存余额");
 					feedBack = feedBack == null ? "付款账户余额小于留存余额" : feedBack+",付款账户余额小于留存余额" ;
-					flag = false ;
+					flag = ProcessStatus.CANCEL ;
 				}else if(amount.compareTo(topic.getBigDecimal("collect_amount")) == 0){
 					log.error("=======账号=="+record.getStr("child_acc_no")+"余额等于留存余额，不进行此次归集");
 					feedBack = feedBack == null ? "付款账户余额等于留存余额，不进行此次归集" : feedBack+",付款账户余额等于留存余额，不进行此次归集" ;
-					flag = false ;
+					flag = ProcessStatus.CANCEL ;
 				}else{
 					BigDecimal collectAmount = amount.subtract(topic.getBigDecimal("collect_amount"));
 					instruction.set("collect_amount", collectAmount);
@@ -170,7 +175,7 @@ public class CollectJob extends PubJob{
 			}else{
 				log.error("=========未在acc_cur_balance表内查询到余额信息,账号=="+record.getStr("child_acc_no"));
 				feedBack = feedBack == null ? "暂未查询到付款账户余额" : feedBack+",暂未查询到付款账户余额" ;
-				flag = false ;
+				flag = ProcessStatus.CANCEL ;
 			}
 		}else if(3 == collect_type){
 			log.info("=======全额归集");
@@ -184,18 +189,25 @@ public class CollectJob extends PubJob{
 			}else{
 				log.error("=========未在acc_cur_balance表内查询到余额信息,账号=="+record.getStr("child_acc_no"));
 				feedBack = feedBack == null ? "暂未查询到付款账户余额" : feedBack+",暂未查询到付款账户余额" ;
-				flag = false ;
+				flag = ProcessStatus.CANCEL ;
 			}
 		}else {
 			log.error("===========数据失效,不存在此归集类型");
 			feedBack = feedBack == null ? "数据失效,归集类型有误" : feedBack+",数据失效,归集类型有误" ;
-			flag = false ;
+			flag = ProcessStatus.CANCEL ;
 		}
-        if(!flag) {
-        	instruction.set("feed_back", feedBack);
-        	instruction.set("collect_status", WebConstant.CollOrPoolRunStatus.FAILED.getKey());
-        	instruction.set("collect_amount", new BigDecimal("0.00"));
-        }
+		switch (flag){
+			case CANCEL:
+				instruction.set("feed_back", feedBack);
+				instruction.set("collect_status", WebConstant.CollOrPoolRunStatus.CANCEL.getKey());
+				instruction.set("collect_amount", new BigDecimal("0.00"));
+				break;
+			case FAILED:
+				instruction.set("feed_back", feedBack);
+				instruction.set("collect_status", WebConstant.CollOrPoolRunStatus.FAILED.getKey());
+				instruction.set("collect_amount", new BigDecimal("0.00"));
+				break;
+		}
 		Db.save("collect_execute_instruction", instruction);
 		record.setColumns(instruction);
 		record.set("bank_cnaps_code", instruction.getStr("pay_bank_cnaps"));
@@ -204,12 +216,12 @@ public class CollectJob extends PubJob{
 		record.set("payment_amount", instruction.getBigDecimal("collect_amount"));
 		record.set("process_bank_type", record.getStr("child_acc_bank_cnaps_code").subSequence(0, 3));
 		record.set("payment_summary", topic.getStr("summary"));	
-		return flag ;
+		return ProcessStatus.SUCCESS.equals(flag) ;
 	}
 	
 	@Override
 	public  Map<String,Object> getParams(IChannelInter inter,Record instrRecord,Record sourceRecord){
 		return inter.genParamsMap(instrRecord);
 	}
-	
+
 }

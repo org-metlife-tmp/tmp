@@ -42,7 +42,6 @@ public class DiskSendingWorkBook extends AbstractWorkBook {
     @Override
     public Workbook getWorkbook() {
     	Record record = getRecord();
-    	long source_sys = TypeUtils.castToLong(record.get("source_sys"));
         SqlPara sqlPara = null;
         Long org_id = getUodpInfo().getOrg_id();
 		Record findById = Db.findById("organization", "org_id", org_id);
@@ -67,10 +66,12 @@ public class DiskSendingWorkBook extends AbstractWorkBook {
     	if(status == null || status.size() == 0){
     		record.remove("status");
     	}
-        if(WebConstant.SftOsSource.LA.getKey() == source_sys){
+    	if(StringUtils.isBlank(record.getStr("source_sys"))) {
+            this.fileName = "Send_"+FH+"_"+ RedisSericalnoGenTool.genShortSerial() +"_"+DateKit.toStr(new Date(), "YYYYMMdd")+".xls";
+    	}else if(WebConstant.SftOsSource.LA.getKey() == TypeUtils.castToLong(record.get("source_sys"))){
             //LA
             this.fileName = "LA_Send_"+FH+"_"+ RedisSericalnoGenTool.genShortSerial() +"_"+DateKit.toStr(new Date(), "YYYYMMdd")+".xls";
-        }else if(WebConstant.SftOsSource.EBS.getKey() == source_sys){
+        }else if(WebConstant.SftOsSource.EBS.getKey() == TypeUtils.castToLong(record.get("source_sys"))){
             //EBS
             this.fileName = "EBS_Send_"+FH+"_"+ RedisSericalnoGenTool.genShortSerial() +"_"+DateKit.toStr(new Date(), "YYYYMMdd")+".xls";
         }

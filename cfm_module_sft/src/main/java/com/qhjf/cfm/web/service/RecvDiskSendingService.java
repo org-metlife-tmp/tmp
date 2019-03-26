@@ -70,11 +70,37 @@ public class RecvDiskSendingService {
 	 */
 	public void sendbank(Record record) throws ReqDataException {
 		//1. 根据前端传入 子批次id查询子批次
+		final Integer persistVersion = TypeUtils.castToInt(record.get("persist_version"));
 		final long id = TypeUtils.castToLong(record.get("id"));
-		final Record cbRecord = Db.findById("recv_batch_total", "id", id);
-		if(cbRecord == null){
-			throw new ReqDataException("未找到相应的子批次！");
+		//防止重复发送
+		final Record[] total = new Record[1];
+		final String errMst[] = new String[1];
+		boolean tx = Db.tx(new IAtom() {
+			@Override
+			public boolean run() throws SQLException {
+				total[0] = Db.findFirst("select * from recv_batch_total where id=? and persist_version=?", id, persistVersion);
+				if (total[0] == null) {
+					errMst[0] = "未找到相应的子批次！";
+					return false;
+				}
+				
+				int update = Db.update("update recv_batch_total set persist_version = ? where id=? and persist_version=?", (persistVersion+1), id, persistVersion);
+				if (update != 1) {
+					errMst[0] = "升级相应的子批次版本号失败！";
+					return false;
+				}
+				
+				Record t = total[0];
+				t.set("persist_version", persistVersion + 1);
+				return true;
+			}
+		});
+		if (!tx) {
+			throw new ReqDataException(errMst[0]);
 		}
+		
+		final Record cbRecord = total[0];
+		
 		//2. 根据子批次记录中的主批次号查询 主批次
 		Record mbRecord = Db.findFirst(Db.getSql("recv_disk_downloading.findMasterByBatchNo"),
 				TypeUtils.castToString(cbRecord.get("master_batchno")));

@@ -5,7 +5,7 @@
 #end
 
 #sql("getStatusByPayCode")
-  select tmp_status from ebs_origin_pay_data
+  select tmp_status,pay_mode from ebs_origin_pay_data
   where pay_code = ?
 #end
 
@@ -20,6 +20,20 @@
   WHERE
     legal.id = detail.legal_id
     AND detail.base_id = total.id
+    AND legal.source_sys = 1
+    AND legal.pay_code = ?
+#end
+
+#sql("getPayGmLegalByPayCode")
+  SELECT
+    legal.*,
+    gmf.pay_account_no,
+    gmf.back_on
+  FROM
+    pay_legal_data legal,
+    gmf_bill gmf
+  WHERE
+    legal.id = gmf.legal_id
     AND legal.source_sys = 1
     AND legal.pay_code = ?
 #end

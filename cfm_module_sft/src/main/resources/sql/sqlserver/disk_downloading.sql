@@ -130,7 +130,7 @@
       pay_master.create_on ,
       pay_master.update_by ,
       pay_master.update_on ,
-      pay_master.persist_version ,
+      pay.persist_version ,
       pay_master.service_status ,
       pay.id AS pay_id ,
       pay.child_batchno ,
