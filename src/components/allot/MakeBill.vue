@@ -560,7 +560,8 @@
             getPayList: function (value) {
                 this.payLoading = true;
                 var billData = this.billData;
-                var interactive_mode = billData.pay_mode !='1' ? '2' : '1';
+                //var interactive_mode = billData.pay_mode !='1' ? '2' : '1';
+		var interactive_mode = billData.pay_mode !=8  ? (billData.pay_mode == "1" ? "1" : "2") : ""
                 this.$axios({
                     url:  this.queryUrl + "normalProcess",
                     method: "post",
