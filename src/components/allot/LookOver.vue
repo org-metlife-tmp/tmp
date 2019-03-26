@@ -11,7 +11,7 @@
             top: -56px;
             left: -21px;
         }
-        
+
         .table-content{
             height:273px;
         }
@@ -150,7 +150,7 @@
         <!--顶部按钮-->
         <div class="button-list-left">
             <!-- <el-select v-model="searchData.payment_type" placeholder="请选择调拨类型"
-                       filterable clearable size="mini" 
+                       filterable clearable size="mini"
                        @change="queryByPayType">
                 <el-option v-for="(name,k) in paymentTypeList"
                            :key="k"
@@ -354,7 +354,6 @@
             this.$emit("transmitTitle", "内部调拨-查看");
             this.$emit("getCommTable", this.routerMessage);
 
-            this.$common.transitSeparator();
             //业务类型
             this.$axios({
                 url: this.queryUrl + "commProcess",

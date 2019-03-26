@@ -140,6 +140,8 @@ import GatherCheckBatch from '@/components/batchGather/GatherCheckBatch'
 import GatherDiskbacking from '@/components/batchGather/GatherDiskbacking'
 import GatherDiskSending from '@/components/batchGather/GatherDiskSending'
 import GatherSettleAccounts from '@/components/batchGather/GatherSettleAccounts'
+//柜面付款
+import CounterSettleAccount from '@/components/counterPayment/CounterSettleAccount'
 
 
 Vue.use(Router)
@@ -268,6 +270,8 @@ const router = new Router({
                         {path: '/batch-gather/gather-diskbacking', name: 'GatherDiskbacking', component: GatherDiskbacking, meta: {requireAuth: true}},
                         {path: '/batch-gather/gather-disk-sending', name: 'GatherDiskSending', component: GatherDiskSending, meta: {requireAuth: true}},
                         {path: '/batch-gather/gather-settle-accounts', name: 'GatherSettleAccounts', component: GatherSettleAccounts, meta: {requireAuth: true}},
+                        //柜面付款
+                        {path: '/counter-payment/counter-settle-account', name: 'CounterSettleAccount', component: CounterSettleAccount, meta: {requireAuth: true}},
                     ]
                 },
                 //基础样式三（tab页）

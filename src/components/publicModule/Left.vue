@@ -127,6 +127,10 @@
             .icon-plfk{
                 background-position: -512px -252px;
             }
+
+            .icon-plsk{
+                background-position: -452px -252px;
+            }
             /*首页背景图定位结束*/
         }
 
@@ -200,6 +204,9 @@
             }
             .icon-plfk{
                 background-position: -482px -252px;
+            }
+            .icon-plsk{
+                background-position: -422px -252px;
             }
 
             .el-submenu__title p {
@@ -293,6 +300,9 @@
 
             .el-submenu__title:hover .icon-plfk{
                 background-position: -512px -252px;
+            }
+            .el-submenu__title:hover .icon-plsk{
+                background-position: -452px -252px;
             }
 
             .el-submenu__title:hover p {
@@ -618,7 +628,7 @@
             </el-submenu>
             <el-submenu index="21" v-if="menuList.BATCHRECV">
                 <template slot="title" height="200px">
-                    <i class="icon-plfk"></i>
+                    <i class="icon-plsk"></i>
                     <p class="mg-four">批量收款</p>
                 </template>
                 <el-menu-item-group>
@@ -628,6 +638,15 @@
                     <el-menu-item index="/batch-gather/gather-diskbacking" v-if="menuList.RecvBatchResp">盘片回盘</el-menu-item>
                     <el-menu-item index="/batch-gather/gather-settle-accounts" v-if="menuList.RecvBatchCheck">结算对账</el-menu-item>
                     <el-menu-item index="/batch-gather/gather-abnormal" v-if="menuList.RecvBatchDoExcp">异常处理</el-menu-item>
+                </el-menu-item-group>
+            </el-submenu>
+            <el-submenu index="22">
+                <template slot="title" height="200px">
+                    <i class="icon-gmfk"></i>
+                    <p class="mg-four">柜面付款</p>
+                </template>
+                <el-menu-item-group>
+                    <el-menu-item index="/counter-payment/counter-settle-account">结算对账</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
         </el-menu>
