@@ -212,7 +212,8 @@
                           height="100%" border size="mini">
                     <el-table-column prop="check_date" label="操作日期" :show-overflow-tooltip="true"></el-table-column>
                     <el-table-column prop="org_name" label="机构名称" :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="pay_mode" label="支付方式" :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column prop="pay_mode" label="支付方式" :show-overflow-tooltip="true"
+                                     :formatter="transitMode"></el-table-column>
                     <el-table-column prop="biz_code" label="业务号码" :show-overflow-tooltip="true"></el-table-column>
                     <el-table-column prop="preinsure_bill_no" label="投保单号" :show-overflow-tooltip="true"></el-table-column>
                     <el-table-column prop="insure_bill_no" label="保单号" :show-overflow-tooltip="true"></el-table-column>
@@ -228,7 +229,8 @@
                     <el-table-column prop="recv_bank_name" label="开户行" :show-overflow-tooltip="true"></el-table-column>
                     <el-table-column prop="pay_account_no" label="付款账号" :show-overflow-tooltip="true"></el-table-column>
                     <el-table-column prop="pay_bank_name" label="付款银行":show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="is_checked" label="状态" :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column prop="is_checked" label="状态" :show-overflow-tooltip="true"
+                                     :formatter="transitStatus"></el-table-column>
                     <el-table-column prop="check_service_number" label="对账流水号" width="100px"
                                      :show-overflow-tooltip="true"></el-table-column>
                     <el-table-column prop="check_user_name" label="操作人" :show-overflow-tooltip="true"></el-table-column>
@@ -374,6 +376,10 @@
             if (constants.SftOsSource) {
                 this.sourceList = constants.SftOsSource;
             }
+            //支付方式
+            if(constants.SftDoubtPayMode){
+                this.paymodeList = constants.SftDoubtPayMode;
+            }
         },
         props: ["tableData"],
         data: function () {
@@ -417,6 +423,7 @@
                 pagCurrent: 1,
                 selfMotion: true, //自动匹配
                 sourceList: {}, //常量数据
+                paymodeList: {},
                 totalData: { //汇总数据
                     total_amount: ""
                 },
@@ -490,7 +497,7 @@
                     url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
-                        optype: "sftpaycountercheck_tradingListAuto",
+                        optype: "sftpaycountercheck_tradingListNoAuto",
                         params: params
                     }
                 }).then((result) => {
@@ -632,6 +639,10 @@
             transitStatus: function (row, column, cellValue, index) {
                 return cellValue == 0 ? "未核对" : "已核对";
             },
+            //展示格式转换-支付方式
+            transitMode: function (row, column, cellValue, index) {
+                return this.paymodeList[cellValue];
+            },
 
 
             //获取通道编码
@@ -731,16 +742,6 @@
                         break;
                     }
                 }
-            },
-            //展示格式转换-结算模式
-            transtMode: function (row, column, cellValue, index) {
-                var constants = JSON.parse(window.sessionStorage.getItem("constants"));
-                return constants.SftNetMode[cellValue];
-            },
-            //展示格式转换-状态(上)
-            transtSerStatus: function (row, column, cellValue, index) {
-                var constants = JSON.parse(window.sessionStorage.getItem("constants"));
-                return constants.SftCheckBatchStatus[cellValue];
             },
         },
         watch: {
