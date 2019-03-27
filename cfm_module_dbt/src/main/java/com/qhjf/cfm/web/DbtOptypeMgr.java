@@ -73,7 +73,6 @@ public class DbtOptypeMgr extends AbstractOptypeMgr {
 
         //付款方账户列表
         optypes.add(new Optype(Optype.Mode.NORMAL, "dbt_payacclist")
-                .registerValidate(new RequiredParamsValidate(new String[]{"interactive_mode"}))
                 .registKeepParams(new String[]{"query_key", "exclude_ids", "interactive_mode", "page_size", "page_num"}));
 
         //收款方账户列表

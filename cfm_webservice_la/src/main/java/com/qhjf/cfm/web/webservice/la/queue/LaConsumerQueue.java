@@ -135,7 +135,6 @@ public class LaConsumerQueue implements Runnable{
 									track.info("LA中批量付paycode为【"+payCode+"】的数据回调成功，生成凭证---begin");
 									CheckVoucherService.plfLaEbsBackCheckVoucher("LA",
 											payLegalRecord,
-											CommonService.getPeriodByCurrentDay(new Date()),
 											payMode
 											);
 									track.info("LA中批量付paycode为【"+payCode+"】的数据回调成功，生成凭证---end");

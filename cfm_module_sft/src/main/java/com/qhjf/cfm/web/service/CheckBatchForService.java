@@ -476,7 +476,7 @@ public class CheckBatchForService {
 						type = WebConstant.MajorBizType.ZFT;
 						serviceSerialNumber = BizSerialnoGenTool.getInstance().getSerial(WebConstant.MajorBizType.ZFT);
 						insertRecord.set("biz_id", "801dbfb1bfb34817b9e61ce29d86b47b")
-						            .set("biz_name", "对外支付")
+						            .set("biz_name", "第三方账户充值")
 								    .set("service_serial_number", serviceSerialNumber)
 									.set("channel_id", main_record.getInt("channel_id"))
 									.set("channel_code", channel.getStr("channel_code"))
@@ -495,7 +495,7 @@ public class CheckBatchForService {
 						// 获取配置的调拨付款方账号
 						serviceSerialNumber = BizSerialnoGenTool.getInstance().getSerial(WebConstant.MajorBizType.INNERDB);
 						insertRecord.set("biz_id", "11e1d8f2dbe14c41a241e0a430743c6b")
-						            .set("biz_name", "第三方资金调拨")
+						            .set("biz_name", "保单支出户充值")
 								    .set("service_serial_number", serviceSerialNumber);
 						//封装 recv_account_id  		
 						List<Record> find = Db.find(Db.getSql("acc.findAccountByAccNo"),main_record.get("pay_acc_no"));

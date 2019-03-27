@@ -210,8 +210,8 @@ public class PayCounterService {
 		if(null == user_record){
 			throw new ReqDataException("当前登录人未在用户信息表内配置");
 		}
-		Long pay_id = record.getLong("pay_id");
-		final Integer source_sys = record.getInt("source_sys");
+		Long pay_id = TypeUtils.castToLong(record.get("pay_id"));
+		final Integer source_sys = TypeUtils.castToInt(record.get("source_sys")); 
 		// 更新 status 为 已拒绝 . 
 		Record pay_legal_data = Db.findById("pay_legal_data", "id",pay_id);
 		if(WebConstant.SftLegalData.REVOKE.getKey() == pay_legal_data.getInt("status")

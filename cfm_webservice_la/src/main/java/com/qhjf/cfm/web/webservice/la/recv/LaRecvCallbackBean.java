@@ -123,7 +123,7 @@ public class LaRecvCallbackBean {
 		this.sacstype = origin.getStr("sacstyp");
 		//下次扣款时间：当天日期
 		Date date = new Date();
-		this.nextdate = new SimpleDateFormat("ddMMyyyy").format(date);
+		this.nextdate = new SimpleDateFormat("yyyyMMdd").format(date);
 		
 		Integer tmpStatus = origin.getInt("tmp_status");
 		if (tmpStatus == null) {

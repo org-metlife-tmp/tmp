@@ -104,7 +104,6 @@ public class EbsConsumerQueue implements Runnable{
 									log.info("EBS中批量付paycode为【"+payCode+"】的数据回调成功，生成凭证---begin");
 									CheckVoucherService.plfLaEbsBackCheckVoucher("EBS",
 											payLegalRecord,
-											CommonService.getPeriodByCurrentDay(new Date()),
 											payMode
 									);
 									log.info("EBS中批量付paycode为【"+payCode+"】的数据回调成功，生成凭证---end");

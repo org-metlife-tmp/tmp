@@ -151,8 +151,7 @@ public class LaRecvConsumerQueue implements Runnable{
 								try {
 									log.info("LA中批量收paycode为【"+payCode+"】的数据回调成功，生成凭证---begin");
 									CheckVoucherService.plsLaBackCheckVoucher("LA",
-											payLegalRecord,
-											CommonService.getPeriodByCurrentDay(new Date())
+											payLegalRecord
 											);
 									log.info("LA中批量收paycode为【"+payCode+"】的数据回调成功，生成凭证---end");
 								} catch (BusinessException e) {
