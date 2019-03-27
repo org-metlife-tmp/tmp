@@ -382,9 +382,13 @@
             </div>
             <ul class="dialog-talbe">
                 <li class="table-li-title">申请日期</li>
-                <li class="table-li-content table-two-row" v-text="dialogData.apply_on"></li>
+                <li class="table-li-content" v-text="dialogData.apply_on"></li>
+                <li class="table-li-title">业务类型</li>
+                <li class="table-li-content" v-text="dialogData.biz_name"></li>
+                <li class="table-li-title">付款方式</li>
+                <li class="table-li-content" v-text="dialogData.pay_mode"></li>
                 <li class="table-li-title">付款账号</li>
-                <li class="table-li-content table-two-row" v-text="dialogData.pay_account_no"></li>
+                <li class="table-li-content" v-text="dialogData.pay_account_no"></li>
 
                 <li class="table-li-title">收款人户名</li>
                 <li class="table-li-content" v-text="dialogData.recv_account_name"></li>
@@ -948,6 +952,7 @@
                     }
                 }
                 this.dialogData['apply_on'] = row.apply_on.split(' ')[0];
+                this.dialogData.pay_mode = JSON.parse(window.sessionStorage.getItem("constants")).PayMode[row.pay_mode];
                 this.dialogVisible = true;
 
                 //附件数据
