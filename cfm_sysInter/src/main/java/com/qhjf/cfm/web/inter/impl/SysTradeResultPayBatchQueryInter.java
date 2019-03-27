@@ -127,6 +127,7 @@ public class SysTradeResultPayBatchQueryInter implements ISysAtomicInterface {
 
                         if (status == WebConstant.PayStatus.SUCCESS.getKey()) {
                             bill_setRecord.set(SysInterManager.getStatusFiled(billDetailTable) , SysInterManager.getSuccessStatusEnum(billDetailTable))
+				             			  .set("bank_err_code", "成功")
                             			  .set("bank_err_msg", TypeUtils.castToString(bankData.get("bank_err_msg")));
 
                             instr_setRecord.set("status", SysInterManager.getSuccessStatusEnum(INSTR_DETAIL))

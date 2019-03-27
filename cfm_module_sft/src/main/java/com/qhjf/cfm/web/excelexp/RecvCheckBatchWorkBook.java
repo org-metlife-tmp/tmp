@@ -1,5 +1,6 @@
 package com.qhjf.cfm.web.excelexp;
 
+import com.alibaba.fastjson.util.TypeUtils;
 import com.jfinal.ext.kit.DateKit;
 import com.jfinal.kit.Kv;
 import com.jfinal.plugin.activerecord.Db;
@@ -78,6 +79,18 @@ public class RecvCheckBatchWorkBook extends AbstractWorkBook {
     	if(status == null || status.size() == 0){
     		record.remove("status");
     	}
+    	// 首期  :  biz_Type : IP  ,  续期 : biz_Type : MP ,PP ,RP ,TP
+    			if(StringUtils.isNotBlank(TypeUtils.castToString(record.get("biz_type")))) {
+    				if(WebConstant.Sft_BizType.SQ.getKey() ==  TypeUtils.castToInt(record.get("biz_type"))) {
+    					record.set("biz_type", new String[]{
+    							"IP"
+    					});
+    				}else {
+    					record.set("biz_type", new String[]{
+    							"MP" ,"PP" ,"RP" ,"TP"
+    					});
+    				}
+    			}
         //LA
         this.fileName = "LA_Package_"+FH+"_"+ RedisSericalnoGenTool.genShortSerial() +"_"+DateKit.toStr(new Date(), "YYYYMMdd")+".xls";
 		SqlPara sqlPara = Db.getSqlPara("recv_check_batch.recvcheckBatchLAlist", Kv.by("map", record.getColumns()));

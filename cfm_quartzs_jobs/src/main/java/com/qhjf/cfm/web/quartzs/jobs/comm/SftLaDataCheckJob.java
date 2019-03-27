@@ -239,7 +239,16 @@ public class SftLaDataCheckJob implements Job{
                 + "_" +originData.getStr("amount"));
 
         checkDoubtful.set("identification", identification);
-        checkDoubtful.set("is_doubtful", 0);
+        //判断可疑表中是否存在可疑数据
+        List<Record> checkRecordList = Db.find(Db.getSql("la_cfm.getpaycheck"),originData.getStr("insure_bill_no"),originData.getStr("recv_acc_name"),
+                originData.getStr("amount"));
+        if(checkRecordList!=null && checkRecordList.size()!=0){
+            checkDoubtful.set("is_doubtful", 1);
+            Db.save("la_check_doubtful", checkDoubtful);
+            return WebConstant.YesOrNo.YES;
+        }else{
+            checkDoubtful.set("is_doubtful", 0);
+        }
 
         Db.save("la_check_doubtful", checkDoubtful);
 

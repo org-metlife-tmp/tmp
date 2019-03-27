@@ -108,4 +108,15 @@
   delete from ebs_pay_legal_data_ext where legal_id=?
 #end
 
+#sql("getpaycheck")
+  SELECT
+	*
+FROM
+	ebs_check_doubtful
+WHERE is_doubtful = 1
+	AND insure_bill_no =?
+	AND recv_acc_name =?
+	AND amount =?
+#end
+
 #end

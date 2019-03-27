@@ -8,7 +8,6 @@ import com.jfinal.plugin.activerecord.Record;
 import com.qhjf.cfm.exceptions.BusinessException;
 import com.qhjf.cfm.utils.CommKit;
 import com.qhjf.cfm.utils.CommonService;
-import com.qhjf.cfm.utils.StringKit;
 import com.qhjf.cfm.utils.XmlTool;
 import com.qhjf.cfm.web.config.DDHLARecvConfigSection;
 import com.qhjf.cfm.web.config.GlobalConfigSection;
@@ -20,9 +19,9 @@ import org.apache.axiom.om.OMElement;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.client.Options;
 import org.apache.axis2.client.ServiceClient;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
@@ -55,15 +54,22 @@ public class LaRecvConsumerQueue implements Runnable{
 				opts.setAction("http://eai.metlife.com/ESBWebEntry/ProcessMessage");
 				sc.setOptions(opts);
 				OMElement res = sc.sendReceive(queueBean.getoMElement());
-				CommKit.debugPrint(log,"response={}",res.toString());
+				CommKit.debugPrint(log,"LA批收回调response={}",res.toString());
 
 
 				JSONObject json = XmlTool.documentToJSONObject(res.toString());
 				
-				JSONObject rec = json.getJSONArray("ESBEnvelopeResult").getJSONObject(0)
-						.getJSONArray("MsgBody").getJSONObject(0)
-						.getJSONArray("DRNADDO_REC").getJSONObject(0);
-				String status = rec.getString("STATUS");
+				JSONObject rec = null;
+				String status = "";
+				try {
+					rec = json.getJSONArray("ESBEnvelopeResult").getJSONObject(0)
+							.getJSONArray("MsgBody").getJSONObject(0)
+							.getJSONArray("DRNADDO_REC").getJSONObject(0);
+					status = rec.getString("STATUS");
+				} catch (Exception e) {
+					CommKit.errorPrint(log,"解析LA批收回调响应状态失败(ESBEnvelopeResult-MsgBody-DRNADDO_REC-STATUS)={}",json.toJSONString());
+				}
+				
 				if(status.equals("0")){
 					processSuccess(json, queueBean);
 				}else{
@@ -82,6 +88,7 @@ public class LaRecvConsumerQueue implements Runnable{
 		log.debug("LA批收推送核心系统，核心系统接收失败！");
 		List<LaRecvCallbackBean> beans = queueBean.getBeans();
 		for(LaRecvCallbackBean bean : beans){
+			log.debug("更新原始数据pay_code={}为回调失败！", bean.getDdderef());
 			try{
 				Record setRecord = new Record()
 						.set("la_callback_status", WebConstant.SftCallbackStatus.SFT_CALLBACK_F.getKey())
@@ -90,11 +97,11 @@ public class LaRecvConsumerQueue implements Runnable{
 	    		Record whereRecord = new Record()
 	    				.set("pay_code", bean.getDdderef());
 	    		if(CommonService.updateRows(LA_ORIGIN, setRecord, whereRecord) != 1){
-	    			log.debug("LA批收回调接口回写数据库失败:"+bean.getDdderef());
+	    			log.error("LA批收回调接口回写数据库失败:"+bean.getDdderef());
 	    			continue;
 	    		};
 			}catch(Exception e){
-				log.debug("LA批收回调接口回写数据库失败:"+bean.getDdderef());
+				log.error("LA批收回调接口回写数据库失败:"+bean.getDdderef());
 				e.printStackTrace();
 				continue;
 			}
@@ -105,8 +112,6 @@ public class LaRecvConsumerQueue implements Runnable{
 	private void processSuccess(JSONObject resp, LaRecvQueueBean queueBean){
 		log.debug("LA批收推送核心系统，核心系统接收成功！");
 		
-		List<LaRecvCallbackBean> beans = queueBean.getBeans();
-		
 		JSONArray array = resp.getJSONArray("ESBEnvelopeResult").getJSONObject(0)
 				.getJSONArray("MsgBody").getJSONObject(0)
 				.getJSONArray("DRNADDO_REC").getJSONObject(0)
@@ -114,27 +119,23 @@ public class LaRecvConsumerQueue implements Runnable{
 				.getJSONArray("DRNOUTRECS");
 		
 		for(int i = 0;i<array.size();i++){
-			if (beans.size() <= i) {
-				log.debug("LA批付回写跳过：{}", i);
-				CommKit.debugPrint(log,"LA批付回写跳过：{}",array.getString(i));
-				continue;
-			}
-			final LaRecvCallbackBean bean = beans.get(i);
-			final String payCode = bean.getDdderef();
 			
 			final JSONObject json = array.getJSONObject(i);
 			boolean flag = Db.tx(new IAtom() {
 	            @Override
 	            public boolean run() throws SQLException {
+	            	String payCode = json.getString("DDDEREF");
 	            	String processStatus = json.getString("STATUS");
 	    			String receipt = json.getString("RECEIPT");
 	    			
-	    			if (null == processStatus || "".equals(processStatus.trim())) {
+	    			if (StringUtils.isBlank(processStatus)) {
 	    				return true;
 					}
-	    			/*if (null == receipt || "".equals(receipt.trim())) {
+	    			
+	    			if (StringUtils.isBlank(payCode)) {
+	    				log.error("LA批收回调报文，传回的DDDEREF字段为空！跳过该笔处理");
 						return true;
-					}*/
+					}
 	    			
 	    			Record whereRecord = new Record().set("pay_code", payCode);
 	    			
@@ -144,6 +145,7 @@ public class LaRecvConsumerQueue implements Runnable{
 	    						.set("la_callback_resp_time", new Date())
 	    						.set("receipt", receipt);
 	    				
+	    				log.debug("LA批收回调，回写原始数据表，pay_code={}", payCode);
 	    				if(CommonService.updateRows(LA_ORIGIN, setRecord, whereRecord)==1){
 	    					Record record = Db.findFirst(Db.getSql("webservice_la_recv_cfm.getStatusByPayCode"), payCode);
 	    					if(record.getInt("tmp_status") == WebConstant.SftInterfaceStatus.SFT_INTER_PROCESS_S.getKey()){

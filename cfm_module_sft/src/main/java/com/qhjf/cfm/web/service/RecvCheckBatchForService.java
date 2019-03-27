@@ -74,8 +74,8 @@ public class RecvCheckBatchForService {
 			record.remove("status");
 		}
 		// 首期  :  biz_Type : IP  ,  续期 : biz_Type : MP ,PP ,RP ,TP
-		if(StringUtils.isNotBlank(record.getStr("biz_type"))) {
-			if(WebConstant.Sft_BizType.SQ.getKey() ==  record.getInt("biz_type")) {
+		if(StringUtils.isNotBlank(TypeUtils.castToString(record.get("biz_type")))) {
+			if(WebConstant.Sft_BizType.SQ.getKey() ==  TypeUtils.castToInt(record.get("biz_type"))) {
 				record.set("biz_type", new String[]{
 						"IP"
 				});

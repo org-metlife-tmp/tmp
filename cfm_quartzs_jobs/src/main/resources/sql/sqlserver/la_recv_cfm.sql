@@ -84,4 +84,16 @@
   delete from la_recv_legal_data_ext where legal_id=?
 #end
 
+#sql("getrecvcheck")
+  SELECT
+	*
+FROM
+	la_recv_check_doubtful
+WHERE is_doubtful = 1
+	AND insure_bill_no =?
+	AND recv_acc_name =?
+	AND amount =?
+	AND ext.recv_date =?
+#end
+
 #end

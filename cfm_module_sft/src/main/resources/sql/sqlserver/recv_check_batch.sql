@@ -71,8 +71,8 @@ WHERE
               #for(y : map.biz_type)
                 #if(for.index > 0)
                   #(",")
-                #end
-                #(y)
+                #end 
+                '#(y)'
               #end
             )
         #elseif("bank_key".equals(x.key))
@@ -137,7 +137,14 @@ WHERE
         #elseif("pay_mode".equals(x.key))
             la.pay_mode = #para(x.value)
         #elseif("biz_type".equals(x.key))
-            la.biz_type = #para(x.value)
+            la.biz_type in(
+              #for(y : map.biz_type)
+                #if(for.index > 0)
+                  #(",")
+                #end 
+                '#(y)'
+              #end
+            )
         #elseif("bank_key".equals(x.key))
             la.bank_key  like convert(varchar(5),'%')+convert(varchar(255),#para(x.value))+convert(varchar(5),'%')
         #elseif("status".equals(x.key))
@@ -351,7 +358,14 @@ WHERE
         #elseif("insure_bill_no".equals(x.key))
             la.insure_bill_no like convert(varchar(5),'%')+convert(varchar(255),#para(x.value))+convert(varchar(5),'%')
         #elseif("biz_type".equals(x.key))
-            la.biz_type = #para(x.value)
+            la.biz_type in(
+              #for(y : map.biz_type)
+                #if(for.index > 0)
+                  #(",")
+                #end 
+                '#(y)'
+              #end
+            )
         #elseif("pay_mode".equals(x.key))
             la.pay_mode = #para(x.value)
         #elseif("bank_key".equals(x.key))
@@ -423,7 +437,14 @@ WHERE
         #elseif("insure_bill_no".equals(x.key))
             la.insure_bill_no like convert(varchar(5),'%')+convert(varchar(255),#para(x.value))+convert(varchar(5),'%')
         #elseif("biz_type".equals(x.key))
-            la.biz_type = #para(x.value)
+            la.biz_type in(
+              #for(y : map.biz_type)
+                #if(for.index > 0)
+                  #(",")
+                #end 
+                '#(y)'
+              #end
+            )
         #elseif("pay_mode".equals(x.key))
             la.pay_mode = #para(x.value)
         #elseif("bank_key".equals(x.key))
