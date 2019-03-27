@@ -192,7 +192,7 @@
                                  :formatter="transitAmount"></el-table-column>
                 <el-table-column prop="fail_num" label="失败笔数" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="status" label="状态" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="send_user_name" label="操作人" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="back_user_name" label="操作人" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column
                         label="操作" width="70"
                         fixed="right">
