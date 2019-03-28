@@ -558,6 +558,7 @@
             allChange: function(selection,val){
                 let tableList = this.tableList;
                 let selectId = this.selectId;
+                let totalData = this.totalData;
 
                 if(selection.length === 0){
                     tableList.forEach((item) => {
