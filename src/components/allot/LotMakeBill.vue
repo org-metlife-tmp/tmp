@@ -1562,7 +1562,7 @@
                 this.payAccDetail.acc_name = "";
                 this.payAccDetail.acc_no = "";
                 this.payAccDetail.bank_name = "";
-                 var interactive_mode = val !='1' ? '2' : '1';
+		var interactive_mode = this.billData.pay_mode !=8  ? (this.billData.pay_mode == "1" ? "1" : "2") : ""
                 //获取付款方账户列表(保证他先执行，tip才能带出来)
                 this.$axios({
                     url: this.queryUrl + "commProcess",
