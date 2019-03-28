@@ -1,13 +1,12 @@
 package cfm_quartzs;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
 import com.jfinal.plugin.activerecord.ActiveRecordPlugin;
 import com.jfinal.plugin.activerecord.dialect.SqlServerDialect;
 import com.jfinal.plugin.druid.DruidPlugin;
 import com.jfinal.template.source.ClassPathSourceFactory;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 public class MainQuartzJobTest {
 	DruidPlugin dp = null;

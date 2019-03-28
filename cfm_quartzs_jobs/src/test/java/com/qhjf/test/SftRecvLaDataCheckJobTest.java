@@ -13,13 +13,12 @@ import com.qhjf.cfm.web.constant.WebConstant;
 import com.qhjf.cfm.web.plugins.CfmRedisPlugin;
 import com.qhjf.cfm.web.quartzs.jobs.comm.SftRecvLaDataCheckJob;
 import com.qhjf.cfm.web.webservice.la.queue.recv.LaRecvQueuePlugin;
-
-import java.util.List;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.quartz.JobExecutionException;
+
+import java.util.List;
 
 public class SftRecvLaDataCheckJobTest {
 	DruidPlugin dp = null;

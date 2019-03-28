@@ -141,7 +141,7 @@ public class SftOptypeMgr extends AbstractOptypeMgr {
 
         //查找交易流水
         optypes.add(new Optype(Optype.Mode.NORMAL, "sftpaycheck_tradingList")
-                .registKeepParams(new String[]{"bankcode", "acc_no", "min", "max", "start_date", "end_date", "summary", "is_checked"})
+                .registKeepParams(new String[]{"is_inner", "bankcode", "acc_no", "min", "max", "start_date", "end_date", "summary", "is_checked"})
                 .registerValidate(new RequiredParamsValidate(new String[]{"is_inner"})));
 
         //对账确认

@@ -12,11 +12,9 @@ import com.qhjf.cfm.exceptions.EncryAndDecryException;
 import com.qhjf.cfm.utils.RedisSericalnoGenTool;
 import com.qhjf.cfm.utils.SymmetricEncryptUtil;
 import com.qhjf.cfm.web.constant.WebConstant;
-import com.qhjf.cfm.web.controller.CheckBatchForController;
 import com.qhjf.cfm.web.plugins.excelexp.AbstractWorkBook;
 import com.qhjf.cfm.web.plugins.excelexp.POIUtil;
 import com.qhjf.cfm.web.plugins.log.LogbackLog;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.ss.usermodel.Workbook;
 

@@ -1,16 +1,5 @@
 package cfm_sysInter;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.alibaba.fastjson.util.TypeUtils;
 import com.jfinal.plugin.activerecord.ActiveRecordPlugin;
 import com.jfinal.plugin.activerecord.Db;
@@ -23,7 +12,6 @@ import com.qhjf.bankinterface.api.ProcessEntrance;
 import com.qhjf.bankinterface.api.exceptions.BankInterfaceException;
 import com.qhjf.cfm.exceptions.EncryAndDecryException;
 import com.qhjf.cfm.exceptions.ReqDataException;
-import com.qhjf.cfm.queue.ProductQueue;
 import com.qhjf.cfm.queue.QueueBean;
 import com.qhjf.cfm.utils.CommonService;
 import com.qhjf.cfm.utils.SymmetricEncryptUtil;
@@ -31,6 +19,14 @@ import com.qhjf.cfm.utils.TableDataCacheUtil;
 import com.qhjf.cfm.web.channel.inter.api.IChannelInter;
 import com.qhjf.cfm.web.channel.manager.ChannelManager;
 import com.qhjf.cfm.web.inter.impl.batch.SysBatchPayNewInter;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.sql.SQLException;
+import java.util.*;
 
 public class SysBatchPayNewInterTest {
 	private static final Logger logger = LoggerFactory.getLogger(SysBatchPayNewInterTest.class);

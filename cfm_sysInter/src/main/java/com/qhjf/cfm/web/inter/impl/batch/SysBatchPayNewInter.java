@@ -7,7 +7,9 @@ import com.jfinal.plugin.activerecord.IAtom;
 import com.jfinal.plugin.activerecord.Record;
 import com.jfinal.plugin.activerecord.SqlPara;
 import com.qhjf.bankinterface.api.exceptions.BankInterfaceException;
-import com.qhjf.cfm.utils.*;
+import com.qhjf.cfm.utils.ArrayUtil;
+import com.qhjf.cfm.utils.CommKit;
+import com.qhjf.cfm.utils.CommonService;
 import com.qhjf.cfm.web.channel.inter.api.IChannelBatchInter;
 import com.qhjf.cfm.web.channel.inter.api.IChannelInter;
 import com.qhjf.cfm.web.channel.manager.ChannelManager;
@@ -17,8 +19,11 @@ import com.qhjf.cfm.web.inter.manager.SysInterManager;
 import com.qhjf.cfm.web.webservice.sft.SftCallBack;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 public class SysBatchPayNewInter implements ISysAtomicInterface {
 

@@ -1,8 +1,8 @@
 package com.qhjf.cfm.web.quartzs.jobs.utils;
 
+import com.jfinal.plugin.activerecord.Db;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.jfinal.plugin.activerecord.Db;
 
 /**
  * 大都会安全工具类

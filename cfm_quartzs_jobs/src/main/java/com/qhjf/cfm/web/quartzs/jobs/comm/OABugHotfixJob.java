@@ -1,22 +1,20 @@
 package com.qhjf.cfm.web.quartzs.jobs.comm;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.List;
-
-import com.jfinal.ext.kit.DateKit;
+import com.alibaba.fastjson.util.TypeUtils;
 import com.jfinal.kit.Kv;
+import com.jfinal.plugin.activerecord.Db;
+import com.jfinal.plugin.activerecord.Record;
 import com.qhjf.cfm.utils.CommKit;
-import com.qhjf.cfm.web.constant.WebConstant;
+import com.qhjf.cfm.web.webservice.oa.callback.OaCallback;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.alibaba.fastjson.util.TypeUtils;
-import com.jfinal.plugin.activerecord.Db;
-import com.jfinal.plugin.activerecord.Record;
-import com.qhjf.cfm.web.webservice.oa.callback.OaCallback;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.List;
 
 /**
  * OA回调异常数据再次回调作业：

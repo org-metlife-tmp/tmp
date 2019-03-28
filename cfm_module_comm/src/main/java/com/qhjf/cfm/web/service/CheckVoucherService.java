@@ -122,6 +122,7 @@ public class CheckVoucherService {
                 break;
             case PLS:
                 flag = plsCheckVoucher(batchList, tradList, batchRecordList, tradRecordList, majorBizType, seqnoOrstatmentCode);
+                break;
             default:
                 throw new ReqDataException(majorBizType.getDesc() + "，未实现生成凭证方法！");
         }
@@ -686,9 +687,9 @@ public class CheckVoucherService {
         List<Record> list = new ArrayList<>();
         if("LA".equals(source)){
             //凭证1
-            list.add(CommonService.plfLaBackCheckVoucher(recvLegalRecord, 1, seqnoOrstatmentCode));
+            list.add(CommonService.plsLaBackCheckVoucher(recvLegalRecord, 1, seqnoOrstatmentCode));
             //凭证2
-            list.add(CommonService.plfLaBackCheckVoucher(recvLegalRecord, 2, seqnoOrstatmentCode));
+            list.add(CommonService.plsLaBackCheckVoucher(recvLegalRecord, 2, seqnoOrstatmentCode));
 
         }
 

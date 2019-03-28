@@ -11,7 +11,6 @@ import com.qhjf.cfm.web.plugins.CfmRedisPlugin;
 import com.qhjf.cfm.web.webservice.la.queue.recv.LaRecvQueuePlugin;
 import com.qhjf.cfm.web.webservice.la.recv.LaRecvCallback;
 import com.qhjf.cfm.web.webservice.la.recv.LaRecvCallbackBean;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

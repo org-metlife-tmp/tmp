@@ -12,12 +12,10 @@ import com.qhjf.cfm.utils.TableDataCacheUtil;
 import com.qhjf.cfm.web.channel.inter.api.IChannelInter;
 import com.qhjf.cfm.web.channel.inter.api.ISingleResultChannelInter;
 import com.qhjf.cfm.web.config.GmfConfigAccnoSection;
-import com.qhjf.cfm.web.config.PlfConfigAccnoSection;
 import com.qhjf.cfm.web.constant.WebConstant;
 import com.qhjf.cfm.web.inter.api.ISysAtomicInterface;
 import com.qhjf.cfm.web.inter.manager.SysInterManager;
 import com.qhjf.cfm.web.webservice.sft.SftCallBack;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

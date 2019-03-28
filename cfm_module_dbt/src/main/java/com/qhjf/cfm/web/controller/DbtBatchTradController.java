@@ -6,6 +6,7 @@ import com.jfinal.plugin.activerecord.Record;
 import com.qhjf.cfm.exceptions.BusinessException;
 import com.qhjf.cfm.web.UodpInfo;
 import com.qhjf.cfm.web.UserInfo;
+import com.qhjf.cfm.web.plugins.jwt.Auth;
 import com.qhjf.cfm.web.plugins.log.LogbackLog;
 import com.qhjf.cfm.web.service.AccCommonService;
 import com.qhjf.cfm.web.service.DbtBatchTradService;
@@ -27,7 +28,7 @@ public class DbtBatchTradController extends CFMBaseController {
     /**
      * 未核对单据查询
      */
-//    @Auth(hasForces = {"DbtCheck"})
+    @Auth(hasForces = {"DbtCheck"})
     public void billList() throws Exception {
         Record record = getRecordByParamsStrong();
 
@@ -47,7 +48,7 @@ public class DbtBatchTradController extends CFMBaseController {
     /**
      * 勾选 查找交易流水
      */
-//    @Auth(hasForces = {"DbtCheck"})
+    @Auth(hasForces = {"DbtCheck"})
     public void tradingList() {
         Record record = getRecordByParamsStrong();
         List<Record> page = service.tradingList(record);
@@ -57,7 +58,7 @@ public class DbtBatchTradController extends CFMBaseController {
     /**
      * 确认交易
      */
-//    @Auth(hasForces = {"DbtCheck"})
+    @Auth(hasForces = {"DbtCheck"})
     public void confirm() {
         try {
             Record record = getRecordByParamsStrong();
@@ -76,7 +77,7 @@ public class DbtBatchTradController extends CFMBaseController {
     /**
      * 已核对单据查询
      */
-//    @Auth(hasForces = {"DbtCheck"})
+    @Auth(hasForces = {"DbtCheck"})
     public void confirmbillList() throws Exception {
         Record record = getRecordByParamsStrong();
 
@@ -94,7 +95,7 @@ public class DbtBatchTradController extends CFMBaseController {
     /**
      * 已核对单据交易查询
      */
-//    @Auth(hasForces = {"DbtCheck"})
+    @Auth(hasForces = {"DbtCheck"})
     public void confirmTradingList() {
         Record record = getRecordByParamsStrong();
         List<Record> page = service.confirmTradingList(record);

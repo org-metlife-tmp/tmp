@@ -8,9 +8,7 @@ import com.qhjf.bankinterface.icbc.IcbcConstant;
 import com.qhjf.cfm.utils.CommKit;
 import com.qhjf.cfm.utils.StringKit;
 import com.qhjf.cfm.web.channel.inter.api.ISingleResultChannelInter;
-
 import com.qhjf.cfm.web.channel.util.ChannelStringUtil;
-
 import com.qhjf.cfm.web.channel.util.IcbcResultParseUtil;
 import com.qhjf.cfm.web.constant.WebConstant;
 import org.slf4j.Logger;

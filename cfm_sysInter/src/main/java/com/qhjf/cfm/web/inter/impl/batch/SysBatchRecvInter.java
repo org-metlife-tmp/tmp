@@ -10,7 +10,6 @@ import com.qhjf.bankinterface.api.exceptions.BankInterfaceException;
 import com.qhjf.cfm.utils.ArrayUtil;
 import com.qhjf.cfm.utils.CommKit;
 import com.qhjf.cfm.utils.CommonService;
-import com.qhjf.cfm.utils.StringKit;
 import com.qhjf.cfm.web.channel.inter.api.IChannelBatchInter;
 import com.qhjf.cfm.web.channel.inter.api.IChannelInter;
 import com.qhjf.cfm.web.channel.manager.ChannelManager;

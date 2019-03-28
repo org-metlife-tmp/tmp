@@ -6,7 +6,6 @@ import com.jfinal.plugin.activerecord.Record;
 import com.jfinal.plugin.activerecord.dialect.SqlServerDialect;
 import com.jfinal.plugin.druid.DruidPlugin;
 import com.jfinal.template.source.ClassPathSourceFactory;
-import com.qhjf.cfm.web.webservice.la.queue.recv.LaRecvQueuePlugin;
 import com.qhjf.cfm.web.webservice.la.recv.LaRecvCallbackBean;
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
@@ -285,7 +284,10 @@ public class TestRecv2 {
 		Scanner s = new Scanner(System.in);        
 		while(s.hasNext()){           
 			String a = s.next();  //将s.next()赋值给变量a           
-			if("quit".equals(a)){               
+			if("quit".equals(a)){   
+				if (s != null) {
+					s.close();
+				}
 				break;           
 			}else{               
 				System.out.println(a);           

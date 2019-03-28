@@ -1,7 +1,6 @@
 package com.qhjf.cfm.web.service;
 
 import com.jfinal.plugin.activerecord.Record;
-import org.apache.commons.lang.StringUtils;
 
 import java.math.BigDecimal;
 import java.util.Map;

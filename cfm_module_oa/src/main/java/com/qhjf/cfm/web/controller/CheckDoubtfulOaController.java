@@ -5,6 +5,7 @@ import com.jfinal.log.Log;
 import com.jfinal.plugin.activerecord.Page;
 import com.jfinal.plugin.activerecord.Record;
 import com.qhjf.cfm.exceptions.BusinessException;
+import com.qhjf.cfm.web.plugins.jwt.Auth;
 import com.qhjf.cfm.web.plugins.log.LogbackLog;
 import com.qhjf.cfm.web.service.CheckDoubtfulOaService;
 
@@ -18,6 +19,7 @@ public class CheckDoubtfulOaController extends CFMBaseController {
     /**
      * 可疑单据列表
      */
+    @Auth(hasForces = {"OACheckDoubtful"})
     public void list() {
         Record record = getRecordByParamsStrong();
         int pageNum = getPageNum(record);
@@ -30,12 +32,14 @@ public class CheckDoubtfulOaController extends CFMBaseController {
     /**
      * 查看疑似重复单据列表
      */
+    @Auth(hasForces = {"OACheckDoubtful"})
     public void doubtlist() {
         Record record = getRecordByParamsStrong();
         List<Record> list = service.doubtlist(record);
         renderOk(list);
     }
-    
+
+    @Auth(hasForces = {"OACheckDoubtful"})
     public void payoff() throws Exception {
         try {
             Record record = getParamsToRecord();
@@ -46,7 +50,8 @@ public class CheckDoubtfulOaController extends CFMBaseController {
             renderFail(e);
         }
     }
-    
+
+    @Auth(hasForces = {"OACheckDoubtful"})
     public void pass() throws Exception {
         try {
             Record record = getParamsToRecord();

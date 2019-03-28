@@ -8,7 +8,6 @@ import com.jfinal.plugin.activerecord.Page;
 import com.jfinal.plugin.activerecord.Record;
 import com.jfinal.plugin.activerecord.SqlPara;
 import com.qhjf.cfm.exceptions.BusinessException;
-import com.qhjf.cfm.exceptions.ReqDataException;
 import com.qhjf.cfm.exceptions.WorkflowException;
 import com.qhjf.cfm.utils.CommonService;
 import com.qhjf.cfm.web.UserInfo;
@@ -244,7 +243,7 @@ public class CheckBatchForController extends CFMBaseController{
                             public <T> T getFieldValue(WebConstant.WfExpressType type) throws WorkflowException {
                                 Record bill_info = getBillRecord();
                                 if (type.equals(WebConstant.WfExpressType.AMOUNT)) {
-                                    return bill_info.get("payment_amount");
+                                    return bill_info.get("total_amount");
                                 } else if (type.equals(WebConstant.WfExpressType.STATUS)) {
                                     return bill_info.get("service_status");
                                 } else {

@@ -1,8 +1,6 @@
 package com.qhjf.cfm.web.controller;
 
 
-import java.util.List;
-
 import com.alibaba.fastjson.util.TypeUtils;
 import com.jfinal.kit.Kv;
 import com.jfinal.log.Log;
@@ -17,10 +15,10 @@ import com.qhjf.cfm.utils.CommonService;
 import com.qhjf.cfm.web.UserInfo;
 import com.qhjf.cfm.web.WfRequestObj;
 import com.qhjf.cfm.web.constant.WebConstant;
-import com.qhjf.cfm.web.plugins.jwt.Auth;
 import com.qhjf.cfm.web.plugins.log.LogbackLog;
-import com.qhjf.cfm.web.service.CheckBatchForService;
 import com.qhjf.cfm.web.service.PayCounterService;
+
+import java.util.List;
 
 
 /**

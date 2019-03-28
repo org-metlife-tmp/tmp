@@ -118,7 +118,7 @@ public class LaRecvCallbackBean {
 		this.jobno = origin.getStr("job_no");
 		this.trancd = origin.getStr("trans_code");
 		//收方bankcode
-		this.bankcode = getBankCode(origin);
+		this.bankcode = origin.getStr("bankcode");//getBankCode(origin);//bankcode由核心系统推送
 		this.sacscode = origin.getStr("sacscode");
 		this.sacstype = origin.getStr("sacstyp");
 		//下次扣款时间：当天日期
@@ -169,7 +169,7 @@ public class LaRecvCallbackBean {
 		return map;
 	}
 	
-	private String getBankCode(Record origin){
+	/*private String getBankCode(Record origin){
 		String bankcode = origin.getStr("bankcode");
 		
 		String err = origin.getStr("tmp_err_message");
@@ -201,7 +201,7 @@ public class LaRecvCallbackBean {
 			}
 		}
 		return bankcode;
-	}
+	}*/
 
 	public Long getId() {
 		return id;

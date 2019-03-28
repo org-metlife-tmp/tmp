@@ -1,17 +1,17 @@
 package com.qhjf.cfm.web.quartzs.jobs.comm;
 
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-
+import com.jfinal.plugin.activerecord.Db;
+import com.jfinal.plugin.activerecord.Record;
+import com.qhjf.cfm.utils.CommonService;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.jfinal.plugin.activerecord.Db;
-import com.jfinal.plugin.activerecord.Record;
-import com.qhjf.cfm.utils.CommonService;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
 /**
  * LA批收原始数据校验
  * 	规则：同一批次数据，父子表的总比数相同，总金额相同

@@ -8,7 +8,6 @@ import com.qhjf.cfm.web.UserInfo;
 import com.qhjf.cfm.web.plugins.jwt.Auth;
 import com.qhjf.cfm.web.plugins.log.LogbackLog;
 import com.qhjf.cfm.web.service.AccCommonService;
-import com.qhjf.cfm.web.service.PayCheckService;
 import com.qhjf.cfm.web.service.PayCounterCheckService;
 
 import java.util.List;

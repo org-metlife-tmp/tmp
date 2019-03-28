@@ -31,7 +31,7 @@ import java.util.*;
 
 /**
  * 核对组批LA
- * 
+ *
  * @author pc_liweibing
  *
  */
@@ -44,14 +44,14 @@ public class CheckBatchForService {
 	private static String ebs_pre = "pay_ebs_batch";
 	/**
 	 * LA组批列表
-	 * @param pageSize 
-	 * @param pageNum 
-	 * 
+	 * @param pageSize
+	 * @param pageNum
+	 *
 	 * @param record
 	 * @param uodpInfo
 	 * @return
-	 * @throws BusinessException 
-	 * @throws UnsupportedEncodingException 
+	 * @throws BusinessException
+	 * @throws UnsupportedEncodingException
 	 */
 	public Page<Record> list(int pageNum, int pageSize, Record record, UodpInfo uodpInfo) throws Exception, BusinessException {
 		Long org_id = uodpInfo.getOrg_id();
@@ -97,20 +97,20 @@ public class CheckBatchForService {
 		 return paginate ;
 	}
 
-	
+
 	/**
 	 * 组批LA勾选后提交
-	 * 
+	 *
 	 * @param record
 	 * @param curUodp
 	 * @param userInfo
-	 * @throws BusinessException 
+	 * @throws BusinessException
 	 */
 	public void confirm(final Record record, final UodpInfo curUodp, final UserInfo userInfo) throws BusinessException {
-		
-	    long start_TimeMillis = System.currentTimeMillis();	
+
+	    long start_TimeMillis = System.currentTimeMillis();
 	    logger.info("============组批开始时间=="+start_TimeMillis);
-	    
+
 		int flag_redis = 0 ;  // 是否确实有人在组批此渠道数据
 		final Integer source_sys = TypeUtils.castToInt(record.get("source_sys"));
 		final Long channel_id = TypeUtils.castToLong(record.get("channel_id"));
@@ -178,8 +178,8 @@ public class CheckBatchForService {
 			SymmetricEncryptUtil  util = SymmetricEncryptUtil.getInstance();
 			String recv_acc_no = record.getStr("recv_acc_no");
 			recv_acc_no = util.encrypt(recv_acc_no);
-			record.set("recv_acc_no", recv_acc_no);		
-			
+			record.set("recv_acc_no", recv_acc_no);
+
 			final Record error_message = new Record();
 			error_message.set("error_message", "组批数据库操作失败");
 			// 主批次入xx表.主批次走审批流
@@ -191,13 +191,13 @@ public class CheckBatchForService {
 					Record total_amount_master = null ;
 				   if( 0 == source_sys) {
 					   ids = Db
-							   .find(Db.getSqlPara("check_batch.checkBatchLAlist_confirm", Kv.by("map", record.getColumns())));	
+							   .find(Db.getSqlPara("check_batch.checkBatchLAlist_confirm", Kv.by("map", record.getColumns())));
 					   total_amount_master = Db
 							   .findFirst(Db.getSqlPara("check_batch.checkBatchLAlistAmount_confirm", Kv.by("map", record.getColumns())));
-				   
+
 				   } else {
 					   ids = Db
-							   .find(Db.getSqlPara("check_batch.checkBatchEBSlist_confirm", Kv.by("map", record.getColumns())));				
+							   .find(Db.getSqlPara("check_batch.checkBatchEBSlist_confirm", Kv.by("map", record.getColumns())));
 					   total_amount_master = Db
 							   .findFirst(Db.getSqlPara("check_batch.checkBatchEBSlistAmount_confirm", Kv.by("map", record.getColumns())));
 				   }
@@ -208,7 +208,7 @@ public class CheckBatchForService {
 					   return false ;
 				   }
 
-					// 封装 pay_batch_total 和 pay_batch_detail 
+					// 封装 pay_batch_total 和 pay_batch_detail
 				    // 这里拿到的 配置详情表id
 				    Integer interactive_mode = channel_setting.getInt("interactive_mode");
 				    Integer document_moudle = null;
@@ -217,14 +217,14 @@ public class CheckBatchForService {
 				    	Integer detail_id = channel_setting.getInt("document_moudle");
 				    	logger.info("============报盘模板详情Id==="+detail_id);
 				    	Record configs_tail = Db.findById("document_detail_config", "id", detail_id);
-				    	document_moudle = Integer.valueOf(configs_tail.getStr("document_moudle")) ;				    	
+				    	document_moudle = Integer.valueOf(configs_tail.getStr("document_moudle")) ;
 				    }
-			    	
+
 					BigDecimal limit = channel_setting.get("single_file_limit") == null ? new BigDecimal(ids.size())
 							: new BigDecimal(channel_setting.getInt("single_file_limit"));
 					BigDecimal num = new BigDecimal(ids.size()).divide(limit, 0, BigDecimal.ROUND_UP);
 					logger.info("此渠道文件限制个数==" + limit + "分成的子批次个数==" + num);
-					
+
 					// 封装主批次对象
 					main_record.set("source_sys", source_sys)
 					        .set("master_batchno", CommonService.getSftMasterBatchno())
@@ -398,10 +398,10 @@ public class CheckBatchForService {
 		}  finally {
 			// 组批成功,删除redis中值
 			if(flag_redis == 0) {
-				oaDataDoubtfulCache.sremValue(pre, value);				
+				oaDataDoubtfulCache.sremValue(pre, value);
 			}
 		}
-	    long end_TimeMillis = System.currentTimeMillis();	
+	    long end_TimeMillis = System.currentTimeMillis();
 	    logger.info("============组批结束时间=="+end_TimeMillis);
         logger.info("============组批共耗时毫秒数====="+(end_TimeMillis-start_TimeMillis));
 	}
@@ -417,6 +417,7 @@ public class CheckBatchForService {
 		final Record main_record = Db.findById("pay_batch_total_master", "id", master_id);
 		if (null == main_record) {
 			logger.error("===============此条数据数据库中未找到====" + master_id);
+			return false;
 		}
 		final Record channel = Db.findById("channel_setting", "id", TypeUtils.castToInt(main_record.get("channel_id")));
 		final String channel_code = channel.getStr("channel_code");
@@ -439,6 +440,7 @@ public class CheckBatchForService {
 					Record payRec = Db.findFirst(Db.getSql("nbdb.findAccountByAccno"), accno);
 					if (payRec == null) {
 						logger.error("=============未在系统内找到此账户======" + accno);
+						return false;
 					}
 					Record insertRecord = new Record();
 					insertRecord.set("org_id", main_record.getInt("org_id"))
@@ -488,7 +490,7 @@ public class CheckBatchForService {
 						insertRecord.set("payment_summary", payment_summary);
 						boolean save = Db.save("outer_zf_payment", "id", insertRecord);
 						logger.info("===============入库支付通的结果==="+ save + "==id=="+ insertRecord.getLong("id"));
-						
+
 					} else {
 						logger.info("===============此处需要开启一个调拨的审批流");
 						type = WebConstant.MajorBizType.INNERDB;
@@ -497,7 +499,7 @@ public class CheckBatchForService {
 						insertRecord.set("biz_id", "11e1d8f2dbe14c41a241e0a430743c6b")
 						            .set("biz_name", "保单支出户充值")
 								    .set("service_serial_number", serviceSerialNumber);
-						//封装 recv_account_id  		
+						//封装 recv_account_id
 						List<Record> find = Db.find(Db.getSql("acc.findAccountByAccNo"),main_record.get("pay_acc_no"));
 						insertRecord.set("recv_account_id", find.get(0).get("acc_id"));
 						insertRecord.set("recv_bank_cnaps", find.get(0).get("bank_cnaps_code"));
@@ -561,7 +563,7 @@ public class CheckBatchForService {
 			//此时直接开启一个异步线程,下载盘片
 			DiskDownloadingQueue diskDownloadingQueue = new DiskDownloadingQueue();
 			diskDownloadingQueue.setMain_record(main_record);
-			Thread thread = new Thread(diskDownloadingQueue); 
+			Thread thread = new Thread(diskDownloadingQueue);
 			thread.start();
 		}
 		return flag;
@@ -569,9 +571,9 @@ public class CheckBatchForService {
 
 	/**
 	 * 核对组批撤回
-	 * 
+	 *
 	 * @param record
-	 * @param userInfo 
+	 * @param userInfo
 	 * @return
 	 * @throws ReqDataException
 	 */
@@ -581,7 +583,7 @@ public class CheckBatchForService {
 		final Integer source_sys = TypeUtils.castToInt(record.get("source_sys"));
 		final Integer id = TypeUtils.castToInt(record.get("id"));
 		final Integer persist_version = TypeUtils.castToInt(record.get("persist_version"));
-		final String feed_back = record.getStr("feed_back");		
+		final String feed_back = record.getStr("feed_back");
 		Record findById = Db.findById("pay_legal_data", "id", id);
 		if (null == findById) {
 			throw new ReqDataException("此条数据已经过期,请刷新页面");
@@ -643,9 +645,9 @@ public class CheckBatchForService {
 
 	/**
 	 * 审批拒绝通过后,修改相关表状态 更新合法数据表状态为未组批.更新组批详情表的delete_num为此条数据id
-	 * 
+	 *
 	 * @param record
-	 * 
+	 *
 	 */
 
 	public boolean hookReject(Record record) {
@@ -678,7 +680,7 @@ public class CheckBatchForService {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param
 	 * @return
 	 * @throws ReqDataException
@@ -694,7 +696,7 @@ public class CheckBatchForService {
 	/**
 	 * @根据主单次号查找子单次详情
 	 * @param record
-	 * @return 
+	 * @return
 	 */
 	public List<Record> findSonByMasterBatch(Record record) {
 		// TODO Auto-generated method stub
@@ -705,9 +707,9 @@ public class CheckBatchForService {
 	/**
 	 * 获取总金额 , 总个数
 	 * @param record
-	 * @param uodpInfo 
+	 * @param uodpInfo
 	 * @return
-	 * @throws ReqDataException 
+	 * @throws ReqDataException
 	 */
 	public Record totalInfo(Record record, UodpInfo uodpInfo) throws ReqDataException {
 		Long org_id = uodpInfo.getOrg_id();

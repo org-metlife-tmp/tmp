@@ -1,22 +1,8 @@
 package com.qhjf.test;
 
-import java.io.UnsupportedEncodingException;
-import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
 import com.jfinal.kit.Kv;
 import com.jfinal.plugin.activerecord.ActiveRecordPlugin;
 import com.jfinal.plugin.activerecord.Db;
-import com.jfinal.plugin.activerecord.IAtom;
-import com.jfinal.plugin.activerecord.Record;
 import com.jfinal.plugin.activerecord.SqlPara;
 import com.jfinal.plugin.activerecord.dialect.SqlServerDialect;
 import com.jfinal.plugin.druid.DruidPlugin;
@@ -24,6 +10,15 @@ import com.jfinal.template.source.ClassPathSourceFactory;
 import com.qhjf.cfm.exceptions.EncryAndDecryException;
 import com.qhjf.cfm.utils.SymmetricEncryptUtil;
 import com.qhjf.cfm.web.quartzs.jobs.utils.DDHSafeUtil;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 public class EncryptTest {
 	DruidPlugin dp = null;

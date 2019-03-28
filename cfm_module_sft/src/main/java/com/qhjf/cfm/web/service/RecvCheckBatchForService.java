@@ -18,7 +18,6 @@ import com.qhjf.cfm.web.webservice.oa.server.OaDataDoubtfulCache;
 import com.qhjf.cfm.web.webservice.sft.SftRecvCallBack;
 import org.apache.commons.lang3.StringUtils;
 
-import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.*;

@@ -20,7 +20,6 @@ import com.qhjf.cfm.web.inter.api.ISysAtomicInterface;
 import com.qhjf.cfm.web.inter.manager.SysInterManager;
 import com.qhjf.cfm.web.webservice.oa.callback.OaCallback;
 import com.qhjf.cfm.web.webservice.sft.SftCallBack;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
