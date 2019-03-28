@@ -435,45 +435,6 @@ public class ZftBatchController extends CFMBaseController {
         renderOkPage(page, totalRec);
     }
 
-
-    //批量支付退票_单据列表
-    //@Auth(hasForces = {"ZFTBatchPay"})
-    public void billrefund() {
-        Record record = getRecordByParamsStrong();
-        int pageNum = getPageNum(record);
-        int pageSize = getPageSize(record);
-        Page<Record> page;
-        try {
-            page = service.billRefund(pageNum, pageSize, record);
-            renderOkPage(page);
-        } catch (ReqDataException e) {
-            e.printStackTrace();
-            renderFail(e);
-        }
-    }
-
-
-    //批量支付通退票处理_根据单据查询交易详情
-    //@Auth(hasForces = {"ZFTViewBill","MyWFPLAT"})
-    public void tradeDetailByBill() {
-        try {
-            Record record = getRecordByParamsStrong();
-            List<Record> page = service.tradeDetailByBill(record);
-            renderOk(page);
-        } catch (BusinessException e) {
-            e.printStackTrace();
-            renderFail(e);
-        }
-    }
-
-    //批量支付通退票处理_点击退票
-    //@Auth(hasForces = {"ZFTViewBill","MyWFPLAT"})
-    public void confirmRefund() {
-        Record record = getRecordByParamsStrong();
-        service.confirmRefund(record);
-        renderOk(null);
-    }
-
     @Auth(hasForces = {"ZFTBatchPay"})
     public void payok() {
         try {

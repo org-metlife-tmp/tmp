@@ -6,6 +6,7 @@ import com.jfinal.plugin.activerecord.Record;
 import com.qhjf.cfm.exceptions.ReqDataException;
 import com.qhjf.cfm.exceptions.WorkflowException;
 import com.qhjf.cfm.web.UserInfo;
+import com.qhjf.cfm.web.plugins.jwt.Auth;
 import com.qhjf.cfm.web.plugins.log.LogbackLog;
 import com.qhjf.cfm.web.service.DoubtfulRefundService;
 
@@ -25,6 +26,7 @@ public class DoubtfulRefundController extends CFMBaseController {
 	 * @throws ReqDataException 
 	 * @ 可疑退票_退票模块系列表
 	 */
+	@Auth(hasForces = {"DoubtfulRefund"})
 	public void tradeList() throws ReqDataException {
 		log.info("=========进入可疑退票_交易列表模块");
 		Record record = getRecordByParamsStrong();
@@ -38,6 +40,7 @@ public class DoubtfulRefundController extends CFMBaseController {
 		 * @throws ReqDataException 
 		 * @ 可疑退票_判断为正常交易
 		 */
+	   @Auth(hasForces = {"DoubtfulRefund"})
 		public void normalTrade() throws ReqDataException {
 			log.info("=========进入可疑退票_判断为正常交易模块");
 			Record record = getRecordByParamsStrong();
@@ -50,7 +53,7 @@ public class DoubtfulRefundController extends CFMBaseController {
 		 * @throws WorkflowException 
 		 * @ 可疑退票_根据交易查找单据
 		 */
-		
+		 @Auth(hasForces = {"DoubtfulRefund"})
 		public void billList() throws Exception {
 			log.info("=========进入可疑退票_根据交易查找单据模块");
 			Record record = getRecordByParamsStrong();
@@ -63,6 +66,7 @@ public class DoubtfulRefundController extends CFMBaseController {
 		/**
 		 * @可疑退票_退票确认
 		 */
+		@Auth(hasForces = {"DoubtfulRefund"})
 		public void confirm() throws Exception {
 			log.info("=========进入可疑退票_根据交易查找单据模块");
 			Record record = getRecordByParamsStrong();

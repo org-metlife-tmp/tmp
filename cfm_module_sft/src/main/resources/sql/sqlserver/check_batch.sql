@@ -964,3 +964,14 @@ WHERE
     #end
   #end
 #end
+
+#sql("findOppoBanktype")
+   select 
+	*
+   from 
+   bank_type_mapping
+   where 
+   bank_type = ? AND
+   channel like concat('%', ?, '%')
+#end
+

@@ -99,6 +99,7 @@ WHERE
   #end
   )  tab  left join gmf_bill gmf
      on gmf.legal_id = tab.pay_id
+     AND delete_num = 0
      #if(map != null)
     #for(x : map)
       #if(x.value&&x.value!="")
@@ -296,7 +297,7 @@ pay.id  in (
           #if(for.index > 0)
             #(",")
           #end
-          #(y.pay_id)
+          #(y)
      #end
      )
 #end
@@ -444,5 +445,116 @@ WHERE ozp.id = cwrei.bill_id
 #sql("updBillById")
    update gmf_bill set bank_serial_number = ?,repeat_count = ?,service_status = ? ,instruct_code = ?,actual_payment_date = ?
    where id =  ? and service_status = ? and repeat_count = ?
+#end
+
+
+#sql("checkBatchLADetail")
+   select
+    pay.op_date ,
+    pay.op_user_name ,
+    pay.id AS pay_id ,
+	pay.source_sys,
+	pay.origin_id,
+	pay.pay_code,
+	pay.channel_id,
+	pay.org_id,
+	pay.org_code,
+	pay.amount,
+	pay.recv_acc_name,
+	pay.recv_cert_type,
+	pay.recv_cert_code,
+	pay.recv_bank_name,
+	pay.recv_acc_no,
+	pay.recv_bank_type,
+	pay.recv_bank_cnaps,
+	pay.status,
+	pay.process_msg,
+	pay.bank_fb_msg,
+	pay.create_time,
+	pay.persist_version,
+	la.bank_key,
+	la.id AS la_id,
+	la.legal_id ,
+	la.branch_code ,
+	la.preinsure_bill_no ,
+	la.insure_bill_no ,
+	la.biz_type ,
+	la.pay_mode ,
+	la.pay_date ,
+	la.sale_code ,
+	la.sale_name ,
+	la.op_code ,
+	la.op_name 
+   from 
+     pay_legal_data AS pay ,
+     la_pay_legal_data_ext AS la
+   where 
+     pay.id = la.legal_id
+     AND
+     pay.id  in (
+      #for(y : map)
+          #if(for.index > 0)
+            #(",")
+          #end
+          #(y)
+     #end
+     )
+#end
+
+#sql("checkBatchEBSDetail")
+   select 
+    pay.op_date ,
+    pay.op_user_name ,
+    pay.id AS pay_id ,
+	pay.source_sys,
+	pay.origin_id,
+	pay.pay_code,
+	pay.channel_id,
+	pay.org_id,
+	pay.org_code,
+	pay.amount,
+	pay.recv_acc_name,
+	pay.recv_cert_type,
+	pay.recv_cert_code,
+	pay.recv_bank_type,
+	pay.recv_bank_name,
+	pay.recv_acc_no,
+	pay.recv_bank_type,
+	pay.status ,
+	pay.process_msg,
+	pay.bank_fb_msg,
+	pay.create_time,
+	pay.persist_version,
+	pay.recv_bank_cnaps,
+	ebs.id AS ebs_id,
+	ebs.legal_id ,
+	ebs.insure_type ,
+	ebs.preinsure_bill_no ,
+	ebs.insure_bill_no ,
+	ebs.branch_bill_no ,
+	ebs.biz_type ,
+	ebs.pay_mode ,
+	ebs.pay_date ,
+	ebs.company_name ,
+	ebs.company_customer_no ,
+	ebs.biz_code ,
+	ebs.sale_code ,
+	ebs.sale_name ,
+	ebs.op_code ,
+	ebs.op_name 
+   from 
+     pay_legal_data AS pay ,
+     ebs_pay_legal_data_ext AS ebs
+   where 
+     pay.id = ebs.legal_id
+     AND
+     pay.id  in (
+      #for(y : map)
+          #if(for.index > 0)
+            #(",")
+          #end
+          #(y)
+     #end
+        )
 #end
 

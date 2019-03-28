@@ -4,6 +4,7 @@ import com.jfinal.log.Log;
 import com.jfinal.plugin.activerecord.Page;
 import com.jfinal.plugin.activerecord.Record;
 import com.qhjf.cfm.exceptions.BusinessException;
+import com.qhjf.cfm.web.plugins.jwt.Auth;
 import com.qhjf.cfm.web.plugins.log.LogbackLog;
 import com.qhjf.cfm.web.service.DztInitSettingService;
 
@@ -22,6 +23,7 @@ public class DztInitSettingController extends CFMBaseController {
     /**
      * 新增
      */
+    @Auth(hasForces = {"DztInitData"})
     public void add() {
     	logger.debug("对账通 - 对账初始化设置 - add()");
     	try {
@@ -37,6 +39,7 @@ public class DztInitSettingController extends CFMBaseController {
     /**
      * 修改
      */
+    @Auth(hasForces = {"DztInitData"})
     public void chg(){
     	logger.debug("对账通 - 对账初始化设置 - upd()");
     	try {
@@ -52,6 +55,7 @@ public class DztInitSettingController extends CFMBaseController {
     /**
      * 启用
      */
+    @Auth(hasForces = {"DztInitData"})
     public void enable() {
     	logger.debug("对账通 - 对账初始化设置 - enable()");
     	try {
@@ -67,6 +71,7 @@ public class DztInitSettingController extends CFMBaseController {
     /**
      * 查询详情
      */
+    @Auth(hasForces = {"DztInitData"})
     public void detail(){
     	logger.debug("对账通 - 对账初始化设置 - detail()");
     	Record record = getRecordByParamsStrong();
@@ -77,6 +82,7 @@ public class DztInitSettingController extends CFMBaseController {
     /**
      * 期初余额列表
      */
+    @Auth(hasForces = {"DztInitData"})
     public void list(){
     	logger.debug("对账通 - 对账初始化设置 - list()");
     	Record record = getRecordByParamsStrong();

@@ -2,6 +2,7 @@ package com.qhjf.cfm.web.channel.util;
 
 import com.jfinal.plugin.activerecord.ActiveRecordPlugin;
 import com.jfinal.plugin.activerecord.Db;
+import com.jfinal.plugin.activerecord.Record;
 import com.jfinal.plugin.activerecord.dialect.SqlServerDialect;
 import com.jfinal.plugin.druid.DruidPlugin;
 import com.jfinal.template.source.ClassPathSourceFactory;
@@ -36,8 +37,9 @@ public class TransQueryTimesGenUtilTest {
 	public void test(){
 		String preDay = "366";
 		String accId = "103";
-		String queryStr = Db.queryStr("select latest_date from acc_his_transaction_jobext where acc_id=103");
-		System.out.println(queryStr);
+		Record r = Db.findFirst("select latest_date from acc_his_transaction_jobext where acc_id=?", accId);
+		
+		System.out.println(r);
 		Map<String, String> times = TransQueryTimesGenUtil.getInstance().getTransQueryTime(accId, preDay);
 		System.out.println(times);
 	}

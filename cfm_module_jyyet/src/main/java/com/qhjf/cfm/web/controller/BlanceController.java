@@ -11,6 +11,7 @@ import com.qhjf.cfm.exceptions.ReqDataException;
 import com.qhjf.cfm.web.config.GlobalConfigSection;
 import com.qhjf.cfm.web.config.IConfigSectionType;
 import com.qhjf.cfm.web.config.RedisCacheConfigSection;
+import com.qhjf.cfm.web.plugins.jwt.Auth;
 import com.qhjf.cfm.web.plugins.log.LogbackLog;
 import com.qhjf.cfm.web.service.BlanceService;
 import org.apache.commons.lang3.StringUtils;
@@ -36,6 +37,7 @@ public class BlanceController extends CFMBaseController {
 	/**
 	 * 当日余额导入 余额日期可以不录
 	 */
+	@Auth(hasForces = "BalImport")
 	public void curBlanceImport() {
 		try {
 			// 从redis中获取excel上传的数据
@@ -57,6 +59,7 @@ public class BlanceController extends CFMBaseController {
 	/**
 	 * 历史余额导入
 	 */
+	@Auth(hasForces = "BalImport")
 	public void hisBlanceImport() {
 		try {
 			// 从redis中获取excel上传的数据

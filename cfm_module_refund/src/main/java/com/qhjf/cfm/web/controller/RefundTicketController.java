@@ -8,6 +8,7 @@ import com.qhjf.cfm.exceptions.ReqDataException;
 import com.qhjf.cfm.exceptions.WorkflowException;
 import com.qhjf.cfm.web.UodpInfo;
 import com.qhjf.cfm.web.UserInfo;
+import com.qhjf.cfm.web.plugins.jwt.Auth;
 import com.qhjf.cfm.web.plugins.log.LogbackLog;
 import com.qhjf.cfm.web.service.RefundTicketService;
 
@@ -29,6 +30,7 @@ public class RefundTicketController extends CFMBaseController {
 	 * @throws ReqDataException 
 	 * @ 主动退票_交易列表
 	 */
+	@Auth(hasForces = {"ActiveRefund"})
 	public void tradeList() throws ReqDataException {
 		log.info("=========进入主动退票_交易列表模块");
 		try {
@@ -51,6 +53,7 @@ public class RefundTicketController extends CFMBaseController {
 	 * @throws ParseException 
 	 * @ 主动退票_单据列表
 	 */
+	@Auth(hasForces = {"ActiveRefund"})
 	public void billList() throws WorkflowException, ReqDataException, ParseException {
 		log.info("=========进入主动退票_单据列表模块");
 		try {
@@ -72,6 +75,7 @@ public class RefundTicketController extends CFMBaseController {
 	 * @throws ParseException 
 	 * @ 主动退票_退票确认
 	 */
+	@Auth(hasForces = {"ActiveRefund"})
 	public void confirm() throws WorkflowException, ReqDataException{
 		log.info("=========进入主动退票_确认退票");
 		try {

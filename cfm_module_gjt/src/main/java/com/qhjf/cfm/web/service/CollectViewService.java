@@ -7,11 +7,15 @@ import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Page;
 import com.jfinal.plugin.activerecord.Record;
 import com.jfinal.plugin.activerecord.SqlPara;
+import com.qhjf.cfm.exceptions.BusinessException;
 import com.qhjf.cfm.exceptions.ReqDataException;
+import com.qhjf.cfm.utils.CommonService;
 import com.qhjf.cfm.utils.StringKit;
 import com.qhjf.cfm.web.UodpInfo;
+import com.qhjf.cfm.web.UserInfo;
 import com.qhjf.cfm.web.constant.WebConstant;
 import com.qhjf.cfm.web.plugins.log.LogbackLog;
+import com.seeyon.ctp.common.authenticate.domain.xsd.User;
 
 import java.util.List;
 
@@ -45,7 +49,9 @@ public class CollectViewService {
      * @param record
      * @throws ReqDataException
      */
-    public Record detail(Record record) throws ReqDataException {
+    public Record detail(Record record, UserInfo userInfo) throws BusinessException {
+
+
         Record returnRecord = new Record();
         log.info("=======进入归集通查看详情逻辑层");
         Long collect_id = TypeUtils.castToLong(record.get("id"));
@@ -54,6 +60,13 @@ public class CollectViewService {
         if (null == findById) {
             throw new ReqDataException("未找到相应的归集信息");
         }
+
+        //如果recode中同时含有“wf_inst_id"和biz_type ,则判断是workflow模块forward过来的，不进行机构权限的校验
+        //否则进行机构权限的校验
+        if (record.get("wf_inst_id") == null || record.get("biz_type") == null) {
+            CommonService.checkUseCanViewBill(userInfo.getCurUodp().getOrg_id(), findById.getLong("create_org_id"));
+        }
+
         log.info("=======开始拼接详情的返回对象=======" + collect_id);
         returnRecord.set("id", collect_id); //归集id
         returnRecord.set("service_serial_number", findById.get("service_serial_number"));  //单据编号

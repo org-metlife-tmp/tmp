@@ -186,6 +186,7 @@ public class JytController extends CFMBaseController {
     /**
      * 当日交易导入
      */
+    @Auth(hasForces = "TransImport")
     public void curTransImport(){
     	
     	try {
@@ -212,6 +213,7 @@ public class JytController extends CFMBaseController {
     /**
      * 历史交易导入
      */
+    @Auth(hasForces = "TransImport")
 	public void hisTransImport() {
 		try {
     		// 从redis中获取excel上传的数据

@@ -123,27 +123,6 @@ public class ZftOptypeMgr extends AbstractOptypeMgr {
         optypes.add(new Optype(Optype.Mode.NORMAL, "zft_revoke")
                 .registKeepParams(new String[]{"id", "persist_version", "service_status"})
                 .registerValidate(new RequiredParamsValidate(new String[]{"id", "persist_version", "service_status"})));
-        //支付通退票单据列表
-        optypes.add(new Optype(Optype.Mode.NORMAL, "zft_billrefund")
-                .registerValidate(new RequiredParamsValidate(new String[]{
-                        "page_size", "page_num"
-                }))
-                .registKeepParams(new String[]{"bill_id", "query_key", "min", "max", "start_date",
-                        "end_date", "page_size", "page_num"}));
-        //支付通退票交易详情
-        optypes.add(new Optype(Optype.Mode.NORMAL, "zft_tradeDetailByBill")
-                .registerValidate(new RequiredParamsValidate(new String[]{
-                        "bill_id"
-                }))
-                .registKeepParams(new String[]{"bill_id"}));
-
-        //支付通退票确认
-        optypes.add(new Optype(Optype.Mode.NORMAL, "zft_confirmRefund")
-                .registerValidate(new RequiredParamsValidate(new String[]{
-                        "bill_id", "trade_id"
-                }))
-                .registKeepParams(new String[]{"bill_id", "trade_id"}));
-
 
         /** 支付通批量操作 start **/
         optypes.add(new Optype(Optype.Mode.NORMAL, "zftbatch_addbillexcel")
@@ -386,28 +365,6 @@ public class ZftOptypeMgr extends AbstractOptypeMgr {
         optypes.add(new Optype(Optype.Mode.NORMAL, "zftbatch_sendpaylist")
                 .registerValidate(new RequiredParamsValidate(new String[]{"id", "ids"}))
                 .registKeepParams(new String[]{"id", "ids"}));
-
-
-        //支付通退票单据列表
-        optypes.add(new Optype(Optype.Mode.NORMAL, "zftbatch_billrefund")
-                .registerValidate(new RequiredParamsValidate(new String[]{
-                        "page_size", "page_num"
-                }))
-                .registKeepParams(new String[]{"bill_id", "query_key", "min", "max", "start_date",
-                        "end_date", "page_size", "page_num"}));
-        //支付通退票交易详情
-        optypes.add(new Optype(Optype.Mode.NORMAL, "zftbatch_tradeDetailByBill")
-                .registerValidate(new RequiredParamsValidate(new String[]{
-                        "bill_id"
-                }))
-                .registKeepParams(new String[]{"bill_id"}));
-
-        //支付通退票确认
-        optypes.add(new Optype(Optype.Mode.NORMAL, "zftbatch_confirmRefund")
-                .registerValidate(new RequiredParamsValidate(new String[]{
-                        "bill_id", "trade_id"
-                }))
-                .registKeepParams(new String[]{"bill_id", "trade_id"}));
 
         optypes.add(new Optype(Optype.Mode.NORMAL, "zft_payok")
                 .registKeepParams(new String[]{

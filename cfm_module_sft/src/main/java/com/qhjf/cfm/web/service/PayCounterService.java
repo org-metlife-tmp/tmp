@@ -179,7 +179,8 @@ public class PayCounterService {
 						if (list != null && list.size() > 0) {
 							// 保存附件
 							return CommonService.saveFileRef(WebConstant.MajorBizType.GMF.getKey(), record.getInt("pay_id"), list);
-						}						
+						}	
+						return true ;
 					}
 					return false ;
 				 
@@ -294,10 +295,10 @@ public class PayCounterService {
 		List<Record> Details = null ;
 		if(0 == source_sys) {
 			logger.info("===========LA数据进行提交");
-			Details = Db.find(Db.getSqlPara("check_batch.checkBatchLADetail", Kv.by("map", pay_ids)));			
+			Details = Db.find(Db.getSqlPara("pay_counter.checkBatchLADetail", Kv.by("map", pay_ids)));			
 		}else {
 			logger.info("===========EBS数据进行提交");
-			Details = Db.find(Db.getSqlPara("check_batch.checkBatchEBSDetail", Kv.by("map", pay_ids)));			
+			Details = Db.find(Db.getSqlPara("pay_counter.checkBatchEBSDetail", Kv.by("map", pay_ids)));			
 		}
         if(null == Details || pay_ids.size() != Details.size()) {
         	throw new ReqDataException("勾选数据中部分数据已过期,请刷新页面");
@@ -333,6 +334,7 @@ public class PayCounterService {
         	          .set("recv_bank_cnaps", rec.get("recv_bank_cnaps"))
         	          .set("recv_bank_type", rec.get("recv_bank_type"))
         	          .set("create_by", userInfo.getUsr_id())
+        	          .set("persist_version", 0)
         	          .set("service_serial_number", serviceSerialNumber)
         	          .set("service_status", WebConstant.BillStatus.AUDITING.getKey())
         	          .set("create_on", new Date());
@@ -351,59 +353,61 @@ public class PayCounterService {
 			    boolean updateResult = ArrayUtil.checkDbResult(batchUpdate);
 			    logger.info("======更新pay_legal_data结果====="+updateResult);
 			    if(updateResult) {
-			    	int[] batchSave = Db.batchSave("gmf_bill", insertRecords, 1000);
-			    	boolean checkDbResult = ArrayUtil.checkDbResult(batchSave);
-			    	logger.info("=======插入gmf_bill表结果==="+checkDbResult);
-			    	if(checkDbResult) {
+			    	    //int[] batchSave = Db.batchSave("gmf_bill", insertRecords, 1000);
 			    		for (Record rec : insertRecords) {
-			    			Db.update("pay_counter.updateFileRef", rec.get("id")  , WebConstant.MajorBizType.GMF.getKey(),rec.get("legal_id"));						     
-			    		    //开启审批流
-			    			List<Record> flows = null;
-							try {
-								flows = CommonService.displayPossibleWf(WebConstant.MajorBizType.GMF.getKey(),
-										org_id, null);
-							} catch (BusinessException e) {
-								e.printStackTrace();
-								logger.error("============获取柜面付审批流异常");
-								return false;
-							}
-							if (flows == null || flows.size() == 0) {
-								logger.error("============未查询到柜面付审批流");
-								return false;
-							}
-							Record flow = flows.get(0);
-							rec.set("define_id", flow.getLong("define_id"));
-							rec.set("service_serial_number", rec.get("service_serial_number"));
-							// TODO
-							WfRequestObj wfRequestObj = new WfRequestObj(WebConstant.MajorBizType.GMF, "gmf_bill",
-									rec) {
-								@Override
-								public <T> T getFieldValue(WebConstant.WfExpressType type) {
-									return null;
+			    			boolean save = Db.save("gmf_bill", "id", rec);
+			    			logger.info("=======插入gmf_bill表结果==="+save);			    			
+			    			if(save) {
+			    				Db.update(Db.getSql("pay_counter.updateFileRef"), rec.get("id")  , WebConstant.MajorBizType.GMF.getKey(),rec.get("legal_id"));						     
+				    		    //开启审批流
+				    			List<Record> flows = null;
+								try {
+									flows = CommonService.displayPossibleWf(WebConstant.MajorBizType.GMF.getKey(),
+											org_id, null);
+								} catch (BusinessException e) {
+									e.printStackTrace();
+									logger.error("============获取柜面付审批流异常");
+									return false;
 								}
-
-								@Override
-								public SqlPara getPendingWfSql(Long[] inst_id, Long[] exclude_inst_id) {
-									return null;
+								if (flows == null || flows.size() == 0) {
+									logger.error("============未查询到柜面付审批流");
+									return false;
 								}
+								Record flow = flows.get(0);
+								rec.set("define_id", flow.getLong("define_id"));
+								rec.set("service_serial_number", rec.get("service_serial_number"));
+								// TODO
+								WfRequestObj wfRequestObj = new WfRequestObj(WebConstant.MajorBizType.GMF, "gmf_bill",
+										rec) {
+									@Override
+									public <T> T getFieldValue(WebConstant.WfExpressType type) {
+										return null;
+									}
 
-							};
-							WorkflowProcessService workflowProcessService = new WorkflowProcessService();
-							boolean submitFlowFlg;
-							try {
-								submitFlowFlg = workflowProcessService.startWorkflow(wfRequestObj, userInfo);
-							} catch (WorkflowException e) {
-								e.printStackTrace();
-								logger.error("=========柜面付审批流提交失败");
-								return false;
-							}
-							if (!submitFlowFlg) {
-								return false;
-							}
+									@Override
+									public SqlPara getPendingWfSql(Long[] inst_id, Long[] exclude_inst_id) {
+										return null;
+									}
+
+								};
+								WorkflowProcessService workflowProcessService = new WorkflowProcessService();
+								boolean submitFlowFlg;
+								try {
+									submitFlowFlg = workflowProcessService.startWorkflow(wfRequestObj, userInfo);
+								} catch (WorkflowException e) {
+									e.printStackTrace();
+									logger.error("=========柜面付审批流提交失败");
+									return false;
+								}
+								if (!submitFlowFlg) {
+									return false;
+								}
+			    			}else {
+			    				return false ;
+			    			}
 			    		}
 			    		return true ;
 			    	}
-			    }
 			    return false ;		    	
 			}   
 		});
@@ -556,4 +560,6 @@ public class PayCounterService {
             throw new DbProcessException("发送失败，请联系管理员！");
         }
     }
+       
 }
+

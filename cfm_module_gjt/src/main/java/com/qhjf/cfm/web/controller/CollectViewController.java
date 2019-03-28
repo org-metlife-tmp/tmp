@@ -55,7 +55,7 @@ public class CollectViewController extends CFMBaseController {
         log.info("===========进入归集通_查看详情接口");
         Record record = getRecordByParamsStrong();
         try {
-            Record returnRecord = service.detail(record);
+            Record returnRecord = service.detail(record,getUserInfo());
             renderOk(returnRecord);
         } catch (BusinessException e) {
             log.info("========获取归集通详情接口失败了");

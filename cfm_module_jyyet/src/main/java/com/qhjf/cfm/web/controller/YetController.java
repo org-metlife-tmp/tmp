@@ -184,6 +184,7 @@ public class YetController extends CFMBaseController {
     /**
 	 * 当日余额导入
 	 */
+    @Auth(hasForces = "BalImport")
 	public void curBlanceImport() {
 		try {
 			// 从redis中获取excel上传的数据
@@ -208,6 +209,7 @@ public class YetController extends CFMBaseController {
 	/**
 	 * 历史余额导入（只支持单个账号历史余额导入）
 	 */
+    @Auth(hasForces = "BalImport")
 	public void hisBlanceImport() {
 		try {
 			// 从redis中获取excel上传的数据

@@ -1,18 +1,24 @@
 package com.qhjf.cfm.web.channel.util;
 
+import com.ibm.icu.text.SimpleDateFormat;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
 
+import java.text.ParseException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 历史交易查询工具类
  *
  */
 public class TransQueryTimesGenUtil {
+	private static final Logger logger = LoggerFactory.getLogger(TransQueryTimesGenUtil.class);
 	private TransQueryTimesGenUtil(){
 		if (null != TransQueryInner.INSTANCE) {
 			throw new RuntimeException("试图破坏单例！");
@@ -63,6 +69,7 @@ public class TransQueryTimesGenUtil {
 	private void getDateMap(Map<String, String> map, int preDay, Date startDate){
 		String start = DateUtil.getSpecifiedDayAfter(startDate, 1, "yyyyMMdd");
 		String preDate = getPreDate(preDay);
+		start = startLegalJudge(start, preDate);
 		map.put("start", start);
 		map.put("end", preDate);
 	}
@@ -80,6 +87,26 @@ public class TransQueryTimesGenUtil {
 		Date date = new Date();
 		String preDate = DateUtil.getSpecifiedDayBefore(date, preDay + 1, "yyyyMMdd");
 		return preDate;
+	}
+	/**
+	 * 开始日期大于结束日期则把开始日期赋值为结束日期
+	 * @param start
+	 * @param end
+	 * @return
+	 */
+	private String startLegalJudge(String start, String end){
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+		try {
+			Date s = sdf.parse(start);
+			Date e = sdf.parse(end);
+			if (s.compareTo(e) > 0) {
+				logger.debug("开始时间在结束时间只后，把开始时间设置为结束时间！");
+				return end;
+			}
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		return start;
 	}
 	
 	private static class TransQueryInner{

@@ -52,6 +52,7 @@ public class CollectManageController extends CFMBaseController {
         }
     }
 
+    @Auth(hasForces = {"GJMgr"})
     public void sendPayList() {
         Record record = getParamsToRecord();
         List<Object> ids = record.get("ids");
@@ -66,12 +67,14 @@ public class CollectManageController extends CFMBaseController {
         renderOk(null);
     }
 
+    @Auth(hasForces = {"GJMgr"})
     public void instruction() {
         Record record = getParamsToRecord();
         List<Record> list = service.instruction(record);
         renderOk(list);
     }
 
+    @Auth(hasForces = {"GJMgr"})
     public void sendinstruction() {
         Record record = getParamsToRecord();
         try {
@@ -82,6 +85,7 @@ public class CollectManageController extends CFMBaseController {
         }
     }
 
+    @Auth(hasForces = {"GJMgr"})
     public void cancelinstruction() {
         Record record = getParamsToRecord();
         try {
