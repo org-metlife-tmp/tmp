@@ -2641,7 +2641,6 @@
             },
             //确认加签或同意或拒绝
             confirmThirdFun:function(){
-                debugger;
                 let type = this.thirdFunData.type;//加签？拒绝？同意？
                 let number = this.thirdFunData.number;//批量？单笔？
                 let _index = this.activeName == '0'? this.dialogData.biz_type : this.activeName;
