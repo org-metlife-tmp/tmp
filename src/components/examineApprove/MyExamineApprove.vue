@@ -1893,8 +1893,8 @@
                     {id:"16", pspan:8, prop:"channel_code"},
                     {id:"17", lspan:4, label:"渠道描述"},
                     {id:"18", pspan:8, prop:"channel_desc"},
-                    {id:"17", lspan:4, label:"审批状态"},
-                    {id:"18", pspan:8, prop:"service_status"},
+                    {id:"19", lspan:4, label:"审批状态"},
+                    {id:"20", pspan:8, prop:"service_status"},
                 ],
                 "26":[
                     {id:"1", lspan:4, label:"来源系统"},
@@ -2641,6 +2641,7 @@
             },
             //确认加签或同意或拒绝
             confirmThirdFun:function(){
+                debugger;
                 let type = this.thirdFunData.type;//加签？拒绝？同意？
                 let number = this.thirdFunData.number;//批量？单笔？
                 let _index = this.activeName == '0'? this.dialogData.biz_type : this.activeName;
@@ -2708,10 +2709,11 @@
                         params:paramsObj
                     }
                 }).then((result) =>{
-                    if (result.data.error_msg) {
+                    if (result.data.state=='fail') {
+                        var msg = result.data.error_msg ? result.data.error_msg : "失败";
                         this.$message({
                             type: "error",
-                            message: result.data.error_msg,
+                            message: msg,
                             duration: 2000
                         });
                     }else{
@@ -2719,7 +2721,7 @@
                             type: "success",
                             message: message,
                             duration: 2000
-                        });
+                        }); 
                         this.getTabList('third');
                         if(this.curBiztype==10 || this.curBiztype==11 || this.curBiztype==19){
                             this.batchAllotVisible = false;
