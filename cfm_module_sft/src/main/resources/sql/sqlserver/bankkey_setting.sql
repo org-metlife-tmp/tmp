@@ -10,15 +10,11 @@ SELECT
 	bank.name display_name,
 	ui.name update_user
 FROM
-	bankkey_setting bankkey,
-	channel_setting channel,
-	organization org,
-	const_bank_type bank,
-	user_info ui
-where bankkey.channel_id = channel.id
-and bankkey.org_id = org.org_id
-and bankkey.bank_type = bank.code
-and ui.usr_id = bankkey.update_by
+	bankkey_setting bankkey
+	inner join channel_setting channel on bankkey.channel_id = channel.id
+	inner join organization org on bankkey.org_id = org.org_id
+	inner join const_bank_type bank on bankkey.bank_type = bank.code
+	left join user_info ui on ui.usr_id = bankkey.update_by
   #if(map != null)
     #for(x : map)
       #if(x.value&&x.value!=""&&(!"[]".equals(x.value.toString())))

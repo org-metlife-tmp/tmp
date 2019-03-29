@@ -45,10 +45,11 @@ public class CmbcBatchPayRecvStatusQueryInter  implements IMoreResultChannelInte
 			return null;
 		}
         
+        //1付2收
         TranType tranType = null;
         if (bizType == 1) {
         	tranType = StringUtils.isBlank(paySection.getTranType()) ? 
-    				TranType.AYBK : TranType.getTranType(paySection.getTranType());
+    				TranType.BYBK : TranType.getTranType(paySection.getTranType());
 		}else {
 			tranType = StringUtils.isBlank(recvSection.getTranType()) ? 
     				TranType.AYBK : TranType.getTranType(recvSection.getTranType());

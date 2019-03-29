@@ -2,6 +2,7 @@ package com.qhjf.cfm.web.channel.cmbc;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.util.TypeUtils;
 import com.jfinal.plugin.activerecord.Record;
 import com.qhjf.bankinterface.api.AtomicInterfaceConfig;
 import com.qhjf.bankinterface.cmbc.CmbcConstant;
@@ -36,7 +37,7 @@ public class CmbcBatchPayNewInter implements IChannelBatchInter {
 	@Override
 	public Map<String, Object> genParamsMap(Record record) {
 		TranType tranType = StringUtils.isBlank(section.getTranType()) ? 
-				TranType.BYSA : TranType.getTranType(section.getTranType());
+				TranType.BYBK : TranType.getTranType(section.getTranType());
 		
 		Map<String, Object> map = new HashMap<>();
         Map<String, Object> totMap = new HashMap<>();
@@ -49,7 +50,7 @@ public class CmbcBatchPayNewInter implements IChannelBatchInter {
 		totMap.put("TRSTYP", tranType.getTrstyp());//交易代码
         totMap.put("DBTACC", totalRec.get("pay_account_no"));//转出账号/转入账号(代发为转出账号；代扣为转入账号)
         totMap.put("BBKNBR", totalRec.getStr("pay_bank_cnaps").substring(3, 7));//分行代码
-        totMap.put("SUM", String.valueOf(totalRec.get("total_amount")));//总金额
+        totMap.put("SUM", TypeUtils.castToString(totalRec.get("total_amount")));//总金额
         totMap.put("TOTAL", String.valueOf(totalRec.get("total_num")));//总笔数
         totMap.put("YURREF", totalRec.get("bank_serial_number"));//业务参考号
         totMap.put("MEMO", tranType.getCTrstyp());//用途

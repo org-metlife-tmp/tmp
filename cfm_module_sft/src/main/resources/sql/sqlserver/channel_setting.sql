@@ -9,7 +9,7 @@ SELECT
 FROM
 	channel_setting chan
 	inner join organization org on chan.org_id = org.org_id
-	inner join user_info ui on chan.update_by = ui.usr_id
+	left join user_info ui on chan.update_by = ui.usr_id
 	left join document_detail_config config on chan.document_moudle = config.id
 WHERE 1 = 1
   #if(map != null)
@@ -190,11 +190,14 @@ WHERE is_checkout = 1
 #sql("getchannelbyid")
 SELECT
 	chan.*,
+	ui.name update_user,
 	org.name org_name
 FROM
 	channel_setting chan,
+	user_info ui,
 	organization org
 WHERE chan.org_id = org.org_id
+  AND chan.update_by = ui.usr_id
   AND chan.id = ?
 #end
 

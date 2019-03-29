@@ -26,11 +26,13 @@ FROM
 	channel_setting chan,
 	bankkey_setting bankkey,
 	organization org,
+	organization org2,
 	la_biz_type biz
 where la.bank_key = bankkey.bankkey
 and la.tmp_org_id = bankkey.org_id
 and la.channel_id = chan.id
 and la.tmp_org_id = org.org_id
+and org2.org_id = chan.org_id
 and la.biz_type = biz.type_code
 and bankkey.pay_mode = 1
 and biz.type = 1
@@ -51,8 +53,6 @@ and la.is_doubtful = 1
           DATEDIFF(day,#para(x.value),pay_date) >= 0
         #elseif("end_date".equals(x.key))
           DATEDIFF(day,#para(x.value),pay_date) <= 0
-        #elseif("tmp_org_id".equals(x.key))
-          chan.org_id = #para(x.value)
         #elseif("status".equals(x.key))
           la.status in(
             #for(y : map.status)
@@ -63,7 +63,7 @@ and la.is_doubtful = 1
             #end
           )
         #elseif("codes".equals(x.key))
-          org.code in(
+          org2.code in(
             #for(y : map.codes)
               #if(for.index > 0)
                 #(",")
@@ -107,11 +107,13 @@ FROM
 	ebs_check_doubtful ebs,
 	bankkey_setting bankkey,
 	channel_setting chan,
+	organization org2,
 	organization org
 where ebs.bank_key = bankkey.bankkey
 and ebs.tmp_org_id = bankkey.org_id
 and ebs.channel_id = chan.id
 and chan.org_id = org.org_id
+and org2.org_id = chan.org_id
 and ebs.is_doubtful = 1
   #if(map != null)
     #for(x : map)
@@ -129,8 +131,6 @@ and ebs.is_doubtful = 1
           DATEDIFF(day,#para(x.value),pay_date) >= 0
         #elseif("end_date".equals(x.key))
           DATEDIFF(day,#para(x.value),pay_date) <= 0
-        #elseif("tmp_org_id".equals(x.key))
-          chan.org_id = #para(x.value)
         #elseif("status".equals(x.key))
           ebs.status in(
             #for(y : map.status)
@@ -141,7 +141,7 @@ and ebs.is_doubtful = 1
             #end
           )
         #elseif("codes".equals(x.key))
-          org.code in(
+          org2.code in(
             #for(y : map.codes)
               #if(for.index > 0)
                 #(",")

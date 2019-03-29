@@ -22,6 +22,7 @@ import com.qhjf.cfm.web.webservice.sft.SftRecvCallBack;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -70,12 +71,12 @@ public class SysBatchRecvInter implements ISysAtomicInterface {
         if (total == null) {
             return null;
         }
-        double amount = 0;
+        BigDecimal amount = new BigDecimal(0);
         List<Record> detailList = new ArrayList<>();
         for (Record batch : batchList) {
             //汇总每笔金额
-            Double batchAmount = batch.getDouble("amount");
-            amount += batchAmount == null ? 0 : batchAmount;
+            BigDecimal batchAmount = new BigDecimal(batch.getDouble("amount") == null ? "0" : Double.toString(batch.getDouble("amount")));
+			amount = amount.add(batchAmount);
 
             //生成收款指令明细信息
             Record detail = genInstrDetail(batch, total.getStr("bank_serial_number"), recvBankCode);

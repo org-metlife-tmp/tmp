@@ -6,8 +6,8 @@
     where 
     	apply_date > #para(start_date) and
     	apply_date < #para(end_date) and
-    	interface_status = 3 and
-    	process_status = 3
+    	interface_status in (3, 4) and
+    	process_status in (3, 5)
   #end
 
 #end

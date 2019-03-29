@@ -44,7 +44,7 @@ public class DiskSendingServiceTest {
 
 	@Before
 	public void start() {
-		dp = new DruidPlugin("jdbc:sqlserver://10.164.26.24:1433;DatabaseName=TreasureDB", "tmpadmin", "User123$");
+		dp = new DruidPlugin("jdbc:sqlserver://10.164.24.147:1433;DatabaseName=TreasureDB", "tmpadmin", "User123$");
 		arp = new ActiveRecordPlugin(dp);
 		arp.setDevMode(true);
 		arp.setDialect(new SqlServerDialect());
@@ -70,7 +70,7 @@ public class DiskSendingServiceTest {
 	@Test
 	public void findMasterByBatchNoTest() {
 		//excel文件路径
-		String excelPath = "D:\\Company\\工作安排\\2018-12-24 收付费\\资金平台通UAT配置0308.xlsx";
+		String excelPath = "D:\\Company\\工作安排\\2018-12-24 收付费\\资金平台通收付费生产配置0329.xlsx";
 
 		try {
 			//String encoding = "GBK";
@@ -91,18 +91,18 @@ public class DiskSendingServiceTest {
 				}
 
 				//开始解析
-				Sheet sheet = wb.getSheetAt(1);     //读取sheet 0
+				Sheet sheet = wb.getSheetAt(5);     //读取sheet 0
 				List<Record> list = new ArrayList<>();
 
 				int firstRowIndex = sheet.getFirstRowNum()+1;   //第一行是列名，所以不读
 				int lastRowIndex = sheet.getLastRowNum();
-
 				for(int rIndex = firstRowIndex; rIndex <= lastRowIndex; rIndex++) {   //遍历行
 					Row row = sheet.getRow(rIndex);
 					Record record = new Record();
 					if (row != null) {
 						row.getCell(0).setCellType(Cell.CELL_TYPE_STRING);
 						String channelCode = row.getCell(0).getStringCellValue();
+						System.out.println("通道："+channelCode);
 						String org = row.getCell(2).getStringCellValue();
 						String bankkey = row.getCell(3).getStringCellValue();
 						String bankkeydesc = row.getCell(4).getStringCellValue();
@@ -313,7 +313,7 @@ public class DiskSendingServiceTest {
 		return result;
 	}
 	
-	@Test
+	//@Test
 	public void validateAvailableBalence(){
 		try {
 //			Record mbRecord = Db.findById("pay_batch_total_master", "id", 2084);
@@ -334,7 +334,7 @@ public class DiskSendingServiceTest {
 		}
 	}
 	
-	@Test
+	//@Test
 	public void repeatSendbankPayTest(){
 		final Integer persistVersion = 3;
 		final long id = TypeUtils.castToLong(1017);
@@ -364,7 +364,7 @@ public class DiskSendingServiceTest {
 			System.out.println("sucess");
 		}
 	}
-	@Test
+	//@Test
 	public void repeatSendbankRecvTest(){
 		final Integer persistVersion = 2;
 		final long id = TypeUtils.castToLong(1);

@@ -19,6 +19,7 @@ public interface CmbcParamsUtil {
 		BYSU("N03020", "代发保险费", "BYSU"),
 		BYTF("N03020", "代发报销款", "BYTF"),
 		BYSA("N03010", "代发工资", "BYSA"),
+		BYBK("N03020", "代发其他", "BYBK"),
 		
 		
 		AYIS("N03030", "代扣保险费", "AYIS"),

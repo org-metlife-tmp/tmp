@@ -96,12 +96,12 @@ public class SysBatchRecvStatusQueryInter implements ISysAtomicInterface {
 			setRecord.set("init_resp_time", new Date());
 			setRecord.set("bank_err_msg", bankErrMsg);
 			
-			//交易失败，回写原始数据
-			if (reqsta == 1 && rtnflg == 1) {
+			//交易失败，回写原始数据（概要信息不回写，查询明细的时候查询）
+			/*if (reqsta == 1 && rtnflg == 1) {
 				if (writeBack(intrTotal, setRecord)) {
 					continue;
 				}
-			}
+			}*/
 			
 			boolean update = CommonService.update("batch_recv_instr_queue_total"
 					, setRecord
