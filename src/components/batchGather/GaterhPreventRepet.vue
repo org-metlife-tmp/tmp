@@ -294,7 +294,7 @@
     export default {
         name: "GaterhPreventRepet",
         created: function () {
-            this.$emit("transmitTitle", "支付数据防重预警");
+            this.$emit("transmitTitle", "防重预警");
             this.$emit("getCommTable", this.routerMessage);
 
             /*获取常量数据*/
