@@ -16,14 +16,14 @@
             top: -50px;
             left: -20px;
 
-            ul{
+            ul {
                 font-size: 14px;
                 color: #b1b1b1;
                 text-align: center;
                 height: 30px;
                 line-height: 30px;
 
-                li{
+                li {
                     float: left;
                     margin-right: 4px;
                     height: 100%;
@@ -33,7 +33,7 @@
                     background-color: #f2f2f2;
                 }
 
-                .active{
+                .active {
                     color: #00b3ed;
                     background-color: #fff;
                 }
@@ -61,7 +61,7 @@
         }
 
         /*数据展示区*/
-        .table-content{
+        .table-content {
             height: 60%;
         }
 
@@ -321,6 +321,20 @@
                     :current-page="pagCurrent">
             </el-pagination>
         </div>
+        <!--拒绝弹框-->
+        <el-dialog title="拒绝理由"
+                   top="200px" width="310px"
+                   :visible.sync="dialogVisible"
+                   :close-on-click-modal="false">
+            <el-select v-model="rejectMessage" placeholder="请选择拒绝理由" clearable size="small">
+                <el-option label="TMP:变更支付方式" value="TMP:变更支付方式"></el-option>
+                <el-option label="TMP:拒绝支付" value="TMP:拒绝支付"></el-option>
+            </el-select>
+            <span slot="footer" class="dialog-footer">
+                <el-button type="warning" plain @click="dialogVisible = false" size="mini">取 消</el-button>
+                <el-button type="warning" @click="submitReject" size="mini">确 定</el-button>
+            </span>
+        </el-dialog>
     </div>
 </template>
 
@@ -387,8 +401,11 @@
                     total_amount: "",
                     total_num: ""
                 },
+                currentData: "",
                 selectId: [], //选中数据
-                resetAllData: true
+                resetAllData: true,
+                dialogVisible:false, //拒绝弹框
+                rejectMessage: ""
             }
         },
         methods: {
@@ -407,12 +424,12 @@
                 this.$emit("getCommTable", this.routerMessage);
             },
             //清空搜索条件
-            clearData: function() {
+            clearData: function () {
                 var searchData = this.searchData;
                 for (var k in searchData) {
-                    if(k == "status"){
+                    if (k == "status") {
                         searchData[k] = [];
-                    }else if (k != "source_sys"){
+                    } else if (k != "source_sys") {
                         searchData[k] = "";
                     }
                 }
@@ -432,14 +449,14 @@
                 this.$emit("getCommTable", this.routerMessage);
             },
             //切换标签
-            switchTab: function(tab){
+            switchTab: function (tab) {
                 var searchData = this.searchData;
-                for(var k in searchData){
-                    if(k == "source_sys"){
+                for (var k in searchData) {
+                    if (k == "source_sys") {
                         searchData[k] = tab;
-                    }else if(k == "status"){
+                    } else if (k == "status") {
                         searchData[k] = ["0"];
-                    }else{
+                    } else {
                         searchData[k] = "";
                     }
                 }
@@ -502,14 +519,14 @@
                 });
             },
             //设置未保存的id
-            setId: function(selection, row){
+            setId: function (selection, row) {
                 let selectId = this.selectId;
                 let totalData = this.totalData;
-                for(let i = 0; i < selection.length; i++){
-                    if(row.pay_id == selection[i].pay_id){
-                        for(let j = 0; j < selectId.length; j++){
-                            if(selectId[j] === row.pay_id){
-                                selectId.splice(j,1);
+                for (let i = 0; i < selection.length; i++) {
+                    if (row.pay_id == selection[i].pay_id) {
+                        for (let j = 0; j < selectId.length; j++) {
+                            if (selectId[j] === row.pay_id) {
+                                selectId.splice(j, 1);
                                 totalData.total_num++;
                                 totalData.total_amount = this.$common.transitSeparator(this.$common.transitNumber(totalData.total_amount) + row.amount);
                                 break;
@@ -523,40 +540,41 @@
                 selectId.push(row.pay_id);
             },
             //点击全选时设置取消勾选的id
-            allChange: function(selection,val){
+            allChange: function (selection, val) {
                 let tableList = this.tableList;
                 let selectId = this.selectId;
                 let totalData = this.totalData;
 
-                if(selection.length === 0){
+                if (selection.length === 0) {
                     tableList.forEach((item) => {
                         let flag = true;
-                        if(item.status == "已提交" || item.status == "已拒绝"){
+                        if (item.status == "已提交" || item.status == "已拒绝") {
                             flag = false;
-                        }else{
-                            for(let i = 0; i < selectId.length; i++){
+                        } else {
+                            for (let i = 0; i < selectId.length; i++) {
                                 let idItem = selectId[i];
-                                if(item.pay_id === idItem){
+                                if (item.pay_id === idItem) {
                                     flag = false;
                                     break;
                                 }
                             }
                         }
 
-                        if(flag) {
+                        if (flag) {
                             totalData.total_num--;
                             totalData.total_amount = this.$common.transitSeparator(this.$common.transitNumber(totalData.total_amount) - item.amount);
                             selectId.push(item.pay_id);
-                        };
+                        }
+                        ;
                     });
-                }else{
+                } else {
                     tableList.forEach((item) => {
-                        for(let i = 0; i < selectId.length; i++){
+                        for (let i = 0; i < selectId.length; i++) {
                             let idItem = selectId[i];
-                            if(item.pay_id === idItem){
+                            if (item.pay_id === idItem) {
                                 totalData.total_num++;
                                 totalData.total_amount = this.$common.transitSeparator(this.$common.transitNumber(totalData.total_amount) + item.amount);
-                                selectId.splice(i,1);
+                                selectId.splice(i, 1);
                                 break;
                             }
                         }
@@ -564,12 +582,12 @@
                 }
             },
             //当前列是否可以勾选
-            isSelect: function(row, index){
+            isSelect: function (row, index) {
                 return !(row.status == "已提交" || row.status == "已拒绝");
             },
             //确认
-            affirm: function(){
-                if(!this.routerMessage.params.channel_id){
+            affirm: function () {
+                if (!this.routerMessage.params.channel_id) {
                     this.$message({
                         type: "warning",
                         message: "请选择通道编码",
@@ -581,7 +599,7 @@
                     remove_ids: this.selectId
                 };
                 let searchData = this.routerMessage.params;
-                for(let k in searchData){
+                for (let k in searchData) {
                     params[k] = searchData[k];
                 }
 
@@ -614,54 +632,45 @@
             },
             //拒绝
             withdrawBill: function (row) {
-                this.$prompt('请输入拒绝原因', '提示', {
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                    title: "拒绝原因",
-                    inputValidator: function (value) {
-                        if (!value) {
-                            return false;
-                        } else {
-                            return true;
+                this.dialogVisible = true;
+                this.rejectMessage = "";
+                this.currentData = row;
+            },
+            //确定拒绝
+            submitReject: function(){
+                let currentData = this.currentData;
+                this.$axios({
+                    url: this.queryUrl + "normalProcess",
+                    method: "post",
+                    data: {
+                        optype: "checkbatch_revokeToLaOrEbs",
+                        params: {
+                            id: currentData.pay_id,
+                            persist_version: currentData.persist_version,
+                            source_sys: this.routerMessage.params.source_sys,
+                            feed_back: this.rejectMessage
                         }
-                    },
-                    inputErrorMessage: '请输入拒绝原因'
-                }).then(({value}) => {
-                    var searData = this.searchData;
-                    this.$axios({
-                        url: this.queryUrl + "normalProcess",
-                        method: "post",
-                        data: {
-                            optype: "checkbatch_revokeToLaOrEbs",
-                            params: {
-                                id: row.pay_id,
-                                persist_version: row.persist_version,
-                                source_sys: searData.source_sys,
-                                feed_back: value
-                            }
-                        }
-                    }).then((result) => {
-                        if (result.data.error_msg) {
-                            this.$message({
-                                type: "error",
-                                message: result.data.error_msg,
-                                duration: 2000
-                            });
-                            return;
-                        } else {
-                            this.$message({
-                                type: "success",
-                                message: "拒绝成功",
-                                duration: 2000
-                            });
-                            this.$emit("getCommTable", this.routerMessage);
-                        }
-                    }).catch(function (error) {
-                        console.log(error);
-                    })
-                }).catch(() => {
-
-                });
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        });
+                        return;
+                    } else {
+                        this.$message({
+                            type: "success",
+                            message: "拒绝成功",
+                            duration: 2000
+                        });
+                        this.dialogVisible = false;
+                        this.$emit("getCommTable", this.routerMessage);
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                })
             },
             //导出
             exportFun: function () {
@@ -709,29 +718,29 @@
                 })
             },
             //设置当前页勾选情况
-            setSelect: function(){
-                if(this.tableList.length > 0){
+            setSelect: function () {
+                if (this.tableList.length > 0) {
                     let selectId = this.selectId;
                     let tableList = this.tableList;
                     tableList.forEach((row) => {
                         let flag = true;
-                        if(row.status == "已提交" || row.status == "已拒绝"){
+                        if (row.status == "已提交" || row.status == "已拒绝") {
                             flag = false;
-                        }else{
-                            for(let i = 0; i < selectId.length; i++){
-                                if(row.pay_id == selectId[i]){
+                        } else {
+                            for (let i = 0; i < selectId.length; i++) {
+                                if (row.pay_id == selectId[i]) {
                                     flag = false;
                                     break;
                                 }
                             }
                         }
-                        this.$refs.contentTable.toggleRowSelection(row,flag);
+                        this.$refs.contentTable.toggleRowSelection(row, flag);
                     })
                 }
             }
         },
         computed: {
-            mayAffirm: function(){
+            mayAffirm: function () {
                 return this.tableList.length === 0;
             }
         },
@@ -742,14 +751,14 @@
                 this.tableList = val.data;
                 this.pagCurrent = val.page_num;
                 this.searchData.visit_time = val.data.length > 0 ? val.data[0].visit_time : "";
-                if(this.resetAllData){
+                if (this.resetAllData) {
                     this.totalData.total_num = val.total_num;
                     this.totalData.total_amount = this.$common.transitSeparator(val.total_amount);
                 }
 
                 setTimeout(() => {
                     this.setSelect();
-                },100);
+                }, 100);
             }
         }
     }

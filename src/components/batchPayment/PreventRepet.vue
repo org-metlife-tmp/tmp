@@ -563,18 +563,10 @@
             },
             //拒绝
             rejectData: function (row) {
-                this.$prompt('请输入拒绝原因', '提示', {
+                this.$confirm('TMP:疑似重复,拒绝支付', '拒绝原因', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
-                    title: "拒绝原因",
-                    inputValidator: function (value) {
-                        if (!value) {
-                            return false;
-                        } else {
-                            return true;
-                        }
-                    },
-                    inputErrorMessage: '请输入拒绝原因'
+                    type: 'warning'
                 }).then(({value}) => {
                     this.$axios({
                         url: this.queryUrl + "normalProcess",
@@ -585,7 +577,7 @@
                                 id: row.id,
                                 os_source: row.os_source,
                                 persist_version: row.persist_version,
-                                op_reason: value
+                                op_reason: "TMP:疑似重复,拒绝支付"
                             }
                         }
                     }).then((result) => {
