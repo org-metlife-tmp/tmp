@@ -18,6 +18,7 @@ import com.qhjf.cfm.web.constant.WebConstant;
 import com.qhjf.cfm.web.plugins.log.LogbackLog;
 import com.qhjf.cfm.web.service.PayCounterService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -168,6 +169,51 @@ public class PayCounterController extends CFMBaseController{
 			        }
 			        kv.set("biz_type", rec.get("biz_type"));
 			        return Db.getSqlPara("pay_counter.findPendingList", Kv.by("map", kv));
+			    }
+			    
+			    
+			    
+			    @Override
+			    protected List<WfRequestObj> genBatchWfRequestObjs() throws BusinessException {
+			        Record record = getParamsToRecordStrong();
+			        final List<Record> wfRequestObjs = record.get("batch_list");
+
+			        if (wfRequestObjs != null && wfRequestObjs.size() > 0) {
+
+			            return new ArrayList<WfRequestObj>() {
+			                {
+			                    for (final Record rec : wfRequestObjs) {
+			                        add(new WfRequestObj(WebConstant.MajorBizType.GMF, "gmf_bill", rec) {
+			                            @Override
+			                            public <T> T getFieldValue(WebConstant.WfExpressType type) throws WorkflowException {
+			                                Record bill_info = getBillRecord();
+			                                if (type.equals(WebConstant.WfExpressType.AMOUNT)) {
+			                                    return bill_info.get("amount");
+			                                } else if (type.equals(WebConstant.WfExpressType.STATUS)) {
+			                                    return bill_info.get("service_status");
+			                                } else {
+			                                    throw new WorkflowException("类型不支持");
+			                                }
+			                            }
+
+			                            @Override
+			                            public SqlPara getPendingWfSql(Long[] inst_id, Long[] exclude_inst_id) {
+			                                return getSqlPara(inst_id, exclude_inst_id, rec);
+			                            }
+
+			                            @Override
+			                            public boolean hookPass() {
+			                            	UserInfo userInfo = getUserInfo();
+			                                return service.hookPass(rec,userInfo);
+			                            }
+			                        });
+			                    }
+			                }
+			            };
+
+			        }
+
+			        throw new WorkflowException("没有可操作的单据!");
 			    }
 			    
 			    /**

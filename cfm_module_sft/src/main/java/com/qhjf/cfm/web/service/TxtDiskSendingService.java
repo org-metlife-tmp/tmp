@@ -59,6 +59,9 @@ public class TxtDiskSendingService {
      */
 	public String diskDownLoad(Long pay_master_id,final Long pay_id,Integer document_moudle, final UserInfo userInfo, final String fileName, Integer document_type, Record configs_tail) throws IOException, BusinessException {
 		logger.info("==============生成txt样式的盘片");
+		Record pay_batch_total_master = Db.findById("pay_batch_total_master", "id", pay_master_id);
+		Record channel_setting = Db.findById("channel_setting", "id", pay_batch_total_master.get("channel_id"));
+		String channel_code = channel_setting.getStr("channel_code");
 		Record pay_total = Db.findById("pay_batch_total", "id", pay_id);
 		final Record user_record = Db.findById("user_info", "usr_id",userInfo.getUsr_id());
 		if(null == user_record){
@@ -163,7 +166,7 @@ public class TxtDiskSendingService {
 	        	Map<String, Object> detail_map = new HashMap<>();
 	        	
 	        	//详情的record同样也需要额外封装一些盘片需要的详情信息
-	        	constructDetailMapService.constructDetailRecord(detail_map,detailRecords.get(i),document_moudle);	        	
+	        	constructDetailMapService.constructDetailRecord(detail_map,detailRecords.get(i),document_moudle,channel_code,pay_total.getInt("source_sys"));	        	
 	        	//detail_map.put("serialnum", detailRecords.get(i).get("serialnum"));
 	        	for(int j = 0; j < datail_titleNames.split(",").length; j++) {
 	        		if("recv_acc_no".equals(datail_titleNames.split(",")[j])) {
@@ -386,6 +389,9 @@ public class TxtDiskSendingService {
      */
 	public String diskDownLoadNewThread(Long pay_master_id,final Long pay_id,Integer document_moudle, final String fileName, Integer document_type, Record configs_tail) throws IOException, BusinessException {
 		logger.info("==============生成txt样式的盘片");
+		Record pay_batch_total_master = Db.findById("pay_batch_total_master", "id", pay_master_id);
+		Record channel_setting = Db.findById("channel_setting", "id", pay_batch_total_master.get("channel_id"));
+		String channel_code = channel_setting.getStr("channel_code");
 		// .mv文件均放在common包的resource文件下
 		String filePath = String.valueOf(document_moudle)+ document_type +".vm";
 		String total_titleNames = "";
@@ -485,7 +491,7 @@ public class TxtDiskSendingService {
 	        	Map<String, Object> detail_map = new HashMap<>();
 	        	
 	        	//详情的record同样也需要额外封装一些盘片需要的详情信息
-	        	constructDetailMapService.constructDetailRecord(detail_map,detailRecords.get(i),document_moudle);	        	
+	        	constructDetailMapService.constructDetailRecord(detail_map,detailRecords.get(i),document_moudle,channel_code,pay_total.getInt("source_sys"));	        	
 	        	//detail_map.put("serialnum", detailRecords.get(i).get("serialnum"));
 	        	for(int j = 0; j < datail_titleNames.split(",").length; j++) {
 	        		if("recv_acc_no".equals(datail_titleNames.split(",")[j])) {

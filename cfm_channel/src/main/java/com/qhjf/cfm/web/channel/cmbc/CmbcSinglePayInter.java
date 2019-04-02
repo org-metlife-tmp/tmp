@@ -8,6 +8,7 @@ import com.qhjf.bankinterface.cmbc.CmbcConstant;
 import com.qhjf.cfm.utils.CommKit;
 import com.qhjf.cfm.utils.StringKit;
 import com.qhjf.cfm.web.channel.inter.api.ISingleResultChannelInter;
+import com.qhjf.cfm.web.channel.util.ChannelStringUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,7 +35,7 @@ public class CmbcSinglePayInter  implements ISingleResultChannelInter{
 
         //摘要处理
 		String summary = CommKit.isNullOrEmpty(record.getStr("summary")) ? "cfm" : record.getStr("summary");
-		summary = StringKit.cutString(StringKit.filterSpecialChar(summary),62);
+		summary = ChannelStringUtil.getCmbFixLenStr(StringKit.filterSpecialChar(summary),62);
 		detailMap1.put("NUSAGE",summary);
 		//指令码放到招行接口接口的BUSNAR字段，做自动核对用，同交易信息中的BUSNAR比对
 		detailMap1.put("BUSNAR", record.getStr("instruct_code"));

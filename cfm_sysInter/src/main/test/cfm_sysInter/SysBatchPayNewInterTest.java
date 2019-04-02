@@ -26,7 +26,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
-import java.util.*;
 
 public class SysBatchPayNewInterTest {
 	private static final Logger logger = LoggerFactory.getLogger(SysBatchPayNewInterTest.class);

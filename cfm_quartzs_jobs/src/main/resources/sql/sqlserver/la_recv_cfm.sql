@@ -85,15 +85,15 @@
 #end
 
 #sql("getrecvcheck")
-  SELECT
-	*
-FROM
-	la_recv_check_doubtful
-WHERE is_doubtful = 1
-	AND insure_bill_no =?
-	AND recv_acc_name =?
-	AND amount =?
-	AND ext.recv_date =?
+  	SELECT
+		*
+	FROM
+		la_recv_check_doubtful
+	WHERE is_doubtful = 1
+		AND insure_bill_no =?
+		AND pay_acc_name =?
+		AND amount =?
+		AND recv_date =?
 #end
 
 #end

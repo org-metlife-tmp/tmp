@@ -61,13 +61,19 @@
 #sql("findDatailInfo")
     select 
       pbd.* ,
-      la.insure_bill_no ,
-      la.preinsure_bill_no
+      org.province ,
+      la.bank_key ,
+      la.preinsure_bill_no,
+      la.insure_bill_no
      from
     recv_batch_detail  pbd ,
-    la_recv_legal_data_ext  la
+    la_recv_legal_data_ext AS la,
+    recv_legal_data AS recv ,
+    organization AS org
    where 
-   pbd.legal_id = la.legal_id AND
+   pbd.legal_id = recv.id AND
+   recv.org_id = org.org_id AND
+   la.legal_id = recv.id AND
    pbd.base_id = ? 
    order by pbd.package_seq asc
 #end

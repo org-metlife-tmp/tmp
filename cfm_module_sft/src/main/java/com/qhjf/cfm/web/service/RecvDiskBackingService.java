@@ -265,7 +265,7 @@ public class RecvDiskBackingService {
 					} else {
 						sonnum ++ ;
 						// 建行直接开始校验详情列数
-						if (linefile.split("\\|",-1).length != 12) {
+						if (linefile.split("\\|",-1).length != 15) {
 							// 汇总信息列数不正确
 							logger.error("===========建行详情列数不对");
 							result.put("success", false);

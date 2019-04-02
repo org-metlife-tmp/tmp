@@ -60,20 +60,34 @@
 
 #sql("findDatailInfo")
     select 
-      pbd.* 
+      pbd.* ,
+      org.province ,
+      la.bank_key ,  
+      la.preinsure_bill_no,
+      la.insure_bill_no
     from
-    pay_batch_detail  pbd 
+    pay_batch_detail AS  pbd ,
+    la_pay_legal_data_ext AS la,
+    pay_legal_data AS pay ,
+    organization AS org
    where 
+   pbd.legal_id = pay.id AND
+   pay.org_id = org.org_id AND
+   la.legal_id = pay.id AND
    pbd.base_id = ? 
    order by pbd.package_seq asc 
 #end
 
 #sql("findEBSDatailInfo")
     select 
-      pbd.* 
+      pbd.* ,
+      ebs.preinsure_bill_no,
+      ebs.insure_bill_no
     from
-    pay_batch_detail  pbd 
+    pay_batch_detail AS pbd ,
+    ebs_pay_legal_data_ext AS ebs
    where 
+   ebs.legal_id = pbd.legal_id AND
    pbd.base_id = ? 
    order by pbd.package_seq asc 
 #end

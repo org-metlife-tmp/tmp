@@ -15,6 +15,7 @@ FROM
 	inner join organization org on bankkey.org_id = org.org_id
 	inner join const_bank_type bank on bankkey.bank_type = bank.code
 	left join user_info ui on ui.usr_id = bankkey.update_by
+WHERE 1 = 1
   #if(map != null)
     #for(x : map)
       #if(x.value&&x.value!=""&&(!"[]".equals(x.value.toString())))

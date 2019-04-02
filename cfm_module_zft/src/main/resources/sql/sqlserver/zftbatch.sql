@@ -902,6 +902,7 @@ select
 	detail.payment_amount,
 	detail.pay_status,
 	detail.memo,
+	detail.memo as payment_summary,
     detail.repeat_count,
     detail.instruct_code,
     detail.persist_version
