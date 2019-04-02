@@ -7,6 +7,7 @@ import com.jfinal.plugin.activerecord.Record;
 import com.qhjf.bankinterface.api.AtomicInterfaceConfig;
 import com.qhjf.bankinterface.icbc.IcbcConstant;
 import com.qhjf.cfm.utils.CommKit;
+import com.qhjf.cfm.utils.RedisSericalnoGenTool;
 import com.qhjf.cfm.web.channel.inter.api.IMoreResultChannelInter;
 import com.qhjf.cfm.web.channel.util.DateUtil;
 import com.qhjf.cfm.web.channel.util.IcbcResultParseUtil;
@@ -37,7 +38,13 @@ public class IcbcCurrTransQueryInter  implements IMoreResultChannelInter{
         Map<String,Object> pub = new HashMap<>();
         
         pub.put("CIS", inter.getChannelConfig("CIS"));
-        pub.put("fSeqno", inter.getChannelInfo().getSerialnoGenTool().next());
+        
+		// 指令包序列号
+		String serianlNo = RedisSericalnoGenTool.genBankSeqNo();
+		if (serianlNo == null) {
+			return result;
+		}
+        pub.put("fSeqno", serianlNo);
         
         result.put("TotalNum", "1");
         result.put("AccNo", record.getStr("acc_no"));

@@ -5,7 +5,9 @@ import com.alibaba.fastjson.JSONObject;
 import com.jfinal.plugin.activerecord.Record;
 import com.qhjf.bankinterface.api.AtomicInterfaceConfig;
 import com.qhjf.bankinterface.icbc.IcbcConstant;
+import com.qhjf.cfm.utils.RedisSericalnoGenTool;
 import com.qhjf.cfm.web.channel.inter.api.IMoreResultChannelInter;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +33,13 @@ public class IcbcTradeResultBatchQueryInter  implements IMoreResultChannelInter{
 		Map<String, Object> pub = new HashMap<>();
 
 		pub.put("CIS", inter.getChannelConfig("CIS"));
-		pub.put("fSeqno", inter.getChannelInfo().getSerialnoGenTool().next());
+		
+		// 指令包序列号
+		String serianlNo = RedisSericalnoGenTool.genBankSeqNo();
+		if (serianlNo == null) {
+			return result;
+		}
+		pub.put("fSeqno", serianlNo);
 		
 		result.put("pub", pub);
 		//根据指令序列号查询

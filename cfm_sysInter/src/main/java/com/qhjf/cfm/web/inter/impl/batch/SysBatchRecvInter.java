@@ -279,7 +279,7 @@ public class SysBatchRecvInter implements ISysAtomicInterface {
         //生成批量指令的银行流水号
         String bankSerialNumber = null;
         try {
-            bankSerialNumber = ChannelManager.getChannelInfo(recvBankCode).getSerialnoGenTool().next();
+            bankSerialNumber = ChannelManager.getSerianlNo(recvBankCode);
         } catch (Exception e1) {
             e1.printStackTrace();
             return null;
@@ -335,7 +335,7 @@ public class SysBatchRecvInter implements ISysAtomicInterface {
 
         String detailBankServiceNumber = null;
         try {
-            detailBankServiceNumber = ChannelManager.getChannelInfo(recvBankCode).getSerialnoGenTool().next();
+            detailBankServiceNumber = ChannelManager.getSerianlNo(recvBankCode);
         } catch (Exception e1) {
         	log.error("批收指令生成明细表表数据时，生成detailBankServiceNumber异常！");
             e1.printStackTrace();

@@ -8,6 +8,7 @@ import com.qhjf.bankinterface.api.ProcessEntrance;
 import com.qhjf.bankinterface.api.exceptions.BankInterfaceException;
 import com.qhjf.bankinterface.api.exceptions.DataParseException;
 import com.qhjf.bankinterface.icbc.IcbcConstant;
+import com.qhjf.cfm.utils.RedisSericalnoGenTool;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,7 +35,8 @@ public class IcbcTransQueryProcessPatch {
 		if (null != nextTag) {
 			reqParams.put("NextTag", nextTag);
 			Map<String, Object> pub = (Map<String, Object>) reqParams.get("pub");
-			pub.put("fSeqno", IcbcConstant.QHISD.getChannelInfo().getSerialnoGenTool().next());
+			
+			pub.put("fSeqno", RedisSericalnoGenTool.genBankSeqNo());
 			reqParams.put("pub", pub);
 			
 			JSONArray ebs = resultJO.getJSONArray("eb");
@@ -70,7 +72,9 @@ public class IcbcTransQueryProcessPatch {
 		if (null != nextTag) {
 			reqParams.put("NextTag", nextTag);
 			Map<String, Object> pub = (Map<String, Object>) reqParams.get("pub");
-			pub.put("fSeqno", IcbcConstant.QHISD.getChannelInfo().getSerialnoGenTool().next());
+			
+			// 指令包序列号
+			pub.put("fSeqno", RedisSericalnoGenTool.genBankSeqNo());
 			reqParams.put("pub", pub);
 			
 			queryPage(rds, inter, reqParams);

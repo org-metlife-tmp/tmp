@@ -424,7 +424,7 @@ public class SysBatchPayInter implements ISysAtomicInterface {
 		//生成批量指令的银行流水号
 		String bankSerialNumber = null;
 		try {
-			bankSerialNumber =  ChannelManager.getChannelInfo(payBankCode).getSerialnoGenTool().next();
+			bankSerialNumber =  ChannelManager.getSerianlNo(payBankCode);
 		} catch (Exception e1) {
 			e1.printStackTrace();
 			return null;
@@ -466,7 +466,7 @@ public class SysBatchPayInter implements ISysAtomicInterface {
 		
 		String detailBankServiceNumber = null;
 		try {
-			detailBankServiceNumber =  ChannelManager.getChannelInfo(payBankCode).getSerialnoGenTool().next();
+			detailBankServiceNumber =  ChannelManager.getSerianlNo(payBankCode);
 		} catch (Exception e1) {
 			e1.printStackTrace();
 			return null;

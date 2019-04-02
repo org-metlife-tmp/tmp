@@ -8,6 +8,7 @@ import com.qhjf.bankinterface.icbc.IcbcChannel;
 import com.qhjf.bankinterface.icbc.IcbcConstant;
 import com.qhjf.bankinterface.icbc.convertor.IcbcCurrTypeConvertor;
 import com.qhjf.cfm.utils.ElectronicTemplateTool;
+import com.qhjf.cfm.utils.RedisSericalnoGenTool;
 import com.qhjf.cfm.utils.UUIDUtil;
 import com.qhjf.cfm.web.channel.inter.api.IMoreResultChannelInter;
 import com.qhjf.cfm.web.channel.util.AmountUtil;
@@ -35,7 +36,14 @@ public class IcbcHisElectronicQueryInter implements IMoreResultChannelInter{
 		Map<String, Object> rd = new HashMap<String, Object>();
 		
 		pub.put("CIS", inter.getChannelConfig("CIS"));
-		pub.put("fSeqno", inter.getChannelInfo().getSerialnoGenTool().next());
+		
+		// 指令包序列号
+		String serianlNo = RedisSericalnoGenTool.genBankSeqNo();
+		if (serianlNo == null) {
+			return result;
+		}
+		
+		pub.put("fSeqno", serianlNo);
 		
 		rd.put("iSeqno", "1");//指令顺序号
 		String accNo = record.getStr("acc_no");
