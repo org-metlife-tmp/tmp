@@ -10,6 +10,7 @@
         <!--开户行选择弹框-->
         <el-dialog :visible.sync="dialogVisible"
                    width="40%" title="选择开户行"
+                   :append-to-body="true"
                    top="140px" :close-on-click-modal="false">
             <el-form :model="dialogData" size="small" :label-width="formLabelWidth">
                 <el-row>
@@ -72,7 +73,8 @@
 
             <span slot="footer" class="dialog-footer" style="text-align:center">
                     <el-button type="warning" size="mini" plain @click="dialogVisible = false">取 消</el-button>
-                    <el-button type="warning" size="mini" @click="saveBankinfo">确 定</el-button>
+                    <el-button type="warning" size="mini" :disabled="!dialogData.bank_name"
+                               @click="saveBankinfo">确 定</el-button>
                 </span>
         </el-dialog>
     </div>
@@ -80,7 +82,10 @@
 
 <script>
     /*
-    * 选择开户行组件
+    * 选择开户行组件传参-fillinBankName
+    * 1、接收空字符串进行清空处理
+    * 2、接收开户行名称进行展示
+    * 返回数据-bankInfo：包含银行大类、地区、开户行及开户行cnps号
     * */
     export default {
         name: "SetBanktype",
@@ -96,6 +101,7 @@
                 this.bankTypeList = bankAllTypeList.slice(0,200);
             }
         },
+        props: ["fillinBankName"],
         data: function(){
             return {
                 queryUrl: this.$store.state.queryUrl,
@@ -117,13 +123,13 @@
                 loading: false,
                 bankSelect: true, //开户行
                 bankList: [],
-
             }
         },
         methods: {
             //选择开户行
             getBank: function(){
                 this.dialogVisible = true;
+                this.bankSelect = true;
                 let dialogData = this.dialogData;
                 for(let k in dialogData){
                     dialogData[k] = "";
@@ -231,14 +237,30 @@
             },
             //设置CNPAS
             setCNAPS: function(value){
-                var bankList = this.bankList;
-                for(var i = 0; i < bankList.length; i++){
-                    if(bankList[i].name == value){
-                        this.dialogData.cnaps_code = bankList[i].cnaps_code;
-                        return;
+                if(value){
+                    var bankList = this.bankList;
+                    for(var i = 0; i < bankList.length; i++){
+                        if(bankList[i].name == value){
+                            this.dialogData.cnaps_code = bankList[i].cnaps_code;
+                            return;
+                        }
                     }
+                }else{
+                    this.dialogData.cnaps_code = "";
                 }
             },
+            //保存选中的银行
+            saveBankinfo: function(){
+                let dialogData = this.dialogData;
+                this.showBank = dialogData.bank_name;
+                this.dialogVisible = false;
+                this.$emit("bankInfo",dialogData);
+            },
+        },
+        watch: {
+            fillinBankName: function(val,oldVal){
+                this.showBank = val;
+            }
         }
     }
 </script>
