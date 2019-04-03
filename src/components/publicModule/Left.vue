@@ -640,7 +640,7 @@
                     <el-menu-item index="/batch-gather/gather-abnormal" v-if="menuList.RecvBatchDoExcp">异常处理</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
-            <!--<el-submenu index="22">
+            <el-submenu index="22">
                 <template slot="title" height="200px">
                     <i class="icon-gmfk"></i>
                     <p class="mg-four">柜面付款</p>
@@ -649,7 +649,7 @@
                     <el-menu-item index="/counter-payment/counter-settle-account">结算对账</el-menu-item>
                     <el-menu-item index="/counter-payment/payment-workbench">付款工作台</el-menu-item>
                 </el-menu-item-group>
-            </el-submenu>-->
+            </el-submenu>
         </el-menu>
     </div>
 </template>

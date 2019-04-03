@@ -1354,6 +1354,16 @@
                     'more-addLots':"sftrecvexcept_batchappend",
                     'more-agree':"sftrecvexcept_batchagree"
                 },
+                "32":{
+                    text:"柜面付",
+                    detail:"paycounter_detail",
+                    list:"paycounter_pendingtasks",
+                    addLots:"paycounter_append",
+                    agree:"paycounter_agree",
+                    reject:"paycounter_reject",
+                    'more-addLots':"paycounter_batchappend",
+                    'more-agree':"paycounter_batchagree"
+                }
             };
 
             this.detailDialog ={
@@ -1940,6 +1950,26 @@
                     {id:"19", lspan:4, label:"交互方式"},
                     {id:"20", pspan:8, prop:"inter_mode"},
                 ],
+                "32":[
+                    {id:"1", lspan:4, label:"业务类型"},
+                    {id:"2", pspan:8, prop:"type_name"},
+                    {id:"3", lspan:4, label:"付款方账号"},
+                    {id:"4",pspan:8, prop:"pay_account_no"},
+                    {id:"5", lspan:4, label:"付款方名称"},
+                    {id:"6", pspan:8, prop:"pay_account_name"},
+                    {id:"7", lspan:4, label:"付款方银行名称"},
+                    {id:"8", pspan:8, prop:"pay_bank_name"},
+                    {id:"9", lspan:4, label:"收款人户名"},
+                    {id:"10", pspan:8, prop:"recv_acc_name"},
+                    {id:"11", lspan:4, label:"收款人账号"},
+                    {id:"12", pspan:8, prop:"recv_acc_no"},
+                    {id:"13", lspan:4, label:"开户行"},
+                    {id:"14", pspan:8, prop:"recv_bank_name"},
+                    {id:"15", lspan:4, label:"金额"},
+                    {id:"16", pspan:8, prop:"amount"},
+                    {id:"17", lspan:4, label:"摘要"},
+                    {id:"18", pspan:8, prop:"payment_summary"}
+                ],
             }
         },
         mounted:function(){
@@ -2207,6 +2237,20 @@
                         {id:'8',prop:"total_amount",name:'总金额'},
                         {id:'9',prop:"total_num",name:'总笔数'},
                         {id:'10',prop:"name",name:'操作人'}
+                    ],
+                    "32":[
+                        {id:'1',prop:"pay_date",name:'业务操作日期'},
+                        {id:'3',prop:"pay_code",name:'支付号码'},
+                        {id:'4',prop:"biz_code",name:'业务号码'},
+                        {id:'5',prop:"insure_bill_no",name:'保单号'},
+                        {id:'6',prop:"type_name",name:'业务类型'},
+                        {id:'7',prop:"pay_acc_no",name:'付款账号'},
+                        {id:'8',prop:"recv_acc_no",name:'收款方账号'},
+                        {id:'9',prop:"recv_acc_name",name:'客户名称'},
+                        {id:'10',prop:"recv_acc_name",name:'开户名称'},
+                        {id:'11',prop:"amount",name:'金额'},
+                        {id:'12',prop:"op_user_name",name:'操作人'},
+                        {id:'13',prop:"nextUserList",name:'下级审批人'},
                     ]
                 },
                 editableTabsList: {},
@@ -2720,7 +2764,7 @@
                             type: "success",
                             message: message,
                             duration: 2000
-                        }); 
+                        });
                         this.getTabList('third');
                         if(this.curBiztype==10 || this.curBiztype==11 || this.curBiztype==19){
                             this.batchAllotVisible = false;
