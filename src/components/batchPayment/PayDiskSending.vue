@@ -63,7 +63,7 @@
 
         /*导出*/
         .export {
-            background-position: -513px -62px;
+            background-position: -535px -62px;
         }
     }
 </style>
