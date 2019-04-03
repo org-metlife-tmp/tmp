@@ -531,7 +531,7 @@
                 orgList: [],
                 billstatusList: [],
                 statusList: {},
-                dialogVisible: false, //弹框数据
+                dialogVisible: true, //弹框数据
                 dialogData: {
                     recv_acc_name: "",
                     recv_acc_no: "",
@@ -829,10 +829,10 @@
                 let params = {
                     files: this.fileList,
                     source_sys: this.routerMessage.params.source_sys,
-                    pay_id: this.currentData.id,
+                    pay_id: this.currentData.pay_id,
                     persist_version: this.currentData.persist_version
                 };
-                for(let i = 0; i < dialogData.length; i++){
+                for(let k in dialogData){
                     params[k] = dialogData[k];
                 }
 
@@ -930,7 +930,7 @@
                         data: {
                             optype: "paycounter_revokeToLaOrEbs",
                             params: {
-                                pay_id: row.id,
+                                pay_id: row.pay_id,
                                 source_sys: row.source_sys,
                                 persist_version: row.persist_version,
                                 feed_back: value
