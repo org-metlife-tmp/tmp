@@ -50,16 +50,17 @@
   #end
   
   #sql("bal_from_cur_to_his")
-    INSERT into acc_his_balance  
+    INSERT into acc_his_balance(acc_id,acc_no,acc_name,bank_type,bal,available_bal,frz_amt,data_source,bal_date,import_time)
     select b.acc_id,b.acc_no,b.acc_name,b.bank_type,b.bal,b.available_bal,b.frz_amt,b.data_source,b.bal_date,b.import_time
     from acc_cur_balance b,account a  
     where b.acc_id=a.acc_id and a.interactive_mode != 1
   #end
   
    #sql("trans_from_cur_to_his")
-    INSERT into acc_his_transaction  
+    INSERT into acc_his_transaction(acc_id,acc_no,acc_name,bank_type,direction,amount,opp_acc_no,opp_acc_name,opp_acc_bank,summary,
+           post_script,trans_date,trans_time,data_source,identifier,import_time,is_checked,is_refund_scan)
     select b.acc_id,b.acc_no,b.acc_name,b.bank_type,b.direction,b.amount,b.opp_acc_no,b.opp_acc_name,b.opp_acc_bank,b.summary,
-           b.post_script,b.trans_date,b.trans_time,b.data_source,b.identifier,getdate(),0,0,null,null,null,null,null,null
+           b.post_script,b.trans_date,b.trans_time,b.data_source,b.identifier,getdate(),0,0
     from acc_cur_transaction b,account a 
     where b.acc_id=a.acc_id and a.interactive_mode !=1
   #end

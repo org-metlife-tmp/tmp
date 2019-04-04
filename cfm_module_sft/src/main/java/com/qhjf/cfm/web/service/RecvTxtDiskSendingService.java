@@ -166,7 +166,7 @@ public class RecvTxtDiskSendingService {
 	        	datail_list.add(detail_map);
 			}
 	        map.put("details", datail_list);
-	        final String genVelo  = VelocityUtil.genVelo(filePath, map);		        
+	        final String genVelo  = VelocityUtil.genGBKVelo(filePath, map);		        
 	        logger.info("===============此网盘第一次下载");
 	        boolean flag = Db.tx(new IAtom() {		
 	        	@Override

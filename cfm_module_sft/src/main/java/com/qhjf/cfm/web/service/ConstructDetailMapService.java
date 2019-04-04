@@ -3,6 +3,9 @@ package com.qhjf.cfm.web.service;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
 
+import io.jsonwebtoken.lang.Assert;
+
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
@@ -19,8 +22,9 @@ public class ConstructDetailMapService {
 	 * @param channel_code 
 	 * @param channel_code
 	 * @param documentType
+	 * @throws UnsupportedEncodingException 
 	 */
-	public void constructDetailRecord(Map<String, Object> detail_map, Record record, Integer document_moudle, String channel_code, Integer source_sys) {
+	public void constructDetailRecord(Map<String, Object> detail_map, Record record, Integer document_moudle, String channel_code, Integer source_sys) throws UnsupportedEncodingException {
 		//金额需要由 元 转换为 分
 		BigDecimal detail_cent = record.getBigDecimal("amount").multiply(new BigDecimal(100)).setScale(0);
 		detail_map.put("detail_cent", detail_cent);	
@@ -60,11 +64,13 @@ public class ConstructDetailMapService {
 				detail_map.put("province", record.get("province"));	
 			}
 		}
+		detail_map.put("pay_summary", new String("代付保费".getBytes("GBK"),"GBK"));
+		detail_map.put("recv_summary",new String("代扣保费".getBytes("GBK"),"GBK") );
+	}	
+	
+	public static void main(String[] args) throws UnsupportedEncodingException {
+		String str = "代付保费";
+		String string = new String(str.getBytes("GBK"),"GBK");
+		System.out.println(string);
 	}
-	
-	
-	
-	
-	
-
 }

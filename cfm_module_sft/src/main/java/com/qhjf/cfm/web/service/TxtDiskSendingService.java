@@ -181,7 +181,7 @@ public class TxtDiskSendingService {
 	        	datail_list.add(detail_map);
 			}
 	        map.put("details", datail_list);
-	        final String genVelo  = VelocityUtil.genVelo(filePath, map);		        
+	        final String genVelo  = VelocityUtil.genGBKVelo(filePath, map);		        
 	        logger.info("===============此网盘第一次下载");
 	        boolean flag = Db.tx(new IAtom() {		
 	        	@Override
@@ -360,7 +360,7 @@ public class TxtDiskSendingService {
 		BufferedWriter writer = null ; 
 		try {
 			fos= new FileOutputStream(f);  
-			writer = new BufferedWriter(new OutputStreamWriter(fos, "utf-8"));  
+			writer = new BufferedWriter(new OutputStreamWriter(fos, "GBK"));  
 			writer.append(genVelo);	
 		} catch (Exception e) {
 			logger.error("============TXT文件长传导服务器失败");
@@ -506,7 +506,7 @@ public class TxtDiskSendingService {
 	        	datail_list.add(detail_map);
 			}
 	        map.put("details", datail_list);
-	        final String genVelo  = VelocityUtil.genVelo(filePath, map);		        
+	        final String genVelo  = VelocityUtil.genGBKVelo(filePath, map);		        
 	        logger.info("===============此网盘第一次下载");
 	        boolean flag = Db.tx(new IAtom() {		
 	        	@Override

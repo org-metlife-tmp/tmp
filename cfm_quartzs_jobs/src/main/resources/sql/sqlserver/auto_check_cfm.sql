@@ -76,7 +76,6 @@
     where is_checked = 0
       and direction = 1
       and acc_no = #para(map.pay_account_no)
-      and opp_acc_no = #para(map.recv_account_no)
       and amount = #para(map.payment_amount)
       and instruct_code = #para(map.instruct_code)
       and DATEDIFF(day,#para(map.create_on),trans_date) = 0
@@ -97,7 +96,6 @@
     where is_checked = 0
       and direction = 2
       and acc_no = #para(map.recv_account_no)
-      and opp_acc_no = #para(map.pay_account_no)
       and amount = #para(map.payment_amount)
       and instruct_code = #para(map.instruct_code)
       and DATEDIFF(day,#para(map.create_on),trans_date) = 0

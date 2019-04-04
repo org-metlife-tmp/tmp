@@ -212,7 +212,7 @@ public class RecvDiskBackingService {
 		}
 
 		// 开始校验总列数,总行数等信息
-		InputStreamReader input = new InputStreamReader(new ByteArrayInputStream(content));// 考虑到编码格式
+		InputStreamReader input = new InputStreamReader(new ByteArrayInputStream(content),"GBK");// 考虑到编码格式
 		BufferedReader bufferedReader = new BufferedReader(input);
 		// 子批次表中存储的报盘总行数
 		final int sendnum = recv_batch_total.getInt("total_num");

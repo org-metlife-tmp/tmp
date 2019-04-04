@@ -90,7 +90,7 @@ public class DiskSendingController extends CFMBaseController {
         		if(!is_download){
         		    String fileName = txtservice.getFileName(document_moudle,document_type,document_version);
         		    String diskDownLoad = txtservice.diskDownLoad(pay_master_id,pay_id,document_moudle,userInfo,fileName,document_type,configs_tail);
-        		    render(new ByteArrayRender(fileName,diskDownLoad.getBytes()));
+        		    render(new ByteArrayRender(fileName,diskDownLoad.getBytes("GBK")));
         		}else{
         			//直接去服务器上获取文件
         			String file_name = offerDocument.get(0).getStr("file_name");
