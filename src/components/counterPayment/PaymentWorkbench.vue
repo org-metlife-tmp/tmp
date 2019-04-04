@@ -531,7 +531,7 @@
                 orgList: [],
                 billstatusList: [],
                 statusList: {},
-                dialogVisible: true, //弹框数据
+                dialogVisible: false, //弹框数据
                 dialogData: {
                     recv_acc_name: "",
                     recv_acc_no: "",
@@ -970,6 +970,7 @@
                 let selectId = this.selectId;
                 let selectVersion = this.selectVersion;
                 for(let i = 0; i < selection.length; i++){
+                    let row = selection[i];
                     selectId.push(row.pay_id);
                     selectVersion.push(row.persist_version);
                 }
