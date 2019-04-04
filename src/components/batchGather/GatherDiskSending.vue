@@ -414,7 +414,7 @@
                     url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
-                        optype: "disksending_sendbank",
+                        optype: "recvdisksending_sendbank",
                         params: {
                             id: row.recv_id,
                             persist_version: row.persist_version
