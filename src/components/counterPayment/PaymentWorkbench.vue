@@ -234,9 +234,10 @@
                     <el-col :span="7">
                         <el-form-item style="margin-bottom:0px">
                             <el-checkbox-group v-model="searchData.status">
-                                <el-checkbox :label="0" name="未提交">未提交</el-checkbox>
-                                <el-checkbox :label="1" name="已提交">已提交</el-checkbox>
-                                <el-checkbox :label="2" name="已拒绝">已拒绝</el-checkbox>
+                                <el-checkbox v-for="(status,key) in statusList"
+                                             :key="key" :label="key">
+                                    {{status}}
+                                </el-checkbox>
                             </el-checkbox-group>
                         </el-form-item>
                     </el-col>
@@ -261,11 +262,10 @@
                       @selection-change="setId"
                       border size="mini" height="100%">
                 <el-table-column type="selection" width="40" :selectable="isSelect"></el-table-column>
-                <el-table-column prop="op_date" label="业务操作日期" width="110px"
+                <el-table-column prop="pay_date" label="业务操作日期" width="110px"
                                  :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="name" label="机构名称" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="pay_mode" label="支付方式" :show-overflow-tooltip="true"
-                                 :formatter="transitMode"></el-table-column>
+                <el-table-column prop="pay_mode" label="支付方式" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="biz_code" label="业务号码" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="preinsure_bill_no" label="投保单号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="insure_bill_no" label="保单号" :show-overflow-tooltip="true"></el-table-column>
@@ -473,6 +473,10 @@
             if(constants.Sft_Billstatus){
                 this.billstatusList = constants.Sft_Billstatus;
             }
+            //状态
+            if(constants.SftLegalData){
+                this.statusList = constants.SftLegalData;
+            }
             //银行大类
             var bankTypeList = JSON.parse(window.sessionStorage.getItem("bankTypeList"));
             if (bankTypeList) {
@@ -526,6 +530,7 @@
                 payModeList: {},
                 orgList: [],
                 billstatusList: [],
+                statusList: {},
                 dialogVisible: false, //弹框数据
                 dialogData: {
                     recv_acc_name: "",
@@ -661,13 +666,9 @@
             transitAmount: function (row, column, cellValue, index) {
                 return this.$common.transitSeparator(cellValue);
             },
-            //展示格式转换-支付方式
-            transitMode: function (row, column, cellValue, index) {
-                return this.payModeList[cellValue];
-            },
             //展示格式转换-状态
             transitStatus: function (row, column, cellValue, index) {
-                return cellValue == 0 ? (cellValue == 1 ? "已提交" : "已拒绝") : "未提交";
+                return this.statusList[cellValue];
             },
             //补录
             addRecord: function(row){
@@ -828,10 +829,10 @@
                 let params = {
                     files: this.fileList,
                     source_sys: this.routerMessage.params.source_sys,
-                    pay_id: this.currentData.id,
+                    pay_id: this.currentData.pay_id,
                     persist_version: this.currentData.persist_version
                 };
-                for(let i = 0; i < dialogData.length; i++){
+                for(let k in dialogData){
                     params[k] = dialogData[k];
                 }
 
@@ -929,7 +930,7 @@
                         data: {
                             optype: "paycounter_revokeToLaOrEbs",
                             params: {
-                                pay_id: row.id,
+                                pay_id: row.pay_id,
                                 source_sys: row.source_sys,
                                 persist_version: row.persist_version,
                                 feed_back: value
@@ -969,6 +970,7 @@
                 let selectId = this.selectId;
                 let selectVersion = this.selectVersion;
                 for(let i = 0; i < selection.length; i++){
+                    let row = selection[i];
                     selectId.push(row.pay_id);
                     selectVersion.push(row.persist_version);
                 }
