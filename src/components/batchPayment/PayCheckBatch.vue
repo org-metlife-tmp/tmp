@@ -260,9 +260,13 @@
                       @select="setId"
                       @select-all="allChange">
                 <el-table-column type="selection" width="40" :selectable="isSelect"></el-table-column>
-                <el-table-column prop="pay_date" label="日期" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="push_date" label="日期" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="channel_code" label="通道编码" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="channel_desc" label="通道描述" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="bank_key" label="bankkey" width="100px"
+                                 :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="bankkey_desc" label="bankkey描述" width="110px"
+                                 :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="name" label="机构名称" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="preinsure_bill_no" label="投保单号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="insure_bill_no" label="保单号" :show-overflow-tooltip="true"></el-table-column>
@@ -500,7 +504,9 @@
                     method: "post",
                     data: {
                         optype: "sftchannel_getallchannel",
-                        params: {}
+                        params: {
+                            pay_attr: 1
+                        }
                     }
                 }).then((result) => {
                     if (result.data.error_msg) {

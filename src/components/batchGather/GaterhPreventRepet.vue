@@ -436,7 +436,9 @@
                     method: "post",
                     data: {
                         optype: "sftchannel_getallchannel",
-                        params: {}
+                        params: {
+                            pay_attr: 0
+                        }
                     }
                 }).then((result) => {
                     if (result.data.error_msg) {

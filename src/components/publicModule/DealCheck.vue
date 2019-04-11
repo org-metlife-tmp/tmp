@@ -12,6 +12,7 @@
             /*时间控件*/
             .el-date-editor {
                 width: 100%;
+                max-width: 210px;
             }
         }
 
@@ -44,6 +45,12 @@
             .el-button {
                 float: right;
                 margin-top: -30px;
+            }
+
+            .check-select{
+                float: right;
+                margin-top: -26px;
+                margin-right: 70px;
             }
         }
         .botton-pag-center {
@@ -195,6 +202,10 @@
                     @size-change="sizeChange">
             </el-pagination>
             <el-button type="warning" size="mini" @click="confirmCheck" v-show="isPending">确认</el-button>
+            <div class="check-select" v-show="isPending">
+                <el-checkbox v-model="dateCheck">日期校验</el-checkbox>
+                <el-checkbox v-model="recvCheck">收款方校验</el-checkbox>
+            </div>
         </div>
         <!--主数据关联数据-->
         <section class="table-content" style="margin-top:40px" v-if="isPending">
@@ -222,6 +233,8 @@
         beforeRouteUpdate (to, from, next) {
             this.setOptypes(to.query);
             this.curBizType = to.query.bizType;
+            this.dateCheck = true;
+            this.recvCheck = true;
             this.childList = [];
             this.dataNum = "1";
             next();
@@ -291,6 +304,8 @@
                     allText: "批量支付"
                 },
                 curBizType: "",
+                dateCheck: true,
+                recvCheck: true,
             }
         },
         methods: {
@@ -388,6 +403,8 @@
                 }else{
                     this.setBatchOptype(queryData);
                 }
+                this.dateCheck = true;
+                this.recvCheck = true;
                 this.childList = [];
             },
             //展示格式转换-金额
@@ -445,7 +462,9 @@
                     data: {
                         optype: this.checkOptype,
                         params: {
-                            id: val.id
+                            id: val.id,
+                            date_validate: this.dateCheck ? 1 : 0,
+                            recv_validate: this.recvCheck ? 1 : 0,
                         }
                     }
                 }).then((result) => {

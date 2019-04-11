@@ -550,7 +550,9 @@
                     method: "post",
                     data: {
                         optype: "sftchannel_getallchannel",
-                        params: {}
+                        params: {
+                            pay_attr: 1
+                        }
                     }
                 }).then((result) => {
                     if (result.data.error_msg) {

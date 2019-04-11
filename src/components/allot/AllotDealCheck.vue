@@ -49,6 +49,12 @@
                 float: right;
                 margin-top: -30px;
             }
+
+            .check-select{
+                float: right;
+                margin-top: -26px;
+                margin-right: 70px;
+            }
         }
         .botton-pag-center{
             top: 258px;
@@ -197,8 +203,8 @@
                 <el-table-column prop="recv_account_name" label="收款方公司名称" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="payment_amount" label="金额" :show-overflow-tooltip="true"
                                 :formatter="transitAmount"></el-table-column>
-                <el-table-column v-if="curBizType==13" prop="create_on" label="日期" :show-overflow-tooltip="true"></el-table-column> 
-                <el-table-column v-else prop="apply_on" label="日期" :show-overflow-tooltip="true"></el-table-column>         
+                <el-table-column v-if="curBizType==13" prop="create_on" label="日期" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column v-else prop="apply_on" label="日期" :show-overflow-tooltip="true"></el-table-column>
             </el-table>
         </section>
         <!--分页部分-->
@@ -215,6 +221,10 @@
                     @size-change="sizeChange">
             </el-pagination>
             <el-button type="warning" size="mini" @click="transactionConfirm" v-show="isPending">确认</el-button>
+            <div class="check-select" v-show="isPending">
+                <el-checkbox v-model="dateCheck">日期校验</el-checkbox>
+                <el-checkbox v-model="recvCheck">收款方校验</el-checkbox>
+            </div>
         </div>
         <!--主数据关联数据-->
         <section class="table-content" style="margin-top:40px" v-if="isPending">
@@ -308,6 +318,8 @@
                     return row.id;
                 },
                 curBizType:"",
+                dateCheck: true,
+                recvCheck: true,
             }
         },
         methods: {
@@ -354,7 +366,9 @@
                 var params = {
                     pay_account_no: row.pay_account_no,
                     recv_account_no: row.recv_account_no,
-                    payment_amount: row.payment_amount
+                    payment_amount: row.payment_amount,
+                    date_validate: this.dateCheck ? 1 : 0,
+                    recv_validate: this.recvCheck ? 1 : 0,
                 }
                 if(this.curBizType==13){//资金下拨
                     params.create_on = row.create_on;
@@ -504,6 +518,8 @@
                     this.validatedOptype = "skttrad_confirmTradingList";
                     this.isAllot = false;
                 }
+                this.dateCheck = true;
+                this.recvCheck = true;
                 this.$emit("getTableData", this.routerMessage);
             },
             //根据调拨类型查询
@@ -513,6 +529,8 @@
                     if(k!=='payment_type')
                         searchData[k] = "";
                 }
+                this.dateCheck = true;
+                this.recvCheck = true;
                 this.tableList = [];
                 this.childList = [];
                 this.routerMessage.todo.params = {
