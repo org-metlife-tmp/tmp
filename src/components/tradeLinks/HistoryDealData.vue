@@ -72,6 +72,10 @@
                 <el-option label="覆盖导入" value="1"></el-option>
                 <el-option label="增量导入" value="2"></el-option>
             </el-select>
+            <el-select v-model="uploadHeaders.pk" size="mini">
+                <el-option label="建设银行" value="10"></el-option>
+                <el-option label="中国银行" value="11"></el-option>
+            </el-select>
         </div>
         <div class="dataBox" v-show="!isPending">
             <div class="title-text">导入范围</div>
@@ -102,7 +106,9 @@
             </el-input>
         </div>
         <div class="btnList">
-            <el-button type="warning" size="small" plain @click="templateDownLoad">模板下载</el-button>
+            <el-button type="warning" size="small" plain
+                       v-show="isPending"
+                       @click="templateDownLoad">模板下载</el-button>
             <el-button type="warning" size="small" plain>取 消</el-button>
             <el-button type="warning" size="small" @click="subConfirm">确 定</el-button>
         </div>
@@ -128,6 +134,8 @@
                 currToken:"",
                 currentUpload:{},
                 uploadHeaders:{
+                    Authorization: "",
+                    pk: ""
                 },
                 errorTipShow: false,
                 limitDate:"",
@@ -239,7 +247,7 @@
         },
         watch: {
             isPending: function (val, oldVal) {
-                this.uploadHeaders.pk = val ? '5' : '6';
+                this.uploadHeaders.pk = val ? '5' : '10';
                 this.currentUpload = {};
                 this.errorTipShow = false;
             }

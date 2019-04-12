@@ -640,14 +640,14 @@
                     <el-menu-item index="/batch-gather/gather-abnormal" v-if="menuList.RecvBatchDoExcp">异常处理</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="22">
+            <el-submenu index="22" v-if="menuList.COUNTERPAY">
                 <template slot="title" height="200px">
                     <i class="icon-gmfk"></i>
                     <p class="mg-four">柜面付款</p>
                 </template>
                 <el-menu-item-group>
-                    <el-menu-item index="/counter-payment/counter-settle-account">结算对账</el-menu-item>
-                    <el-menu-item index="/counter-payment/payment-workbench">付款工作台</el-menu-item>
+                    <el-menu-item index="/counter-payment/counter-settle-account" v-if="menuList.PayCounterCheck">结算对账</el-menu-item>
+                    <el-menu-item index="/counter-payment/payment-workbench" v-if="menuList.PayCounterPlat">付款工作台</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
         </el-menu>
@@ -808,6 +808,10 @@
                     RecvBatchResp: false, //盘片回盘
                     RecvBatchCheck: false, //结算对账
                     RecvBatchDoExcp: false, //异常处理
+
+                    COUNTERPAY: false, //柜面付款
+                    PayCounterCheck: false, //结算对账
+                    PayCounterPlat: false, //付款工作台
                 }
             }
         },
