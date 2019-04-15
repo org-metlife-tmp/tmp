@@ -79,9 +79,11 @@
             .icon-skt{
                 background-position: -152px -254px;
             }
+
             .icon-electb{
                 background-position: -321px -194px;
             }
+
             .icon-gyl{
                 background-position: -212px -254px;
             }
@@ -93,9 +95,11 @@
             .icon-zht {
                 background-position: -249px -193px;
             }
+
             .icon-splgl {
                 background-position: -322px -222px;
             }
+
             .icon-zjys {
                 background-position: -32px 0px;
             }
@@ -130,6 +134,8 @@
 
             .icon-plsk{
                 background-position: -452px -252px;
+            .icon-dzt{
+                background-position: -333px -254px;
             }
             /*首页背景图定位结束*/
         }
@@ -207,6 +213,8 @@
             }
             .icon-plsk{
                 background-position: -422px -252px;
+            .icon-dzt{
+                background-position: -302px -254px;
             }
 
             .el-submenu__title p {
@@ -303,6 +311,8 @@
             }
             .el-submenu__title:hover .icon-plsk{
                 background-position: -452px -252px;
+            .el-submenu__title:hover .icon-dzt{
+                background-position: -333px -254px;
             }
 
             .el-submenu__title:hover p {
@@ -650,6 +660,17 @@
                     <el-menu-item index="/counter-payment/payment-workbench" v-if="menuList.PayCounterPlat">付款工作台</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
+            <el-submenu index="23" v-if="menuList.DZT">
+                <template slot="title" height="200px">
+                    <i class="icon-dzt"></i>
+                    <p>对账通</p>
+                </template>
+                <el-menu-item-group>
+                    <el-menu-item index="/reconciliation/initial-balance" v-if="menuList.DztInitData">期初数据</el-menu-item>
+                    <el-menu-item index="/reconciliation/balance-adjust" v-if="menuList.DztBalAdjust">余额调节表</el-menu-item>
+                    <el-menu-item index="/allot/allot-deal-check?bizType=100" v-if="menuList.DztInitCheck">期初数据核对</el-menu-item>
+                </el-menu-item-group>
+            </el-submenu>
         </el-menu>
     </div>
 </template>
@@ -812,6 +833,10 @@
                     COUNTERPAY: false, //柜面付款
                     PayCounterCheck: false, //结算对账
                     PayCounterPlat: false, //付款工作台
+                    DZT: false, //对账通
+                    DztInitData: false, //期初余额设置
+                    DztBalAdjust: false, //余额调节表
+                    DztInitCheck: false, //期初数据核对
                 }
             }
         },

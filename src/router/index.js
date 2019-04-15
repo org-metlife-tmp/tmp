@@ -143,6 +143,9 @@ import GatherSettleAccounts from '@/components/batchGather/GatherSettleAccounts'
 //柜面付款
 import CounterSettleAccount from '@/components/counterPayment/CounterSettleAccount'
 import PaymentWorkbench from '@/components/counterPayment/PaymentWorkbench'
+//对账通
+import InitialBalance from '@/components/reconciliation/InitialBalance'
+import BalanceAdjust from '@/components/reconciliation/BalanceAdjust'
 
 
 Vue.use(Router)
@@ -274,6 +277,9 @@ const router = new Router({
                         //柜面付款
                         {path: '/counter-payment/counter-settle-account', name: 'CounterSettleAccount', component: CounterSettleAccount, meta: {requireAuth: true}},
                         {path: '/counter-payment/payment-workbench', name: 'PaymentWorkbench', component: PaymentWorkbench, meta: {requireAuth: true}},
+                        //对账通
+                        {path: '/reconciliation/initial-balance', name: 'InitialBalance', component: InitialBalance, meta: {requireAuth: true}},
+                        {path: '/reconciliation/balance-adjust', name: 'BalanceAdjust', component: BalanceAdjust, meta: {requireAuth: true}}
                     ]
                 },
                 //基础样式三（tab页）
