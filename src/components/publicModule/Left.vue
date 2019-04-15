@@ -134,6 +134,7 @@
 
             .icon-plsk{
                 background-position: -452px -252px;
+	    }
             .icon-dzt{
                 background-position: -333px -254px;
             }
@@ -213,6 +214,7 @@
             }
             .icon-plsk{
                 background-position: -422px -252px;
+	    }
             .icon-dzt{
                 background-position: -302px -254px;
             }
@@ -311,6 +313,7 @@
             }
             .el-submenu__title:hover .icon-plsk{
                 background-position: -452px -252px;
+	    }
             .el-submenu__title:hover .icon-dzt{
                 background-position: -333px -254px;
             }
