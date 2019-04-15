@@ -147,7 +147,6 @@
             uploadSuccess:function(response, file, fileList){
                 this.currentUpload = response;
                 // this.addExcel = false;
-                var message = "";
                 var message  = response.success ? '上传成功' : response.error_message;
                 var type = response.success ? 'success' : 'warning';
                 this.$message({
@@ -203,7 +202,9 @@
                 });
             },
             subConfirm: function (){
-                var params = {};
+                var params = {
+                    pk: this.uploadHeaders.pk
+                };
                 var currentUpload = this.currentUpload;
                 for(var k in currentUpload){
                     params[k] = currentUpload[k];
