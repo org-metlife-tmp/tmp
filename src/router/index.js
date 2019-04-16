@@ -145,6 +145,8 @@ import PaymentWorkbench from '@/components/counterPayment/PaymentWorkbench'
 //对账通
 import InitialBalance from '@/components/reconciliation/InitialBalance'
 import BalanceAdjust from '@/components/reconciliation/BalanceAdjust'
+//月末预提凭证
+import Operation from '@/components/endMonthAdvance/Operation'
 
 
 Vue.use(Router)
@@ -278,7 +280,9 @@ const router = new Router({
                         {path: '/counter-payment/payment-workbench', name: 'PaymentWorkbench', component: PaymentWorkbench, meta: {requireAuth: true}},
                         //对账通
                         {path: '/reconciliation/initial-balance', name: 'InitialBalance', component: InitialBalance, meta: {requireAuth: true}},
-                        {path: '/reconciliation/balance-adjust', name: 'BalanceAdjust', component: BalanceAdjust, meta: {requireAuth: true}}
+                        {path: '/reconciliation/balance-adjust', name: 'BalanceAdjust', component: BalanceAdjust, meta: {requireAuth: true}},
+                        //月末预提凭证
+                        {path: '/endmonth-advance/operation', name: 'Operation', component: Operation, meta: {requireAuth: true}},
                     ]
                 },
                 //基础样式三（tab页）

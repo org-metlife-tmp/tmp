@@ -720,6 +720,15 @@
                     </el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
+            <el-submenu index="24">
+                <template slot="title" height="200px">
+                    <i class="icon-dzt"></i>
+                    <p>月末预提</p>
+                </template>
+                <el-menu-item-group>
+                    <el-menu-item index="/endmonth-advance/operation">操作</el-menu-item>
+                </el-menu-item-group>
+            </el-submenu>
         </el-menu>
     </div>
 </template>
