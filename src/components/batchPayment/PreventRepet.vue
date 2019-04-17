@@ -565,7 +565,7 @@
             },
             //拒绝
             rejectData: function (row) {
-                this.$confirm('TMP:疑似重复,拒绝支付', '拒绝原因', {
+                this.$confirm('TMPPJ:疑似重复,拒绝支付', '拒绝原因', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'warning'
@@ -579,7 +579,7 @@
                                 id: row.id,
                                 os_source: row.os_source,
                                 persist_version: row.persist_version,
-                                op_reason: "TMP:疑似重复,拒绝支付"
+                                op_reason: "TMPPJ:疑似重复,拒绝支付"
                             }
                         }
                     }).then((result) => {
