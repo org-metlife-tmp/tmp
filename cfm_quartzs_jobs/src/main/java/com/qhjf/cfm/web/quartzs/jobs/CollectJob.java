@@ -185,7 +185,14 @@ public class CollectJob extends PubJob{
 			if(null != find && find.size() == 1){
 				Record rec = find.get(0);
 				BigDecimal collectAmount = TypeUtils.castToBigDecimal(rec.get("bal"));
-				instruction.set("collect_amount", collectAmount);
+				if(collectAmount.doubleValue() <= 0.00){
+					log.error("=========查询到余额信息,账号=="+record.getStr("child_acc_no")+"余额为零==");
+					feedBack = feedBack == null ? "付款账户余额为零" : feedBack+",付款账户余额为零" ;
+					flag = ProcessStatus.CANCEL ;
+				}else{
+					instruction.set("collect_amount", collectAmount);
+				}
+
 			}else{
 				log.error("=========未在acc_cur_balance表内查询到余额信息,账号=="+record.getStr("child_acc_no"));
 				feedBack = feedBack == null ? "暂未查询到付款账户余额" : feedBack+",暂未查询到付款账户余额" ;

@@ -38,18 +38,26 @@ SELECT
 	la.op_name ,
 	org2.name,
 	channel.channel_code ,
-	channel.channel_desc
+	channel.channel_desc ,
+	origin.create_time AS push_date,
+	bankkey.bankkey_desc
 FROM
 	recv_legal_data AS recv,
 	channel_setting AS channel,
 	la_recv_legal_data_ext AS  la ,
 	organization AS org ,
-	organization AS org2 
+	organization AS org2 ,
+	la_origin_recv_data AS origin,
+	bankkey_setting AS bankkey
 WHERE
 	recv.id = la.legal_id AND
 	channel.org_id = org.org_id AND
 	channel.id = recv.channel_id AND
-	org2.org_id = recv.org_id
+	org2.org_id = recv.org_id AND
+	origin.id = recv.origin_id AND
+	bankkey.org_id = recv.org_id AND
+	la.bank_key = bankkey.bankkey AND
+	bankkey.pay_mode = 0 
   #if(map != null)
     #for(x : map)
       #if(x.value&&x.value!="")
@@ -57,9 +65,9 @@ WHERE
         #if("channel_desc".equals(x.key))
         	channel.id = #para(x.value)
         #elseif("start_date".equals(x.key))
-             DATEDIFF(day,#para(x.value),la.recv_date) >= 0
+             DATEDIFF(day,#para(x.value),origin.create_time) >= 0
         #elseif("end_date".equals(x.key))
-              DATEDIFF(day,#para(x.value),la.recv_date) <= 0
+              DATEDIFF(day,#para(x.value),origin.create_time) <= 0
         #elseif("preinsure_bill_no".equals(x.key))
             la.preinsure_bill_no  like convert(varchar(5),'%')+convert(varchar(255),#para(x.value))+convert(varchar(5),'%')
         #elseif("insure_bill_no".equals(x.key))
@@ -114,12 +122,18 @@ FROM
 	channel_setting AS channel,
 	la_recv_legal_data_ext AS  la ,
 	organization AS org ,
-	organization AS org2 
+	organization AS org2 ,
+	la_origin_recv_data AS origin,
+	bankkey_setting AS bankkey
 WHERE
 	recv.id = la.legal_id AND
 	channel.org_id = org.org_id AND
 	channel.id = recv.channel_id AND
-	org2.org_id = recv.org_id
+	org2.org_id = recv.org_id AND
+	origin.id = recv.origin_id AND
+	bankkey.org_id = recv.org_id AND
+	la.bank_key = bankkey.bankkey AND
+	bankkey.pay_mode = 0 
   #if(map != null)
     #for(x : map)
       #if(x.value&&x.value!="")
@@ -127,9 +141,9 @@ WHERE
         #if("channel_desc".equals(x.key))
         	channel.id = #para(x.value)
         #elseif("start_date".equals(x.key))
-             DATEDIFF(day,#para(x.value),la.recv_date) >= 0
+             DATEDIFF(day,#para(x.value),origin.create_time) >= 0
         #elseif("end_date".equals(x.key))
-              DATEDIFF(day,#para(x.value),la.recv_date) <= 0
+              DATEDIFF(day,#para(x.value),origin.create_time) <= 0
         #elseif("preinsure_bill_no".equals(x.key))
             la.preinsure_bill_no  like convert(varchar(5),'%')+convert(varchar(255),#para(x.value))+convert(varchar(5),'%')
         #elseif("insure_bill_no".equals(x.key))
@@ -335,12 +349,18 @@ FROM
 	channel_setting AS channel,
 	la_recv_legal_data_ext AS  la ,
 	organization AS org ,
-	organization AS org2 
+	organization AS org2 ,
+	la_origin_recv_data AS origin ,
+	bankkey_setting AS bankkey
 WHERE
 	recv.id = la.legal_id AND
 	channel.org_id = org.org_id AND
 	channel.id = recv.channel_id AND
-	org2.org_id = recv.org_id
+	org2.org_id = recv.org_id AND
+	origin.id = recv.origin_id AND
+	bankkey.org_id = recv.org_id AND
+	la.bank_key = bankkey.bankkey AND
+	bankkey.pay_mode = 0 
   #if(map != null)
     #for(x : map)
       #if(x.value&&x.value!="")
@@ -348,11 +368,11 @@ WHERE
         #if("channel_desc".equals(x.key))
         	channel.id = #para(x.value)
         #elseif("start_date".equals(x.key))
-             DATEDIFF(day,#para(x.value),la.recv_date) >= 0
+             DATEDIFF(day,#para(x.value),origin.create_time) >= 0
         #elseif("visit_time".equals(x.key))
               DATEDIFF(second,#para(x.value),recv.create_time) <= 0
         #elseif("end_date".equals(x.key))
-              DATEDIFF(day,#para(x.value),la.recv_date) <= 0
+              DATEDIFF(day,#para(x.value),origin.create_time) <= 0
         #elseif("preinsure_bill_no".equals(x.key))
             la.preinsure_bill_no  like convert(varchar(5),'%')+convert(varchar(255),#para(x.value))+convert(varchar(5),'%')
         #elseif("insure_bill_no".equals(x.key))
@@ -414,12 +434,18 @@ FROM
 	channel_setting AS channel,
 	la_recv_legal_data_ext AS  la ,
 	organization AS org ,
-	organization AS org2 
+	organization AS org2 ,
+	la_origin_recv_data AS origin,
+	bankkey_setting AS bankkey
 WHERE
 	recv.id = la.legal_id AND
 	channel.org_id = org.org_id AND
 	channel.id = recv.channel_id AND
-	org2.org_id = recv.org_id
+	org2.org_id = recv.org_id AND
+	origin.id = recv.origin_id AND
+	bankkey.org_id = recv.org_id AND
+	la.bank_key = bankkey.bankkey AND
+	bankkey.pay_mode = 0 
   #if(map != null)
     #for(x : map)
       #if(x.value&&x.value!="")
@@ -427,11 +453,11 @@ WHERE
         #if("channel_desc".equals(x.key))
         	channel.id = #para(x.value)
         #elseif("start_date".equals(x.key))
-             DATEDIFF(day,#para(x.value),la.recv_date) >= 0
+             DATEDIFF(day,#para(x.value),origin.create_time) >= 0
         #elseif("visit_time".equals(x.key))
               DATEDIFF(day,#para(x.value),recv.create_time) <= 0
         #elseif("end_date".equals(x.key))
-              DATEDIFF(day,#para(x.value),la.recv_date) <= 0
+              DATEDIFF(day,#para(x.value),origin.create_time) <= 0
         #elseif("preinsure_bill_no".equals(x.key))
             la.preinsure_bill_no  like convert(varchar(5),'%')+convert(varchar(255),#para(x.value))+convert(varchar(5),'%')
         #elseif("insure_bill_no".equals(x.key))
@@ -483,8 +509,4 @@ WHERE
     #end
   #end
 #end
-
-
-
-
 

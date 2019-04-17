@@ -33,13 +33,13 @@ public class CheckBatchWorkBook extends AbstractWorkBook {
     public CheckBatchWorkBook() {
         this.optype = "checkbatch_listexport";
         this.titleNames = new String[]{
-                "pay_date", "channel_code", "channel_desc", "name", "preinsure_bill_no",
+                "push_date", "channel_code", "channel_desc","bank_key" ,"bankkey_desc" , "name", "preinsure_bill_no",
                 "insure_bill_no", "amount", "recv_acc_name", "recv_cert_code", "recv_acc_no", "pay_code" 
                 ,"status","op_user_name","op_date"
 
         };
         this.titles = new String[]{
-                "日期", "通道编码", "通道描述", "机构名称", "投保单号", "保单号", "金额", "客户姓名", "证件号码",
+                "日期", "通道编码", "通道描述", "bankkey" ,"bankkey描述" , "机构名称", "投保单号", "保单号", "金额", "客户姓名", "证件号码",
                 "客户帐号", "支付号码" ,"状态" ,"操作人","操作日期"
         };
         this.sheetName = "核对组批列表";

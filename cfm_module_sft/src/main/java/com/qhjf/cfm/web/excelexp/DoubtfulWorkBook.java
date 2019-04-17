@@ -25,7 +25,7 @@ public class DoubtfulWorkBook extends AbstractWorkBook {
     public DoubtfulWorkBook() {
         this.optype = "sftdoubtful_listexport";
         this.titleNames = new String[]{
-                "pay_date", "pay_code", "pay_mode", "bank_key", "bankkey_desc",
+                "push_date", "pay_code", "pay_mode", "bank_key", "bankkey_desc",
                 "biz_type", "org_name", "preinsure_bill_no", "insure_bill_no", "amount",
                 "recv_acc_name", "recv_cert_code", "recv_acc_no", "status", "op_user_name", "op_date", "op_reason"
 

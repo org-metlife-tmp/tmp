@@ -1,7 +1,7 @@
 #sql("doubtfulLalist")
 SELECT
 	la.id,
-	la.recv_date,
+	origin.create_time push_date,
 	la.pay_code,
 	case la.pay_mode when 'D' then '批量收付' when 'C' then '网银' end pay_mode,
 	la.bank_key,
@@ -24,6 +24,7 @@ SELECT
 FROM
 	la_recv_check_doubtful la,
 	channel_setting chan,
+	la_origin_recv_data origin,
 	bankkey_setting bankkey,
 	organization org,
 	organization org2,
@@ -32,6 +33,7 @@ where la.bank_key = bankkey.bankkey
 and la.tmp_org_id = bankkey.org_id
 and la.channel_id = chan.id
 and la.tmp_org_id = org.org_id
+and la.origin_id = origin.id
 and org2.org_id = chan.org_id
 and la.biz_type = biz.type_code
 and bankkey.pay_mode = 0
@@ -50,9 +52,9 @@ and la.is_doubtful = 1
         #elseif("channel_id_two".equals(x.key))
           la.channel_id = #para(x.value)
         #elseif("start_date".equals(x.key))
-          DATEDIFF(day,#para(x.value),recv_date) >= 0
+          DATEDIFF(day,#para(x.value),origin.create_time) >= 0
         #elseif("end_date".equals(x.key))
-          DATEDIFF(day,#para(x.value),recv_date) <= 0
+          DATEDIFF(day,#para(x.value),origin.create_time) <= 0
         #elseif("status".equals(x.key))
           la.status in(
             #for(y : map.status)

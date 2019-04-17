@@ -1,7 +1,7 @@
 #sql("doubtfulLalist")
 SELECT
 	la.id,
-	la.pay_date,
+	origin.create_time push_date,
 	la.pay_code,
 	case la.pay_mode when 'C' then '批量收付' when 'Q' then '实时收付' when 'H' then '第三方' when '0' then '网银' end pay_mode,
 	la.bank_key,
@@ -24,6 +24,7 @@ SELECT
 FROM
 	la_check_doubtful la,
 	channel_setting chan,
+	la_origin_pay_data origin ,
 	bankkey_setting bankkey,
 	organization org,
 	organization org2,
@@ -33,6 +34,7 @@ and la.tmp_org_id = bankkey.org_id
 and la.channel_id = chan.id
 and la.tmp_org_id = org.org_id
 and org2.org_id = chan.org_id
+and la.origin_id = origin.id
 and la.biz_type = biz.type_code
 and bankkey.pay_mode = 1
 and biz.type = 1
@@ -50,9 +52,9 @@ and la.is_doubtful = 1
         #elseif("channel_id_two".equals(x.key))
           la.channel_id = #para(x.value)
         #elseif("start_date".equals(x.key))
-          DATEDIFF(day,#para(x.value),pay_date) >= 0
+          DATEDIFF(day,#para(x.value),create_time) >= 0
         #elseif("end_date".equals(x.key))
-          DATEDIFF(day,#para(x.value),pay_date) <= 0
+          DATEDIFF(day,#para(x.value),create_time) <= 0
         #elseif("status".equals(x.key))
           la.status in(
             #for(y : map.status)
@@ -83,7 +85,7 @@ and la.is_doubtful = 1
 #sql("doubtfulEbslist")
 SELECT
 	ebs.id,
-	ebs.pay_date,
+	origin.create_time push_date,
 	ebs.pay_code,
 	case ebs.pay_mode when 'C' then '批量收付' when 'Q' then '实时收付' when 'H' then '第三方' when '0' then '网银' end pay_mode,
 	ebs.bank_key,
@@ -106,12 +108,14 @@ SELECT
 FROM
 	ebs_check_doubtful ebs,
 	bankkey_setting bankkey,
+	ebs_origin_pay_data origin ,
 	channel_setting chan,
 	organization org2,
 	organization org
 where ebs.bank_key = bankkey.bankkey
 and ebs.tmp_org_id = bankkey.org_id
 and ebs.channel_id = chan.id
+and ebs.origin_id = origin.id
 and chan.org_id = org.org_id
 and org2.org_id = chan.org_id
 and ebs.is_doubtful = 1
@@ -128,9 +132,9 @@ and ebs.is_doubtful = 1
         #elseif("channel_id_two".equals(x.key))
           ebs.channel_id = #para(x.value)
         #elseif("start_date".equals(x.key))
-          DATEDIFF(day,#para(x.value),pay_date) >= 0
+          DATEDIFF(day,#para(x.value),origin.create_time) >= 0
         #elseif("end_date".equals(x.key))
-          DATEDIFF(day,#para(x.value),pay_date) <= 0
+          DATEDIFF(day,#para(x.value),origin.create_time) <= 0
         #elseif("status".equals(x.key))
           ebs.status in(
             #for(y : map.status)
