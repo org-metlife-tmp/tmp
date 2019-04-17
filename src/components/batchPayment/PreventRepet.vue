@@ -232,7 +232,7 @@
         <section class="table-content">
             <el-table :data="tableList"
                       border size="mini" height="100%">
-                <el-table-column prop="pay_date" label="应付日期" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="push_date" label="应付日期" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="pay_code" label="支付号码" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="pay_mode" label="支付方式" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="bank_key" label="bankkey" width="90"
