@@ -4,14 +4,50 @@
         height: 100%;
         margin: 0 auto;
         min-width: 960px;
-        .content {
-            width: 100%;
-            height: 90%;
-            min-height: 500px;
-            box-sizing: border-box;
-            position: relative;
-            padding: 20px;
+        position: relative;
+
+        .el-header {
             background-color: #fff;
+            height: auto !important;
+        }
+        .el-main {
+            width: 100%;
+            background-color: #fff;
+            box-sizing: border-box;
+            padding: 0;
+
+            > .el-container{
+                height: 100%;
+
+                > .el-header {
+                    overflow: visible;
+                }
+            }
+        }
+        .el-footer {
+            background-color: #fff;
+            padding: 0;
+            height: auto !important;
+
+            .el-pagination {
+                margin-top: 14px;
+            }
+        }
+
+        > .el-header {
+            line-height: 52px;
+            background-color: #E7E7E7;
+
+            h1 {
+                margin-bottom: 0;
+            }
+        }
+
+        > .el-main {
+            min-height: 500px;
+            padding: 20px;
+            padding-bottom: 14px;
+            overflow: hidden;
         }
 
         //表格内部操作按钮
@@ -22,34 +58,14 @@
             }
         }
     }
-
-    /*设置弹出框公共样式*/
-    .el-dialog {
-        text-align: left;
-        margin-bottom: 10px;
-        /*设置标题*/
-        .dialog-title {
-            margin-bottom: 0;
-        }
-        .el-dialog__body {
-            padding-top: 10px;
-            padding-bottom: 0;
-        }
-        .el-form {
-            width: 94%;
-            .el-select {
-                width: 100%;
-            }
-        }
-    }
 </style>
 
 <template>
-    <div id="emptyContent">
-        <header>
+    <el-container id="emptyContent">
+        <el-header>
             <h1 v-text="currentTitle"></h1>
-        </header>
-        <section class="content" v-loading="loading">
+        </el-header>
+        <el-main v-loading="loading">
             <router-view @transmitTitle="currentTitle= $event"
                          @getTableData="getRouterData"
                          @getCommTable="commRouterData"
@@ -58,8 +74,8 @@
                          @exportData="exportFun"
                          :tableData="childData"
                          :gatherData="childGatherData"></router-view>
-        </section>
-    </div>
+        </el-main>
+    </el-container>
 </template>
 
 <script>
@@ -93,7 +109,7 @@
                             message: result.data.error_msg,
                             duration: 2000
                         })
-                    }else{
+                    } else {
                         var currentData = result.data;
                         temporaryThis.childData = currentData;
                         temporaryThis.loading = false;
@@ -103,7 +119,7 @@
                 })
             },
             //获取normal接口数据
-            commRouterData:function(routerData){
+            commRouterData: function (routerData) {
                 this.loading = true;
                 var currParams = {};
                 for (var k in routerData) {
@@ -121,7 +137,7 @@
                             message: result.data.error_msg,
                             duration: 2000
                         })
-                    } else{
+                    } else {
                         var currentData = result.data;
                         temporaryThis.childData = currentData;
                         temporaryThis.loading = false;
@@ -131,7 +147,7 @@
                 })
             },
             //部分页面获取汇总数据接口
-            getGatherData: function(routerData){
+            getGatherData: function (routerData) {
                 var currParams = {};
                 for (var k in routerData) {
                     currParams[k] = routerData[k];
@@ -156,24 +172,24 @@
                 })
             },
             //下载
-            downLoad:function(loadData){
+            downLoad: function (loadData) {
                 var currParams = {};
                 for (var k in loadData) {
                     currParams[k] = loadData[k];
                 }
                 this.$axios({
-                    url:this.queryUrl + "normalProcess",
+                    url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: currParams,
                     responseType: 'blob'
                 }).then((result) => {
-                    if(result.error_msg){
+                    if (result.error_msg) {
                         this.$message({
                             type: "error",
                             message: result.data.error_msg,
                             duration: 2000
                         })
-                    }else{
+                    } else {
                         var fileName = decodeURI(result.headers["content-disposition"]).split("=")[1];
                         //ie兼容
                         if (window.navigator && window.navigator.msSaveOrOpenBlob) {
@@ -188,12 +204,12 @@
                             link.click();
                         }
                     }
-                }).catch(function(error){
+                }).catch(function (error) {
                     console.log(error);
                 })
             },
             //导出
-            exportFun: function(routerMessage){
+            exportFun: function (routerMessage) {
                 this.$axios({
                     url: this.queryUrl + "normalProcess",
                     method: "post",

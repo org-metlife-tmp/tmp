@@ -5,6 +5,7 @@
         /**********
         修改框架样式-开始
         ***********/
+        /*表格*/
         .el-table th {
             background: #E9F2F9;
             text-align: center;
@@ -18,14 +19,18 @@
             font-size: 14px;
         }
 
+        /*表单*/
+        .el-form-item .el-input input{
+            vertical-align: top;
+        }
+
+        /*布局*/
         .el-header {
-            background-color: #B3C0D1;
             color: #333;
             text-align: center;
             height: 52px !important;
             padding: 0;
             width: 100%;
-            position: fixed;
             overflow: hidden;
             transition: height 0.5s;
         }
@@ -37,12 +42,34 @@
             height: 100%;
             padding-bottom: 40px;
             background-color: rgba(255, 255, 255, 0.1);
+            overflow: hidden;
         }
 
         .el-main {
             background-color: #E7E7E7;
             text-align: center;
-            height: 100%;
+        }
+
+        /*弹出框*/
+        .el-dialog {
+            text-align: left;
+            margin-bottom: 10px;
+            /*设置标题*/
+            .dialog-title {
+                margin-bottom: 0;
+            }
+            .el-dialog__body {
+                padding-top: 10px;
+                padding-bottom: 0;
+                max-height: 400px;
+                overflow-y: auto;
+            }
+            .el-form {
+                width: 96%;
+                .el-select {
+                    width: 100%;
+                }
+            }
         }
 
         h1 {
@@ -51,44 +78,71 @@
             font-weight: 400;
         }
 
-        .el-container {
-            height: 100%;
-            transition: padding-top 0.5s;
-        }
-
-        .el-container:nth-child(5) .el-aside,
-        .el-container:nth-child(6) .el-aside {
-            line-height: 260px;
-        }
-
-        .el-container:nth-child(7) .el-aside {
-            line-height: 320px;
-        }
-
-        .el-aside {
-            overflow: hidden;
-        }
-
-        .el-table.el-table--border:before{
-            /*height: 0;*/
-        }
-        .el-table.el-table--border:after{
-            /*width: 0;*/
-        }
-        .el-table.el-table--border{
-            /*border-left: none;*/
-        }
-
-        .el-form-item .el-input input{
-            vertical-align: top;
-        }
-
         /**********
          修改框架样式-结束
          ***********/
 
+        /**********
+         公共样式设置
+        **********/
+        .search-setion {
+            text-align: left;
+
+            /*时间控件*/
+            .el-date-editor {
+                width: 100%;
+                max-width: 210px;
+            }
+        }
+
+        .split-bar {
+            width: 106%;
+            height: 6px;
+            margin-left: -20px;
+            background-color: #E7E7E7;
+            margin-bottom: 20px;
+        }
+
+        .allData {
+            height: 36px;
+            line-height: 36px;
+            width: 100%;
+            background-color: #F8F8F8;
+            border: 1px solid #ebeef5;
+            border-top: none;
+            box-sizing: border-box;
+
+            .btn-left {
+                float: left;
+                margin-left: 16px;
+            }
+
+            .btn-right {
+                float: right;
+                marging-right: 16px;
+            }
+        }
+
+        .button-list-right {
+            position: absolute;
+            top: 18px;
+            right: 0;
+        }
+
+        .button-list-left {
+            position: absolute;
+            top: 18px;
+            left: 0;
+        }
+        /*********
+         公共样式设置结束
+        *********/
+
         #contented {
-            padding-top: 52px;
+            >.el-main{
+                padding-top: 0;
+            }
+
             #plugin {
                 position: fixed;
                 width: 60px;
@@ -155,19 +209,15 @@
         .header-none {
             height: 0 !important;
         }
-        .padding-none {
-            padding-top: 0 !important;
-        }
     }
 </style>
 
 <template>
-    <div id="main">
-        <el-container>
+    <el-container id="main">
             <el-header :class="{'header-none':!headerShow}">
                 <Top></Top>
             </el-header>
-            <el-container id="contented" :class="{'home-bgc':showBgc,'padding-none':!headerShow}">
+            <el-container id="contented" :class="{'home-bgc':showBgc}">
                 <el-aside width="70px">
                     <Left></Left>
                 </el-aside>
@@ -180,9 +230,8 @@
                          v-text="topSet"></div>
                 </div>
             </el-container>
-        </el-container>
         <GetSelectData></GetSelectData>
-    </div>
+    </el-container>
 </template>
 
 <script>

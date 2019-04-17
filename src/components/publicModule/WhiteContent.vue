@@ -3,11 +3,10 @@
         width: 90%;
         height: 100%;
         margin: 0 auto;
-        min-width: 800px;
+        min-width: 960px;
+        position: relative;
 
         .content {
-            width: 100%;
-            height: 90%;
             background-color: #fff;
             min-height: 500px;
             box-sizing: border-box;
@@ -16,21 +15,6 @@
             background-color: #fff;
         }
         /*按钮样式*/
-        .content .button-list-left,
-        .content .button-list-right,
-        .button-left-bottom {
-            position: absolute;
-            top: -40px;
-        }
-
-        .content .button-list-left {
-            left: 0;
-        }
-
-        .content .button-list-right {
-            right: 0;
-        }
-
         .content .display-none{
             display: none;
         }
@@ -63,24 +47,6 @@
         }
 
         /*设置弹出框公共样式*/
-        .el-dialog {
-            text-align: left;
-            margin-bottom: 10px;
-            /*设置标题*/
-            .dialog-title {
-                margin-bottom: 0;
-            }
-            .el-dialog__body {
-                padding-top: 10px;
-                padding-bottom: 0;
-            }
-            .el-form {
-                width: 94%;
-                .el-select {
-                    width: 100%;
-                }
-            }
-        }
         .el-checkbox {
             display: block;
             margin-left: 50px;
@@ -97,11 +63,11 @@
 </style>
 
 <template>
-    <div id="whiteContent">
-        <header>
+    <el-container id="whiteContent">
+        <el-header>
             <h1 v-text="currentTitle"></h1>
-        </header>
-        <section class="content" v-loading="loading">
+        </el-header>
+        <el-main class="content" v-loading="loading">
             <div class="button-list-left">
                 <el-button type="primary" plain size="mini" @click="showDialog('dialogVisible')">全部公司</el-button>
                 <!-- <el-button type="primary" plain size="mini">全部银行</el-button> -->
@@ -134,7 +100,7 @@
                          @getTableData="getRouterData"
                          @exportOptype="exportOptype=$event"
                          :tableData="childData"></router-view>
-        </section>
+        </el-main>
         <!--请选择公司弹出框-->
         <el-dialog :visible.sync="dialogVisible"
                    class="comDialog"
@@ -187,7 +153,7 @@
                 <el-button type="warning" size="mini" @click="queryByMode">确 定</el-button>
             </span>
         </el-dialog>
-    </div>
+    </el-container>
 </template>
 
 <script>
