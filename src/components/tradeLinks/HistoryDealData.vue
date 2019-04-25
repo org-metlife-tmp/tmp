@@ -166,7 +166,7 @@
             downLoadExcel:function(type){
                 var params = {};
                 if(type =='template'){
-                    params.pk = uploadHeaders.pk;
+                    params.pk = this.uploadHeaders.pk;
                 }else{
                     params.object_id = this.currentUpload.download_object_id;
                 }
