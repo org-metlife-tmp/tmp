@@ -109,7 +109,7 @@
         </div>
         <div class="btnList">
             <el-button type="warning" size="small" plain
-                       v-show="isPending"
+                       v-show="isPending || uploadHeaders.pk == '6'"
                        @click="templateDownLoad">模板下载</el-button>
             <el-button type="warning" size="small" plain>取 消</el-button>
             <el-button type="warning" size="small" @click="subConfirm">确 定</el-button>
