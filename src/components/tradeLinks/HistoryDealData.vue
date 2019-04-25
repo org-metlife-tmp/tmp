@@ -76,7 +76,7 @@
                 <el-option label="自带模板" value="6"></el-option>
                 <el-option label="建设银行" value="10"></el-option>
                 <el-option label="中国银行" value="11"></el-option>
-                <el-option label="中信银行" value="12"></el-option>
+                <!--<el-option label="中信银行" value="12"></el-option>-->
             </el-select>
         </div>
         <div class="dataBox" v-show="!isPending">
