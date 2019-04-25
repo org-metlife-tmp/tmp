@@ -73,6 +73,7 @@
                 <el-option label="增量导入" value="2"></el-option>
             </el-select>
             <el-select v-model="uploadHeaders.pk" size="mini">
+                <el-option label="自带模板" value="6"></el-option>
                 <el-option label="建设银行" value="10"></el-option>
                 <el-option label="中国银行" value="11"></el-option>
                 <el-option label="中信银行" value="12"></el-option>
@@ -124,7 +125,7 @@
             this.currToken = this.$store.state.token;
             this.$emit("transmitTitle", "交易数据导入");
             this.uploadHeaders.Authorization = this.currToken;
-            this.uploadHeaders.pk = this.isPending ? '5' : '10';
+            this.uploadHeaders.pk = this.isPending ? '5' : '6';
             var date = new Date();
             this.limitDate = new Date(date.setDate(date.getDate()-1)).toLocaleDateString().replace(/\//g,"-");
         },
@@ -165,7 +166,7 @@
             downLoadExcel:function(type){
                 var params = {};
                 if(type =='template'){
-                    params.pk = this.isPending ? '5':'10';
+                    params.pk = uploadHeaders.pk;
                 }else{
                     params.object_id = this.currentUpload.download_object_id;
                 }
@@ -249,7 +250,7 @@
         },
         watch: {
             isPending: function (val, oldVal) {
-                this.uploadHeaders.pk = val ? '5' : '10';
+                this.uploadHeaders.pk = val ? '5' : '6';
                 this.currentUpload = {};
                 this.errorTipShow = false;
             }
