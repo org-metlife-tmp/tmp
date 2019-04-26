@@ -57,7 +57,7 @@
             }
         }
         .botton-pag-center{
-            top: 258px;
+            top: 287px;
         }
 
         /*分割线*/
@@ -184,7 +184,7 @@
         <!--分隔栏-->
         <div class="split-bar"></div>
         <!--数据展示区-->
-        <section class="table-content" :class="[isPending ? '' : 'height1']">
+        <section class="table-content" :class="[isPending ? '' : 'height1']" style="height:210px">
             <el-table :data="tableList"
                       border
                       height="100%"
@@ -230,7 +230,7 @@
                 <el-table-column v-if="biz_type!=100" prop="recv_account_name" label="收款方公司名称" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column v-if="biz_type!=100" prop="payment_amount" label="金额" :show-overflow-tooltip="true"
                                 :formatter="transitAmount"></el-table-column>
-                <el-table-column v-if="biz_type!=100" prop="create_on" label="日期" :show-overflow-tooltip="true"></el-table-column>         
+                <el-table-column v-if="biz_type!=100" prop="create_on" label="日期" :show-overflow-tooltip="true"></el-table-column>
             </el-table>
         </section>
         <!--分页部分-->
@@ -240,7 +240,7 @@
                     layout="sizes, prev, pager, next, jumper"
                     :page-size="pagSize"
                     :total="pagTotal"
-                    :page-sizes="[7, 50, 100, 500]"
+                    :page-sizes="[5, 7, 50, 100, 500]"
                     :pager-count="5"
                     :current-page="pagCurrent"
                     @current-change="getCurrentPage"
@@ -253,7 +253,7 @@
             </div>
         </div>
         <!--主数据关联数据-->
-        <section class="table-content" style="margin-top:40px" v-if="isPending">
+        <section class="table-content" style="margin-top:40px;height:150px" v-if="isPending">
             <el-table :data="childList"
                       border
                       height="100%"
@@ -313,7 +313,7 @@
                     todo:{
                         optype: "dbttrad_billList",
                         params: {
-                            page_size: 7,
+                            page_size: 5,
                             page_num: 1
                         }
                     },
@@ -399,10 +399,13 @@
             },
             //当前页数据条数发生变化
             sizeChange:function(val){
-                this.routerMessage.todo.params.page_size = val;
-                this.routerMessage.todo.params.page_num = 1;
-                this.routerMessage.done.params.page_size = val;
-                this.routerMessage.done.params.page_num = 1;
+                if(this.isPending){
+                    this.routerMessage.todo.params.page_size = val;
+                    this.routerMessage.todo.params.page_num = 1;
+                }else{
+                    this.routerMessage.done.params.page_size = val;
+                    this.routerMessage.done.params.page_num = 1;
+                }
                 this.$emit("getTableData", this.routerMessage);
             },
             //获取未核对下第二个表格数据
@@ -591,7 +594,7 @@
                 this.tableList = [];
                 this.childList = [];
                 this.routerMessage.todo.params = {
-                    page_size: 7,
+                    page_size: 5,
                     page_num: 1
                 }
                 this.routerMessage.done.params = {

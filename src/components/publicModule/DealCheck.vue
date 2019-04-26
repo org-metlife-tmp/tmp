@@ -26,8 +26,11 @@
         }
 
         /*数据展示区*/
-        .table-content {
-            height: 181px;
+        .table-content-top {
+            height: 210px;
+        }
+        .table-content-bottom {
+            height: 150px;
         }
 
         .validated-content {
@@ -54,7 +57,7 @@
             }
         }
         .botton-pag-center {
-            top: 258px;
+            top: 287px;
         }
 
         /*分割线*/
@@ -140,7 +143,7 @@
         <!--分隔栏-->
         <div class="split-bar"></div>
         <!--数据展示区-->
-        <section class="table-content" v-if="isPending">
+        <section class="table-content-top" v-if="isPending">
             <el-table :data="tableList" border
                       height="100%" size="mini"
                       highlight-current-row
@@ -195,7 +198,7 @@
                     layout="sizes, prev, pager, next, jumper"
                     :page-size="pagSize"
                     :total="pagTotal"
-                    :page-sizes="[7, 50, 100, 500]"
+                    :page-sizes="[5, 7, 50, 100, 500]"
                     :pager-count="5"
                     :current-page="pagCurrent"
                     @current-change="getCurrentPage"
@@ -208,7 +211,7 @@
             </div>
         </div>
         <!--主数据关联数据-->
-        <section class="table-content" style="margin-top:40px" v-if="isPending">
+        <section class="table-content-bottom" style="margin-top:40px" v-if="isPending">
             <el-table :data="childList" border
                       height="100%" size="mini"
                       @selection-change="selectChange">
@@ -260,7 +263,7 @@
                     todo: {
                         optype: "",
                         params: {
-                            page_size: 7,
+                            page_size: 5,
                             page_num: 1,
                             is_checked: 0
                         }
