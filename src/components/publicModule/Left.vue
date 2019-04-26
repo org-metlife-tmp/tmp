@@ -72,19 +72,19 @@
                 background-position: -103px -116px;
             }
 
-            .icon-zjxb{
+            .icon-zjxb {
                 background-position: -92px -254px;
             }
 
-            .icon-skt{
+            .icon-skt {
                 background-position: -152px -254px;
             }
 
-            .icon-electb{
+            .icon-electb {
                 background-position: -321px -194px;
             }
 
-            .icon-gyl{
+            .icon-gyl {
                 background-position: -212px -254px;
             }
 
@@ -128,14 +128,19 @@
                 background-position: -31px -85px;
             }
 
-            .icon-plfk{
+            .icon-plfk {
                 background-position: -512px -252px;
             }
 
-            .icon-plsk{
+            .icon-plsk {
                 background-position: -452px -252px;
-	    }
-            .icon-dzt{
+            }
+
+            .icon-gmfk{
+                background-position: -272px -284px;
+            }
+
+            .icon-dzt {
                 background-position: -333px -254px;
             }
             /*首页背景图定位结束*/
@@ -167,16 +172,16 @@
             .icon-gjt {
                 background-position: -69px -116px;
             }
-            .icon-zjxb{
+            .icon-zjxb {
                 background-position: -62px -254px;
             }
-            .icon-skt{
+            .icon-skt {
                 background-position: -122px -254px;
             }
-            .icon-electb{
+            .icon-electb {
                 background-position: -287px -194px;
             }
-            .icon-gyl{
+            .icon-gyl {
                 background-position: -182px -254px;
             }
             .icon-ywfk {
@@ -209,13 +214,16 @@
             .icon-xtsz {
                 background-position: 0px -85px;
             }
-            .icon-plfk{
+            .icon-plfk {
                 background-position: -482px -252px;
             }
-            .icon-plsk{
+            .icon-plsk {
                 background-position: -422px -252px;
-	    }
-            .icon-dzt{
+            }
+            .icon-gmfk{
+                background-position: -242px -284px;
+            }
+            .icon-dzt {
                 background-position: -302px -254px;
             }
 
@@ -254,17 +262,17 @@
                 background-position: -103px -116px;
             }
 
-            .el-submenu__title:hover .icon-zjxb{
+            .el-submenu__title:hover .icon-zjxb {
                 background-position: -92px -254px;
             }
 
-            .el-submenu__title:hover .icon-skt{
+            .el-submenu__title:hover .icon-skt {
                 background-position: -152px -254px;
             }
-            .el-submenu__title:hover .icon-electb{
+            .el-submenu__title:hover .icon-electb {
                 background-position: -321px -194px;
             }
-            .el-submenu__title:hover .icon-gyl{
+            .el-submenu__title:hover .icon-gyl {
                 background-position: -212px -254px;
             }
 
@@ -296,11 +304,11 @@
                 background-position: -506px -190px;
             }
 
-            .el-submenu__title:hover .icon-gzrl{
+            .el-submenu__title:hover .icon-gzrl {
                 background-position: -32px -252px;
             }
 
-            .el-submenu__title:hover .icon-tpgl{
+            .el-submenu__title:hover .icon-tpgl {
                 background-position: -272px -254px;
             }
 
@@ -308,13 +316,19 @@
                 background-position: -31px -85px;
             }
 
-            .el-submenu__title:hover .icon-plfk{
+            .el-submenu__title:hover .icon-plfk {
                 background-position: -512px -252px;
             }
-            .el-submenu__title:hover .icon-plsk{
+
+            .el-submenu__title:hover .icon-plsk {
                 background-position: -452px -252px;
-	    }
-            .el-submenu__title:hover .icon-dzt{
+            }
+
+            .el-submenu__title:hover .icon-gmfk{
+                background-position: -272px -284px;
+            }
+
+            .el-submenu__title:hover .icon-dzt {
                 background-position: -333px -254px;
             }
 
@@ -483,7 +497,8 @@
                     <el-menu-item index="/trade-links/today-all" v-if="menuList.CurTransSummary">当日交易汇总</el-menu-item>
                     <el-menu-item index="/trade-links/history-detail" v-if="menuList.HisTrans">历史交易明细</el-menu-item>
                     <el-menu-item index="/trade-links/history-all" v-if="menuList.HisTransSummary">历史交易汇总</el-menu-item>
-                    <el-menu-item index="/trade-links/history-fluctuate" v-if="menuList.HisTransWave">历史交易波动</el-menu-item>
+                    <el-menu-item index="/trade-links/history-fluctuate" v-if="menuList.HisTransWave">历史交易波动
+                    </el-menu-item>
                     <el-menu-item index="/trade-links/history-data" v-if="menuList.TransImport">交易数据导入</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
@@ -539,35 +554,43 @@
                     <el-menu-item index="/collection/collection-set" v-if="menuList.GJSetting">自动归集设置</el-menu-item>
                     <el-menu-item index="/collection/collection-manage" v-if="menuList.GJMgr">自动归集管理</el-menu-item>
                     <el-menu-item index="/collection/collection-look" v-if="menuList.GJView">自动归集查看</el-menu-item>
-                    <el-menu-item index="/collection/collection-statement" v-if="menuList.GJReport">自动归集报表</el-menu-item>
-                    <el-menu-item index="/collection/not-directly-set" v-if="menuList.GJBatchBill">非直连归集-制单</el-menu-item>
-                    <el-menu-item index="/collection/no-directly-look" v-if="menuList.GJBatchView">非直连归集-查看</el-menu-item>
+                    <el-menu-item index="/collection/collection-statement" v-if="menuList.GJReport">自动归集报表
+                    </el-menu-item>
+                    <el-menu-item index="/collection/not-directly-set" v-if="menuList.GJBatchBill">非直连归集-制单
+                    </el-menu-item>
+                    <el-menu-item index="/collection/no-directly-look" v-if="menuList.GJBatchView">非直连归集-查看
+                    </el-menu-item>
                     <el-menu-item index="/payment/deal-check?bizType=12" v-if="menuList.GJCheck">交易核对</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="13"  v-if="menuList.ZJXB">
+            <el-submenu index="13" v-if="menuList.ZJXB">
                 <template slot="title" height="200px">
                     <i class="icon-zjxb"></i>
                     <p>资金下拨</p>
                 </template>
                 <el-menu-item-group>
-                    <el-menu-item index="/allocation/fundpool-acc-set" v-if="menuList.ZJXBApSetting">资金池账户设置</el-menu-item>
+                    <el-menu-item index="/allocation/fundpool-acc-set" v-if="menuList.ZJXBApSetting">资金池账户设置
+                    </el-menu-item>
                     <el-menu-item index="/allocation/allocation-set" v-if="menuList.ZJXBSetting">自动下拨设置</el-menu-item>
                     <el-menu-item index="/allocation/allocation-manage" v-if="menuList.ZJXBMgr">自动下拨管理</el-menu-item>
                     <el-menu-item index="/allocation/allocation-view" v-if="menuList.ZJXBView">自动下拨查看</el-menu-item>
                     <el-menu-item index="/allocation/allocation-chart" v-if="menuList.ZJXBReport">自动下拨报表</el-menu-item>
-                    <el-menu-item index="/allot/allot-deal-check?bizType=13" v-if="menuList.ZJXBChecked">交易核对</el-menu-item>
+                    <el-menu-item index="/allot/allot-deal-check?bizType=13" v-if="menuList.ZJXBChecked">交易核对
+                    </el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="14"  v-if="menuList.SKT">
+            <el-submenu index="14" v-if="menuList.SKT">
                 <template slot="title" height="200px">
                     <i class="icon-skt"></i>
                     <p>收款通</p>
                 </template>
                 <el-menu-item-group>
-                    <el-menu-item index="/receivables/receive-make-bill" v-if="menuList.SKTMkBill">资金收款-制单</el-menu-item>
-                    <el-menu-item index="/receivables/receive-look-over" v-if="menuList.SKTViewBill">资金收款-查看</el-menu-item>
-                    <el-menu-item index="/allot/allot-deal-check?bizType=15" v-if="menuList.SKTCheck">交易核对</el-menu-item>
+                    <el-menu-item index="/receivables/receive-make-bill" v-if="menuList.SKTMkBill">资金收款-制单
+                    </el-menu-item>
+                    <el-menu-item index="/receivables/receive-look-over" v-if="menuList.SKTViewBill">资金收款-查看
+                    </el-menu-item>
+                    <el-menu-item index="/allot/allot-deal-check?bizType=15" v-if="menuList.SKTCheck">交易核对
+                    </el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
             <el-submenu index="15" v-if="menuList.ELECTB">
@@ -576,7 +599,8 @@
                     <p>电子回单</p>
                 </template>
                 <el-menu-item-group>
-                    <el-menu-item index="/electronicReceipt/electronic-receipt" v-if="menuList.ElectronicBillMgr">电子回单</el-menu-item>
+                    <el-menu-item index="/electronicReceipt/electronic-receipt" v-if="menuList.ElectronicBillMgr">电子回单
+                    </el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
             <el-submenu index="16" v-if="menuList.GYLBFJ">
@@ -585,10 +609,13 @@
                     <p>广银联</p>
                 </template>
                 <el-menu-item-group>
-                    <el-menu-item index="/wide-unionpay/strategy-set" v-if="menuList.GYLBFJSetting">广银联备付金设置</el-menu-item>
-                    <el-menu-item index="/wide-unionpay/unionpay-manage" v-if="menuList.GYLBFJMgr">广银联备付金管理</el-menu-item>
+                    <el-menu-item index="/wide-unionpay/strategy-set" v-if="menuList.GYLBFJSetting">广银联备付金设置
+                    </el-menu-item>
+                    <el-menu-item index="/wide-unionpay/unionpay-manage" v-if="menuList.GYLBFJMgr">广银联备付金管理
+                    </el-menu-item>
                     <el-menu-item index="/wide-unionpay/task-look" v-if="menuList.GYLBFJView">广银联备付金查看</el-menu-item>
-                    <el-menu-item index="/payment/deal-check?bizType=14" v-if="menuList.GYLBFJCheck">广银联备付金核对</el-menu-item>
+                    <el-menu-item index="/payment/deal-check?bizType=14" v-if="menuList.GYLBFJCheck">广银联备付金核对
+                    </el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
             <el-submenu index="17" v-if="menuList.OADATAMGT">
@@ -611,7 +638,8 @@
                 </template>
                 <el-menu-item-group>
                     <el-menu-item index="/refund-ticket/refund-dispose" v-if="menuList.ActiveRefund">主动退票</el-menu-item>
-                    <el-menu-item index="/refund-ticket/suspicious-refund" v-if="menuList.DoubtfulRefund">可疑退票</el-menu-item>
+                    <el-menu-item index="/refund-ticket/suspicious-refund" v-if="menuList.DoubtfulRefund">可疑退票
+                    </el-menu-item>
                     <el-menu-item index="/refund-ticket/refund-inquiry" v-if="menuList.QRefund">退票查询</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
@@ -631,12 +659,18 @@
                     <p class="mg-four">批量付款</p>
                 </template>
                 <el-menu-item-group>
-                    <el-menu-item index="/batch-payment/prevent-repet" v-if="menuList.DataAntiDualWaring">防重预警</el-menu-item>
-                    <el-menu-item index="/batch-payment/pay-check-batch" v-if="menuList.PayCheckAllot">核对组批</el-menu-item>
-                    <el-menu-item index="/batch-payment/pay-disk-sending" v-if="menuList.PayBatchSend">盘片发送</el-menu-item>
-                    <el-menu-item index="/batch-payment/pay-diskbacking" v-if="menuList.PayBatchResp">盘片回盘</el-menu-item>
-                    <el-menu-item index="/batch-payment/settle-accounts" v-if="menuList.PayBatchCheck">结算对账</el-menu-item>
-                    <el-menu-item index="/batch-payment/abnormal-dispose" v-if="menuList.PayBatchDoExcp">异常处理</el-menu-item>
+                    <el-menu-item index="/batch-payment/prevent-repet" v-if="menuList.DataAntiDualWaring">防重预警
+                    </el-menu-item>
+                    <el-menu-item index="/batch-payment/pay-check-batch" v-if="menuList.PayCheckAllot">核对组批
+                    </el-menu-item>
+                    <el-menu-item index="/batch-payment/pay-disk-sending" v-if="menuList.PayBatchSend">盘片发送
+                    </el-menu-item>
+                    <el-menu-item index="/batch-payment/pay-diskbacking" v-if="menuList.PayBatchResp">盘片回盘
+                    </el-menu-item>
+                    <el-menu-item index="/batch-payment/settle-accounts" v-if="menuList.PayBatchCheck">结算对账
+                    </el-menu-item>
+                    <el-menu-item index="/batch-payment/abnormal-dispose" v-if="menuList.PayBatchDoExcp">异常处理
+                    </el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
             <el-submenu index="21" v-if="menuList.BATCHRECV">
@@ -645,12 +679,19 @@
                     <p class="mg-four">批量收款</p>
                 </template>
                 <el-menu-item-group>
-                    <el-menu-item index="/batch-gather/gaterh-prevent-repet" v-if="menuList.RecvDataAntiDualWaring">防重预警</el-menu-item>
-                    <el-menu-item index="/batch-gather/gather-check-batch" v-if="menuList.RecvCheckAllot">核对组批</el-menu-item>
-                    <el-menu-item index="/batch-gather/gather-disk-sending" v-if="menuList.RecvBatchSend">盘片发送</el-menu-item>
-                    <el-menu-item index="/batch-gather/gather-diskbacking" v-if="menuList.RecvBatchResp">盘片回盘</el-menu-item>
-                    <el-menu-item index="/batch-gather/gather-settle-accounts" v-if="menuList.RecvBatchCheck">结算对账</el-menu-item>
-                    <el-menu-item index="/batch-gather/gather-abnormal" v-if="menuList.RecvBatchDoExcp">异常处理</el-menu-item>
+                    <el-menu-item index="/batch-gather/gaterh-prevent-repet" v-if="menuList.RecvDataAntiDualWaring">
+                        防重预警
+                    </el-menu-item>
+                    <el-menu-item index="/batch-gather/gather-check-batch" v-if="menuList.RecvCheckAllot">核对组批
+                    </el-menu-item>
+                    <el-menu-item index="/batch-gather/gather-disk-sending" v-if="menuList.RecvBatchSend">盘片发送
+                    </el-menu-item>
+                    <el-menu-item index="/batch-gather/gather-diskbacking" v-if="menuList.RecvBatchResp">盘片回盘
+                    </el-menu-item>
+                    <el-menu-item index="/batch-gather/gather-settle-accounts" v-if="menuList.RecvBatchCheck">结算对账
+                    </el-menu-item>
+                    <el-menu-item index="/batch-gather/gather-abnormal" v-if="menuList.RecvBatchDoExcp">异常处理
+                    </el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
             <el-submenu index="22" v-if="menuList.COUNTERPAY">
@@ -659,8 +700,10 @@
                     <p class="mg-four">柜面付款</p>
                 </template>
                 <el-menu-item-group>
-                    <el-menu-item index="/counter-payment/counter-settle-account" v-if="menuList.PayCounterCheck">结算对账</el-menu-item>
-                    <el-menu-item index="/counter-payment/payment-workbench" v-if="menuList.PayCounterPlat">付款工作台</el-menu-item>
+                    <el-menu-item index="/counter-payment/counter-settle-account" v-if="menuList.PayCounterCheck">结算对账
+                    </el-menu-item>
+                    <el-menu-item index="/counter-payment/payment-workbench" v-if="menuList.PayCounterPlat">付款工作台
+                    </el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
             <el-submenu index="23" v-if="menuList.DZT">
@@ -669,9 +712,12 @@
                     <p>对账通</p>
                 </template>
                 <el-menu-item-group>
-                    <el-menu-item index="/reconciliation/initial-balance" v-if="menuList.DztInitData">期初数据</el-menu-item>
-                    <el-menu-item index="/reconciliation/balance-adjust" v-if="menuList.DztBalAdjust">余额调节表</el-menu-item>
-                    <el-menu-item index="/allot/allot-deal-check?bizType=100" v-if="menuList.DztInitCheck">期初数据核对</el-menu-item>
+                    <el-menu-item index="/reconciliation/initial-balance" v-if="menuList.DztInitData">期初数据
+                    </el-menu-item>
+                    <el-menu-item index="/reconciliation/balance-adjust" v-if="menuList.DztBalAdjust">余额调节表
+                    </el-menu-item>
+                    <el-menu-item index="/allot/allot-deal-check?bizType=100" v-if="menuList.DztInitCheck">期初数据核对
+                    </el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
         </el-menu>
@@ -845,10 +891,10 @@
         },
         methods: {
             //根据权限设置菜单栏
-            setMenu: function(){
+            setMenu: function () {
                 var user = JSON.parse(window.sessionStorage.getItem("user"));
                 var menuList = this.menuList;
-                for(var k in menuList){
+                for (var k in menuList) {
                     menuList[k] = false;
                 }
 
@@ -878,7 +924,7 @@
         computed: {
             showBgc: function () {
                 var currentPath = this.$route.name;
-                if(currentPath == "Home" && this.$route.params.refreshUser){
+                if (currentPath == "Home" && this.$route.params.refreshUser) {
                     this.setMenu();
                 }
                 if (!currentPath || currentPath == "Home") {
