@@ -206,8 +206,8 @@
             </el-pagination>
             <el-button type="warning" size="mini" @click="confirmCheck" v-show="isPending">确认</el-button>
             <div class="check-select" v-show="isPending">
-                <el-checkbox v-model="dateCheck">日期校验</el-checkbox>
-                <el-checkbox v-model="recvCheck">收款方校验</el-checkbox>
+                <el-checkbox v-model="dateCheck" @change="getCheckData(currentData)">日期校验</el-checkbox>
+                <el-checkbox v-model="recvCheck" @change="getCheckData(currentData)">收款方校验</el-checkbox>
             </div>
         </div>
         <!--主数据关联数据-->
@@ -309,6 +309,7 @@
                 curBizType: "",
                 dateCheck: true,
                 recvCheck: true,
+                currentData: ""
             }
         },
         methods: {
@@ -454,9 +455,11 @@
             },
             //获取当前数据对应的核对数据
             getCheckData: function (val) {
-                if (!val) {
+                if (this.tableList.length === 0 || !val) {
+                    this.currentData = "";
                     return;
                 }
+                this.currentData = val;
                 this.currSelectData = val;
                 this.childList = [];
                 this.$axios({

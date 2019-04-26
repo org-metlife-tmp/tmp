@@ -1,12 +1,12 @@
 <style scoped lang="less" type="text/less">
-    #allotDealCheck{
+    #allotDealCheck {
         width: 100%;
         height: 100%;
         box-sizing: border-box;
         position: relative;
 
         /*搜索区*/
-        .search-setion{
+        .search-setion {
             text-align: left;
             .line {
                 text-align: center;
@@ -27,13 +27,13 @@
         }
 
         /*数据展示区*/
-        .table-content{
+        .table-content {
             height: 181px;
         }
         .table-content.height1 {
             height: 325px;
         }
-        .childTable{
+        .childTable {
             // min-height: 96px;
             // max-height: 192px;
         }
@@ -50,13 +50,13 @@
                 margin-top: -30px;
             }
 
-            .check-select{
+            .check-select {
                 float: right;
                 margin-top: -26px;
                 margin-right: 70px;
             }
         }
-        .botton-pag-center{
+        .botton-pag-center {
             top: 287px;
         }
 
@@ -91,12 +91,12 @@
         .el-table__expanded-cell[class*=cell] {
             padding: 20px;
         }
-        .el-form--inline .el-form-item{
+        .el-form--inline .el-form-item {
             width: calc(100% - 10px);
             width: -moz-calc(100% - 10px);
             width: -webkit-calc(100% - 10px);
         }
-        .el-form--inline .el-form-item__content{
+        .el-form--inline .el-form-item__content {
             width: 100%;
         }
     }
@@ -147,12 +147,12 @@
                     </el-col>
                     <el-col :span="4" v-if="biz_type==100">
                         <el-form-item>
-                            <el-select v-model="searchData.credit_or_debit" placeholder="请选择借贷方向" clearable >
+                            <el-select v-model="searchData.credit_or_debit" placeholder="请选择借贷方向" clearable>
                                 <el-option
-                                    v-for="(item,k) in credirOrDebit"
-                                    :key="k"
-                                    :label="item"
-                                    :value="k">
+                                        v-for="(item,k) in credirOrDebit"
+                                        :key="k"
+                                        :label="item"
+                                        :value="k">
                                 </el-option>
                             </el-select>
                         </el-form-item>
@@ -198,39 +198,56 @@
                     <template slot-scope="scope">
                         <section class="childTable">
                             <el-table :data="scope.row.list"
-                                    border
-                                    size="mini">
-                                <el-table-column prop="acc_no" label="账户号" :show-overflow-tooltip="true"></el-table-column>
-                                <el-table-column prop="acc_name" label="账户名称" :show-overflow-tooltip="true"></el-table-column>
-                                <el-table-column prop="bank_name" label="开户行" :show-overflow-tooltip="true"></el-table-column>
-                                <el-table-column prop="direction" label="收付方向" :show-overflow-tooltip="true" width="80"></el-table-column>
-                                <el-table-column prop="opp_acc_no" label="对方账户号" :show-overflow-tooltip="true"></el-table-column>
-                                <el-table-column prop="opp_acc_name" label="对方账户号名称" :show-overflow-tooltip="true"></el-table-column>
+                                      border
+                                      size="mini">
+                                <el-table-column prop="acc_no" label="账户号"
+                                                 :show-overflow-tooltip="true"></el-table-column>
+                                <el-table-column prop="acc_name" label="账户名称"
+                                                 :show-overflow-tooltip="true"></el-table-column>
+                                <el-table-column prop="bank_name" label="开户行"
+                                                 :show-overflow-tooltip="true"></el-table-column>
+                                <el-table-column prop="direction" label="收付方向" :show-overflow-tooltip="true"
+                                                 width="80"></el-table-column>
+                                <el-table-column prop="opp_acc_no" label="对方账户号"
+                                                 :show-overflow-tooltip="true"></el-table-column>
+                                <el-table-column prop="opp_acc_name" label="对方账户号名称"
+                                                 :show-overflow-tooltip="true"></el-table-column>
                                 <el-table-column prop="amount" label="交易金额" :show-overflow-tooltip="true"
-                                                :formatter="transitAmount"></el-table-column>
-                                <el-table-column prop="summary" label="摘要" :show-overflow-tooltip="true" width="80"></el-table-column>
-                                <el-table-column prop="trans_date" label="交易时间" :show-overflow-tooltip="true"></el-table-column>
+                                                 :formatter="transitAmount"></el-table-column>
+                                <el-table-column prop="summary" label="摘要" :show-overflow-tooltip="true"
+                                                 width="80"></el-table-column>
+                                <el-table-column prop="trans_date" label="交易时间"
+                                                 :show-overflow-tooltip="true"></el-table-column>
                             </el-table>
                         </section>
                     </template>
                 </el-table-column>
-                <el-table-column v-if="biz_type==100" prop="acc_no" label="账户号" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column v-if="biz_type==100" prop="acc_name" label="账户名称" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column v-if="biz_type==100" prop="acc_no" label="账户号"
+                                 :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column v-if="biz_type==100" prop="acc_name" label="账户名称"
+                                 :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column v-if="biz_type==100" prop="amount" label="金额" :show-overflow-tooltip="true"
-                                :formatter="transitAmount"></el-table-column>
-                <el-table-column v-if="curBizType==13" prop="create_on" label="日期" :show-overflow-tooltip="true"></el-table-column>
+                                 :formatter="transitAmount"></el-table-column>
+                <el-table-column v-if="curBizType==13" prop="create_on" label="日期"
+                                 :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column v-else prop="apply_on" label="日期" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column v-if="biz_type==100" prop="credit_or_debit" label="借贷方向" :show-overflow-tooltip="true"
-                                :formatter="transitionStatus"></el-table-column>
+                                 :formatter="transitionStatus"></el-table-column>
 
-                <el-table-column v-if="biz_type==100" prop="memo" label="摘要" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column v-if="biz_type!=100" prop="pay_account_no" label="付款方账号" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column v-if="biz_type!=100" prop="pay_account_bank" label="付款银行" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column v-if="biz_type!=100" prop="recv_account_no" label="收款方账号" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column v-if="biz_type!=100" prop="recv_account_name" label="收款方公司名称" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column v-if="biz_type==100" prop="memo" label="摘要"
+                                 :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column v-if="biz_type!=100" prop="pay_account_no" label="付款方账号"
+                                 :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column v-if="biz_type!=100" prop="pay_account_bank" label="付款银行"
+                                 :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column v-if="biz_type!=100" prop="recv_account_no" label="收款方账号"
+                                 :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column v-if="biz_type!=100" prop="recv_account_name" label="收款方公司名称"
+                                 :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column v-if="biz_type!=100" prop="payment_amount" label="金额" :show-overflow-tooltip="true"
-                                :formatter="transitAmount"></el-table-column>
-                <el-table-column v-if="biz_type!=100" prop="create_on" label="日期" :show-overflow-tooltip="true"></el-table-column>
+                                 :formatter="transitAmount"></el-table-column>
+                <el-table-column v-if="biz_type!=100" prop="create_on" label="日期"
+                                 :show-overflow-tooltip="true"></el-table-column>
             </el-table>
         </section>
         <!--分页部分-->
@@ -248,8 +265,8 @@
             </el-pagination>
             <el-button type="warning" size="mini" @click="transactionConfirm" v-show="isPending">确认</el-button>
             <div class="check-select" v-show="isPending">
-                <el-checkbox v-model="dateCheck">日期校验</el-checkbox>
-                <el-checkbox v-model="recvCheck">收款方校验</el-checkbox>
+                <el-checkbox v-model="dateCheck" @change="getCurRowData(currentData)">日期校验</el-checkbox>
+                <el-checkbox v-model="recvCheck" @change="getCurRowData(currentData)">收款方校验</el-checkbox>
             </div>
         </div>
         <!--主数据关联数据-->
@@ -263,11 +280,12 @@
                 <el-table-column prop="acc_no" label="账户号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="acc_name" label="账户名称" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="bank_name" label="开户行" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="direction" label="收付方向" :show-overflow-tooltip="true" width="80"></el-table-column>
+                <el-table-column prop="direction" label="收付方向" :show-overflow-tooltip="true"
+                                 width="80"></el-table-column>
                 <el-table-column prop="opp_acc_no" label="对方账户号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="opp_acc_name" label="对方账户号名称" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="amount" label="交易金额" :show-overflow-tooltip="true"
-                                :formatter="transitAmount"></el-table-column>
+                                 :formatter="transitAmount"></el-table-column>
                 <el-table-column prop="summary" label="摘要" :show-overflow-tooltip="true" width="80"></el-table-column>
                 <el-table-column prop="trans_date" label="交易时间" :show-overflow-tooltip="true"></el-table-column>
             </el-table>
@@ -282,7 +300,7 @@
             //设置当前optype信息
             var queryData = this.$router.currentRoute.query;
             this.biz_type = queryData.bizType;
-            if(this.biz_type!=100)
+            if (this.biz_type != 100)
                 this.$emit("transmitTitle", "交易核对");
             else
                 this.$emit("transmitTitle", "期初数据核对");
@@ -297,7 +315,7 @@
         mounted: function () {
             var constants = JSON.parse(window.sessionStorage.getItem("constants"));
             //借贷方向
-            if(constants.CredirOrDebit){
+            if (constants.CredirOrDebit) {
                 this.credirOrDebit = constants.CredirOrDebit;
             }
             this.paymentTypeList = {
@@ -305,19 +323,19 @@
                 10: '批量调拨'
             }
         },
-        props:["isPending","tableData"],
+        props: ["isPending", "tableData"],
         data: function () {
             return {
                 queryUrl: this.$store.state.queryUrl,
                 routerMessage: {
-                    todo:{
+                    todo: {
                         optype: "dbttrad_billList",
                         params: {
                             page_size: 5,
                             page_num: 1
                         }
                     },
-                    done:{
+                    done: {
                         optype: "dbttrad_confirmbillList",
                         params: {
                             page_size: 7,
@@ -325,10 +343,10 @@
                         }
                     }
                 },
-                searchData:{
+                searchData: {
                     payment_type: "8",
                 },
-                tableList:[],
+                tableList: [],
                 childList: [],
                 pagSize: 8, //分页数据
                 pagTotal: 1,
@@ -344,18 +362,19 @@
                         return time.getTime() > Date.now();
                     }
                 },
-                paymentTypeList:{},//调拨类型
+                paymentTypeList: {},//调拨类型
                 isAllot: false,//是否是调拨
-                expandKeys:[],//存放展开的id
+                expandKeys: [],//存放展开的id
                 // 获取row的key值
                 getRowKeys(row) {
                     return row.id;
                 },
-                curBizType:"",
+                curBizType: "",
                 dateCheck: true,
                 recvCheck: true,
-                biz_type:"",
-                credirOrDebit:{},//借贷方向
+                biz_type: "",
+                credirOrDebit: {},//借贷方向
+                currentData: ""
             }
         },
         methods: {
@@ -365,21 +384,21 @@
             },
             //展示格式转换
             transitionStatus: function (row, column, cellValue, index) {
-                if(column.property === "credit_or_debit"){//转换借贷方向
+                if (column.property === "credit_or_debit") {//转换借贷方向
                     if (this.credirOrDebit) {
                         return this.credirOrDebit[cellValue];
                     }
                 }
             },
             //根据条件查询数据
-            queryData:function(){
+            queryData: function () {
                 var searchData = this.searchData;
                 searchData.start_date = this.dateValue ? this.dateValue[0] : "";
                 searchData.end_date = this.dateValue ? this.dateValue[1] : "";
-                for(var k in searchData){
-                    if(this.isPending){
+                for (var k in searchData) {
+                    if (this.isPending) {
                         this.routerMessage.todo.params[k] = searchData[k];
-                    }else{
+                    } else {
                         this.routerMessage.done.params[k] = searchData[k];
                     }
                 }
@@ -389,20 +408,20 @@
                 this.$emit("getTableData", this.routerMessage);
             },
             //点击页数获取当前页数据
-            getCurrentPage:function(currPage){
-                if(this.isPending){
+            getCurrentPage: function (currPage) {
+                if (this.isPending) {
                     this.routerMessage.todo.params.page_num = currPage;
-                }else{
+                } else {
                     this.routerMessage.done.params.page_num = currPage;
                 }
                 this.$emit("getTableData", this.routerMessage);
             },
             //当前页数据条数发生变化
-            sizeChange:function(val){
-                if(this.isPending){
+            sizeChange: function (val) {
+                if (this.isPending) {
                     this.routerMessage.todo.params.page_size = val;
                     this.routerMessage.todo.params.page_num = 1;
-                }else{
+                } else {
                     this.routerMessage.done.params.page_size = val;
                     this.routerMessage.done.params.page_num = 1;
                 }
@@ -410,6 +429,11 @@
             },
             //获取未核对下第二个表格数据
             getCurRowData: function (row, event, column) {
+                if(this.tableList.length === 0 || !row){
+                    this.currentData = "";
+                    return;
+                }
+                this.currentData = row;
                 var params = {
                     pay_account_no: row.pay_account_no,
                     recv_account_no: row.recv_account_no,
@@ -417,21 +441,21 @@
                     date_validate: this.dateCheck ? 1 : 0,
                     recv_validate: this.recvCheck ? 1 : 0,
                 }
-                if(this.curBizType==13){//资金下拨
+                if (this.curBizType == 13) {//资金下拨
                     params.create_on = row.create_on;
-                }else if(this.curBizType==16){ //对账通
-                    params.acc_no = row.acc_no,
-                    params.credit_or_debit = row.credit_or_debit,
-                    params.amount = row.amount,
-                    params.month = row.month,
-                    params.year = row.year
-		}else{
+                } else if (this.curBizType == 16) { //对账通
+                    params.acc_no = row.acc_no;
+                    params.credit_or_debit = row.credit_or_debit;
+                    params.amount = row.amount;
+                    params.month = row.month;
+                    params.year = row.year;
+                } else {
                     params.apply_on = row.apply_on;
                 }
                 this.$axios({
                     url: this.queryUrl + "normalProcess",
-                    method:"post",
-                    data:{
+                    method: "post",
+                    data: {
                         optype: this.checkOptype,
                         params: params
                     }
@@ -461,7 +485,7 @@
                 this.selectionList.forEach(element => {
                     trading_no.push(element.id);
                 });
-                if(trading_no.length){
+                if (trading_no.length) {
                     this.$confirm('确认核对当前选择数据吗?', '提示', {
                         confirmButtonText: '确定',
                         cancelButtonText: '取消',
@@ -470,10 +494,10 @@
                         var row = this.currenrRow;
                         this.$axios({
                             url: this.queryUrl + "normalProcess",
-                            method:"post",
-                            data:{
-                                optype:this.confirmOptype,
-                                params:{
+                            method: "post",
+                            data: {
+                                optype: this.confirmOptype,
+                                params: {
                                     bill_no: row.id,
                                     trading_no: trading_no,
                                     persist_version: row.persist_version
@@ -508,26 +532,26 @@
                 var isPush = true;
                 var esList = this.expandKeys;
                 var esLen = esList.length;
-                for(let i =0 ;i<esLen;i++){
-                    if(esList[i] == row.id){
+                for (let i = 0; i < esLen; i++) {
+                    if (esList[i] == row.id) {
                         isPush = false;
                         break;
                     }
                 }
-                if(isPush){
+                if (isPush) {
                     this.expandKeys = [];
                     this.expandKeys.push(row.id);
-                }else{
+                } else {
                     let index = esList.indexOf(row.id);
-                    esList.splice(index,1);
+                    esList.splice(index, 1);
                 }
-                if(!row.list){
+                if (!row.list) {
                     this.$axios({
                         url: this.queryUrl + "normalProcess",
-                        method:"post",
-                        data:{
-                            optype:this.validatedOptype,
-                            params:{
+                        method: "post",
+                        data: {
+                            optype: this.validatedOptype,
+                            params: {
                                 bill_no: row.id,
                             }
                         }
@@ -540,7 +564,7 @@
                             })
                         } else {
                             var data = result.data.data;
-                            this.$set(row,'list',data);
+                            this.$set(row, 'list', data);
                         }
                     }).catch(function (error) {
                         console.log(error);
@@ -548,29 +572,29 @@
                 }
             },
             //路由变化而导致的参数变化
-            getRouterParamsChange:function(type){
-                if(type == '13'){
+            getRouterParamsChange: function (type) {
+                if (type == '13') {
                     this.routerMessage.todo.optype = "pooltrad_billList";
                     this.routerMessage.done.optype = "pooltrad_confirmbillList";
                     this.checkOptype = "pooltrad_tradingList";
                     this.confirmOptype = "pooltrad_confirm";
                     this.validatedOptype = "pooltrad_confirmTradingList";
                     this.isAllot = false;
-                }else if(type == '8'){//内部调拨
+                } else if (type == '8') {//内部调拨
                     this.routerMessage.todo.optype = "dbttrad_billList";
                     this.routerMessage.done.optype = "dbttrad_confirmbillList";
                     this.checkOptype = "dbttrad_tradingList";
                     this.confirmOptype = "dbttrad_confirm";
                     this.validatedOptype = "dbttrad_confirmTradingList";
                     this.isAllot = true;
-                }else if(type == '15'){
+                } else if (type == '15') {
                     this.routerMessage.todo.optype = "skttrad_billList";
                     this.routerMessage.done.optype = "skttrad_confirmbillList";
                     this.checkOptype = "skttrad_tradingList";
                     this.confirmOptype = "skttrad_confirm";
                     this.validatedOptype = "skttrad_confirmTradingList";
                     this.isAllot = false;
-                }else if(type == '100'){
+                } else if (type == '100') {
                     this.routerMessage.todo.optype = "dztcheck_billList";
                     this.routerMessage.done.optype = "dztcheck_confirmbillList";
                     this.checkOptype = "dztcheck_tradingList";
@@ -583,10 +607,10 @@
                 this.$emit("getTableData", this.routerMessage);
             },
             //根据调拨类型查询
-            queryByPayType:function(val){
+            queryByPayType: function (val) {
                 var searchData = this.searchData;
                 for (var k in searchData) {
-                    if(k!=='payment_type')
+                    if (k !== 'payment_type')
                         searchData[k] = "";
                 }
                 this.dateCheck = true;
@@ -601,13 +625,13 @@
                     page_size: 7,
                     page_num: 1
                 }
-                if(val == '10'){
+                if (val == '10') {
                     this.routerMessage.todo.optype = "dbtbatchtrad_billList";
                     this.routerMessage.done.optype = "dbtbatchtrad_confirmbillList";
                     this.checkOptype = "dbtbatchtrad_tradingList";
                     this.confirmOptype = "dbtbatchtrad_confirm";
                     this.validatedOptype = "dbtbatchtrad_confirmTradingList";
-                }else{
+                } else {
                     this.routerMessage.todo.optype = "dbttrad_billList";
                     this.routerMessage.done.optype = "dbttrad_confirmbillList";
                     this.checkOptype = "dbttrad_tradingList";
@@ -617,11 +641,11 @@
                 this.$emit("getTableData", this.routerMessage);
             }
         },
-        watch:{
-            isPending:function(val,oldVal){
+        watch: {
+            isPending: function (val, oldVal) {
                 var searchData = this.searchData;
                 for (var k in searchData) {
-                    if(k!=='payment_type')
+                    if (k !== 'payment_type')
                         searchData[k] = "";
                 }
                 this.childList = [];
@@ -632,20 +656,20 @@
                 this.pagTotal = val.total_line;
                 this.pagCurrent = val.page_num;
                 this.tableList = val.data;
-                if(!this.isPending){
-                     this.expandKeys = [];
+                if (!this.isPending) {
+                    this.expandKeys = [];
                 }
             },
-            '$route' (to, from) {
+            '$route'(to, from) {
                 // 对路由变化作出响应...
                 this.getRouterParamsChange(to.query.bizType);
                 this.curBizType = to.query.bizType;
                 this.biz_type = to.query.bizType;
-		if(this.curBizType==16){
+                if (this.curBizType == 16) {
                     this.$emit("transmitTitle", "期初数据核对");
-		}else{
+                } else {
                     this.$emit("transmitTitle", "交易核对");
-		}
+                }
             }
         }
     }
