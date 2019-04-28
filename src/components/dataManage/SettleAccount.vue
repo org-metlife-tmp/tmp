@@ -1,96 +1,69 @@
 <style scoped lang="less" type="text/less">
     #settleAccount {
-        width: 100%;
-        height: 100%;
-        box-sizing: border-box;
-        position: relative;
 
-        /*顶部按钮*/
-        .button-list-right {
-            position: absolute;
-            top: -60px;
-            right: -18px;
-        }
         /*数据展示区*/
         .table-content {
             height: 325px;
-        }
-        /*搜索区*/
-        .search-setion {
-            text-align: left;
-        }
-        /*分隔栏*/
-        .split-bar {
-            width: 106%;
-            height: 6px;
-            margin-left: -20px;
-            background-color: #E7E7E7;
-            margin-bottom: 20px;
-        }
-        /*分页部分*/
-        .botton-pag {
-            position: absolute;
-            width: 100%;
-            height: 8%;
-            bottom: -6px;
         }
     }
 </style>
 
 <template>
-    <div id="settleAccount">
-        <!-- 顶部按钮-->
-        <div class="button-list-right">
-            <el-button type="warning" size="mini" @click="addData">新增</el-button>
-        </div>
-        <!--搜索区-->
-        <div class="search-setion">
-            <el-form :inline="true" :model="serachData" size="mini">
-                <el-row>
-                    <el-col :span="7">
-                        <el-form-item label="机构">
-                            <el-select v-model="serachData.org_id" placeholder="请选择机构" clearable>
-                                <el-option v-for="org in orgList"
-                                           :key="org.org_id"
-                                           :label="org.name"
-                                           :value="org.org_id">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="7">
-                        <el-form-item label="银行大类">
-                            <el-select v-model="serachData.bank_type" placeholder="请选择银行"
-                                       clearable filterable
-                                       :filter-method="filterBankType"
-                                       :loading="bankLongding"
-                                       @visible-change="clearSearch">
-                                <el-option v-for="bankType in bankTypeList"
-                                           :key="bankType.name"
-                                           :label="bankType.name"
-                                           :value="bankType.code">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="7">
-                        <el-form-item label="账户">
-                            <el-input v-model="serachData.query_key" clearable
-                                      placeholder="输入账户号或账户名称"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="3">
-                        <el-form-item>
-                            <el-button type="primary" plain @click="queryData">搜索</el-button>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-            </el-form>
-        </div>
-        <!--分隔栏-->
-        <div class="split-bar"></div>
-        <!--数据展示区-->
-        <section class="table-content">
+    <el-container id="settleAccount">
+        <el-header>
+            <!-- 顶部按钮-->
+            <div class="button-list-right">
+                <el-button type="warning" size="mini" @click="addData">新增</el-button>
+            </div>
+            <!--搜索区-->
+            <div class="search-setion">
+                <el-form :inline="true" :model="serachData" size="mini">
+                    <el-row>
+                        <el-col :span="7">
+                            <el-form-item label="机构">
+                                <el-select v-model="serachData.org_id" placeholder="请选择机构" clearable>
+                                    <el-option v-for="org in orgList"
+                                               :key="org.org_id"
+                                               :label="org.name"
+                                               :value="org.org_id">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="7">
+                            <el-form-item label="银行大类">
+                                <el-select v-model="serachData.bank_type" placeholder="请选择银行"
+                                           clearable filterable
+                                           :filter-method="filterBankType"
+                                           :loading="bankLongding"
+                                           @visible-change="clearSearch">
+                                    <el-option v-for="bankType in bankTypeList"
+                                               :key="bankType.name"
+                                               :label="bankType.name"
+                                               :value="bankType.code">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="7">
+                            <el-form-item label="账户">
+                                <el-input v-model="serachData.query_key" clearable
+                                          placeholder="输入账户号或账户名称"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="3">
+                            <el-form-item>
+                                <el-button type="primary" plain @click="queryData">搜索</el-button>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                </el-form>
+            </div>
+            <!--分隔栏-->
+            <div class="split-bar"></div>
+        </el-header>
+        <el-main>
+            <!--数据展示区-->
             <el-table :data="tableList"
                       border
                       height="100%"
@@ -119,153 +92,155 @@
                     </template>
                 </el-table-column>
             </el-table>
-        </section>
-        <!--分页部分-->
-        <div class="botton-pag">
-            <el-pagination
-                    background :pager-count="5"
-                    :current-page="pagCurrent"
-                    layout="sizes , prev, pager, next, jumper"
-                    :page-size="pagSize" :total="pagTotal"
-                    :page-sizes="[8, 50, 100, 500]"
-                    @current-change="getCurrentPage"
-                    @size-change="sizeChange">
-            </el-pagination>
-        </div>
-        <!--新增/修改 弹出框-->
-        <el-dialog :visible.sync="dialogVisible"
-                   width="860px" top="76px"
-                   :close-on-click-modal="false">
-            <h1 slot="title" v-text="dialogTitle" class="dialog-title"></h1>
-            <el-form :model="dialogData" size="small"
-                     :rules="rules" ref="dialogForm">
-                <el-row>
-                    <el-col :span="12">
-                        <el-form-item label="账户编号" :label-width="formLabelWidth" prop="acc_no">
-                            <el-input v-model="dialogData.acc_no" auto-complete="off"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="账户名称" :label-width="formLabelWidth" prop="acc_name">
-                            <el-input v-model="dialogData.acc_name" auto-complete="off"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="18">
-                        <el-form-item label="银行大类" :label-width="formLabelWidth">
-                            <el-col :span="14">
-                                <el-select v-model="bankCorrelation.bankTypeName" placeholder="请选择银行大类"
+        </el-main>
+        <el-footer>
+            <!--分页部分-->
+            <div class="botton-pag">
+                <el-pagination
+                        background :pager-count="5"
+                        :current-page="pagCurrent"
+                        layout="sizes , prev, pager, next, jumper"
+                        :page-size="pagSize" :total="pagTotal"
+                        :page-sizes="[8, 50, 100, 500]"
+                        @current-change="getCurrentPage"
+                        @size-change="sizeChange">
+                </el-pagination>
+            </div>
+            <!--新增/修改 弹出框-->
+            <el-dialog :visible.sync="dialogVisible"
+                       width="860px" top="76px"
+                       :close-on-click-modal="false">
+                <h1 slot="title" v-text="dialogTitle" class="dialog-title"></h1>
+                <el-form :model="dialogData" size="small"
+                         :rules="rules" ref="dialogForm">
+                    <el-row>
+                        <el-col :span="12">
+                            <el-form-item label="账户编号" :label-width="formLabelWidth" prop="acc_no">
+                                <el-input v-model="dialogData.acc_no" auto-complete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="账户名称" :label-width="formLabelWidth" prop="acc_name">
+                                <el-input v-model="dialogData.acc_name" auto-complete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="18">
+                            <el-form-item label="银行大类" :label-width="formLabelWidth">
+                                <el-col :span="14">
+                                    <el-select v-model="bankCorrelation.bankTypeName" placeholder="请选择银行大类"
+                                               clearable filterable
+                                               :filter-method="filterBankType"
+                                               @visible-change="clearSearch"
+                                               :loading="bankLongding"
+                                               @change="bankIsSelect">
+                                        <el-option v-for="bankType in bankTypeList"
+                                                   :key="bankType.name"
+                                                   :label="bankType.display_name"
+                                                   :value="bankType.code">
+                                        </el-option>
+                                    </el-select>
+                                </el-col>
+                                <el-col :span="1" style="height:1px"></el-col>
+                                <el-col :span="9">
+                                    <el-select v-model="bankCorrelation.area"
+                                               filterable remote clearable
+                                               placeholder="请输入地区关键字"
+                                               :remote-method="getAreaList"
+                                               :loading="loading"
+                                               @change="bankIsSelect">
+                                        <el-option
+                                                v-for="area in areaList"
+                                                :key="area.name + '-' + area.top_super"
+                                                :value="area.name + '-' + area.top_super">
+                                            <span>{{ area.name }}</span><span style="margin-left:10px;color:#bbb">{{ area.top_super }}</span>
+                                        </el-option>
+                                    </el-select>
+                                </el-col>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="18">
+                            <el-form-item label=" " :label-width="formLabelWidth" prop="cnaps_code">
+                                <el-select v-model="dialogData.cnaps_code" placeholder="请选择银行"
                                            clearable filterable
-                                           :filter-method="filterBankType"
-                                           @visible-change="clearSearch"
-                                           :loading="bankLongding"
-                                           @change="bankIsSelect">
-                                    <el-option v-for="bankType in bankTypeList"
-                                               :key="bankType.name"
-                                               :label="bankType.display_name"
-                                               :value="bankType.code">
+                                           @visible-change="getBankList"
+                                           :disabled="bankSelect">
+                                    <el-option v-for="bankType in bankList"
+                                               :key="bankType.cnaps_code"
+                                               :label="bankType.name"
+                                               :value="bankType.cnaps_code">
                                     </el-option>
                                 </el-select>
-                            </el-col>
-                            <el-col :span="1" style="height:1px"></el-col>
-                            <el-col :span="9">
-                                <el-select v-model="bankCorrelation.area"
-                                           filterable remote clearable
-                                           placeholder="请输入地区关键字"
-                                           :remote-method="getAreaList"
-                                           :loading="loading"
-                                           @change="bankIsSelect">
-                                    <el-option
-                                            v-for="area in areaList"
-                                            :key="area.name + '-' + area.top_super"
-                                            :value="area.name + '-' + area.top_super">
-                                        <span>{{ area.name }}</span><span style="margin-left:10px;color:#bbb">{{ area.top_super }}</span>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="所属机构" :label-width="formLabelWidth" prop="org_id">
+                                <el-select v-model="dialogData.org_id" placeholder="请选择机构"
+                                           filterable clearable>
+                                    <el-option v-for="org in orgList"
+                                               :key="org.org_id"
+                                               :label="org.name"
+                                               :value="org.org_id">
                                     </el-option>
                                 </el-select>
-                            </el-col>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="18">
-                        <el-form-item label=" " :label-width="formLabelWidth" prop="cnaps_code">
-                            <el-select v-model="dialogData.cnaps_code" placeholder="请选择银行"
-                                       clearable filterable
-                                       @visible-change="getBankList"
-                                       :disabled="bankSelect">
-                                <el-option v-for="bankType in bankList"
-                                           :key="bankType.cnaps_code"
-                                           :label="bankType.name"
-                                           :value="bankType.cnaps_code">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="所属机构" :label-width="formLabelWidth" prop="org_id">
-                            <el-select v-model="dialogData.org_id" placeholder="请选择机构"
-                                       filterable clearable>
-                                <el-option v-for="org in orgList"
-                                           :key="org.org_id"
-                                           :label="org.name"
-                                           :value="org.org_id">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="币种" :label-width="formLabelWidth" prop="curr_id">
-                            <el-select v-model="dialogData.curr_id" placeholder="请选择币种"
-                                       filterable clearable>
-                                <el-option v-for="currency in currencyList"
-                                           :key="currency.id"
-                                           :label="currency.name"
-                                           :value="currency.id">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="收付属性" :label-width="formLabelWidth" prop="pay_recv_attr">
-                            <el-select v-model="dialogData.pay_recv_attr" placeholder="请选择收付属性"
-                                       filterable clearable>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="币种" :label-width="formLabelWidth" prop="curr_id">
+                                <el-select v-model="dialogData.curr_id" placeholder="请选择币种"
+                                           filterable clearable>
+                                    <el-option v-for="currency in currencyList"
+                                               :key="currency.id"
+                                               :label="currency.name"
+                                               :value="currency.id">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="收付属性" :label-width="formLabelWidth" prop="pay_recv_attr">
+                                <el-select v-model="dialogData.pay_recv_attr" placeholder="请选择收付属性"
+                                           filterable clearable>
                                     <el-option v-for="(name,k) in accOrRecvList"
-                                           :key="k"
-                                           :label="name"
-                                           :value="k">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="开户日期" :label-width="formLabelWidth" prop="open_date">
-                            <el-date-picker type="date" placeholder="选择日期" v-model="dialogData.open_date"
-                                            style="width: 100%;"
-                                            format="yyyy 年 MM 月 dd 日"
-                                            value-format="yyyy-MM-dd"></el-date-picker>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="机构段" :label-width="formLabelWidth" prop="org_seg">
-                            <el-input v-model="dialogData.org_seg" auto-complete="off"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="明细段" :label-width="formLabelWidth" prop="detail_seg">
-                            <el-input v-model="dialogData.detail_seg" auto-complete="off"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="24">
-                        <el-form-item label="备注" :label-width="formLabelWidth">
-                            <el-input v-model="dialogData.memo" auto-complete="off"></el-input>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-            </el-form>
-            <span slot="footer" class="dialog-footer">
+                                               :key="k"
+                                               :label="name"
+                                               :value="k">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="开户日期" :label-width="formLabelWidth" prop="open_date">
+                                <el-date-picker type="date" placeholder="选择日期" v-model="dialogData.open_date"
+                                                style="width: 100%;"
+                                                format="yyyy 年 MM 月 dd 日"
+                                                value-format="yyyy-MM-dd"></el-date-picker>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="机构段" :label-width="formLabelWidth" prop="org_seg">
+                                <el-input v-model="dialogData.org_seg" auto-complete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="明细段" :label-width="formLabelWidth" prop="detail_seg">
+                                <el-input v-model="dialogData.detail_seg" auto-complete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="24">
+                            <el-form-item label="备注" :label-width="formLabelWidth">
+                                <el-input v-model="dialogData.memo" auto-complete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                </el-form>
+                <span slot="footer" class="dialog-footer">
                 <el-button type="warning" size="mini" plain
                            @click="dialogVisible = false">取 消</el-button>
                 <el-button type="warning" size="mini" @click="subCurrent">确 定</el-button>
             </span>
-        </el-dialog>
-    </div>
+            </el-dialog>
+        </el-footer>
+    </el-container>
 </template>
 
 <script>
@@ -288,7 +263,7 @@
                 this.bankAllList = bankTypeList;
             }
             var bankAllTypeList = JSON.parse(window.sessionStorage.getItem("bankAllTypeList"));
-            if(bankAllTypeList){
+            if (bankAllTypeList) {
                 this.bankAllTypeList = bankAllTypeList;
             }
             //币种
@@ -478,7 +453,7 @@
                 this.dialogVisible = true;
 
                 var bankCorrelation = this.bankCorrelation;
-                for(var k in bankCorrelation){
+                for (var k in bankCorrelation) {
                     bankCorrelation[k] = "";
                 }
 
@@ -501,7 +476,7 @@
                 this.currentSettle = row;
 
                 var bankCorrelation = this.bankCorrelation;
-                for(var k in bankCorrelation){
+                for (var k in bankCorrelation) {
                     bankCorrelation[k] = "";
                 }
                 if (this.$refs.dialogForm) {
@@ -616,13 +591,13 @@
                             return;
                         }
 
-                        if(this.pagCurrent < (this.pagTotal/this.pagSize)){ //存在下一页
+                        if (this.pagCurrent < (this.pagTotal / this.pagSize)) { //存在下一页
                             this.$emit('getTableData', this.routerMessage);
-                        }else{
-                            if(rows.length == "1"){ //是当前页最后一条
+                        } else {
+                            if (rows.length == "1") { //是当前页最后一条
                                 this.routerMessage.params.page_num--;
                                 this.$emit('getTableData', this.routerMessage);
-                            }else{
+                            } else {
                                 rows.splice(index, 1);
                                 this.pagTotal--;
                             }
@@ -682,16 +657,16 @@
                                 }
                             }
                         });
-                        this.bankTypeList = this.bankTypeList.filter((item,index,arr) => {
-                            for(var i = index+1; i < arr.length; i++){
-                                if(item.display_name == arr[i].display_name){
+                        this.bankTypeList = this.bankTypeList.filter((item, index, arr) => {
+                            for (var i = index + 1; i < arr.length; i++) {
+                                if (item.display_name == arr[i].display_name) {
                                     return false;
                                 }
                             }
                             return true;
                         });
                     } else {
-                        this.bankTypeList = this.bankAllTypeList.slice(0,200);
+                        this.bankTypeList = this.bankAllTypeList.slice(0, 200);
                     }
                     this.bankLongding = false;
                 }, 1200);
@@ -699,7 +674,7 @@
             //银行大类展开时重置数据
             clearSearch: function (val) {
                 if (this.bankTypeList != this.bankAllTypeList && val) {
-                    this.bankTypeList = this.bankAllTypeList.slice(0,200);
+                    this.bankTypeList = this.bankAllTypeList.slice(0, 200);
                 }
             },
             //地区数据

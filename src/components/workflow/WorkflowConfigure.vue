@@ -1,19 +1,10 @@
 <style lang="less" scoped type="text/less">
     #workflowConfigure {
-        width: 100%;
-        height: 100%;
-        box-sizing: border-box;
-        position: relative;
 
         /*搜索区*/
         .search-setion {
             width: 50%;
             margin: 0 auto 10px;
-        }
-
-        /*数据展示区*/
-        .table-content {
-            height: 407px;
         }
 
         /*按钮*/
@@ -32,14 +23,6 @@
         /*-查看*/
         .look-work-flow {
             background-position: -296px -61px;
-        }
-
-        /*分页部分*/
-        .botton-pag {
-            position: absolute;
-            width: 100%;
-            height: 8%;
-            bottom: -12px;
         }
 
         /*配置流程弹框-新增*/
@@ -110,26 +93,19 @@
             }
         }
     }
-
-    .workflow-dialog {
-        .el-dialog__body {
-            height: 400px;
-            overflow-y: auto;
-        }
-    }
 </style>
 
 <template>
-    <div id="workflowConfigure">
-        <!--搜索区-->
-        <div class="search-setion">
-            <el-input placeholder="请输入流程名查询" class="input-with-select"
-                      size="small" v-model="searchData" clearable>
-                <el-button type="primary" slot="append" icon="el-icon-search" @click="queryData"></el-button>
-            </el-input>
-        </div>
-        <!--数据展示区-->
-        <section class="table-content">
+    <el-container id="workflowConfigure">
+        <el-header>
+            <div class="search-setion">
+                <el-input placeholder="请输入流程名查询" class="input-with-select"
+                          size="small" v-model="searchData" clearable>
+                    <el-button type="primary" slot="append" icon="el-icon-search" @click="queryData"></el-button>
+                </el-input>
+            </div>
+        </el-header>
+        <el-main>
             <el-table :data="tableList"
                       border
                       height="100%"
@@ -159,49 +135,49 @@
                     </template>
                 </el-table-column>
             </el-table>
-        </section>
-        <!--分页部分-->
-        <div class="botton-pag">
-            <el-pagination
-                    background :pager-count="5"
-                    :current-page="pagCurrent"
-                    layout="sizes , prev, pager, next, jumper"
-                    :page-size="pagSize" :total="pagTotal"
-                    :page-sizes="[10, 50, 100, 500]"
-                    @current-change="getCurrentPage"
-                    @size-change="sizeChange">
-            </el-pagination>
-        </div>
-        <!--配置弹出框-->
-        <el-dialog :visible.sync="dialogVisible"
-                   width="900px"
-                   :close-on-click-modal="false"
-                   top="56px">
-            <h1 slot="title" class="dialog-title">流程配置</h1>
-            <div class="add-button">
-                <el-button type="warning" size="mini" @click="addSettingData">新增</el-button>
+        </el-main>
+        <el-footer>
+            <div class="botton-pag">
+                <el-pagination
+                        background :pager-count="5"
+                        :current-page="pagCurrent"
+                        layout="sizes , prev, pager, next, jumper"
+                        :page-size="pagSize" :total="pagTotal"
+                        :page-sizes="[10, 50, 100, 500]"
+                        @current-change="getCurrentPage"
+                        @size-change="sizeChange">
+                </el-pagination>
             </div>
-            <el-table :data="settingTableList"
-                      border
-                      size="mini">
-                <el-table-column prop="name" label="名称" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="create_on" label="时间" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column
-                        label="操作"
-                        width="80">
-                    <template slot-scope="scope" class="operationBtn">
-                        <el-tooltip content="编辑" placement="bottom" effect="light" :enterable="false" :open-delay="500">
-                            <el-button type="primary" icon="el-icon-edit" size="mini"
-                                       @click="editSetting(scope.row)"></el-button>
-                        </el-tooltip>
-                        <el-tooltip content="删除" placement="bottom" effect="light" :enterable="false" :open-delay="500">
-                            <el-button type="danger" icon="el-icon-delete" size="mini"
-                                       @click="removeSetting(scope.row,scope.$index,settingTableList)"></el-button>
-                        </el-tooltip>
-                    </template>
-                </el-table-column>
-            </el-table>
-            <span slot="footer" class="dialog-footer" style="text-align:center">
+            <!--配置弹出框-->
+            <el-dialog :visible.sync="dialogVisible"
+                       width="900px"
+                       :close-on-click-modal="false"
+                       top="100px">
+                <h1 slot="title" class="dialog-title">流程配置</h1>
+                <div class="add-button">
+                    <el-button type="warning" size="mini" @click="addSettingData">新增</el-button>
+                </div>
+                <el-table :data="settingTableList"
+                          border
+                          size="mini">
+                    <el-table-column prop="name" label="名称" :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column prop="create_on" label="时间" :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column
+                            label="操作"
+                            width="80">
+                        <template slot-scope="scope" class="operationBtn">
+                            <el-tooltip content="编辑" placement="bottom" effect="light" :enterable="false" :open-delay="500">
+                                <el-button type="primary" icon="el-icon-edit" size="mini"
+                                           @click="editSetting(scope.row)"></el-button>
+                            </el-tooltip>
+                            <el-tooltip content="删除" placement="bottom" effect="light" :enterable="false" :open-delay="500">
+                                <el-button type="danger" icon="el-icon-delete" size="mini"
+                                           @click="removeSetting(scope.row,scope.$index,settingTableList)"></el-button>
+                            </el-tooltip>
+                        </template>
+                    </el-table-column>
+                </el-table>
+                <span slot="footer" class="dialog-footer" style="text-align:center">
                 <el-pagination
                         background :pager-count="5"
                         :current-page="settingCurPag"
@@ -211,102 +187,103 @@
                         @current-change="getSettingData">
                     </el-pagination>
             </span>
-            <el-dialog :visible.sync="innerVisible"
-                       width="800px"
-                       class="workflow-dialog"
-                       append-to-body top="76px"
-                       :close-on-click-modal="false">
-                <h1 slot="title" v-text="innerTitle" class="dialog-title"></h1>
-                <el-form :model="innerData" size="small" :label-width="formLabelWidth">
-                    <el-col :span="12">
-                        <el-form-item label="关系名称">
-                            <el-input v-model="innerData.relationName" auto-complete="off"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="流程名称">
-                            <el-input v-model="innerData.workflowName" auto-complete="off"
-                                      :disabled="true"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="24" class="tree-content">
-                        <h4 class="set-required">绑定公司</h4>
-                        <div class="org-tree">
-                            <el-tree :data="orgTreeList"
-                                     node-key="org_id"
-                                     :check-strictly="true"
-                                     highlight-current
-                                     accordion show-checkbox
-                                     :expand-on-click-node="false"
-                                     :default-expanded-keys="expandData"
-                                     ref="orgTree">
+                <el-dialog :visible.sync="innerVisible"
+                           width="800px"
+                           class="workflow-dialog"
+                           append-to-body top="100px"
+                           :close-on-click-modal="false">
+                    <h1 slot="title" v-text="innerTitle" class="dialog-title"></h1>
+                    <el-form :model="innerData" size="small" :label-width="formLabelWidth">
+                        <el-col :span="12">
+                            <el-form-item label="关系名称">
+                                <el-input v-model="innerData.relationName" auto-complete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="流程名称">
+                                <el-input v-model="innerData.workflowName" auto-complete="off"
+                                          :disabled="true"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="24" class="tree-content">
+                            <h4 class="set-required">绑定公司</h4>
+                            <div class="org-tree">
+                                <el-tree :data="orgTreeList"
+                                         node-key="org_id"
+                                         :check-strictly="true"
+                                         highlight-current
+                                         accordion show-checkbox
+                                         :expand-on-click-node="false"
+                                         :default-expanded-keys="expandData"
+                                         ref="orgTree">
                                         <span class="custom-tree-node" slot-scope="{ node, data }">
                                             <span>{{ node.data.name }}</span>
                                         </span>
-                            </el-tree>
-                        </div>
+                                </el-tree>
+                            </div>
 
-                        <h4 class="set-required">绑定部门</h4>
-                        <div class="dept-list">
-                            <el-checkbox :indeterminate="isIndeterminate" v-model="deptAll"
-                                         @change="deptAllChange">全选
-                            </el-checkbox>
-                            <el-checkbox-group v-model="deptSelect" @change="deptChange">
-                                <el-checkbox v-for="dept in deptList"
-                                             :label="dept.dept_id"
-                                             :key="dept.dept_id">{{dept.name}}
+                            <h4 class="set-required">绑定部门</h4>
+                            <div class="dept-list">
+                                <el-checkbox :indeterminate="isIndeterminate" v-model="deptAll"
+                                             @change="deptAllChange">全选
                                 </el-checkbox>
-                            </el-checkbox-group>
-                        </div>
+                                <el-checkbox-group v-model="deptSelect" @change="deptChange">
+                                    <el-checkbox v-for="dept in deptList"
+                                                 :label="dept.dept_id"
+                                                 :key="dept.dept_id">{{dept.name}}
+                                    </el-checkbox>
+                                </el-checkbox-group>
+                            </div>
 
-                        <h4 class="set-required">绑定业务</h4>
-                        <div class="org-tree">
-                            <el-tree :data="majorList"
-                                     node-key="biz_id"
-                                     highlight-current
-                                     accordion show-checkbox
-                                     :expand-on-click-node="false"
-                                     :default-expanded-keys="expandBizData"
-                                     ref="bizTree">
+                            <h4 class="set-required">绑定业务</h4>
+                            <div class="org-tree">
+                                <el-tree :data="majorList"
+                                         node-key="biz_id"
+                                         highlight-current
+                                         accordion show-checkbox
+                                         :expand-on-click-node="false"
+                                         :default-expanded-keys="expandBizData"
+                                         ref="bizTree">
                                         <span class="custom-tree-node" slot-scope="{ node, data }">
                                             <span>{{ node.data.biz_name }}</span>
                                         </span>
-                            </el-tree>
-                        </div>
-                    </el-col>
-                </el-form>
-                <span slot="footer" class="dialog-footer" style="text-align:center">
+                                </el-tree>
+                            </div>
+                        </el-col>
+                    </el-form>
+                    <span slot="footer" class="dialog-footer" style="text-align:center">
                     <el-button type="warning" size="mini" plain @click="reset">重 置</el-button>
                     <el-button type="warning" size="mini" @click="subInnerWorkflow">保 存</el-button>
                 </span>
+                </el-dialog>
             </el-dialog>
-        </el-dialog>
-        <!--查看工作流弹出框-->
-        <el-dialog :visible.sync="lookFlowDialogVisible"
-                   width="800px" title="新建流程"
-                   :close-on-click-modal="false"
-                   :before-close="cancelLookFlow"
-                   top="56px">
-            <h1 slot="title" class="dialog-title">查看流程</h1>
-            <div>
-                <div class="formflot" style="margin-bottom:15px">
-                    <span>流程名称</span>
-                    <el-input v-model="createDialogData.workflow_name" disabled size="mini"></el-input>
+            <!--查看工作流弹出框-->
+            <el-dialog :visible.sync="lookFlowDialogVisible"
+                       width="800px" title="新建流程"
+                       :close-on-click-modal="false"
+                       :before-close="cancelLookFlow"
+                       top="100px">
+                <h1 slot="title" class="dialog-title">查看流程</h1>
+                <div>
+                    <div class="formflot" style="margin-bottom:15px">
+                        <span>流程名称</span>
+                        <el-input v-model="createDialogData.workflow_name" disabled size="mini"></el-input>
+                    </div>
+                    <div class="formflot">
+                        <span>审批退回</span>
+                        <el-input v-model="createDialogData.reject_strategy" disabled size="mini"></el-input>
+                    </div>
                 </div>
-                <div class="formflot">
-                    <span>审批退回</span>
-                    <el-input v-model="createDialogData.reject_strategy" disabled size="mini"></el-input>
-                </div>
-            </div>
-            <WorkFlow
-                    :flowList="flowList"
-                    :isEmptyFlow="isEmptyFlow"
-            ></WorkFlow>
-            <span slot="footer" class="dialog-footer">
+                <WorkFlow
+                        :flowList="flowList"
+                        :isEmptyFlow="isEmptyFlow"
+                ></WorkFlow>
+                <span slot="footer" class="dialog-footer">
                 <el-button type="warning" size="mini" plain @click="cancelLookFlow">取 消</el-button>
             </span>
-        </el-dialog>
-    </div>
+            </el-dialog>
+        </el-footer>
+    </el-container>
 </template>
 
 <script>

@@ -49,23 +49,16 @@
             padding-bottom: 14px;
             overflow: hidden;
         }
-
-        //表格内部操作按钮
-        .el-table .el-button {
-            padding: 3px 3px;
-            + .el-button {
-                margin-left: 4px;
-            }
-        }
     }
 </style>
 
 <template>
-    <el-container id="emptyContent">
+    <el-container id="emptyContent" v-loading="loading"
+                  element-loading-background="rgba(230, 230, 230, 0.5)">
         <el-header>
             <h1 v-text="currentTitle"></h1>
         </el-header>
-        <el-main v-loading="loading">
+        <el-main>
             <router-view @transmitTitle="currentTitle= $event"
                          @getTableData="getRouterData"
                          @getCommTable="commRouterData"

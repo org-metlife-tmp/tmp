@@ -1,17 +1,5 @@
 <style scoped lang="less" type="text/less">
-    #moveWithhold{
-        width: 100%;
-        height: 100%;
-        box-sizing: border-box;
-        position: relative;
-
-        /*顶部按钮*/
-        .button-list-right {
-            position: absolute;
-            top: -60px;
-            right: -18px;
-        }
-
+    #moveWithhold {
         /*搜索区*/
         .search-setion {
             text-align: right;
@@ -23,64 +11,39 @@
             height: 140px;
         }
 
-        /*分隔栏*/
-        .split-bar {
-            width: 106%;
-            height: 6px;
-            margin-left: -20px;
-            background-color: #E7E7E7;
-            margin-bottom: 20px;
-        }
-
-        /*数据展示区*/
-        .table-content {
-            height: 320px;
-            transition: height 1s;
-
-            /*汇总数据*/
-            .gather-data {
-                height: 30px;
-                width: 100%;
-                background-color: #F9F8F7;
-                text-align: left;
-                font-size: 14px;
-                color: #606266;
-
-                .red-text {
-                    color: red;
-                }
-                .blue-text {
-                    color: blue;
-                }
-                .action-text {
-                    margin-left: 16px;
-                }
-            }
-        }
-        .is-small {
-            height: 49%;
-        }
-
-        /*分页部分*/
-        .botton-pag {
-            position: absolute;
+        /*汇总数据*/
+        .gather-data {
+            height: 30px;
+            line-height: 30px;
             width: 100%;
-            height: 8%;
-            bottom: -6px;
+            background-color: #F9F8F7;
+            text-align: left;
+            font-size: 14px;
+            color: #606266;
+
+            .red-text {
+                color: red;
+            }
+            .blue-text {
+                color: blue;
+            }
+            .action-text {
+                margin-left: 16px;
+            }
         }
 
         /*弹框*/
-        .el-dialog{
-            .el-form{
-                .el-form-item{
+        .el-dialog {
+            .el-form {
+                .el-form-item {
                     margin-bottom: 0;
                 }
             }
         }
-        .form-small-title{
+        .form-small-title {
             font-weight: bold;
-            span{
-                display:inline-block;
+            span {
+                display: inline-block;
                 width: 4px;
                 height: 16px;
                 background-color: orange;
@@ -89,22 +52,6 @@
             }
         }
 
-        /*页面宽度变小后样式调整*/
-        @media (max-width: 1140px) {
-            .search-setion {
-                text-align: left;
-                height: 64px;
-            }
-            .search-setion.show-more {
-                height: 220px;
-            }
-            .table-content{
-                height: 300px;
-            }
-            .is-small {
-                height: 32%;
-            }
-        }
     }
 </style>
 <style lang="less" type="text/less">
@@ -116,115 +63,105 @@
                 }
             }
         }
-        .el-dialog__wrapper {
-            .el-dialog__body {
-                height: 400px;
-                overflow-y: scroll;
-            }
-        }
     }
 </style>
 
 <template>
-    <div id="moveWithhold">
-        <!-- 顶部按钮-->
-        <div class="button-list-right">
-            <el-button type="warning" size="mini" @click="download">下载</el-button>
-        </div>
-        <!--搜索区-->
-        <div :class="['search-setion',{'show-more':showMore}]">
-            <el-form :inline="true" :model="searchData" size="mini">
-                <el-row>
-                    <el-col :span="7">
-                        <el-form-item label="投保单号">
-                            <el-input v-model="searchData.preinsure_bill_no" clearable></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="7">
-                        <el-form-item label="对方账号">
-                            <el-input v-model="searchData.settle_or_merchant_acc_no" clearable></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="7">
-                        <el-form-item label="对方户名">
-                            <el-input v-model="searchData.settle_or_merchant_acc_name" clearable></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="3">
-                        <el-button type="primary" plain @click="showMore = !showMore" size="mini">
-                            高级<i
-                                :class="['el-icon--right',{'el-icon-arrow-down':!showMore},{'el-icon-arrow-right':showMore}]"></i>
-                        </el-button>
-                    </el-col>
-                    <el-col :span="7">
-                        <el-form-item label="银行大类">
-                            <el-select v-model="searchData.customer_bank" placeholder="请选择银行"
-                                       clearable filterable
-                                       :filter-method="filterBankType"
-                                       :loading="bankLongding"
-                                       @visible-change="clearSearch">
-                                <el-option v-for="bankType in bankTypeList"
-                                           :key="bankType.name"
-                                           :label="bankType.display_name"
-                                           :value="bankType.code">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="7">
-                        <el-form-item label="支付渠道">
-                            <el-select v-model="searchData.channel_code" placeholder="请选择支付渠道"
-                                       clearable>
-                                <el-option v-for="channel in channelList"
-                                           :key="channel.code"
-                                           :label="channel.desc"
-                                           :value="channel.code">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="7">
-                        <el-form-item label="开始日期">
-                            <el-date-picker type="date" placeholder="选择日期" v-model="searchData.start_date"
-                                            style="width: 100%;"
-                                            format="yyyy 年 MM 月 dd 日"
-                                            value-format="yyyy-MM-dd"></el-date-picker>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="7">
-                        <el-form-item label="结束日期">
-                            <el-date-picker type="date" placeholder="选择日期" v-model="searchData.end_date"
-                                            style="width: 100%;"
-                                            format="yyyy 年 MM 月 dd 日"
-                                            value-format="yyyy-MM-dd"></el-date-picker>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="7">
-                        <el-form-item label="交易状态">
-                            <el-select v-model="searchData.trade_status" placeholder="请选择交易状态"
-                                       filterable clearable>
-                                <el-option v-for="(name,k) in payStatList"
-                                           :key="k"
-                                           :label="name"
-                                           :value="k">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="7" style="height:1px"></el-col>
-                    <el-col :span="7" style="text-align:right">
-                        <el-form-item>
-                            <el-button type="primary" plain @click="clearSearData">清空</el-button>
-                            <el-button type="primary" plain @click="queryData">搜索</el-button>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-            </el-form>
-        </div>
-        <!--分隔栏-->
-        <div class="split-bar"></div>
-        <!--数据展示区-->
-        <section :class="['table-content',{'is-small':showMore}]">
+    <el-container id="moveWithhold">
+        <el-header>
+            <div class="button-list-right">
+                <el-button type="warning" size="mini" @click="download">下载</el-button>
+            </div>
+            <div :class="['search-setion',{'show-more':showMore}]">
+                <el-form :inline="true" :model="searchData" size="mini">
+                    <el-row>
+                        <el-col :span="7">
+                            <el-form-item label="投保单号">
+                                <el-input v-model="searchData.preinsure_bill_no" clearable></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="7">
+                            <el-form-item label="对方账号">
+                                <el-input v-model="searchData.settle_or_merchant_acc_no" clearable></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="7">
+                            <el-form-item label="对方户名">
+                                <el-input v-model="searchData.settle_or_merchant_acc_name" clearable></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="3">
+                            <el-button type="primary" plain @click="showMore = !showMore" size="mini">
+                                高级<i
+                                    :class="['el-icon--right',{'el-icon-arrow-down':!showMore},{'el-icon-arrow-right':showMore}]"></i>
+                            </el-button>
+                        </el-col>
+                        <el-col :span="7">
+                            <el-form-item label="银行大类">
+                                <el-select v-model="searchData.customer_bank" placeholder="请选择银行"
+                                           clearable filterable
+                                           :filter-method="filterBankType"
+                                           :loading="bankLongding"
+                                           @visible-change="clearSearch">
+                                    <el-option v-for="bankType in bankTypeList"
+                                               :key="bankType.name"
+                                               :label="bankType.display_name"
+                                               :value="bankType.code">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="7">
+                            <el-form-item label="支付渠道">
+                                <el-select v-model="searchData.channel_code" placeholder="请选择支付渠道"
+                                           clearable>
+                                    <el-option v-for="channel in channelList"
+                                               :key="channel.code"
+                                               :label="channel.desc"
+                                               :value="channel.code">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="7">
+                            <el-form-item label="开始日期">
+                                <el-date-picker type="date" placeholder="选择日期" v-model="searchData.start_date"
+                                                style="width: 100%;"
+                                                format="yyyy 年 MM 月 dd 日"
+                                                value-format="yyyy-MM-dd"></el-date-picker>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="7">
+                            <el-form-item label="结束日期">
+                                <el-date-picker type="date" placeholder="选择日期" v-model="searchData.end_date"
+                                                style="width: 100%;"
+                                                format="yyyy 年 MM 月 dd 日"
+                                                value-format="yyyy-MM-dd"></el-date-picker>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="7">
+                            <el-form-item label="交易状态">
+                                <el-select v-model="searchData.trade_status" placeholder="请选择交易状态"
+                                           filterable clearable>
+                                    <el-option v-for="(name,k) in payStatList"
+                                               :key="k"
+                                               :label="name"
+                                               :value="k">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="7" style="height:1px"></el-col>
+                        <el-col :span="7" style="text-align:right">
+                            <el-form-item>
+                                <el-button type="primary" plain @click="clearSearData">清空</el-button>
+                                <el-button type="primary" plain @click="queryData">搜索</el-button>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                </el-form>
+            </div>
+            <div class="split-bar"></div>
             <!--汇总数据-->
             <div class="gather-data">
                 <template v-for="item in gatherDataList">
@@ -233,12 +170,14 @@
                     <span class="end-text">{{ item.endText }}</span>
                 </template>
             </div>
-            <!--详情列表-->
+        </el-header>
+        <el-main>
             <el-table :data="tableList"
                       border
                       size="mini"
                       height="100%">
-                <el-table-column prop="serial_no" label="流水号" :show-overflow-tooltip="true" width="190"></el-table-column>
+                <el-table-column prop="serial_no" label="流水号" :show-overflow-tooltip="true"
+                                 width="190"></el-table-column>
                 <el-table-column prop="biz_type" :formatter="transitionType"
                                  label="业务类型" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="amount" label="金额" width="80" :formatter="transitionAmount"
@@ -272,59 +211,62 @@
                     </template>
                 </el-table-column>
             </el-table>
-        </section>
-        <!--分页部分-->
-        <div class="botton-pag">
-            <el-pagination
-                    background :pager-count="5"
-                    layout="sizes , prev, pager, next, jumper"
-                    :page-size="pagSize" :total="pagTotal"
-                    :page-sizes="[8, 50, 100, 500]"
-                    @current-change="getCurrentPage"
-                    @size-change="sizeChange"
-                    :current-page="pagCurrent">
-            </el-pagination>
-        </div>
-        <!--详情弹出框-->
-        <el-dialog title="详情"
-                   :visible.sync="dialogVisible"
-                   width="800px" top="76px"
-                   :close-on-click-modal="false">
-            <el-form :model="dialogData" size="mini">
-                <el-row>
-                    <el-col :span="24" class="form-small-title"><span></span>支付信息</el-col>
-                    <el-col :span="businessLength[index]" v-for="(payItem,index) in payMessage" :key="payItem.title">
-                        <el-form-item :label-width="formLabelWidth">
-                            <label slot="label">{{ payItem.title }}：</label>
-                            <div>{{ payItem.content }}</div>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="24" class="form-small-title"><span></span>业务信息</el-col>
-                    <el-col :span="payLength[index]" v-for="(business,index) in businessMessage" :key="business.title">
-                        <el-form-item :label-width="formLabelWidth">
-                            <label slot="label">{{ business.title }}：</label>
-                            <div>{{ business.content }}</div>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-            </el-form>
-            <span slot="footer" class="dialog-footer">
+        </el-main>
+        <el-footer>
+            <div class="botton-pag">
+                <el-pagination
+                        background :pager-count="5"
+                        layout="sizes , prev, pager, next, jumper"
+                        :page-size="pagSize" :total="pagTotal"
+                        :page-sizes="[8, 50, 100, 500]"
+                        @current-change="getCurrentPage"
+                        @size-change="sizeChange"
+                        :current-page="pagCurrent">
+                </el-pagination>
+            </div>
+            <!--详情弹出框-->
+            <el-dialog title="详情"
+                       :visible.sync="dialogVisible"
+                       width="800px" top="100px"
+                       :close-on-click-modal="false">
+                <el-form :model="dialogData" size="mini">
+                    <el-row>
+                        <el-col :span="24" class="form-small-title"><span></span>支付信息</el-col>
+                        <el-col :span="businessLength[index]" v-for="(payItem,index) in payMessage"
+                                :key="payItem.title">
+                            <el-form-item :label-width="formLabelWidth">
+                                <label slot="label">{{ payItem.title }}：</label>
+                                <div>{{ payItem.content }}</div>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="24" class="form-small-title"><span></span>业务信息</el-col>
+                        <el-col :span="payLength[index]" v-for="(business,index) in businessMessage"
+                                :key="business.title">
+                            <el-form-item :label-width="formLabelWidth">
+                                <label slot="label">{{ business.title }}：</label>
+                                <div>{{ business.content }}</div>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                </el-form>
+                <span slot="footer" class="dialog-footer">
                 <el-button type="warning" size="mini" plain
                            @click="dialogVisible = false">取 消</el-button>
             </span>
-        </el-dialog>
-    </div>
+            </el-dialog>
+        </el-footer>
+    </el-container>
 </template>
 
 <script>
     export default {
         name: "MoveWithhold",
-        created:function(){
+        created: function () {
             this.$emit("transmitTitle", "移动展业实时代扣");
             this.$emit("getCommTable", this.routerMessage);
             this.$emit("getGatherData", this.getAllMessage);
         },
-        mounted:function(){
+        mounted: function () {
             /*获取下拉框数据*/
             //银行大类
             var bankTypeList = JSON.parse(window.sessionStorage.getItem("bankTypeList"));
@@ -332,7 +274,7 @@
                 this.bankAllList = bankTypeList;
             }
             var bankAllTypeList = JSON.parse(window.sessionStorage.getItem("bankAllTypeList"));
-            if(bankAllTypeList){
+            if (bankAllTypeList) {
                 this.bankAllTypeList = bankAllTypeList;
             }
             //支付渠道
@@ -346,7 +288,7 @@
                 this.payStatList = constants.PayStatus;
             }
         },
-        props: ["tableData","gatherData"],
+        props: ["tableData", "gatherData"],
         data: function () {
             return {
                 queryUrl: this.$store.state.queryUrl,
@@ -374,14 +316,14 @@
                 payStatList: {},
                 outTime: "", //银行大类搜索控制
                 bankLongding: false,
-                dialogVisible:false, //弹框数据
+                dialogVisible: false, //弹框数据
                 dialogData: {},
                 formLabelWidth: "140px",
 
                 businessMessage: [], //弹框数据控制
-                businessLength:[12,12,12,12,12,12,24,12,12,12,12,24],
+                businessLength: [12, 12, 12, 12, 12, 12, 24, 12, 12, 12, 12, 24],
                 payMessage: [],
-                payLength: [12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,24,12,12,12],
+                payLength: [12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 24, 12, 12, 12],
                 //汇总数据
                 gatherDataList: [
                     {key: "total_count", title: "总笔数:", data: 0, endText: "笔;", thisColor: "blue-text"},
@@ -404,11 +346,11 @@
                 }
             },
             //展示格式转换-金额
-            transitionAmount:function (row, column, cellValue, index) {
+            transitionAmount: function (row, column, cellValue, index) {
                 return this.transitionNumber(cellValue);
             },
             //数字格式转换
-            transitionNumber:function(oldValue){
+            transitionNumber: function (oldValue) {
                 return this.$common.transitSeparator(oldValue);
             },
             //展示格式转换-状态
@@ -430,9 +372,9 @@
                 this.$emit("getGatherData", this.getAllMessage);
             },
             //清空查询条件
-            clearSearData:function(){
+            clearSearData: function () {
                 var searchData = this.searchData;
-                for(var k in searchData){
+                for (var k in searchData) {
                     searchData[k] = "";
                 }
             },
@@ -442,17 +384,17 @@
                 this.$emit("getCommTable", this.routerMessage);
             },
             //当前页数据条数发生变化
-            sizeChange:function(val){
+            sizeChange: function (val) {
                 this.routerMessage.params.page_size = val;
                 this.routerMessage.params.page_num = 1;
                 this.$emit("getCommTable", this.routerMessage);
             },
             //下载
             download: function () {
-                if(this.pagTotal == 0){
+                if (this.pagTotal == 0) {
                     this.$message({
-                        type:"warning",
-                        message:"数据为空",
+                        type: "warning",
+                        message: "数据为空",
                         duration: 2000
                     });
                     return;
@@ -484,16 +426,16 @@
                                 }
                             }
                         });
-                        this.bankTypeList = this.bankTypeList.filter((item,index,arr) => {
-                            for(var i = index+1; i < arr.length; i++){
-                                if(item.display_name == arr[i].display_name){
+                        this.bankTypeList = this.bankTypeList.filter((item, index, arr) => {
+                            for (var i = index + 1; i < arr.length; i++) {
+                                if (item.display_name == arr[i].display_name) {
                                     return false;
                                 }
                             }
                             return true;
                         });
                     } else {
-                        this.bankTypeList = this.bankAllTypeList.slice(0,200);
+                        this.bankTypeList = this.bankAllTypeList.slice(0, 200);
                     }
                     this.bankLongding = false;
                 }, 1200);
@@ -501,12 +443,12 @@
             //银行大类展开时重置数据
             clearSearch: function (val) {
                 if (this.bankTypeList != this.bankAllTypeList && val) {
-                    this.bankTypeList = this.bankAllTypeList.slice(0,200);
+                    this.bankTypeList = this.bankAllTypeList.slice(0, 200);
                 }
             },
             /*弹框相关*/
             //查看详细信息
-            lookParticular: function(row){
+            lookParticular: function (row) {
                 this.$axios({
                     url: this.queryUrl + "normalProcess",
                     method: "post",
@@ -559,7 +501,7 @@
                                 current.content = data.channel_interface_name;
                             } else if (item.key == "haha") {
                                 current.content = "实时代付";
-                            } else if(item.key == "amount"){
+                            } else if (item.key == "amount") {
                                 current.content = this.transitionNumber(data[item.key]);
                             } else {
                                 current.content = data[item.key];

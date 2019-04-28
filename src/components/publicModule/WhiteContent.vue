@@ -6,21 +6,56 @@
         min-width: 960px;
         position: relative;
 
-        .content {
+        .el-header {
             background-color: #fff;
-            min-height: 500px;
+            height: auto !important;
+        }
+        .el-main {
+            width: 100%;
+            background-color: #fff;
             box-sizing: border-box;
-            position: relative;
-            padding: 20px;
+            padding: 0;
+
+            > .el-container{
+                height: 100%;
+
+                > .el-header {
+                    overflow: visible;
+                }
+            }
+        }
+        .el-footer {
             background-color: #fff;
+            padding: 0;
+            height: auto !important;
+
+            .el-pagination {
+                margin-top: 14px;
+            }
+        }
+
+        > .el-header {
+            line-height: 52px;
+            background-color: #E7E7E7;
+
+            h1 {
+                margin-bottom: 0;
+            }
+        }
+
+        > .el-main {
+            min-height: 500px;
+            padding: 20px;
+            padding-bottom: 14px;
+            overflow: hidden;
+        }
+
+        .content {
+            padding: 20px;
         }
         /*按钮样式*/
         .content .display-none{
             display: none;
-        }
-
-        .el-button + .el-button {
-            margin-left: 4px;
         }
 
         /*表格部分*/
@@ -53,21 +88,16 @@
             line-height: 35px;
 
         }
-        .comDialog.el-dialog__wrapper {
-            .el-dialog__body {
-                height: 400px;
-                overflow-y: scroll;
-            }
-        }
     }
 </style>
 
 <template>
-    <el-container id="whiteContent">
+    <el-container id="whiteContent" v-loading="loading"
+                  element-loading-background="rgba(230, 230, 230, 0.1)">
         <el-header>
             <h1 v-text="currentTitle"></h1>
         </el-header>
-        <el-main class="content" v-loading="loading">
+        <el-main class="content">
             <div class="button-list-left">
                 <el-button type="primary" plain size="mini" @click="showDialog('dialogVisible')">全部公司</el-button>
                 <!-- <el-button type="primary" plain size="mini">全部银行</el-button> -->
@@ -106,7 +136,7 @@
                    class="comDialog"
                    width="810px" title="请选择公司"
                    :close-on-click-modal="false"
-                   top="56px">
+                   top="100px">
             <h1 slot="title" class="dialog-title">请选择公司</h1>
             <el-tree
                     :data="treeList"
@@ -129,7 +159,7 @@
         <el-dialog :visible.sync="accDialogVisible"
                    width="600px" title="请选择账户性质"
                    :close-on-click-modal="false"
-                   top="56px">
+                   top="100px">
             <h1 slot="title" class="dialog-title">请选择账户性质</h1>
             <el-checkbox-group v-model="checkAccAttrList">
                 <el-checkbox v-for="acc in accAttrList" :key="acc.id" :label="acc.id">{{acc.name}}</el-checkbox>
@@ -143,7 +173,7 @@
         <el-dialog :visible.sync="inactiveDialogVisible"
                    width="600px" title="请选择账户模式"
                    :close-on-click-modal="false"
-                   top="56px">
+                   top="100px">
             <h1 slot="title" class="dialog-title">请选择账户模式</h1>
             <el-checkbox-group v-model="checkModeList">
                 <el-checkbox v-for="mode in modeList" :key="mode.id" :label="mode.id">{{mode.name}}</el-checkbox>

@@ -1,35 +1,5 @@
 <style lang="less" scoped type="text/less">
     #workflowTrace {
-        width: 100%;
-        height: 100%;
-        box-sizing: border-box;
-        position: relative;
-        overflow: hidden;
-
-        /*搜索区*/
-        .search-setion {
-            text-align: left;
-        }
-        /*分页部分*/
-        .botton-pag {
-            position: absolute;
-            width: 100%;
-            height: 8%;
-            bottom: -6px;
-        }
-
-        /*已办数据展示区*/
-        .table-content {
-            height: 336px;
-        }
-        /*分隔栏*/
-        .split-bar {
-            width: 106%;
-            height: 6px;
-            margin-left: -20px;
-            background-color: #E7E7E7;
-            margin-bottom: 20px;
-        }
         /*按钮样式*/
         .withdraw,.look-work-flow,.iconTime{
             width: 22px;
@@ -71,89 +41,89 @@
         }
     }
     #showbox{
-        position: absolute;
+        position: fixed;
         right: -500px;
         transition: all 1.5s;
+        z-index: 1000;
     }
 </style>
 
 <template>
-    <div id="workflowTrace">
-        <!--搜索区-->
-        <div class="search-setion">
-            <el-form :inline="true" :model="searchData" size="mini">
-                <el-row>
-                    <el-col :span="4">
-                        <el-form-item>
-                            <el-select v-model="searchData.biz_type" placeholder="请选择业务种类" clearable >
-                                <el-option
-                                    v-for="item in businessType"
-                                    :key="item.id"
-                                    :label="item.name"
-                                    :value="item.id">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="7">
-                        <el-form-item>
-                            <el-col :span="11">
-                                <el-date-picker
-                                        v-model="searchData.start_time"
-                                        type="date"
-                                        placeholder="起始日期"
-                                        value-format="yyyy-MM-dd"
-                                        style="width: 100%;">
-                                </el-date-picker>
-                            </el-col>
-                            <el-col class="line" :span="1" style="text-align:center">-</el-col>
-                            <el-col :span="11">
-                                <el-date-picker
-                                        v-model="searchData.end_time"
-                                        type="date"
-                                        placeholder="结束日期"
-                                        value-format="yyyy-MM-dd"
-                                        style="width: 100%;">
-                                </el-date-picker>
-                            </el-col>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="4">
-                        <el-form-item>
-                            <el-input v-model="searchData.bill_code"
-                                      clearable
-                                      placeholder="请输入事单据号"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="2">
-                        <el-form-item>
-                            <el-button type="primary" plain @click="queryData" size="mini">搜索</el-button>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-            </el-form>
-        </div>
-        <!--分隔栏-->
-        <div class="split-bar" ></div>
-        <!--已办数据展示区-->
-        <section :class="['table-content']">
+    <el-container id="workflowTrace">
+        <el-header>
+            <div class="search-setion">
+                <el-form :inline="true" :model="searchData" size="mini">
+                    <el-row>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-select v-model="searchData.biz_type" placeholder="请选择业务种类" clearable >
+                                    <el-option
+                                            v-for="item in businessType"
+                                            :key="item.id"
+                                            :label="item.name"
+                                            :value="item.id">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="7">
+                            <el-form-item>
+                                <el-col :span="11">
+                                    <el-date-picker
+                                            v-model="searchData.start_time"
+                                            type="date"
+                                            placeholder="起始日期"
+                                            value-format="yyyy-MM-dd"
+                                            style="width: 100%;">
+                                    </el-date-picker>
+                                </el-col>
+                                <el-col class="line" :span="1" style="text-align:center">-</el-col>
+                                <el-col :span="11">
+                                    <el-date-picker
+                                            v-model="searchData.end_time"
+                                            type="date"
+                                            placeholder="结束日期"
+                                            value-format="yyyy-MM-dd"
+                                            style="width: 100%;">
+                                    </el-date-picker>
+                                </el-col>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-input v-model="searchData.bill_code"
+                                          clearable
+                                          placeholder="请输入事单据号"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="2">
+                            <el-form-item>
+                                <el-button type="primary" plain @click="queryData" size="mini">搜索</el-button>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                </el-form>
+            </div>
+            <div class="split-bar" ></div>
+        </el-header>
+        <el-main>
             <el-table :data="tableList"
-                    border
-                    height="100%"
-                    size="mini">
+                      border
+                      height="100%"
+                      size="mini">
                 <el-table-column prop="bill_code" label="单据编号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="start_time" label="申请日期" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="biz_type" label="业务种类"
-                                :formatter="transitionStatus"
-                                :show-overflow-tooltip="true"></el-table-column>
+                                 :formatter="transitionStatus"
+                                 :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="init_user_name" label="发起人" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="current" label="当前处理人"
-                                :formatter="rename"
-                                :show-overflow-tooltip="true"></el-table-column>
+                                 :formatter="rename"
+                                 :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="history_name" label="上级处理人" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="future" label="下级审批人"
-                                :formatter="rename"
-                                :show-overflow-tooltip="true"></el-table-column>
+                                 :formatter="rename"
+                                 :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column
                         label="操作" width="110"
                         fixed="right">
@@ -163,7 +133,7 @@
                                        @click="lookFlow(scope.row)"
                                        class="look-work-flow"></el-button>
                         </el-tooltip>
-                         <el-tooltip content="流程" placement="bottom" effect="light"
+                        <el-tooltip content="流程" placement="bottom" effect="light"
                                     :enterable="false" :open-delay="500">
                             <el-button size="mini" class="iconTime" @click="showRightFlow(scope.row)"></el-button>
                         </el-tooltip>
@@ -174,55 +144,55 @@
                     </template>
                 </el-table-column>
             </el-table>
-        </section>
-        <!--分页部分-->
-        <div class="botton-pag">
-            <el-pagination
-                background
-                layout="sizes, prev, pager, next, jumper"
-                :page-size="pagSize"
-                :total="pagTotal"
-                :page-sizes="[8, 50, 100, 500]"
-                :pager-count="5"
-                :current-page="pagCurrent"
-                @current-change="getCurrentPage"
-                @size-change="sizeChange">
-            </el-pagination>
-        </div>
-        <!--查看工作流弹出框-->
-        <el-dialog :visible.sync="lookFlowDialogVisible"
-                   width="800px" title="新建流程"
-                   :close-on-click-modal="false"
-                   :before-close="cancelLookFlow"
-                   top="56px">
-            <h1 slot="title" class="dialog-title">查看流程</h1>
-            <div>
-                <div class="formflot" style="margin-bottom:15px">
-                    <span>流程名称</span>
-                    <el-input v-model="createDialogData.workflow_name" disabled size="mini"></el-input>
-                </div>
-                <div class="formflot">
-                    <span>审批退回</span>
-                    <el-input v-model="createDialogData.reject_strategy" disabled size="mini"></el-input>
-                </div>
+        </el-main>
+        <el-footer>
+            <div class="botton-pag">
+                <el-pagination
+                        background
+                        layout="sizes, prev, pager, next, jumper"
+                        :page-size="pagSize"
+                        :total="pagTotal"
+                        :page-sizes="[8, 50, 100, 500]"
+                        :pager-count="5"
+                        :current-page="pagCurrent"
+                        @current-change="getCurrentPage"
+                        @size-change="sizeChange">
+                </el-pagination>
             </div>
-            <WorkFlow
-                :flowList="flowList"
-                :isEmptyFlow="isEmptyFlow"
-            ></WorkFlow>
-            <span slot="footer" class="dialog-footer">
+            <!--查看工作流弹出框-->
+            <el-dialog :visible.sync="lookFlowDialogVisible"
+                       width="800px" title="新建流程"
+                       :close-on-click-modal="false"
+                       :before-close="cancelLookFlow"
+                       top="100px">
+                <h1 slot="title" class="dialog-title">查看流程</h1>
+                <div>
+                    <div class="formflot" style="margin-bottom:15px">
+                        <span>流程名称</span>
+                        <el-input v-model="createDialogData.workflow_name" disabled size="mini"></el-input>
+                    </div>
+                    <div class="formflot">
+                        <span>审批退回</span>
+                        <el-input v-model="createDialogData.reject_strategy" disabled size="mini"></el-input>
+                    </div>
+                </div>
+                <WorkFlow
+                        :flowList="flowList"
+                        :isEmptyFlow="isEmptyFlow"
+                ></WorkFlow>
+                <span slot="footer" class="dialog-footer">
                 <el-button type="warning" size="mini" plain @click="cancelLookFlow">取 消</el-button>
             </span>
-        </el-dialog>
-        <!-- 右侧流程图 -->
-        <div id="showbox">
-            <BusinessTracking
-                :businessParams="businessParams"
-                @closeRightDialog="closeRightFlow"
-            ></BusinessTracking>
-        </div>
-
-    </div>
+            </el-dialog>
+            <!-- 右侧流程图 -->
+            <div id="showbox">
+                <BusinessTracking
+                        :businessParams="businessParams"
+                        @closeRightDialog="closeRightFlow"
+                ></BusinessTracking>
+            </div>
+        </el-footer>
+    </el-container>
 </template>
 
 <script>

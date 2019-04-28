@@ -1,15 +1,10 @@
 <style scoped lang="less" type="text/less">
     #basicData {
-        width: 100%;
-        height: 100%;
-        box-sizing: border-box;
-        position: relative;
-
         /*公司-银行切换*/
         .company-bank {
             position: absolute;
-            top: -20px;
-            right: -48px;
+            top: 52px;
+            right: -28px;
             width: 28px;
             height: 140px;
             li {
@@ -52,21 +47,6 @@
                 border-bottom-color: transparent;
                 border-left: none;
             }
-        }
-
-        //顶部按钮
-        .button-list-right {
-            position: absolute;
-            top: -60px;
-            right: -18px;
-        }
-
-        /*分页部分*/
-        .botton-pag {
-            position: absolute;
-            width: 100%;
-            height: 8%;
-            bottom: -6px;
         }
 
         /*树结构*/
@@ -156,29 +136,47 @@
 </style>
 
 <template>
-    <div id="basicData">
-        <!-- 顶部按钮-->
-        <div class="button-list-right">
-            <el-button type="warning" size="mini" @click="addDept"
-                       v-if="btActive.department || btActive.post">新增
-            </el-button>
-            <!--<el-button type="warning" size="mini">下载</el-button>-->
-        </div>
-        <!--公司内容-->
-        <div class="tree-content" v-if="btActive.company">
-            <ul class="tree-title">
-                <li>公司名称</li>
-                <li>公司编号</li>
-                <li>公司地址</li>
-                <li>地区（省）</li>
-                <li>操作</li>
-            </ul>
-            <el-tree :data="treeList"
-                     node-key="org_id"
-                     default-expand-all
-                     highlight-current
-                     accordion
-                     :expand-on-click-node="false">
+    <el-container id="basicData">
+        <el-header>
+            <div class="button-list-right">
+                <el-button type="warning" size="mini" @click="addDept"
+                           v-if="btActive.department || btActive.post">新增
+                </el-button>
+            </div>
+        </el-header>
+        <el-main>
+            <!-- 公司/币种/部门 选择-->
+            <div class="company-bank">
+                <ul>
+                    <li :class="{'current-select':btActive.company}"
+                        @click="isActive('company')">公司
+                    </li>
+                    <li :class="{'current-select':btActive.department}"
+                        @click="isActive('department')">部门
+                    </li>
+                    <li :class="{'current-select':btActive.post}"
+                        @click="isActive('post')">职位
+                    </li>
+                    <li :class="{'current-select':btActive.currency}"
+                        @click="isActive('currency')">币种
+                    </li>
+                </ul>
+            </div>
+            <!--公司内容-->
+            <div class="tree-content" v-if="btActive.company">
+                <ul class="tree-title">
+                    <li>公司名称</li>
+                    <li>公司编号</li>
+                    <li>公司地址</li>
+                    <li>地区（省）</li>
+                    <li>操作</li>
+                </ul>
+                <el-tree :data="treeList"
+                         node-key="org_id"
+                         default-expand-all
+                         highlight-current
+                         accordion
+                         :expand-on-click-node="false">
             <span class="custom-tree-node" slot-scope="{ node, data }">
                 <span class="custom-tree-name" :title="node.data.name">{{ node.data.name }}</span>
                 <span class="custom-tree-code">{{ node.data.code }}</span>
@@ -201,93 +199,78 @@
                     </el-tooltip>
                 </span>
             </span>
-            </el-tree>
-        </div>
-        <!--币种/部门/职位 表格-->
-        <el-table :data="tableList"
-                  border size="mini"
-                  height="86.5%"
-                  v-else>
-            <el-table-column prop="iso_code" label="币种编号"
-                             :show-overflow-tooltip="true"
-                             v-if="btActive.currency"></el-table-column>
-            <el-table-column prop="name" label="部门名称"
-                             :show-overflow-tooltip="true"
-                             v-else-if="btActive.department"></el-table-column>
-            <el-table-column prop="name" label="职位名称"
-                             :show-overflow-tooltip="true"
-                             v-else-if="btActive.post"></el-table-column>
+                </el-tree>
+            </div>
+            <!--币种/部门/职位 表格-->
+            <el-table :data="tableList"
+                      border size="mini"
+                      height="100%"
+                      v-else>
+                <el-table-column prop="iso_code" label="币种编号"
+                                 :show-overflow-tooltip="true"
+                                 v-if="btActive.currency"></el-table-column>
+                <el-table-column prop="name" label="部门名称"
+                                 :show-overflow-tooltip="true"
+                                 v-else-if="btActive.department"></el-table-column>
+                <el-table-column prop="name" label="职位名称"
+                                 :show-overflow-tooltip="true"
+                                 v-else-if="btActive.post"></el-table-column>
+                <el-table-column prop="name" label="币种名称"
+                                 :show-overflow-tooltip="true"
+                                 v-if="btActive.currency"></el-table-column>
+                <el-table-column prop="desc" label="职位描述"
+                                 :show-overflow-tooltip="true"
+                                 v-else-if="btActive.post"></el-table-column>
+                <el-table-column prop="status" :formatter="transition" label="状态" v-else-if="btActive.department"></el-table-column>
 
-            <el-table-column prop="name" label="币种名称"
-                             :show-overflow-tooltip="true"
-                             v-if="btActive.currency"></el-table-column>
-            <el-table-column prop="desc" label="职位描述"
-                             :show-overflow-tooltip="true"
-                             v-else-if="btActive.post"></el-table-column>
-            <el-table-column prop="status" :formatter="transition" label="状态" v-else-if="btActive.department"></el-table-column>
-
-            <el-table-column prop="symbol" label="币种符号"
-                             :show-overflow-tooltip="true"
-                             v-if="btActive.currency"></el-table-column>
-            <el-table-column prop="status" :formatter="transition" label="职位状态" v-else-if="btActive.post"></el-table-column>
-            <el-table-column
-                    label="操作"
-                    width="100">
-                <template slot-scope="scope" class="operationBtn">
-                    <el-button type="text" v-if="btActive.currency"
-                               @click="setCurrency(scope.row,tableList)"
-                               :class="{'text-button':!scope.row.is_default}">设为默认
-                    </el-button>
-                    <el-tooltip content="设置状态" placement="bottom" effect="light" :enterable="false" :open-delay="500">
-                        <el-button size="mini"
-                                   @click="setStatus(scope.row)"
-                                   v-if="btActive.department || btActive.post"
-                                   class="on-off"></el-button>
-                    </el-tooltip>
-                    <el-tooltip content="编辑" placement="bottom" effect="light" :enterable="false" :open-delay="500">
-                        <el-button type="primary" icon="el-icon-edit" size="mini"
-                                   v-if="btActive.department || btActive.post"
-                                   @click="redact(scope.row)"></el-button>
-                    </el-tooltip>
-                    <el-tooltip content="删除" placement="bottom" effect="light" :enterable="false" :open-delay="500">
-                        <el-button type="danger" icon="el-icon-delete" size="mini"
-                                   v-if="btActive.department || btActive.post"
-                                   @click="delDept(scope.row,scope.$index,tableList)"></el-button>
-                    </el-tooltip>
-                </template>
-            </el-table-column>
-        </el-table>
-        <!-- 公司/币种/部门 选择-->
-        <div class="company-bank">
-            <ul>
-                <li :class="{'current-select':btActive.company}"
-                    @click="isActive('company')">公司
-                </li>
-                <li :class="{'current-select':btActive.department}"
-                    @click="isActive('department')">部门
-                </li>
-                <li :class="{'current-select':btActive.post}"
-                    @click="isActive('post')">职位
-                </li>
-                <li :class="{'current-select':btActive.currency}"
-                    @click="isActive('currency')">币种
-                </li>
-            </ul>
-        </div>
-        <!--分页部分-->
-        <div class="botton-pag" v-if="!btActive.company">
-            <el-pagination
-                    background
-                    layout="sizes, prev, pager, next, jumper"
-                    :page-size="pagSize"
-                    :total="pagTotal"
-                    @current-change="pageChange"
-                    @size-change="sizeChange"
-                    :page-sizes="[10, 50, 100, 500]"
-                    :pager-count="5"
-                    :current-page="pagCurrent">
-            </el-pagination>
-        </div>
+                <el-table-column prop="symbol" label="币种符号"
+                                 :show-overflow-tooltip="true"
+                                 v-if="btActive.currency"></el-table-column>
+                <el-table-column prop="status" :formatter="transition" label="职位状态" v-else-if="btActive.post"></el-table-column>
+                <el-table-column
+                        label="操作"
+                        width="100">
+                    <template slot-scope="scope" class="operationBtn">
+                        <el-button type="text" v-if="btActive.currency"
+                                   @click="setCurrency(scope.row,tableList)"
+                                   :class="{'text-button':!scope.row.is_default}">设为默认
+                        </el-button>
+                        <el-tooltip content="设置状态" placement="bottom" effect="light" :enterable="false" :open-delay="500">
+                            <el-button size="mini"
+                                       @click="setStatus(scope.row)"
+                                       v-if="btActive.department || btActive.post"
+                                       class="on-off"></el-button>
+                        </el-tooltip>
+                        <el-tooltip content="编辑" placement="bottom" effect="light" :enterable="false" :open-delay="500">
+                            <el-button type="primary" icon="el-icon-edit" size="mini"
+                                       v-if="btActive.department || btActive.post"
+                                       @click="redact(scope.row)"></el-button>
+                        </el-tooltip>
+                        <el-tooltip content="删除" placement="bottom" effect="light" :enterable="false" :open-delay="500">
+                            <el-button type="danger" icon="el-icon-delete" size="mini"
+                                       v-if="btActive.department || btActive.post"
+                                       @click="delDept(scope.row,scope.$index,tableList)"></el-button>
+                        </el-tooltip>
+                    </template>
+                </el-table-column>
+            </el-table>
+        </el-main>
+        <el-footer>
+            <!--分页部分-->
+            <div class="botton-pag" v-if="!btActive.company">
+                <el-pagination
+                        background
+                        layout="sizes, prev, pager, next, jumper"
+                        :page-size="pagSize"
+                        :total="pagTotal"
+                        @current-change="pageChange"
+                        @size-change="sizeChange"
+                        :page-sizes="[10, 50, 100, 500]"
+                        :pager-count="5"
+                        :current-page="pagCurrent">
+                </el-pagination>
+            </div>
+        </el-footer>
         <!--弹出框-->
         <el-dialog :visible.sync="dialogVisible"
                    width="30%"
@@ -376,7 +359,7 @@
                 <el-button type="primary" @click="setPost" size="small">确 定</el-button>
             </span>
         </el-dialog>
-    </div>
+    </el-container>
 </template>
 
 <script>

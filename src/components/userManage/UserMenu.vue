@@ -1,15 +1,10 @@
 <style scoped lang="less" type="text/less">
     #userMenu {
-        width: 100%;
-        height: 100%;
-        box-sizing: border-box;
-        position: relative;
-
         /*用户-用户组切换*/
         .company-bank {
             position: absolute;
-            top: -20px;
-            right: -48px;
+            top: 52px;
+            right: -28px;
             width: 28px;
             height: 140px;
 
@@ -63,18 +58,6 @@
             }
         }
 
-        /*数据展示区*/
-        .table-content{
-            height: 397px;
-        }
-        /*分页部分*/
-        .botton-pag {
-            position: absolute;
-            width: 100%;
-            height: 8%;
-            bottom: -6px;
-        }
-
         /*分割线*/
         .split-form {
             width: 100%;
@@ -86,32 +69,23 @@
         }
     }
 </style>
-<style lang="less" type="text/less">
-    #userMenu {
-        .el-dialog__wrapper {
-            .el-dialog__body {
-                max-height: 400px;
-                overflow-y: auto;
-            }
-        }
-    }
-</style>
 
 <template>
-    <div id="userMenu">
-        <!-- 用户/用户组 选择-->
-        <div class="company-bank">
-            <ul>
-                <li :class="{'current-select':btActive}"
-                    @click="isUser">用户权限
-                </li>
-                <li :class="{'current-select':!btActive}"
-                    @click="isGroup">用户组权限
-                </li>
-            </ul>
-        </div>
-        <!--数据展示区-->
-        <section class="table-content">
+    <el-container id="userMenu">
+        <el-header>
+            <!-- 用户/用户组 选择-->
+            <div class="company-bank">
+                <ul>
+                    <li :class="{'current-select':btActive}"
+                        @click="isUser">用户权限
+                    </li>
+                    <li :class="{'current-select':!btActive}"
+                        @click="isGroup">用户组权限
+                    </li>
+                </ul>
+            </div>
+        </el-header>
+        <el-main>
             <el-table :data="tableList"
                       border height="100%"
                       size="mini">
@@ -146,158 +120,158 @@
                     </template>
                 </el-table-column>
             </el-table>
-        </section>
-        <!--分页部分-->
-        <div class="botton-pag">
-            <el-pagination
-                    background :pager-count="5"
-                    layout="sizes , prev, pager, next, jumper"
-                    :page-size="pagSize" :total="pagTotal"
-                    :page-sizes="[10, 50, 100, 500]"
-                    @current-change="getCurrentPage"
-                    @size-change="sizeChange"
-                    :current-page="pagCurrent">
-            </el-pagination>
-        </div>
-        <!--用户弹出框-->
-        <el-dialog title="编辑"
-                   :visible.sync="dialogVisible"
-                   width="800px" top="76px"
-                   :close-on-click-modal="false">
-            <el-form :model="dialogData" size="small">
-                <el-row>
-                    <el-col :span="12">
-                        <el-form-item label="姓名" :label-width="formLabelWidth">
-                            <el-input v-model="dialogData.name" auto-complete="off" disabled></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="机构名称" :label-width="formLabelWidth">
-                            <el-input v-model="dialogData.org_name" auto-complete="off" disabled></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="部门名称" :label-width="formLabelWidth">
-                            <el-input v-model="dialogData.dept_name" auto-complete="off" disabled></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="职位" :label-width="formLabelWidth">
-                            <el-input v-model="dialogData.pos_name" auto-complete="off" disabled></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="是否默认" :label-width="formLabelWidth">
-                            <el-switch v-model="dialogData.is_default" disabled
-                                       active-value="1"
-                                       inactive-value="0"></el-switch>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="24">
-                        <div class="split-form">
-                            <h4>用户组分配</h4>
-                        </div>
-                    </el-col>
-                    <el-col :span="24" style="margin-bottom:24px">
-                        <el-table :data="usrgroupList"
-                                  border size="mini"
-                                  style="width:96%;float:right"
-                                  empty-text="无可分配数据"
-                                  ref="usergroupTable"
-                                  @selection-change="usergroupChange">
-                            <el-table-column type="selection" width="46"></el-table-column>
-                            <el-table-column prop="name" label="用户组名称"
-                                             :show-overflow-tooltip="true"></el-table-column>
-                            <el-table-column prop="memo" label="用户组说明"
-                                             :show-overflow-tooltip="true"></el-table-column>
-                        </el-table>
-                    </el-col>
-                </el-row>
-            </el-form>
-            <span slot="footer" class="dialog-footer">
+        </el-main>
+        <el-footer>
+            <div class="botton-pag">
+                <el-pagination
+                        background :pager-count="5"
+                        layout="sizes , prev, pager, next, jumper"
+                        :page-size="pagSize" :total="pagTotal"
+                        :page-sizes="[10, 50, 100, 500]"
+                        @current-change="getCurrentPage"
+                        @size-change="sizeChange"
+                        :current-page="pagCurrent">
+                </el-pagination>
+            </div>
+            <!--用户弹出框-->
+            <el-dialog title="编辑"
+                       :visible.sync="dialogVisible"
+                       width="800px" top="100px"
+                       :close-on-click-modal="false">
+                <el-form :model="dialogData" size="small">
+                    <el-row>
+                        <el-col :span="12">
+                            <el-form-item label="姓名" :label-width="formLabelWidth">
+                                <el-input v-model="dialogData.name" auto-complete="off" disabled></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="机构名称" :label-width="formLabelWidth">
+                                <el-input v-model="dialogData.org_name" auto-complete="off" disabled></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="部门名称" :label-width="formLabelWidth">
+                                <el-input v-model="dialogData.dept_name" auto-complete="off" disabled></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="职位" :label-width="formLabelWidth">
+                                <el-input v-model="dialogData.pos_name" auto-complete="off" disabled></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="是否默认" :label-width="formLabelWidth">
+                                <el-switch v-model="dialogData.is_default" disabled
+                                           active-value="1"
+                                           inactive-value="0"></el-switch>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="24">
+                            <div class="split-form">
+                                <h4>用户组分配</h4>
+                            </div>
+                        </el-col>
+                        <el-col :span="24" style="margin-bottom:24px">
+                            <el-table :data="usrgroupList"
+                                      border size="mini"
+                                      style="width:96%;float:right"
+                                      empty-text="无可分配数据"
+                                      ref="usergroupTable"
+                                      @selection-change="usergroupChange">
+                                <el-table-column type="selection" width="46"></el-table-column>
+                                <el-table-column prop="name" label="用户组名称"
+                                                 :show-overflow-tooltip="true"></el-table-column>
+                                <el-table-column prop="memo" label="用户组说明"
+                                                 :show-overflow-tooltip="true"></el-table-column>
+                            </el-table>
+                        </el-col>
+                    </el-row>
+                </el-form>
+                <span slot="footer" class="dialog-footer">
                 <el-button type="warning" size="mini" plain @click="dialogVisible = false">取 消</el-button>
                 <el-button type="warning" size="mini" @click="subCurrent">确 定</el-button>
             </span>
-        </el-dialog>
-        <!--用户组弹出框-->
-        <el-dialog title="编辑"
-                   :visible.sync="groupDialog"
-                   width="800px" top="76px"
-                   :close-on-click-modal="false">
-            <el-form :model="groupDiaData" size="small">
-                <el-row>
-                    <el-col :span="12">
-                        <el-form-item label="用户组名称" :label-width="formLabelWidth">
-                            <el-input v-model="groupDiaData.name" auto-complete="off" disabled></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="用户组描述" :label-width="formLabelWidth">
-                            <el-input v-model="groupDiaData.memo" auto-complete="off" disabled></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="是否内置" :label-width="formLabelWidth">
-                            <el-switch v-model="groupDiaData.is_default" disabled
-                                       active-value="1"
-                                       inactive-value="0"></el-switch>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="24">
-                        <div class="split-form">
-                            <h4>用户管理</h4>
-                            <el-button size="mini" style="float:right"
-                                       @click="innerVisible = true">添加用户
-                            </el-button>
-                        </div>
-                    </el-col>
-                    <el-col :span="24" style="margin-bottom:24px">
-                        <el-table :data="userList"
-                                  border size="mini"
-                                  style="width:96%;float:right"
-                                  empty-text="请添加用户">
-                            <el-table-column prop="name" label="姓名" :show-overflow-tooltip="true"></el-table-column>
-                            <el-table-column prop="org_name" label="机构名称" :show-overflow-tooltip="true"></el-table-column>
-                            <el-table-column prop="dept_name" label="部门名称" :show-overflow-tooltip="true"></el-table-column>
-                            <el-table-column prop="pos_name" label="职位" :show-overflow-tooltip="true"></el-table-column>
-                            <el-table-column
-                                    label="删除"
-                                    width="50">
-                                <template slot-scope="scope" class="operationBtn">
-                                    <el-button type="danger" icon="el-icon-delete" size="mini"
-                                               @click="delSeleUser(scope.row,scope.$index,userList)"></el-button>
-                                </template>
-                            </el-table-column>
-                        </el-table>
-                    </el-col>
-                </el-row>
-            </el-form>
-            <span slot="footer" class="dialog-footer">
+            </el-dialog>
+            <!--用户组弹出框-->
+            <el-dialog title="编辑"
+                       :visible.sync="groupDialog"
+                       width="800px" top="100px"
+                       :close-on-click-modal="false">
+                <el-form :model="groupDiaData" size="small">
+                    <el-row>
+                        <el-col :span="12">
+                            <el-form-item label="用户组名称" :label-width="formLabelWidth">
+                                <el-input v-model="groupDiaData.name" auto-complete="off" disabled></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="用户组描述" :label-width="formLabelWidth">
+                                <el-input v-model="groupDiaData.memo" auto-complete="off" disabled></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="是否内置" :label-width="formLabelWidth">
+                                <el-switch v-model="groupDiaData.is_default" disabled
+                                           active-value="1"
+                                           inactive-value="0"></el-switch>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="24">
+                            <div class="split-form">
+                                <h4>用户管理</h4>
+                                <el-button size="mini" style="float:right"
+                                           @click="innerVisible = true">添加用户
+                                </el-button>
+                            </div>
+                        </el-col>
+                        <el-col :span="24" style="margin-bottom:24px">
+                            <el-table :data="userList"
+                                      border size="mini"
+                                      style="width:96%;float:right"
+                                      empty-text="请添加用户">
+                                <el-table-column prop="name" label="姓名" :show-overflow-tooltip="true"></el-table-column>
+                                <el-table-column prop="org_name" label="机构名称" :show-overflow-tooltip="true"></el-table-column>
+                                <el-table-column prop="dept_name" label="部门名称" :show-overflow-tooltip="true"></el-table-column>
+                                <el-table-column prop="pos_name" label="职位" :show-overflow-tooltip="true"></el-table-column>
+                                <el-table-column
+                                        label="删除"
+                                        width="50">
+                                    <template slot-scope="scope" class="operationBtn">
+                                        <el-button type="danger" icon="el-icon-delete" size="mini"
+                                                   @click="delSeleUser(scope.row,scope.$index,userList)"></el-button>
+                                    </template>
+                                </el-table-column>
+                            </el-table>
+                        </el-col>
+                    </el-row>
+                </el-form>
+                <span slot="footer" class="dialog-footer">
                 <el-button type="warning" size="mini" plain @click="groupDialog = false">取 消</el-button>
                 <el-button type="warning" size="mini" @click="subGroup">确 定</el-button>
             </span>
-            <el-dialog :visible.sync="innerVisible"
-                       width="50%" title="添加用户"
-                       append-to-body top="76px"
-                       :close-on-click-modal="false">
-                <el-table :data="selectUserList"
-                          size="mini">
-                    <!--用户信息-->
-                    <el-table-column prop="name" label="姓名" width="100" :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="org_name" label="机构名称" :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="dept_name" label="部门名称" :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="pos_name" label="职位" :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column
-                            label=""
-                            width="60">
-                        <template slot-scope="scope" class="operationBtn">
-                            <el-button type="text" style="padding-top:6px;padding-bottom:6px"
-                                       @click="addSelectUser(scope.row)">添加</el-button>
-                        </template>
-                    </el-table-column>
-                </el-table>
+                <el-dialog :visible.sync="innerVisible"
+                           width="50%" title="添加用户"
+                           append-to-body top="76px"
+                           :close-on-click-modal="false">
+                    <el-table :data="selectUserList"
+                              size="mini">
+                        <!--用户信息-->
+                        <el-table-column prop="name" label="姓名" width="100" :show-overflow-tooltip="true"></el-table-column>
+                        <el-table-column prop="org_name" label="机构名称" :show-overflow-tooltip="true"></el-table-column>
+                        <el-table-column prop="dept_name" label="部门名称" :show-overflow-tooltip="true"></el-table-column>
+                        <el-table-column prop="pos_name" label="职位" :show-overflow-tooltip="true"></el-table-column>
+                        <el-table-column
+                                label=""
+                                width="60">
+                            <template slot-scope="scope" class="operationBtn">
+                                <el-button type="text" style="padding-top:6px;padding-bottom:6px"
+                                           @click="addSelectUser(scope.row)">添加</el-button>
+                            </template>
+                        </el-table-column>
+                    </el-table>
 
-                <span slot="footer" class="dialog-footer" style="text-align:center">
+                    <span slot="footer" class="dialog-footer" style="text-align:center">
                     <el-pagination
                             background
                             layout="prev, pager, next, jumper"
@@ -307,9 +281,10 @@
                             :pager-count="5">
                     </el-pagination>
                 </span>
+                </el-dialog>
             </el-dialog>
-        </el-dialog>
-    </div>
+        </el-footer>
+    </el-container>
 </template>
 
 <script>

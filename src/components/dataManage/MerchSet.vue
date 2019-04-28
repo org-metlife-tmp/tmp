@@ -1,39 +1,5 @@
 <style scoped lang="less" type="text/less">
     #merchSet {
-        width: 100%;
-        height: 100%;
-        box-sizing: border-box;
-        position: relative;
-
-        /*顶部按钮*/
-        .button-list-right {
-            position: absolute;
-            top: -60px;
-            right: -18px;
-        }
-        /*搜索区*/
-        .search-setion {
-            text-align: left;
-        }
-        /*分隔栏*/
-        .split-bar {
-            width: 106%;
-            height: 6px;
-            margin-left: -20px;
-            margin-bottom: 20px;
-            background-color: #E7E7E7;
-        }
-        /*数据展示区*/
-        .table-content{
-            height: 333px;
-        }
-        /*分页部分*/
-        .botton-pag {
-            position: absolute;
-            width: 100%;
-            height: 8%;
-            bottom: -6px;
-        }
         /*按钮-设置状态*/
         .on-off {
             width: 22px;
@@ -44,66 +10,57 @@
             padding: 0;
             vertical-align: middle;
         }
-
-        /*当屏幕过小时整体样式调整*/
-        @media screen and (max-width: 1340px){
-            .split-bar{
-                margin-bottom: 10px;
-            }
-        }
     }
 </style>
 
 <template>
-    <div id="merchSet">
-        <!-- 顶部按钮-->
-        <div class="button-list-right">
-            <el-button type="warning" size="mini" @click="addMerch">新增</el-button>
-        </div>
-        <!--搜索区-->
-        <div class="search-setion">
-            <el-form :inline="true" :model="serachData" size="mini">
-                <el-row>
-                    <el-col :span="7">
-                        <el-form-item label="机构">
-                            <el-select v-model="serachData.org_id" placeholder="请选择机构" clearable>
-                                <el-option v-for="org in orgList"
-                                           :key="org.org_id"
-                                           :label="org.name"
-                                           :value="org.org_id">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="7">
-                        <el-form-item label="支付渠道">
-                            <el-select v-model="serachData.channel_code" placeholder="请选择支付渠道"
-                                       clearable>
-                                <el-option v-for="channel in channelList"
-                                           :key="channel.code"
-                                           :label="channel.desc"
-                                           :value="channel.code">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="7">
-                        <el-form-item label="商户号">
-                            <el-input v-model="serachData.query_key" placeholder="请输入商户号" clearable></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="3">
-                        <el-form-item>
-                            <el-button type="primary" plain @click="queryData">搜索</el-button>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-            </el-form>
-        </div>
-        <!--分隔栏-->
-        <div class="split-bar"></div>
-        <!--数据展示区-->
-        <section class="table-content">
+    <el-container id="merchSet">
+        <el-header>
+            <div class="button-list-right">
+                <el-button type="warning" size="mini" @click="addMerch">新增</el-button>
+            </div>
+            <div class="search-setion">
+                <el-form :inline="true" :model="serachData" size="mini">
+                    <el-row>
+                        <el-col :span="7">
+                            <el-form-item label="机构">
+                                <el-select v-model="serachData.org_id" placeholder="请选择机构" clearable>
+                                    <el-option v-for="org in orgList"
+                                               :key="org.org_id"
+                                               :label="org.name"
+                                               :value="org.org_id">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="7">
+                            <el-form-item label="支付渠道">
+                                <el-select v-model="serachData.channel_code" placeholder="请选择支付渠道"
+                                           clearable>
+                                    <el-option v-for="channel in channelList"
+                                               :key="channel.code"
+                                               :label="channel.desc"
+                                               :value="channel.code">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="7">
+                            <el-form-item label="商户号">
+                                <el-input v-model="serachData.query_key" placeholder="请输入商户号" clearable></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="3">
+                            <el-form-item>
+                                <el-button type="primary" plain @click="queryData">搜索</el-button>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                </el-form>
+            </div>
+            <div class="split-bar"></div>
+        </el-header>
+        <el-main>
             <el-table :data="tableList"
                       border
                       height="100%"
@@ -135,129 +92,129 @@
                     </template>
                 </el-table-column>
             </el-table>
-        </section>
-        <!--分页部分-->
-        <div class="botton-pag">
-            <el-pagination
-                    background :pager-count="5"
-                    :current-page="pagCurrent"
-                    layout="sizes , prev, pager, next, jumper"
-                    :page-size="pagSize" :total="pagTotal"
-                    :page-sizes="[8, 50, 100, 500]"
-                    @current-change="getCurrentPage"
-                    @size-change="sizeChange">
-            </el-pagination>
-        </div>
-        <!--弹出框-->
-        <el-dialog :visible.sync="dialogVisible"
-                   width="810px"
-                   :close-on-click-modal="false"
-                   top="56px">
-            <h1 slot="title" v-text="dialogTitle" class="dialog-title"></h1>
-            <el-form :model="dialogData" size="small"
-                     :label-width="formLabelWidth"
-                     :rules="rules" ref="dialogForm">
-                <el-row>
-                    <el-col :span="12">
-                        <el-form-item label="商户号" prop="acc_no">
-                            <el-input v-model="dialogData.acc_no"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="商户名称" prop="acc_name">
-                            <el-input v-model="dialogData.acc_name"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="支付渠道" prop="channel_code">
-                            <el-select v-model="dialogData.channel_code" placeholder="请选择支付渠道"
-                                       clearable>
-                                <el-option v-for="channel in channelList"
-                                           :key="channel.code"
-                                           :label="channel.desc"
-                                           :value="channel.code">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="所属机构" prop="org_id">
-                            <el-select v-model="dialogData.org_id" placeholder="请选择机构" clearable>
-                                <el-option v-for="org in orgList"
-                                           :key="org.org_id"
-                                           :label="org.name"
-                                           :value="org.org_id">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="币种" prop="curr_id">
-                            <el-select v-model="dialogData.curr_id" placeholder="请选择币种"
-                                       filterable clearable>
-                                <el-option v-for="currency in currencyList"
-                                           :key="currency.id"
-                                           :label="currency.name"
-                                           :value="currency.id">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="收付属性" prop="pay_recv_attr">
-                            <el-select v-model="dialogData.pay_recv_attr" placeholder="请选择收付属性"
-                                       filterable clearable>
-                                <el-option v-for="(name,k) in accOrRecvList"
-                                           :key="k"
-                                           :label="name"
-                                           :value="k">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="开户日期" prop="open_date">
-                            <el-date-picker type="date" placeholder="选择日期" v-model="dialogData.open_date"
-                                            style="width: 100%;"
-                                            format="yyyy 年 MM 月 dd 日"
-                                            value-format="yyyy-MM-dd"></el-date-picker>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="明细段" prop="detail_seg">
-                            <el-input v-model="dialogData.detail_seg"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="机构段" prop="org_seg">
-                            <el-input v-model="dialogData.org_seg"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="结算账号" prop="settle_acc_id">
-                            <el-select v-model="dialogData.settle_acc_id" placeholder="请选择支付渠道"
-                                       clearable>
-                                <el-option v-for="settacc in settaccList"
-                                           :key="settacc.id"
-                                           :label="settacc.acc_no"
-                                           :value="settacc.id">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="24">
-                        <el-form-item label="备注">
-                            <el-input v-model="dialogData.memo" width="100%"></el-input>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-            </el-form>
-            <span slot="footer" class="dialog-footer">
+        </el-main>
+        <el-footer>
+            <div class="botton-pag">
+                <el-pagination
+                        background :pager-count="5"
+                        :current-page="pagCurrent"
+                        layout="sizes , prev, pager, next, jumper"
+                        :page-size="pagSize" :total="pagTotal"
+                        :page-sizes="[8, 50, 100, 500]"
+                        @current-change="getCurrentPage"
+                        @size-change="sizeChange">
+                </el-pagination>
+            </div>
+            <el-dialog :visible.sync="dialogVisible"
+                       width="810px"
+                       :close-on-click-modal="false"
+                       top="100px">
+                <h1 slot="title" v-text="dialogTitle" class="dialog-title"></h1>
+                <el-form :model="dialogData" size="small"
+                         :label-width="formLabelWidth"
+                         :rules="rules" ref="dialogForm">
+                    <el-row>
+                        <el-col :span="12">
+                            <el-form-item label="商户号" prop="acc_no">
+                                <el-input v-model="dialogData.acc_no"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="商户名称" prop="acc_name">
+                                <el-input v-model="dialogData.acc_name"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="支付渠道" prop="channel_code">
+                                <el-select v-model="dialogData.channel_code" placeholder="请选择支付渠道"
+                                           clearable>
+                                    <el-option v-for="channel in channelList"
+                                               :key="channel.code"
+                                               :label="channel.desc"
+                                               :value="channel.code">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="所属机构" prop="org_id">
+                                <el-select v-model="dialogData.org_id" placeholder="请选择机构" clearable>
+                                    <el-option v-for="org in orgList"
+                                               :key="org.org_id"
+                                               :label="org.name"
+                                               :value="org.org_id">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="币种" prop="curr_id">
+                                <el-select v-model="dialogData.curr_id" placeholder="请选择币种"
+                                           filterable clearable>
+                                    <el-option v-for="currency in currencyList"
+                                               :key="currency.id"
+                                               :label="currency.name"
+                                               :value="currency.id">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="收付属性" prop="pay_recv_attr">
+                                <el-select v-model="dialogData.pay_recv_attr" placeholder="请选择收付属性"
+                                           filterable clearable>
+                                    <el-option v-for="(name,k) in accOrRecvList"
+                                               :key="k"
+                                               :label="name"
+                                               :value="k">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="开户日期" prop="open_date">
+                                <el-date-picker type="date" placeholder="选择日期" v-model="dialogData.open_date"
+                                                style="width: 100%;"
+                                                format="yyyy 年 MM 月 dd 日"
+                                                value-format="yyyy-MM-dd"></el-date-picker>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="明细段" prop="detail_seg">
+                                <el-input v-model="dialogData.detail_seg"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="机构段" prop="org_seg">
+                                <el-input v-model="dialogData.org_seg"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="结算账号" prop="settle_acc_id">
+                                <el-select v-model="dialogData.settle_acc_id" placeholder="请选择支付渠道"
+                                           clearable>
+                                    <el-option v-for="settacc in settaccList"
+                                               :key="settacc.id"
+                                               :label="settacc.acc_no"
+                                               :value="settacc.id">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="24">
+                            <el-form-item label="备注">
+                                <el-input v-model="dialogData.memo" width="100%"></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                </el-form>
+                <span slot="footer" class="dialog-footer">
                 <el-button type="warning" size="mini" plain @click="dialogVisible = false">取 消</el-button>
                 <el-button type="warning" size="mini" @click="subCurrent">确 定</el-button>
             </span>
-        </el-dialog>
-    </div>
+            </el-dialog>
+        </el-footer>
+    </el-container>
 </template>
 
 <script>

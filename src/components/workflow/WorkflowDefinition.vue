@@ -12,25 +12,6 @@
             }
         }
 
-        /*顶部按钮*/
-        .button-list-right {
-            position: absolute;
-            top: -42px;
-            right: 0px;
-        }
-
-        /*分页部分*/
-        .botton-pag {
-            position: absolute;
-            width: 100%;
-            height: 8%;
-            bottom: 8px;
-        }
-
-        /*数据展示区*/
-        .table-content {
-            height: 362px;
-        }
         /*按钮-复制*/
         .on-copy {
             width: 22px;
@@ -339,25 +320,24 @@
 </style>
 
 <template>
-    <div id="workflowDefinition">
-        <!-- 顶部按钮-->
-        <div class="button-list-right">
-            <el-button type="warning" size="mini" @click="createProcess">新建流程</el-button>
-        </div>
-        <!--搜索区-->
-        <div class="search-setion">
-            <el-form :inline="true" :model="searchData" size="mini">
-                <el-row>
-                    <el-col :span="12" :offset="6">
-                        <el-input placeholder="请输入内容" v-model="searchData.query_key" class="input-with-select">
-                            <el-button slot="append" icon="el-icon-search" type="primary" @click="queryData"></el-button>
-                        </el-input>
-                    </el-col>
-                </el-row>
-            </el-form>
-        </div>
-        <!--数据展示区-->
-        <section :class="['table-content']">
+    <el-container id="workflowDefinition">
+        <el-header>
+            <div class="button-list-right">
+                <el-button type="warning" size="mini" @click="createProcess">新建流程</el-button>
+            </div>
+            <div class="search-setion">
+                <el-form :inline="true" :model="searchData" size="mini">
+                    <el-row>
+                        <el-col :span="12" :offset="6">
+                            <el-input placeholder="请输入内容" v-model="searchData.query_key" class="input-with-select">
+                                <el-button slot="append" icon="el-icon-search" type="primary" @click="queryData"></el-button>
+                            </el-input>
+                        </el-col>
+                    </el-row>
+                </el-form>
+            </div>
+        </el-header>
+        <el-main>
             <el-table :data="tableList"
                       border
                       height="100%"
@@ -392,168 +372,168 @@
                     </template>
                 </el-table-column>
             </el-table>
-        </section>
-        <!--分页部分-->
-        <div class="botton-pag">
-            <el-pagination
-                    background
-                    layout="sizes, prev, pager, next, jumper"
-                    :page-size="pagSize"
-                    :total="pagTotal"
-                    :page-sizes="[10, 50, 100, 500]"
-                    :pager-count="5"
-                    :current-page="pagCurrent"
-                    @current-change="getCurrentPage"
-                    @size-change="sizeChange">
-            </el-pagination>
-        </div>
-        <!--新建流程弹出框-->
-        <el-dialog :visible.sync="createDialogVisible"
-                   width="500px" title="新建流程"
-                   :close-on-click-modal="false"
-                   top="156px">
-            <h1 slot="title" class="dialog-title">新建流程</h1>
-            <el-form :model="createDialogData" size="small"
-                     :label-width="formLabelWidth">
-                <el-row>
-                    <el-col :span="24">
-                        <el-form-item label="流程组名称">
-                            <el-input v-model="createDialogData.workflow_name"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="24">
-                        <el-form-item label="审批退回">
-                            <el-select v-model="createDialogData.reject_strategy">
-                                <el-option
+        </el-main>
+        <el-footer>
+            <div class="botton-pag">
+                <el-pagination
+                        background
+                        layout="sizes, prev, pager, next, jumper"
+                        :page-size="pagSize"
+                        :total="pagTotal"
+                        :page-sizes="[10, 50, 100, 500]"
+                        :pager-count="5"
+                        :current-page="pagCurrent"
+                        @current-change="getCurrentPage"
+                        @size-change="sizeChange">
+                </el-pagination>
+            </div>
+            <!--新建流程弹出框-->
+            <el-dialog :visible.sync="createDialogVisible"
+                       width="500px" title="新建流程"
+                       :close-on-click-modal="false"
+                       top="156px">
+                <h1 slot="title" class="dialog-title">新建流程</h1>
+                <el-form :model="createDialogData" size="small"
+                         :label-width="formLabelWidth">
+                    <el-row>
+                        <el-col :span="24">
+                            <el-form-item label="流程组名称">
+                                <el-input v-model="createDialogData.workflow_name"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="24">
+                            <el-form-item label="审批退回">
+                                <el-select v-model="createDialogData.reject_strategy">
+                                    <el-option
+                                            v-for="item in back_options"
+                                            :key="item.id"
+                                            :label="item.name"
+                                            :value="item.id">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="24">
+                            <el-form-item label="初始级次">
+                                <el-select v-model="createDialogData.lanes">
+                                    <el-option
+                                            v-for="item in gradation_options"
+                                            :key="item.id"
+                                            :label="item.name"
+                                            :value="item.id">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                </el-form>
+                <span slot="footer" class="dialog-footer">
+                <el-button type="warning" size="mini" plain @click="createDialogVisible = false">取 消</el-button>
+                <el-button type="warning" size="mini" @click="showNext(createDialogData)">下 一 步</el-button>
+            </span>
+            </el-dialog>
+            <!--下一步弹出框-->
+            <el-dialog :visible.sync="nextStepDialogVisible"
+                       width="960px" title="新建流程"
+                       :close-on-click-modal="false"
+                       :before-close="handleClose"
+                       top="100px">
+                <div slot="title" class="dialog-title">
+                    <div class="formflot">
+                        <span>流程名称</span>
+                        <el-input v-model="createDialogData.workflow_name"></el-input>
+                    </div>
+                    <div class="formflot">
+                        <span>审批退回</span>
+                        <el-select v-model="createDialogData.reject_strategy">
+                            <el-option
                                     v-for="item in back_options"
                                     :key="item.id"
                                     :label="item.name"
                                     :value="item.id">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="24">
-                        <el-form-item label="初始级次">
-                            <el-select v-model="createDialogData.lanes">
-                                <el-option
-                                    v-for="item in gradation_options"
-                                    :key="item.id"
-                                    :label="item.name"
-                                    :value="item.id">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-            </el-form>
-            <span slot="footer" class="dialog-footer">
-                <el-button type="warning" size="mini" plain @click="createDialogVisible = false">取 消</el-button>
-                <el-button type="warning" size="mini" @click="showNext(createDialogData)">下 一 步</el-button>
-            </span>
-        </el-dialog>
-        <!--下一步弹出框-->
-        <el-dialog :visible.sync="nextStepDialogVisible"
-                   width="960px" title="新建流程"
-                   :close-on-click-modal="false"
-                   :before-close="handleClose"
-                   top="56px">
-            <div slot="title" class="dialog-title">
-                <div class="formflot">
-                    <span>流程名称</span>
-                    <el-input v-model="createDialogData.workflow_name"></el-input>
-                </div>
-                <div class="formflot">
-                    <span>审批退回</span>
-                    <el-select v-model="createDialogData.reject_strategy">
-                        <el-option
-                            v-for="item in back_options"
-                            :key="item.id"
-                            :label="item.name"
-                            :value="item.id">
-                        </el-option>
-                    </el-select>
-                </div>
-            </div>
-            <div id="diagramContainer">
-                <template  v-for="(item,index) in design_data">
-                    <div v-if="item.item_id=='-1'" id="root_box" :key="item.item_id" class="firstEnd" @click="creatFirst">
-                        <span class="iconBg"></span>
+                            </el-option>
+                        </el-select>
                     </div>
-                    <div v-if="item.item_id=='-2'" id="end_box" :key="item.item_id" class="firstEnd">
-                        <span class="iconBg"></span>
-                    </div>
-                    <div v-if="isFirstEnd(item)" :id="'item_'+item.item_id" draggable="true" class="child_item" :key="item.item_id">
-                        <span class="child_no"><i class="child_num">{{item.item_id}}</i></span>
-                        <div class="child_org" v-show="item.isOrg">
-                            <el-select v-model="item.push_org" @change="selectPushOrg(item)">
-                                <el-option
-                                    v-for="org in org_options"
-                                    :key="org.id"
-                                    :label="org.name"
-                                    :value="org.id">
-                                </el-option>
-                            </el-select>
+                </div>
+                <div id="diagramContainer">
+                    <template  v-for="(item,index) in design_data">
+                        <div v-if="item.item_id=='-1'" id="root_box" :key="item.item_id" class="firstEnd" @click="creatFirst">
+                            <span class="iconBg"></span>
                         </div>
-                        <span class="child_delete iconBg" @click="deleteNode(design_data,item,index,$event)"></span>
-                        <div class="child_user">
-                            <el-select v-model="item['curUser']" @change="selectUsers(item,'user')" v-show="!item.isOrg">
-                                <el-option
-                                    v-for="user in user_list"
-                                    :key="user.usr_id"
-                                    :label="user.name"
-                                    :value="user.usr_id">
-                                </el-option>
-                            </el-select>
-                            <el-select v-model="item['curUser']" @change="selectUsers(item,'pos')" v-show="item.isOrg">
-                                <el-option
-                                    v-for="pos in position_list"
-                                    :key="pos.pos_id"
-                                    :label="pos.name"
-                                    :value="pos.pos_id">
-                                </el-option>
-                            </el-select>
-                            <span class="userCheck iconBg" @click="changeOrgUser(item)"></span>
+                        <div v-if="item.item_id=='-2'" id="end_box" :key="item.item_id" class="firstEnd">
+                            <span class="iconBg"></span>
                         </div>
-                        <div class="child-select">
-                            <div class="child-users-container">
-                                <div class="child-users-source">
-                                    <el-tag
-                                        size="small"
-                                        type="info"
-                                        :key="tag.id"
-                                        v-for="tag in item.addUsers"
-                                        closable
-                                        :disable-transitions="false"
-                                        @close="deleteUser(tag.id,item,$event)">
-                                        {{tag.name}}
-                                    </el-tag>
-                                </div>
+                        <div v-if="isFirstEnd(item)" :id="'item_'+item.item_id" draggable="true" class="child_item" :key="item.item_id">
+                            <span class="child_no"><i class="child_num">{{item.item_id}}</i></span>
+                            <div class="child_org" v-show="item.isOrg">
+                                <el-select v-model="item.push_org" @change="selectPushOrg(item)">
+                                    <el-option
+                                            v-for="org in org_options"
+                                            :key="org.id"
+                                            :label="org.name"
+                                            :value="org.id">
+                                    </el-option>
+                                </el-select>
                             </div>
-                            <button class="iconBg left-icon scrBtn" @click="leftMove($event)"></button>
-                            <button class="iconBg right-icon scrBtn" @click="rightMove($event)"></button>
+                            <span class="child_delete iconBg" @click="deleteNode(design_data,item,index,$event)"></span>
+                            <div class="child_user">
+                                <el-select v-model="item['curUser']" @change="selectUsers(item,'user')" v-show="!item.isOrg">
+                                    <el-option
+                                            v-for="user in user_list"
+                                            :key="user.usr_id"
+                                            :label="user.name"
+                                            :value="user.usr_id">
+                                    </el-option>
+                                </el-select>
+                                <el-select v-model="item['curUser']" @change="selectUsers(item,'pos')" v-show="item.isOrg">
+                                    <el-option
+                                            v-for="pos in position_list"
+                                            :key="pos.pos_id"
+                                            :label="pos.name"
+                                            :value="pos.pos_id">
+                                    </el-option>
+                                </el-select>
+                                <span class="userCheck iconBg" @click="changeOrgUser(item)"></span>
+                            </div>
+                            <div class="child-select">
+                                <div class="child-users-container">
+                                    <div class="child-users-source">
+                                        <el-tag
+                                                size="small"
+                                                type="info"
+                                                :key="tag.id"
+                                                v-for="tag in item.addUsers"
+                                                closable
+                                                :disable-transitions="false"
+                                                @close="deleteUser(tag.id,item,$event)">
+                                            {{tag.name}}
+                                        </el-tag>
+                                    </div>
+                                </div>
+                                <button class="iconBg left-icon scrBtn" @click="leftMove($event)"></button>
+                                <button class="iconBg right-icon scrBtn" @click="rightMove($event)"></button>
+                            </div>
+                            <div class="child_add iconBg" @click="addChild(item.n_column,item.axis_x,item.item_id)"></div>
+                            <div class="check_redirect iconBg" @click="selectFlow(item.n_column,item.item_id)"></div>
                         </div>
-                        <div class="child_add iconBg" @click="addChild(item.n_column,item.axis_x,item.item_id)"></div>
-                        <div class="check_redirect iconBg" @click="selectFlow(item.n_column,item.item_id)"></div>
-                    </div>
-                    <!-- <div id="end_box" class="firstEnd"><span class="iconBg"></span></div> -->
-                </template>
-            </div>
-            <span slot="footer" class="dialog-footer">
+                        <!-- <div id="end_box" class="firstEnd"><span class="iconBg"></span></div> -->
+                    </template>
+                </div>
+                <span slot="footer" class="dialog-footer">
                 <el-button type="warning" size="mini" plain @click="cancelWorkflow">取 消</el-button>
                 <el-button type="warning" size="mini" @click="saveWorkflow">下 一 步</el-button>
             </span>
-        </el-dialog>
-        <!--添加规则弹出框-->
-        <el-dialog :visible.sync="addRuleDialogVisible"
-                   width="420px" title="添加规则"
-                   :close-on-click-modal="false"
-                   top="156px">
-            <h1 slot="title" class="dialog-title">流程走向条件[单据金额]</h1>
-            <el-form :model="addRuleCurData" size="small"
-                     :label-width="formLabelWidth"
-                     class="ruler-form">
-                     <svg class="dialog-svg">
+            </el-dialog>
+            <!--添加规则弹出框-->
+            <el-dialog :visible.sync="addRuleDialogVisible"
+                       width="420px" title="添加规则"
+                       :close-on-click-modal="false"
+                       top="156px">
+                <h1 slot="title" class="dialog-title">流程走向条件[单据金额]</h1>
+                <el-form :model="addRuleCurData" size="small"
+                         :label-width="formLabelWidth"
+                         class="ruler-form">
+                    <svg class="dialog-svg">
                         <line x1="0" y1="5" x2="50" y2="5" class="svg-line" stroke-dasharray="3"></line>
                         <path d="M50 5 L 42 0 L 42 10 L 50 5 z" fill="#ccc"></path>
                     </svg>
@@ -561,64 +541,65 @@
                     <el-input class="ruler-input" v-model="addRuleCurData.min" placeholder="大于等于" @blur="validateNum(addRuleCurData.min,'min')" clearable></el-input>
                     -
                     <el-input class="ruler-input" v-model="addRuleCurData.max" placeholder="小于" @blur="validateNum(addRuleCurData.max,'max')" clearable></el-input>
-            </el-form>
-            <span slot="footer" class="dialog-footer">
+                </el-form>
+                <span slot="footer" class="dialog-footer">
                 <el-button type="warning" size="mini" @click="saveRules(addRuleCurData)">确 定</el-button>
             </span>
-        </el-dialog>
-        <!--选择流程后续走向弹出框-->
-        <el-dialog :visible.sync="selectFlowDialogVisible"
-                   width="420px" title="选择流程后续走向"
-                   :close-on-click-modal="false"
-                   top="156px">
-            <h1 slot="title" class="dialog-title">选择流程后续走向</h1>
-            <el-form :model="selectFlowData" size="small"
-                     :label-width="formLabelWidth"
-                     class="ruler-form">
-                     <span class="rule-source">{{selectFlowData.item_id}}</span>
-                     <svg class="dialog-svg">
+            </el-dialog>
+            <!--选择流程后续走向弹出框-->
+            <el-dialog :visible.sync="selectFlowDialogVisible"
+                       width="420px" title="选择流程后续走向"
+                       :close-on-click-modal="false"
+                       top="156px">
+                <h1 slot="title" class="dialog-title">选择流程后续走向</h1>
+                <el-form :model="selectFlowData" size="small"
+                         :label-width="formLabelWidth"
+                         class="ruler-form">
+                    <span class="rule-source">{{selectFlowData.item_id}}</span>
+                    <svg class="dialog-svg">
                         <line x1="0" y1="5" x2="50" y2="5" class="svg-line" stroke-dasharray="3"></line>
                         <path d="M50 5 L 42 0 L 42 10 L 50 5 z" fill="#ccc"></path>
                     </svg>
                     <el-select v-model="selectFlowData.target_id">
                         <el-option
-                            v-for="item in select_flow"
-                            :key="item.id"
-                            :label="item.name"
-                            :value="item.id">
+                                v-for="item in select_flow"
+                                :key="item.id"
+                                :label="item.name"
+                                :value="item.id">
                         </el-option>
                     </el-select>
-            </el-form>
-            <span slot="footer" class="dialog-footer">
+                </el-form>
+                <span slot="footer" class="dialog-footer">
                 <el-button type="warning" size="mini" @click="connectFlow">确 定</el-button>
             </span>
-        </el-dialog>
-        <!--查看工作流弹出框-->
-        <el-dialog :visible.sync="lookFlowDialogVisible"
-                   width="800px" title="新建流程"
-                   :close-on-click-modal="false"
-                   :before-close="cancelLookFlow"
-                   top="56px">
-            <h1 slot="title" class="dialog-title">查看流程</h1>
-            <div>
-                <div class="formflot" style="margin-bottom:15px">
-                    <span>流程名称</span>
-                    <el-input size="mini" v-model="createDialogData.workflow_name" disabled></el-input>
+            </el-dialog>
+            <!--查看工作流弹出框-->
+            <el-dialog :visible.sync="lookFlowDialogVisible"
+                       width="800px" title="新建流程"
+                       :close-on-click-modal="false"
+                       :before-close="cancelLookFlow"
+                       top="100px">
+                <h1 slot="title" class="dialog-title">查看流程</h1>
+                <div>
+                    <div class="formflot" style="margin-bottom:15px">
+                        <span>流程名称</span>
+                        <el-input size="mini" v-model="createDialogData.workflow_name" disabled></el-input>
+                    </div>
+                    <div class="formflot">
+                        <span>审批退回</span>
+                        <el-input size="mini" v-model="createDialogData.reject_strategy" disabled></el-input>
+                    </div>
                 </div>
-                <div class="formflot">
-                    <span>审批退回</span>
-                    <el-input size="mini" v-model="createDialogData.reject_strategy" disabled></el-input>
-                </div>
-            </div>
-            <WorkFlow
-                :flowList="flowList"
-                :isEmptyFlow="isEmptyFlow"
-            ></WorkFlow>
-            <span slot="footer" class="dialog-footer">
+                <WorkFlow
+                        :flowList="flowList"
+                        :isEmptyFlow="isEmptyFlow"
+                ></WorkFlow>
+                <span slot="footer" class="dialog-footer">
                 <el-button type="warning" size="mini" plain @click="cancelLookFlow">取 消</el-button>
             </span>
-        </el-dialog>
-    </div>
+            </el-dialog>
+        </el-footer>
+    </el-container>
 </template>
 <script>
 import "../../js/jsPlumb-2.2.6.js"

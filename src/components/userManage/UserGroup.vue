@@ -1,49 +1,18 @@
 <style scoped lang="less" type="text/less">
     #userGroup {
-        width: 100%;
-        height: 100%;
-        box-sizing: border-box;
-        position: relative;
 
-        /*顶部按钮*/
-        .button-list-right {
-            position: absolute;
-            top: -60px;
-            right: -18px;
-        }
-        /*数据展示区*/
-        .table-content{
-            height: 397px;
-        }
-        /*分页部分*/
-        .botton-pag {
-            position: absolute;
-            width: 100%;
-            height: 8%;
-            bottom: -6px;
-        }
-    }
-</style>
-<style lang="less" type="text/less">
-    #userGroup {
-        .el-dialog__wrapper {
-            .el-dialog__body {
-                max-height: 400px;
-                overflow-y: auto;
-            }
-        }
     }
 </style>
 
 <template>
-    <div id="userGroup">
-        <!-- 顶部按钮-->
-        <div class="button-list-right">
-            <el-button type="warning" size="mini" @click="addUserGroup">新增</el-button>
-            <!--<el-button type="warning" size="mini" @click="">下载</el-button>-->
-        </div>
-        <!--数据展示区-->
-        <section class="table-content">
+    <el-container id="userGroup">
+        <el-header>
+            <div class="button-list-right">
+                <el-button type="warning" size="mini" @click="addUserGroup">新增</el-button>
+                <!--<el-button type="warning" size="mini" @click="">下载</el-button>-->
+            </div>
+        </el-header>
+        <el-main>
             <el-table :data="tableList"
                       border height="100%"
                       size="mini">
@@ -64,59 +33,61 @@
                     </template>
                 </el-table-column>
             </el-table>
-        </section>
-        <!--分页部分-->
-        <div class="botton-pag">
-            <el-pagination
-                    background :pager-count="5"
-                    :current-page="pagCurrent"
-                    layout="sizes , prev, pager, next, jumper"
-                    :page-size="pagSize" :total="pagTotal"
-                    :page-sizes="[10, 50, 100, 500]"
-                    @current-change="getCurrentPage"
-                    @size-change="sizeChange">
-            </el-pagination>
-        </div>
-        <!--添加/编辑 弹出框-->
-        <el-dialog :visible.sync="dialogVisible"
-                   width="800px" top="76px"
-                   :close-on-click-modal="false">
-            <h1 slot="title" v-text="dialogTitle" class="dialog-title"></h1>
-            <el-form :model="dialogData" size="small"
-                     :label-width="formLabelWidth"
-                     :rules="rules" ref="dialogForm">
-                <el-row>
-                    <el-col :span="12">
-                        <el-form-item label="用户组名" prop="name">
-                            <el-input v-model="dialogData.name" auto-complete="off"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="用户组描述">
-                            <el-input v-model="dialogData.memo" auto-complete="off"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="24">功能权限分配</el-col>
-                    <el-col :span="24">
-                        <el-tree :data="jurisdTreeList"
-                                 node-key="code"
-                                 highlight-current
-                                 accordion show-checkbox
-                                 :expand-on-click-node="false"
-                                 ref="jurisdTree">
+        </el-main>
+        <el-footer>
+            <!--分页部分-->
+            <div class="botton-pag">
+                <el-pagination
+                        background :pager-count="5"
+                        :current-page="pagCurrent"
+                        layout="sizes , prev, pager, next, jumper"
+                        :page-size="pagSize" :total="pagTotal"
+                        :page-sizes="[10, 50, 100, 500]"
+                        @current-change="getCurrentPage"
+                        @size-change="sizeChange">
+                </el-pagination>
+            </div>
+            <!--添加/编辑 弹出框-->
+            <el-dialog :visible.sync="dialogVisible"
+                       width="800px" top="100px"
+                       :close-on-click-modal="false">
+                <h1 slot="title" v-text="dialogTitle" class="dialog-title"></h1>
+                <el-form :model="dialogData" size="small"
+                         :label-width="formLabelWidth"
+                         :rules="rules" ref="dialogForm">
+                    <el-row>
+                        <el-col :span="12">
+                            <el-form-item label="用户组名" prop="name">
+                                <el-input v-model="dialogData.name" auto-complete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="用户组描述">
+                                <el-input v-model="dialogData.memo" auto-complete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="24">功能权限分配</el-col>
+                        <el-col :span="24">
+                            <el-tree :data="jurisdTreeList"
+                                     node-key="code"
+                                     highlight-current
+                                     accordion show-checkbox
+                                     :expand-on-click-node="false"
+                                     ref="jurisdTree">
                                         <span class="custom-tree-node" slot-scope="{ node, data }">
                                             <span>{{ node.data.name }}</span>
                                         </span>
-                        </el-tree>
-                    </el-col>
-                </el-row>
-            </el-form>
-            <span slot="footer" class="dialog-footer">
+                            </el-tree>
+                        </el-col>
+                    </el-row>
+                </el-form>
+                <span slot="footer" class="dialog-footer">
                 <el-button type="warning" size="mini" plain @click="dialogVisible = false">取 消</el-button>
                 <el-button type="warning" size="mini" @click="subCurrent">确 定</el-button>
             </span>
-        </el-dialog>
-    </div>
+            </el-dialog>
+        </el-footer>
+    </el-container>
 </template>
 
 <script>

@@ -1,17 +1,5 @@
 <style scoped lang="less" type="text/less">
     #personalInsurance {
-        width: 100%;
-        height: 100%;
-        box-sizing: border-box;
-        position: relative;
-
-        /*顶部按钮*/
-        .button-list-right {
-            position: absolute;
-            top: -60px;
-            right: -18px;
-        }
-
         /*搜索区*/
         .search-setion {
             text-align: right;
@@ -23,50 +11,25 @@
             height: 184px;
         }
 
-        /*分隔栏*/
-        .split-bar {
-            width: 106%;
-            height: 6px;
-            margin-left: -20px;
-            background-color: #E7E7E7;
-            margin-bottom: 20px;
-        }
-
-        /*数据展示区*/
-        .table-content {
-            height: 320px;
-            transition: height 1s;
-
-            /*汇总数据*/
-            .gather-data {
-                height: 30px;
-                width: 100%;
-                background-color: #F9F8F7;
-                text-align: left;
-                font-size: 14px;
-                color: #606266;
-
-                .red-text {
-                    color: red;
-                }
-                .blue-text {
-                    color: blue;
-                }
-                .action-text {
-                    margin-left: 16px;
-                }
-            }
-        }
-        .is-small {
-            height: 40%;
-        }
-
-        /*分页部分*/
-        .botton-pag {
-            position: absolute;
+        /*汇总数据*/
+        .gather-data {
+            height: 30px;
+            line-height: 30px;
             width: 100%;
-            height: 8%;
-            bottom: -6px;
+            background-color: #F9F8F7;
+            text-align: left;
+            font-size: 14px;
+            color: #606266;
+
+            .red-text {
+                color: red;
+            }
+            .blue-text {
+                color: blue;
+            }
+            .action-text {
+                margin-left: 16px;
+            }
         }
 
         /*弹框*/
@@ -93,29 +56,6 @@
         .show-standby {
             display: none;
         }
-        /*页面宽度变小后样式调整*/
-        @media (max-width: 1136px) {
-            .search-setion {
-                text-align: left;
-                height: 64px;
-            }
-
-            .search-setion.show-more {
-                height: 220px;
-            }
-
-            .table-content {
-                height: 300px;
-            }
-
-            .is-small {
-                height: 32%;
-            }
-
-            .show-standby {
-                display: block;
-            }
-        }
     }
 </style>
 <style lang="less" type="text/less">
@@ -127,135 +67,125 @@
                 }
             }
         }
-        .el-dialog__wrapper {
-            .el-dialog__body {
-                height: 400px;
-                overflow-y: scroll;
-            }
-        }
     }
 </style>
 
 <template>
-    <div id="personalInsurance">
-        <!-- 顶部按钮-->
-        <div class="button-list-right">
-            <el-button type="warning" size="mini" @click="download">下载</el-button>
-        </div>
-        <!--搜索区-->
-        <div :class="['search-setion',{'show-more':showMore}]">
-            <el-form :inline="true" :model="searchData" size="mini">
-                <el-row>
-                    <el-col :span="7">
-                        <el-form-item label="单据号">
-                            <el-input v-model="searchData.bill_no" clearable></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="7">
-                        <el-form-item label="投保单号">
-                            <el-input v-model="searchData.preinsure_bill_no" clearable></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="7">
-                        <el-form-item label="保单号">
-                            <el-input v-model="searchData.insure_bill_no" clearable></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="3">
-                        <el-button type="primary" plain @click="showMore = !showMore" size="mini">
-                            高级<i
-                                :class="['el-icon--right',{'el-icon-arrow-down':!showMore},{'el-icon-arrow-right':showMore}]"></i>
-                        </el-button>
-                    </el-col>
-                    <el-col :span="7">
-                        <el-form-item label="对方账号">
-                            <el-input v-model="searchData.settle_or_merchant_acc_no" clearable></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="7">
-                        <el-form-item label="对方户名">
-                            <el-input v-model="searchData.settle_or_merchant_acc_name" clearable></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="7">
-                        <el-form-item label="银行大类">
-                            <el-select v-model="searchData.customer_bank" placeholder="请选择银行"
-                                       clearable filterable
-                                       :filter-method="filterBankType"
-                                       :loading="bankLongding"
-                                       @visible-change="clearSearch">
-                                <el-option v-for="bankType in bankTypeList"
-                                           :key="bankType.name"
-                                           :label="bankType.display_name"
-                                           :value="bankType.code">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="3" class="show-standby">
-                        <el-form-item>
-                            <el-button type="primary" plain @click="queryData">搜索</el-button>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="7">
-                        <el-form-item label="支付渠道">
-                            <el-select v-model="searchData.channel_code" placeholder="请选择支付渠道"
-                                       clearable>
-                                <el-option v-for="channel in channelList"
-                                           :key="channel.code"
-                                           :label="channel.desc"
-                                           :value="channel.code">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="7">
-                        <el-form-item label="开始日期">
-                            <el-date-picker type="date" placeholder="选择日期" v-model="searchData.start_date"
-                                            style="width: 100%;"
-                                            format="yyyy 年 MM 月 dd 日"
-                                            value-format="yyyy-MM-dd"></el-date-picker>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="7">
-                        <el-form-item label="结束日期">
-                            <el-date-picker type="date" placeholder="选择日期" v-model="searchData.end_date"
-                                            style="width: 100%;"
-                                            format="yyyy 年 MM 月 dd 日"
-                                            value-format="yyyy-MM-dd"></el-date-picker>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="3" class="show-standby">
-                        <el-form-item>
-                            <el-button type="primary" plain @click="clearSearData">清空</el-button>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="7">
-                        <el-form-item label="交易状态">
-                            <el-select v-model="searchData.trade_status" placeholder="请选择交易状态"
-                                       filterable clearable>
-                                <el-option v-for="(name,k) in payStatList"
-                                           :key="k"
-                                           :label="name"
-                                           :value="k">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="7" style="height:1px"></el-col>
-                    <el-col :span="7" style="text-align:right">
-                        <el-form-item>
-                            <el-button type="primary" plain @click="clearSearData">清空</el-button>
-                            <el-button type="primary" plain @click="queryData">搜索</el-button>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-            </el-form>
-        </div>
-        <!--分隔栏-->
-        <div class="split-bar"></div>
-        <!--数据展示区-->
-        <section :class="['table-content',{'is-small':showMore}]">
+    <el-container id="personalInsurance">
+        <el-header>
+            <div class="button-list-right">
+                <el-button type="warning" size="mini" @click="download">下载</el-button>
+            </div>
+            <div :class="['search-setion',{'show-more':showMore}]">
+                <el-form :inline="true" :model="searchData" size="mini">
+                    <el-row>
+                        <el-col :span="7">
+                            <el-form-item label="单据号">
+                                <el-input v-model="searchData.bill_no" clearable></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="7">
+                            <el-form-item label="投保单号">
+                                <el-input v-model="searchData.preinsure_bill_no" clearable></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="7">
+                            <el-form-item label="保单号">
+                                <el-input v-model="searchData.insure_bill_no" clearable></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="3">
+                            <el-button type="primary" plain @click="showMore = !showMore" size="mini">
+                                高级<i
+                                    :class="['el-icon--right',{'el-icon-arrow-down':!showMore},{'el-icon-arrow-right':showMore}]"></i>
+                            </el-button>
+                        </el-col>
+                        <el-col :span="7">
+                            <el-form-item label="对方账号">
+                                <el-input v-model="searchData.settle_or_merchant_acc_no" clearable></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="7">
+                            <el-form-item label="对方户名">
+                                <el-input v-model="searchData.settle_or_merchant_acc_name" clearable></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="7">
+                            <el-form-item label="银行大类">
+                                <el-select v-model="searchData.customer_bank" placeholder="请选择银行"
+                                           clearable filterable
+                                           :filter-method="filterBankType"
+                                           :loading="bankLongding"
+                                           @visible-change="clearSearch">
+                                    <el-option v-for="bankType in bankTypeList"
+                                               :key="bankType.name"
+                                               :label="bankType.display_name"
+                                               :value="bankType.code">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="3" class="show-standby">
+                            <el-form-item>
+                                <el-button type="primary" plain @click="queryData">搜索</el-button>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="7">
+                            <el-form-item label="支付渠道">
+                                <el-select v-model="searchData.channel_code" placeholder="请选择支付渠道"
+                                           clearable>
+                                    <el-option v-for="channel in channelList"
+                                               :key="channel.code"
+                                               :label="channel.desc"
+                                               :value="channel.code">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="7">
+                            <el-form-item label="开始日期">
+                                <el-date-picker type="date" placeholder="选择日期" v-model="searchData.start_date"
+                                                style="width: 100%;"
+                                                format="yyyy 年 MM 月 dd 日"
+                                                value-format="yyyy-MM-dd"></el-date-picker>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="7">
+                            <el-form-item label="结束日期">
+                                <el-date-picker type="date" placeholder="选择日期" v-model="searchData.end_date"
+                                                style="width: 100%;"
+                                                format="yyyy 年 MM 月 dd 日"
+                                                value-format="yyyy-MM-dd"></el-date-picker>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="3" class="show-standby">
+                            <el-form-item>
+                                <el-button type="primary" plain @click="clearSearData">清空</el-button>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="7">
+                            <el-form-item label="交易状态">
+                                <el-select v-model="searchData.trade_status" placeholder="请选择交易状态"
+                                           filterable clearable>
+                                    <el-option v-for="(name,k) in payStatList"
+                                               :key="k"
+                                               :label="name"
+                                               :value="k">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="7" style="height:1px"></el-col>
+                        <el-col :span="7" style="text-align:right">
+                            <el-form-item>
+                                <el-button type="primary" plain @click="clearSearData">清空</el-button>
+                                <el-button type="primary" plain @click="queryData">搜索</el-button>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                </el-form>
+            </div>
+            <div class="split-bar"></div>
             <div class="gather-data">
                 <template v-for="item in gatherDataList">
                     <span class="action-text">{{ item.title }}</span>
@@ -263,6 +193,8 @@
                     <span class="end-text">{{ item.endText }}</span>
                 </template>
             </div>
+        </el-header>
+        <el-main>
             <el-table :data="tableList"
                       border
                       size="mini"
@@ -305,49 +237,50 @@
                     </template>
                 </el-table-column>
             </el-table>
+        </el-main>
+        <el-footer>
 
-        </section>
-        <!--分页部分-->
-        <div class="botton-pag">
-            <el-pagination
-                    background :pager-count="5"
-                    layout="sizes , prev, pager, next, jumper"
-                    :page-size="pagSize" :total="pagTotal"
-                    :page-sizes="[8, 50, 100, 500]"
-                    @current-change="getCurrentPage"
-                    @size-change="sizeChange"
-                    :current-page="pagCurrent">
-            </el-pagination>
-        </div>
-        <!--详情弹出框-->
-        <el-dialog title="详情"
-                   :visible.sync="dialogVisible"
-                   width="820px" top="76px"
-                   :close-on-click-modal="false">
-            <el-form :model="dialogData" size="mini">
-                <el-row>
-                    <el-col :span="24" class="form-small-title"><span></span>支付信息</el-col>
-                    <el-col :span="businessLength[index]" v-for="(payItem,index) in payMessage" :key="payItem.title">
-                        <el-form-item :label-width="formLabelWidth">
-                            <label slot="label">{{ payItem.title }}：</label>
-                            <div>{{ payItem.content }}</div>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="24" class="form-small-title"><span></span>业务信息</el-col>
-                    <el-col :span="payLength[index]" v-for="(business,index) in businessMessage" :key="business.title">
-                        <el-form-item :label-width="formLabelWidth">
-                            <label slot="label">{{ business.title }}：</label>
-                            <div>{{ business.content }}</div>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-            </el-form>
-            <span slot="footer" class="dialog-footer">
+            <div class="botton-pag">
+                <el-pagination
+                        background :pager-count="5"
+                        layout="sizes , prev, pager, next, jumper"
+                        :page-size="pagSize" :total="pagTotal"
+                        :page-sizes="[8, 50, 100, 500]"
+                        @current-change="getCurrentPage"
+                        @size-change="sizeChange"
+                        :current-page="pagCurrent">
+                </el-pagination>
+            </div>
+            <!--详情弹出框-->
+            <el-dialog title="详情"
+                       :visible.sync="dialogVisible"
+                       width="820px" top="100px"
+                       :close-on-click-modal="false">
+                <el-form :model="dialogData" size="mini">
+                    <el-row>
+                        <el-col :span="24" class="form-small-title"><span></span>支付信息</el-col>
+                        <el-col :span="businessLength[index]" v-for="(payItem,index) in payMessage" :key="payItem.title">
+                            <el-form-item :label-width="formLabelWidth">
+                                <label slot="label">{{ payItem.title }}：</label>
+                                <div>{{ payItem.content }}</div>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="24" class="form-small-title"><span></span>业务信息</el-col>
+                        <el-col :span="payLength[index]" v-for="(business,index) in businessMessage" :key="business.title">
+                            <el-form-item :label-width="formLabelWidth">
+                                <label slot="label">{{ business.title }}：</label>
+                                <div>{{ business.content }}</div>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                </el-form>
+                <span slot="footer" class="dialog-footer">
                 <el-button type="warning" size="mini"
                            @click="dialogVisible = false">取 消</el-button>
             </span>
-        </el-dialog>
-    </div>
+            </el-dialog>
+        </el-footer>
+    </el-container>
 </template>
 
 <script>

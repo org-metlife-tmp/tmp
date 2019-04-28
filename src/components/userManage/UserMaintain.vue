@@ -1,28 +1,5 @@
 <style scoped lang="less" type="text/less">
     #userMaintain {
-        width: 100%;
-        height: 100%;
-        box-sizing: border-box;
-        position: relative;
-
-        /*顶部按钮*/
-        .button-list-right {
-            position: absolute;
-            top: -60px;
-            right: -18px;
-        }
-        /*数据展示区*/
-        .table-content {
-            height: 408px;
-        }
-        /*分页部分*/
-        .botton-pag {
-            position: absolute;
-            width: 100%;
-            height: 8%;
-            bottom: -6px;
-        }
-
         /*按钮-冻结/解冻*/
         .on-off {
             width: 22px;
@@ -49,26 +26,16 @@
         }
     }
 </style>
-<style lang="less" type="text/less">
-    #userMaintain {
-        .el-dialog__wrapper {
-            .el-dialog__body {
-                max-height: 400px;
-                overflow-y: auto;
-            }
-        }
-    }
-</style>
 
 <template>
-    <div id="userMaintain">
-        <!-- 顶部按钮-->
-        <div class="button-list-right">
-            <el-button type="warning" size="mini" @click="addStaff">添加员工</el-button>
-            <!--<el-button type="warning" size="mini" @click="">下载</el-button>-->
-        </div>
-        <!--数据展示区-->
-        <section class="table-content">
+    <el-container id="userMaintain">
+        <el-header>
+            <div class="button-list-right">
+                <el-button type="warning" size="mini" @click="addStaff">添加员工</el-button>
+                <!--<el-button type="warning" size="mini" @click="">下载</el-button>-->
+            </div>
+        </el-header>
+        <el-main>
             <el-table :data="tableList"
                       border height="100%"
                       size="mini">
@@ -103,162 +70,163 @@
                     </template>
                 </el-table-column>
             </el-table>
-        </section>
-        <!--分页部分-->
-        <div class="botton-pag">
-            <el-pagination
-                    background :pager-count="5"
-                    :current-page="pagCurrent"
-                    layout="sizes , prev, pager, next, jumper"
-                    :page-size="pagSize" :total="pagTotal"
-                    :page-sizes="[10, 50, 100, 500]"
-                    @current-change="getCurrentPage"
-                    @size-change="sizeChange">
-            </el-pagination>
-        </div>
-        <!--添加/编辑员工 弹出框-->
-        <el-dialog :visible.sync="dialogVisible"
-                   width="800px" top="76px"
-                   :close-on-click-modal="false">
-            <h1 slot="title" v-text="dialogTitle" class="dialog-title"></h1>
-            <el-form :model="dialogData" size="small"
-                     :label-width="formLabelWidth"
-                     :rules="rules" ref="dialogForm">
-                <el-row>
-                    <el-col :span="12">
-                        <el-form-item label="姓名" prop="name">
-                            <el-input v-model="dialogData.name" auto-complete="off"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="邮箱" prop="email">
-                            <el-input v-model="dialogData.email" auto-complete="off"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="登录名称" prop="login_name">
-                            <el-input v-model="dialogData.login_name" auto-complete="off"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="密码" :label-width="formLabelWidth">
-                            <el-input type="password"
-                                      v-model="dialogData.password"
-                                      auto-complete="off"
-                                      placeholder="密码默认为123456"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="手机号" prop="phone">
-                            <el-input v-model="dialogData.phone" auto-complete="off"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="24">
-                        <div class="split-form">
-                            <h4>所属机构部门</h4>
-                            <el-button size="mini" style="margin-left:0"
-                                       @click="showPosDialog">新增
-                            </el-button>
-                        </div>
-                    </el-col>
-                    <el-col :span="24" style="margin-bottom:24px">
-                        <el-table :data="udopsList"
-                                  border size="mini"
-                                  style="width:96%;float:right"
-                                  empty-text="请点击新增添加数据"
-                                  highlight-current-row
-                                  @current-change="udopsCurrentChange">
-                            <el-table-column label="默认" width="60">
-                                <template slot-scope="scope">
-                                    <el-radio v-model="scope.row.is_default" label="1">{{emptyData}}</el-radio>
-                                </template>
-                            </el-table-column>
-                            <el-table-column prop="org_id" label="所属机构"
-                                             :formatter="transitionOrg"
-                                             :show-overflow-tooltip="true"></el-table-column>
-                            <el-table-column prop="dept_id" label="所属部门"
-                                             :formatter="transitionDept"
-                                             :show-overflow-tooltip="true"></el-table-column>
-                            <el-table-column prop="pos_id" label="所属职位"
-                                             :formatter="transitionPos"
-                                             :show-overflow-tooltip="true"></el-table-column>
-                            <el-table-column
-                                    label="删除"
-                                    width="50">
-                                <template slot-scope="scope" class="operationBtn">
-                                    <el-tooltip content="删除" placement="bottom" effect="light" :enterable="false"
-                                                :open-delay="500">
-                                        <el-button type="danger" icon="el-icon-delete" size="mini"
-                                                   @click.stop="removePos(scope.row,scope.$index,udopsList)"></el-button>
-                                    </el-tooltip>
-                                </template>
-                            </el-table-column>
-                        </el-table>
-                    </el-col>
-                </el-row>
-            </el-form>
-            <span slot="footer" class="dialog-footer">
-                <el-button type="warning" size="mini" plain @click="dialogVisible = false">取 消</el-button>
-                <el-button type="warning" size="mini" @click="subCurrent">确 定</el-button>
-            </span>
-            <el-dialog :visible.sync="innerVisible"
-                       width="38%" title="添加职位"
-                       append-to-body
+        </el-main>
+        <el-footer>
+            <div class="botton-pag">
+                <el-pagination
+                        background :pager-count="5"
+                        :current-page="pagCurrent"
+                        layout="sizes , prev, pager, next, jumper"
+                        :page-size="pagSize" :total="pagTotal"
+                        :page-sizes="[10, 50, 100, 500]"
+                        @current-change="getCurrentPage"
+                        @size-change="sizeChange">
+                </el-pagination>
+            </div>
+            <!--添加/编辑员工 弹出框-->
+            <el-dialog :visible.sync="dialogVisible"
+                       width="800px" top="100px"
                        :close-on-click-modal="false">
-                <el-form :model="posDialogData" size="small"
+                <h1 slot="title" v-text="dialogTitle" class="dialog-title"></h1>
+                <el-form :model="dialogData" size="small"
                          :label-width="formLabelWidth"
-                         :rules="posRules" ref="innerDialogForm">
+                         :rules="rules" ref="dialogForm">
                     <el-row>
-                        <el-col :span="24">
-                            <el-form-item label="所属机构" prop="org_id">
-                                <el-select v-model="posDialogData.org_id" placeholder="请选择机构" clearable>
-                                    <el-option v-for="org in orgList"
-                                               :key="org.org_id"
-                                               :label="org.name"
-                                               :value="org.org_id">
-                                    </el-option>
-                                </el-select>
+                        <el-col :span="12">
+                            <el-form-item label="姓名" prop="name">
+                                <el-input v-model="dialogData.name" auto-complete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="邮箱" prop="email">
+                                <el-input v-model="dialogData.email" auto-complete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="登录名称" prop="login_name">
+                                <el-input v-model="dialogData.login_name" auto-complete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="密码" :label-width="formLabelWidth">
+                                <el-input type="password"
+                                          v-model="dialogData.password"
+                                          auto-complete="off"
+                                          placeholder="密码默认为123456"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="手机号" prop="phone">
+                                <el-input v-model="dialogData.phone" auto-complete="off"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="24">
-                            <el-form-item label="所属部门" prop="dept_id">
-                                <el-select v-model="posDialogData.dept_id" placeholder="请选择部门" clearable>
-                                    <el-option v-for="dept in deptList"
-                                               :key="dept.dept_id"
-                                               :label="dept.name"
-                                               :value="dept.dept_id">
-                                    </el-option>
-                                </el-select>
-                            </el-form-item>
+                            <div class="split-form">
+                                <h4>所属机构部门</h4>
+                                <el-button size="mini" style="margin-left:0"
+                                           @click="showPosDialog">新增
+                                </el-button>
+                            </div>
                         </el-col>
-                        <el-col :span="24">
-                            <el-form-item label="所属职位" prop="pos_id">
-                                <el-select v-model="posDialogData.pos_id" placeholder="请选择职位" clearable>
-                                    <el-option v-for="position in positionList"
-                                               :key="position.pos_id"
-                                               :label="position.name"
-                                               :value="position.pos_id">
-                                    </el-option>
-                                </el-select>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="24">
-                            <el-form-item label="是否默认" :label-width="formLabelWidth">
-                                <el-switch v-model="posDialogData.is_default"
-                                           active-value="1"
-                                           inactive-value="0">
-                                </el-switch>
-                            </el-form-item>
+                        <el-col :span="24" style="margin-bottom:24px">
+                            <el-table :data="udopsList"
+                                      border size="mini"
+                                      style="width:96%;float:right"
+                                      empty-text="请点击新增添加数据"
+                                      highlight-current-row
+                                      @current-change="udopsCurrentChange">
+                                <el-table-column label="默认" width="60">
+                                    <template slot-scope="scope">
+                                        <el-radio v-model="scope.row.is_default" label="1">{{emptyData}}</el-radio>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column prop="org_id" label="所属机构"
+                                                 :formatter="transitionOrg"
+                                                 :show-overflow-tooltip="true"></el-table-column>
+                                <el-table-column prop="dept_id" label="所属部门"
+                                                 :formatter="transitionDept"
+                                                 :show-overflow-tooltip="true"></el-table-column>
+                                <el-table-column prop="pos_id" label="所属职位"
+                                                 :formatter="transitionPos"
+                                                 :show-overflow-tooltip="true"></el-table-column>
+                                <el-table-column
+                                        label="删除"
+                                        width="50">
+                                    <template slot-scope="scope" class="operationBtn">
+                                        <el-tooltip content="删除" placement="bottom" effect="light" :enterable="false"
+                                                    :open-delay="500">
+                                            <el-button type="danger" icon="el-icon-delete" size="mini"
+                                                       @click.stop="removePos(scope.row,scope.$index,udopsList)"></el-button>
+                                        </el-tooltip>
+                                    </template>
+                                </el-table-column>
+                            </el-table>
                         </el-col>
                     </el-row>
                 </el-form>
                 <span slot="footer" class="dialog-footer">
+                <el-button type="warning" size="mini" plain @click="dialogVisible = false">取 消</el-button>
+                <el-button type="warning" size="mini" @click="subCurrent">确 定</el-button>
+            </span>
+                <el-dialog :visible.sync="innerVisible"
+                           width="38%" title="添加职位"
+                           append-to-body
+                           :close-on-click-modal="false">
+                    <el-form :model="posDialogData" size="small"
+                             :label-width="formLabelWidth"
+                             :rules="posRules" ref="innerDialogForm">
+                        <el-row>
+                            <el-col :span="24">
+                                <el-form-item label="所属机构" prop="org_id">
+                                    <el-select v-model="posDialogData.org_id" placeholder="请选择机构" clearable>
+                                        <el-option v-for="org in orgList"
+                                                   :key="org.org_id"
+                                                   :label="org.name"
+                                                   :value="org.org_id">
+                                        </el-option>
+                                    </el-select>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="24">
+                                <el-form-item label="所属部门" prop="dept_id">
+                                    <el-select v-model="posDialogData.dept_id" placeholder="请选择部门" clearable>
+                                        <el-option v-for="dept in deptList"
+                                                   :key="dept.dept_id"
+                                                   :label="dept.name"
+                                                   :value="dept.dept_id">
+                                        </el-option>
+                                    </el-select>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="24">
+                                <el-form-item label="所属职位" prop="pos_id">
+                                    <el-select v-model="posDialogData.pos_id" placeholder="请选择职位" clearable>
+                                        <el-option v-for="position in positionList"
+                                                   :key="position.pos_id"
+                                                   :label="position.name"
+                                                   :value="position.pos_id">
+                                        </el-option>
+                                    </el-select>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="24">
+                                <el-form-item label="是否默认" :label-width="formLabelWidth">
+                                    <el-switch v-model="posDialogData.is_default"
+                                               active-value="1"
+                                               inactive-value="0">
+                                    </el-switch>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                    </el-form>
+                    <span slot="footer" class="dialog-footer">
                 <el-button type="warning" size="mini" plain @click="innerVisible = false">取 消</el-button>
                 <el-button type="warning" size="mini" @click="addUdops">确 定</el-button>
             </span>
+                </el-dialog>
             </el-dialog>
-        </el-dialog>
-    </div>
+        </el-footer>
+    </el-container>
 </template>
 
 <script>

@@ -1,16 +1,5 @@
 <style scoped lang="less" type="text/less">
     #routerSet {
-        width: 100%;
-        height: 100%;
-        box-sizing: border-box;
-        position: relative;
-
-        //顶部按钮
-        .button-list-right {
-            position: absolute;
-            top: -60px;
-            right: -18px;
-        }
         /*搜索区*/
         .search-setion {
             text-align: right;
@@ -21,30 +10,6 @@
         .search-setion.show-more {
             height: 92px;
         }
-        /*分隔栏*/
-        .split-bar {
-            width: 106%;
-            height: 6px;
-            margin-left: -20px;
-            background-color: #E7E7E7;
-            margin-bottom: 20px;
-        }
-        /*数据展示区*/
-        .table-content {
-            height: 333px;
-            transition: height 1s;
-        }
-        .is-small {
-            height: 65%;
-        }
-        /*分页部分*/
-        .botton-pag {
-            position: absolute;
-            width: 100%;
-            height: 8%;
-            bottom: -6px;
-        }
-
         /*弹框样式调整*/
         /*分割线*/
         .split-form {
@@ -131,113 +96,101 @@
         }
     }
 </style>
-<style lang="less" type="text/less">
-    #routerSet {
-        .el-dialog__wrapper {
-            .el-dialog__body {
-                height: 400px;
-                overflow-y: scroll;
-            }
-        }
-    }
-</style>
 
 <template>
-    <div id="routerSet">
-        <!-- 顶部按钮-->
-        <div class="button-list-right">
-            <el-button type="warning" size="mini" @click="addRouter">新增</el-button>
-        </div>
-        <!--搜索区-->
-        <div :class="['search-setion',{'show-more':showMore}]">
-            <el-form :inline="true" :model="serachData" size="mini" :label-position="'left'" ref="lala">
-                <el-row>
-                    <el-col :span="7">
-                        <el-form-item label="来源系统">
-                            <el-select v-model="serachData.source_code" placeholder="请选择来源系统" clearable>
-                                <el-option label="个险" value="GX"></el-option>
-                                <el-option label="团险" value="TX"></el-option>
-                                <el-option label="移动展业" value="YD"></el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="7">
-                        <el-form-item label="机构">
-                            <el-select v-model="serachData.org_exp" placeholder="请选择机构"
-                                       filterable clearable>
-                                <el-option v-for="org in orgList"
-                                           :key="org.org_id"
-                                           :label="org.name"
-                                           :value="org.org_id">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="7">
-                        <el-form-item label="支付方式">
-                            <el-select v-model="serachData.pay_recv_mode" placeholder="请选择支付方式"
-                                       clearable @change="searchPayChange">
-                                <el-option v-for="(name,k) in PayOrRecvMode"
-                                           :key="k"
-                                           :label="name"
-                                           :value="k">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="3">
-                        <el-button type="primary" plain @click="showMore = !showMore" size="mini">
-                            高级<i
-                                :class="['el-icon--right',{'el-icon-arrow-down':!showMore},{'el-icon-arrow-right':showMore}]"></i>
-                        </el-button>
-                    </el-col>
-                </el-row>
-                <el-row>
-                    <el-col :span="7">
-                        <el-form-item label="支付子项">
-                            <el-select v-model="serachData.pay_item" placeholder="请选择支付子项" clearable
-                                       :disabled="hasSearchPay">
-                                <el-option label="微信" value="WX"></el-option>
-                                <el-option label="支付宝" value="ZFB"></el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="7">
-                        <el-form-item label="业务类型">
-                            <el-select v-model="serachData.biz_type_exp" placeholder="请选择业务类型"
-                                       clearable>
-                                <el-option v-for="(name,k) in bizTypeList"
-                                           :key="k"
-                                           :label="name"
-                                           :value="k">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="7">
-                        <el-form-item label="险种大类">
-                            <el-select v-model="serachData.insurance_type_exp" placeholder="请选择险种大类"
-                                       clearable>
-                                <el-option v-for="(name,k) in insureTypeList"
-                                           :key="k"
-                                           :label="name"
-                                           :value="k">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="3">
-                        <el-form-item>
-                            <el-button type="primary" plain @click="queryData">搜索</el-button>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-            </el-form>
-        </div>
-        <!--分隔栏-->
-        <div class="split-bar"></div>
-        <!--数据展示区-->
-        <section :class="['table-content',{'is-small':showMore}]">
+    <el-container id="routerSet">
+        <el-header>
+            <div class="button-list-right">
+                <el-button type="warning" size="mini" @click="addRouter">新增</el-button>
+            </div>
+            <div :class="['search-setion',{'show-more':showMore}]">
+                <el-form :inline="true" :model="serachData" size="mini" :label-position="'left'" ref="lala">
+                    <el-row>
+                        <el-col :span="7">
+                            <el-form-item label="来源系统">
+                                <el-select v-model="serachData.source_code" placeholder="请选择来源系统" clearable>
+                                    <el-option label="个险" value="GX"></el-option>
+                                    <el-option label="团险" value="TX"></el-option>
+                                    <el-option label="移动展业" value="YD"></el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="7">
+                            <el-form-item label="机构">
+                                <el-select v-model="serachData.org_exp" placeholder="请选择机构"
+                                           filterable clearable>
+                                    <el-option v-for="org in orgList"
+                                               :key="org.org_id"
+                                               :label="org.name"
+                                               :value="org.org_id">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="7">
+                            <el-form-item label="支付方式">
+                                <el-select v-model="serachData.pay_recv_mode" placeholder="请选择支付方式"
+                                           clearable @change="searchPayChange">
+                                    <el-option v-for="(name,k) in PayOrRecvMode"
+                                               :key="k"
+                                               :label="name"
+                                               :value="k">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="3">
+                            <el-button type="primary" plain @click="showMore = !showMore" size="mini">
+                                高级<i
+                                    :class="['el-icon--right',{'el-icon-arrow-down':!showMore},{'el-icon-arrow-right':showMore}]"></i>
+                            </el-button>
+                        </el-col>
+                    </el-row>
+                    <el-row>
+                        <el-col :span="7">
+                            <el-form-item label="支付子项">
+                                <el-select v-model="serachData.pay_item" placeholder="请选择支付子项" clearable
+                                           :disabled="hasSearchPay">
+                                    <el-option label="微信" value="WX"></el-option>
+                                    <el-option label="支付宝" value="ZFB"></el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="7">
+                            <el-form-item label="业务类型">
+                                <el-select v-model="serachData.biz_type_exp" placeholder="请选择业务类型"
+                                           clearable>
+                                    <el-option v-for="(name,k) in bizTypeList"
+                                               :key="k"
+                                               :label="name"
+                                               :value="k">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="7">
+                            <el-form-item label="险种大类">
+                                <el-select v-model="serachData.insurance_type_exp" placeholder="请选择险种大类"
+                                           clearable>
+                                    <el-option v-for="(name,k) in insureTypeList"
+                                               :key="k"
+                                               :label="name"
+                                               :value="k">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="3">
+                            <el-form-item>
+                                <el-button type="primary" plain @click="queryData">搜索</el-button>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                </el-form>
+            </div>
+            <div class="split-bar"></div>
+        </el-header>
+        <el-main>
             <el-table :data="tableList"
                       border height=100%
                       size="mini"
@@ -275,186 +228,188 @@
                     </template>
                 </el-table-column>
             </el-table>
-        </section>
-        <!--分页部分-->
-        <div class="botton-pag">
-            <el-pagination
-                    background :pager-count="5"
-                    :current-page="pagCurrent"
-                    layout="sizes , prev, pager, next, jumper"
-                    :page-size="pagSize" :total="pagTotal"
-                    :page-sizes="[8, 50, 100, 500]"
-                    @current-change="getCurrentPage"
-                    @size-change="sizeChange">
-            </el-pagination>
-        </div>
-        <!--新增/修改 弹出框-->
-        <el-dialog :visible.sync="dialogVisible"
-                   width="860px" top="76px"
-                   :close-on-click-modal="false">
-            <h1 slot="title" v-text="dialogTitle" class="dialog-title"></h1>
-            <el-form :model="dialogData" size="small"
-                     :rules="rules" ref="dialogForm">
-                <el-row>
-                    <el-col :span="12">
-                        <el-form-item label="来源系统" :label-width="formLabelWidth" prop="source_code">
-                            <el-select v-model="dialogData.source_code" placeholder="请选择来源系统" clearable>
-                                <el-option label="个险" value="GX"></el-option>
-                                <el-option label="团险" value="TX"></el-option>
-                                <el-option label="移动展业" value="YD"></el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="支付方式" :label-width="formLabelWidth" prop="pay_recv_mode">
-                            <el-select v-model="dialogData.pay_recv_mode"
-                                       placeholder="请选择支付方式"
-                                       clearable filterable
-                                       @change="payChange">
-                                <el-option v-for="(name,k) in PayOrRecvMode"
-                                           :key="k"
-                                           :label="name"
-                                           :value="k">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="支付子项" :label-width="formLabelWidth">
-                            <el-select v-model="dialogData.pay_item"
-                                       placeholder="请选择支付子项"
-                                       clearable :disabled="hasPayRecv">
-                                <el-option label="微信" value="WX"></el-option>
-                                <el-option label="支付宝" value="ZFB"></el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="24">
-                        <el-form-item label="备注" :label-width="formLabelWidth">
-                            <el-input v-model="dialogData.memo" auto-complete="off"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="24" class="tree-content">
+        </el-main>
+        <el-footer>
+            <!--分页部分-->
+            <div class="botton-pag">
+                <el-pagination
+                        background :pager-count="5"
+                        :current-page="pagCurrent"
+                        layout="sizes , prev, pager, next, jumper"
+                        :page-size="pagSize" :total="pagTotal"
+                        :page-sizes="[8, 50, 100, 500]"
+                        @current-change="getCurrentPage"
+                        @size-change="sizeChange">
+                </el-pagination>
+            </div>
+            <!--新增/修改 弹出框-->
+            <el-dialog :visible.sync="dialogVisible"
+                       width="860px" top="100px"
+                       :close-on-click-modal="false">
+                <h1 slot="title" v-text="dialogTitle" class="dialog-title"></h1>
+                <el-form :model="dialogData" size="small"
+                         :rules="rules" ref="dialogForm">
+                    <el-row>
+                        <el-col :span="12">
+                            <el-form-item label="来源系统" :label-width="formLabelWidth" prop="source_code">
+                                <el-select v-model="dialogData.source_code" placeholder="请选择来源系统" clearable>
+                                    <el-option label="个险" value="GX"></el-option>
+                                    <el-option label="团险" value="TX"></el-option>
+                                    <el-option label="移动展业" value="YD"></el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="支付方式" :label-width="formLabelWidth" prop="pay_recv_mode">
+                                <el-select v-model="dialogData.pay_recv_mode"
+                                           placeholder="请选择支付方式"
+                                           clearable filterable
+                                           @change="payChange">
+                                    <el-option v-for="(name,k) in PayOrRecvMode"
+                                               :key="k"
+                                               :label="name"
+                                               :value="k">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="支付子项" :label-width="formLabelWidth">
+                                <el-select v-model="dialogData.pay_item"
+                                           placeholder="请选择支付子项"
+                                           clearable :disabled="hasPayRecv">
+                                    <el-option label="微信" value="WX"></el-option>
+                                    <el-option label="支付宝" value="ZFB"></el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
                         <el-col :span="24">
-                            <h4 class="set-required">机构</h4>
-                            <div class="org-tree">
-                                <el-tree :data="orgTreeList"
-                                         node-key="org_id"
-                                         :check-strictly="true"
-                                         highlight-current
-                                         accordion show-checkbox
-                                         :expand-on-click-node="false"
-                                         :default-expanded-keys="expandData"
-                                         ref="orgTree">
+                            <el-form-item label="备注" :label-width="formLabelWidth">
+                                <el-input v-model="dialogData.memo" auto-complete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="24" class="tree-content">
+                            <el-col :span="24">
+                                <h4 class="set-required">机构</h4>
+                                <div class="org-tree">
+                                    <el-tree :data="orgTreeList"
+                                             node-key="org_id"
+                                             :check-strictly="true"
+                                             highlight-current
+                                             accordion show-checkbox
+                                             :expand-on-click-node="false"
+                                             :default-expanded-keys="expandData"
+                                             ref="orgTree">
                                         <span class="custom-tree-node" slot-scope="{ node, data }">
                                             <span>{{ node.data.name }}</span>
                                         </span>
-                                </el-tree>
-                            </div>
+                                    </el-tree>
+                                </div>
 
-                            <h4 class="set-required">业务类型</h4>
-                            <div class="biz-type-list">
-                                <el-checkbox :indeterminate="isIndeterminate" v-model="biztypeAll"
-                                             @change="biztypeAllChange">全选
-                                </el-checkbox>
-                                <el-checkbox-group v-model="biztypeSelect" @change="biztypeChange">
-                                    <el-checkbox v-for="(name,k) in bizTypeList"
-                                                 :label="k"
-                                                 :key="k">{{name}}
+                                <h4 class="set-required">业务类型</h4>
+                                <div class="biz-type-list">
+                                    <el-checkbox :indeterminate="isIndeterminate" v-model="biztypeAll"
+                                                 @change="biztypeAllChange">全选
                                     </el-checkbox>
-                                </el-checkbox-group>
-                            </div>
+                                    <el-checkbox-group v-model="biztypeSelect" @change="biztypeChange">
+                                        <el-checkbox v-for="(name,k) in bizTypeList"
+                                                     :label="k"
+                                                     :key="k">{{name}}
+                                        </el-checkbox>
+                                    </el-checkbox-group>
+                                </div>
 
-                            <h4 class="set-required">险种大类</h4>
-                            <div class="insure-type-list">
-                                <el-checkbox :indeterminate="insureIndeter" v-model="insureAll"
-                                             @change="insureAllChange">全选
-                                </el-checkbox>
-                                <el-checkbox-group v-model="insureSelect" @change="insureChange">
-                                    <el-checkbox v-for="(name,k) in insureTypeList"
-                                                 :label="k"
-                                                 :key="k">{{name}}
+                                <h4 class="set-required">险种大类</h4>
+                                <div class="insure-type-list">
+                                    <el-checkbox :indeterminate="insureIndeter" v-model="insureAll"
+                                                 @change="insureAllChange">全选
                                     </el-checkbox>
-                                </el-checkbox-group>
+                                    <el-checkbox-group v-model="insureSelect" @change="insureChange">
+                                        <el-checkbox v-for="(name,k) in insureTypeList"
+                                                     :label="k"
+                                                     :key="k">{{name}}
+                                        </el-checkbox>
+                                    </el-checkbox-group>
+                                </div>
+                            </el-col>
+                        </el-col>
+
+                        <el-col :span="24" style="position:relative">
+                            <h4 class="small-title">渠道账户</h4>
+                        </el-col>
+                    </el-row>
+                    <el-row v-for="item in items"
+                            :key="item.$id">
+                        <el-col :span="24">
+                            <div class="split-form">
+                                <el-button-group>
+                                    <el-button size="mini" @click="removeAccount(item)"
+                                               v-show="showDel">删除
+                                    </el-button>
+                                    <el-button size="mini" style="margin-left:0"
+                                               @click="addAccount">新增
+                                    </el-button>
+                                </el-button-group>
                             </div>
                         </el-col>
-                    </el-col>
-
-                    <el-col :span="24" style="position:relative">
-                        <h4 class="small-title">渠道账户</h4>
-                    </el-col>
-                </el-row>
-                <el-row v-for="item in items"
-                        :key="item.$id">
-                    <el-col :span="24">
-                        <div class="split-form">
-                            <el-button-group>
-                                <el-button size="mini" @click="removeAccount(item)"
-                                           v-show="showDel">删除
-                                </el-button>
-                                <el-button size="mini" style="margin-left:0"
-                                           @click="addAccount">新增
-                                </el-button>
-                            </el-button-group>
-                        </div>
-                    </el-col>
-                    <el-col :span="12" required>
-                        <el-form-item label="支付渠道" :label-width="formLabelWidth" required>
-                            <el-select v-model="item.channel_code" placeholder="请选择支付渠道"
-                                       clearable @change="clearElse(item)">
-                                <el-option v-for="channel in channelList"
-                                           :key="channel.code"
-                                           :label="channel.desc"
-                                           :value="channel.code">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item :label-width="formLabelWidth">
-                            <div slot="label" class="set-required" style="line-height:16px">支付渠道<br>原子接口</div>
-                            <el-select v-model="item.channel_interface_code" placeholder="请选择活动区域"
-                                       clearable :disabled="item.channel_code?false:true"
-                                       @visible-change="getSalestList(item.channel_code)">
-                                <el-option v-for="(name,k) in salesChannelList"
-                                           :key="k"
-                                           :label="name"
-                                           :value="k">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item :label-width="formLabelWidth">
-                            <div slot="label" class="set-required" style="line-height:16px">结算账户<br>/商户号</div>
-                            <el-select v-model="item.settle_or_merchant_acc_id" placeholder="请选择账户"
-                                       clearable filterable :disabled="item.channel_code?false:true"
-                                       @visible-change="getAccountList(item.channel_code)">
-                                <el-option v-for="closeAccount in closeAccountList"
-                                           :key="closeAccount.id"
-                                           :label="closeAccount.acc_no"
-                                           :value="closeAccount.id">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="优先级" required
-                                      :label-width="formLabelWidth">
-                            <el-input v-model="item.level" type="number"
-                                      placeholder="请输入1-9的数字"
-                                      @change="controlNum(item)" min="1" max="9"
-                                      auto-complete="off"></el-input>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-            </el-form>
-            <span slot="footer" class="dialog-footer">
+                        <el-col :span="12" required>
+                            <el-form-item label="支付渠道" :label-width="formLabelWidth" required>
+                                <el-select v-model="item.channel_code" placeholder="请选择支付渠道"
+                                           clearable @change="clearElse(item)">
+                                    <el-option v-for="channel in channelList"
+                                               :key="channel.code"
+                                               :label="channel.desc"
+                                               :value="channel.code">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item :label-width="formLabelWidth">
+                                <div slot="label" class="set-required" style="line-height:16px">支付渠道<br>原子接口</div>
+                                <el-select v-model="item.channel_interface_code" placeholder="请选择活动区域"
+                                           clearable :disabled="item.channel_code?false:true"
+                                           @visible-change="getSalestList(item.channel_code)">
+                                    <el-option v-for="(name,k) in salesChannelList"
+                                               :key="k"
+                                               :label="name"
+                                               :value="k">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item :label-width="formLabelWidth">
+                                <div slot="label" class="set-required" style="line-height:16px">结算账户<br>/商户号</div>
+                                <el-select v-model="item.settle_or_merchant_acc_id" placeholder="请选择账户"
+                                           clearable filterable :disabled="item.channel_code?false:true"
+                                           @visible-change="getAccountList(item.channel_code)">
+                                    <el-option v-for="closeAccount in closeAccountList"
+                                               :key="closeAccount.id"
+                                               :label="closeAccount.acc_no"
+                                               :value="closeAccount.id">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="优先级" required
+                                          :label-width="formLabelWidth">
+                                <el-input v-model="item.level" type="number"
+                                          placeholder="请输入1-9的数字"
+                                          @change="controlNum(item)" min="1" max="9"
+                                          auto-complete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                </el-form>
+                <span slot="footer" class="dialog-footer">
                 <el-button type="warning" size="mini" plain @click="dialogVisible = false">取 消</el-button>
                 <el-button type="warning" size="mini" @click="subCurrent">确 定</el-button>
             </span>
-        </el-dialog>
-    </div>
+            </el-dialog>
+        </el-footer>
+    </el-container>
 </template>
 
 <script>

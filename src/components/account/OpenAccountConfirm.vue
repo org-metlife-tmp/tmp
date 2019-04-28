@@ -1,37 +1,5 @@
 <style scoped lang="less" type="text/less">
     #openAccountConfirm{
-        width: 100%;
-        height: 100%;
-        box-sizing: border-box;
-        position: relative;
-
-        /*搜索区*/
-        .search-setion{
-            text-align: left;
-        }
-
-        /*数据展示区*/
-        .table-content {
-            height: 289px;
-        }
-
-        /*分隔栏*/
-        .split-bar {
-            width: 106%;
-            height: 6px;
-            margin-left: -20px;
-            background-color: #E7E7E7;
-            margin-bottom: 20px;
-        }
-
-        /*分页部分*/
-        .botton-pag {
-            position: absolute;
-            width: 100%;
-            height: 8%;
-            bottom: -6px;
-        }
-
         //弹框
         .form-small-title {
             font-weight: bold;
@@ -46,85 +14,74 @@
         }
     }
 </style>
-<style lang="less" type="text/less">
-    #openAccountConfirm {
-        .el-dialog__wrapper {
-            .el-dialog__body {
-                max-height: 400px;
-                overflow-y: auto;
-            }
-        }
-    }
-</style>
 
 <template>
-    <div id="openAccountConfirm">
-        <!--搜索区-->
-        <div class="search-setion">
-            <el-form :inline="true" :model="searchData" size="mini">
-                <el-row>
-                    <el-col :span="4">
-                        <el-form-item>
-                            <el-input v-model="searchData.query_key" clearable placeholder="请输入账户号"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="4">
-                        <el-form-item>
-                            <el-select v-model="searchData.org_name" placeholder="请选择账户所属机构"
-                                       filterable clearable>
-                                <el-option v-for="org in orgList"
-                                           :key="org.name"
-                                           :label="org.name"
-                                           :value="org.name">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="4">
-                        <el-form-item>
-                            <el-select v-model="searchData.acc_attr" placeholder="请选择账户性质"
-                                       clearable>
-                                <el-option v-for="(name,k) in attrList"
-                                           :key="k"
-                                           :label="name"
-                                           :value="k">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="4">
-                        <el-form-item>
-                            <el-select v-model="searchData.interactive_mode" placeholder="请选择账户模式"
-                                       clearable>
-                                <el-option v-for="(name,k) in interList"
-                                           :key="k"
-                                           :label="name"
-                                           :value="k">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="2">
-                        <el-form-item>
-                            <el-button type="primary" plain @click="queryData" size="mini">搜索</el-button>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="24">
-                        <el-form-item style="margin-bottom:0px">
-                            <el-checkbox-group v-model="searchData.service_status">
-                                <el-checkbox label="1" name="type">正常</el-checkbox>
-                                <el-checkbox label="3" name="type">已冻结</el-checkbox>
-                                <el-checkbox label="2" name="type">已销户</el-checkbox>
-                            </el-checkbox-group>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-            </el-form>
-        </div>
-        <!--分隔栏-->
-        <div class="split-bar"></div>
-        <!--数据展示区-->
-        <section class="table-content">
+    <el-container id="openAccountConfirm">
+        <el-header>
+            <div class="search-setion">
+                <el-form :inline="true" :model="searchData" size="mini">
+                    <el-row>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-input v-model="searchData.query_key" clearable placeholder="请输入账户号"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-select v-model="searchData.org_name" placeholder="请选择账户所属机构"
+                                           filterable clearable>
+                                    <el-option v-for="org in orgList"
+                                               :key="org.name"
+                                               :label="org.name"
+                                               :value="org.name">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-select v-model="searchData.acc_attr" placeholder="请选择账户性质"
+                                           clearable>
+                                    <el-option v-for="(name,k) in attrList"
+                                               :key="k"
+                                               :label="name"
+                                               :value="k">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-select v-model="searchData.interactive_mode" placeholder="请选择账户模式"
+                                           clearable>
+                                    <el-option v-for="(name,k) in interList"
+                                               :key="k"
+                                               :label="name"
+                                               :value="k">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="2">
+                            <el-form-item>
+                                <el-button type="primary" plain @click="queryData" size="mini">搜索</el-button>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="24">
+                            <el-form-item style="margin-bottom:0px">
+                                <el-checkbox-group v-model="searchData.service_status">
+                                    <el-checkbox label="1" name="type">正常</el-checkbox>
+                                    <el-checkbox label="3" name="type">已冻结</el-checkbox>
+                                    <el-checkbox label="2" name="type">已销户</el-checkbox>
+                                </el-checkbox-group>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                </el-form>
+            </div>
+            <div class="split-bar"></div>
+        </el-header>
+        <el-main>
             <el-table :data="tableList"
                       border
                       height="100%"
@@ -152,123 +109,124 @@
                     </template>
                 </el-table-column>
             </el-table>
-        </section>
-        <!--分页部分-->
-        <div class="botton-pag">
-            <el-pagination
-                    background
-                    layout="sizes, prev, pager, next, jumper"
-                    :page-size="pagSize"
-                    :total="pagTotal"
-                    :page-sizes="[7, 50, 100, 500]"
-                    :pager-count="5"
-                    @current-change="getCurrentPage"
-                    @size-change="sizeChange"
-                    :current-page="pagCurrent">
-            </el-pagination>
-        </div>
-        <!--编辑弹出框-->
-        <el-dialog title="详情"
-                   :visible.sync="dialogVisible"
-                   width="860px" top="76px"
-                   :close-on-click-modal="false">
-            <el-form :model="dialogData" size="mini"
-                     :label-width="formLabelWidth"
-                     :rules="rules" ref="dialogForm">
-                <el-row>
-                    <el-col :span="12">
-                        <el-form-item label="申请公司">
-                            <el-input v-model="dialogData.org_name" :disabled="true"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="开户日期">
-                            <el-input v-model="dialogData.open_date" :disabled="true"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="银行账号">
-                            <el-input v-model="dialogData.acc_no" :disabled="true"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="账户名称">
-                            <el-input v-model="dialogData.acc_name" :disabled="true"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="开户行">
-                            <el-input v-model="dialogData.bank_name" :disabled="true"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="账户性质">
-                            <el-input v-model="dialogData.acc_attr_name" :disabled="true"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="账户法人">
-                            <el-input v-model="dialogData.lawfull_man" :disabled="true"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="账户用途">
-                            <el-input v-model="dialogData.acc_purpose_name" :disabled="true"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="账户模式">
-                            <el-input v-model="interList[dialogData.interactive_mode]" :disabled="true"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="币种">
-                            <el-input v-model="dialogData.curr_name" :disabled="true"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="存款类型">
-                            <el-input v-model="depositsList[dialogData.deposits_mode]" :disabled="true"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="24">
-                        <el-form-item label="开户行地址">
-                            <el-input v-model="dialogData.bank_address" :disabled="true"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="开户行联系人">
-                            <el-input v-model="dialogData.bank_contact" :disabled="true"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="联系人电话">
-                            <el-input v-model="dialogData.bank_contact_phone" :disabled="true"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="24">
-                        <el-form-item label="预留印鉴">
-                            <el-input v-model="dialogData.reserved_seal" :disabled="true"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="24">
-                        <el-form-item label="备注">
-                            <el-input type="textarea" v-model="dialogData.memo" :disabled="true"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="会计科目代码" prop="subject_code">
-                            <el-input v-model="dialogData.subject_code"></el-input>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-            </el-form>
-            <span slot="footer" class="dialog-footer">
+        </el-main>
+        <el-footer>
+            <div class="botton-pag">
+                <el-pagination
+                        background
+                        layout="sizes, prev, pager, next, jumper"
+                        :page-size="pagSize"
+                        :total="pagTotal"
+                        :page-sizes="[7, 50, 100, 500]"
+                        :pager-count="5"
+                        @current-change="getCurrentPage"
+                        @size-change="sizeChange"
+                        :current-page="pagCurrent">
+                </el-pagination>
+            </div>
+            <!--编辑弹出框-->
+            <el-dialog title="详情"
+                       :visible.sync="dialogVisible"
+                       width="860px" top="76px"
+                       :close-on-click-modal="false">
+                <el-form :model="dialogData" size="mini"
+                         :label-width="formLabelWidth"
+                         :rules="rules" ref="dialogForm">
+                    <el-row>
+                        <el-col :span="12">
+                            <el-form-item label="申请公司">
+                                <el-input v-model="dialogData.org_name" :disabled="true"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="开户日期">
+                                <el-input v-model="dialogData.open_date" :disabled="true"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="银行账号">
+                                <el-input v-model="dialogData.acc_no" :disabled="true"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="账户名称">
+                                <el-input v-model="dialogData.acc_name" :disabled="true"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="开户行">
+                                <el-input v-model="dialogData.bank_name" :disabled="true"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="账户性质">
+                                <el-input v-model="dialogData.acc_attr_name" :disabled="true"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="账户法人">
+                                <el-input v-model="dialogData.lawfull_man" :disabled="true"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="账户用途">
+                                <el-input v-model="dialogData.acc_purpose_name" :disabled="true"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="账户模式">
+                                <el-input v-model="interList[dialogData.interactive_mode]" :disabled="true"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="币种">
+                                <el-input v-model="dialogData.curr_name" :disabled="true"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="存款类型">
+                                <el-input v-model="depositsList[dialogData.deposits_mode]" :disabled="true"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="24">
+                            <el-form-item label="开户行地址">
+                                <el-input v-model="dialogData.bank_address" :disabled="true"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="开户行联系人">
+                                <el-input v-model="dialogData.bank_contact" :disabled="true"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="联系人电话">
+                                <el-input v-model="dialogData.bank_contact_phone" :disabled="true"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="24">
+                            <el-form-item label="预留印鉴">
+                                <el-input v-model="dialogData.reserved_seal" :disabled="true"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="24">
+                            <el-form-item label="备注">
+                                <el-input type="textarea" v-model="dialogData.memo" :disabled="true"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="会计科目代码" prop="subject_code">
+                                <el-input v-model="dialogData.subject_code"></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                </el-form>
+                <span slot="footer" class="dialog-footer">
                 <el-button type="warning" size="mini" @click="dialogVisible = false">取 消</el-button>
                 <el-button type="warning" size="mini" @click="subEdit">确 定</el-button>
             </span>
-        </el-dialog>
-    </div>
+            </el-dialog>
+        </el-footer>
+    </el-container>
 </template>
 
 <script>

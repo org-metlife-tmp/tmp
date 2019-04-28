@@ -20,7 +20,7 @@
         }
 
         /*表单*/
-        .el-form-item .el-input input{
+        .el-form-item .el-input input {
             vertical-align: top;
         }
 
@@ -50,34 +50,18 @@
             text-align: center;
         }
 
-        /*弹出框*/
-        .el-dialog {
-            text-align: left;
-            margin-bottom: 10px;
-            /*设置标题*/
-            .dialog-title {
-                margin-bottom: 0;
-            }
-            .el-dialog__body {
-                padding-top: 10px;
-                padding-bottom: 0;
-                max-height: 400px;
-                overflow-y: auto;
-            }
-            .el-form {
-                width: 96%;
-                .el-select {
-                    width: 100%;
-                }
-            }
-        }
-
         h1 {
             margin-top: 0;
             font-size: 18px;
             font-weight: 400;
         }
 
+        .el-table .el-button {
+            padding: 3px 3px;
+            + .el-button {
+                margin-left: 4px;
+            }
+        }
         /**********
          修改框架样式-结束
          ***********/
@@ -119,7 +103,12 @@
 
             .btn-right {
                 float: right;
-                marging-right: 16px;
+                margin-right: 16px;
+            }
+
+            .numText {
+                color: #FF5800;
+                margin-right: 10px;
             }
         }
 
@@ -139,7 +128,7 @@
         *********/
 
         #contented {
-            >.el-main{
+            > .el-main {
                 padding-top: 0;
             }
 
@@ -210,26 +199,47 @@
             height: 0 !important;
         }
     }
+    /*弹出框公共样式设置*/
+    .el-dialog {
+        text-align: left;
+        margin-bottom: 10px;
+        /*设置标题*/
+        .dialog-title {
+            margin-bottom: 0;
+        }
+        .el-dialog__body {
+            padding-top: 10px;
+            padding-bottom: 0;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .el-form {
+            width: 96%;
+            .el-select {
+                width: 100%;
+            }
+        }
+    }
 </style>
 
 <template>
     <el-container id="main">
-            <el-header :class="{'header-none':!headerShow}">
-                <Top></Top>
-            </el-header>
-            <el-container id="contented" :class="{'home-bgc':showBgc}">
-                <el-aside width="70px">
-                    <Left></Left>
-                </el-aside>
-                <el-main :class="{'home-bgc-none':showBgc}">
-                    <router-view></router-view>
-                </el-main>
-                <div id="plugin" v-show="!showBgc">
-                    <div class="phone-version" style="visibility: hidden">手机版</div>
-                    <div :class="['show-header',{'icon-position':!headerShow}]" @click="setHeader"
-                         v-text="topSet"></div>
-                </div>
-            </el-container>
+        <el-header :class="{'header-none':!headerShow}">
+            <Top></Top>
+        </el-header>
+        <el-container id="contented" :class="{'home-bgc':showBgc}">
+            <el-aside width="70px">
+                <Left></Left>
+            </el-aside>
+            <el-main :class="{'home-bgc-none':showBgc}">
+                <router-view></router-view>
+            </el-main>
+            <div id="plugin" v-show="!showBgc">
+                <div class="phone-version" style="visibility: hidden">手机版</div>
+                <div :class="['show-header',{'icon-position':!headerShow}]" @click="setHeader"
+                     v-text="topSet"></div>
+            </div>
+        </el-container>
         <GetSelectData></GetSelectData>
     </el-container>
 </template>
@@ -241,7 +251,8 @@
 
     export default {
         name: "",
-        created: function(){},
+        created: function () {
+        },
         data: function () {
             return {
                 headerShow: true,

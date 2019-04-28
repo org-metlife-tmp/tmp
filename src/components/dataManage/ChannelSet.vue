@@ -1,40 +1,5 @@
 <style scoped lang="less" type="text/less">
     #channelSet {
-        width: 100%;
-        height: 100%;
-        box-sizing: border-box;
-        position: relative;
-
-        //顶部按钮
-        .button-list-right {
-            position: absolute;
-            top: -60px;
-            right: -18px;
-        }
-        /*搜索区*/
-        .search-setion {
-            text-align: left;
-        }
-        /*分隔栏*/
-        .split-bar {
-            width: 106%;
-            height: 6px;
-            margin-left: -20px;
-            background-color: #E7E7E7;
-            margin-bottom: 20px;
-        }
-        /*数据展示区*/
-        .table-content {
-            height: 333px;
-        }
-        /*分页部分*/
-        .botton-pag {
-            position: absolute;
-            width: 100%;
-            height: 8%;
-            bottom: -6px;
-        }
-
         /*按钮-设置状态*/
         .on-off {
             width: 22px;
@@ -45,50 +10,44 @@
             padding: 0;
             vertical-align: middle;
         }
-
-        /*当屏幕过小时整体样式调整*/
-        @media screen and (max-width: 1340px){
-            .split-bar{
-                margin-bottom: 10px;
-            }
-        }
     }
 </style>
 
 <template>
-    <div id="channelSet">
-        <!-- 顶部按钮-->
-        <div class="button-list-right">
-            <el-button type="warning" size="mini" @click="addChannel">新增</el-button>
-        </div>
-        <!--搜索区-->
-        <div class="search-setion">
-            <el-form :inline="true" :model="serachData" size="mini">
-                <el-row>
-                    <el-col :span="7">
-                        <el-form-item label="渠道名称">
-                            <el-select v-model="serachData.query_key" placeholder="请选择渠道"
-                                       clearable filterable>
-                                <el-option v-for="chiannel in channelList"
-                                           :key="chiannel.code"
-                                           :label="chiannel.desc"
-                                           :value="chiannel.desc">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="3">
-                        <el-form-item>
-                            <el-button type="primary" plain @click="queryData">搜索</el-button>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-            </el-form>
-        </div>
-        <!--分隔栏-->
-        <div class="split-bar"></div>
-        <!--数据展示区-->
-        <section class="table-content">
+    <el-container id="channelSet">
+        <el-header>
+            <!-- 顶部按钮-->
+            <div class="button-list-right">
+                <el-button type="warning" size="mini" @click="addChannel">新增</el-button>
+            </div>
+            <!--搜索区-->
+            <div class="search-setion">
+                <el-form :inline="true" :model="serachData" size="mini">
+                    <el-row>
+                        <el-col :span="7">
+                            <el-form-item label="渠道名称">
+                                <el-select v-model="serachData.query_key" placeholder="请选择渠道"
+                                           clearable filterable>
+                                    <el-option v-for="chiannel in channelList"
+                                               :key="chiannel.code"
+                                               :label="chiannel.desc"
+                                               :value="chiannel.desc">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="3">
+                            <el-form-item>
+                                <el-button type="primary" plain @click="queryData">搜索</el-button>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                </el-form>
+            </div>
+            <!--分隔栏-->
+            <div class="split-bar"></div>
+        </el-header>
+        <el-main>
             <el-table :data="tableList"
                       border
                       height="100%"
@@ -114,68 +73,70 @@
                     </template>
                 </el-table-column>
             </el-table>
-        </section>
-        <!--分页部分-->
-        <div class="botton-pag">
-            <el-pagination
-                    background :pager-count="5"
-                    :current-page="pagCurrent"
-                    layout="sizes , prev, pager, next, jumper"
-                    :page-size="pagSize" :total="pagTotal"
-                    :page-sizes="[8, 50, 100, 500]"
-                    @current-change="getCurrentPage"
-                    @size-change="sizeChange">
-            </el-pagination>
-        </div>
-        <!--新增弹出框-->
-        <el-dialog title="新增"
-                   :visible.sync="dialogVisible"
-                   width="800px" top="76px"
-                   :close-on-click-modal="false">
-            <el-form :model="dialogData" size="small"
-                     :label-width="formLabelWidth"
-                     :rules="rules" ref="dialogForm">
-                <el-row>
-                    <el-col :span="12">
-                        <el-form-item label="渠道名称" prop="name">
-                            <el-select v-model="dialogData.name"
-                                       placeholder="请选择渠道名称"
-                                       clearable filterable
-                                       @change="setChiannelName">
-                                <el-option v-for="chiannel in channelList"
-                                           :key="chiannel.desc"
-                                           :value="chiannel.desc">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="渠道代码">
-                            <el-input v-model="dialogData.code" auto-complete="off" :disabled="true"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="是否第三方">
-                            <el-switch
-                                    v-model="dialogData.third_party_flag"
-                                    active-value="1"
-                                    inactive-value="0">
-                            </el-switch>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="24">
-                        <el-form-item label="备注">
-                            <el-input v-model="dialogData.memo" auto-complete="off"></el-input>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-            </el-form>
-            <span slot="footer" class="dialog-footer">
+        </el-main>
+        <el-footer>
+            <!--分页部分-->
+            <div class="botton-pag">
+                <el-pagination
+                        background :pager-count="5"
+                        :current-page="pagCurrent"
+                        layout="sizes , prev, pager, next, jumper"
+                        :page-size="pagSize" :total="pagTotal"
+                        :page-sizes="[8, 50, 100, 500]"
+                        @current-change="getCurrentPage"
+                        @size-change="sizeChange">
+                </el-pagination>
+            </div>
+            <!--新增弹出框-->
+            <el-dialog title="新增"
+                       :visible.sync="dialogVisible"
+                       width="800px" top="76px"
+                       :close-on-click-modal="false">
+                <el-form :model="dialogData" size="small"
+                         :label-width="formLabelWidth"
+                         :rules="rules" ref="dialogForm">
+                    <el-row>
+                        <el-col :span="12">
+                            <el-form-item label="渠道名称" prop="name">
+                                <el-select v-model="dialogData.name"
+                                           placeholder="请选择渠道名称"
+                                           clearable filterable
+                                           @change="setChiannelName">
+                                    <el-option v-for="chiannel in channelList"
+                                               :key="chiannel.desc"
+                                               :value="chiannel.desc">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="渠道代码">
+                                <el-input v-model="dialogData.code" auto-complete="off" :disabled="true"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="是否第三方">
+                                <el-switch
+                                        v-model="dialogData.third_party_flag"
+                                        active-value="1"
+                                        inactive-value="0">
+                                </el-switch>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="24">
+                            <el-form-item label="备注">
+                                <el-input v-model="dialogData.memo" auto-complete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                </el-form>
+                <span slot="footer" class="dialog-footer">
                 <el-button type="warning" plain size="mini" @click="dialogVisible = false">取 消</el-button>
                 <el-button type="warning" size="mini" @click="subCurrent">确 定</el-button>
             </span>
-        </el-dialog>
-    </div>
+            </el-dialog>
+        </el-footer>
+    </el-container>
 </template>
 
 <script>
