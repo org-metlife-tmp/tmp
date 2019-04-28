@@ -261,7 +261,7 @@
                 <el-col :span="6" v-for="(card,index) in tableList" :key="card.id">
                     <el-card class="box-card">
                         <div slot="header">
-                            <span>{{ card.topic }}</span>
+                            <span style="display: inline-block;width: 110px;overflow: hidden;white-space: nowrap;text-overflow: ellipsis;">{{ card.topic }}</span>
                             <div class="title-btn">
                                 <i class="icon-img" title="激活" v-show="card.is_activity == 0"
                                    @click="activeCollect(card)"></i>
