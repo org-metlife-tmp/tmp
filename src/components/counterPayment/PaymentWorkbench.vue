@@ -335,19 +335,19 @@
                      :rules="rules" ref="dialogForm">
                 <el-row>
                     <el-col :span="12">
-                        <el-form-item label="收款账号户名">
+                        <el-form-item label="收款账号户名" prop="recv_acc_name">
                             <el-input v-model="dialogData.recv_acc_name" clearable
                                       placeholder="请输入收款账号户名"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="收款银行账号">
+                        <el-form-item label="收款银行账号" prop="recv_acc_no">
                             <el-input v-model="dialogData.recv_acc_no" clearable
                                       placeholder="请输入收款银行账号"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="16">
-                        <el-form-item label="开户行">
+                        <el-form-item label="开户行" prop="recv_bank_name">
                             <el-input v-model="dialogData.recv_bank_name"
                                       placeholder="请选择开户行" @focus="getBank"></el-input>
                         </el-form-item>
@@ -542,19 +542,19 @@
                 formLabelWidth: "120px",
                 //校验规则设置
                 rules: {
-                    memo: {
+                    recv_acc_name: {
                         required: true,
-                        message: "请输入事由摘要",
+                        message: "请输入收款账号户名",
                         trigger: "blur"
                     },
-                    detail: {
+                    recv_acc_no: {
                         required: true,
-                        message: "请输入事由说明",
+                        message: "请输入收款银行账号",
                         trigger: "blur"
                     },
-                    acc_id: {
+                    recv_bank_name: {
                         required: true,
-                        message: "请选择账户号",
+                        message: "请选择开户行",
                         trigger: "change"
                     }
                 },
@@ -677,6 +677,11 @@
                 for(let k in dialogData){
                     dialogData[k] = "";
                 }
+
+                if (this.$refs.dialogForm) {
+                    this.$refs.postForm.clearValidate();
+                }
+
                 this.currentData = row;
                 //附件数据
                 this.emptyFileList = [];
@@ -825,44 +830,52 @@
             },
             //保存补录信息
             saveAddRecord: function(){
-                let dialogData = this.dialogData;
-                let params = {
-                    files: this.fileList,
-                    source_sys: this.routerMessage.params.source_sys,
-                    pay_id: this.currentData.pay_id,
-                    persist_version: this.currentData.persist_version
-                };
-                for(let k in dialogData){
-                    params[k] = dialogData[k];
-                }
+                this.$refs.dialogForm.validate((valid, object) => {
+                    if (valid) {
+                        let dialogData = this.dialogData;
+                        let params = {
+                            files: this.fileList,
+                            source_sys: this.routerMessage.params.source_sys,
+                            pay_id: this.currentData.pay_id,
+                            persist_version: this.currentData.persist_version
+                        };
+                        for(let k in dialogData){
+                            params[k] = dialogData[k];
+                        }
 
-                this.$axios({
-                    url: this.queryUrl + "normalProcess",
-                    method: "post",
-                    data: {
-                        optype: "paycounter_supplement",
-                        params: params
-                    }
-                }).then((result) => {
-                    if (result.data.error_msg) {
-                        this.$message({
-                            type: "error",
-                            message: result.data.error_msg,
-                            duration: 2000
-                        });
-                        return;
+                        this.$axios({
+                            url: this.queryUrl + "normalProcess",
+                            method: "post",
+                            data: {
+                                optype: "paycounter_supplement",
+                                params: params
+                            }
+                        }).then((result) => {
+                            if (result.data.error_msg) {
+                                this.$message({
+                                    type: "error",
+                                    message: result.data.error_msg,
+                                    duration: 2000
+                                });
+                                return;
+                            } else {
+                                this.$message({
+                                    type: "success",
+                                    message: "补录信息保存成功",
+                                    duration: 2000
+                                });
+                                this.dialogVisible = false;
+                                this.$emit("getCommTable", this.routerMessage);
+                            }
+                        }).catch(function (error) {
+                            console.log(error);
+                        })
                     } else {
-                        this.$message({
-                            type: "success",
-                            message: "补录信息保存成功",
-                            duration: 2000
-                        });
-                        this.dialogVisible = false;
-                        this.$emit("getCommTable", this.routerMessage);
+                        return false;
                     }
-                }).catch(function (error) {
-                    console.log(error);
                 })
+
+
             },
             //导出
             exportFun: function () {
