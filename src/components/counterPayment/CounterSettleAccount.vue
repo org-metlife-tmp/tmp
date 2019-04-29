@@ -1,72 +1,5 @@
 <style scoped lang="less" type="text/less">
     #counterSettleAccount {
-        width: 100%;
-        height: 100%;
-        box-sizing: border-box;
-        position: relative;
-
-        .dropdown-content{
-            width: 100%;
-            height: 100%;
-            overflow-y: scroll;
-            overflow-x: hidden;
-        }
-
-        /*顶部按钮*/
-        .button-list-right {
-            position: absolute;
-            top: -60px;
-            right: -18px;
-        }
-        .button-list-left {
-            position: absolute;
-            top: -56px;
-            left: -21px;
-        }
-
-        /*搜索区*/
-        .search-setion {
-            text-align: left;
-
-            /*时间控件*/
-            .el-date-editor {
-                width: 100%;
-                max-width: 210px;
-            }
-        }
-
-        /*分隔栏*/
-        .split-bar {
-            width: 106%;
-            height: 6px;
-            margin-left: -20px;
-            background-color: #E7E7E7;
-            margin-bottom: 10px;
-        }
-
-        /*数据展示区*/
-        .table-content {
-            height: 181px;
-        }
-
-        /*汇总数据*/
-        .allData {
-            height: 36px;
-            line-height: 36px;
-            width: 100%;
-            background-color: #F8F8F8;
-            border: 1px solid #ebeef5;
-            border-top: none;
-            box-sizing: border-box;
-            text-align: right;
-
-            /*汇总数字*/
-            .numText {
-                color: #FF5800;
-                margin-right: 10px;
-            }
-        }
-
         /*分页部分*/
         .botton-pag {
             width: 100%;
@@ -77,6 +10,12 @@
                 float: right;
                 margin-top: -30px;
             }
+        }
+
+        /*分割线*/
+        .split-bar{
+            width: 100%;
+            margin: 0 0 10px 0;
         }
 
         /*按钮样式*/
@@ -100,21 +39,11 @@
 </style>
 
 <template>
-    <div id="counterSettleAccount">
-        <!-- 顶部按钮-->
-        <div class="button-list-left">
-            <!--<el-select v-model="searchData.source_sys"
-                       filterable size="mini"
-                       @change="queryData">
-                <el-option v-for="(item,key) in sourceList"
-                           :key="key"
-                           :label="item"
-                           :value="key">
-                </el-option>
-            </el-select>-->
-        </div>
-        <div class="dropdown-content">
-            <!--搜索区-->
+    <el-container id="counterSettleAccount">
+        <el-header>
+
+        </el-header>
+        <el-main>
             <div class="search-setion">
                 <el-form :inline="true" :model="searchData" size="mini">
                     <el-row>
@@ -204,43 +133,36 @@
                     </el-row>
                 </el-form>
             </div>
-            <!--数据展示区-->
-            <section class="table-content">
-                <el-table :data="tableList"
-                          @current-change="selectChange"
-                          highlight-current-row
-                          height="100%" border size="mini">
-                    <el-table-column prop="check_date" label="操作日期" :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="org_name" label="机构名称" :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="pay_mode" label="支付方式" :show-overflow-tooltip="true"
-                                     :formatter="transitMode"></el-table-column>
-                    <el-table-column prop="biz_code" label="业务号码" :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="preinsure_bill_no" label="投保单号" :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="insure_bill_no" label="保单号" :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="biz_type" label="业务类型" :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="amount" label="金额" :show-overflow-tooltip="true"
-                                     :formatter="transitAmount"></el-table-column>
-                    <el-table-column prop="recv_acc_name" label="客户名称" :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="recv_cert_code" label="客户号码" :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="recv_account_name" label="收款账号户名" width="120px"
-                                     :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="recv_account_no" label="收款银行账号" width="120px"
-                                     :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="recv_bank_name" label="开户行" :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="pay_account_no" label="付款账号" :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="pay_bank_name" label="付款银行":show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="is_checked" label="状态" :show-overflow-tooltip="true"
-                                     :formatter="transitStatus"></el-table-column>
-                    <el-table-column prop="check_service_number" label="对账流水号" width="100px"
-                                     :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="check_user_name" label="操作人" :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="check_date" label="操作日期" :show-overflow-tooltip="true"></el-table-column>
-                </el-table>
-            </section>
-            <div class="allData">
-                <span>总金额：</span>
-                <span v-text="$common.transitSeparator(totalData.total_amount)" class="numText"></span>
-            </div>
+            <el-table :data="tableList"
+                      @current-change="selectChange"
+                      highlight-current-row
+                      height="200px" border size="mini">
+                <el-table-column prop="check_date" label="操作日期" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="org_name" label="机构名称" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="pay_mode" label="支付方式" :show-overflow-tooltip="true"
+                                 :formatter="transitMode"></el-table-column>
+                <el-table-column prop="biz_code" label="业务号码" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="preinsure_bill_no" label="投保单号" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="insure_bill_no" label="保单号" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="biz_type" label="业务类型" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="amount" label="金额" :show-overflow-tooltip="true"
+                                 :formatter="transitAmount"></el-table-column>
+                <el-table-column prop="recv_acc_name" label="客户名称" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="recv_cert_code" label="客户号码" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="recv_account_name" label="收款账号户名" width="120px"
+                                 :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="recv_account_no" label="收款银行账号" width="120px"
+                                 :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="recv_bank_name" label="开户行" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="pay_account_no" label="付款账号" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="pay_bank_name" label="付款银行":show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="is_checked" label="状态" :show-overflow-tooltip="true"
+                                 :formatter="transitStatus"></el-table-column>
+                <el-table-column prop="check_service_number" label="对账流水号" width="100px"
+                                 :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="check_user_name" label="操作人" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="check_date" label="操作日期" :show-overflow-tooltip="true"></el-table-column>
+            </el-table>
             <!--分页部分-->
             <div class="botton-pag">
                 <el-pagination
@@ -317,50 +239,53 @@
                 </el-form>
             </div>
             <!--主数据关联数据-->
-            <section class="table-content">
-                <el-table :data="childList" border
-                          ref="tableRef"
-                          @selection-change="childChange"
-                          @select-all="childChange"
-                          height="100%" size="mini">
-                    <el-table-column type="selection" width="40"></el-table-column>
-                    <el-table-column prop="trans_date" label="交易日期" :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="bankcode" label="BankCode" width="100px"
-                                     :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="acc_no" label="银行账号" :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="bank_name" label="账户名称" :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="bank_name" label="开户行" :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="direction" label="收付方向" :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="opp_acc_no" label="对方银行账号" width="110px"
-                                     :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="opp_acc_name" label="对方账户名称" width="110px"
-                                     :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="opp_acc_bank" label="对方开户行" width="100px"
-                                     :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="amount" label="交易金额" :show-overflow-tooltip="true"
-                                     :formatter="transitAmount"></el-table-column>
-                    <el-table-column prop="summary" label="摘要" :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="is_checked" label="状态" :show-overflow-tooltip="true"
-                                     :formatter="transitStatus"></el-table-column>
-                    <el-table-column prop="check_service_number" label="对账流水号" width="100px"
-                                     :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="check_user_name" label="操作人" :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="check_date" label="操作日期" :show-overflow-tooltip="true"></el-table-column>
-                </el-table>
-            </section>
+            <el-table :data="childList" border
+                      ref="tableRef"
+                      @selection-change="childChange"
+                      @select-all="childChange"
+                      height="200px" size="mini">
+                <el-table-column type="selection" width="40"></el-table-column>
+                <el-table-column prop="trans_date" label="交易日期" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="bankcode" label="BankCode" width="100px"
+                                 :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="acc_no" label="银行账号" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="bank_name" label="账户名称" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="bank_name" label="开户行" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="direction" label="收付方向" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="opp_acc_no" label="对方银行账号" width="110px"
+                                 :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="opp_acc_name" label="对方账户名称" width="110px"
+                                 :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="opp_acc_bank" label="对方开户行" width="100px"
+                                 :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="amount" label="交易金额" :show-overflow-tooltip="true"
+                                 :formatter="transitAmount"></el-table-column>
+                <el-table-column prop="summary" label="摘要" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="is_checked" label="状态" :show-overflow-tooltip="true"
+                                 :formatter="transitStatus"></el-table-column>
+                <el-table-column prop="check_service_number" label="对账流水号" width="100px"
+                                 :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="check_user_name" label="操作人" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="check_date" label="操作日期" :show-overflow-tooltip="true"></el-table-column>
+            </el-table>
             <div class="allData">
-                <span>交易金额(收)：</span>
-                <span v-text="childTotalData.recvAmount" class="numText"></span>
-                <span>交易金额(付)：</span>
-                <span v-text="childTotalData.payAmount" class="numText"></span>
-                <span>合计金额：</span>
-                <span v-show="!isZero && !isPay">收</span>
-                <span v-show="!isZero && isPay">付</span>
-                <span v-show="isZero">-</span>
-                <span v-text="childTotalData.totalAmount" class="numText"></span>
+                <div class="btn-right">
+                    <span>交易金额(收)：</span>
+                    <span v-text="childTotalData.recvAmount" class="numText"></span>
+                    <span>交易金额(付)：</span>
+                    <span v-text="childTotalData.payAmount" class="numText"></span>
+                    <span>合计金额：</span>
+                    <span v-show="!isZero && !isPay">收</span>
+                    <span v-show="!isZero && isPay">付</span>
+                    <span v-show="isZero">-</span>
+                    <span v-text="childTotalData.totalAmount" class="numText"></span>
+                </div>
             </div>
-        </div>
-    </div>
+        </el-main>
+        <el-footer>
+
+        </el-footer>
+    </el-container>
 </template>
 
 <script>

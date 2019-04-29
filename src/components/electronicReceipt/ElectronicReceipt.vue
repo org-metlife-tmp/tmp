@@ -1,48 +1,16 @@
 <style lang="less" type="text/less">
     #electronicReceipt{
-        width: 100%;
-        height: 100%;
-        box-sizing: border-box;
-        position: relative;
-
         /*搜索区*/
         .search-setion {
             text-align: left;
             height: 42px;
             overflow: hidden;
             transition: height 1s;
-            .line {
-                text-align: center;
-            }
         }
         .search-setion.show-more {
             height: 184px;
         }
 
-        .table-content{
-            height: 350px;
-            transition: height 1s;
-        }
-        .is-small {
-            height: 45%;
-        }
-
-        /*分隔栏*/
-        .split-bar {
-            width: 106%;
-            height: 6px;
-            margin-left: -20px;
-            background-color: #E7E7E7;
-            margin-bottom: 20px;
-        }
-
-        /*分页部分*/
-        .botton-pag {
-            position: absolute;
-            width: 100%;
-            height: 8%;
-            bottom: -10px;
-        }
         /*顶部下拉部分*/
         .btn-list-left{
             position: absolute;
@@ -106,143 +74,135 @@
                 width: 90%;
             }
         }
-        .el-dialog__wrapper {
-            .el-dialog__body {
-                height: 484px;
-                overflow-y: auto;
-                padding-bottom: 10px;
-            }
-        }
     }
 </style>
 
 <template>
-    <div id="electronicReceipt">
-        <div class="btn-list-left">
-            <el-select v-model="channel_code"
-                        placeholder="渠道编码" size="mini"
-                        @change="channelIsSelect">
-                <el-option v-for="channel in channelList"
-                            :key="channel.channel_code"
-                            :label="channel.channel_code"
-                            :value="channel.channel_code">
-                </el-option>
-            </el-select>
-            <el-select v-model="ebObj"
-                        :disabled="!channel_code"
-                        placeholder="银行" size="mini"
-                        @change="bankIsSelect"
-                        value-key="eb_type">
-                <el-option v-for="type in bankListByChannel"
-                            :key="type.eb_type"
-                            :label="type.eb_type_desc"
-                            :value="type">
-                    <span style="float: left">{{ type.eb_type_desc }}</span>
-                    <span style="float: right; color: #8492a6; font-size: 12px">{{ type.eb_type }}</span>
-                </el-option>
-            </el-select>
-        </div>
-        <!--搜索区-->
-        <div :class="['search-setion',{'show-more':showMore}]">
-            <el-form :inline="true" :model="searchData" size="mini">
-                <el-row>
-                    <el-col :span="6">
-                        <el-form-item>
-                            <el-date-picker
-                                    v-model="searchData.eb_date"
-                                    type="date"
-                                    placeholder=" 回单日期"
-                                    value-format="yyyy-MM-dd"
-                                    style="width: 100%;">
-                            </el-date-picker>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="8">
-                        <el-form-item>
-                            <el-col :span="11">
-                                <el-input v-model="searchData.min" clearable placeholder="最小回单金额"></el-input>
-                            </el-col>
-                            <el-col class="line" :span="2">-</el-col>
-                            <el-col :span="11">
-                                <el-input v-model="searchData.max" clearable placeholder="最大回单金额"></el-input>
-                            </el-col>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="2">
-                        <el-form-item>
-                            <el-button type="primary" plain @click="queryData" size="mini">搜索</el-button>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="3" :offset="5">
-                        <el-button type="primary" plain @click="showMore = !showMore" size="mini">
-                            高级<i
-                                :class="['el-icon--right',{'el-icon-arrow-down':!showMore},{'el-icon-arrow-right':showMore}]"></i>
-                        </el-button>
-                    </el-col>
-                </el-row>
-                <el-row>
-                    <el-col :span="6">
-                        <el-select v-model="searchData.addKey"
-                                    placeholder="增加搜索条件" size="mini"
-                                    @change="addSearch"
-                                    value-key="key">
-                            <el-option v-for="type in searchOptionList"
-                                        :key="type.key"
-                                        :label="type.value"
-                                        :value="type">
-                            </el-option>
-                        </el-select>
-                    </el-col>
-                    <template v-for="item in searchList">
-                        <el-col :span="6" :key="item.key">
+    <el-container id="electronicReceipt">
+        <el-header>
+            <div class="btn-list-left">
+                <el-select v-model="channel_code"
+                           placeholder="渠道编码" size="mini"
+                           @change="channelIsSelect">
+                    <el-option v-for="channel in channelList"
+                               :key="channel.channel_code"
+                               :label="channel.channel_code"
+                               :value="channel.channel_code">
+                    </el-option>
+                </el-select>
+                <el-select v-model="ebObj"
+                           :disabled="!channel_code"
+                           placeholder="银行" size="mini"
+                           @change="bankIsSelect"
+                           value-key="eb_type">
+                    <el-option v-for="type in bankListByChannel"
+                               :key="type.eb_type"
+                               :label="type.eb_type_desc"
+                               :value="type">
+                        <span style="float: left">{{ type.eb_type_desc }}</span>
+                        <span style="float: right; color: #8492a6; font-size: 12px">{{ type.eb_type }}</span>
+                    </el-option>
+                </el-select>
+            </div>
+            <div :class="['search-setion',{'show-more':showMore}]">
+                <el-form :inline="true" :model="searchData" size="mini">
+                    <el-row>
+                        <el-col :span="6">
                             <el-form-item>
-                                <el-input v-model="searchData[item.key]" clearable :placeholder="item.desc" class="input-with-select">
-                                    <el-button slot="append"  type="primary" @click="delSearch(item)">删除</el-button>
-                                </el-input>
+                                <el-date-picker
+                                        v-model="searchData.eb_date"
+                                        type="date"
+                                        placeholder=" 回单日期"
+                                        value-format="yyyy-MM-dd"
+                                        style="width: 100%;">
+                                </el-date-picker>
                             </el-form-item>
                         </el-col>
-                    </template>
-                </el-row>
-            </el-form>
-        </div>
-        <!--分隔栏-->
-        <div class="split-bar"></div>
-        <!--数据展示区-->
-        <section :class="['table-content',{'is-small':showMore}]">
+                        <el-col :span="8">
+                            <el-form-item>
+                                <el-col :span="11">
+                                    <el-input v-model="searchData.min" clearable placeholder="最小回单金额"></el-input>
+                                </el-col>
+                                <el-col class="line" :span="2">-</el-col>
+                                <el-col :span="11">
+                                    <el-input v-model="searchData.max" clearable placeholder="最大回单金额"></el-input>
+                                </el-col>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="2">
+                            <el-form-item>
+                                <el-button type="primary" plain @click="queryData" size="mini">搜索</el-button>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="3" :offset="5">
+                            <el-button type="primary" plain @click="showMore = !showMore" size="mini">
+                                高级<i
+                                    :class="['el-icon--right',{'el-icon-arrow-down':!showMore},{'el-icon-arrow-right':showMore}]"></i>
+                            </el-button>
+                        </el-col>
+                    </el-row>
+                    <el-row>
+                        <el-col :span="6">
+                            <el-select v-model="searchData.addKey"
+                                       placeholder="增加搜索条件" size="mini"
+                                       @change="addSearch"
+                                       value-key="key">
+                                <el-option v-for="type in searchOptionList"
+                                           :key="type.key"
+                                           :label="type.value"
+                                           :value="type">
+                                </el-option>
+                            </el-select>
+                        </el-col>
+                        <template v-for="item in searchList">
+                            <el-col :span="6" :key="item.key">
+                                <el-form-item>
+                                    <el-input v-model="searchData[item.key]" clearable :placeholder="item.desc" class="input-with-select">
+                                        <el-button slot="append"  type="primary" @click="delSearch(item)">删除</el-button>
+                                    </el-input>
+                                </el-form-item>
+                            </el-col>
+                        </template>
+                    </el-row>
+                </el-form>
+            </div>
+            <div class="split-bar"></div>
+        </el-header>
+        <el-main>
             <el-table :data="tableList"
                       height="100%"
                       border size="mini">
                 <el-table-column
-                    prop="eb_date"
-                    label="回单日期"
-                    :show-overflow-tooltip="true"
+                        prop="eb_date"
+                        label="回单日期"
+                        :show-overflow-tooltip="true"
                 >
                 </el-table-column>
                 <el-table-column
-                    prop="amount"
-                    label="回单金额"
-                    :formatter="changeThousandth"
-                    :show-overflow-tooltip="true"
+                        prop="amount"
+                        label="回单金额"
+                        :formatter="changeThousandth"
+                        :show-overflow-tooltip="true"
                 >
                 </el-table-column>
                 <template v-for="head in tableHead">
                     <!-- 业务种类列，需要格式化数据-->
                     <el-table-column
-                        v-if="head.prop=='biz_type' || head.prop=='service_status' || head.prop=='interactive_mode'"
-                        :key="head.id"
-                        :prop="head.prop"
-                        :label="head.name"
-                        :formatter="transitionStatus"
-                        :show-overflow-tooltip="true"
+                            v-if="head.prop=='biz_type' || head.prop=='service_status' || head.prop=='interactive_mode'"
+                            :key="head.id"
+                            :prop="head.prop"
+                            :label="head.name"
+                            :formatter="transitionStatus"
+                            :show-overflow-tooltip="true"
                     >
                     </el-table-column>
                     <!-- 公用列 -->
                     <el-table-column
-                        v-else
-                        :key="head.prop"
-                        :prop="head.prop"
-                        :label="head.origin_fd_desc"
-                        :show-overflow-tooltip="true"
+                            v-else
+                            :key="head.prop"
+                            :prop="head.prop"
+                            :label="head.origin_fd_desc"
+                            :show-overflow-tooltip="true"
                     >
                     </el-table-column>
                 </template>
@@ -253,59 +213,60 @@
                         <el-tooltip content="查看" placement="bottom" effect="light"
                                     :enterable="false" :open-delay="500">
                             <el-button type="primary" icon="el-icon-search" size="mini"
-                                    @click="viewDetail(scope.row,scope.$index)"></el-button>
+                                       @click="viewDetail(scope.row,scope.$index)"></el-button>
                         </el-tooltip>
                     </template>
                 </el-table-column>
             </el-table>
-        </section>
-        <!--分页部分-->
-        <div class="botton-pag">
-            <el-pagination
-                    background
-                    layout="sizes, prev, pager, next, jumper"
-                    :page-size="pagSize"
-                    :total="pagTotal"
-                    :page-sizes="[10, 50, 100, 500]"
-                    :pager-count="5"
-                    @current-change="getCurrentPage"
-                    @size-change="sizeChange"
-                    :current-page="pagCurrent">
-            </el-pagination>
-        </div>
-        <!--查看弹出框-->
-        <el-dialog :visible.sync="dialogVisible"
-                   width="851px" title="收款回单查看"
-                   :close-on-click-modal="false"
-                   top="46px">
-            <!-- <h1 slot="title" class="dialog-title">收款回单查看</h1> -->
-            <div class="bgStyle" :class="[bgImg]">
-                <div class="bankContentFir">
-                    <template v-for="field in curDialogField.first">
-                        <div :key="field.id">
-                            <span>{{field.name}}：</span>
-                            <span v-if="field.key=='bAmount'">{{tansss(dialogData[field.value])}}</span>
-                            <span v-else-if="field.key=='sAmount'">{{dialogData[field.value]+dialogData.payAmountUp}}</span>
-                            <span v-else>{{dialogData[field.value]}}</span>
+        </el-main>
+        <el-footer>
+            <div class="botton-pag">
+                <el-pagination
+                        background
+                        layout="sizes, prev, pager, next, jumper"
+                        :page-size="pagSize"
+                        :total="pagTotal"
+                        :page-sizes="[10, 50, 100, 500]"
+                        :pager-count="5"
+                        @current-change="getCurrentPage"
+                        @size-change="sizeChange"
+                        :current-page="pagCurrent">
+                </el-pagination>
+            </div>
+            <!--查看弹出框-->
+            <el-dialog :visible.sync="dialogVisible"
+                       width="851px" title="收款回单查看"
+                       :close-on-click-modal="false"
+                       top="46px">
+                <!-- <h1 slot="title" class="dialog-title">收款回单查看</h1> -->
+                <div class="bgStyle" :class="[bgImg]">
+                    <div class="bankContentFir">
+                        <template v-for="field in curDialogField.first">
+                            <div :key="field.id">
+                                <span>{{field.name}}：</span>
+                                <span v-if="field.key=='bAmount'">{{tansss(dialogData[field.value])}}</span>
+                                <span v-else-if="field.key=='sAmount'">{{dialogData[field.value]+dialogData.payAmountUp}}</span>
+                                <span v-else>{{dialogData[field.value]}}</span>
+                            </div>
+                        </template>
+                    </div>
+                    <div class="bankContentSec">
+                        <template v-for="field in curDialogField.second">
+                            <div :key="field.id" class="firstStyle">
+                                <span>{{field.name}}：</span>
+                                <span :title="dialogData[field.value]">{{dialogData[field.value]}}</span>
+                            </div>
+                        </template>
+                        <div class="tip">
+                            <span>提示：</span>
+                            <span>1.电子回单验证码相同表示同一笔业务回单，请勿重复记账使用</span>
+                            <span>2.已在银行柜台领用业务回单的单位，请注意核对，请勿重复记账使用</span>
                         </div>
-                    </template>
-                </div>
-                <div class="bankContentSec">
-                    <template v-for="field in curDialogField.second">
-                        <div :key="field.id" class="firstStyle">
-                            <span>{{field.name}}：</span>
-                            <span :title="dialogData[field.value]">{{dialogData[field.value]}}</span>
-                        </div>
-                    </template>
-                    <div class="tip">
-                        <span>提示：</span>
-                        <span>1.电子回单验证码相同表示同一笔业务回单，请勿重复记账使用</span>
-                        <span>2.已在银行柜台领用业务回单的单位，请注意核对，请勿重复记账使用</span>
                     </div>
                 </div>
-            </div>
-        </el-dialog>
-    </div>
+            </el-dialog>
+        </el-footer>
+    </el-container>
 </template>
 
 <script>

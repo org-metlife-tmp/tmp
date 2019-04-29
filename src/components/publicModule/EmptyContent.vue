@@ -4,6 +4,7 @@
         height: 100%;
         margin: 0 auto;
         min-width: 960px;
+        min-height: 552px;
         position: relative;
 
         .el-header {
@@ -44,7 +45,6 @@
         }
 
         > .el-main {
-            min-height: 500px;
             padding: 20px;
             padding-bottom: 14px;
             overflow: hidden;

@@ -1,12 +1,27 @@
 <style scoped lang="less" type="text/less">
-
-    #operation {
-
+    #abnormalDispose {
+        /*按钮样式*/
+        .on-copy, .withdraw {
+            width: 20px;
+            height: 20px;
+            background-image: url(../../assets/icon_common.png);
+            border: none;
+            padding: 0;
+            vertical-align: middle;
+        }
+        /*复制按钮*/
+        .on-copy {
+            background-position: -24px 1px;
+        }
+        /*撤回按钮*/
+        .withdraw {
+            background-position: -48px 0;
+        }
     }
 </style>
 
 <template>
-    <el-container id="operation">
+    <el-container id="abnormalDispose">
         <el-header>
             <div class="button-list-left">
                 <el-select v-model="searchData.source_sys"
@@ -108,23 +123,19 @@
             <div class="split-bar"></div>
         </el-header>
         <el-main>
-            <el-table :data="tableList" height="100%" border size="mini"
-                      @selection-change="saveId">
-                <el-table-column type="selection" width="40"></el-table-column>
-                <el-table-column prop="trans_date" label="交易日期" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="bankcode" label="BankCode" width="110px"
-                                 :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="acc_no" label="银行账号" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="acc_name" label="账户名称" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="bank_name" label="开户行" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="direction" label="收付方向" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="opp_acc_no" label="对方银行账号" width="110px"
-                                 :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="opp_acc_name" label="对方账户名称" width="110px"
-                                 :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="opp_acc_bank" label="对方开户行" width="110px"
-                                 :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="amount" label="交易金额" :show-overflow-tooltip="true"
+            <el-table :data="tableList"
+                      border size="mini" height="100%">
+                <el-table-column prop="source_sys" label="来源系统" :show-overflow-tooltip="true"
+                                 :formatter="transitSource"></el-table-column>
+                <el-table-column prop="master_batchno" label="主批次号" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="child_batchno" label="子批次号" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="interactive_mode" label="交互方式" :show-overflow-tooltip="true"
+                                 :formatter="transitMode"></el-table-column>
+                <el-table-column prop="channel_code" label="通道编码" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="channel_desc" label="通道描述" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="send_on" label="出盘日期" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="total_num" label="总笔数" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="total_amount" label="总金额" :show-overflow-tooltip="true"
                                  :formatter="transitAmount"></el-table-column>
                 <el-table-column prop="service_status" label="状态" :show-overflow-tooltip="true"
                                  :formatter="transitStatus"></el-table-column>
@@ -167,6 +178,8 @@
                     @size-change="sizeChange"
                     :current-page="pagCurrent">
             </el-pagination>
+
+
         </el-footer>
     </el-container>
 </template>

@@ -1,20 +1,8 @@
 <style scoped lang="less" type="text/less">
     #payCheckBatch {
-        width: 100%;
-        height: 100%;
-        box-sizing: border-box;
-        position: relative;
-
         /*顶部按钮*/
-        .button-list-right {
-            position: absolute;
-            top: -60px;
-            right: -18px;
-        }
         .button-list-left {
-            position: absolute;
-            top: -50px;
-            left: -20px;
+            top: 22px;
 
             ul{
                 font-size: 14px;
@@ -40,74 +28,6 @@
             }
         }
 
-        /*搜索区*/
-        .search-setion {
-            text-align: left;
-
-            /*时间控件*/
-            .el-date-editor {
-                width: 100%;
-                max-width: 210px;
-            }
-        }
-
-        /*分隔栏*/
-        .split-bar {
-            width: 106%;
-            height: 6px;
-            margin-left: -20px;
-            background-color: #E7E7E7;
-            margin-bottom: 20px;
-        }
-
-        /*数据展示区*/
-        .table-content{
-            height: 60%;
-        }
-
-        /*汇总数据*/
-        .allData {
-            height: 36px;
-            line-height: 36px;
-            width: 100%;
-            background-color: #F8F8F8;
-            border: 1px solid #ebeef5;
-            border-top: none;
-            box-sizing: border-box;
-            text-align: right;
-
-            /*左侧按钮*/
-            .btn-left {
-                float: left;
-                margin-left: 16px;
-            }
-
-            /*汇总数字*/
-            .numText {
-                color: #FF5800;
-                margin-right: 10px;
-            }
-        }
-
-        .transmit-icon {
-            position: relative;
-            display: inline-block;
-            width: 16px;
-            height: 10px;
-            vertical-align: middle;
-            margin-right: 4px;
-
-            i {
-                position: absolute;
-                top: -5px;
-                left: -3px;
-                width: 18px;
-                height: 18px;
-                background: url(../../assets/icon_common.png) no-repeat;
-                background-position: -49px -80px;
-            }
-        }
-
         /*撤回按钮*/
         .withdraw {
             width: 20px;
@@ -119,155 +39,137 @@
             vertical-align: middle;
         }
 
-        /*分页部分*/
-        .botton-pag {
-            position: absolute;
-            width: 100%;
-            height: 8%;
-            bottom: -6px;
-        }
-
     }
 </style>
 
 <template>
-    <div id="payCheckBatch">
-        <!-- 顶部按钮-->
-        <div class="button-list-left">
-            <!--<el-select v-model="searchData.source_sys"
-                       filterable size="mini">
-                <el-option v-for="(item,key) in sourceList"
-                           :key="key"
-                           :label="item"
-                           :value="key">
-                </el-option>
-            </el-select>-->
-            <ul>
-                <li :class="{'active': searchData.source_sys == '0'}" @click="switchTab('0')">LA</li>
-                <!--<li :class="{'active': searchData.source_sys == '1'}" @click="switchTab('1')">EBS</li>-->
-            </ul>
-        </div>
-        <div class="button-list-right">
-            <el-button type="warning" size="mini" @click="exportFun">导出</el-button>
-        </div>
-        <!--搜索区-->
-        <div class="search-setion">
-            <el-form :inline="true" :model="searchData" size="mini">
-                <el-row>
-                    <el-col :span="4">
-                        <el-form-item>
-                            <el-select v-model="searchData.channel_id" placeholder="请选择通道编码"
-                                       clearable filterable
-                                       style="width:100%">
-                                <el-option v-for="channel in channelList"
-                                           :key="channel.channel_id"
-                                           :label="channel.channel_code"
-                                           :value="channel.channel_id">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="4">
-                        <el-form-item>
-                            <el-select v-model="searchData.channel_id" placeholder="请选择通道描述"
-                                       clearable filterable
-                                       style="width:100%">
-                                <el-option v-for="channel in channelList"
-                                           :key="channel.channel_id"
-                                           :label="channel.channel_desc"
-                                           :value="channel.channel_id">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="4">
-                        <el-form-item>
-                            <el-input v-model="searchData.preinsure_bill_no" clearable placeholder="请输入投保单号"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="4">
-                        <el-form-item>
-                            <el-input v-model="searchData.insure_bill_no" clearable placeholder="请输入保单号"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="4">
-                        <el-form-item>
-                            <el-select v-model="searchData.org_id" placeholder="请选择机构"
-                                       clearable filterable
-                                       style="width:100%">
-                                <el-option v-for="item in orgList"
-                                           :key="item.org_id"
-                                           :label="item.name"
-                                           :value="item.org_id">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="4">
-                        <el-form-item>
-                            <el-input v-model="searchData.recv_acc_no" clearable placeholder="请输入客户账号"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="5">
-                        <el-form-item>
-                            <el-date-picker
-                                    v-model="dateValue"
-                                    type="daterange"
-                                    range-separator="至"
-                                    start-placeholder="开始日期"
-                                    end-placeholder="结束日期"
-                                    value-format="yyyy-MM-dd"
-                                    size="mini" clearable
-                                    unlink-panels
-                                    :picker-options="pickerOptions">
-                            </el-date-picker>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="4">
-                        <el-form-item>
-                            <el-input v-model="searchData.bank_key" clearable placeholder="请输入bankkey"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="4">
-                        <el-form-item>
-                            <el-select v-model="searchData.biz_type" placeholder="请选择业务类型"
-                                       clearable filterable
-                                       style="width:100%">
-                                <el-option v-for="(item,key) in biztypeList"
-                                           :key="key"
-                                           :label="item"
-                                           :value="key">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="7">
-                        <el-form-item style="margin-bottom:0px">
-                            <el-checkbox-group v-model="searchData.status">
-                                <el-checkbox v-for="(name,k) in statusList"
-                                             :label="k" name="name" :key="k">
-                                    {{ name }}
-                                </el-checkbox>
-                            </el-checkbox-group>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="2">
-                        <el-form-item>
-                            <el-button type="primary" plain @click="clearData" size="mini">清空筛选</el-button>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="2">
-                        <el-form-item>
-                            <el-button type="primary" plain @click="queryData" size="mini">搜索</el-button>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-            </el-form>
-        </div>
-        <!--分隔栏-->
-        <div class="split-bar"></div>
-        <!--数据展示区-->
-        <section class="table-content">
+    <el-container id="payCheckBatch">
+        <el-header>
+            <div class="button-list-left">
+                <ul>
+                    <li :class="{'active': searchData.source_sys == '0'}" @click="switchTab('0')">LA</li>
+                    <!--<li :class="{'active': searchData.source_sys == '1'}" @click="switchTab('1')">EBS</li>-->
+                </ul>
+            </div>
+            <div class="button-list-right">
+                <el-button type="warning" size="mini" @click="exportFun">导出</el-button>
+            </div>
+            <div class="search-setion">
+                <el-form :inline="true" :model="searchData" size="mini">
+                    <el-row>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-select v-model="searchData.channel_id" placeholder="请选择通道编码"
+                                           clearable filterable
+                                           style="width:100%">
+                                    <el-option v-for="channel in channelList"
+                                               :key="channel.channel_id"
+                                               :label="channel.channel_code"
+                                               :value="channel.channel_id">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-select v-model="searchData.channel_id" placeholder="请选择通道描述"
+                                           clearable filterable
+                                           style="width:100%">
+                                    <el-option v-for="channel in channelList"
+                                               :key="channel.channel_id"
+                                               :label="channel.channel_desc"
+                                               :value="channel.channel_id">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-input v-model="searchData.preinsure_bill_no" clearable placeholder="请输入投保单号"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-input v-model="searchData.insure_bill_no" clearable placeholder="请输入保单号"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-select v-model="searchData.org_id" placeholder="请选择机构"
+                                           clearable filterable
+                                           style="width:100%">
+                                    <el-option v-for="item in orgList"
+                                               :key="item.org_id"
+                                               :label="item.name"
+                                               :value="item.org_id">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-input v-model="searchData.recv_acc_no" clearable placeholder="请输入客户账号"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="5">
+                            <el-form-item>
+                                <el-date-picker
+                                        v-model="dateValue"
+                                        type="daterange"
+                                        range-separator="至"
+                                        start-placeholder="开始日期"
+                                        end-placeholder="结束日期"
+                                        value-format="yyyy-MM-dd"
+                                        size="mini" clearable
+                                        unlink-panels
+                                        :picker-options="pickerOptions">
+                                </el-date-picker>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-input v-model="searchData.bank_key" clearable placeholder="请输入bankkey"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-select v-model="searchData.biz_type" placeholder="请选择业务类型"
+                                           clearable filterable
+                                           style="width:100%">
+                                    <el-option v-for="(item,key) in biztypeList"
+                                               :key="key"
+                                               :label="item"
+                                               :value="key">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="7">
+                            <el-form-item style="margin-bottom:0px">
+                                <el-checkbox-group v-model="searchData.status">
+                                    <el-checkbox v-for="(name,k) in statusList"
+                                                 :label="k" name="name" :key="k">
+                                        {{ name }}
+                                    </el-checkbox>
+                                </el-checkbox-group>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="2">
+                            <el-form-item>
+                                <el-button type="primary" plain @click="clearData" size="mini">清空筛选</el-button>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="2">
+                            <el-form-item>
+                                <el-button type="primary" plain @click="queryData" size="mini">搜索</el-button>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                </el-form>
+            </div>
+            <div class="split-bar"></div>
+        </el-header>
+        <el-main>
             <el-table :data="tableList" ref="contentTable"
                       height="100%" border size="mini"
                       @select="setId"
@@ -312,6 +214,8 @@
                     </template>
                 </el-table-column>
             </el-table>
+        </el-main>
+        <el-footer>
             <div class="allData">
                 <div class="btn-left">
                     <el-button type="warning" size="mini" @click="affirm"
@@ -319,27 +223,28 @@
                         <span class="transmit-icon"><i></i></span>确认
                     </el-button>
                 </div>
-                <span>总笔数：</span>
-                <span v-text="totalData.total_num" class="numText"></span>
-                <span>总金额：</span>
-                <span v-text="totalData.total_amount" class="numText"></span>
+                <div class="btn-right">
+                    <span>总笔数：</span>
+                    <span v-text="totalData.total_num" class="numText"></span>
+                    <span>总金额：</span>
+                    <span v-text="totalData.total_amount" class="numText"></span>
+                </div>
             </div>
-        </section>
-        <!--分页部分-->
-        <div class="botton-pag">
-            <el-pagination
-                    background
-                    layout="sizes, prev, pager, next, jumper"
-                    :page-size="pagSize"
-                    :total="pagTotal"
-                    :page-sizes="[20, 50, 100, 500]"
-                    :pager-count="5"
-                    @current-change="getCurrentPage"
-                    @size-change="sizeChange"
-                    :current-page="pagCurrent">
-            </el-pagination>
-        </div>
-    </div>
+            <div class="botton-pag">
+                <el-pagination
+                        background
+                        layout="sizes, prev, pager, next, jumper"
+                        :page-size="pagSize"
+                        :total="pagTotal"
+                        :page-sizes="[20, 50, 100, 500]"
+                        :pager-count="5"
+                        @current-change="getCurrentPage"
+                        @size-change="sizeChange"
+                        :current-page="pagCurrent">
+                </el-pagination>
+            </div>
+        </el-footer>
+    </el-container>
 </template>
 
 <script>

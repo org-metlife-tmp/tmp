@@ -72,6 +72,10 @@
         .search-setion {
             text-align: left;
 
+            .line {
+                text-align: center;
+            }
+
             /*时间控件*/
             .el-date-editor {
                 width: 100%;
@@ -110,6 +114,29 @@
                 color: #FF5800;
                 margin-right: 10px;
             }
+
+            .numText:last-child {
+                margin-right: 0;
+            }
+
+            .transmit-icon {
+                position: relative;
+                display: inline-block;
+                width: 16px;
+                height: 10px;
+                vertical-align: middle;
+                margin-right: 4px;
+
+                i {
+                    position: absolute;
+                    top: -5px;
+                    left: -3px;
+                    width: 18px;
+                    height: 18px;
+                    background: url(../assets/icon_common.png) no-repeat;
+                    background-position: -49px -80px;
+                }
+            }
         }
 
         .button-list-right {
@@ -128,6 +155,7 @@
         *********/
 
         #contented {
+            height: 100%;
             > .el-main {
                 padding-top: 0;
             }

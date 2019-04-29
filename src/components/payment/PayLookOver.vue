@@ -1,84 +1,5 @@
 <style scoped lang="less" type="text/less">
     #payLookOver {
-        width: 100%;
-        height: 100%;
-        box-sizing: border-box;
-        position: relative;
-
-        /*搜索区*/
-        .search-setion {
-            text-align: left;
-
-            .line {
-                text-align: center;
-            }
-
-            /*时间控件*/
-            .el-date-editor {
-                width: 100%;
-            }
-        }
-
-        /*分隔栏*/
-        .split-bar {
-            width: 106%;
-            height: 6px;
-            margin-left: -20px;
-            background-color: #E7E7E7;
-            margin-bottom: 20px;
-        }
-
-        /*分页部分*/
-        .botton-pag {
-            position: absolute;
-            width: 100%;
-            height: 8%;
-            bottom: -6px;
-        }
-
-        /*汇总数据*/
-        .allData {
-            height: 36px;
-            line-height: 36px;
-            width: 100%;
-            background-color: #F8F8F8;
-            border: 1px solid #ebeef5;
-            border-top: none;
-            box-sizing: border-box;
-            text-align: right;
-
-            /*左侧按钮*/
-            .btn-left {
-                float: left;
-                margin-left: 16px;
-
-                .transmit-icon {
-                    position: relative;
-                    display: inline-block;
-                    width: 16px;
-                    height: 10px;
-                    vertical-align: middle;
-                    margin-right: 4px;
-
-                    i {
-                        position: absolute;
-                        top: -5px;
-                        left: -3px;
-                        width: 18px;
-                        height: 18px;
-                        background: url(../../assets/icon_common.png) no-repeat;
-                        background-position: -49px -80px;
-                    }
-                }
-            }
-
-            /*汇总数字*/
-            .numText {
-                color: #FF5800;
-                margin-right: 10px;
-            }
-        }
-
         /*查看弹框*/
         .dialog-talbe {
             width: 100%;
@@ -135,83 +56,83 @@
 </style>
 
 <template>
-    <div id="payLookOver">
-        <!--搜索区-->
-        <div class="search-setion">
-            <el-form :inline="true" :model="searchData" size="mini">
-                <el-row>
-                    <el-col :span="5">
-                        <el-form-item>
-                            <el-date-picker
-                                    v-model="dateValue"
-                                    type="daterange"
-                                    range-separator="至"
-                                    start-placeholder="开始日期"
-                                    end-placeholder="结束日期"
-                                    value-format="yyyy-MM-dd"
-                                    size="mini" clearable
-                                    unlink-panels
-                                    :picker-options="pickerOptions">
-                            </el-date-picker>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="4">
-                        <el-form-item>
-                            <el-input v-model="searchData.pay_query_key" clearable placeholder="请输入付款方名称或账号"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="4">
-                        <el-form-item>
-                            <el-input v-model="searchData.recv_query_key" clearable
-                                      placeholder="请输入收款方名称或账号"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="4">
-                        <el-form-item>
-                            <el-select v-model="searchData.pay_mode" placeholder="请选择付款方式"
-                                       filterable size="mini">
-                                <el-option v-for="(item,k) in payModeList"
-                                           :key="k"
-                                           :label="item"
-                                           :value="k">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="5">
-                        <el-form-item>
-                            <el-col :span="11">
-                                <el-input v-model="searchData.min" clearable placeholder="最小金额"></el-input>
-                            </el-col>
-                            <el-col class="line" :span="2">-</el-col>
-                            <el-col :span="11">
-                                <el-input v-model="searchData.max" clearable placeholder="最大金额"></el-input>
-                            </el-col>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="2">
-                        <el-form-item>
-                            <el-button type="primary" plain @click="queryData" size="mini">搜索</el-button>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="24">
-                        <el-form-item style="margin-bottom:0px">
-                            <el-checkbox-group v-model="searchData.service_status">
-                                <el-checkbox v-for="(name,k) in statusList"
-                                             :label="k" name="type" :key="k">
-                                    {{ name }}
-                                </el-checkbox>
-                            </el-checkbox-group>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-            </el-form>
-        </div>
-        <!--分隔栏-->
-        <div class="split-bar"></div>
-        <!--数据展示区-->
-        <section class="table-content">
+    <el-container id="payLookOver">
+        <el-header>
+            <div class="search-setion">
+                <el-form :inline="true" :model="searchData" size="mini">
+                    <el-row>
+                        <el-col :span="5">
+                            <el-form-item>
+                                <el-date-picker
+                                        v-model="dateValue"
+                                        type="daterange"
+                                        range-separator="至"
+                                        start-placeholder="开始日期"
+                                        end-placeholder="结束日期"
+                                        value-format="yyyy-MM-dd"
+                                        size="mini" clearable
+                                        unlink-panels
+                                        :picker-options="pickerOptions">
+                                </el-date-picker>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-input v-model="searchData.pay_query_key" clearable placeholder="请输入付款方名称或账号"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-input v-model="searchData.recv_query_key" clearable
+                                          placeholder="请输入收款方名称或账号"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-select v-model="searchData.pay_mode" placeholder="请选择付款方式"
+                                           filterable size="mini">
+                                    <el-option v-for="(item,k) in payModeList"
+                                               :key="k"
+                                               :label="item"
+                                               :value="k">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="5">
+                            <el-form-item>
+                                <el-col :span="11">
+                                    <el-input v-model="searchData.min" clearable placeholder="最小金额"></el-input>
+                                </el-col>
+                                <el-col class="line" :span="2">-</el-col>
+                                <el-col :span="11">
+                                    <el-input v-model="searchData.max" clearable placeholder="最大金额"></el-input>
+                                </el-col>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="2">
+                            <el-form-item>
+                                <el-button type="primary" plain @click="queryData" size="mini">搜索</el-button>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="24">
+                            <el-form-item style="margin-bottom:0px">
+                                <el-checkbox-group v-model="searchData.service_status">
+                                    <el-checkbox v-for="(name,k) in statusList"
+                                                 :label="k" name="type" :key="k">
+                                        {{ name }}
+                                    </el-checkbox>
+                                </el-checkbox-group>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                </el-form>
+            </div>
+            <div class="split-bar"></div>
+        </el-header>
+        <el-main>
             <el-table :data="tableList"
+                      height="100%"
                       border size="mini">
                 <el-table-column prop="recv_account_name" label="收款方名称" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="recv_account_no" label="收款方账号" :show-overflow-tooltip="true"></el-table-column>
@@ -233,76 +154,79 @@
                     </template>
                 </el-table-column>
             </el-table>
+        </el-main>
+        <el-footer>
             <div class="allData">
                 <div class="btn-left">
                     <el-button type="warning" plain size="mini" @click="goMakeBill">制单</el-button>
                     <el-button type="warning" plain size="mini" @click="goPayment">支付处理</el-button>
                 </div>
-                <span>总笔数：</span>
-                <span v-text="totalData.total_num" class="numText"></span>
-                <span>总金额：</span>
-                <span v-text="totalData.total_amount" class="numText"></span>
+                <div class="btn-right">
+                    <span>总笔数：</span>
+                    <span v-text="totalData.total_num" class="numText"></span>
+                    <span>总金额：</span>
+                    <span v-text="totalData.total_amount" class="numText"></span>
+                </div>
             </div>
-        </section>
-        <!--分页部分-->
-        <div class="botton-pag">
-            <el-pagination
-                    background
-                    layout="sizes, prev, pager, next, jumper"
-                    :page-size="pagSize"
-                    :total="pagTotal"
-                    :page-sizes="[7, 50, 100, 500]"
-                    :pager-count="5"
-                    @current-change="getCurrentPage"
-                    @size-change="sizeChange"
-                    :current-page="pagCurrent">
-            </el-pagination>
-        </div>
-        <!--查看弹出框-->
-        <el-dialog title="支付单信息"
-                   :visible.sync="dialogVisible"
-                   width="900px" top="76px"
-                   :close-on-click-modal="false">
-            <div class="serial-number">
-                [编号:
-                <span v-text="dialogData.service_serial_number"></span>
-                ]
+            <div class="botton-pag">
+                <el-pagination
+                        background
+                        layout="sizes, prev, pager, next, jumper"
+                        :page-size="pagSize"
+                        :total="pagTotal"
+                        :page-sizes="[7, 50, 100, 500]"
+                        :pager-count="5"
+                        @current-change="getCurrentPage"
+                        @size-change="sizeChange"
+                        :current-page="pagCurrent">
+                </el-pagination>
             </div>
-            <ul class="dialog-talbe">
-                <li class="table-li-title">申请日期</li>
-                <li class="table-li-content" v-text="dialogData.apply_on"></li>
-                <li class="table-li-title">业务类型</li>
-                <li class="table-li-content" v-text="dialogData.biz_name"></li>
-                <li class="table-li-title">付款方式</li>
-                <li class="table-li-content" v-text="dialogData.pay_mode"></li>
-                <li class="table-li-title">付款账号</li>
-                <li class="table-li-content" v-text="dialogData.pay_account_no"></li>
+            <!--查看弹出框-->
+            <el-dialog title="支付单信息"
+                       :visible.sync="dialogVisible"
+                       width="900px" top="76px"
+                       :close-on-click-modal="false">
+                <div class="serial-number">
+                    [编号:
+                    <span v-text="dialogData.service_serial_number"></span>
+                    ]
+                </div>
+                <ul class="dialog-talbe">
+                    <li class="table-li-title">申请日期</li>
+                    <li class="table-li-content" v-text="dialogData.apply_on"></li>
+                    <li class="table-li-title">业务类型</li>
+                    <li class="table-li-content" v-text="dialogData.biz_name"></li>
+                    <li class="table-li-title">付款方式</li>
+                    <li class="table-li-content" v-text="dialogData.pay_mode"></li>
+                    <li class="table-li-title">付款账号</li>
+                    <li class="table-li-content" v-text="dialogData.pay_account_no"></li>
 
-                <li class="table-li-title">收款人户名</li>
-                <li class="table-li-content" v-text="dialogData.recv_account_name"></li>
-                <li class="table-li-title">收款人账号</li>
-                <li class="table-li-content" v-text="dialogData.recv_account_no"></li>
+                    <li class="table-li-title">收款人户名</li>
+                    <li class="table-li-content" v-text="dialogData.recv_account_name"></li>
+                    <li class="table-li-title">收款人账号</li>
+                    <li class="table-li-content" v-text="dialogData.recv_account_no"></li>
 
-                <li class="table-li-title">开户行</li>
-                <li class="table-li-content" :title="dialogData.recv_account_bank" v-text="dialogData.recv_account_bank"></li>
-                <li class="table-li-title">金额</li>
-                <li class="table-li-content" v-text="dialogData.payment_amount" style="color:#fd7d2f"></li>
+                    <li class="table-li-title">开户行</li>
+                    <li class="table-li-content" :title="dialogData.recv_account_bank" v-text="dialogData.recv_account_bank"></li>
+                    <li class="table-li-title">金额</li>
+                    <li class="table-li-content" v-text="dialogData.payment_amount" style="color:#fd7d2f"></li>
 
-                <li class="table-li-title">摘要</li>
-                <li class="table-li-content table-two-row" v-text="dialogData.payment_summary"></li>
+                    <li class="table-li-title">摘要</li>
+                    <li class="table-li-content table-two-row" v-text="dialogData.payment_summary"></li>
 
-                <li class="table-li-title" style="height:60px;line-height:60px">附件</li>
-                <li class="table-li-content table-two-row" style="height:60px;padding-top:6px;overflow-y:auto">
-                    <Upload :emptyFileList="emptyFileList"
-                            :fileMessage="fileMessage"
-                            :triggerFile="triggerFile"
-                            :isPending="false"></Upload>
-                </li>
+                    <li class="table-li-title" style="height:60px;line-height:60px">附件</li>
+                    <li class="table-li-content table-two-row" style="height:60px;padding-top:6px;overflow-y:auto">
+                        <Upload :emptyFileList="emptyFileList"
+                                :fileMessage="fileMessage"
+                                :triggerFile="triggerFile"
+                                :isPending="false"></Upload>
+                    </li>
 
-            </ul>
-            <BusinessTracking :businessParams="businessParams"></BusinessTracking>
-        </el-dialog>
-    </div>
+                </ul>
+                <BusinessTracking :businessParams="businessParams"></BusinessTracking>
+            </el-dialog>
+        </el-footer>
+    </el-container>
 </template>
 
 <script>

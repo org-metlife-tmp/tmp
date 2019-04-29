@@ -1,34 +1,5 @@
 <style scoped lang="less" type="text/less">
     #fundPoolAccSet{
-        width: 100%;
-        height: 100%;
-        box-sizing: border-box;
-        position: relative;
-
-        /*顶部按钮*/
-        .button-list-right {
-            position: absolute;
-            top: -60px;
-            right: -18px;
-        }
-
-        /*数据展示区*/
-        .table-content{
-            height: 397px;
-        }
-
-        /*分页部分*/
-        .botton-pag {
-            position: absolute;
-            width: 100%;
-            height: 8%;
-            bottom: -6px;
-
-            .el-button {
-                float: right;
-                margin-top: -30px;
-            }
-        }
         .switch{
             position: absolute;
             left: 20px;
@@ -38,12 +9,6 @@
 </style>
 <style lang="less">
     #fundPoolAccSet {
-        .el-dialog__wrapper {
-            .el-dialog__body {
-                height: 300px;
-                overflow-y: auto;
-            }
-        }
         .el-table__expanded-cell[class*=cell] {
             padding: 20px;
         }
@@ -51,13 +16,13 @@
 </style>
 
 <template>
-    <div id="fundPoolAccSet">
-        <!-- 顶部按钮-->
-        <div class="button-list-right">
-            <el-button type="warning" size="mini" @click="addAccount">新增</el-button>
-        </div>
-        <!--数据展示区-->
-        <section class="table-content">
+    <el-container id="fundPoolAccSet">
+        <el-header>
+            <div class="button-list-right">
+                <el-button type="warning" size="mini" @click="addAccount">新增</el-button>
+            </div>
+        </el-header>
+        <el-main>
             <el-table :data="tableList"
                       border
                       height="100%"
@@ -73,94 +38,95 @@
                     <template slot-scope="scope" class="operationBtn">
                         <span v-show="scope.row.default_flag">默认</span>
                         <el-button type="warning" size="mini" v-show="scope.row.visible"
-                            @click="setDefault(scope.row)">设为默认</el-button>
+                                   @click="setDefault(scope.row)">设为默认</el-button>
                     </template>
                 </el-table-column>
                 <el-table-column
-                            label="操作" width="80"
-                            fixed="right">
+                        label="操作" width="80"
+                        fixed="right">
                     <template slot-scope="scope" class="operationBtn">
                         <el-tooltip content="删除" placement="bottom" effect="light"
                                     :enterable="false" :open-delay="500">
                             <el-button type="danger" icon="el-icon-delete" size="mini"
-                                        @click="delAcc(scope.row,scope.$index,tableList)"></el-button>
+                                       @click="delAcc(scope.row,scope.$index,tableList)"></el-button>
                         </el-tooltip>
                     </template>
                 </el-table-column>
             </el-table>
-        </section>
-        <!--分页部分-->
-        <div class="botton-pag">
-            <el-pagination
-                    background
-                    layout="sizes, prev, pager, next, jumper"
-                    :page-size="pagSize"
-                    :total="pagTotal"
-                    :page-sizes="[11, 50, 100, 500]"
-                    :pager-count="5"
-                    :current-page="pagCurrent"
-                    @current-change="getCurrentPage"
-                    @size-change="sizeChange">
-            </el-pagination>
-        </div>
-        <!--待处理新增&修改弹出框-->
-        <el-dialog :visible.sync="dialogVisible"
-                   width="800px"
-                   :close-on-click-modal="false"
-                   top="56px">
-            <h1 slot="title" v-text="dialogTitle" class="dialog-title"></h1>
-            <el-form :model="dialogData" size="small"
-                     :label-width="formLabelWidth">
-                <el-row>
-                    <el-col :span="12">
-                        <el-form-item label="银行大类">
-                            <el-select v-model="dialogData.bank_type" placeholder="请选择银行大类"
-                                       clearable filterable
-                                       :filter-method="filterBankType"
-                                       @visible-change="clearSearch"
-                                       :loading="bankLongding"
-                                       @change="seletBank">
-                                <el-option v-for="bankType in bankTypeList"
-                                           :key="bankType.name"
-                                           :label="bankType.display_name"
-                                           :value="bankType.code">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span=12 style="height:51px"></el-col>
-                    <el-col :span="12">
-                        <el-form-item label="账户号">
-                            <el-select v-model="dialogData.acc" @change="changeAccount" clearable value-key="acc_no">
-                                <el-option
-                                    v-for="item in accOptions"
-                                    :key="item.acc_no"
-                                    :label="item.acc_no"
-                                    :value="item">
-                                    <span>{{ item.acc_no }}</span>
-                                    <span style="margin-left:10px;color:#bbb">{{ item.acc_name }}</span>
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="账户名称">
-                            <el-input v-model="dialogData.acc_name" readonly></el-input>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-            </el-form>
-            <span slot="footer" class="dialog-footer">
+        </el-main>
+        <el-footer>
+            <div class="botton-pag">
+                <el-pagination
+                        background
+                        layout="sizes, prev, pager, next, jumper"
+                        :page-size="pagSize"
+                        :total="pagTotal"
+                        :page-sizes="[11, 50, 100, 500]"
+                        :pager-count="5"
+                        :current-page="pagCurrent"
+                        @current-change="getCurrentPage"
+                        @size-change="sizeChange">
+                </el-pagination>
+            </div>
+            <!--待处理新增&修改弹出框-->
+            <el-dialog :visible.sync="dialogVisible"
+                       width="800px"
+                       :close-on-click-modal="false"
+                       top="56px">
+                <h1 slot="title" v-text="dialogTitle" class="dialog-title"></h1>
+                <el-form :model="dialogData" size="small"
+                         :label-width="formLabelWidth">
+                    <el-row>
+                        <el-col :span="12">
+                            <el-form-item label="银行大类">
+                                <el-select v-model="dialogData.bank_type" placeholder="请选择银行大类"
+                                           clearable filterable
+                                           :filter-method="filterBankType"
+                                           @visible-change="clearSearch"
+                                           :loading="bankLongding"
+                                           @change="seletBank">
+                                    <el-option v-for="bankType in bankTypeList"
+                                               :key="bankType.name"
+                                               :label="bankType.display_name"
+                                               :value="bankType.code">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span=12 style="height:51px"></el-col>
+                        <el-col :span="12">
+                            <el-form-item label="账户号">
+                                <el-select v-model="dialogData.acc" @change="changeAccount" clearable value-key="acc_no">
+                                    <el-option
+                                            v-for="item in accOptions"
+                                            :key="item.acc_no"
+                                            :label="item.acc_no"
+                                            :value="item">
+                                        <span>{{ item.acc_no }}</span>
+                                        <span style="margin-left:10px;color:#bbb">{{ item.acc_name }}</span>
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="账户名称">
+                                <el-input v-model="dialogData.acc_name" readonly></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                </el-form>
+                <span slot="footer" class="dialog-footer">
                 <el-switch
-                    class="switch"
-                    v-model="dialogData.default_flag"
-                    active-text="默认">
+                        class="switch"
+                        v-model="dialogData.default_flag"
+                        active-text="默认">
                 </el-switch>
                 <el-button type="warning" size="mini" plain @click="dialogVisible = false">取 消</el-button>
                 <el-button type="warning" size="mini" @click="subAdd">确 定</el-button>
             </span>
-        </el-dialog>
-    </div>
+            </el-dialog>
+        </el-footer>
+    </el-container>
 </template>
 
 <script>

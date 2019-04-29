@@ -1,47 +1,7 @@
 <style scoped lang="less" type="text/less">
     #refundDispose {
-        width: 100%;
-        height: 100%;
-        box-sizing: border-box;
-        position: relative;
-
-        /*搜索区*/
-        .search-setion {
-            text-align: left;
-
-            /*时间控件*/
-            .el-date-editor {
-                width: 96%;
-            }
-        }
-
-        /*分隔栏*/
-        .split-bar {
-            width: 106%;
-            height: 6px;
-            margin-left: -20px;
-            background-color: #E7E7E7;
-            margin-bottom: 20px;
-        }
-
-        /*数据展示区*/
-        .table-content {
-            height: 181px;
-        }
-
-        .validated-content {
-            height: 75%;
-            overflow-y: auto;
-        }
-
         /*分页部分*/
         .botton-pag {
-            position: absolute;
-            width: 100%;
-            height: 8%;
-            bottom: -6px;
-            top: 258px;
-
             .el-button {
                 float: right;
                 margin-top: 2px;
@@ -54,68 +14,56 @@
             }
         }
 
-        /*分割线*/
-        .split-form {
-            width: 100%;
-            height: 26px;
-            border-bottom: 1px solid #ccc;
-            margin-bottom: 10px;
-            h4 {
-                margin: 0;
-                float: left;
-            }
-        }
     }
 </style>
 
 <template>
-    <div id="refundDispose">
-        <!--搜索区-->
-        <div class="search-setion">
-            <el-form :inline="true" :model="searchData" size="mini">
-                <el-row>
-                    <el-col :span="5">
-                        <el-date-picker
-                                v-model="dateValue"
-                                type="daterange"
-                                range-separator="至"
-                                start-placeholder="开始日期"
-                                end-placeholder="结束日期"
-                                value-format="yyyy-MM-dd"
-                                size="mini" clearable
-                                unlink-panels
-                                :picker-options="pickerOptions"
-                                @change="">
-                        </el-date-picker>
-                    </el-col>
-                    <el-col :span="4">
-                        <el-form-item>
-                            <el-input v-model="searchData.acc_no" clearable placeholder="请输入账户号"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="7">
-                        <el-form-item>
-                            <el-col :span="11">
-                                <el-input v-model="searchData.min" clearable placeholder="最小金额"></el-input>
-                            </el-col>
-                            <el-col class="line" :span="1" style="text-align:center">-</el-col>
-                            <el-col :span="11">
-                                <el-input v-model="searchData.max" clearable placeholder="最大金额"></el-input>
-                            </el-col>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="2">
-                        <el-form-item>
-                            <el-button type="primary" plain @click="queryData" size="mini">搜索</el-button>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-            </el-form>
-        </div>
-        <!--分隔栏-->
-        <div class="split-bar"></div>
-        <!--数据展示区-->
-        <section class="table-content">
+    <el-container id="refundDispose">
+        <el-header>
+            <div class="search-setion">
+                <el-form :inline="true" :model="searchData" size="mini">
+                    <el-row>
+                        <el-col :span="5">
+                            <el-date-picker
+                                    v-model="dateValue"
+                                    type="daterange"
+                                    range-separator="至"
+                                    start-placeholder="开始日期"
+                                    end-placeholder="结束日期"
+                                    value-format="yyyy-MM-dd"
+                                    size="mini" clearable
+                                    unlink-panels
+                                    :picker-options="pickerOptions"
+                                    @change="">
+                            </el-date-picker>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-input v-model="searchData.acc_no" clearable placeholder="请输入账户号"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="7">
+                            <el-form-item>
+                                <el-col :span="11">
+                                    <el-input v-model="searchData.min" clearable placeholder="最小金额"></el-input>
+                                </el-col>
+                                <el-col class="line" :span="1" style="text-align:center">-</el-col>
+                                <el-col :span="11">
+                                    <el-input v-model="searchData.max" clearable placeholder="最大金额"></el-input>
+                                </el-col>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="2">
+                            <el-form-item>
+                                <el-button type="primary" plain @click="queryData" size="mini">搜索</el-button>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                </el-form>
+            </div>
+            <div class="split-bar"></div>
+        </el-header>
+        <el-main>
             <el-table :data="tableList" border
                       height="100%" size="mini"
                       highlight-current-row
@@ -133,51 +81,51 @@
                 <el-table-column prop="amount" label="金额" :show-overflow-tooltip="true"
                                  :formatter="transitAmount"></el-table-column>
             </el-table>
-        </section>
-        <!--分页部分-->
-        <div class="botton-pag botton-pag-center">
-            <el-select v-model="bizType" placeholder="请选择业务类型"
-                       filterable size="mini"
-                       @change="getSelectData">
-                <el-option v-for="(bizType,key) in bizTypeList"
-                           :key="key"
-                           :label="bizType"
-                           :value="key">
-                </el-option>
-            </el-select>
-            <el-button type="warning" size="mini" @click="confirmCheck">确认退票</el-button>
-            <div style="float:right;display:inline-block;width:60px;height:12px"></div>
-            <el-pagination
-                    background
-                    layout="sizes, prev, pager, next, jumper"
-                    :page-size="pagSize"
-                    :total="pagTotal"
-                    :page-sizes="[7, 50, 100, 500]"
-                    :pager-count="5"
-                    :current-page="pagCurrent"
-                    @current-change="getCurrentPage"
-                    @size-change="sizeChange">
-            </el-pagination>
-        </div>
-        <!--主数据关联数据-->
-        <section class="table-content" style="margin-top:40px">
-            <el-table :data="childList" border
-                      highlight-current-row
-                      height="100%" size="mini"
-                      @current-change="selectData = $event || {}">
-                <!--<el-table-column prop="service_serial_number" label="单据编号" :show-overflow-tooltip="true"></el-table-column>-->
-                <el-table-column prop="pay_account_no" label="付款方账号" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="pay_account_name" label="付款方账户名称" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="pay_account_bank" label="付款方开户行" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="recv_account_no" label="收款方账户号" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="recv_account_name" label="收款方账户名称" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="recv_account_bank" label="收款方开户行" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="payment_summary" label="摘要" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="payment_amount" label="金额" :show-overflow-tooltip="true"
-                                 :formatter="transitAmount"></el-table-column>
-            </el-table>
-        </section>
-    </div>
+        </el-main>
+        <el-footer>
+            <div class="botton-pag botton-pag-center">
+                <el-select v-model="bizType" placeholder="请选择业务类型"
+                           filterable size="mini"
+                           @change="getSelectData">
+                    <el-option v-for="(bizType,key) in bizTypeList"
+                               :key="key"
+                               :label="bizType"
+                               :value="key">
+                    </el-option>
+                </el-select>
+                <el-button type="warning" size="mini" @click="confirmCheck">确认退票</el-button>
+                <div style="float:right;display:inline-block;width:60px;height:12px"></div>
+                <el-pagination
+                        background
+                        layout="sizes, prev, pager, next, jumper"
+                        :page-size="pagSize"
+                        :total="pagTotal"
+                        :page-sizes="[7, 50, 100, 500]"
+                        :pager-count="5"
+                        :current-page="pagCurrent"
+                        @current-change="getCurrentPage"
+                        @size-change="sizeChange">
+                </el-pagination>
+            </div>
+            <section class="table-content" style="margin-top:10px">
+                <el-table :data="childList" border
+                          highlight-current-row
+                          height="200px" size="mini"
+                          @current-change="selectData = $event || {}">
+                    <!--<el-table-column prop="service_serial_number" label="单据编号" :show-overflow-tooltip="true"></el-table-column>-->
+                    <el-table-column prop="pay_account_no" label="付款方账号" :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column prop="pay_account_name" label="付款方账户名称" :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column prop="pay_account_bank" label="付款方开户行" :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column prop="recv_account_no" label="收款方账户号" :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column prop="recv_account_name" label="收款方账户名称" :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column prop="recv_account_bank" label="收款方开户行" :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column prop="payment_summary" label="摘要" :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column prop="payment_amount" label="金额" :show-overflow-tooltip="true"
+                                     :formatter="transitAmount"></el-table-column>
+                </el-table>
+            </section>
+        </el-footer>
+    </el-container>
 </template>
 
 <script>

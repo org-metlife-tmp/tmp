@@ -1,53 +1,5 @@
 <style scoped lang="less" type="text/less">
     #balanceAdjust {
-        width: 100%;
-        height: 100%;
-        box-sizing: border-box;
-        position: relative;
-
-        /*顶部按钮*/
-        .button-list-right {
-            position: absolute;
-            top: -60px;
-            right: -18px;
-        }
-
-        /*搜索区*/
-        .search-setion {
-            text-align: left;
-
-            .line {
-                text-align: center;
-            }
-
-            /*时间控件*/
-            .el-date-editor {
-                width: 100%;
-            }
-        }
-
-        /*分隔栏*/
-        .split-bar {
-            width: 106%;
-            height: 6px;
-            margin-left: -20px;
-            background-color: #E7E7E7;
-            margin-bottom: 20px;
-        }
-
-        /*分页部分*/
-        .botton-pag {
-            position: absolute;
-            width: 100%;
-            height: 8%;
-            bottom: -6px;
-        }
-
-        /*数据列表*/
-        .table-content {
-            height: 340px;
-        }
-
         /*弹框余额表*/
         .build-table {
             width: 100%;
@@ -97,61 +49,49 @@
         }
     }
 </style>
-<style lang="less" type="text/less">
-    #balanceAdjust {
-        .el-dialog__wrapper {
-            .el-dialog__body {
-                max-height: 440px;
-                overflow-y: auto;
-            }
-        }
-    }
-</style>
 
 <template>
-    <div id="balanceAdjust">
-        <!-- 顶部按钮-->
-        <div class="button-list-right">
-            <el-button type="warning" size="mini" @click="addBill">新增</el-button>
-        </div>
-        <!--搜索区-->
-        <div class="search-setion">
-            <el-form :inline="true" :model="searchData" size="mini">
-                <el-row>
-                    <el-col :span="4">
-                        <el-form-item>
-                            <el-date-picker v-model="searchData.year"
-                                            type="year" placeholder="请选择年份"
-                                            format="yyyy 年" value-format="yyyy">
-                            </el-date-picker>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="4">
-                        <el-form-item>
-                            <el-date-picker v-model="searchData.month"
-                                            type="month" placeholder="请选择月份"
-                                            format="M 月" value-format="M">
-                            </el-date-picker>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="4">
-                        <el-form-item>
-                            <el-input v-model="searchData.query_key" clearable
-                                      placeholder="请输入账户名或账号"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="2">
-                        <el-form-item>
-                            <el-button type="primary" plain @click="queryData" size="mini">搜索</el-button>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-            </el-form>
-        </div>
-        <!--分隔栏-->
-        <div class="split-bar"></div>
-        <!--数据展示区-->
-        <section class="table-content">
+    <el-container id="balanceAdjust">
+        <el-header>
+            <div class="button-list-right">
+                <el-button type="warning" size="mini" @click="addBill">新增</el-button>
+            </div>
+            <div class="search-setion">
+                <el-form :inline="true" :model="searchData" size="mini">
+                    <el-row>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-date-picker v-model="searchData.year"
+                                                type="year" placeholder="请选择年份"
+                                                format="yyyy 年" value-format="yyyy">
+                                </el-date-picker>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-date-picker v-model="searchData.month"
+                                                type="month" placeholder="请选择月份"
+                                                format="M 月" value-format="M">
+                                </el-date-picker>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-input v-model="searchData.query_key" clearable
+                                          placeholder="请输入账户名或账号"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="2">
+                            <el-form-item>
+                                <el-button type="primary" plain @click="queryData" size="mini">搜索</el-button>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                </el-form>
+            </div>
+            <div class="split-bar"></div>
+        </el-header>
+        <el-main>
             <el-table :data="tableList"
                       height="100%"
                       border size="mini">
@@ -171,109 +111,110 @@
                     </template>
                 </el-table-column>
             </el-table>
-        </section>
-        <!--分页部分-->
-        <div class="botton-pag">
-            <el-pagination
-                    background
-                    layout="sizes, prev, pager, next, jumper"
-                    :page-size="pagSize"
-                    :total="pagTotal"
-                    :page-sizes="[7, 50, 100, 500]"
-                    :pager-count="5"
-                    @current-change="getCurrentPage"
-                    @size-change="sizeChange"
-                    :current-page="pagCurrent">
-            </el-pagination>
-        </div>
-        <!--新增/查看弹出框-->
-        <el-dialog title=""
-                   :visible.sync="dialogVisible"
-                   width="860px" top="76px"
-                   :close-on-click-modal="false">
-            <h1 slot="title" v-text="dialogTitle" class="dialog-title"></h1>
-            <el-form :model="dialogData" size="small"
-                     :label-width="formLabelWidth">
-                <el-row>
-                    <el-col :span="11">
-                        <el-form-item label="账号">
-                            <el-select v-model="dialogData.acc_id" placeholder="请选择账号"
-                                       clearable :disabled="dialogTitle != '新增余额调节表'">
-                                <el-option v-for="accItem in accList"
-                                           :key="accItem.acc_id"
-                                           :label="accItem.acc_no"
-                                           :value="accItem.acc_id">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="11">
-                        <el-form-item label="日期">
-                            <el-date-picker v-model="dialogData.cdate"
-                                            style="width:100%"
-                                            type="month" placeholder="请选择日期"
-                                            value-format="yyyy-MM"
-                                            :disabled="dialogTitle != '新增余额调节表'">
-                            </el-date-picker>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="2" style="text-align:right">
-                        <el-button type="primary" plain @click="getBuild" size="small">查询</el-button>
-                    </el-col>
-                </el-row>
-            </el-form>
-            <div class="build-table" v-show="hasBuild">
-                <ul>
-                    <li class="table-title">项目</li>
-                    <li class="table-title">金额 (元)</li>
-                    <li>企业银行存款日记账余额</li>
-                    <li v-text="dialogTable.voucher_bal"></li>
-                    <li>加：银行已收,企业未收款</li>
-                    <li v-text="dialogTable.ysAll"></li>
-                    <template v-for="(item,index) in ysList">
-                        <li>{{ item.$empty ? "" : (index + 1 ) + "、" + item.memo }}</li>
-                        <li>{{ item.amount }}</li>
-                    </template>
-
-
-                    <li>减：银行已付,企业未付款</li>
-                    <li v-text="dialogTable.yfAll"></li>
-                    <template v-for="(item,index) in yfList">
-                        <li>{{ item.$empty ? "" : (index + 1 ) + "、" + item.memo }}</li>
-                        <li>{{ item.amount }}</li>
-                    </template>
-                    <li class="table-bottom">调节后的存款余额</li>
-                    <li class="table-bottom" v-text="dialogTable.voucher_adjust_bal"></li>
-                </ul>
-                <ul>
-                    <li class="table-title">项目</li>
-                    <li class="table-title">金额 (元)</li>
-                    <li>银行对账单余额</li>
-                    <li v-text="dialogTable.acc_bal"></li>
-                    <li>加：企业已收,银行未收款</li>
-                    <li v-text="dialogTable.qsAll"></li>
-                    <template v-for="(item,index) in qsList">
-                        <li>{{ item.$empty ? "" : (index + 1 ) + "、" + item.memo }}</li>
-                        <li>{{ item.amount }}</li>
-                    </template>
-
-                    <li>减：企业已付,银行未付款</li>
-                    <li v-text="dialogTable.qfAll"></li>
-                    <template v-for="(item,index) in qfList">
-                        <li>{{ item.$empty ? "" : (index + 1 ) + "、" + item.memo }}</li>
-                        <li>{{ item.amount }}</li>
-                    </template>
-                    <li class="table-bottom">调节后的存款余额</li>
-                    <li class="table-bottom" v-text="dialogTable.acc_adjust_bal"></li>
-                </ul>
+        </el-main>
+        <el-footer>
+            <div class="botton-pag">
+                <el-pagination
+                        background
+                        layout="sizes, prev, pager, next, jumper"
+                        :page-size="pagSize"
+                        :total="pagTotal"
+                        :page-sizes="[7, 50, 100, 500]"
+                        :pager-count="5"
+                        @current-change="getCurrentPage"
+                        @size-change="sizeChange"
+                        :current-page="pagCurrent">
+                </el-pagination>
             </div>
-            <span slot="footer" class="dialog-footer">
+            <!--新增/查看弹出框-->
+            <el-dialog title=""
+                       :visible.sync="dialogVisible"
+                       width="860px" top="76px"
+                       :close-on-click-modal="false">
+                <h1 slot="title" v-text="dialogTitle" class="dialog-title"></h1>
+                <el-form :model="dialogData" size="small"
+                         :label-width="formLabelWidth">
+                    <el-row>
+                        <el-col :span="11">
+                            <el-form-item label="账号">
+                                <el-select v-model="dialogData.acc_id" placeholder="请选择账号"
+                                           clearable :disabled="dialogTitle != '新增余额调节表'">
+                                    <el-option v-for="accItem in accList"
+                                               :key="accItem.acc_id"
+                                               :label="accItem.acc_no"
+                                               :value="accItem.acc_id">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="11">
+                            <el-form-item label="日期">
+                                <el-date-picker v-model="dialogData.cdate"
+                                                style="width:100%"
+                                                type="month" placeholder="请选择日期"
+                                                value-format="yyyy-MM"
+                                                :disabled="dialogTitle != '新增余额调节表'">
+                                </el-date-picker>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="2" style="text-align:right">
+                            <el-button type="primary" plain @click="getBuild" size="small">查询</el-button>
+                        </el-col>
+                    </el-row>
+                </el-form>
+                <div class="build-table" v-show="hasBuild">
+                    <ul>
+                        <li class="table-title">项目</li>
+                        <li class="table-title">金额 (元)</li>
+                        <li>企业银行存款日记账余额</li>
+                        <li v-text="dialogTable.voucher_bal"></li>
+                        <li>加：银行已收,企业未收款</li>
+                        <li v-text="dialogTable.ysAll"></li>
+                        <template v-for="(item,index) in ysList">
+                            <li>{{ item.$empty ? "" : (index + 1 ) + "、" + item.memo }}</li>
+                            <li>{{ item.amount }}</li>
+                        </template>
+
+
+                        <li>减：银行已付,企业未付款</li>
+                        <li v-text="dialogTable.yfAll"></li>
+                        <template v-for="(item,index) in yfList">
+                            <li>{{ item.$empty ? "" : (index + 1 ) + "、" + item.memo }}</li>
+                            <li>{{ item.amount }}</li>
+                        </template>
+                        <li class="table-bottom">调节后的存款余额</li>
+                        <li class="table-bottom" v-text="dialogTable.voucher_adjust_bal"></li>
+                    </ul>
+                    <ul>
+                        <li class="table-title">项目</li>
+                        <li class="table-title">金额 (元)</li>
+                        <li>银行对账单余额</li>
+                        <li v-text="dialogTable.acc_bal"></li>
+                        <li>加：企业已收,银行未收款</li>
+                        <li v-text="dialogTable.qsAll"></li>
+                        <template v-for="(item,index) in qsList">
+                            <li>{{ item.$empty ? "" : (index + 1 ) + "、" + item.memo }}</li>
+                            <li>{{ item.amount }}</li>
+                        </template>
+
+                        <li>减：企业已付,银行未付款</li>
+                        <li v-text="dialogTable.qfAll"></li>
+                        <template v-for="(item,index) in qfList">
+                            <li>{{ item.$empty ? "" : (index + 1 ) + "、" + item.memo }}</li>
+                            <li>{{ item.amount }}</li>
+                        </template>
+                        <li class="table-bottom">调节后的存款余额</li>
+                        <li class="table-bottom" v-text="dialogTable.acc_adjust_bal"></li>
+                    </ul>
+                </div>
+                <span slot="footer" class="dialog-footer">
                 <el-button type="warning" size="mini" plain @click="dialogVisible = false">取 消</el-button>
                 <el-button type="warning" size="mini" @click="createTable"
                            v-show="dialogTitle == '新增余额调节表'">生成余额调节表</el-button>
             </span>
-        </el-dialog>
-    </div>
+            </el-dialog>
+        </el-footer>
+    </el-container>
 </template>
 
 <script>

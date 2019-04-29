@@ -1,84 +1,5 @@
 <style scoped lang="less" type="text/less">
     #batchLookOver {
-        width: 100%;
-        height: 100%;
-        box-sizing: border-box;
-        position: relative;
-
-        /*搜索区*/
-        .search-setion {
-            text-align: left;
-
-            .line {
-                text-align: center;
-            }
-
-            /*时间控件*/
-            .el-date-editor {
-                width: 100%;
-            }
-        }
-
-        /*分隔栏*/
-        .split-bar {
-            width: 106%;
-            height: 6px;
-            margin-left: -20px;
-            background-color: #E7E7E7;
-            margin-bottom: 20px;
-        }
-
-        /*分页部分*/
-        .botton-pag {
-            position: absolute;
-            width: 100%;
-            height: 8%;
-            bottom: -6px;
-        }
-
-        /*汇总数据*/
-        .allData {
-            height: 36px;
-            line-height: 36px;
-            width: 100%;
-            background-color: #F8F8F8;
-            border: 1px solid #ebeef5;
-            border-top: none;
-            box-sizing: border-box;
-            text-align: right;
-
-            /*左侧按钮*/
-            .btn-left {
-                float: left;
-                margin-left: 16px;
-
-                .transmit-icon {
-                    position: relative;
-                    display: inline-block;
-                    width: 16px;
-                    height: 10px;
-                    vertical-align: middle;
-                    margin-right: 4px;
-
-                    i {
-                        position: absolute;
-                        top: -5px;
-                        left: -3px;
-                        width: 18px;
-                        height: 18px;
-                        background: url(../../assets/icon_common.png) no-repeat;
-                        background-position: -49px -80px;
-                    }
-                }
-            }
-
-            /*汇总数字*/
-            .numText {
-                color: #FF5800;
-                margin-right: 10px;
-            }
-        }
-
         /*按钮样式*/
         .get-all, .get-list {
             display: inline-block;
@@ -186,94 +107,88 @@
         .el-form--inline .el-form-item__content{
             width: 100%;
         }
-        .el-dialog__wrapper {
-            .el-dialog__body {
-                max-height:440px;
-                overflow-y: auto;
-            }
-        }
     }
 </style>
 
 <template>
-    <div id="batchLookOver">
-        <!--搜索区-->
-        <div class="search-setion">
-            <el-form :inline="true" :model="searchData" size="mini">
-                <el-row>
-                    <el-col :span="5">
-                        <el-form-item>
-                            <el-date-picker
-                                    v-model="dateValue"
-                                    type="daterange"
-                                    range-separator="至"
-                                    start-placeholder="开始日期"
-                                    end-placeholder="结束日期"
-                                    value-format="yyyy-MM-dd"
-                                    size="mini" clearable
-                                    unlink-panels
-                                    :picker-options="pickerOptions"
-                                    @change="">
-                            </el-date-picker>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="4">
-                        <el-form-item>
-                            <el-input v-model="searchData.pay_query_key" clearable placeholder="请输入付款方名称或账号"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="4">
-                        <el-form-item>
-                            <el-input v-model="searchData.recv_query_key" clearable
-                                      placeholder="请输入收款方名称或账号"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="4">
-                        <el-form-item>
-                            <el-select v-model="searchData.pay_mode" placeholder="请选择付款方式"
-                                       filterable clearable size="mini">
-                                <el-option v-for="(item,k) in payModeList"
-                                           :key="k"
-                                           :label="item"
-                                           :value="k">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="5">
-                        <el-form-item>
-                            <el-col :span="11">
-                                <el-input v-model="searchData.min" clearable placeholder="最小金额"></el-input>
-                            </el-col>
-                            <el-col class="line" :span="2">-</el-col>
-                            <el-col :span="11">
-                                <el-input v-model="searchData.max" clearable placeholder="最大金额"></el-input>
-                            </el-col>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="2">
-                        <el-form-item>
-                            <el-button type="primary" plain @click="queryData" size="mini">搜索</el-button>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="24">
-                        <el-form-item style="margin-bottom:0px">
-                            <el-checkbox-group v-model="searchData.service_status">
-                                <el-checkbox v-for="(name,k) in statusList"
-                                             :label="k" name="type" :key="k">
-                                    {{ name }}
-                                </el-checkbox>
-                            </el-checkbox-group>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-            </el-form>
-        </div>
-        <!--分隔栏-->
-        <div class="split-bar"></div>
-        <!--数据展示区-->
-        <section class="table-content">
+    <el-container id="batchLookOver">
+        <el-header>
+            <div class="search-setion">
+                <el-form :inline="true" :model="searchData" size="mini">
+                    <el-row>
+                        <el-col :span="5">
+                            <el-form-item>
+                                <el-date-picker
+                                        v-model="dateValue"
+                                        type="daterange"
+                                        range-separator="至"
+                                        start-placeholder="开始日期"
+                                        end-placeholder="结束日期"
+                                        value-format="yyyy-MM-dd"
+                                        size="mini" clearable
+                                        unlink-panels
+                                        :picker-options="pickerOptions"
+                                        @change="">
+                                </el-date-picker>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-input v-model="searchData.pay_query_key" clearable placeholder="请输入付款方名称或账号"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-input v-model="searchData.recv_query_key" clearable
+                                          placeholder="请输入收款方名称或账号"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-select v-model="searchData.pay_mode" placeholder="请选择付款方式"
+                                           filterable clearable size="mini">
+                                    <el-option v-for="(item,k) in payModeList"
+                                               :key="k"
+                                               :label="item"
+                                               :value="k">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="5">
+                            <el-form-item>
+                                <el-col :span="11">
+                                    <el-input v-model="searchData.min" clearable placeholder="最小金额"></el-input>
+                                </el-col>
+                                <el-col class="line" :span="2">-</el-col>
+                                <el-col :span="11">
+                                    <el-input v-model="searchData.max" clearable placeholder="最大金额"></el-input>
+                                </el-col>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="2">
+                            <el-form-item>
+                                <el-button type="primary" plain @click="queryData" size="mini">搜索</el-button>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="24">
+                            <el-form-item style="margin-bottom:0px">
+                                <el-checkbox-group v-model="searchData.service_status">
+                                    <el-checkbox v-for="(name,k) in statusList"
+                                                 :label="k" name="type" :key="k">
+                                        {{ name }}
+                                    </el-checkbox>
+                                </el-checkbox-group>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                </el-form>
+            </div>
+            <div class="split-bar"></div>
+        </el-header>
+        <el-main>
             <el-table :data="tableList"
+                      height="100%"
                       border size="mini">
                 <el-table-column prop="batchno" label="批次号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="total_num" label="总笔数" :show-overflow-tooltip="true"></el-table-column>
@@ -297,165 +212,167 @@
                     </template>
                 </el-table-column>
             </el-table>
+        </el-main>
+        <el-footer>
             <div class="allData">
                 <div class="btn-left">
                     <el-button type="warning" plain size="mini" @click="goMakeBill">制单</el-button>
                 </div>
-                <span>总金额：</span>
-                <span v-text="totalData.total_amount" class="numText"></span>
-                <span>成功金额：</span>
-                <span v-text="totalData.success_amount" class="numText"></span>
-            </div>
-        </section>
-        <!--分页部分-->
-        <div class="botton-pag">
-            <el-pagination
-                    background
-                    layout="sizes, prev, pager, next, jumper"
-                    :page-size="pagSize"
-                    :total="pagTotal"
-                    :page-sizes="[7, 50, 100, 500]"
-                    :pager-count="5"
-                    @current-change="getCurrentPage"
-                    @size-change="sizeChange"
-                    :current-page="pagCurrent">
-            </el-pagination>
-        </div>
-
-        <!--查看弹出框-->
-        <el-dialog title="支付单信息"
-                   :visible.sync="dialogVisible"
-                   width="900px" top="76px"
-                   :close-on-click-modal="false">
-            <div class="switchover">
-                <el-button-group>
-                    <el-button type="primary" size="mini" :class="{active:showAll}"
-                               @click="showAll=true">
-                        <i class="get-all"></i>
-                    </el-button>
-                    <el-button type="primary" size="mini" :class="{active:!showAll}"
-                               @click="showAll=false">
-                        <i class="get-list"></i>
-                    </el-button>
-                </el-button-group>
-            </div>
-            <div class="all-table" v-show="showAll">
-                <div class="serial-number">
-                    [批次号:
-                    <span v-text="dialogData.batchno"></span>
-                    ]
-                </div>
-                <ul class="dialog-talbe">
-                    <li class="table-li-title">总笔数</li>
-                    <li class="table-li-content" v-text="dialogData.total_num"></li>
-                    <li class="table-li-title">总金额</li>
-                    <li class="table-li-content" v-text="dialogData.total_amount"></li>
-
-                    <li class="table-li-title">付款账号</li>
-                    <li class="table-li-content" v-text="dialogData.pay_account_no"></li>
-                    <li class="table-li-title">开户行</li>
-                    <li class="table-li-content" :title="dialogData.pay_account_bank" v-text="dialogData.pay_account_bank"></li>
-
-                    <li class="table-li-title small-title">支付结果</li>
-                    <li class="table-li-content table-two-row"></li>
-
-                    <li class="table-li-title">已失败</li>
-                    <li class="table-li-content"  style="color:#fd7d2f">
-                        <span v-text="dialogData.failed_num"></span>笔
-                        <span v-text="dialogData.failed_amount" class="partition"></span>元
-                    </li>
-                    <li class="table-li-title">处理中</li>
-                    <li class="table-li-content">
-                        <span v-text="dialogData.process_num"></span>笔
-                        <span v-text="dialogData.process_amount" class="partition"></span>元
-                    </li>
-
-                    <li class="table-li-title">已保存</li>
-                    <li class="table-li-content">
-                        <span v-text="dialogData.saved_num"></span>笔
-                        <span v-text="dialogData.saved_amount" class="partition"></span>元
-                    </li>
-                    <li class="table-li-title">已作废</li>
-                    <li class="table-li-content">
-                        <span v-text="dialogData.cancel_num"></span>笔
-                        <span v-text="dialogData.cancel_amount" class="partition"></span>元
-                    </li>
-
-                    <li class="table-li-title">已成功</li>
-                    <li class="table-li-content table-two-row">
-                        <span v-text="dialogData.success_num"></span>笔
-                        <span v-text="dialogData.success_amount" class="partition"></span>元
-                    </li>
-
-                    <li class="table-li-title">摘要</li>
-                    <li class="table-li-content table-two-row" v-text="dialogData.payment_summary"></li>
-
-                    <li class="table-li-title" style="height:60px;line-height:60px">附件</li>
-                    <li class="table-li-content table-two-row" style="height:60px;padding-top:6px;overflow-y:auto">
-                        <Upload :emptyFileList="emptyFileList"
-                                :fileMessage="fileMessage"
-                                :triggerFile="triggerFile"
-                                :isPending="false"></Upload>
-                    </li>
-                </ul>
-                <BusinessTracking :businessParams="businessParams"></BusinessTracking>
-            </div>
-            <div class="list-table" v-show="!showAll">
-                <el-form :inline="true" :model="dialogSearch" size="mini">
-                    <el-row>
-                        <el-col :span="6">
-                            <el-form-item>
-                                <el-input v-model="dialogSearch.query_key" clearable
-                                          placeholder="请输入收款方名称或账号"></el-input>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="8">
-                            <el-form-item>
-                                <el-col :span="11">
-                                    <el-input v-model="dialogSearch.min_amount" clearable placeholder="最小金额"></el-input>
-                                </el-col>
-                                <el-col class="line" :span="1" style="text-align:center">-</el-col>
-                                <el-col :span="11">
-                                    <el-input v-model="dialogSearch.max_amount" clearable placeholder="最大金额"></el-input>
-                                </el-col>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="2">
-                            <el-form-item>
-                                <el-button type="primary" plain @click="queryDialogData" size="mini">搜索</el-button>
-                            </el-form-item>
-                        </el-col>
-                    </el-row>
-                </el-form>
-                <el-table :data="dialogList"
-                          border size="mini">
-                    <el-table-column prop="recv_account_name" label="收款户名" :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="recv_account_no" label="收款账号" :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="recv_account_bank" label="收款行" :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="payment_amount" label="金额" :show-overflow-tooltip="true"
-                                     :formatter="transitAmount"></el-table-column>
-                    <el-table-column prop="pay_status" label="业务状态" :show-overflow-tooltip="true"
-                                     :formatter="transitDetailStatus"></el-table-column>
-                    <el-table-column prop="feed_back" label="反馈信息" :show-overflow-tooltip="true"></el-table-column>
-                </el-table>
-                <div class="allData">
-                    <span>总笔数：</span>
-                    <span v-text="dialogTotal.total_num" class="numText"></span>
+                <div class="btn-right">
                     <span>总金额：</span>
-                    <span v-text="dialogTotal.total_amount" class="numText"></span>
+                    <span v-text="totalData.total_amount" class="numText"></span>
+                    <span>成功金额：</span>
+                    <span v-text="totalData.success_amount" class="numText"></span>
                 </div>
-                <el-pagination style="margin-top:20px;margin-left:280px"
-                               background
-                               layout="prev, pager, next, jumper"
-                               :page-size="dialogPagSize"
-                               :total="dialogPagTotal"
-                               :pager-count="5"
-                               @current-change="diaCurrentPage"
-                               :current-page="dialogPagCurrent">
+            </div>
+            <div class="botton-pag">
+                <el-pagination
+                        background
+                        layout="sizes, prev, pager, next, jumper"
+                        :page-size="pagSize"
+                        :total="pagTotal"
+                        :page-sizes="[7, 50, 100, 500]"
+                        :pager-count="5"
+                        @current-change="getCurrentPage"
+                        @size-change="sizeChange"
+                        :current-page="pagCurrent">
                 </el-pagination>
             </div>
-        </el-dialog>
-    </div>
+            <!--查看弹出框-->
+            <el-dialog title="支付单信息"
+                       :visible.sync="dialogVisible"
+                       width="900px" top="76px"
+                       :close-on-click-modal="false">
+                <div class="switchover">
+                    <el-button-group>
+                        <el-button type="primary" size="mini" :class="{active:showAll}"
+                                   @click="showAll=true">
+                            <i class="get-all"></i>
+                        </el-button>
+                        <el-button type="primary" size="mini" :class="{active:!showAll}"
+                                   @click="showAll=false">
+                            <i class="get-list"></i>
+                        </el-button>
+                    </el-button-group>
+                </div>
+                <div class="all-table" v-show="showAll">
+                    <div class="serial-number">
+                        [批次号:
+                        <span v-text="dialogData.batchno"></span>
+                        ]
+                    </div>
+                    <ul class="dialog-talbe">
+                        <li class="table-li-title">总笔数</li>
+                        <li class="table-li-content" v-text="dialogData.total_num"></li>
+                        <li class="table-li-title">总金额</li>
+                        <li class="table-li-content" v-text="dialogData.total_amount"></li>
+
+                        <li class="table-li-title">付款账号</li>
+                        <li class="table-li-content" v-text="dialogData.pay_account_no"></li>
+                        <li class="table-li-title">开户行</li>
+                        <li class="table-li-content" :title="dialogData.pay_account_bank" v-text="dialogData.pay_account_bank"></li>
+
+                        <li class="table-li-title small-title">支付结果</li>
+                        <li class="table-li-content table-two-row"></li>
+
+                        <li class="table-li-title">已失败</li>
+                        <li class="table-li-content"  style="color:#fd7d2f">
+                            <span v-text="dialogData.failed_num"></span>笔
+                            <span v-text="dialogData.failed_amount" class="partition"></span>元
+                        </li>
+                        <li class="table-li-title">处理中</li>
+                        <li class="table-li-content">
+                            <span v-text="dialogData.process_num"></span>笔
+                            <span v-text="dialogData.process_amount" class="partition"></span>元
+                        </li>
+
+                        <li class="table-li-title">已保存</li>
+                        <li class="table-li-content">
+                            <span v-text="dialogData.saved_num"></span>笔
+                            <span v-text="dialogData.saved_amount" class="partition"></span>元
+                        </li>
+                        <li class="table-li-title">已作废</li>
+                        <li class="table-li-content">
+                            <span v-text="dialogData.cancel_num"></span>笔
+                            <span v-text="dialogData.cancel_amount" class="partition"></span>元
+                        </li>
+
+                        <li class="table-li-title">已成功</li>
+                        <li class="table-li-content table-two-row">
+                            <span v-text="dialogData.success_num"></span>笔
+                            <span v-text="dialogData.success_amount" class="partition"></span>元
+                        </li>
+
+                        <li class="table-li-title">摘要</li>
+                        <li class="table-li-content table-two-row" v-text="dialogData.payment_summary"></li>
+
+                        <li class="table-li-title" style="height:60px;line-height:60px">附件</li>
+                        <li class="table-li-content table-two-row" style="height:60px;padding-top:6px;overflow-y:auto">
+                            <Upload :emptyFileList="emptyFileList"
+                                    :fileMessage="fileMessage"
+                                    :triggerFile="triggerFile"
+                                    :isPending="false"></Upload>
+                        </li>
+                    </ul>
+                    <BusinessTracking :businessParams="businessParams"></BusinessTracking>
+                </div>
+                <div class="list-table" v-show="!showAll">
+                    <el-form :inline="true" :model="dialogSearch" size="mini">
+                        <el-row>
+                            <el-col :span="6">
+                                <el-form-item>
+                                    <el-input v-model="dialogSearch.query_key" clearable
+                                              placeholder="请输入收款方名称或账号"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="8">
+                                <el-form-item>
+                                    <el-col :span="11">
+                                        <el-input v-model="dialogSearch.min_amount" clearable placeholder="最小金额"></el-input>
+                                    </el-col>
+                                    <el-col class="line" :span="1" style="text-align:center">-</el-col>
+                                    <el-col :span="11">
+                                        <el-input v-model="dialogSearch.max_amount" clearable placeholder="最大金额"></el-input>
+                                    </el-col>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="2">
+                                <el-form-item>
+                                    <el-button type="primary" plain @click="queryDialogData" size="mini">搜索</el-button>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                    </el-form>
+                    <el-table :data="dialogList"
+                              border size="mini">
+                        <el-table-column prop="recv_account_name" label="收款户名" :show-overflow-tooltip="true"></el-table-column>
+                        <el-table-column prop="recv_account_no" label="收款账号" :show-overflow-tooltip="true"></el-table-column>
+                        <el-table-column prop="recv_account_bank" label="收款行" :show-overflow-tooltip="true"></el-table-column>
+                        <el-table-column prop="payment_amount" label="金额" :show-overflow-tooltip="true"
+                                         :formatter="transitAmount"></el-table-column>
+                        <el-table-column prop="pay_status" label="业务状态" :show-overflow-tooltip="true"
+                                         :formatter="transitDetailStatus"></el-table-column>
+                        <el-table-column prop="feed_back" label="反馈信息" :show-overflow-tooltip="true"></el-table-column>
+                    </el-table>
+                    <div class="allData">
+                        <span>总笔数：</span>
+                        <span v-text="dialogTotal.total_num" class="numText"></span>
+                        <span>总金额：</span>
+                        <span v-text="dialogTotal.total_amount" class="numText"></span>
+                    </div>
+                    <el-pagination style="margin-top:20px;margin-left:280px"
+                                   background
+                                   layout="prev, pager, next, jumper"
+                                   :page-size="dialogPagSize"
+                                   :total="dialogPagTotal"
+                                   :pager-count="5"
+                                   @current-change="diaCurrentPage"
+                                   :current-page="dialogPagCurrent">
+                    </el-pagination>
+                </div>
+            </el-dialog>
+        </el-footer>
+    </el-container>
 </template>
 
 <script>

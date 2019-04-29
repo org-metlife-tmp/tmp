@@ -1,29 +1,9 @@
 <style scoped lang="less" type="text/less">
     #payeeMessage{
-        width: 100%;
-        height: 100%;
-        box-sizing: border-box;
-        position: relative;
-
-        /*顶部按钮*/
-        .button-list-right {
-            position: absolute;
-            top: -60px;
-            right: -18px;
-        }
-
         /*搜索区*/
         .search-setion {
             width: 50%;
             margin: 0 auto 10px;
-        }
-
-        /*分页部分*/
-        .botton-pag {
-            position: absolute;
-            width: 100%;
-            height: 8%;
-            bottom: -12px;
         }
 
         /*批量上传*/
@@ -53,27 +33,24 @@
 </style>
 
 <template>
-    <div id="payeeMessage">
-        <!-- 顶部按钮-->
-        <div class="button-list-right">
-            <el-button type="warning" size="mini" @click="addPayee">新增</el-button>
-            <!--<el-button type="warning" size="mini" @click="addBatchPayee">批量新增</el-button>-->
-            <!--<el-button type="warning" size="mini" @click="">下载</el-button>-->
-        </div>
-
-        <!--搜索区-->
-        <div class="search-setion">
-            <el-input placeholder="请输入收款方名称或账号" class="input-with-select"
-                      size="small" v-model="searchData" clearable>
-                <el-button type="primary" slot="append" icon="el-icon-search" @click="queryData"></el-button>
-            </el-input>
-        </div>
-
-        <!--数据展示区-->
-        <section class="table-content">
+    <el-container id="payeeMessage">
+        <el-header>
+            <div class="button-list-right">
+                <el-button type="warning" size="mini" @click="addPayee">新增</el-button>
+                <!--<el-button type="warning" size="mini" @click="addBatchPayee">批量新增</el-button>-->
+                <!--<el-button type="warning" size="mini" @click="">下载</el-button>-->
+            </div>
+            <div class="search-setion">
+                <el-input placeholder="请输入收款方名称或账号" class="input-with-select"
+                          size="small" v-model="searchData" clearable>
+                    <el-button type="primary" slot="append" icon="el-icon-search" @click="queryData"></el-button>
+                </el-input>
+            </div>
+        </el-header>
+        <el-main>
             <el-table :data="tableList"
-                      border
-                      size="mini">
+                      height="100%"
+                      border size="mini">
                 <el-table-column prop="acc_name" label="收款方账户名称" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="acc_no" label="收款方账号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="bank_name" label="开户行" :show-overflow-tooltip="true"></el-table-column>
@@ -97,138 +74,136 @@
                     </template>
                 </el-table-column>
             </el-table>
-        </section>
-
-        <!--分页部分-->
-        <div class="botton-pag">
-            <el-pagination
-                    background :pager-count="5"
-                    :current-page="pagCurrent"
-                    layout="sizes , prev, pager, next, jumper"
-                    :page-size="pagSize" :total="pagTotal"
-                    :page-sizes="[10, 50, 100, 500]"
-                    @current-change="getCurrentPage"
-                    @size-change="sizeChange">
-            </el-pagination>
-        </div>
-
-        <!--新增/修改 弹出框-->
-        <el-dialog :visible.sync="dialogVisible"
-                   width="860px" top="76px"
-                   :close-on-click-modal="false">
-            <h1 slot="title" v-text="dialogTitle" class="dialog-title"></h1>
-            <el-form :model="dialogData" size="small"
-                     :label-width="formLabelWidth"
-                     :rules="rules" ref="dialogForm">
-                <el-row>
-                    <el-col :span="24">
-                        <el-form-item label="收款方账号" prop="acc_no">
-                            <el-input v-model="dialogData.acc_no" auto-complete="off"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="24">
-                        <el-form-item label="收款方名称" prop="acc_name">
-                            <el-input v-model="dialogData.acc_name" auto-complete="off"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="24">
-                        <el-form-item label="开户行">
-                            <el-col :span="14">
-                                <el-select v-model="bankCorrelation.bankTypeName" placeholder="请选择银行大类"
+        </el-main>
+        <el-footer>
+            <div class="botton-pag">
+                <el-pagination
+                        background :pager-count="5"
+                        :current-page="pagCurrent"
+                        layout="sizes , prev, pager, next, jumper"
+                        :page-size="pagSize" :total="pagTotal"
+                        :page-sizes="[10, 50, 100, 500]"
+                        @current-change="getCurrentPage"
+                        @size-change="sizeChange">
+                </el-pagination>
+            </div>
+            <!--新增/修改 弹出框-->
+            <el-dialog :visible.sync="dialogVisible"
+                       width="860px" top="76px"
+                       :close-on-click-modal="false">
+                <h1 slot="title" v-text="dialogTitle" class="dialog-title"></h1>
+                <el-form :model="dialogData" size="small"
+                         :label-width="formLabelWidth"
+                         :rules="rules" ref="dialogForm">
+                    <el-row>
+                        <el-col :span="24">
+                            <el-form-item label="收款方账号" prop="acc_no">
+                                <el-input v-model="dialogData.acc_no" auto-complete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="24">
+                            <el-form-item label="收款方名称" prop="acc_name">
+                                <el-input v-model="dialogData.acc_name" auto-complete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="24">
+                            <el-form-item label="开户行">
+                                <el-col :span="14">
+                                    <el-select v-model="bankCorrelation.bankTypeName" placeholder="请选择银行大类"
+                                               clearable filterable
+                                               :filter-method="filterBankType"
+                                               @visible-change="clearSearch"
+                                               :loading="bankLongding"
+                                               @change="bankIsSelect">
+                                        <el-option v-for="bankType in bankTypeList"
+                                                   :key="bankType.name"
+                                                   :label="bankType.display_name"
+                                                   :value="bankType.code">
+                                        </el-option>
+                                    </el-select>
+                                </el-col>
+                                <el-col :span="1" style="height:1px"></el-col>
+                                <el-col :span="9">
+                                    <el-select v-model="bankCorrelation.area"
+                                               filterable remote clearable
+                                               placeholder="请输入地区关键字"
+                                               :remote-method="getAreaList"
+                                               :loading="loading"
+                                               @change="bankIsSelect">
+                                        <el-option
+                                                v-for="area in areaList"
+                                                :key="area.name + '-' + area.top_super"
+                                                :value="area.name + '-' + area.top_super">
+                                            <span>{{ area.name }}</span><span style="margin-left:10px;color:#bbb">{{ area.top_super }}</span>
+                                        </el-option>
+                                    </el-select>
+                                </el-col>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="24">
+                            <el-form-item label=" " prop="cnaps_code">
+                                <el-select v-model="dialogData.cnaps_code" placeholder="请选择银行"
                                            clearable filterable
-                                           :filter-method="filterBankType"
-                                           @visible-change="clearSearch"
-                                           :loading="bankLongding"
-                                           @change="bankIsSelect">
-                                    <el-option v-for="bankType in bankTypeList"
-                                               :key="bankType.name"
-                                               :label="bankType.display_name"
-                                               :value="bankType.code">
+                                           @visible-change="getBankList"
+                                           :disabled="bankSelect">
+                                    <el-option v-for="bankType in bankList"
+                                               :key="bankType.cnaps_code"
+                                               :label="bankType.name"
+                                               :value="bankType.cnaps_code">
                                     </el-option>
                                 </el-select>
-                            </el-col>
-                            <el-col :span="1" style="height:1px"></el-col>
-                            <el-col :span="9">
-                                <el-select v-model="bankCorrelation.area"
-                                           filterable remote clearable
-                                           placeholder="请输入地区关键字"
-                                           :remote-method="getAreaList"
-                                           :loading="loading"
-                                           @change="bankIsSelect">
-                                    <el-option
-                                            v-for="area in areaList"
-                                            :key="area.name + '-' + area.top_super"
-                                            :value="area.name + '-' + area.top_super">
-                                        <span>{{ area.name }}</span><span style="margin-left:10px;color:#bbb">{{ area.top_super }}</span>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="属性" prop="type">
+                                <el-select v-model="dialogData.type" placeholder="请选择属性"
+                                           filterable clearable>
+                                    <el-option value="1" label="公司"></el-option>
+                                    <el-option value="2" label="个人"></el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="币种"  prop="curr_id">
+                                <el-select v-model="dialogData.curr_id" placeholder="请选择币种"
+                                           filterable clearable>
+                                    <el-option v-for="currency in currencyList"
+                                               :key="currency.id"
+                                               :label="currency.name"
+                                               :value="currency.id">
                                     </el-option>
                                 </el-select>
-                            </el-col>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="24">
-                        <el-form-item label=" " prop="cnaps_code">
-                            <el-select v-model="dialogData.cnaps_code" placeholder="请选择银行"
-                                       clearable filterable
-                                       @visible-change="getBankList"
-                                       :disabled="bankSelect">
-                                <el-option v-for="bankType in bankList"
-                                           :key="bankType.cnaps_code"
-                                           :label="bankType.name"
-                                           :value="bankType.cnaps_code">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="属性" prop="type">
-                            <el-select v-model="dialogData.type" placeholder="请选择属性"
-                                       filterable clearable>
-                                <el-option value="1" label="公司"></el-option>
-                                <el-option value="2" label="个人"></el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="币种"  prop="curr_id">
-                            <el-select v-model="dialogData.curr_id" placeholder="请选择币种"
-                                       filterable clearable>
-                                <el-option v-for="currency in currencyList"
-                                           :key="currency.id"
-                                           :label="currency.name"
-                                           :value="currency.id">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-            </el-form>
-            <span slot="footer" class="dialog-footer">
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                </el-form>
+                <span slot="footer" class="dialog-footer">
                 <el-button type="warning" size="mini" plain
                            @click="dialogVisible = false">取 消</el-button>
                 <el-button type="warning" size="mini" @click="confirm">确 定</el-button>
             </span>
-        </el-dialog>
+            </el-dialog>
+            <!--批量新增弹出框-->
+            <el-dialog :visible.sync="batchDialog"
+                       width="800px" top="180px" title="批量新增"
+                       :close-on-click-modal="false">
 
-        <!--批量新增弹出框-->
-        <el-dialog :visible.sync="batchDialog"
-                   width="800px" top="180px" title="批量新增"
-                   :close-on-click-modal="false">
+                <div class="upload-batch">
+                    <el-input placeholder="请输入流程名查询" class="input-with-select"
+                              size="small" readonly clearable>
+                        <el-button type="primary" slot="append" @click="">浏览</el-button>
+                    </el-input>
+                </div>
 
-            <div class="upload-batch">
-                <el-input placeholder="请输入流程名查询" class="input-with-select"
-                          size="small" readonly clearable>
-                    <el-button type="primary" slot="append" @click="">浏览</el-button>
-                </el-input>
-            </div>
-
-            <span slot="footer" class="dialog-footer">
+                <span slot="footer" class="dialog-footer">
                 <el-button type="warning" size="mini" plain @click="">模板下载</el-button>
                 <el-button type="warning" size="mini" plain
                            @click="batchDialog = false">取 消</el-button>
                 <el-button type="warning" size="mini" @click="">确 定</el-button>
             </span>
-        </el-dialog>
-    </div>
+            </el-dialog>
+        </el-footer>
+    </el-container>
 </template>
 
 <script>

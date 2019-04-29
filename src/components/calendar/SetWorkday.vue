@@ -1,26 +1,11 @@
 <style scoped lang="less" type="text/less">
     #setWorkday {
-        width: 100%;
-        height: 100%;
-        box-sizing: border-box;
-        position: relative;
-
-        /*顶部按钮*/
-        .button-list-left {
-            position: absolute;
-            top: -40px;
-            left: -21px;
-        }
-
         //日历部分
         .workday-content {
-            position: relative;
-            height: 960px;
             margin-bottom: 20px;
             width: 104%;
             margin-left: -20px;
             margin-top: -20px;
-            background: #fff;
             padding-top: 20px;
             padding-left: 20px;
             min-width: 1076px;
@@ -111,10 +96,7 @@
 
         /*底部按钮*/
         .botton-pag {
-            position: absolute;
             height: 32px;
-            bottom: 10px;
-            right: 34px;
             width: 100%;
             text-align: right;
         }
@@ -122,21 +104,21 @@
 </style>
 
 <template>
-    <div id="setWorkday">
-        <!--顶部按钮-->
-        <div class="button-list-left">
-            <el-select v-model="currentYear" placeholder="请选择年份"
-                       filterable clearable size="mini"
-                       @change="selectYear">
-                <el-option v-for="year in yearList"
-                           :key="year"
-                           :label="year"
-                           :value="year">
-                </el-option>
-            </el-select>
-        </div>
-        <!--日历部分-->
-        <div class="workday-content">
+    <el-container id="setWorkday">
+        <el-header>
+            <div class="button-list-left">
+                <el-select v-model="currentYear" placeholder="请选择年份"
+                           filterable clearable size="mini"
+                           @change="selectYear">
+                    <el-option v-for="year in yearList"
+                               :key="year"
+                               :label="year"
+                               :value="year">
+                    </el-option>
+                </el-select>
+            </div>
+        </el-header>
+        <el-main class="workday-content">
             <ul v-for="workday in workdayData" class="month"
                 :class="weekStatus(workday.month)">
                 <div class="month-title">{{ workday.month }}月</div>
@@ -160,15 +142,15 @@
                     </li>
                 </el-tooltip>
             </ul>
-
-            <!--底部按钮-->
+        </el-main>
+        <el-footer>
             <div class="botton-pag" v-if="!isActive">
                 <el-button type="warning" size="small" @click="startUsing">启用</el-button>
                 <el-button type="warning" size="small" @click="saveWorkday(false)">保存</el-button>
                 <el-button type="warning" size="small" @click="cancelSet">取消</el-button>
             </div>
-        </div>
-    </div>
+        </el-footer>
+    </el-container>
 </template>
 
 <script>

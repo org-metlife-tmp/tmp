@@ -1,22 +1,7 @@
 <style scoped lang="less" type="text/less">
     #autoAllocationSet {
-        width: 100%;
-        height: 100%;
-        box-sizing: border-box;
-        position: relative;
-
-        /*顶部按钮*/
-        .button-list-right {
-            position: absolute;
-            top: -60px;
-            right: -18px;
-        }
-
         /*主体内容*/
         .table-content {
-            max-height: 94%;
-            overflow-y: auto;
-
             /*标签页*/
             .tab-content {
                 width: 100%;
@@ -191,12 +176,6 @@
             height: 32px;
             line-height: 32px;
         }
-        .el-dialog__wrapper {
-            .el-dialog__body {
-                max-height: 400px;
-                overflow-y: auto;
-            }
-        }
         /*弹框表格样式*/
         .dialogTable{
             // max-height: 200px;
@@ -221,13 +200,10 @@
 </style>
 
 <template>
-    <div id="autoAllocationSet">
-        <!-- 顶部按钮-->
-        <div class="button-list-right">
-            <!-- <el-button type="warning" size="mini" @click="">打印</el-button>-->
-        </div>
-        <!--中间内容-->
-        <section class="table-content">
+    <el-container id="autoAllocationSet">
+        <el-header>
+        </el-header>
+        <el-main class="table-content">
             <el-form :model="allocationData" size="small"
                      :label-width="formLabelWidth">
                 <el-row>
@@ -254,12 +230,12 @@
                                             下拨主账户
                                             <!-- :remote-method="getMainAccListByKey" -->
                                             <el-select v-model="item.main_acc_id" filterable remote clearable
-                                                        placeholder="请输入关键字"
-                                                        style="width:42%;margin-left:6px"
-                                                        @visible-change="getMainAccList"
-                                                        @change="changeMainAcc($event,item)"
-                                                        :disabled="viewReadonly"
-                                                        :loading="loading">
+                                                       placeholder="请输入关键字"
+                                                       style="width:42%;margin-left:6px"
+                                                       @visible-change="getMainAccList"
+                                                       @change="changeMainAcc($event,item)"
+                                                       :disabled="viewReadonly"
+                                                       :loading="loading">
                                                 <el-option
                                                         v-for="acc in mainAccOptions"
                                                         :key="acc.acc_id"
@@ -356,157 +332,158 @@
                     </el-col>
                 </el-row>
             </el-form>
-        </section>
-        <!--底部按钮-->
-        <div class="btn-bottom">
-            <el-button type="warning" plain size="mini" @click="showRightFlow" v-show="viewReadonly || allocationData.service_status==5">
-                审批记录<span class="arrows">></span>
-            </el-button>
-            <el-button type="warning" plain size="mini" @click="gomoreBills">
-                更多单据<span class="arrows">></span>
-            </el-button>
-            <div class="btnGroup" v-show="!viewReadonly">
-                <el-button type="warning" size="small" @click="deleteBill" v-show="allocationData.id">删除</el-button>
-                <el-button type="warning" size="small" @click="clearAll" v-show="!allocationData.id">清空</el-button>
-                <el-button type="warning" size="small" @click="saveAllocate">保存</el-button>
-                <el-button type="warning" size="small" @click="submitBill">提交</el-button>
+        </el-main>
+        <el-footer>
+            <div class="btn-bottom">
+                <el-button type="warning" plain size="mini" @click="showRightFlow" v-show="viewReadonly || allocationData.service_status==5">
+                    审批记录<span class="arrows">></span>
+                </el-button>
+                <el-button type="warning" plain size="mini" @click="gomoreBills">
+                    更多单据<span class="arrows">></span>
+                </el-button>
+                <div class="btnGroup" v-show="!viewReadonly">
+                    <el-button type="warning" size="small" @click="deleteBill" v-show="allocationData.id">删除</el-button>
+                    <el-button type="warning" size="small" @click="clearAll" v-show="!allocationData.id">清空</el-button>
+                    <el-button type="warning" size="small" @click="saveAllocate">保存</el-button>
+                    <el-button type="warning" size="small" @click="submitBill">提交</el-button>
+                </div>
             </div>
-        </div>
-        <!--添加被下拨账户弹框-->
-        <el-dialog :visible.sync="dialogVisible"
-                    class="tableDialog"
-                   width="860px" title="添加被下拨账户"
-                   top="76px" :close-on-click-modal="false">
-            <el-form :inline="true" :model="searchData" size="mini">
-                <el-row>
-                    <el-col :span="6">
-                        <el-form-item>
-                            <el-input v-model="searchData.query_key" clearable placeholder="请输入收款方名称或账号"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="6">
-                        <el-form-item>
-                            <el-select v-model="searchData.acc_attr" placeholder="请选择账户类型"
-                                       clearable filterable
-                                       style="width:100%">
-                                <el-option v-for="(purpose,key) in purposeList"
-                                           :key="key"
-                                           :label="purpose"
-                                           :value="key">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="6">
-                        <el-form-item>
-                            <el-select v-model="searchData.bank_type" placeholder="请选择银行大类"
-                                       clearable filterable
-                                       style="width:100%"
-                                       :filter-method="filterBankType"
-                                       :loading="bankLongding"
-                                       @visible-change="clearSearch">
-                                <el-option v-for="bankType in bankTypeList"
-                                           :key="bankType.name"
-                                           :label="bankType.display_name"
-                                           :value="bankType.code">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="2">
-                        <el-form-item>
-                            <el-button type="primary" plain @click="queryDialogData" size="mini">搜索</el-button>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-            </el-form>
-            <div class="dialog-content">
-                <template v-for="table in dialogTableList" >
-                    <el-table :data="table.accounts" :key="table.org_id"
-                             size="mini" class="dialogTable"
-                             max-height="250"
-                            @selection-change="selectChange($event,table)">
-                        <el-table-column type="selection" width="40"></el-table-column>
-                        <el-table-column prop="child_acc_no" :label="table.org_name" :show-overflow-tooltip="true"></el-table-column>
-                        <el-table-column prop="child_acc_bank_name" label=""
-                                        :show-overflow-tooltip="true"></el-table-column>
-                    </el-table>
-                </template>
-            </div>
-            <span slot="footer" class="dialog-footer" style="text-align:center">
+            <!--添加被下拨账户弹框-->
+            <el-dialog :visible.sync="dialogVisible"
+                       class="tableDialog"
+                       width="860px" title="添加被下拨账户"
+                       top="76px" :close-on-click-modal="false">
+                <el-form :inline="true" :model="searchData" size="mini">
+                    <el-row>
+                        <el-col :span="6">
+                            <el-form-item>
+                                <el-input v-model="searchData.query_key" clearable placeholder="请输入收款方名称或账号"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="6">
+                            <el-form-item>
+                                <el-select v-model="searchData.acc_attr" placeholder="请选择账户类型"
+                                           clearable filterable
+                                           style="width:100%">
+                                    <el-option v-for="(purpose,key) in purposeList"
+                                               :key="key"
+                                               :label="purpose"
+                                               :value="key">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="6">
+                            <el-form-item>
+                                <el-select v-model="searchData.bank_type" placeholder="请选择银行大类"
+                                           clearable filterable
+                                           style="width:100%"
+                                           :filter-method="filterBankType"
+                                           :loading="bankLongding"
+                                           @visible-change="clearSearch">
+                                    <el-option v-for="bankType in bankTypeList"
+                                               :key="bankType.name"
+                                               :label="bankType.display_name"
+                                               :value="bankType.code">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="2">
+                            <el-form-item>
+                                <el-button type="primary" plain @click="queryDialogData" size="mini">搜索</el-button>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                </el-form>
+                <div class="dialog-content">
+                    <template v-for="table in dialogTableList" >
+                        <el-table :data="table.accounts" :key="table.org_id"
+                                  size="mini" class="dialogTable"
+                                  max-height="250"
+                                  @selection-change="selectChange($event,table)">
+                            <el-table-column type="selection" width="40"></el-table-column>
+                            <el-table-column prop="child_acc_no" :label="table.org_name" :show-overflow-tooltip="true"></el-table-column>
+                            <el-table-column prop="child_acc_bank_name" label=""
+                                             :show-overflow-tooltip="true"></el-table-column>
+                        </el-table>
+                    </template>
+                </div>
+                <span slot="footer" class="dialog-footer" style="text-align:center">
                 <el-button type="warning" size="mini" plain @click="dialogVisible = false">取 消</el-button>
                 <el-button type="warning" size="mini" @click="addAllocate">确 定</el-button>
             </span>
-        </el-dialog>
-        <!--选择时间弹框-->
-        <el-dialog :visible.sync="dateDialog"
-                   width="600px" title="下拨时间选择"
-                   top="140px" :close-on-click-modal="false">
-            <div class="set-date">
-                <h5 v-show="allocationData.allocation_frequency == 3">请选择日期</h5>
-                <ul class="month-day" v-show="allocationData.allocation_frequency == 3">
-                    <li v-for="item in monthDay" :key="item.day"
-                        :class="{active:item.isActive}"
-                        @click="item.isActive = !item.isActive">{{ item.day }}
-                    </li>
-                </ul>
-                <el-checkbox-group v-model="dateSelect.weekDate" size="small"
-                                   v-show="allocationData.allocation_frequency == 2">
-                    <el-checkbox-button v-for="(week,k) in weeks"
-                                        :label="k"
-                                        :key="k">
-                        {{week}}
-                    </el-checkbox-button>
-                </el-checkbox-group>
-                <el-time-picker
-                    arrow-control
-                    v-model="dateSelect.timeDate"
-                    :format="'HH:mm'"
-                    value-format="HH:mm"
-                    placeholder="请选择时间">
-                </el-time-picker>
-            </div>
-            <span slot="footer" class="dialog-footer" style="text-align:center">
+            </el-dialog>
+            <!--选择时间弹框-->
+            <el-dialog :visible.sync="dateDialog"
+                       width="600px" title="下拨时间选择"
+                       top="140px" :close-on-click-modal="false">
+                <div class="set-date">
+                    <h5 v-show="allocationData.allocation_frequency == 3">请选择日期</h5>
+                    <ul class="month-day" v-show="allocationData.allocation_frequency == 3">
+                        <li v-for="item in monthDay" :key="item.day"
+                            :class="{active:item.isActive}"
+                            @click="item.isActive = !item.isActive">{{ item.day }}
+                        </li>
+                    </ul>
+                    <el-checkbox-group v-model="dateSelect.weekDate" size="small"
+                                       v-show="allocationData.allocation_frequency == 2">
+                        <el-checkbox-button v-for="(week,k) in weeks"
+                                            :label="k"
+                                            :key="k">
+                            {{week}}
+                        </el-checkbox-button>
+                    </el-checkbox-group>
+                    <el-time-picker
+                            arrow-control
+                            v-model="dateSelect.timeDate"
+                            :format="'HH:mm'"
+                            value-format="HH:mm"
+                            placeholder="请选择时间">
+                    </el-time-picker>
+                </div>
+                <span slot="footer" class="dialog-footer" style="text-align:center">
                     <el-button type="warning" size="mini" plain @click="dateDialog = false">取 消</el-button>
                     <el-button type="warning" size="mini" @click="comfirmCurrDate">确 定</el-button>
                 </span>
-        </el-dialog>
-        <el-dialog :visible.sync="commitVisible"
-                    width="50%" title="提交审批流程" top="76px"
-                    :close-on-click-modal="false" class="workFlow">
-            <h1 slot="title" class="dialog-title">提交审批流程</h1>
-            <el-radio-group v-model="selectWorkflow">
-                <el-radio v-for="workflow in workflows"
-                            :key="workflow.define_id"
-                            :label="workflow.define_id"
-                >{{ workflow.workflow_name }}
-                    <el-button class="flow-tip-box" @click="showFlowDialog(workflow)"></el-button>
-                </el-radio>
-            </el-radio-group>
-            <span slot="footer" class="dialog-footer" style="text-align:center">
+            </el-dialog>
+            <el-dialog :visible.sync="commitVisible"
+                       width="50%" title="提交审批流程" top="76px"
+                       :close-on-click-modal="false" class="workFlow">
+                <h1 slot="title" class="dialog-title">提交审批流程</h1>
+                <el-radio-group v-model="selectWorkflow">
+                    <el-radio v-for="workflow in workflows"
+                              :key="workflow.define_id"
+                              :label="workflow.define_id"
+                    >{{ workflow.workflow_name }}
+                        <el-button class="flow-tip-box" @click="showFlowDialog(workflow)"></el-button>
+                    </el-radio>
+                </el-radio-group>
+                <span slot="footer" class="dialog-footer" style="text-align:center">
                 <el-button type="warning" size="mini" plain @click="commitVisible = false">取 消</el-button>
                 <el-button type="warning" size="mini" @click="confirmWorkflow">确 定</el-button>
             </span>
-        </el-dialog>
-        <!-- 右侧流程图 -->
-        <div id="showbox">
-            <BusinessTracking
-                :businessParams="businessParams"
-                @closeRightDialog="closeRightFlow"
-            ></BusinessTracking>
-        </div>
-        <!--查看工作流弹出框-->
-        <el-dialog :visible.sync="lookFlowDialogVisible"
-                   width="800px" title="查看流程"
-                   :close-on-click-modal="false"
-                   :before-close="cancelLookFlow"
-                   top="120px">
-            <WorkFlow
-                    :flowList="flowList"
-                    :isEmptyFlow="isEmptyFlow"
-            ></WorkFlow>
-        </el-dialog>
-    </div>
+            </el-dialog>
+            <!-- 右侧流程图 -->
+            <div id="showbox">
+                <BusinessTracking
+                        :businessParams="businessParams"
+                        @closeRightDialog="closeRightFlow"
+                ></BusinessTracking>
+            </div>
+            <!--查看工作流弹出框-->
+            <el-dialog :visible.sync="lookFlowDialogVisible"
+                       width="800px" title="查看流程"
+                       :close-on-click-modal="false"
+                       :before-close="cancelLookFlow"
+                       top="120px">
+                <WorkFlow
+                        :flowList="flowList"
+                        :isEmptyFlow="isEmptyFlow"
+                ></WorkFlow>
+            </el-dialog>
+        </el-footer>
+    </el-container>
 </template>
 
 <script>

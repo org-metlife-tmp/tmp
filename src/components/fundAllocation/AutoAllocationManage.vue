@@ -1,29 +1,8 @@
 <style scoped lang="less" type="text/less">
     #autoAllocationManage{
-        width: 100%;
-        height: 100%;
-        box-sizing: border-box;
-        position: relative;
-
-        /*搜索区*/
-        .search-setion{
-            text-align: left;
-        }
-
-        /*分隔栏*/
-        .split-bar {
-            width: 106%;
-            height: 6px;
-            margin-left: -20px;
-            background-color: #E7E7E7;
-            margin-bottom: 20px;
-        }
-
         /*数据展示区*/
         .table-content{
             text-align: left;
-            height: 76%;
-            overflow-y: auto;
 
             .el-card{
                 width: 92%;
@@ -121,15 +100,6 @@
                 }
             }
         }
-
-        /*分页部分*/
-        .botton-pag {
-            position: absolute;
-            width: 100%;
-            height: 8%;
-            bottom: -6px;
-        }
-
     }
 </style>
 <style lang="less" type="text/less">
@@ -146,69 +116,68 @@
 </style>
 
 <template>
-    <div id="autoAllocationManage">
-        <!--搜索区-->
-        <div class="search-setion">
-            <el-form :inline="true" :model="searchData" size="mini">
-                <el-row>
-                    <el-col :span="4">
-                        <el-form-item>
-                            <el-select v-model="searchData.allocation_type" placeholder="请选择下拨额度"
-                                       clearable filterable
-                                       style="width:100%">
-                                <el-option v-for="(collType,key) in collTypeList"
-                                           :key="key"
-                                           :label="collType"
-                                           :value="key">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="4">
-                        <el-form-item>
-                            <el-select v-model="searchData.allocation_frequency" placeholder="请选择下拨频率"
-                                       clearable filterable
-                                       style="width:100%">
-                                <el-option v-for="(frequency,key) in frequencyList"
-                                           :key="key"
-                                           :label="frequency"
-                                           :value="key">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="4">
-                        <el-form-item>
-                            <el-input v-model="searchData.query_key" clearable placeholder="请输入下拨关键字"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="4">
-                        <el-form-item>
-                            <el-input v-model="searchData.main_account_query" clearable placeholder="请输入下拨主账号关键字"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="2">
-                        <el-form-item>
-                            <el-button type="primary" plain @click="queryData" size="mini">搜索</el-button>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="24">
-                        <el-form-item style="margin-bottom:0px">
-                            <el-checkbox-group v-model="searchData.is_activity">
-                                <el-checkbox v-for="(name,k) in statusList"
-                                             :label="k" name="type" :key="k">
-                                    {{ name }}
-                                </el-checkbox>
-                            </el-checkbox-group>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-            </el-form>
-        </div>
-        <!--分隔栏-->
-        <div class="split-bar"></div>
-        <!--数据展示区-->
-        <section class="table-content">
+    <el-container id="autoAllocationManage">
+        <el-header>
+            <div class="search-setion">
+                <el-form :inline="true" :model="searchData" size="mini">
+                    <el-row>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-select v-model="searchData.allocation_type" placeholder="请选择下拨额度"
+                                           clearable filterable
+                                           style="width:100%">
+                                    <el-option v-for="(collType,key) in collTypeList"
+                                               :key="key"
+                                               :label="collType"
+                                               :value="key">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-select v-model="searchData.allocation_frequency" placeholder="请选择下拨频率"
+                                           clearable filterable
+                                           style="width:100%">
+                                    <el-option v-for="(frequency,key) in frequencyList"
+                                               :key="key"
+                                               :label="frequency"
+                                               :value="key">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-input v-model="searchData.query_key" clearable placeholder="请输入下拨关键字"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-input v-model="searchData.main_account_query" clearable placeholder="请输入下拨主账号关键字"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="2">
+                            <el-form-item>
+                                <el-button type="primary" plain @click="queryData" size="mini">搜索</el-button>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="24">
+                            <el-form-item style="margin-bottom:0px">
+                                <el-checkbox-group v-model="searchData.is_activity">
+                                    <el-checkbox v-for="(name,k) in statusList"
+                                                 :label="k" name="type" :key="k">
+                                        {{ name }}
+                                    </el-checkbox>
+                                </el-checkbox-group>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                </el-form>
+            </div>
+            <div class="split-bar"></div>
+        </el-header>
+        <el-main class="table-content">
             <el-row>
                 <el-col :span="6" v-for="(card,index) in tableList" :key="card.id">
                     <el-card class="box-card">
@@ -246,8 +215,10 @@
                     </el-card>
                 </el-col>
             </el-row>
-        </section>
-    </div>
+        </el-main>
+        <el-footer>
+        </el-footer>
+    </el-container>
 </template>
 
 <script>

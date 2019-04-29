@@ -1,29 +1,5 @@
 <style scoped lang="less" type="text/less">
     #initialBalance {
-        width: 100%;
-        height: 100%;
-        box-sizing: border-box;
-        position: relative;
-
-        /*顶部按钮*/
-        .button-list-right {
-            position: absolute;
-            top: -60px;
-            right: -18px;
-        }
-        /*分页部分*/
-        .botton-pag {
-            position: absolute;
-            width: 100%;
-            height: 8%;
-            bottom: -6px;
-        }
-
-        /*数据列表*/
-        .table-content {
-            height: 400px;
-        }
-
         /*弹框*/
         .form-small-title{
             font-weight: bold;
@@ -48,25 +24,15 @@
         }
     }
 </style>
-<style lang="less" type="text/less">
-    #initialBalance {
-        .el-dialog__wrapper {
-            .el-dialog__body {
-                max-height: 440px;
-                overflow-y: auto;
-            }
-        }
-    }
-</style>
 
 <template>
-    <div id="initialBalance">
-        <!-- 顶部按钮-->
-        <div class="button-list-right">
-            <el-button type="warning" size="mini" @click="addSign">新增</el-button>
-        </div>
-        <!--数据展示区-->
-        <section class="table-content">
+    <el-container id="initialBalance">
+        <el-header>
+            <div class="button-list-right">
+                <el-button type="warning" size="mini" @click="addSign">新增</el-button>
+            </div>
+        </el-header>
+        <el-main>
             <el-table :data="tableList"
                       height="100%"
                       border size="mini">
@@ -77,7 +43,7 @@
                 <el-table-column prop="bank_fail_achieve" label="银行未达账项" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="enter_fail_achieve" label="企业未达账项" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="is_enabled" label="状态" :show-overflow-tooltip="true"
-                                :formatter="transitionStatus"></el-table-column>
+                                 :formatter="transitionStatus"></el-table-column>
                 <el-table-column
                         label="操作" width="80"
                         fixed="right">
@@ -95,128 +61,129 @@
                     </template>
                 </el-table-column>
             </el-table>
-        </section>
-        <!--分页部分-->
-        <div class="botton-pag">
-            <el-pagination
-                    background
-                    layout="sizes, prev, pager, next, jumper"
-                    :page-size="pagSize"
-                    :total="pagTotal"
-                    :page-sizes="[7, 50, 100, 500]"
-                    :pager-count="5"
-                    @current-change="getCurrentPage"
-                    @size-change="sizeChange"
-                    :current-page="pagCurrent">
-            </el-pagination>
-        </div>
-        <!--新增弹出框-->
-        <el-dialog title=""
-                   :visible.sync="dialogVisible"
-                   width="860px" top="76px"
-                   :close-on-click-modal="false">
-            <h1 slot="title" v-text="dialogTitle" class="dialog-title"></h1>
-            <el-form :model="dialogData" size="small"
-                     :label-width="formLabelWidth">
-                <el-row>
-                    <el-col :span="12">
-                        <el-form-item label="账户号">
-                            <el-select v-model="dialogData.acc_id" clearable placeholder="请选择账户号" :disabled="lookDisabled">
-                                <el-option
-                                    v-for="item in accOptions"
-                                    :key="item.acc_no"
-                                    :label="item.acc_no"
-                                    :value="item.acc_id">
-                                    <span>{{ item.acc_no }}</span>
-                                    <span style="margin-left:10px;color:#bbb">{{ item.acc_name }}</span>
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="期末余额">
-                            <el-input v-model="dialogData.balance" :disabled="lookDisabled" clearable></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="年">
-                            <el-date-picker
-                                v-model="dialogData.year"
-                                type="year"
-                                placeholder="选择年"
-                                value-format="yyyy"
-                                style="width: 100%;" :disabled="lookDisabled">
-                            </el-date-picker>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="月">
-                            <el-date-picker
-                                v-model="dialogData.month"
-                                type="month"
-                                placeholder="选择月"
-                                value-format="M"
-                                style="width: 100%;" :disabled="lookDisabled">
-                            </el-date-picker>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-                <el-row v-for="item in items"
-                        :key="item.$id">
-                    <el-col :span="24">
-                        <div class="split-form">
-                            <el-button-group v-show="!lookDisabled">
-                                <el-button size="mini" @click="removeAccount(item)"
-                                           v-show="showDel">删除</el-button>
-                                <el-button size="mini" style="margin-left:0"
-                                           @click="addAccount">新增
-                                </el-button>
-                            </el-button-group>
-                        </div>
-                    </el-col>
-                    <el-col :span="12" required>
-                        <el-form-item label="类型">
-                            <el-select v-model="item.data_type" placeholder="请选择类型" clearable :disabled="lookDisabled">
-                                <el-option
-                                    v-for="(item,k) in initDataType"
-                                    :key="k"
-                                    :label="item"
-                                    :value="k">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="借贷方向">
-                            <el-select v-model="item.credit_or_debit" placeholder="请选择借贷方向" clearable  :disabled="lookDisabled">
-                                <el-option
-                                    v-for="(item,k) in credirOrDebit"
-                                    :key="k"
-                                    :label="item"
-                                    :value="k">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="金额">
-                            <el-input v-model="item.amount" :disabled="lookDisabled" clearable></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="摘要">
-                            <el-input v-model="item.memo" :disabled="lookDisabled" clearable></el-input>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-            </el-form>
-            <span slot="footer" class="dialog-footer" v-show="!lookDisabled">
+        </el-main>
+        <el-footer>
+            <div class="botton-pag">
+                <el-pagination
+                        background
+                        layout="sizes, prev, pager, next, jumper"
+                        :page-size="pagSize"
+                        :total="pagTotal"
+                        :page-sizes="[7, 50, 100, 500]"
+                        :pager-count="5"
+                        @current-change="getCurrentPage"
+                        @size-change="sizeChange"
+                        :current-page="pagCurrent">
+                </el-pagination>
+            </div>
+            <!--新增弹出框-->
+            <el-dialog title=""
+                       :visible.sync="dialogVisible"
+                       width="860px" top="76px"
+                       :close-on-click-modal="false">
+                <h1 slot="title" v-text="dialogTitle" class="dialog-title"></h1>
+                <el-form :model="dialogData" size="small"
+                         :label-width="formLabelWidth">
+                    <el-row>
+                        <el-col :span="12">
+                            <el-form-item label="账户号">
+                                <el-select v-model="dialogData.acc_id" clearable placeholder="请选择账户号" :disabled="lookDisabled">
+                                    <el-option
+                                            v-for="item in accOptions"
+                                            :key="item.acc_no"
+                                            :label="item.acc_no"
+                                            :value="item.acc_id">
+                                        <span>{{ item.acc_no }}</span>
+                                        <span style="margin-left:10px;color:#bbb">{{ item.acc_name }}</span>
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="期末余额">
+                                <el-input v-model="dialogData.balance" :disabled="lookDisabled" clearable></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="年">
+                                <el-date-picker
+                                        v-model="dialogData.year"
+                                        type="year"
+                                        placeholder="选择年"
+                                        value-format="yyyy"
+                                        style="width: 100%;" :disabled="lookDisabled">
+                                </el-date-picker>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="月">
+                                <el-date-picker
+                                        v-model="dialogData.month"
+                                        type="month"
+                                        placeholder="选择月"
+                                        value-format="M"
+                                        style="width: 100%;" :disabled="lookDisabled">
+                                </el-date-picker>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row v-for="item in items"
+                            :key="item.$id">
+                        <el-col :span="24">
+                            <div class="split-form">
+                                <el-button-group v-show="!lookDisabled">
+                                    <el-button size="mini" @click="removeAccount(item)"
+                                               v-show="showDel">删除</el-button>
+                                    <el-button size="mini" style="margin-left:0"
+                                               @click="addAccount">新增
+                                    </el-button>
+                                </el-button-group>
+                            </div>
+                        </el-col>
+                        <el-col :span="12" required>
+                            <el-form-item label="类型">
+                                <el-select v-model="item.data_type" placeholder="请选择类型" clearable :disabled="lookDisabled">
+                                    <el-option
+                                            v-for="(item,k) in initDataType"
+                                            :key="k"
+                                            :label="item"
+                                            :value="k">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="借贷方向">
+                                <el-select v-model="item.credit_or_debit" placeholder="请选择借贷方向" clearable  :disabled="lookDisabled">
+                                    <el-option
+                                            v-for="(item,k) in credirOrDebit"
+                                            :key="k"
+                                            :label="item"
+                                            :value="k">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="金额">
+                                <el-input v-model="item.amount" :disabled="lookDisabled" clearable></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="摘要">
+                                <el-input v-model="item.memo" :disabled="lookDisabled" clearable></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                </el-form>
+                <span slot="footer" class="dialog-footer" v-show="!lookDisabled">
                 <el-button type="warning" size="mini" plain @click="dialogVisible = false">取 消</el-button>
                 <el-button type="warning" size="mini" @click="saveBalance">保 存</el-button>
                 <el-button type="warning" size="mini" @click="enableBalance" v-show="isEnabled">启 用</el-button>
             </span>
-        </el-dialog>
-    </div>
+            </el-dialog>
+        </el-footer>
+    </el-container>
 </template>
 
 <script>

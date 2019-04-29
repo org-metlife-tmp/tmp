@@ -1,44 +1,5 @@
 <style scoped lang="less" type="text/less">
     #bankkeySet {
-        width: 100%;
-        height: 100%;
-        box-sizing: border-box;
-        position: relative;
-
-        /*顶部按钮*/
-        .button-list-right {
-            position: absolute;
-            top: -60px;
-            right: -18px;
-        }
-
-        /*搜索区*/
-        .search-setion {
-            text-align: left;
-        }
-
-        /*分隔栏*/
-        .split-bar {
-            width: 106%;
-            height: 6px;
-            margin-left: -20px;
-            background-color: #E7E7E7;
-            margin-bottom: 20px;
-        }
-
-        /*数据展示区*/
-        .table-content {
-            height: 320px;
-        }
-
-        /*分页部分*/
-        .botton-pag {
-            position: absolute;
-            width: 100%;
-            height: 8%;
-            bottom: -6px;
-        }
-
         .form-small-title {
             font-weight: bold;
             border-bottom: 1px solid #e2e2e2;
@@ -75,90 +36,88 @@
 </style>
 
 <template>
-    <div id="bankkeySet">
-        <!-- 顶部按钮-->
-        <div class="button-list-right">
-            <el-button type="warning" size="mini" @click="addBankkey">新增</el-button>
-            <el-button type="warning" size="mini" @click="exportFun">导出</el-button>
-        </div>
-        <!--搜索区-->
-        <div class="search-setion">
-            <el-form :inline="true" :model="searchData" size="mini">
-                <el-row>
-                    <el-col :span="4">
-                        <el-form-item>
-                            <el-select v-model="searchData.os_source" placeholder="请选择来源系统"
-                                       clearable filterable
-                                       style="width:100%">
-                                <el-option v-for="(source,key) in sourceList"
-                                           :key="key"
-                                           :label="source"
-                                           :value="key">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="4">
-                        <el-form-item>
-                            <el-select v-model="searchData.channel_code" placeholder="请选择通道编码"
-                                       clearable filterable
-                                       style="width:100%">
-                                <el-option v-for="channel in allChannelList"
-                                           :key="channel.channel_id"
-                                           :label="channel.channel_code"
-                                           :value="channel.channel_id">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="4">
-                        <el-form-item>
-                            <el-select v-model="searchData.channel_code" placeholder="请选择通道描述"
-                                       clearable filterable
-                                       style="width:100%">
-                                <el-option v-for="channel in allChannelList"
-                                           :key="channel.channel_id"
-                                           :label="channel.channel_desc"
-                                           :value="channel.channel_id">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="4">
-                        <el-form-item>
-                            <el-input v-model="searchData.bankkey" clearable placeholder="请输入bankkey"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="4">
-                        <el-form-item>
-                            <el-input v-model="searchData.bankkey_desc" clearable placeholder="请输入bankkey描述"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="2">
-                        <el-form-item>
-                            <el-button type="primary" plain @click="clearData" size="mini">清空筛选</el-button>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="2">
-                        <el-form-item>
-                            <el-button type="primary" plain @click="queryData" size="mini">搜索</el-button>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="24">
-                        <el-form-item style="margin-bottom:0px">
-                            <el-checkbox-group v-model="searchData.bankkey_status">
-                                <el-checkbox :label="1" name="启用">启用</el-checkbox>
-                                <el-checkbox :label="0" name="停用">停用</el-checkbox>
-                            </el-checkbox-group>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-            </el-form>
-        </div>
-        <!--分隔栏-->
-        <div class="split-bar"></div>
-        <!--数据展示区-->
-        <section class="table-content">
+    <el-container id="bankkeySet">
+        <el-header>
+            <div class="button-list-right">
+                <el-button type="warning" size="mini" @click="addBankkey">新增</el-button>
+                <el-button type="warning" size="mini" @click="exportFun">导出</el-button>
+            </div>
+            <div class="search-setion">
+                <el-form :inline="true" :model="searchData" size="mini">
+                    <el-row>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-select v-model="searchData.os_source" placeholder="请选择来源系统"
+                                           clearable filterable
+                                           style="width:100%">
+                                    <el-option v-for="(source,key) in sourceList"
+                                               :key="key"
+                                               :label="source"
+                                               :value="key">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-select v-model="searchData.channel_code" placeholder="请选择通道编码"
+                                           clearable filterable
+                                           style="width:100%">
+                                    <el-option v-for="channel in allChannelList"
+                                               :key="channel.channel_id"
+                                               :label="channel.channel_code"
+                                               :value="channel.channel_id">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-select v-model="searchData.channel_code" placeholder="请选择通道描述"
+                                           clearable filterable
+                                           style="width:100%">
+                                    <el-option v-for="channel in allChannelList"
+                                               :key="channel.channel_id"
+                                               :label="channel.channel_desc"
+                                               :value="channel.channel_id">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-input v-model="searchData.bankkey" clearable placeholder="请输入bankkey"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-input v-model="searchData.bankkey_desc" clearable placeholder="请输入bankkey描述"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="2">
+                            <el-form-item>
+                                <el-button type="primary" plain @click="clearData" size="mini">清空筛选</el-button>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="2">
+                            <el-form-item>
+                                <el-button type="primary" plain @click="queryData" size="mini">搜索</el-button>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="24">
+                            <el-form-item style="margin-bottom:0px">
+                                <el-checkbox-group v-model="searchData.bankkey_status">
+                                    <el-checkbox :label="1" name="启用">启用</el-checkbox>
+                                    <el-checkbox :label="0" name="停用">停用</el-checkbox>
+                                </el-checkbox-group>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                </el-form>
+            </div>
+            <div class="split-bar"></div>
+        </el-header>
+        <el-main>
             <el-table :data="tableList"
                       border size="mini" height="100%">
                 <el-table-column prop="os_source" label="来源系统" :show-overflow-tooltip="true"
@@ -200,163 +159,164 @@
                     </template>
                 </el-table-column>
             </el-table>
-        </section>
-        <!--分页部分-->
-        <div class="botton-pag">
-            <el-pagination
-                    background
-                    layout="sizes, prev, pager, next, jumper"
-                    :page-size="pagSize"
-                    :total="pagTotal"
-                    :page-sizes="[20, 50, 100, 500]"
-                    :pager-count="5"
-                    @current-change="getCurrentPage"
-                    @size-change="sizeChange"
-                    :current-page="pagCurrent">
-            </el-pagination>
-        </div>
-        <!--新增、修改弹出框-->
-        <el-dialog :visible.sync="dialogVisible"
-                   width="860px"
-                   :close-on-click-modal="false"
-                   top="56px">
-            <h1 slot="title" v-text="dialogTitle" class="dialog-title"></h1>
-            <el-form :model="dialogData" size="small"
-                     :label-width="formLabelWidth"
-                     :rules="rules" ref="dialogForm">
-                <el-row>
-                    <el-col :span="12">
-                        <el-form-item label="来源系统" prop="os_source">
-                            <el-select v-model="dialogData.os_source" placeholder="请选择来源系统"
-                                       clearable filterable :disabled="isLook"
-                                       style="width:100%">
-                                <el-option v-for="(source,key) in sourceList"
-                                           :key="key"
-                                           :label="source"
-                                           :value="key">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="机构名称" prop="org_id">
-                            <el-select v-model="dialogData.org_id" placeholder="请选择机构"
-                                       clearable filterable :disabled="isLook"
-                                       style="width:100%">
-                                <el-option v-for="item in orgList"
-                                           :key="item.org_id"
-                                           :label="item.name"
-                                           :value="item.org_id">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="bankkey" prop="bankkey">
-                            <el-input v-model="dialogData.bankkey" placeholder="请输入bankkey" :disabled="isLook"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="bankkey描述" prop="bankkey_desc">
-                            <el-input v-model="dialogData.bankkey_desc" placeholder="请输入bankkey描述" :disabled="isLook"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="收付属性" prop="pay_mode">
-                            <el-select v-model="dialogData.pay_mode" placeholder="请选择收付属性"
-                                       clearable filterable :disabled="isLook"
-                                       @change="dialogData.channel_id = ''"
-                                       style="width:100%">
-                                <el-option v-for="(payAttr,key) in payAttrList"
-                                           :key="key"
-                                           :label="payAttr"
-                                           :value="key">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12" style="height:50.4px">
-                        <el-form-item label="bankkey状态">
-                            <el-switch v-model="dialogData.bankkey_status"
-                                       active-value="1" :disabled="isLook"
-                                       inactive-value="0"></el-switch>
-                            <span v-show="dialogData.bankkey_status == 1">启用</span><span
-                                v-show="dialogData.bankkey_status == 0">停用</span>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="通道编码" prop="channel_id">
-                            <el-select v-model="dialogData.channel_id" placeholder="请选择通道编码"
-                                       clearable filterable
-                                       @change="setChannel"
-                                       @visible-change="getChannelList"
-                                       :disabled="isLook || !dialogData.pay_mode"
-                                       style="width:100%">
-                                <el-option v-for="channel in channelList"
-                                           :key="channel.channel_id"
-                                           :label="channel.channel_code"
-                                           :value="channel.channel_id">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="通道描述">
-                            <el-input v-model="dialogData.channel_desc" disabled></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="原通道退款">
-                            <el-switch v-model="dialogData.is_source_back"
-                                       active-value="1" :disabled="isLook"
-                                       inactive-value="0"></el-switch>
-                            <span v-show="dialogData.is_source_back == 1">是</span>
-                            <span v-show="dialogData.is_source_back == 0">否</span>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="银行名称" prop="bank_type">
-                            <el-select v-model="dialogData.bank_type" placeholder="请选择银行"
-                                       clearable filterable :disabled="isLook"
-                                       style="width:100%"
-                                       :filter-method="filterBankType"
-                                       @visible-change="clearSearch"
-                                       :loading="bankLongding">
-                                <el-option v-for="bankType in bankTypeList"
-                                           :key="bankType.name"
-                                           :label="bankType.display_name"
-                                           :value="bankType.code">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="所属渠道" prop="subordinate_channel">
-                            <el-select v-model="dialogData.subordinate_channel" placeholder="请选择渠道"
-                                       clearable filterable :disabled="isLook"
-                                       style="width:100%">
-                                <el-option v-for="(item,key) in subordinateList"
-                                           :key="key"
-                                           :label="item"
-                                           :value="key">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="24">
-                        <el-form-item label="备注">
-                            <el-input type="textarea" v-model="dialogData.remark" :disabled="isLook"
-                                      :rows="4" placeholder="请输入文字"></el-input>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-            </el-form>
-            <span slot="footer" class="dialog-footer">
+        </el-main>
+        <el-footer>
+            <div class="botton-pag">
+                <el-pagination
+                        background
+                        layout="sizes, prev, pager, next, jumper"
+                        :page-size="pagSize"
+                        :total="pagTotal"
+                        :page-sizes="[20, 50, 100, 500]"
+                        :pager-count="5"
+                        @current-change="getCurrentPage"
+                        @size-change="sizeChange"
+                        :current-page="pagCurrent">
+                </el-pagination>
+            </div>
+            <!--新增、修改弹出框-->
+            <el-dialog :visible.sync="dialogVisible"
+                       width="860px"
+                       :close-on-click-modal="false"
+                       top="56px">
+                <h1 slot="title" v-text="dialogTitle" class="dialog-title"></h1>
+                <el-form :model="dialogData" size="small"
+                         :label-width="formLabelWidth"
+                         :rules="rules" ref="dialogForm">
+                    <el-row>
+                        <el-col :span="12">
+                            <el-form-item label="来源系统" prop="os_source">
+                                <el-select v-model="dialogData.os_source" placeholder="请选择来源系统"
+                                           clearable filterable :disabled="isLook"
+                                           style="width:100%">
+                                    <el-option v-for="(source,key) in sourceList"
+                                               :key="key"
+                                               :label="source"
+                                               :value="key">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="机构名称" prop="org_id">
+                                <el-select v-model="dialogData.org_id" placeholder="请选择机构"
+                                           clearable filterable :disabled="isLook"
+                                           style="width:100%">
+                                    <el-option v-for="item in orgList"
+                                               :key="item.org_id"
+                                               :label="item.name"
+                                               :value="item.org_id">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="bankkey" prop="bankkey">
+                                <el-input v-model="dialogData.bankkey" placeholder="请输入bankkey" :disabled="isLook"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="bankkey描述" prop="bankkey_desc">
+                                <el-input v-model="dialogData.bankkey_desc" placeholder="请输入bankkey描述" :disabled="isLook"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="收付属性" prop="pay_mode">
+                                <el-select v-model="dialogData.pay_mode" placeholder="请选择收付属性"
+                                           clearable filterable :disabled="isLook"
+                                           @change="dialogData.channel_id = ''"
+                                           style="width:100%">
+                                    <el-option v-for="(payAttr,key) in payAttrList"
+                                               :key="key"
+                                               :label="payAttr"
+                                               :value="key">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12" style="height:50.4px">
+                            <el-form-item label="bankkey状态">
+                                <el-switch v-model="dialogData.bankkey_status"
+                                           active-value="1" :disabled="isLook"
+                                           inactive-value="0"></el-switch>
+                                <span v-show="dialogData.bankkey_status == 1">启用</span><span
+                                    v-show="dialogData.bankkey_status == 0">停用</span>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="通道编码" prop="channel_id">
+                                <el-select v-model="dialogData.channel_id" placeholder="请选择通道编码"
+                                           clearable filterable
+                                           @change="setChannel"
+                                           @visible-change="getChannelList"
+                                           :disabled="isLook || !dialogData.pay_mode"
+                                           style="width:100%">
+                                    <el-option v-for="channel in channelList"
+                                               :key="channel.channel_id"
+                                               :label="channel.channel_code"
+                                               :value="channel.channel_id">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="通道描述">
+                                <el-input v-model="dialogData.channel_desc" disabled></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="原通道退款">
+                                <el-switch v-model="dialogData.is_source_back"
+                                           active-value="1" :disabled="isLook"
+                                           inactive-value="0"></el-switch>
+                                <span v-show="dialogData.is_source_back == 1">是</span>
+                                <span v-show="dialogData.is_source_back == 0">否</span>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="银行名称" prop="bank_type">
+                                <el-select v-model="dialogData.bank_type" placeholder="请选择银行"
+                                           clearable filterable :disabled="isLook"
+                                           style="width:100%"
+                                           :filter-method="filterBankType"
+                                           @visible-change="clearSearch"
+                                           :loading="bankLongding">
+                                    <el-option v-for="bankType in bankTypeList"
+                                               :key="bankType.name"
+                                               :label="bankType.display_name"
+                                               :value="bankType.code">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="所属渠道" prop="subordinate_channel">
+                                <el-select v-model="dialogData.subordinate_channel" placeholder="请选择渠道"
+                                           clearable filterable :disabled="isLook"
+                                           style="width:100%">
+                                    <el-option v-for="(item,key) in subordinateList"
+                                               :key="key"
+                                               :label="item"
+                                               :value="key">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="24">
+                            <el-form-item label="备注">
+                                <el-input type="textarea" v-model="dialogData.remark" :disabled="isLook"
+                                          :rows="4" placeholder="请输入文字"></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                </el-form>
+                <span slot="footer" class="dialog-footer">
                 <el-button type="warning" size="mini" plain @click="dialogVisible = false">取 消</el-button>
                 <el-button type="warning" size="mini" @click="subCurrent" v-show="!isLook">确 定</el-button>
             </span>
-        </el-dialog>
-    </div>
+            </el-dialog>
+        </el-footer>
+    </el-container>
 </template>
 
 <script>

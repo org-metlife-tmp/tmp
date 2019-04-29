@@ -1,39 +1,5 @@
 <style scoped lang="less" type="text/less">
     #moreWide{
-        width: 100%;
-        height: 100%;
-        box-sizing: border-box;
-        position: relative;
-
-        /*顶部按钮*/
-        .button-list-right {
-            position: absolute;
-            top: -60px;
-            right: -18px;
-        }
-
-        /*搜索区*/
-        .search-setion{
-            text-align: left;
-        }
-
-        /*分隔栏*/
-        .split-bar {
-            width: 106%;
-            height: 6px;
-            margin-left: -20px;
-            background-color: #E7E7E7;
-            margin-bottom: 20px;
-        }
-
-        /*分页部分*/
-        .botton-pag {
-            position: absolute;
-            width: 100%;
-            height: 8%;
-            bottom: -6px;
-        }
-
         /*按钮样式*/
         .on-copy, .withdraw {
             width: 20px;
@@ -57,83 +23,82 @@
 </style>
 
 <template>
-    <div id="moreWide">
-        <!-- 顶部按钮-->
-        <div class="button-list-right">
-            <el-button type="warning" size="mini" @click="addCollect">新增</el-button>
-        </div>
-        <!--搜索区-->
-        <div class="search-setion">
-            <el-form :inline="true" :model="searchData" size="mini">
-                <el-row>
-                    <el-col :span="4">
-                        <el-form-item>
-                            <el-select v-model="searchData.gyl_allocation_type" placeholder="请选择下拨额度"
-                                       clearable filterable
-                                       style="width:100%">
-                                <el-option v-for="(collType,key) in collTypeList"
-                                           :key="key"
-                                           :label="collType"
-                                           :value="key">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="4">
-                        <el-form-item>
-                            <el-select v-model="searchData.gyl_allocation_frequency" placeholder="请选择下拨频率"
-                                       clearable filterable
-                                       style="width:100%">
-                                <el-option v-for="(frequency,key) in frequencyList"
-                                           :key="key"
-                                           :label="frequency"
-                                           :value="key">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="4">
-                        <el-form-item>
-                            <el-input v-model="searchData.topic" clearable placeholder="请输入下拨关键字"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="4">
-                        <el-form-item>
-                            <el-input v-model="searchData.pay_acc_query_key" clearable placeholder="请输入下拨主账号关键字"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="2">
-                        <el-form-item>
-                            <el-button type="primary" plain @click="queryData" size="mini">搜索</el-button>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="24">
-                        <el-form-item style="margin-bottom:0px">
-                            <el-checkbox-group v-model="searchData.service_status">
-                                <el-checkbox v-for="(name,k) in statusList"
-                                             :label="k" name="type" :key="k">
-                                    {{ name }}
-                                </el-checkbox>
-                            </el-checkbox-group>
-                        </el-form-item>
-                        <el-form-item label="|" style="margin-bottom:0px;margin-left:10px" v-show="showActivate">
-                            <el-checkbox-group v-model="searchData.is_activity">
-                                <el-checkbox v-for="(name,k) in activatList"
-                                             :label="k" name="type" :key="k">
-                                    {{ name }}
-                                </el-checkbox>
-                            </el-checkbox-group>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="10"></el-col>
-                </el-row>
-            </el-form>
-        </div>
-        <!--分隔栏-->
-        <div class="split-bar"></div>
-        <!--数据展示区-->
-        <section class="table-content">
+    <el-container id="moreWide">
+        <el-header>
+            <div class="button-list-right">
+                <el-button type="warning" size="mini" @click="addCollect">新增</el-button>
+            </div>
+            <div class="search-setion">
+                <el-form :inline="true" :model="searchData" size="mini">
+                    <el-row>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-select v-model="searchData.gyl_allocation_type" placeholder="请选择下拨额度"
+                                           clearable filterable
+                                           style="width:100%">
+                                    <el-option v-for="(collType,key) in collTypeList"
+                                               :key="key"
+                                               :label="collType"
+                                               :value="key">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-select v-model="searchData.gyl_allocation_frequency" placeholder="请选择下拨频率"
+                                           clearable filterable
+                                           style="width:100%">
+                                    <el-option v-for="(frequency,key) in frequencyList"
+                                               :key="key"
+                                               :label="frequency"
+                                               :value="key">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-input v-model="searchData.topic" clearable placeholder="请输入下拨关键字"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-input v-model="searchData.pay_acc_query_key" clearable placeholder="请输入下拨主账号关键字"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="2">
+                            <el-form-item>
+                                <el-button type="primary" plain @click="queryData" size="mini">搜索</el-button>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="24">
+                            <el-form-item style="margin-bottom:0px">
+                                <el-checkbox-group v-model="searchData.service_status">
+                                    <el-checkbox v-for="(name,k) in statusList"
+                                                 :label="k" name="type" :key="k">
+                                        {{ name }}
+                                    </el-checkbox>
+                                </el-checkbox-group>
+                            </el-form-item>
+                            <el-form-item label="|" style="margin-bottom:0px;margin-left:10px" v-show="showActivate">
+                                <el-checkbox-group v-model="searchData.is_activity">
+                                    <el-checkbox v-for="(name,k) in activatList"
+                                                 :label="k" name="type" :key="k">
+                                        {{ name }}
+                                    </el-checkbox>
+                                </el-checkbox-group>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="10"></el-col>
+                    </el-row>
+                </el-form>
+            </div>
+            <div class="split-bar"></div>
+        </el-header>
+        <el-main>
             <el-table :data="tableList"
+                      height="100%"
                       border size="mini">
                 <el-table-column prop="topic" label="主题" width="180px"
                                  :show-overflow-tooltip="true"></el-table-column>
@@ -188,22 +153,23 @@
                     </template>
                 </el-table-column>
             </el-table>
-        </section>
-        <!--分页部分-->
-        <div class="botton-pag">
-            <el-pagination
-                    background
-                    layout="sizes, prev, pager, next, jumper"
-                    :page-size="pagSize"
-                    :total="pagTotal"
-                    :page-sizes="[7, 50, 100, 500]"
-                    :pager-count="5"
-                    @current-change="getCurrentPage"
-                    @size-change="sizeChange"
-                    :current-page="pagCurrent">
-            </el-pagination>
-        </div>
-    </div>
+        </el-main>
+        <el-footer>
+            <div class="botton-pag">
+                <el-pagination
+                        background
+                        layout="sizes, prev, pager, next, jumper"
+                        :page-size="pagSize"
+                        :total="pagTotal"
+                        :page-sizes="[7, 50, 100, 500]"
+                        :pager-count="5"
+                        @current-change="getCurrentPage"
+                        @size-change="sizeChange"
+                        :current-page="pagCurrent">
+                </el-pagination>
+            </div>
+        </el-footer>
+    </el-container>
 </template>
 
 <script>

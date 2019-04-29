@@ -1,17 +1,5 @@
 <style scoped lang="less" type="text/less">
     #allocationChart {
-        width: 100%;
-        height: 100%;
-        box-sizing: border-box;
-        position: relative;
-
-        /*顶部选择按钮*/
-        .button-list-left {
-            position: absolute;
-            top: -56px;
-            left: -20px;
-        }
-
         /*弹框高度控制*/
         .dialog-content{
             overflow-y: auto;
@@ -21,8 +9,8 @@
         /*用户-用户组切换*/
         .company-bank {
             position: absolute;
-            top: -20px;
-            right: -48px;
+            top: 52px;
+            right: -28px;
             width: 28px;
             height: 140px;
 
@@ -82,8 +70,8 @@
         /*图表/列表切换按钮*/
         .switchover {
             position: absolute;
-            bottom: -12px;
-            left: 10px;
+            bottom: -3px;
+            left: 28px;
             text-align: left;
             margin: -22px 0 20px 0;
             z-index: 10;
@@ -124,6 +112,7 @@
         .img-content{
             width: 100%;
             height: 100%;
+            box-sizing: border-box;
             border: 1px solid #f1f1f1;
 
             .img-left {
@@ -218,169 +207,160 @@
 
         /*列表内容*/
         .list-content{
-            /*汇总数据*/
-            .allData {
-                height: 36px;
-                line-height: 36px;
-                width: 100%;
-                background-color: #F8F8F8;
-                border: 1px solid #ebeef5;
-                border-top: none;
-                box-sizing: border-box;
-                text-align: right;
-
-                /*汇总数字*/
-                .numText {
-                    color: #FF5800;
-                    margin-right: 10px;
-                }
-            }
+            height: 100%;
         }
 
     }
 </style>
 <template>
-    <div id="allocationChart">
-        <el-date-picker v-show="!showImg" style="margin-bottom:10px"
-                v-model="dateValue"
-                type="daterange"
-                range-separator="至"
-                start-placeholder="开始日期"
-                end-placeholder="结束日期"
-                value-format="yyyy-MM-dd"
-                size="mini" clearable
-                unlink-panels
-                :picker-options="pickerOptions"
-                @change="getDateData">
-        </el-date-picker>
-        <!--顶部选择按钮-->
-        <div class="button-list-left">
-            <el-button type="primary" plain size="mini" @click="showDialog('dialogVisible')">全部公司</el-button>
-            <el-button type="primary" plain size="mini" @click="showDialog('bankDialogVisible')">全部银行</el-button>
-        </div>
-        <!-- 公司/账号 选择-->
-        <div class="company-bank">
-            <ul>
-                <li :class="{'current-select':btActive}"
-                    @click="isCompany">公司
-                </li>
-                <li :class="{'current-select':!btActive}"
-                    @click="isNumber">账号
-                </li>
-            </ul>
-        </div>
-        <!--图表/列表切换按钮-->
-        <div class="switchover">
-            <el-button-group>
-                <el-button type="primary" size="mini" :class="{active:showImg}"
-                           @click="changeListOrChart">
-                    <i class="get-img"></i>
-                </el-button>
-                <el-button type="primary" size="mini" :class="{active:!showImg}"
-                           @click="changeListOrChart">
-                    <i class="get-list"></i>
-                </el-button>
-            </el-button-group>
-        </div>
-        <!--图表内容-->
-        <section class="img-content" v-show="showImg">
-            <div class="img-left">
-                <h2>TOP5</h2>
-                <span>汇总金额</span>
-                <div class="left-money">￥{{ pieTotalAmount }}</div>
-                <!--饼图-->
-                <div class="left-pie">
-                    <div>
-                        <CakePicture :pieData="pieData"></CakePicture>
-                    </div>
-                </div>
+    <el-container id="allocationChart">
+        <el-header>
+            <div class="button-list-left">
+                <el-button type="primary" plain size="mini" @click="showDialog('dialogVisible')">全部公司</el-button>
+                <el-button type="primary" plain size="mini" @click="showDialog('bankDialogVisible')">全部银行</el-button>
             </div>
-            <div class="img-right">
+            <!-- 公司/账号 选择-->
+            <div class="company-bank">
                 <ul>
-                    <li v-for="(item,index) in pieList" :key="item.pay_account_org_id"
-                        class="pie-list">
-                        <span class="corner-mark">{{ index + 1 }}</span>
-                        <div class="left-text">
-                            <p v-show="btActive">{{ item.pay_account_org_name }}</p>
-                            <p v-show="!btActive">{{ item.pay_account_no }}({{ item.pay_account_name }})</p>
-                            <span>￥{{ transitionMoney(item.amount) }}</span>
-                        </div>
-                        <div class="right-echart">
-                            <MoreCake :pieData="item.$pieData" :classIndex="index"></MoreCake>
-                        </div>
+                    <li :class="{'current-select':btActive}"
+                        @click="isCompany">公司
+                    </li>
+                    <li :class="{'current-select':!btActive}"
+                        @click="isNumber">账号
                     </li>
                 </ul>
             </div>
-        </section>
-        <!--列表内容-->
-        <section class="list-content" v-show="!showImg">
-            <el-table :data="tableList" height="325"
-                      border size="mini">
-                <el-table-column prop="pay_account_org_name" label="所属公司" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="pay_account_no" label="被下拨账户" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="pay_account_bank" label="开户行" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="amount" label="下拨总金额" :show-overflow-tooltip="true"
-                                 :formatter="transitAmount"></el-table-column>
-                <el-table-column prop="percentage" label="金额占比" :show-overflow-tooltip="true"></el-table-column>
-            </el-table>
-            <div class="allData">
-                <span>总金额：</span>
-                <span v-text="totalAmount" class="numText"></span>
-                <span>总占比：</span>
-                <span class="numText">100%</span>
+            <!--图表/列表切换按钮-->
+            <div class="switchover">
+                <el-button-group>
+                    <el-button type="primary" size="mini" :class="{active:!showImg}"
+                               @click="changeListOrChart">
+                        <i class="get-img"></i>
+                    </el-button>
+                    <el-button type="primary" size="mini" :class="{active:showImg}"
+                               @click="changeListOrChart">
+                        <i class="get-list"></i>
+                    </el-button>
+                </el-button-group>
             </div>
-        </section>
-        <!--选择公司弹出框-->
-        <el-dialog :visible.sync="dialogVisible"
-                   class="comDialog"
-                   width="810px" title="请选择公司"
-                   :close-on-click-modal="false"
-                   top="56px">
-            <h1 slot="title" class="dialog-title">请选择公司</h1>
-            <div class="dialog-content">
-                <el-tree :data="orgTreeList"
-                         node-key="org_id"
-                         :check-strictly="true"
-                         highlight-current
-                         accordion show-checkbox
-                         :expand-on-click-node="false"
-                         :default-expanded-keys="expandData"
-                         ref="orgTree">
+            <el-date-picker v-show="!showImg" style="margin-bottom:10px"
+                            v-model="dateValue"
+                            type="daterange"
+                            range-separator="至"
+                            start-placeholder="开始日期"
+                            end-placeholder="结束日期"
+                            value-format="yyyy-MM-dd"
+                            size="mini" clearable
+                            unlink-panels
+                            :picker-options="pickerOptions"
+                            @change="getDateData">
+            </el-date-picker>
+        </el-header>
+        <el-main>
+            <!--图表内容-->
+            <section class="img-content" v-show="showImg">
+                <div class="img-left">
+                    <h2>TOP5</h2>
+                    <span>汇总金额</span>
+                    <div class="left-money">￥{{ pieTotalAmount }}</div>
+                    <!--饼图-->
+                    <div class="left-pie">
+                        <div>
+                            <CakePicture :pieData="pieData"></CakePicture>
+                        </div>
+                    </div>
+                </div>
+                <div class="img-right">
+                    <ul>
+                        <li v-for="(item,index) in pieList" :key="item.pay_account_org_id"
+                            class="pie-list">
+                            <span class="corner-mark">{{ index + 1 }}</span>
+                            <div class="left-text">
+                                <p v-show="btActive">{{ item.pay_account_org_name }}</p>
+                                <p v-show="!btActive">{{ item.pay_account_no }}({{ item.pay_account_name }})</p>
+                                <span>￥{{ transitionMoney(item.amount) }}</span>
+                            </div>
+                            <div class="right-echart">
+                                <MoreCake :pieData="item.$pieData" :classIndex="index"></MoreCake>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+            <!--列表内容-->
+            <section class="list-content" v-show="!showImg">
+                <el-table :data="tableList" height="100%"
+                          border size="mini">
+                    <el-table-column prop="pay_account_org_name" label="所属公司" :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column prop="pay_account_no" label="被下拨账户" :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column prop="pay_account_bank" label="开户行" :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column prop="amount" label="下拨总金额" :show-overflow-tooltip="true"
+                                     :formatter="transitAmount"></el-table-column>
+                    <el-table-column prop="percentage" label="金额占比" :show-overflow-tooltip="true"></el-table-column>
+                </el-table>
+            </section>
+        </el-main>
+        <el-footer>
+            <div class="allData" v-show="!showImg">
+                <div class="btn-right">
+                    <span>总金额：</span>
+                    <span v-text="totalAmount" class="numText"></span>
+                    <span>总占比：</span>
+                    <span class="numText">100%</span>
+                </div>
+            </div>
+            <!--选择公司弹出框-->
+            <el-dialog :visible.sync="dialogVisible"
+                       class="comDialog"
+                       width="810px" title="请选择公司"
+                       :close-on-click-modal="false"
+                       top="56px">
+                <h1 slot="title" class="dialog-title">请选择公司</h1>
+                <div class="dialog-content">
+                    <el-tree :data="orgTreeList"
+                             node-key="org_id"
+                             :check-strictly="true"
+                             highlight-current
+                             accordion show-checkbox
+                             :expand-on-click-node="false"
+                             :default-expanded-keys="expandData"
+                             ref="orgTree">
                 <span class="custom-tree-node" slot-scope="{ node, data }">
                     <span>{{ node.data.name }}</span>
                 </span>
-                </el-tree>
-            </div>
-            <span slot="footer" class="dialog-footer">
+                    </el-tree>
+                </div>
+                <span slot="footer" class="dialog-footer">
                 <el-button type="warning" size="mini" plain @click="dialogVisible=false">取 消</el-button>
                 <el-button type="warning" size="mini" @click="queryByOrg">确 定</el-button>
             </span>
-        </el-dialog>
-        <!--选择银行弹出框-->
-        <el-dialog :visible.sync="bankDialogVisible"
-                   width="600px" title="请选择账户性质"
-                   :close-on-click-modal="false"
-                   top="56px">
-            <h1 slot="title" class="dialog-title">请选择银行</h1>
-            <div class="dialog-content">
-                <el-checkbox :indeterminate="insureIndeter" v-model="insureAll"
-                             @change="insureAllChange">全选
-                </el-checkbox>
-                <el-checkbox-group v-model="selectBank" @change="insureChange">
-                    <el-checkbox v-for="bank in bankTypeList"
-                                 :key="bank.name"
-                                 :label="bank.code"
-                                 style="display:block;margin-left:15px">
-                        {{bank.name}}
+            </el-dialog>
+            <!--选择银行弹出框-->
+            <el-dialog :visible.sync="bankDialogVisible"
+                       width="600px" title="请选择账户性质"
+                       :close-on-click-modal="false"
+                       top="56px">
+                <h1 slot="title" class="dialog-title">请选择银行</h1>
+                <div class="dialog-content">
+                    <el-checkbox :indeterminate="insureIndeter" v-model="insureAll"
+                                 @change="insureAllChange">全选
                     </el-checkbox>
-                </el-checkbox-group>
-            </div>
-            <span slot="footer" class="dialog-footer">
+                    <el-checkbox-group v-model="selectBank" @change="insureChange">
+                        <el-checkbox v-for="bank in bankTypeList"
+                                     :key="bank.name"
+                                     :label="bank.code"
+                                     style="display:block;margin-left:15px">
+                            {{bank.name}}
+                        </el-checkbox>
+                    </el-checkbox-group>
+                </div>
+                <span slot="footer" class="dialog-footer">
                 <el-button type="warning" size="mini" plain @click="bankDialogVisible=false">取 消</el-button>
                 <el-button type="warning" size="mini" @click="queryByBank">确 定</el-button>
             </span>
-        </el-dialog>
-    </div>
+            </el-dialog>
+        </el-footer>
+    </el-container>
 </template>
 
 <script>
@@ -416,7 +396,7 @@
                     optype: "allocreport_orglist",
                     params: {
                         start_date:"",
-                        end_date: "",  
+                        end_date: "",
                         pay_account_org_id:[],
                         pay_bank_cnaps:[]
                     }
@@ -479,7 +459,7 @@
                         this.clearAll();
                     }
                     this.btActive = true;
-                    
+
                 }
             },
             //切换到账号
@@ -488,7 +468,7 @@
                     return;
                 }else{
                     if(this.showImg){
-                       this.getChartAxios('acc'); 
+                       this.getChartAxios('acc');
                     }else{
                         this.routerMessage.optype = "allocreport_acclist";
                         this.$emit("getCommTable", this.routerMessage);
@@ -536,7 +516,7 @@
                     }
                 }else{
                     this.routerMessage.optype = this.btActive ? "allocreport_orglist" : "allocreport_acclist";
-                    
+
                     this.$emit("getCommTable", this.routerMessage);
                 }
                 this.bankDialogVisible = false;
@@ -647,7 +627,7 @@
                 this.pieTotalAmount = "0.00";
                 this.routerMessage.params = {
                     start_date:"",
-                    end_date: "",  
+                    end_date: "",
                     pay_account_org_id:[],
                     pay_bank_cnaps:[]
                 }

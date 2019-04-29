@@ -1,29 +1,8 @@
 <style scoped lang="less" type="text/less">
     #collectionManage{
-        width: 100%;
-        height: 100%;
-        box-sizing: border-box;
-        position: relative;
-
-        /*搜索区*/
-        .search-setion{
-            text-align: left;
-        }
-
-        /*分隔栏*/
-        .split-bar {
-            width: 106%;
-            height: 6px;
-            margin-left: -20px;
-            background-color: #E7E7E7;
-            margin-bottom: 20px;
-        }
-
         /*数据展示区*/
         .table-content{
             text-align: left;
-            height: 76%;
-            overflow-y: auto;
 
             .el-card{
                 width: 92%;
@@ -132,14 +111,6 @@
 
         }
 
-        /*分页部分*/
-        .botton-pag {
-            position: absolute;
-            width: 100%;
-            height: 8%;
-            bottom: -6px;
-        }
-
         /*日志弹框*/
         .dialog-title{
             border-bottom: 1px solid #ccc;
@@ -184,79 +155,72 @@
                 padding: 0;
             }
         }
-        .el-dialog__wrapper {
-            .el-dialog__body {
-                max-height: 400px;
-                overflow-y: auto;
-            }
-        }
     }
 </style>
 
 <template>
-    <div id="collectionManage">
-        <!--搜索区-->
-        <div class="search-setion">
-            <el-form :inline="true" :model="searchData" size="mini">
-                <el-row>
-                    <el-col :span="4">
-                        <el-form-item>
-                            <el-select v-model="searchData.collect_type" placeholder="请选择归集额度"
-                                       clearable filterable
-                                       style="width:100%">
-                                <el-option v-for="(collType,key) in collTypeList"
-                                           :key="key"
-                                           :label="collType"
-                                           :value="key">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="4">
-                        <el-form-item>
-                            <el-select v-model="searchData.collect_frequency" placeholder="请选择归集频率"
-                                       clearable filterable
-                                       style="width:100%">
-                                <el-option v-for="(frequency,key) in frequencyList"
-                                           :key="key"
-                                           :label="frequency"
-                                           :value="key">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="4">
-                        <el-form-item>
-                            <el-input v-model="searchData.topic" clearable placeholder="请输入归集关键字"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="4">
-                        <el-form-item>
-                            <el-input v-model="searchData.main_acc_query_key" clearable placeholder="请输入归集主账号关键字"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="2">
-                        <el-form-item>
-                            <el-button type="primary" plain @click="queryData" size="mini">搜索</el-button>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="24">
-                        <el-form-item style="margin-bottom:0px">
-                            <el-checkbox-group v-model="searchData.is_activity">
-                                <el-checkbox v-for="(name,k) in statusList"
-                                             :label="k" name="type" :key="k">
-                                    {{ name }}
-                                </el-checkbox>
-                            </el-checkbox-group>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-            </el-form>
-        </div>
-        <!--分隔栏-->
-        <div class="split-bar"></div>
-        <!--数据展示区-->
-        <section class="table-content">
+    <el-container id="collectionManage">
+        <el-header>
+            <div class="search-setion">
+                <el-form :inline="true" :model="searchData" size="mini">
+                    <el-row>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-select v-model="searchData.collect_type" placeholder="请选择归集额度"
+                                           clearable filterable
+                                           style="width:100%">
+                                    <el-option v-for="(collType,key) in collTypeList"
+                                               :key="key"
+                                               :label="collType"
+                                               :value="key">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-select v-model="searchData.collect_frequency" placeholder="请选择归集频率"
+                                           clearable filterable
+                                           style="width:100%">
+                                    <el-option v-for="(frequency,key) in frequencyList"
+                                               :key="key"
+                                               :label="frequency"
+                                               :value="key">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-input v-model="searchData.topic" clearable placeholder="请输入归集关键字"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-input v-model="searchData.main_acc_query_key" clearable placeholder="请输入归集主账号关键字"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="2">
+                            <el-form-item>
+                                <el-button type="primary" plain @click="queryData" size="mini">搜索</el-button>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="24">
+                            <el-form-item style="margin-bottom:0px">
+                                <el-checkbox-group v-model="searchData.is_activity">
+                                    <el-checkbox v-for="(name,k) in statusList"
+                                                 :label="k" name="type" :key="k">
+                                        {{ name }}
+                                    </el-checkbox>
+                                </el-checkbox-group>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                </el-form>
+            </div>
+            <div class="split-bar"></div>
+        </el-header>
+        <el-main class="table-content">
             <el-row>
                 <el-col :span="6" v-for="(card,index) in tableList" :key="card.id">
                     <el-card class="box-card">
@@ -294,95 +258,96 @@
                     </el-card>
                 </el-col>
             </el-row>
-        </section>
-        <!--日志 弹出框-->
-        <el-dialog :visible.sync="dialogVisible"
-                   width="1000px" top="76px"
-                   title="日志"
-                   :close-on-click-modal="false">
-            <div class="dialog-title">
-                {{ dialogData.topic }}
-                <span>[ {{ dialogData.service_serial_number }} ]</span>
-            </div>
-
-            <!--上半部分表格-->
-            <div class="table-all-data" v-show="topLogList.length > 0">
-                执行时间: <span>{{ topLogData.execute_time }}</span>
-                <div>
-                    共 <span style="color:#FF5800">{{ topLogData.total_num }}</span> 笔,
-                    成功 <span>{{ topLogData.success_count }}</span> 笔,
-                    归集总额 <span style="color:#FF5800">￥{{ $common.transitSeparator(topLogData.total_amount) }}</span>
+        </el-main>
+        <el-footer>
+            <el-dialog :visible.sync="dialogVisible"
+                       width="1000px" top="76px"
+                       title="日志"
+                       :close-on-click-modal="false">
+                <div class="dialog-title">
+                    {{ dialogData.topic }}
+                    <span>[ {{ dialogData.service_serial_number }} ]</span>
                 </div>
-            </div>
-            <el-table :data="topLogList"
-                      border size="mini"
-                      highlight-current-row>
-                <el-table-column prop="recv_account_no" label="被归集账号" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="recv_account_bank" label="归集账号开户行" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="pay_account_no" label="归集主账号" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="collect_amount" label="归集金额" :show-overflow-tooltip="true"></el-table-column>
 
-                <el-table-column label="状态" :show-overflow-tooltip="true" width="80">
-                    <template slot-scope="scope">
-                        <el-popover placement="top" title="失败原因"
-                                    width="200" trigger="hover"
-                                    :disabled="scope.row.collect_status != 4"
-                                    :content="scope.row.feed_back">
-                            <span slot="reference" style="cursor:default">{{ transitionStatus(scope.row.collect_status) }}</span>
-                        </el-popover>
-                    </template>
-                </el-table-column>
-
-                <el-table-column
-                        label="操作"
-                        width="80">
-                    <template slot-scope="scope" class="operationBtn">
-                        <el-tooltip content="发送" placement="bottom" effect="light" :enterable="false"
-                                    :open-delay="500" v-show="scope.row.collect_status == 4">
-                            <el-button class="send" size="mini" type="warning"
-                                       @click="sendData(scope.row)"></el-button>
-                        </el-tooltip>
-                        <el-tooltip content="作废" placement="bottom" effect="light" :enterable="false"
-                                    :open-delay="500" v-show="scope.row.collect_status == 4">
-                            <el-button size="mini" class="withdraw" icon="el-icon-circle-close-outline" type="danger"
-                                       style="font-size:16px;padding: 1px;vertical-align: bottom;line-height: 15px;"
-                                       @click="cancelData(scope.row)"></el-button>
-                        </el-tooltip>
-                    </template>
-                </el-table-column>
-            </el-table>
-
-            <!--下半部分表格-->
-            <div class="table-all-data" style="margin-top:20px" v-show="bottomLogList.length > 0">
-                执行时间: <span>{{ bottomLogData.execute_time }}</span>
-                <div>
-                    共 <span style="color:#FF5800">{{ bottomLogData.total_num }}</span> 笔,
-                    成功 <span>{{ bottomLogData.success_count }}</span> 笔,
-                    归集总额 <span style="color:#FF5800">￥{{ $common.transitSeparator(bottomLogData.total_amount) }}</span>
+                <!--上半部分表格-->
+                <div class="table-all-data" v-show="topLogList.length > 0">
+                    执行时间: <span>{{ topLogData.execute_time }}</span>
+                    <div>
+                        共 <span style="color:#FF5800">{{ topLogData.total_num }}</span> 笔,
+                        成功 <span>{{ topLogData.success_count }}</span> 笔,
+                        归集总额 <span style="color:#FF5800">￥{{ $common.transitSeparator(topLogData.total_amount) }}</span>
+                    </div>
                 </div>
-            </div>
-            <el-table :data="bottomLogList"
-                      border size="mini"
-                      v-show="bottomLogList.length > 0"
-                      highlight-current-row>
-                <el-table-column prop="recv_account_no" label="被归集账号" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="recv_account_bank" label="归集账号开户行" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="pay_account_no" label="归集主账号" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="collect_amount" label="归集金额" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column label="状态" :show-overflow-tooltip="true" width="80">
-                    <template slot-scope="scope">
-                        <el-popover placement="top" title="失败原因"
-                                    width="200" trigger="hover"
-                                    :disabled="scope.row.collect_status != 4"
-                                    :content="scope.row.feed_back">
-                            <span slot="reference" style="cursor:default">{{ transitionStatus(scope.row.collect_status) }}</span>
-                        </el-popover>
-                    </template>
-                </el-table-column>
-            </el-table>
-            <span slot="footer" class="dialog-footer" style="text-align:center"></span>
-        </el-dialog>
-    </div>
+                <el-table :data="topLogList"
+                          border size="mini"
+                          highlight-current-row>
+                    <el-table-column prop="recv_account_no" label="被归集账号" :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column prop="recv_account_bank" label="归集账号开户行" :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column prop="pay_account_no" label="归集主账号" :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column prop="collect_amount" label="归集金额" :show-overflow-tooltip="true"></el-table-column>
+
+                    <el-table-column label="状态" :show-overflow-tooltip="true" width="80">
+                        <template slot-scope="scope">
+                            <el-popover placement="top" title="失败原因"
+                                        width="200" trigger="hover"
+                                        :disabled="scope.row.collect_status != 4"
+                                        :content="scope.row.feed_back">
+                                <span slot="reference" style="cursor:default">{{ transitionStatus(scope.row.collect_status) }}</span>
+                            </el-popover>
+                        </template>
+                    </el-table-column>
+
+                    <el-table-column
+                            label="操作"
+                            width="80">
+                        <template slot-scope="scope" class="operationBtn">
+                            <el-tooltip content="发送" placement="bottom" effect="light" :enterable="false"
+                                        :open-delay="500" v-show="scope.row.collect_status == 4">
+                                <el-button class="send" size="mini" type="warning"
+                                           @click="sendData(scope.row)"></el-button>
+                            </el-tooltip>
+                            <el-tooltip content="作废" placement="bottom" effect="light" :enterable="false"
+                                        :open-delay="500" v-show="scope.row.collect_status == 4">
+                                <el-button size="mini" class="withdraw" icon="el-icon-circle-close-outline" type="danger"
+                                           style="font-size:16px;padding: 1px;vertical-align: bottom;line-height: 15px;"
+                                           @click="cancelData(scope.row)"></el-button>
+                            </el-tooltip>
+                        </template>
+                    </el-table-column>
+                </el-table>
+
+                <!--下半部分表格-->
+                <div class="table-all-data" style="margin-top:20px" v-show="bottomLogList.length > 0">
+                    执行时间: <span>{{ bottomLogData.execute_time }}</span>
+                    <div>
+                        共 <span style="color:#FF5800">{{ bottomLogData.total_num }}</span> 笔,
+                        成功 <span>{{ bottomLogData.success_count }}</span> 笔,
+                        归集总额 <span style="color:#FF5800">￥{{ $common.transitSeparator(bottomLogData.total_amount) }}</span>
+                    </div>
+                </div>
+                <el-table :data="bottomLogList"
+                          border size="mini"
+                          v-show="bottomLogList.length > 0"
+                          highlight-current-row>
+                    <el-table-column prop="recv_account_no" label="被归集账号" :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column prop="recv_account_bank" label="归集账号开户行" :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column prop="pay_account_no" label="归集主账号" :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column prop="collect_amount" label="归集金额" :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column label="状态" :show-overflow-tooltip="true" width="80">
+                        <template slot-scope="scope">
+                            <el-popover placement="top" title="失败原因"
+                                        width="200" trigger="hover"
+                                        :disabled="scope.row.collect_status != 4"
+                                        :content="scope.row.feed_back">
+                                <span slot="reference" style="cursor:default">{{ transitionStatus(scope.row.collect_status) }}</span>
+                            </el-popover>
+                        </template>
+                    </el-table-column>
+                </el-table>
+                <span slot="footer" class="dialog-footer" style="text-align:center"></span>
+            </el-dialog>
+        </el-footer>
+    </el-container>
 </template>
 
 <script>

@@ -1,29 +1,17 @@
 <style scoped lang="less" type="text/less">
     #paymentWorkbench {
-        width: 100%;
-        height: 100%;
-        box-sizing: border-box;
-        position: relative;
-
         /*顶部按钮*/
-        .button-list-right {
-            position: absolute;
-            top: -60px;
-            right: -18px;
-        }
         .button-list-left {
-            position: absolute;
-            top: -50px;
-            left: -20px;
+            top: 22px;
 
-            ul{
+            ul {
                 font-size: 14px;
                 color: #b1b1b1;
                 text-align: center;
                 height: 30px;
                 line-height: 30px;
 
-                li{
+                li {
                     float: left;
                     margin-right: 4px;
                     height: 100%;
@@ -33,87 +21,11 @@
                     background-color: #f2f2f2;
                 }
 
-                .active{
+                .active {
                     color: #00b3ed;
                     background-color: #fff;
                 }
             }
-        }
-
-        /*搜索区*/
-        .search-setion {
-            text-align: left;
-
-            /*时间控件*/
-            .el-date-editor {
-                width: 100%;
-                max-width: 210px;
-            }
-        }
-
-        /*分隔栏*/
-        .split-bar {
-            width: 106%;
-            height: 6px;
-            margin-left: -20px;
-            background-color: #E7E7E7;
-            margin-bottom: 20px;
-        }
-
-        /*数据展示区*/
-        .table-content {
-            height: 60%;
-        }
-
-        /*汇总数据*/
-        .allData {
-            height: 36px;
-            line-height: 36px;
-            width: 100%;
-            background-color: #F8F8F8;
-            border: 1px solid #ebeef5;
-            border-top: none;
-            box-sizing: border-box;
-            text-align: right;
-
-            /*左侧按钮*/
-            .btn-left {
-                float: right;
-                margin-right: 16px;
-
-                .transmit-icon {
-                    position: relative;
-                    display: inline-block;
-                    width: 16px;
-                    height: 10px;
-                    vertical-align: middle;
-                    margin-right: 4px;
-
-                    i {
-                        position: absolute;
-                        top: -5px;
-                        left: -3px;
-                        width: 18px;
-                        height: 18px;
-                        background: url(../../assets/icon_common.png) no-repeat;
-                        background-position: -49px -80px;
-                    }
-                }
-            }
-
-            /*汇总数字*/
-            .numText {
-                color: #FF5800;
-                margin-right: 10px;
-            }
-        }
-
-        /*分页部分*/
-        .botton-pag {
-            position: absolute;
-            width: 100%;
-            height: 8%;
-            bottom: -6px;
         }
 
         /*按钮样式*/
@@ -137,127 +49,127 @@
 </style>
 
 <template>
-    <div id="paymentWorkbench">
-        <!-- 顶部按钮-->
-        <div class="button-list-left">
-            <ul>
-                <li :class="{'active': searchData.source_sys == '0'}" @click="switchTab('0')">LA</li>
-                <li :class="{'active': searchData.source_sys == '1'}" @click="switchTab('1')">EBS</li>
-            </ul>
-        </div>
-        <div class="button-list-right">
-            <el-button type="warning" size="mini" @click="exportFun">导出</el-button>
-        </div>
-        <!--搜索区-->
-        <div class="search-setion">
-            <el-form :inline="true" :model="searchData" size="mini">
-                <el-row>
-                    <el-col :span="4">
-                        <el-form-item>
-                            <el-input v-model="searchData.preinsure_bill_no" clearable placeholder="请输入投保单号"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="4">
-                        <el-form-item>
-                            <el-input v-model="searchData.insure_bill_no" clearable placeholder="请输入保单号"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="4">
-                        <el-form-item>
-                            <el-select v-model="searchData.org_id" placeholder="请选择机构"
-                                       clearable filterable
-                                       style="width:100%">
-                                <el-option v-for="item in orgList"
-                                           :key="item.org_id"
-                                           :label="item.name"
-                                           :value="item.org_id">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="4">
-                        <el-form-item>
-                            <el-input v-model="searchData.recv_cert_code" clearable placeholder="请输入客户号码"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="4">
-                        <el-form-item>
-                            <el-input v-model="searchData.recv_acc_name" clearable placeholder="请输入客户名称"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="4">
-                        <el-form-item>
-                            <el-select v-model="searchData.pay_mode" placeholder="请选择支付方式"
-                                       clearable filterable
-                                       style="width:100%">
-                                <el-option v-for="(payMode,key) in payModeList"
-                                           :key="key"
-                                           :label="payMode"
-                                           :value="key">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="5">
-                        <el-form-item>
-                            <el-date-picker
-                                    v-model="dateValue"
-                                    type="daterange"
-                                    range-separator="至"
-                                    start-placeholder="开始日期"
-                                    end-placeholder="结束日期"
-                                    value-format="yyyy-MM-dd"
-                                    size="mini" clearable
-                                    unlink-panels
-                                    :picker-options="pickerOptions">
-                            </el-date-picker>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="4">
-                        <el-form-item>
-                            <el-input v-model="searchData.biz_code" clearable placeholder="请输入业务号码"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="4">
-                        <el-form-item>
-                            <el-select v-model="searchData.service_status" placeholder="请选择支付结果"
-                                       clearable filterable
-                                       style="width:100%">
-                                <el-option v-for="(billstatus,key) in billstatusList"
-                                           :key="key"
-                                           :label="billstatus"
-                                           :value="key">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="7">
-                        <el-form-item style="margin-bottom:0px">
-                            <el-checkbox-group v-model="searchData.status">
-                                <el-checkbox v-for="(status,key) in statusList"
-                                             :key="key" :label="key">
-                                    {{status}}
-                                </el-checkbox>
-                            </el-checkbox-group>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="2">
-                        <el-form-item>
-                            <el-button type="primary" plain @click="clearData" size="mini">清空筛选</el-button>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="2">
-                        <el-form-item>
-                            <el-button type="primary" plain @click="queryData" size="mini">搜索</el-button>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-            </el-form>
-        </div>
-        <!--分隔栏-->
-        <div class="split-bar"></div>
-        <!--数据展示区-->
-        <section class="table-content">
+    <el-container id="paymentWorkbench">
+        <el-header>
+            <div class="button-list-left">
+                <ul>
+                    <li :class="{'active': searchData.source_sys == '0'}" @click="switchTab('0')">LA</li>
+                    <li :class="{'active': searchData.source_sys == '1'}" @click="switchTab('1')">EBS</li>
+                </ul>
+            </div>
+            <div class="button-list-right">
+                <el-button type="warning" size="mini" @click="exportFun">导出</el-button>
+            </div>
+            <div class="search-setion">
+                <el-form :inline="true" :model="searchData" size="mini">
+                    <el-row>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-input v-model="searchData.preinsure_bill_no" clearable
+                                          placeholder="请输入投保单号"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-input v-model="searchData.insure_bill_no" clearable placeholder="请输入保单号"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-select v-model="searchData.org_id" placeholder="请选择机构"
+                                           clearable filterable
+                                           style="width:100%">
+                                    <el-option v-for="item in orgList"
+                                               :key="item.org_id"
+                                               :label="item.name"
+                                               :value="item.org_id">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-input v-model="searchData.recv_cert_code" clearable
+                                          placeholder="请输入客户号码"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-input v-model="searchData.recv_acc_name" clearable placeholder="请输入客户名称"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-select v-model="searchData.pay_mode" placeholder="请选择支付方式"
+                                           clearable filterable
+                                           style="width:100%">
+                                    <el-option v-for="(payMode,key) in payModeList"
+                                               :key="key"
+                                               :label="payMode"
+                                               :value="key">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="5">
+                            <el-form-item>
+                                <el-date-picker
+                                        v-model="dateValue"
+                                        type="daterange"
+                                        range-separator="至"
+                                        start-placeholder="开始日期"
+                                        end-placeholder="结束日期"
+                                        value-format="yyyy-MM-dd"
+                                        size="mini" clearable
+                                        unlink-panels
+                                        :picker-options="pickerOptions">
+                                </el-date-picker>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-input v-model="searchData.biz_code" clearable placeholder="请输入业务号码"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-select v-model="searchData.service_status" placeholder="请选择支付结果"
+                                           clearable filterable
+                                           style="width:100%">
+                                    <el-option v-for="(billstatus,key) in billstatusList"
+                                               :key="key"
+                                               :label="billstatus"
+                                               :value="key">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="7">
+                            <el-form-item style="margin-bottom:0px">
+                                <el-checkbox-group v-model="searchData.status">
+                                    <el-checkbox v-for="(status,key) in statusList"
+                                                 :key="key" :label="key">
+                                        {{status}}
+                                    </el-checkbox>
+                                </el-checkbox-group>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="2">
+                            <el-form-item>
+                                <el-button type="primary" plain @click="clearData" size="mini">清空筛选</el-button>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="2">
+                            <el-form-item>
+                                <el-button type="primary" plain @click="queryData" size="mini">搜索</el-button>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                </el-form>
+            </div>
+            <div class="split-bar"></div>
+        </el-header>
+        <el-main>
             <el-table :data="tableList"
                       @selection-change="setId"
                       border size="mini" height="100%">
@@ -287,7 +199,8 @@
                                  :formatter="transitStatus"></el-table-column>
                 <el-table-column prop="op_user_name" label="操作人" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="op_date" label="操作日期" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="actual_payment_date" label="实付日期" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="actual_payment_date" label="实付日期"
+                                 :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column
                         label="操作" width="80"
                         fixed="right">
@@ -305,15 +218,16 @@
                     </template>
                 </el-table-column>
             </el-table>
+        </el-main>
+        <el-footer>
             <div class="allData">
                 <div class="btn-left">
                     <el-button type="warning" size="mini" @click="submit"
-                               :disabled="selectId.length == 0">提交</el-button>
+                               :disabled="selectId.length == 0">提交
+                    </el-button>
                 </div>
             </div>
-        </section>
-        <!--分页部分-->
-        <div class="botton-pag">
+
             <el-pagination
                     background
                     layout="sizes, prev, pager, next, jumper"
@@ -325,127 +239,127 @@
                     @size-change="sizeChange"
                     :current-page="pagCurrent">
             </el-pagination>
-        </div>
-        <!--补录弹出框-->
-        <el-dialog :visible.sync="dialogVisible"
-                   width="810px" title="补录"
-                   :close-on-click-modal="false"
-                   top="56px">
-            <el-form :model="dialogData" size="small"
-                     :label-width="formLabelWidth"
-                     :rules="rules" ref="dialogForm">
-                <el-row>
-                    <el-col :span="12">
-                        <el-form-item label="收款账号户名" prop="recv_acc_name">
-                            <el-input v-model="dialogData.recv_acc_name" clearable
-                                      placeholder="请输入收款账号户名"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="收款银行账号" prop="recv_acc_no">
-                            <el-input v-model="dialogData.recv_acc_no" clearable
-                                      placeholder="请输入收款银行账号"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="16">
-                        <el-form-item label="开户行" prop="recv_bank_name">
-                            <el-input v-model="dialogData.recv_bank_name"
-                                      placeholder="请选择开户行" @focus="getBank"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="24">
-                        <el-form-item label="摘要">
-                            <el-input v-model="dialogData.payment_summary" clearable
-                                      placeholder="请输入摘要"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="24">
-                        <el-form-item label="附件">
-                            <Upload @currentFielList="setFileList"
-                                    :emptyFileList="emptyFileList"
-                                    :fileMessage="fileMessage"
-                                    :triggerFile="triggerFile"
-                                    :isPending="true"></Upload>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-            </el-form>
-            <span slot="footer" class="dialog-footer">
+            <!--补录弹出框-->
+            <el-dialog :visible.sync="dialogVisible"
+                       width="810px" title="补录"
+                       :close-on-click-modal="false"
+                       top="56px">
+                <el-form :model="dialogData" size="small"
+                         :label-width="formLabelWidth"
+                         :rules="rules" ref="dialogForm">
+                    <el-row>
+                        <el-col :span="12">
+                            <el-form-item label="收款账号户名">
+                                <el-input v-model="dialogData.recv_acc_name" clearable
+                                          placeholder="请输入收款账号户名"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="收款银行账号">
+                                <el-input v-model="dialogData.recv_acc_no" clearable
+                                          placeholder="请输入收款银行账号"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="16">
+                            <el-form-item label="开户行">
+                                <el-input v-model="dialogData.recv_bank_name"
+                                          placeholder="请选择开户行" @focus="getBank"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="24">
+                            <el-form-item label="摘要">
+                                <el-input v-model="dialogData.payment_summary" clearable
+                                          placeholder="请输入摘要"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="24">
+                            <el-form-item label="附件">
+                                <Upload @currentFielList="setFileList"
+                                        :emptyFileList="emptyFileList"
+                                        :fileMessage="fileMessage"
+                                        :triggerFile="triggerFile"
+                                        :isPending="true"></Upload>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                </el-form>
+                <span slot="footer" class="dialog-footer">
                 <el-button type="warning" size="mini" plain @click="dialogVisible = false">取 消</el-button>
                 <el-button type="warning" size="mini" @click="saveAddRecord">确 定</el-button>
             </span>
-        </el-dialog>
-        <!--开户行选择弹框-->
-        <el-dialog :visible.sync="bankdialogVisible"
-                   width="40%" title="选择开户行"
-                   top="140px" :close-on-click-modal="false">
+            </el-dialog>
+            <!--开户行选择弹框-->
+            <el-dialog :visible.sync="bankdialogVisible"
+                       width="40%" title="选择开户行"
+                       top="140px" :close-on-click-modal="false">
 
-            <el-form :model="bankdialogData" size="small">
-                <el-row>
-                    <el-col :span="24">
-                        <el-form-item label="银行大类" :label-width="formLabelWidth">
-                            <el-select v-model="bankdialogData.bankTypeName" placeholder="请选择银行大类"
-                                       clearable filterable
-                                       style="width:100%"
-                                       :filter-method="filterBankType"
-                                       :loading="bankLongding"
-                                       @visible-change="clearSearch"
-                                       @change="bankIsSelect">
-                                <el-option v-for="bankType in bankTypeList"
-                                           :key="bankType.name"
-                                           :label="bankType.display_name"
-                                           :value="bankType.code">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="24">
-                        <el-form-item label="地区" :label-width="formLabelWidth">
-                            <el-select v-model="bankdialogData.area"
-                                       filterable remote clearable
-                                       style="width:100%"
-                                       placeholder="请输入地区关键字"
-                                       :remote-method="getAreaList"
-                                       :loading="loading"
-                                       @change="bankIsSelect">
-                                <el-option
-                                        v-for="area in areaList"
-                                        :key="area.name + '-' + area.top_super"
-                                        :value="area.name + '-' + area.top_super">
-                                    <span>{{ area.name }}</span><span style="margin-left:10px;color:#bbb">{{ area.top_super }}</span>
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="24">
-                        <el-form-item label="开户行" :label-width="formLabelWidth">
-                            <el-select v-model="bankdialogData.bank_name" placeholder="请选择银行"
-                                       clearable filterable style="width:100%"
-                                       @visible-change="getBankList"
-                                       @change="setCNAPS"
-                                       :disabled="bankSelect">
-                                <el-option v-for="bankType in bankList"
-                                           :key="bankType.cnaps_code"
-                                           :label="bankType.name"
-                                           :value="bankType.name">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="24">
-                        <el-form-item label="CNAPS" :label-width="formLabelWidth">
-                            <el-input v-model="bankdialogData.cnaps_code" readonly></el-input>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-            </el-form>
+                <el-form :model="bankdialogData" size="small">
+                    <el-row>
+                        <el-col :span="24">
+                            <el-form-item label="银行大类" :label-width="formLabelWidth">
+                                <el-select v-model="bankdialogData.bankTypeName" placeholder="请选择银行大类"
+                                           clearable filterable
+                                           style="width:100%"
+                                           :filter-method="filterBankType"
+                                           :loading="bankLongding"
+                                           @visible-change="clearSearch"
+                                           @change="bankIsSelect">
+                                    <el-option v-for="bankType in bankTypeList"
+                                               :key="bankType.name"
+                                               :label="bankType.display_name"
+                                               :value="bankType.code">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="24">
+                            <el-form-item label="地区" :label-width="formLabelWidth">
+                                <el-select v-model="bankdialogData.area"
+                                           filterable remote clearable
+                                           style="width:100%"
+                                           placeholder="请输入地区关键字"
+                                           :remote-method="getAreaList"
+                                           :loading="loading"
+                                           @change="bankIsSelect">
+                                    <el-option
+                                            v-for="area in areaList"
+                                            :key="area.name + '-' + area.top_super"
+                                            :value="area.name + '-' + area.top_super">
+                                        <span>{{ area.name }}</span><span style="margin-left:10px;color:#bbb">{{ area.top_super }}</span>
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="24">
+                            <el-form-item label="开户行" :label-width="formLabelWidth">
+                                <el-select v-model="bankdialogData.bank_name" placeholder="请选择银行"
+                                           clearable filterable style="width:100%"
+                                           @visible-change="getBankList"
+                                           @change="setCNAPS"
+                                           :disabled="bankSelect">
+                                    <el-option v-for="bankType in bankList"
+                                               :key="bankType.cnaps_code"
+                                               :label="bankType.name"
+                                               :value="bankType.name">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="24">
+                            <el-form-item label="CNAPS" :label-width="formLabelWidth">
+                                <el-input v-model="bankdialogData.cnaps_code" readonly></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                </el-form>
 
-            <span slot="footer" class="dialog-footer" style="text-align:center">
+                <span slot="footer" class="dialog-footer" style="text-align:center">
                     <el-button type="warning" size="mini" plain @click="bankdialogVisible = false">取 消</el-button>
                     <el-button type="warning" size="mini" @click="saveBankinfo">确 定</el-button>
                 </span>
-        </el-dialog>
-    </div>
+            </el-dialog>
+        </el-footer>
+    </el-container>
 </template>
 
 <script>
@@ -471,11 +385,11 @@
                 }
             }
             //支付结果
-            if(constants.Sft_Billstatus){
+            if (constants.Sft_Billstatus) {
                 this.billstatusList = constants.Sft_Billstatus;
             }
             //状态
-            if(constants.SftLegalData){
+            if (constants.SftLegalData) {
                 this.statusList = constants.SftLegalData;
             }
             //银行大类
@@ -484,7 +398,7 @@
                 this.bankAllList = bankTypeList;
             }
             var bankAllTypeList = JSON.parse(window.sessionStorage.getItem("bankAllTypeList"));
-            if(bankAllTypeList){
+            if (bankAllTypeList) {
                 this.bankAllTypeList = bankAllTypeList;
             }
             //机构列表
@@ -563,7 +477,7 @@
                 bankdialogData: {
                     bankTypeName: "",
                     area: "",
-                    cnaps_code:"",
+                    cnaps_code: "",
                     bank_name: "",
                 },
                 bankSelect: true, //银行可选控制
@@ -601,12 +515,12 @@
                 this.$emit("getCommTable", this.routerMessage);
             },
             //清空搜索条件
-            clearData: function(){
+            clearData: function () {
                 var searchData = this.searchData;
                 for (var k in searchData) {
-                    if(k == "status"){
+                    if (k == "status") {
                         searchData[k] = [];
-                    }else if (k != "source_sys"){
+                    } else if (k != "source_sys") {
                         searchData[k] = "";
                     }
                 }
@@ -624,14 +538,14 @@
                 this.$emit("getCommTable", this.routerMessage);
             },
             //切换标签
-            switchTab: function(tab){
+            switchTab: function (tab) {
                 var searchData = this.searchData;
-                for(var k in searchData){
-                    if(k == "source_sys"){
+                for (var k in searchData) {
+                    if (k == "source_sys") {
                         searchData[k] = tab;
-                    }else if(k == "status"){
+                    } else if (k == "status") {
                         searchData[k] = [];
-                    }else{
+                    } else {
                         searchData[k] = "";
                     }
                 }
@@ -672,10 +586,10 @@
                 return this.statusList[cellValue];
             },
             //补录
-            addRecord: function(row){
+            addRecord: function (row) {
                 this.dialogVisible = true;
                 let dialogData = this.dialogData;
-                for(let k in dialogData){
+                for (let k in dialogData) {
                     dialogData[k] = "";
                 }
 
@@ -690,11 +604,11 @@
                 this.triggerFile = !this.triggerFile;
             },
             //选择开户行
-            getBank: function(){
+            getBank: function () {
                 this.bankdialogVisible = true;
                 this.bankSelect = true;
                 var bankdialogData = this.bankdialogData;
-                for(var k in bankdialogData){
+                for (var k in bankdialogData) {
                     bankdialogData[k] = "";
                 }
             },
@@ -719,16 +633,16 @@
                                 }
                             }
                         });
-                        this.bankTypeList = this.bankTypeList.filter((item,index,arr) => {
-                            for(var i = index+1; i < arr.length; i++){
-                                if(item.display_name == arr[i].display_name){
+                        this.bankTypeList = this.bankTypeList.filter((item, index, arr) => {
+                            for (var i = index + 1; i < arr.length; i++) {
+                                if (item.display_name == arr[i].display_name) {
                                     return false;
                                 }
                             }
                             return true;
                         });
                     } else {
-                        this.bankTypeList = this.bankAllTypeList.slice(0,200);
+                        this.bankTypeList = this.bankAllTypeList.slice(0, 200);
                     }
                     this.bankLongding = false;
                 }, 1200);
@@ -736,7 +650,7 @@
             //银行大类展开时重置数据
             clearSearch: function (val) {
                 if (this.bankTypeList != this.bankAllTypeList && val) {
-                    this.bankTypeList = this.bankAllTypeList.slice(0,200);
+                    this.bankTypeList = this.bankAllTypeList.slice(0, 200);
                 }
             },
             //银行大类/地址变化后判断银行是否可选
@@ -805,17 +719,17 @@
                 }
             },
             //设置CNPAS
-            setCNAPS: function(value){
+            setCNAPS: function (value) {
                 var bankList = this.bankList;
-                for(var i = 0; i < bankList.length; i++){
-                    if(bankList[i].name == value){
+                for (var i = 0; i < bankList.length; i++) {
+                    if (bankList[i].name == value) {
                         this.bankdialogData.cnaps_code = bankList[i].cnaps_code;
                         return;
                     }
                 }
             },
             //保存选中的银行
-            saveBankinfo: function(){
+            saveBankinfo: function () {
                 this.dialogData.recv_bank_name = this.bankdialogData.bank_name;
                 this.dialogData.recv_cnaps_code = this.bankdialogData.cnaps_code;
                 this.bankdialogVisible = false;
@@ -830,7 +744,7 @@
                 }
             },
             //保存补录信息
-            saveAddRecord: function(){
+            saveAddRecord: function () {
                 this.$refs.dialogForm.validate((valid, object) => {
                     if (valid) {
                         let dialogData = this.dialogData;
@@ -840,7 +754,7 @@
                             pay_id: this.currentData.pay_id,
                             persist_version: this.currentData.persist_version
                         };
-                        for(let k in dialogData){
+                        for (let k in dialogData) {
                             params[k] = dialogData[k];
                         }
 
@@ -974,16 +888,16 @@
                 });
             },
             //当前列是否可以勾选
-            isSelect: function(row, index){
+            isSelect: function (row, index) {
                 return !(row.status == "1" || row.status == "2");
             },
             //设置未保存的id
-            setId: function(selection){
+            setId: function (selection) {
                 this.selectId = [];
                 this.selectVersion = [];
                 let selectId = this.selectId;
                 let selectVersion = this.selectVersion;
-                for(let i = 0; i < selection.length; i++){
+                for (let i = 0; i < selection.length; i++) {
                     let row = selection[i];
                     selectId.push(row.pay_id);
                     selectVersion.push(row.persist_version);

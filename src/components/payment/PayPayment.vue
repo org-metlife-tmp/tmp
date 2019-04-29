@@ -1,91 +1,5 @@
 <style scoped lang="less" type="text/less">
     #payPayment {
-        width: 100%;
-        height: 100%;
-        box-sizing: border-box;
-        position: relative;
-
-        /*顶部按钮*/
-        .button-list-left {
-            position: absolute;
-            top: -56px;
-            left: -21px;
-        }
-
-        /*搜索区*/
-        .search-setion {
-            text-align: left;
-
-            .line {
-                text-align: center;
-            }
-
-            /*时间控件*/
-            .el-date-editor {
-                width: 100%;
-            }
-        }
-
-        /*分隔栏*/
-        .split-bar {
-            width: 106%;
-            height: 6px;
-            margin-left: -20px;
-            background-color: #E7E7E7;
-            margin-bottom: 20px;
-        }
-
-        /*分页部分*/
-        .botton-pag {
-            position: absolute;
-            width: 100%;
-            height: 8%;
-            bottom: -6px;
-        }
-
-        /*汇总数据*/
-        .allData {
-            height: 36px;
-            line-height: 36px;
-            width: 100%;
-            background-color: #F8F8F8;
-            border: 1px solid #ebeef5;
-            border-top: none;
-            box-sizing: border-box;
-            text-align: right;
-
-            /*左侧按钮*/
-            .btn-left {
-                float: left;
-                margin-left: 16px;
-            }
-
-            /*汇总数字*/
-            .numText {
-                color: #FF5800;
-                margin-right: 10px;
-            }
-        }
-
-        .transmit-icon {
-            position: relative;
-            display: inline-block;
-            width: 16px;
-            height: 10px;
-            vertical-align: middle;
-            margin-right: 4px;
-
-            i {
-                position: absolute;
-                top: -5px;
-                left: -3px;
-                width: 18px;
-                height: 18px;
-                background: url(../../assets/icon_common.png) no-repeat;
-                background-position: -49px -80px;
-            }
-        }
-
         /*查看弹框*/
         .bill-status {
             height: 50px;
@@ -190,92 +104,86 @@
         .el-form--inline .el-form-item__content {
             width: 100%;
         }
-        .el-dialog__wrapper {
-            .el-dialog__body {
-                max-height: 440px;
-                overflow-y: auto;
-            }
-        }
     }
 </style>
 
 <template>
-    <div id="payPayment">
-        <div class="button-list-left">
-            <el-select v-model="searchData.pay_mode" placeholder="请选择付款方式"
-                       filterable size="mini" @change="queryData">
-                <el-option value="1" label="直联"></el-option>
-                <el-option value="2" label="网银"></el-option>
-                <!--<el-option v-for="(item,k) in payModeList"
-                           :key="k"
-                           :label="item"
-                           :value="k">
-                </el-option>-->
-            </el-select>
-        </div>
-        <!--搜索区-->
-        <div class="search-setion">
-            <el-form :inline="true" :model="searchData" size="mini">
-                <el-row>
-                    <el-col :span="5">
-                        <el-form-item>
-                            <el-date-picker
-                                    v-model="dateValue"
-                                    type="daterange"
-                                    range-separator="至"
-                                    start-placeholder="开始日期"
-                                    end-placeholder="结束日期"
-                                    value-format="yyyy-MM-dd"
-                                    size="mini" clearable
-                                    unlink-panels
-                                    :picker-options="pickerOptions"
-                                    @change="">
-                            </el-date-picker>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="4">
-                        <el-form-item>
-                            <el-input v-model="searchData.pay_query_key" clearable placeholder="请输入付款方名称或账号"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="4">
-                        <el-form-item>
-                            <el-input v-model="searchData.recv_query_key" clearable
-                                      placeholder="请输入收款方名称或账号"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="6">
-                        <el-form-item>
-                            <el-col :span="11">
-                                <el-input v-model="searchData.min" clearable placeholder="最小金额"></el-input>
-                            </el-col>
-                            <el-col class="line" :span="2">-</el-col>
-                            <el-col :span="11">
-                                <el-input v-model="searchData.max" clearable placeholder="最大金额"></el-input>
-                            </el-col>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="2">
-                        <el-form-item>
-                            <el-button type="primary" plain @click="queryData" size="mini">搜索</el-button>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="24">
-                        <el-form-item style="margin-bottom:0px">
-                            <el-checkbox-group v-model="searchData.service_status">
-                                <el-checkbox label="4" name="type">审批通过</el-checkbox>
-                                <el-checkbox label="8" name="type">已失败</el-checkbox>
-                            </el-checkbox-group>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-            </el-form>
-        </div>
-        <!--分隔栏-->
-        <div class="split-bar"></div>
-        <!--数据展示区-->
-        <section class="table-content">
+    <el-container id="payPayment">
+        <el-header>
+            <div class="button-list-left">
+                <el-select v-model="searchData.pay_mode" placeholder="请选择付款方式"
+                           filterable size="mini" @change="queryData">
+                    <el-option value="1" label="直联"></el-option>
+                    <el-option value="2" label="网银"></el-option>
+                    <!--<el-option v-for="(item,k) in payModeList"
+                               :key="k"
+                               :label="item"
+                               :value="k">
+                    </el-option>-->
+                </el-select>
+            </div>
+            <div class="search-setion">
+                <el-form :inline="true" :model="searchData" size="mini">
+                    <el-row>
+                        <el-col :span="5">
+                            <el-form-item>
+                                <el-date-picker
+                                        v-model="dateValue"
+                                        type="daterange"
+                                        range-separator="至"
+                                        start-placeholder="开始日期"
+                                        end-placeholder="结束日期"
+                                        value-format="yyyy-MM-dd"
+                                        size="mini" clearable
+                                        unlink-panels
+                                        :picker-options="pickerOptions"
+                                        @change="">
+                                </el-date-picker>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-input v-model="searchData.pay_query_key" clearable placeholder="请输入付款方名称或账号"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-input v-model="searchData.recv_query_key" clearable
+                                          placeholder="请输入收款方名称或账号"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="6">
+                            <el-form-item>
+                                <el-col :span="11">
+                                    <el-input v-model="searchData.min" clearable placeholder="最小金额"></el-input>
+                                </el-col>
+                                <el-col class="line" :span="2">-</el-col>
+                                <el-col :span="11">
+                                    <el-input v-model="searchData.max" clearable placeholder="最大金额"></el-input>
+                                </el-col>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="2">
+                            <el-form-item>
+                                <el-button type="primary" plain @click="queryData" size="mini">搜索</el-button>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="24">
+                            <el-form-item style="margin-bottom:0px">
+                                <el-checkbox-group v-model="searchData.service_status">
+                                    <el-checkbox label="4" name="type">审批通过</el-checkbox>
+                                    <el-checkbox label="8" name="type">已失败</el-checkbox>
+                                </el-checkbox-group>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                </el-form>
+            </div>
+            <div class="split-bar"></div>
+        </el-header>
+        <el-main>
             <el-table :data="tableList"
+                      height="100%"
                       border size="mini"
                       @selection-change="selectChange">
                 <el-table-column type="selection" width="40"></el-table-column>
@@ -298,6 +206,8 @@
                     </template>
                 </el-table-column>
             </el-table>
+        </el-main>
+        <el-footer>
             <div class="allData">
                 <div class="btn-left">
                     <el-button type="warning" plain size="mini" @click="goLookOver">
@@ -313,120 +223,118 @@
                         <span class="transmit-icon"><i></i></span>支付确认
                     </el-button>
                 </div>
-                <span>总笔数：</span>
-                <span v-text="totalData.total_num" class="numText"></span>
-                <span>总金额：</span>
-                <span v-text="totalData.total_amount" class="numText"></span>
+                <div class="btn-right">
+                    <span>总笔数：</span>
+                    <span v-text="totalData.total_num" class="numText"></span>
+                    <span>总金额：</span>
+                    <span v-text="totalData.total_amount" class="numText"></span>
+                </div>
             </div>
-        </section>
-        <!--分页部分-->
-        <div class="botton-pag">
-            <el-pagination
-                    background
-                    layout="sizes, prev, pager, next, jumper"
-                    :page-size="pagSize"
-                    :total="pagTotal"
-                    :page-sizes="[7, 50, 100, 500]"
-                    :pager-count="5"
-                    @current-change="getCurrentPage"
-                    @size-change="sizeChange"
-                    :current-page="pagCurrent">
-            </el-pagination>
-        </div>
-
-
-        <!--查看弹出框-->
-        <el-dialog title="支付信息"
-                   :visible.sync="dialogVisible"
-                   width="900px" top="76px"
-                   :close-on-click-modal="false">
-            <div class="bill-status">
-                <div class="i-status">
-                    <i :class="{'success-color':dialogData.service_status == 4,
+            <div class="botton-pag">
+                <el-pagination
+                        background
+                        layout="sizes, prev, pager, next, jumper"
+                        :page-size="pagSize"
+                        :total="pagTotal"
+                        :page-sizes="[7, 50, 100, 500]"
+                        :pager-count="5"
+                        @current-change="getCurrentPage"
+                        @size-change="sizeChange"
+                        :current-page="pagCurrent">
+                </el-pagination>
+            </div>
+            <!--查看弹出框-->
+            <el-dialog title="支付信息"
+                       :visible.sync="dialogVisible"
+                       width="900px" top="76px"
+                       :close-on-click-modal="false">
+                <div class="bill-status">
+                    <div class="i-status">
+                        <i :class="{'success-color':dialogData.service_status == 4,
                             'defeated-color':dialogData.service_status != 4,
                             'el-icon-circle-check-outline':dialogData.service_status == 4,
                             'el-icon-circle-close-outline':dialogData.service_status != 4}">
-                    </i>
-                    <span v-text="currentStatus"
-                        :class="{'success-color':dialogData.service_status == 4,'defeated-color':dialogData.service_status != 4}"></span>
+                        </i>
+                        <span v-text="currentStatus"
+                              :class="{'success-color':dialogData.service_status == 4,'defeated-color':dialogData.service_status != 4}"></span>
+                    </div>
+                    <div class="i-time">
+                        <span v-text="dialogData.create_on"></span>
+                        <span class="feed-back" v-show="dialogData.feed_back">失败原因</span>
+                        <el-popover
+                                v-show="dialogData.feed_back"
+                                placement="top-start"
+                                title="失败原因"
+                                width="200"
+                                trigger="hover"
+                                :content="dialogData.feed_back">
+                            <el-button class="flow-tip-box" slot="reference"></el-button>
+                        </el-popover>
+                    </div>
+                    <div class="i-btn">
+                        <el-button type="warning" plain size="mini" icon="el-icon-delete" v-show="searchData.pay_mode == '1'"
+                                   @click="cancellation">支付作废
+                        </el-button>
+                        <el-button type="warning" size="mini" @click="sendBill" v-show="searchData.pay_mode == '1'">
+                            <span class="transmit-icon"><i></i></span>发送
+                        </el-button>
+                        <el-button type="warning" size="mini" @click="affirmBill('one')" v-show="searchData.pay_mode == '2'">
+                            <span class="transmit-icon"><i></i></span>支付确认
+                        </el-button>
+                    </div>
                 </div>
-                <div class="i-time">
-                    <span v-text="dialogData.create_on"></span>
-                    <span class="feed-back" v-show="dialogData.feed_back">失败原因</span>
-                    <el-popover
-                        v-show="dialogData.feed_back"
-                        placement="top-start"
-                        title="失败原因"
-                        width="200"
-                        trigger="hover"
-                        :content="dialogData.feed_back">
-                        <el-button class="flow-tip-box" slot="reference"></el-button>
-                    </el-popover>
+                <div class="serial-number">
+                    [编号:
+                    <span v-text="dialogData.service_serial_number"></span>
+                    ]
                 </div>
-                <div class="i-btn">
-                    <el-button type="warning" plain size="mini" icon="el-icon-delete" v-show="searchData.pay_mode == '1'"
-                           @click="cancellation">支付作废
-                    </el-button>
-                    <el-button type="warning" size="mini" @click="sendBill" v-show="searchData.pay_mode == '1'">
-                        <span class="transmit-icon"><i></i></span>发送
-                    </el-button>
-                    <el-button type="warning" size="mini" @click="affirmBill('one')" v-show="searchData.pay_mode == '2'">
-                        <span class="transmit-icon"><i></i></span>支付确认
-                    </el-button>
-                </div>
-            </div>
-            <div class="serial-number">
-                [编号:
-                <span v-text="dialogData.service_serial_number"></span>
-                ]
-            </div>
-            <ul class="dialog-talbe">
-                <li class="table-li-title">付款账号</li>
-                <li class="table-li-content table-two-row" v-text="dialogData.pay_account_no"></li>
+                <ul class="dialog-talbe">
+                    <li class="table-li-title">付款账号</li>
+                    <li class="table-li-content table-two-row" v-text="dialogData.pay_account_no"></li>
 
-                <li class="table-li-title">收款人户名</li>
-                <li class="table-li-content" v-text="dialogData.recv_account_name"></li>
-                <li class="table-li-title">收款人账号</li>
-                <li class="table-li-content" v-text="dialogData.recv_account_no"></li>
+                    <li class="table-li-title">收款人户名</li>
+                    <li class="table-li-content" v-text="dialogData.recv_account_name"></li>
+                    <li class="table-li-title">收款人账号</li>
+                    <li class="table-li-content" v-text="dialogData.recv_account_no"></li>
 
-                <li class="table-li-title">开户行</li>
-                <li class="table-li-content" :title="dialogData.recv_account_bank"
-                    v-text="dialogData.recv_account_bank"></li>
-                <li class="table-li-title">金额</li>
-                <li class="table-li-content" v-text="dialogData.payment_amount" style="color:#fd7d2f"></li>
+                    <li class="table-li-title">开户行</li>
+                    <li class="table-li-content" :title="dialogData.recv_account_bank"
+                        v-text="dialogData.recv_account_bank"></li>
+                    <li class="table-li-title">金额</li>
+                    <li class="table-li-content" v-text="dialogData.payment_amount" style="color:#fd7d2f"></li>
 
-                <li class="table-li-title">摘要</li>
-                <li class="table-li-content table-two-row" v-text="dialogData.payment_summary"></li>
+                    <li class="table-li-title">摘要</li>
+                    <li class="table-li-content table-two-row" v-text="dialogData.payment_summary"></li>
 
-                <li class="table-li-title" style="height:60px;line-height:60px">附件</li>
-                <li class="table-li-content table-two-row" style="height:60px;padding-top:6px;overflow-y:auto">
-                    <Upload :emptyFileList="emptyFileList"
-                            :fileMessage="fileMessage"
-                            :triggerFile="triggerFile"
-                            :isPending="false"></Upload>
-                </li>
-            </ul>
-            <BusinessTracking :businessParams="businessParams"></BusinessTracking>
-        </el-dialog>
-
-        <!--支付作废弹出框-->
-        <el-dialog title="作废"
-                   :visible.sync="innerVisible"
-                   width="600px" top="76px"
-                   :close-on-click-modal="false">
-            <div style="margin-bottom:6px">请输入作废原因：</div>
-            <el-input
-                    type="textarea"
-                    :autosize="{ minRows: 3,maxRows: 16}"
-                    placeholder="请输入作废原因(必填)"
-                    v-model="paymentData.feed_back">
-            </el-input>
-            <span slot="footer" class="dialog-footer" style="text-align:center">
+                    <li class="table-li-title" style="height:60px;line-height:60px">附件</li>
+                    <li class="table-li-content table-two-row" style="height:60px;padding-top:6px;overflow-y:auto">
+                        <Upload :emptyFileList="emptyFileList"
+                                :fileMessage="fileMessage"
+                                :triggerFile="triggerFile"
+                                :isPending="false"></Upload>
+                    </li>
+                </ul>
+                <BusinessTracking :businessParams="businessParams"></BusinessTracking>
+            </el-dialog>
+            <!--支付作废弹出框-->
+            <el-dialog title="作废"
+                       :visible.sync="innerVisible"
+                       width="600px" top="76px"
+                       :close-on-click-modal="false">
+                <div style="margin-bottom:6px">请输入作废原因：</div>
+                <el-input
+                        type="textarea"
+                        :autosize="{ minRows: 3,maxRows: 16}"
+                        placeholder="请输入作废原因(必填)"
+                        v-model="paymentData.feed_back">
+                </el-input>
+                <span slot="footer" class="dialog-footer" style="text-align:center">
                     <el-button type="warning" size="mini" plain @click="innerVisible = false">取 消</el-button>
                     <el-button type="warning" size="mini" @click="confirmcancell">确 定</el-button>
             </span>
-        </el-dialog>
-    </div>
+            </el-dialog>
+        </el-footer>
+    </el-container>
 </template>
 
 <script>

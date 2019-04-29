@@ -1,22 +1,7 @@
 <style scoped lang="less" type="text/less">
     #strategySet {
-        width: 100%;
-        height: 100%;
-        box-sizing: border-box;
-        position: relative;
-
-        /*顶部按钮*/
-        .button-list-right {
-            position: absolute;
-            top: -60px;
-            right: -18px;
-        }
-
         /*主体内容*/
         .table-content {
-            max-height: 94%;
-            overflow-y: auto;
-
             /*标签页*/
             .tab-content {
                 width: 100%;
@@ -227,13 +212,10 @@
 </style>
 
 <template>
-    <div id="strategySet">
-        <!-- 顶部按钮-->
-        <div class="button-list-right">
-            <!--<el-button type="warning" size="mini" @click="">打印</el-button>-->
-        </div>
-        <!--中间内容-->
-        <section class="table-content">
+    <el-container id="strategySet">
+        <el-header>
+        </el-header>
+        <el-main class="table-content">
             <el-form :model="collectionData" size="small"
                      :label-width="formLabelWidth"
                      :rules="rules" ref="dialogForm">
@@ -345,94 +327,95 @@
                     </el-col>
                 </el-row>
             </el-form>
-        </section>
-        <!--底部按钮-->
-        <div class="btn-bottom">
-            <el-button type="warning" plain size="mini" @click="showRightFlow" v-show="isView || collectionData.service_status==5">
-                审批记录<span class="arrows">></span>
-            </el-button>
-            <el-button type="warning" plain size="mini" @click="goMoreBills">
-                更多单据<span class="arrows">></span>
-            </el-button>
-            <div class="btnGroup" v-show="!isView">
-                <el-button type="warning" size="small" @click="clearAll">清空</el-button>
-                <el-button type="warning" size="small" @click="saveCollect">保存</el-button>
-                <el-button type="warning" size="small" @click="submitBill">提交</el-button>
+        </el-main>
+        <el-footer>
+            <div class="btn-bottom">
+                <el-button type="warning" plain size="mini" @click="showRightFlow" v-show="isView || collectionData.service_status==5">
+                    审批记录<span class="arrows">></span>
+                </el-button>
+                <el-button type="warning" plain size="mini" @click="goMoreBills">
+                    更多单据<span class="arrows">></span>
+                </el-button>
+                <div class="btnGroup" v-show="!isView">
+                    <el-button type="warning" size="small" @click="clearAll">清空</el-button>
+                    <el-button type="warning" size="small" @click="saveCollect">保存</el-button>
+                    <el-button type="warning" size="small" @click="submitBill">提交</el-button>
+                </div>
             </div>
-        </div>
-        <!--选择时间弹框-->
-        <el-dialog :visible.sync="dateDialog"
-                   width="600px" title="归集时间选择"
-                   top="140px" :close-on-click-modal="false">
-            <div class="set-date">
-                <h5 v-show="collectionData.gyl_allocation_frequency == 3">请选择日期</h5>
+            <!--选择时间弹框-->
+            <el-dialog :visible.sync="dateDialog"
+                       width="600px" title="归集时间选择"
+                       top="140px" :close-on-click-modal="false">
+                <div class="set-date">
+                    <h5 v-show="collectionData.gyl_allocation_frequency == 3">请选择日期</h5>
 
-                <ul class="month-day" v-show="collectionData.gyl_allocation_frequency == 3">
-                    <li v-for="item in monthDay" :key="item.day"
-                        :class="{active:item.isActive}"
-                        @click="item.isActive = !item.isActive">{{ item.day }}
-                    </li>
-                </ul>
+                    <ul class="month-day" v-show="collectionData.gyl_allocation_frequency == 3">
+                        <li v-for="item in monthDay" :key="item.day"
+                            :class="{active:item.isActive}"
+                            @click="item.isActive = !item.isActive">{{ item.day }}
+                        </li>
+                    </ul>
 
-                <el-checkbox-group v-model="dateSelect.weekDate" size="small"
-                                   v-show="collectionData.gyl_allocation_frequency == 2">
-                    <el-checkbox-button v-for="(week,k) in weeks"
-                                        :label="k"
-                                        :key="k">
-                        {{week}}
-                    </el-checkbox-button>
-                </el-checkbox-group>
+                    <el-checkbox-group v-model="dateSelect.weekDate" size="small"
+                                       v-show="collectionData.gyl_allocation_frequency == 2">
+                        <el-checkbox-button v-for="(week,k) in weeks"
+                                            :label="k"
+                                            :key="k">
+                            {{week}}
+                        </el-checkbox-button>
+                    </el-checkbox-group>
 
-                <el-time-picker
-                        arrow-control
-                        v-model="dateSelect.timeDate"
-                        :format="'HH:mm'"
-                        value-format="HH:mm"
-                        placeholder="请选择时间">
-                </el-time-picker>
-            </div>
-            <span slot="footer" class="dialog-footer" style="text-align:center">
+                    <el-time-picker
+                            arrow-control
+                            v-model="dateSelect.timeDate"
+                            :format="'HH:mm'"
+                            value-format="HH:mm"
+                            placeholder="请选择时间">
+                    </el-time-picker>
+                </div>
+                <span slot="footer" class="dialog-footer" style="text-align:center">
                     <el-button type="warning" size="mini" plain @click="dateDialog = false">取 消</el-button>
                     <el-button type="warning" size="mini" @click="comfirmCurrDate">确 定</el-button>
                 </span>
-        </el-dialog>
-        <!--提交弹框-->
-        <el-dialog :visible.sync="innerVisible"
-                   width="50%" title="提交审批流程"
-                   top="76px"
-                   :close-on-click-modal="false">
-            <el-radio-group v-model="selectWorkflow">
-                <el-radio v-for="workflow in workflows"
-                          :key="workflow.define_id"
-                          :label="workflow.define_id"
-                >{{ workflow.workflow_name }}
-                    <el-button class="flow-tip-box" @click="showFlowDialog(workflow)"></el-button>
-                </el-radio>
-            </el-radio-group>
-            <span slot="footer" class="dialog-footer" style="text-align:center">
+            </el-dialog>
+            <!--提交弹框-->
+            <el-dialog :visible.sync="innerVisible"
+                       width="50%" title="提交审批流程"
+                       top="76px"
+                       :close-on-click-modal="false">
+                <el-radio-group v-model="selectWorkflow">
+                    <el-radio v-for="workflow in workflows"
+                              :key="workflow.define_id"
+                              :label="workflow.define_id"
+                    >{{ workflow.workflow_name }}
+                        <el-button class="flow-tip-box" @click="showFlowDialog(workflow)"></el-button>
+                    </el-radio>
+                </el-radio-group>
+                <span slot="footer" class="dialog-footer" style="text-align:center">
                     <el-button type="warning" size="mini" plain @click="innerVisible = false">取 消</el-button>
                     <el-button type="warning" size="mini" @click="submitFlow">确 定</el-button>
                 </span>
-        </el-dialog>
-        <!--查看工作流弹出框-->
-        <el-dialog :visible.sync="lookFlowDialogVisible"
-                   width="800px" title="查看流程"
-                   :close-on-click-modal="false"
-                   :before-close="cancelLookFlow"
-                   top="120px">
-            <WorkFlow
-                    :flowList="flowList"
-                    :isEmptyFlow="isEmptyFlow"
-            ></WorkFlow>
-        </el-dialog>
-        <!-- 右侧流程图 -->
-        <div id="showbox">
-            <BusinessTracking
-                :businessParams="businessParams"
-                @closeRightDialog="closeRightFlow"
-            ></BusinessTracking>
-        </div>
-    </div>
+            </el-dialog>
+            <!--查看工作流弹出框-->
+            <el-dialog :visible.sync="lookFlowDialogVisible"
+                       width="800px" title="查看流程"
+                       :close-on-click-modal="false"
+                       :before-close="cancelLookFlow"
+                       top="120px">
+                <WorkFlow
+                        :flowList="flowList"
+                        :isEmptyFlow="isEmptyFlow"
+                ></WorkFlow>
+            </el-dialog>
+            <!-- 右侧流程图 -->
+            <div id="showbox">
+                <BusinessTracking
+                        :businessParams="businessParams"
+                        @closeRightDialog="closeRightFlow"
+                ></BusinessTracking>
+            </div>
+        </el-footer>
+    </el-container>
 </template>
 
 <script>
