@@ -97,9 +97,9 @@ WHERE
       #end
     #end
   #end
-  )  tab  left join gmf_bill gmf
+  )  tab  left join (
+     select gmf_bill.* from gmf_bill where id in (select max(gmf.id) from gmf_bill gmf group by gmf.legal_id))  gmf
      on gmf.legal_id = tab.pay_id
-     AND delete_num = 0
      #if(map != null)
     #for(x : map)
       #if(x.value&&x.value!="")
@@ -259,9 +259,9 @@ WHERE
       #end
     #end
   #end
-  )  tab  left join gmf_bill gmf
+  )  tab  left join (
+     select gmf_bill.* from gmf_bill where id in (select max(gmf.id) from gmf_bill gmf group by gmf.legal_id)) gmf
      on gmf.legal_id = tab.pay_id
-     AND delete_num = 0
      #if(map != null)
     #for(x : map)
       #if(x.value&&x.value!="")

@@ -6,7 +6,10 @@ import com.jfinal.plugin.activerecord.IAtom;
 import com.jfinal.plugin.activerecord.Record;
 import com.qhjf.cfm.exceptions.EncryAndDecryException;
 import com.qhjf.cfm.exceptions.ReqValidateException;
-import com.qhjf.cfm.utils.*;
+import com.qhjf.cfm.utils.CommonService;
+import com.qhjf.cfm.utils.MD5Kit;
+import com.qhjf.cfm.utils.SymmetricEncryptUtil;
+import com.qhjf.cfm.utils.TableDataCacheUtil;
 import com.qhjf.cfm.web.constant.WebConstant;
 import com.qhjf.cfm.web.quartzs.jobs.pub.PubJob;
 import com.qhjf.cfm.web.quartzs.jobs.utils.DDHSafeUtil;
@@ -247,17 +250,15 @@ public class SftEbsDataCheckJob implements Job{
             }
             checkDoubtful.set(key, entry.getValue());
         }
-        String createTime = DateFormatThreadLocal.format("yyyyMMdd",originData.getDate("create_time"));
         String identification = MD5Kit.string2MD5(originData.getStr("insure_bill_no")
                 + "_" +originData.getStr("recv_acc_name")
-                + "_" +originData.getStr("amount"))
-                + "_" +createTime;
+                + "_" +originData.getStr("amount"));
 
         checkDoubtful.set("identification", identification);
 
         //判断可疑表中是否存在可疑数据
         List<Record> checkRecordList = Db.find(Db.getSql("ebs_cfm.getpaycheck"),originData.getStr("insure_bill_no"),originData.getStr("recv_acc_name"),
-                originData.getStr("amount"),createTime);
+                originData.getStr("amount"));
         if(checkRecordList!=null && checkRecordList.size()!=0){
             checkDoubtful.set("is_doubtful", 1);
             Db.save("ebs_check_doubtful", checkDoubtful);
@@ -272,7 +273,7 @@ public class SftEbsDataCheckJob implements Job{
          * 根据保单号，收款人，金额查询合法表中是否存在数据，如果存在视为可疑数据，将合法表中的数据删除，更新可疑表数据状态为可疑
          */
         List<Record> legalRecordList = Db.find(Db.getSql("ebs_cfm.getpaylegal"),originData.getStr("insure_bill_no"),originData.getStr("recv_acc_name"),
-                originData.getStr("amount"),createTime);
+                originData.getStr("amount"));
         if(legalRecordList!=null && legalRecordList.size()!=0){
             //可疑数据
             CommonService.update("ebs_check_doubtful",
@@ -299,6 +300,6 @@ public class SftEbsDataCheckJob implements Job{
     	return true;
     }*/
 
-	
+
 }
 

@@ -300,7 +300,7 @@ public class SysTradeResultQueryInter implements ISysAtomicInterface {
                         .set("persist_version", persist_version);
 
                 Record instr_setRecord = new Record().set("status", status).set("init_resp_time", new Date()); //添加初始反馈时间;;
-                Record instr_whereRecord = new Record().set("id", instr.getLong("id"))
+                Record instr_whereRecord = new Record().set("id", instrRecord.getLong("id"))
                         .set("status", WebConstant.PayStatus.HANDLE.getKey());
 
                 Integer statusEnum = null;

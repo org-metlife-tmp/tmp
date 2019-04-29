@@ -69,7 +69,6 @@
     AND ext.insure_bill_no =?
     AND legal.recv_acc_name =?
     AND legal.amount =?
-    AND CONVERT(varchar(100), legal.create_time, 112) = ?
 #end
 #sql("dellapaylegalext")
   delete from la_pay_legal_data_ext where legal_id=?
@@ -84,7 +83,6 @@ WHERE is_doubtful = 1
 	AND insure_bill_no =?
 	AND recv_acc_name =?
 	AND amount =?
-	AND CONVERT(varchar(100), create_time, 112) = ?
 #end
 
 #sql("qryBankTypeByAccNo")

@@ -101,7 +101,7 @@ public class SysSftSinglePayInter implements ISysAtomicInterface {
      */
     @Override
     public void callBack(String jsonStr) throws Exception {
-        log.debug("交易回写开始");
+        log.debug("柜面付交易结果回写开始");
         if(jsonStr == null || jsonStr.length() == 0){
         	Record instr_setRecord = new Record().set("init_resp_time", new Date()); //添加初始反馈时间;;
             Record instr_whereRecord = new Record().set("id", instr.getLong("id"));
@@ -189,6 +189,7 @@ public class SysSftSinglePayInter implements ISysAtomicInterface {
             });
             if (!flag) {
                 log.error("回写更新数据库失败！");
+                return ;
             }
             //将回调写在事物外,回调失败,不影响表的回写
             Record originRecord = null ;
