@@ -1,8 +1,8 @@
 #sql("findLAPayCounterList")
 select 
     tab.* ,
-    case isnull(gmf.service_status,'-1')  when '-1' then '0' when '7' then '4'  when '5' then '2' when '3' then '1'
-         when '8' then '5'   when '4' then '3'   end service_status ,
+    case isnull(gmf.service_status,'-1') when '2' then '审批中'  when '-1' then '未给付' when '7' then '给付成功'  when '5' then '审批拒绝' when '3' then '审批中'
+         when '8' then '给付失败'   when '4' then '审批通过,给付中' when '6' then '审批通过,给付中'   end service_status ,
     gmf.actual_payment_date
 from  
  (
@@ -34,7 +34,7 @@ SELECT
 	la.preinsure_bill_no ,
 	la.insure_bill_no ,
 	la.biz_type ,
-	la.pay_mode ,
+	case la.pay_mode when '0' then '网银' when 'H' then '第三方' when 'Q' then '实时收付' when 'C' then '批量收付' end pay_mode,
 	la.pay_date ,
 	la.sale_code ,
 	la.sale_name ,
@@ -133,7 +133,7 @@ select
 	tab.org_id,
 	tab.org_code,
 	tab.amount,
-	tab.recv_acc_name,
+	case isnull(tab.company_name,'') when '' then tab.recv_acc_name else tab.company_name end  recv_acc_name,
 	tab.recv_cert_type,
 	(case  tab.insure_type when  '1'  then  tab.company_customer_no  else  tab.recv_cert_code end ) recv_cert_code,
 	tab.recv_bank_name,
@@ -144,7 +144,7 @@ select
 	tab.create_time,
 	tab.persist_version,
 	tab.bank_key,
-	tab.id AS la_id,
+	tab.la_id,
 	tab.legal_id ,
 	tab.insure_type ,	
 	tab.preinsure_bill_no ,
@@ -161,11 +161,8 @@ select
 	tab.company_customer_no ,
 	tab.biz_code ,
 	tab.name,
-	tab.channel_code ,
-	tab.channel_desc ,
-	tab.type_name,
-    case isnull(gmf.service_status,'-1')  when '-1' then '0' when '7' then '4'  when '5' then '2' when '3' then '1'
-         when '8' then '5'   when '4' then '3'   end service_status ,
+    case isnull(gmf.service_status,'-1') when '2' then '审批中'  when '-1' then '未给付' when '7' then '给付成功'  when '5' then '审批拒绝' when '3' then '审批中'
+         when '8' then '给付失败'   when '4' then '审批通过,给付中'   end service_status  ,
     gmf.actual_payment_date  
 from  
  (
@@ -197,7 +194,7 @@ SELECT
 	ebs.preinsure_bill_no ,
 	ebs.insure_bill_no ,
 	ebs.biz_type ,
-	ebs.pay_mode ,
+	case ebs.pay_mode when '0' then '网银' when 'H' then '第三方' when 'Q' then '实时收付' when 'C' then '批量收付' end pay_mode,
 	ebs.pay_date ,
 	ebs.sale_code ,
 	ebs.sale_name ,
@@ -264,6 +261,7 @@ WHERE
   #end
   )  tab  left join gmf_bill gmf
      on gmf.legal_id = tab.pay_id
+     AND delete_num = 0
      #if(map != null)
     #for(x : map)
       #if(x.value&&x.value!="")
@@ -316,7 +314,10 @@ pay.id  in (
 
 
 #sql("findPendingList")
-SELECT
+select
+    tab.*
+	from 
+(SELECT
 	gmf.id as ipd_id,
 	gmf.org_id,
 	gmf.source_sys,
@@ -324,7 +325,7 @@ SELECT
 	gmf.pay_account_name,
 	gmf.pay_account_cur,
 	gmf.recv_account_no,
-	gmf.recv_account_name,
+	gmf.recv_account_name AS recv_account_name,
 	gmf.recv_bank_name,
 	gmf.recv_bank_cnaps,
 	gmf.persist_version,
@@ -334,27 +335,6 @@ SELECT
 	gmf.create_by,
 	gmf.bank_serial_number,
 	gmf.service_serial_number,
-	ozp.create_on,
-	ozp.apply_on,
-	ozp.update_by,
-	ozp.update_on,
-	ozp.delete_flag,
-	ozp.org_id,
-	ozp.dept_id,
-	ozp.pay_account_cur,
-	ozp.recv_account_cur,
-	ozp.pay_bank_cnaps,
-	ozp.recv_bank_cnaps,
-	ozp.pay_bank_prov,
-	ozp.recv_bank_prov,
-	ozp.pay_bank_city,
-	ozp.recv_bank_city,
-	ozp.process_bank_type,
-	ozp.persist_version,
-	ozp.attachment_count,
-	ozp.feed_back,
-	ozp.biz_id,
-	ozp.biz_name,
 	cwrei.id as inst_id,
 	cwrei.base_id,
 	cwrei.workflow_name,
@@ -372,6 +352,7 @@ SELECT
 	cwrei.bill_code,
 	cwrei.submitter,
 	cwrei.submitter_name,
+	cwrei.submitter_name AS op_user_name,
 	cwrei.submitter_pos_id,
 	cwrei.submitter_pos_name,
 	cwrei.init_user_id,
@@ -380,10 +361,24 @@ SELECT
 	cwrei.init_org_name,
 	cwrei.init_dept_id,
 	cwrei.init_dept_name,
-	cwrei.start_time
+	cwrei.start_time ,
+	la.pay_date  AS pay_date,
+	pay.pay_code AS pay_code,
+	la.preinsure_bill_no AS preinsure_bill_no,
+	la.insure_bill_no AS insure_bill_no,
+	null AS biz_code ,
+	biztype.type_name AS type_name
 FROM
-	gmf_bill gmf,cfm_workflow_run_execute_inst cwrei
-WHERE ozp.id = cwrei.bill_id
+	gmf_bill AS gmf,
+	cfm_workflow_run_execute_inst AS cwrei ,
+	la_pay_legal_data_ext AS  la ,
+	la_biz_type AS biztype ,
+	pay_legal_data AS pay	
+WHERE gmf.id = cwrei.bill_id  AND
+      pay.id = la.legal_id AND 
+	  biztype.type_code = la.biz_type AND
+	  gmf.legal_id = pay.id AND
+	  gmf.delete_num = 0	  
   #for(x : map)
     #if("in".equals(x.key))
       #if(map.in != null)
@@ -412,11 +407,106 @@ WHERE ozp.id = cwrei.bill_id
         )
       #end
     #elseif("biz_type".equals(x.key))
-     AND  #(x.key) = #(x.value)
+     AND  cwrei.#(x.key) = #(x.value)
+    #end
+  #end 
+UNION ALL    
+  SELECT
+	gmf.id as ipd_id,
+	gmf.org_id,
+	gmf.source_sys,
+	gmf.pay_account_no,
+	gmf.pay_account_name,
+	gmf.pay_account_cur,
+	gmf.recv_account_no,
+    case isnull(ebs.company_name,'') when '' then pay.recv_acc_name else ebs.company_name end  recv_account_name,
+	gmf.recv_bank_name,
+	gmf.recv_bank_cnaps,
+	gmf.persist_version,
+	gmf.amount,
+	gmf.service_status,
+	gmf.create_on,
+	gmf.create_by,
+	gmf.bank_serial_number,
+	gmf.service_serial_number,
+	cwrei.id as inst_id,
+	cwrei.base_id,
+	cwrei.workflow_name,
+	cwrei.define_id,
+	cwrei.workflow_type,
+	cwrei.reject_strategy,
+	cwrei.def_version,
+	cwrei.workflow_node_id,
+	cwrei.step_number,
+	cwrei.shadow_execute,
+	cwrei.shadow_user_id,
+	cwrei.shadow_user_name,
+	cwrei.biz_type,
+	cwrei.bill_id,
+	cwrei.bill_code,
+	cwrei.submitter,
+	cwrei.submitter_name AS op_user_name,
+	cwrei.submitter_name,
+	cwrei.submitter_pos_id,
+	cwrei.submitter_pos_name,
+	cwrei.init_user_id,
+	cwrei.init_user_name,
+	cwrei.init_org_id,
+	cwrei.init_org_name,
+	cwrei.init_dept_id,
+	cwrei.init_dept_name,
+	cwrei.start_time ,
+	ebs.pay_date AS pay_date,
+	pay.pay_code AS pay_code,
+	ebs.preinsure_bill_no AS preinsure_bill_no,
+	ebs.insure_bill_no AS insure_bill_no,
+	ebs.biz_code AS biz_code,
+	CASE ebs.biz_type  WHEN 1 THEN '定期结算退费' WHEN 5 THEN '理赔给付' WHEN 10 THEN '保全退费' WHEN 12 THEN
+       '基金单满期退费'  WHEN 13 THEN '客户账户退费'  END type_name	
+FROM
+	gmf_bill AS gmf,
+	cfm_workflow_run_execute_inst AS cwrei ,
+	ebs_pay_legal_data_ext AS  ebs ,
+	pay_legal_data AS pay	
+WHERE gmf.id = cwrei.bill_id  AND
+      pay.id = ebs.legal_id AND 
+	  gmf.legal_id = pay.id AND
+	  gmf.delete_num = 0	  
+  #for(x : map)
+    #if("in".equals(x.key))
+      #if(map.in != null)
+        AND cwrei.id IN (
+          #for(y : map.in)
+            #for(z : y.instIds)
+              #if(for.index > 0)
+                #(",")
+              #end
+              #(z)
+            #end
+          #end
+        )
+      #end
+    #elseif("notin".equals(x.key))
+      #if(map.notin != null)
+        AND cwrei.id NOT IN (
+          #for(y : map.notin)
+            #for(z : y.excludeInstIds)
+              #if(for.index > 0)
+                #(",")
+              #end
+              #(z)
+            #end
+          #end
+        )
+      #end
+    #elseif("biz_type".equals(x.key))
+     AND  cwrei.#(x.key) = #(x.value)
     #end
   #end
-  order by ipd_id
+  ) tab  order by ipd_id 
 #end
+
+
 
 #sql("updateLaOriginData")
    update
@@ -558,3 +648,35 @@ WHERE ozp.id = cwrei.bill_id
         )
 #end
 
+
+#sql("findLaDetailById")
+    select 
+      gmf.* ,
+      biztype.type_name
+    from
+    gmf_bill AS gmf,
+    pay_legal_data AS pay,
+    la_pay_legal_data_ext AS la,
+    la_biz_type AS biztype
+    where 
+     gmf.legal_id = pay.id AND
+     pay.id = la.legal_id AND
+     biztype.type_code = la.biz_type AND
+     gmf.id = ?
+#end
+
+
+#sql("findEBSDetailById")
+    select 
+      gmf.* ,
+      CASE ebs.biz_type  WHEN 1 THEN '定期结算退费' WHEN 5 THEN '理赔给付' WHEN 10 THEN '保全退费' WHEN 12 THEN
+      '基金单满期退费'  WHEN 13 THEN '客户账户退费'  END type_name
+    from
+    gmf_bill AS gmf,
+    pay_legal_data AS pay,
+    ebs_pay_legal_data_ext AS ebs
+    where 
+     gmf.legal_id = pay.id AND
+     pay.id = ebs.legal_id AND
+     gmf.id = ?
+#end

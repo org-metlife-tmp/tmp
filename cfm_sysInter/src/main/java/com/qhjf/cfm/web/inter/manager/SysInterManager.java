@@ -35,6 +35,7 @@ public class SysInterManager {
 		statusFiledMap.put("batch_pay_instr_queue_detail","status");
 		statusFiledMap.put("batch_recv_instr_queue_total","status");
 		statusFiledMap.put("batch_recv_instr_queue_detail","status");
+		statusFiledMap.put("recv_batch_detail","status");
 		
 		
 		Map<String,Integer> collectStatusEnums = new HashMap<String,Integer>();
@@ -60,6 +61,7 @@ public class SysInterManager {
 		statusEnumMap.put("batch_pay_instr_queue_detail",batchPayEnums);
 		statusEnumMap.put("batch_recv_instr_queue_total",batchPayEnums);
 		statusEnumMap.put("batch_recv_instr_queue_detail",batchPayEnums);
+		statusEnumMap.put("recv_batch_detail", batchPayEnums);
 		
 		totalMapDetailTableName.put("pay_batch_total", "pay_batch_detail");
 		totalMapDetailTableName.put("recv_batch_total", "recv_batch_detail");

@@ -383,7 +383,7 @@ public class ChannelSettingService {
      * @throws ReqDataException
      */
     public List<Record> getallchannel(Record record) throws BusinessException {
-        List<Record> records = Db.find(Db.getSql("channel_setting.getAllChannel"));
+        List<Record> records = Db.find(Db.getSqlPara("channel_setting.getAllChannel", Kv.by("map", record.getColumns())));
         return records;
     }
 

@@ -5,7 +5,7 @@
     from inner_db_payment
     where is_checked = 0
     and service_status = 7
-    and DATEDIFF(day,create_on,GETDATE())=1
+    and DATEDIFF(day,create_on,GETDATE()) = 1
   #end
   
   #sql("outer_zf_payment_list")
@@ -13,7 +13,7 @@
     from outer_zf_payment
     where is_checked = 0
     and service_status = 7
-    and DATEDIFF(day,create_on,GETDATE())=1
+    and DATEDIFF(day,create_on,GETDATE()) = 1
   #end
   
   #sql("collect_execute_instruction_list")
@@ -21,33 +21,39 @@
     from collect_execute_instruction
     where is_checked = 0
     and collect_status = 3
-    and DATEDIFF(day,create_on,GETDATE())=1
+    and DATEDIFF(day,create_on,GETDATE()) = 1
   #end
   
-  #sql("oa_head_payment_list")
-    select id,instruct_code,create_on,payment_amount
+ 
+  
+    #sql("oa_head_payment_list")
+    select id,instruct_code,left(bank_serial_number,8) AS create_on,payment_amount
     from oa_head_payment
     where is_checked = 0
     and service_status = 7
-    and DATEDIFF(day,create_on,GETDATE())=1
+    and bank_serial_number is not null
+    and DATEDIFF(day,left(bank_serial_number,8),GETDATE()) = 1
   #end
 
 
+  
   #sql("oa_branch_payment_item_inlist")
-    select id,instruct_code,create_on,payment_amount,pay_account_no,recv_account_no
+    select id,instruct_code,left(bank_serial_number,8) AS create_on,payment_amount,pay_account_no,recv_account_no
     from oa_branch_payment_item
     where is_checked = 0
     and service_status = 1
     and item_type = 1
-    and DATEDIFF(day,create_on,GETDATE())=1
+    and bank_serial_number is not null
+    and DATEDIFF(day,left(bank_serial_number,8),GETDATE()) = 1
   #end
   #sql("oa_branch_payment_item_outlist")
-    select id,instruct_code,create_on,payment_amount
+    select id,instruct_code,left(bank_serial_number,8) AS create_on,payment_amount
     from oa_branch_payment_item
     where is_checked = 0
     and service_status = 1
     and item_type = 2
-    and DATEDIFF(day,create_on,GETDATE())=1
+    and bank_serial_number is not null
+    and DATEDIFF(day,left(bank_serial_number,8),GETDATE()) = 1
   #end
 
   #sql("get_his_trans")
@@ -56,7 +62,7 @@
     where is_checked = 0
     and amount = ?
     and instruct_code = ?
-    and DATEDIFF(day,?,trans_date) = 0
+    and DATEDIFF(day,?,trans_date) >= 0
   #end
 
   #sql("get_his_trans_two")
@@ -78,7 +84,7 @@
       and acc_no = #para(map.pay_account_no)
       and amount = #para(map.payment_amount)
       and instruct_code = #para(map.instruct_code)
-      and DATEDIFF(day,#para(map.create_on),trans_date) = 0
+      and DATEDIFF(day,#para(map.create_on),trans_date) >= 0
     UNION ALL
     SELECT
       id,
@@ -97,8 +103,8 @@
       and direction = 2
       and acc_no = #para(map.recv_account_no)
       and amount = #para(map.payment_amount)
-      and instruct_code = #para(map.instruct_code)
-      and DATEDIFF(day,#para(map.create_on),trans_date) = 0
+      and opp_acc_no = #para(map.pay_account_no)
+      and DATEDIFF(day,#para(map.create_on),trans_date) >= 0
   #end
 
   #sql("inner_batchpay_list")

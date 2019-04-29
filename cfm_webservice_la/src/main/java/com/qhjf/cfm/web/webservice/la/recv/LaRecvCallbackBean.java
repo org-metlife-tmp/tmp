@@ -97,19 +97,23 @@ public class LaRecvCallbackBean {
 	private String ddderef;
 	
 	public LaRecvCallbackBean(Record origin) throws Exception{
+		Date date = new Date();
+		String nowDate = new SimpleDateFormat("yyyyMMdd").format(date);
+		
 		this.id = origin.getLong("id");
 		this.company = origin.getStr("branch_code");
 		this.branch = origin.getStr("org_code");
 		this.cownsel = origin.getStr("insure_bill_no");
 //		this.paytype = origin.getStr("fee_mode");
 		this.paytype = origin.getStr("pay_mode");
-		this.tchqdate = origin.getStr("recv_date") != null ? origin.getStr("recv_date").replaceAll("-", "") : null;
-//		this.tchqdate = origin.getStr("recv_date");
+//		this.tchqdate = origin.getStr("recv_date") != null ? origin.getStr("recv_date").replaceAll("-", "") : null;
+		this.tchqdate = nowDate;
 		this.docorigamt = origin.getStr("amount");
 		
 		this.bankacckey = decrypt(origin.getStr("pay_acc_no"));
 		//银行名称（付方银行大类）
-		this.znbnkkey = origin.getStr("pay_bank_name");
+//		this.znbnkkey = origin.getStr("pay_bank_name");
+		this.znbnkkey = origin.getStr("bank_key");
 		//开户行（收方）：付方账户名
 		this.bankdesc = origin.getStr("insure_bill_no") + origin.getStr("pay_code");
 		this.bankaccdsc = origin.getStr("pay_acc_name");
@@ -122,8 +126,7 @@ public class LaRecvCallbackBean {
 		this.sacscode = origin.getStr("sacscode");
 		this.sacstype = origin.getStr("sacstyp");
 		//下次扣款时间：当天日期
-		Date date = new Date();
-		this.nextdate = new SimpleDateFormat("yyyyMMdd").format(date);
+		this.nextdate = nowDate;
 		
 		Integer tmpStatus = origin.getInt("tmp_status");
 		if (tmpStatus == null) {

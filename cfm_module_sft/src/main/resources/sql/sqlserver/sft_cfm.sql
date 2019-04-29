@@ -62,3 +62,8 @@
   #include("paycountercheck.sql")
 #end
 
+#namespace("voucher")
+  #include("voucher.sql")
+#end
+
+

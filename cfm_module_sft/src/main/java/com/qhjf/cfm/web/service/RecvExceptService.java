@@ -187,6 +187,20 @@ public class RecvExceptService {
     	if(position != null){
     		positionName = position.getStr("name");
     	}
+    	
+    	//修改指令状态为 人工撤销
+    	log.info("子批次：[id={}]发送撤回，修改指令状态！", record.get("id"));
+    	boolean total = CommonService.update("batch_recv_instr_queue_total", 
+    			new Record().set("status", 2), 
+    			new Record().set("bill_id", TypeUtils.castToInt(record.get("id"))));
+    	if (!total) {
+			return total;
+		}
+    	int update = Db.update(Db.getSql("except.recvUpdIntrDetailForException"), TypeUtils.castToInt(record.get("id")));
+    	if (update <= 0) {
+			return false;
+		}
+    	
         return CommonService.update("recv_batch_total",
                 new Record().set("service_status", WebConstant.SftCheckBatchStatus.YHT.getKey())
                         .set("exam_position_name", positionName)

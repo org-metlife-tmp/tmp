@@ -39,7 +39,7 @@
 	where
 		status = 1 and
 		reqsta = 0 and
-		rtnflg = 0
+		rtnflg in (0, 9)
 #end
 
 #end

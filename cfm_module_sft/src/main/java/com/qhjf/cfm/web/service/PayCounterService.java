@@ -7,6 +7,7 @@ import com.jfinal.log.Log;
 import com.jfinal.plugin.activerecord.*;
 import com.qhjf.cfm.exceptions.BusinessException;
 import com.qhjf.cfm.exceptions.DbProcessException;
+import com.qhjf.cfm.exceptions.EncryAndDecryException;
 import com.qhjf.cfm.exceptions.ReqDataException;
 import com.qhjf.cfm.exceptions.WorkflowException;
 import com.qhjf.cfm.queue.ProductQueue;
@@ -14,6 +15,7 @@ import com.qhjf.cfm.queue.QueueBean;
 import com.qhjf.cfm.utils.ArrayUtil;
 import com.qhjf.cfm.utils.BizSerialnoGenTool;
 import com.qhjf.cfm.utils.CommonService;
+import com.qhjf.cfm.utils.SymmetricEncryptUtil;
 import com.qhjf.cfm.web.UodpInfo;
 import com.qhjf.cfm.web.UserInfo;
 import com.qhjf.cfm.web.WfRequestObj;
@@ -26,6 +28,7 @@ import com.qhjf.cfm.web.plugins.log.LogbackLog;
 import com.qhjf.cfm.web.webservice.sft.SftCallBack;
 import org.apache.commons.lang.StringUtils;
 
+import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,9 +53,10 @@ public class PayCounterService {
 	 * @param record
 	 * @param long1 
 	 * @return 
-	 * @throws ReqDataException 
+	 * @throws BusinessException 
+	 * @throws UnsupportedEncodingException 
 	 */
-	public Page<Record> list(int pageNum, int pageSize, Record record, Long org_id) throws ReqDataException {
+	public Page<Record> list(int pageNum, int pageSize, Record record, Long org_id) throws UnsupportedEncodingException, BusinessException {
 		
 		// 获取付款账号
 		String pay_account_no = GmfConfigAccnoSection.getInstance().getAccno();
@@ -67,9 +71,9 @@ public class PayCounterService {
 		if(null == findById){
 			throw new ReqDataException("当前登录人的机构信息未维护");
 		}
-		Integer source_sys = record.getInt("source_sys");
+		Integer source_sys = TypeUtils.castToInt(record.get("source_sys"));
 		
-		List<String> codes = new ArrayList<>();
+		/*List<String> codes = new ArrayList<>();
 		if(findById.getInt("level_num") == 1){
 			logger.info("========目前登录机构为总公司");
 			codes = Arrays.asList("0102","0101","0201","0202","0203","0204","0205","0500");
@@ -78,19 +82,17 @@ public class PayCounterService {
 			Record findFirst = Db.findFirst(Db.getSql("org.getCurrentUserOrgs"), org_id);
 			codes.add(findFirst.getStr("code"));
 		}
-		record.set("codes", codes);
+		record.set("codes", codes);*/
 		List<Integer> status = record.get("status");
-		List<Integer> service_status_origin = record.get("service_status");
+		String service_status_origin = TypeUtils.castToString(record.get("service_status"));
 		if(null == status || status.size() == 0) {
 			record.remove("status");			
 		}
-		if(null == service_status_origin || service_status_origin.size() == 0) {
+		if(StringUtils.isBlank(service_status_origin)) {
 			record.remove("service_status");			
 		}else {
 		List<Integer> service_status = new ArrayList<>();
-		for (int i = 0; i < service_status_origin.size(); i++) {
-			WebConstant.Sft_Billstatus.WJF.getKey();
-			switch (service_status_origin.get(i)) {
+		switch (TypeUtils.castToInt(service_status_origin)) {
 			case 0 :  //WebConstant.Sft_Billstatus.WJF.getKey()
 				service_status.add(1);  //WebConstant.BillStatus.SUBMITED.getKey()
 				service_status.add(2);
@@ -113,13 +115,14 @@ public class PayCounterService {
 			default:
 				break;
 			}
-		 }
 		record.set("service_status", service_status);
 		}
 		String pay_mode = record.getStr("pay_mode");
 		//柜面付  默认网银
 		if( StringUtils.isBlank(pay_mode) ) {
 			record.set("pay_mode", WebConstant.SftDoubtPayMode.WY.getKeyc());
+		}else {
+			record.set("pay_mode", WebConstant.SftDoubtPayMode.getSftDoubtPayModeByKey(Integer.valueOf(pay_mode)).getKeyc());
 		}
 		SqlPara sqlPara = null;
 		if(source_sys == 0) {
@@ -131,10 +134,12 @@ public class PayCounterService {
 		}
 		 Page<Record> paginate = Db.paginate(pageNum, pageSize, sqlPara);
 		 List<Record> list = paginate.getList();
+		 SymmetricEncryptUtil  util = SymmetricEncryptUtil.getInstance();
+		 util.recvmask(list);
 		 if(null != list && list.size() > 0) {
 			 for (Record rec : list) {
-				 rec.set("pay_account_no", pay_account_no);
-				 rec.set("pay_account_bank", pay_account_bank);
+				 rec.set("pay_acc_no", pay_account_no);
+				 rec.set("pay_bank_name", pay_account_bank);
 			}
 		 }
 		 return paginate ;
@@ -145,8 +150,9 @@ public class PayCounterService {
 	 * @param record
 	 * @param userInfo
 	 * @throws ReqDataException 
+	 * @throws EncryAndDecryException 
 	 */
-	public void supplement(final Record record, UserInfo userInfo) throws ReqDataException {
+	public void supplement(final Record record, UserInfo userInfo) throws ReqDataException, EncryAndDecryException {
 		Long usr_id = userInfo.getUsr_id();
 		final Record user_record = Db.findById("user_info", "usr_id",usr_id);
 		final List<Object> list = record.get("files");
@@ -161,6 +167,10 @@ public class PayCounterService {
 			logger.error("====此状态的数据不能进行补录==="+pay_legal_data.getInt("status"));
 			throw new ReqDataException("只有未提交数据才可以进行补录");
 		}
+		
+		SymmetricEncryptUtil  util = SymmetricEncryptUtil.getInstance();
+		String recv_acc_no = record.getStr("recv_acc_no");
+		final String encry_recv_acc_no = util.encrypt(recv_acc_no);
 			
 		// 开始更新合法数据表
 		// supply_status 更新为  1:已补录    
@@ -169,7 +179,7 @@ public class PayCounterService {
 			public boolean run() throws SQLException {
 					boolean update = CommonService.update("pay_legal_data", 
 						 new Record().set("op_date", new Date()).set("op_user_name", user_record.get("name"))
-						.set("supply_status", WebConstant.Sft_supplyStatus.YBL.getKey()).set("recv_acc_no", record.get("recv_acc_no"))
+						.set("supply_status", WebConstant.Sft_supplyStatus.YBL.getKey()).set("recv_acc_no",encry_recv_acc_no)
 						.set("recv_bank_name", record.get("recv_bank_name")).set("recv_bank_cnaps", record.get("recv_cnaps_code"))
 						.set("payment_summary", record.get("payment_summary")).set("persist_version", persist_version+1).set("recv_acc_name", record.get("recv_acc_name")), 
 						 new Record().set("id", record.get("pay_id")).set("persist_version", persist_version));
@@ -280,7 +290,7 @@ public class PayCounterService {
 			logger.error("=============未在系统内找到此账户======" + pay_account_no);
 		}
 		
-		Integer source_sys = record.getInt("source_sys");
+		Integer source_sys = TypeUtils.castToInt(record.get("source_sys"));
 		List<Integer> pay_ids = record.get("pay_id");
 		final Long org_id = uodpInfo.getOrg_id();
 		List<Record> statuss = Db.find(Db.getSqlPara("pay_counter.findDistinctStatus", Kv.by("map", pay_ids)));
@@ -420,10 +430,21 @@ public class PayCounterService {
 	 * 获取柜面付列表详情
 	 * @param long1
 	 * @return
+	 * @throws ReqDataException 
 	 */
-	public Record detail(Long id) {
+	public Record detail(Long id) throws ReqDataException {
 		Record findById = Db.findById("gmf_bill", "id", id);
-		return findById;
+		Record findFirst = null ;
+		try {
+			if(0 == TypeUtils.castToInt(findById.get("source_sys"))) {
+				findFirst = Db.findFirst(Db.getSql("pay_counter.findLaDetailById"), id);
+			} else {
+				findFirst = Db.findFirst(Db.getSql("pay_counter.findEBSDetailById"), id);
+			}		
+		} catch (Exception e) {
+			throw new ReqDataException("此条数据已过期");
+		}
+		return findFirst;
 	}
 
 	/**
@@ -471,7 +492,7 @@ public class PayCounterService {
                 logger.error("数据过期！,更新单据表gmf_bill失败");
             }
         }				
-		return false;
+		return true;
 	}
 
 	/**
@@ -528,11 +549,18 @@ public class PayCounterService {
         if (status != WebConstant.BillStatus.FAILED.getKey() && status != WebConstant.BillStatus.PASS.getKey()) {
             throw new Exception("单据状态有误!:" + id);
         }
+        String str = innerRec.getStr("recv_account_no"); //加密后的..需要解密
+        SymmetricEncryptUtil  util = SymmetricEncryptUtil.getInstance();
+		String recv_account_no = new String(util.decrypt(str), "utf-8");
+		innerRec.set("recv_account_no", recv_account_no);
         String payCnaps = innerRec.getStr("pay_bank_cnaps");
         String payBankCode = payCnaps.substring(0, 3);
         IChannelInter channelInter = ChannelManager.getInter(payBankCode, "SinglePay");    
         innerRec.set("source_ref", "gmf_bill");
         final int old_repeat_count = TypeUtils.castToInt(innerRec.get("repeat_count"));
+        innerRec.set("pay_account_bank", innerRec.get("pay_bank_name"));
+        innerRec.set("recv_account_bank", innerRec.get("recv_bank_name"));
+        innerRec.set("process_bank_type", innerRec.get("pay_bank_type"));
         innerRec.set("repeat_count", old_repeat_count + 1);
         innerRec.set("bank_serial_number", ChannelManager.getSerianlNo(payBankCode));
         innerRec.set("payment_amount", innerRec.get("amount"));

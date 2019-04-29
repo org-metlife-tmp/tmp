@@ -288,5 +288,13 @@
 #end
 
 
+#sql("findMaxName")
+    select max(offer.file_name)  AS maxname
+    from recv_offerDocument_total AS offer , 
+            recv_batch_total AS  total
+    where  total.id= offer.batch_id 
+    and total.master_batchno = ?
+#end
+
 
 

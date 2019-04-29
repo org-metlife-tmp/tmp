@@ -103,13 +103,16 @@ public class CollectionMergeUtil {
 
             //添加“交易唯一标识”
             String identify = null;
+            String monny = record.get("amount") == null ? "0" : record.get("amount").toString();
+            String transDate = record.get("trans_date") == null ? "" : record.get("trans_date").toString();
+            String transTime = record.get("trans_time") == null ? "" : record.get("trans_time").toString();
             try {
                 identify = new TransactionIdentify(Long.parseLong(record.get("acc_id").toString())
-                        , new BigDecimal(record.get("amount").toString())
+                        , new BigDecimal(monny)
                         , Integer.parseInt(record.get("direction").toString())
                         , record.get("opp_acc_no") == null ? "" : record.get("opp_acc_no").toString()
                         , record.get("opp_acc_name") == null ? "" : record.get("opp_acc_name").toString()
-                        , record.get("trans_date").toString().concat(" ").concat(record.get("trans_time").toString())
+                        , transDate.concat(" ").concat(transTime)
                         , record.get("summary") == null ? "" : record.get("summary").toString()
                         , null
                         , record.get("post_script") == null ? "" : record.get("post_script").toString())

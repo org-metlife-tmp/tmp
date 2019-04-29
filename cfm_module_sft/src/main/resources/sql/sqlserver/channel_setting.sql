@@ -151,8 +151,11 @@ SELECT
 	channel_desc,
 	bankcode
 FROM
-	channel_setting
-where is_checkout = 1
+	channel_setting 
+where is_checkout = 1 
+     #if(null != map.pay_attr  && !"".equals(map.date_validate))
+	   and  pay_attr = #para(map.pay_attr) 
+	 #end
 order by id
 #end
 

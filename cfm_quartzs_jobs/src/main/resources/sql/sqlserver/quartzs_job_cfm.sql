@@ -152,7 +152,7 @@
   
   
   #sql("selOneLaRecvTotal")
-    select * from ZDDHPF where [STATUS]=0
+    select * from ZDDHPF where [STATUS] in(0,2,3)
   #end
   
   #sql("selOneBatchLaRecvDetail")

@@ -177,8 +177,8 @@ public class GjtOptypeMgr extends AbstractOptypeMgr {
                 .registerValidate(new RequiredParamsValidate(new String[]{"is_checked"})));
         //根据单据号,查询未核对交易号
         optypes.add(new Optype(Optype.Mode.NORMAL, "collectcheck_checkNoCheckTradeList")
-                .registKeepParams(new String[]{"id"})
-                .registerValidate(new RequiredParamsValidate(new String[]{"id"})));
+                .registKeepParams(new String[]{"id","date_validate","recv_validate"})
+                .registerValidate(new RequiredParamsValidate(new String[]{"id","date_validate","recv_validate"})));
 
         //根据单据号,查询已核对交易号  checkAlreadyTradeList
         optypes.add(new Optype(Optype.Mode.NORMAL, "collectcheck_checkAlreadyTradeList")
@@ -390,9 +390,9 @@ public class GjtOptypeMgr extends AbstractOptypeMgr {
         //勾选 查找交易流水
         optypes.add(new Optype(Optype.Mode.NORMAL, "collectbatchcheck_checkNoCheckTradeList")
                 .registerValidate(new RequiredParamsValidate(new String[]{
-                        "id"
+                        "id","date_validate","recv_validate"
                 }))
-                .registKeepParams(new String[]{"id"}));
+                .registKeepParams(new String[]{"id","date_validate","recv_validate"}));
 
         //确认交易
         optypes.add(new Optype(Optype.Mode.NORMAL, "collectbatchcheck_confirmCheck")

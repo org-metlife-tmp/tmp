@@ -8,6 +8,7 @@ import com.qhjf.cfm.queue.ProductQueue;
 import com.qhjf.cfm.queue.QueueBean;
 import com.qhjf.cfm.utils.CommonService;
 import com.qhjf.cfm.web.UodpInfo;
+import com.qhjf.cfm.web.UserInfo;
 import com.qhjf.cfm.web.channel.inter.api.IChannelInter;
 import com.qhjf.cfm.web.channel.manager.ChannelManager;
 import com.qhjf.cfm.web.constant.WebConstant;
@@ -18,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -68,7 +70,7 @@ public class RecvDiskSendingService {
 	 * 发送银行
 	 * @param record
 	 */
-	public void sendbank(Record record) throws ReqDataException {
+	public void sendbank(Record record, final UserInfo userInfo) throws ReqDataException {
 		//1. 根据前端传入 子批次id查询子批次
 		final Integer persistVersion = TypeUtils.castToInt(record.get("persist_version"));
 		final long id = TypeUtils.castToLong(record.get("id"));
@@ -169,7 +171,10 @@ public class RecvDiskSendingService {
 				if(saveIntr){
 					//子批次汇总表状态改为：4已发送未回盘
 					int updPayBatchTotal = CommonService.updateRows("recv_batch_total"
-							, new Record().set("service_status", 4).set("persist_version", cbRecord.getInt("persist_version") + 1)
+							, new Record().set("service_status", 4)
+										  .set("persist_version", cbRecord.getInt("persist_version") + 1)
+										  .set("send_user_name", userInfo.getName())
+										  .set("send_on", new Date())
 							, new Record().set("id", id).set("persist_version", cbRecord.getInt("persist_version")));
 					if (updPayBatchTotal == 1) {
 						return true;

@@ -44,4 +44,27 @@ public class ExcelCacheUtil {
 		}
 		return rowData;
 	}
+	/**
+	 * 获取excel cell数据
+	 * @param record
+	 * @return
+	 * @throws BusinessException
+	 */
+	public static ExcelResultBean getExcelResultBean(Record record) throws BusinessException {
+		String objectId = record.getStr("object_id");
+		if (StringUtils.isBlank(objectId)) {
+			throw new ReqDataException("请求参数object_id为空");
+		}
+
+		// 从redis中获取excel导入的数据
+		String redisDb = config.getCacheName();
+
+		log.debug(String.format("请求参数：【%s】,Redis库：【%s】", record, redisDb));
+
+		ExcelResultBean excelResultBean = (ExcelResultBean) Redis.use(redisDb).get(objectId);
+		if (null == excelResultBean) {
+			throw new ReqDataException("上传的Excel已过期，请重新上传！");
+		}
+		return excelResultBean;
+	}
 }

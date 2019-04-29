@@ -72,6 +72,7 @@ public class SysTradeResultRecvBatchQueryInter implements ISysAtomicInterface {
         	return;
 		}
         final String billTable = instrTotalRecord.getStr("source_ref");
+        final String billDetailTable = SysInterManager.getDetailTableName(billTable);
         final String billTablePrimaryKey = SysInterManager.getSourceRefPrimaryKey(billTable);
 
         for (int i = 0; i < resultCount; i++) {
@@ -116,7 +117,7 @@ public class SysTradeResultRecvBatchQueryInter implements ISysAtomicInterface {
                         Record instr_whereRecord = new Record().set("id", instrDetailRecord.getLong("id"));
 
                         if (status == WebConstant.PayStatus.SUCCESS.getKey()) {
-                            bill_setRecord.set(SysInterManager.getStatusFiled(billTable), SysInterManager.getSuccessStatusEnum(billTable))
+                            bill_setRecord.set(SysInterManager.getStatusFiled(billDetailTable), SysInterManager.getSuccessStatusEnum(billDetailTable))
                             			  .set("bank_err_code", "成功")
                             			  .set("bank_err_msg", TypeUtils.castToString(bankData.get("bank_err_msg")));
 
@@ -124,7 +125,7 @@ public class SysTradeResultRecvBatchQueryInter implements ISysAtomicInterface {
 		                            	   .set("bank_err_msg", TypeUtils.castToString(bankData.get("bank_err_msg")))
 		                                   .set("bank_back_time", new Date());
                         } else {
-                            bill_setRecord.set(SysInterManager.getStatusFiled(billTable), SysInterManager.getFailStatusEnum(billTable))
+                            bill_setRecord.set(SysInterManager.getStatusFiled(billDetailTable), SysInterManager.getFailStatusEnum(billDetailTable))
                             			  .set("bank_err_msg", TypeUtils.castToString(bankData.get("bank_err_msg")))
                             			  .set("bank_err_code", TypeUtils.castToString(bankData.get("bank_err_code")));
 
@@ -135,14 +136,14 @@ public class SysTradeResultRecvBatchQueryInter implements ISysAtomicInterface {
                         }
 
                         // 1.更新单据状态；2.修改指令表状态
-                        if (CommonService.updateRows(billTable, bill_setRecord, bill_whereRecord) == 1) { // 修改单据状态
+                        if (CommonService.updateRows(billDetailTable, bill_setRecord, bill_whereRecord) == 1) { // 修改单据状态
                             boolean updDetail = CommonService.updateRows(SysBatchRecvInter.BATCH_RECV_INSTR_DETAIL_TALBE, instr_setRecord, instr_whereRecord) == 1;
                             if (!updDetail) {
                                 log.error("批量收付状态查询回写时，[{}]更新失败！instr_setRecord=【{}】，instr_whereRecord=【{}】", SysBatchRecvInter.BATCH_RECV_INSTR_DETAIL_TALBE, instr_setRecord, instr_whereRecord);
                             }
                             return true;
                         } else {
-                            log.error("批量收付状态查询回写时，[{}]更新失败！bill_setRecord=【{}】，bill_whereRecord=【{}】", billTable, bill_setRecord, bill_whereRecord);
+                            log.error("批量收付状态查询回写时，[{}]更新失败！bill_setRecord=【{}】，bill_whereRecord=【{}】", billDetailTable, bill_setRecord, bill_whereRecord);
                             return false;
                         }
                     }
@@ -215,7 +216,10 @@ public class SysTradeResultRecvBatchQueryInter implements ISysAtomicInterface {
             @Override
             public boolean run() throws SQLException {
                 //更新batch_recv_instr_queue_total：明细中有一条成功，汇总就更新为成功
-                int updInstrTotal = Db.update(Db.getSql("batchrecv.updInstrTotal"), instrTotalId, instrTotalId);
+//                int updInstrTotal = Db.update(Db.getSql("batchrecv.updInstrTotal"), instrTotalId, instrTotalId);
+                int updInstrTotal = CommonService.updateRows("batch_recv_instr_queue_total"
+                		, new Record().set("status", 2)
+                		, new Record().set("id", instrTotalId));
                 if (updInstrTotal == 1) {
                     log.debug("批量收付查询历史交易状态指令原始数据回写，更新指令汇总表成功！");
                     //更新recv_batch_total

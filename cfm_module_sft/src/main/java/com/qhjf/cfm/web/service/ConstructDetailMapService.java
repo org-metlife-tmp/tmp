@@ -1,5 +1,6 @@
 package com.qhjf.cfm.web.service;
 
+import com.alibaba.fastjson.util.TypeUtils;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
 
@@ -29,7 +30,11 @@ public class ConstructDetailMapService {
 		BigDecimal detail_cent = record.getBigDecimal("amount").multiply(new BigDecimal(100)).setScale(0);
 		detail_map.put("detail_cent", detail_cent);	
 		detail_map.put("pay_code", record.getStr("pay_code"));
-			
+		if("U3,U6,U0,U5".contains(channel_code)) {
+			//根据渠道获取bank_code,根据bank_code获取账号.此账号需要写在盘片中  只有保融盘片
+			Record acc = Db.findFirst(Db.getSql("disk_downloading.findAccnoByBankcode"), channel_code);
+			detail_map.put("bank_accno", acc.get("acc_no"));
+		}
 		// 银行 type  部分银行接口的银行大类与我系统内不一致.在此映射.如果找不到就默认取我系统
 		if(null != record.get("recv_bank_type")) {
 			//批付

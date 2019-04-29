@@ -52,9 +52,9 @@ and la.is_doubtful = 1
         #elseif("channel_id_two".equals(x.key))
           la.channel_id = #para(x.value)
         #elseif("start_date".equals(x.key))
-          DATEDIFF(day,#para(x.value),create_time) >= 0
+          DATEDIFF(day,#para(x.value),origin.create_time) >= 0
         #elseif("end_date".equals(x.key))
-          DATEDIFF(day,#para(x.value),create_time) <= 0
+          DATEDIFF(day,#para(x.value),origin.create_time) <= 0
         #elseif("status".equals(x.key))
           la.status in(
             #for(y : map.status)

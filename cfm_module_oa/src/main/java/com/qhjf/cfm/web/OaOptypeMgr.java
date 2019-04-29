@@ -328,9 +328,9 @@ public class OaOptypeMgr extends AbstractOptypeMgr {
         //勾选 查找交易流水
         optypes.add(new Optype(Optype.Mode.NORMAL, "branchorgoacheck_checkTradeList")
                 .registerValidate(new RequiredParamsValidate(new String[]{
-                        "id"
+                        "id","date_validate","recv_validate"
                 }))
-                .registKeepParams(new String[]{"id"}));
+                .registKeepParams(new String[]{"id","date_validate","recv_validate"}));
 
         //确认交易
         optypes.add(new Optype(Optype.Mode.NORMAL, "branchorgoacheck_confirmCheck")
@@ -357,9 +357,9 @@ public class OaOptypeMgr extends AbstractOptypeMgr {
         //勾选 查找交易流水
         optypes.add(new Optype(Optype.Mode.NORMAL, "headorgoacheck_checkTradeList")
                 .registerValidate(new RequiredParamsValidate(new String[]{
-                        "id"
+                        "id","date_validate","recv_validate"
                 }))
-                .registKeepParams(new String[]{"id"}));
+                .registKeepParams(new String[]{"id","date_validate","recv_validate"}));
 
         //确认交易
         optypes.add(new Optype(Optype.Mode.NORMAL, "headorgoacheck_confirmCheck")

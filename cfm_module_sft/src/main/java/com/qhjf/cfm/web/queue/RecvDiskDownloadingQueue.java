@@ -1,13 +1,16 @@
 package com.qhjf.cfm.web.queue;
 
+import com.jfinal.ext.kit.DateKit;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
+import com.qhjf.cfm.utils.RedisSericalnoGenTool;
 import com.qhjf.cfm.web.constant.WebConstant;
 import com.qhjf.cfm.web.service.RecvTxtDiskSendingService;
 import com.qhjf.cfm.web.service.TxtDiskSendingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -48,6 +51,7 @@ public class RecvDiskDownloadingQueue implements  Runnable {
 		List<Record> find = Db.find(Db.getSql("recv_disk_downloading.findTotalByMainBatchNo"),master_batchno);
 		Integer detail_id = channel.getInt("document_moudle"); //报盘模板
     	Integer pay_attr = channel.getInt("pay_attr");  //收付属性 0--收，1--付
+    	String channel_code = channel.getStr("channel_code");
     	Integer document_type = pay_attr == 0 ? WebConstant.DocumentType.SB.getKey() : WebConstant.DocumentType.FB.getKey();
     	log.info("============报盘模板详情id==="+detail_id);
     	Record configs_tail = Db.findById("document_detail_config", "id", detail_id);
@@ -60,9 +64,13 @@ public class RecvDiskDownloadingQueue implements  Runnable {
         	return ;
         }   	    	
 		if(null != find  && find.size()> 0){
-			for (Record record : find) {				
+			//工行的递增的随机数
+			String uuid = RedisSericalnoGenTool.genCCBCDiskFileSeqNo(channel_code);
+			String date = DateKit.toStr(new Date(), DateKit.datePattern).replaceAll("-", "");
+			for (int i = 0 ; i < find.size() ; i++ ){				
 	        		log.info("=========网盘是TXT格式的文件");
-	        		String fileName = txtservice.getSFileName(document_moudle,document_type,document_version);
+	        		Record record = find.get(i);
+	        		String fileName = txtservice.getSFileName(document_moudle,document_type,document_version,channel_code,i+1 ,uuid,date);
 	        		try {
 	        			recvTxtDiskSendingService.diskDownLoadNewThread(main_record.getLong("id"),record.getLong("id"),document_moudle,fileName,document_type,configs_tail);
 					} catch (Exception e) {

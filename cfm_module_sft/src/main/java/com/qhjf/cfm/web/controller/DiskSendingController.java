@@ -88,7 +88,7 @@ public class DiskSendingController extends CFMBaseController {
         	}else{
         		logger.info("=========网盘是TXT格式的文件");
         		if(!is_download){
-        		    String fileName = txtservice.getFileName(document_moudle,document_type,document_version);
+        		    String fileName = txtservice.getFileName(document_moudle,document_type,document_version,channel_code);
         		    String diskDownLoad = txtservice.diskDownLoad(pay_master_id,pay_id,document_moudle,userInfo,fileName,document_type,configs_tail);
         		    render(new ByteArrayRender(fileName,diskDownLoad.getBytes("GBK")));
         		}else{

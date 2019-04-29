@@ -8,12 +8,14 @@ import com.jfinal.plugin.activerecord.Record;
 import com.qhjf.cfm.exceptions.BusinessException;
 import com.qhjf.cfm.utils.CommKit;
 import com.qhjf.cfm.utils.CommonService;
+import com.qhjf.cfm.utils.StringKit;
 import com.qhjf.cfm.utils.XmlTool;
 import com.qhjf.cfm.web.config.DDHLARecvConfigSection;
 import com.qhjf.cfm.web.config.GlobalConfigSection;
 import com.qhjf.cfm.web.config.IConfigSectionType;
 import com.qhjf.cfm.web.constant.WebConstant;
 import com.qhjf.cfm.web.service.CheckVoucherService;
+import com.qhjf.cfm.web.webservice.la.logger.recv.BatchRecvLogger;
 import com.qhjf.cfm.web.webservice.la.recv.LaRecvCallbackBean;
 import org.apache.axiom.om.OMElement;
 import org.apache.axis2.addressing.EndpointReference;
@@ -34,6 +36,7 @@ import java.util.List;
  */
 public class LaRecvConsumerQueue implements Runnable{
 	
+	private static Logger track = LoggerFactory.getLogger(BatchRecvLogger.class);
 	private static Logger log = LoggerFactory.getLogger(LaRecvConsumerQueue.class);
 	private static DDHLARecvConfigSection config = GlobalConfigSection.getInstance()
 			.getExtraConfig(IConfigSectionType.DDHConfigSectionType.DDHLaRecv);
@@ -46,6 +49,8 @@ public class LaRecvConsumerQueue implements Runnable{
 				LaRecvQueueBean queueBean = null;
 				queueBean = LaRecvQueue.getInstance().getQueue().take();
 				log.debug("LA批收回调核心系统webservice url="+config.getUrl());
+				String send = StringKit.removeControlCharacter(queueBean.getoMElement() != null ? queueBean.getoMElement().toString() : "请求报文为空");
+				track.debug("LA批收send={}",send);
 				
 				ServiceClient sc = new ServiceClient();
 				Options opts = new Options();
@@ -55,7 +60,7 @@ public class LaRecvConsumerQueue implements Runnable{
 				opts.setAction("http://eai.metlife.com/ESBWebEntry/ProcessMessage");
 				sc.setOptions(opts);
 				OMElement res = sc.sendReceive(queueBean.getoMElement());
-				CommKit.debugPrint(log,"LA批收回调response={}",res.toString());
+				CommKit.debugPrint(track,"LA批收回调response={}",res.toString());
 
 
 				JSONObject json = XmlTool.documentToJSONObject(res.toString());

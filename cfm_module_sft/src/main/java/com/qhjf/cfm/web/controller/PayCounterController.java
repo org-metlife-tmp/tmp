@@ -15,9 +15,11 @@ import com.qhjf.cfm.utils.CommonService;
 import com.qhjf.cfm.web.UserInfo;
 import com.qhjf.cfm.web.WfRequestObj;
 import com.qhjf.cfm.web.constant.WebConstant;
+import com.qhjf.cfm.web.plugins.jwt.Auth;
 import com.qhjf.cfm.web.plugins.log.LogbackLog;
 import com.qhjf.cfm.web.service.PayCounterService;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,9 +37,10 @@ public class PayCounterController extends CFMBaseController{
     
    /**
     * 柜面列表
+ * @throws UnsupportedEncodingException 
     */
-    
-	public  void  list() throws ReqDataException {
+    @Auth(hasForces = {"PayCounterPlat"}) 
+	public  void  list() throws ReqDataException, UnsupportedEncodingException {
 		try {
 			Record record = getRecordByParamsStrong();
 	    	int pageNum = getPageNum(record);
@@ -56,18 +59,25 @@ public class PayCounterController extends CFMBaseController{
 	 /**
      *@ 柜面付列表详情,用于我的审批平台展示
      */
-    //@Auth(hasForces = {"PayCheckAllot", "MyWFPLAT"})
+    @Auth(hasForces = {"PayCounterPlat", "MyWFPLAT"})
 	public void  detail(){
 		logger.info("============获取柜面付列表详情");
 		Record record = getRecordByParamsStrong();          	
-        Record detail = service.detail(record.getLong("id"));	
+        Record detail = null;
+		try {
+			detail = service.detail(record.getLong("id"));
+		} catch (ReqDataException e) {
+			e.printStackTrace();
+			renderFail(e);
+		}	
         renderOk(detail);	
 	}
 	
 	
 	  /**
 	    * 柜面补录
-	    */	    
+	    */	
+       @Auth(hasForces = {"PayCounterPlat"}) 
 		public  void  supplement() {		
 			try {
 				Record record = getRecordByParamsStrong();	
@@ -83,7 +93,8 @@ public class PayCounterController extends CFMBaseController{
 		
 		  /**
 		    * 柜面拒绝
-		    */	    
+		    */	
+           @Auth(hasForces = {"PayCounterPlat"}) 
 			public  void  revokeToLaOrEbs() {		
 				try {
 					Record record = getRecordByParamsStrong();	
@@ -98,7 +109,8 @@ public class PayCounterController extends CFMBaseController{
 			
 			/**
 			    * 柜面确认/提交
-			    */	    
+			    */	
+               @Auth(hasForces = {"PayCounterPlat"}) 
 				public  void  confirm() {		
 					try {
 						Record record = getRecordByParamsStrong();	
@@ -219,7 +231,7 @@ public class PayCounterController extends CFMBaseController{
 			    /**
 			     * 柜台付列表导出
 			     */
-			    //@Auth(hasForces = {"PayBatchResp"})
+			    @Auth(hasForces = {"PayCounterPlat"}) 
 			    public void listexport() {
 			        doExport();
 			    }

@@ -13,7 +13,6 @@ import com.qhjf.cfm.utils.CommonService;
 import com.qhjf.cfm.web.channel.inter.api.IChannelBatchInter;
 import com.qhjf.cfm.web.channel.inter.api.IChannelInter;
 import com.qhjf.cfm.web.channel.manager.ChannelManager;
-import com.qhjf.cfm.web.channel.util.DateUtil;
 import com.qhjf.cfm.web.config.CMBCTestConfigSection;
 import com.qhjf.cfm.web.constant.WebConstant;
 import com.qhjf.cfm.web.inter.api.ISysAtomicInterface;
@@ -21,7 +20,6 @@ import com.qhjf.cfm.web.inter.manager.SysInterManager;
 import com.qhjf.cfm.web.webservice.sft.SftRecvCallBack;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -304,7 +302,7 @@ public class SysBatchRecvInter implements ISysAtomicInterface {
         total.set("recv_bank_city", r.get("recv_bank_city"));
         total.set("recv_bank_type", r.get("recv_bank_type"));
         total.set("status", 1);
-        total.set("trade_date", genTradeDate(recvBankCode));
+        total.set("trade_date", DateKit.toStr(new Date(), "yyyy-MM-dd"));
         //发送时间不精确，从指令发送队列取指令时的时间更精确
         total.set("init_send_time", new Date());
         return total;
@@ -313,7 +311,7 @@ public class SysBatchRecvInter implements ISysAtomicInterface {
 	 * 生成发送日期
 	 * @param cnaps
 	 * @return
-	 */
+	 *//*
 	private String genTradeDate(String cnaps){
 		String result = null;
 		if ("308".equals(cnaps)) {
@@ -321,7 +319,7 @@ public class SysBatchRecvInter implements ISysAtomicInterface {
 			result = DateUtil.getSpecifiedDayAfter(new Date(), preDay, "yyyyMMdd");
 		}
 		return result == null ? DateKit.toStr(new Date(), "yyyy-MM-dd") : result;
-	}
+	}*/
 
     /**
      * 生成收款指令明细信息 ： batch_recv_instr_queue_detail

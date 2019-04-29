@@ -1,17 +1,23 @@
 package com.qhjf.cfm.web.controller;
 
+import com.alibaba.fastjson.util.TypeUtils;
 import com.jfinal.plugin.activerecord.Page;
 import com.jfinal.plugin.activerecord.Record;
+import com.qhjf.cfm.excel.bean.ExcelResultBean;
 import com.qhjf.cfm.exceptions.BusinessException;
 import com.qhjf.cfm.exceptions.ReqDataException;
+import com.qhjf.cfm.utils.StringKit;
 import com.qhjf.cfm.web.plugins.jwt.Auth;
 import com.qhjf.cfm.web.plugins.log.LogbackLog;
 import com.qhjf.cfm.web.service.JytService;
 import com.qhjf.cfm.web.util.jyyet.CollectionMergeUtil;
 import com.qhjf.cfm.web.util.jyyet.ExcelCacheUtil;
+import com.qhjf.cfm.web.util.jyyet.histran.TransColPickFactory;
 
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * @Auther: zhangyuan
@@ -213,7 +219,7 @@ public class JytController extends CFMBaseController {
     /**
      * 历史交易导入
      */
-    @Auth(hasForces = "TransImport")
+    /*@Auth(hasForces = "TransImport")
 	public void hisTransImport() {
 		try {
     		// 从redis中获取excel上传的数据
@@ -224,6 +230,46 @@ public class JytController extends CFMBaseController {
 			
 			//导入类型:1：覆盖导入；2：增量导入；为空则进行覆盖导入
 			String importType = getParamsToRecord().getStr("import_type");
+			if (!"2".equals(importType)) {
+				importType = "1";
+			}
+			
+			//存库
+			service.hisTransImport(excelDataObj, importType);
+			renderOk(null);
+		} catch (BusinessException e) {
+			renderFail(e);
+		}
+	}*/
+    
+    /**
+     * 银行历史交易导入
+     */
+    @Auth(hasForces = "TransImport")
+	public void hisTransImport() {
+		try {
+			Record paramsToRecord = getParamsToRecord();
+    		// 从redis中获取excel上传的数据
+			ExcelResultBean bean = ExcelCacheUtil.getExcelResultBean(paramsToRecord);
+			
+			//根据不同银行的模板，获取历史交易导入必要字段
+			String pk = paramsToRecord.getStr("pk");
+			List<Map<String, Object>> listHandle = null;
+			if ("6".equals(pk)) {
+				listHandle = bean.getRowData();
+			}else{
+				listHandle = TransColPickFactory.getInstance().getStrategyByPk(pk).colPick(bean);
+			}
+			
+			// 把账户id和银行大类加到 excel导入数据中
+			List<Record> excelDataObj = CollectionMergeUtil.transMergeAccountInfo(listHandle);
+			
+			//导入类型:1：覆盖导入；2：增量导入；为空则进行覆盖导入
+			String importType = paramsToRecord.getStr("import_type");
+			if (StringUtils.isBlank(importType)) {
+				renderFail(new ReqDataException("未选择导入类型"));
+				return;
+			}
 			if (!"2".equals(importType)) {
 				importType = "1";
 			}

@@ -34,10 +34,10 @@ public class SftRecvLaDataCheckJob implements Job{
     private ExecutorService executeService = Executors.newFixedThreadPool(100);
     private List<Future<String>> resultList = new ArrayList<Future<String>>();
 
-    private static final String ORG_UNMATCH = "未匹配到机构";
-    private static final String CERT_UNMATCH = "未匹配到证件类型";
-    private static final String CHANNEL_UNMATCH = "未匹配到通道";
-    private static final String CHANNEL_MULTY_MATCH = "匹配到多个通道";
+    private static final String ORG_UNMATCH = "TMPPJ:未匹配到机构";
+    private static final String CERT_UNMATCH = "TMPPJ:未匹配到证件类型";
+    private static final String CHANNEL_UNMATCH = "TMPPJ:未匹配到通道";
+    private static final String CHANNEL_MULTY_MATCH = "TMPPJ:匹配到多个通道";
 //    private static final String BK_UNENABLE = "bankkey状态未启用";
 //    private static final String CHANNEL_UNENABLE = "通道状态未启用";
     
@@ -186,6 +186,10 @@ public class SftRecvLaDataCheckJob implements Job{
         }
 
         Record channel = channels.get(0);
+        
+        CommonService.update("la_origin_recv_data", 
+        		new Record().set("pay_bank_name", channel.getStr("name")), 
+        		new Record().set("id", laOiriginData.getLong("id")));
 
         //bankcode在回调LA批收时需要
         /*int i = Db.update(Db.getSql("la_recv_cfm.updLaRecvOrigin")
@@ -212,14 +216,14 @@ public class SftRecvLaDataCheckJob implements Job{
         //数据库解密
         String recvAccNo = DDHSafeUtil.decrypt(oldRecvAccNo);
         if (null == recvAccNo) {
-            throw new ReqValidateException("银行账号数据库解密失败");
+            throw new ReqValidateException("TMPPJ:银行账号数据库解密失败");
         }
 
         //账号非法校验
         log.debug("数据库解密[{}]=[{}]", oldRecvAccNo, SymmetricEncryptUtil.accNoAddMask(recvAccNo));
         boolean accNoValidate = ValidateUtil.accNoValidate(recvAccNo);
         if (!accNoValidate) {
-            throw new ReqValidateException("银行账号非法");
+            throw new ReqValidateException("TMPPJ:银行账号非法");
         }
 
         //对称加密

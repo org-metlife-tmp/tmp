@@ -6,10 +6,7 @@ import com.jfinal.plugin.activerecord.IAtom;
 import com.jfinal.plugin.activerecord.Record;
 import com.qhjf.cfm.exceptions.EncryAndDecryException;
 import com.qhjf.cfm.exceptions.ReqValidateException;
-import com.qhjf.cfm.utils.CommonService;
-import com.qhjf.cfm.utils.MD5Kit;
-import com.qhjf.cfm.utils.SymmetricEncryptUtil;
-import com.qhjf.cfm.utils.TableDataCacheUtil;
+import com.qhjf.cfm.utils.*;
 import com.qhjf.cfm.web.constant.WebConstant;
 import com.qhjf.cfm.web.quartzs.jobs.pub.PubJob;
 import com.qhjf.cfm.web.quartzs.jobs.utils.DDHSafeUtil;
@@ -152,7 +149,7 @@ public class SftEbsDataCheckJob implements Job{
         Record org = Db.findFirst(Db.getSql("ebs_cfm.getOrg"),
                 TypeUtils.castToString(ebsOriginData.get("org_code")));
         if (org == null) {
-            throw new ReqValidateException("未匹配到机构");
+            throw new ReqValidateException("TMPPJ:未匹配到机构");
         }
         ebsOriginData.set("tmp_org_id", org.getLong("org_id"));
         ebsOriginData.set("tmp_org_code", org.getStr("tmp_org_code"));
@@ -161,7 +158,7 @@ public class SftEbsDataCheckJob implements Job{
             Record certType = Db.findFirst(Db.getSql("ebs_cfm.getCertType"),
                     TypeUtils.castToString(ebsOriginData.get("recv_cert_type")));
             if (certType == null) {
-                throw new ReqValidateException("未匹配到证件类型");
+                throw new ReqValidateException("TMPPJ:未匹配到证件类型");
             }
         }
 
@@ -178,10 +175,10 @@ public class SftEbsDataCheckJob implements Job{
                 , org.getLong("org_id")
                 , bankKey);
         if (channels == null || channels.size() == 0) {
-            throw new ReqValidateException("未匹配到通道");
+            throw new ReqValidateException("TMPPJ:未匹配到通道");
         }
         if (channels.size() > 1) {
-            throw new ReqValidateException("匹配到多个通道");
+            throw new ReqValidateException("TMPPJ:匹配到多个通道");
         }
 
         Record channel = channels.get(0);
@@ -218,14 +215,14 @@ public class SftEbsDataCheckJob implements Job{
         //数据库解密
         String recvAccNo = DDHSafeUtil.decrypt(oldRecvAccNo);
         if (null == recvAccNo) {
-            throw new ReqValidateException("银行账号数据库解密失败");
+            throw new ReqValidateException("TMPPJ:银行账号数据库解密失败");
         }
 
         //账号非法校验
         log.debug("数据库解密[{}]=[{}]", oldRecvAccNo, SymmetricEncryptUtil.accNoAddMask(recvAccNo));
         boolean accNoValidate = ValidateUtil.accNoValidate(recvAccNo);
         if (!accNoValidate) {
-            throw new ReqValidateException("银行账号非法");
+            throw new ReqValidateException("TMPPJ:银行账号非法");
         }
 
         //对称加密
@@ -250,15 +247,17 @@ public class SftEbsDataCheckJob implements Job{
             }
             checkDoubtful.set(key, entry.getValue());
         }
+        String createTime = DateFormatThreadLocal.format("yyyyMMdd",originData.getDate("create_time"));
         String identification = MD5Kit.string2MD5(originData.getStr("insure_bill_no")
                 + "_" +originData.getStr("recv_acc_name")
-                + "_" +originData.getStr("amount"));
+                + "_" +originData.getStr("amount"))
+                + "_" +createTime;
 
         checkDoubtful.set("identification", identification);
 
         //判断可疑表中是否存在可疑数据
         List<Record> checkRecordList = Db.find(Db.getSql("ebs_cfm.getpaycheck"),originData.getStr("insure_bill_no"),originData.getStr("recv_acc_name"),
-                originData.getStr("amount"));
+                originData.getStr("amount"),createTime);
         if(checkRecordList!=null && checkRecordList.size()!=0){
             checkDoubtful.set("is_doubtful", 1);
             Db.save("ebs_check_doubtful", checkDoubtful);
@@ -273,7 +272,7 @@ public class SftEbsDataCheckJob implements Job{
          * 根据保单号，收款人，金额查询合法表中是否存在数据，如果存在视为可疑数据，将合法表中的数据删除，更新可疑表数据状态为可疑
          */
         List<Record> legalRecordList = Db.find(Db.getSql("ebs_cfm.getpaylegal"),originData.getStr("insure_bill_no"),originData.getStr("recv_acc_name"),
-                originData.getStr("amount"));
+                originData.getStr("amount"),createTime);
         if(legalRecordList!=null && legalRecordList.size()!=0){
             //可疑数据
             CommonService.update("ebs_check_doubtful",

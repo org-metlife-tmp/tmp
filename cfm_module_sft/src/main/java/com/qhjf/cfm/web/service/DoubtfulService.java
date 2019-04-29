@@ -249,6 +249,7 @@ public class DoubtfulService {
                     recordExt.set("company_name", TypeUtils.castToString(doubtfulRecord.get("company_name")));
                     recordExt.set("company_customer_no", TypeUtils.castToString(doubtfulRecord.get("company_customer_no")));
                     recordExt.set("biz_code", TypeUtils.castToString(doubtfulRecord.get("biz_code")));
+                    recordExt.set("bank_key", TypeUtils.castToString(doubtfulRecord.get("bank_key")));
                     recordExt.set("sale_code", TypeUtils.castToString(doubtfulRecord.get("sale_code")));
                     recordExt.set("sale_name", TypeUtils.castToString(doubtfulRecord.get("sale_name")));
                     recordExt.set("op_code", TypeUtils.castToString(doubtfulRecord.get("op_code")));

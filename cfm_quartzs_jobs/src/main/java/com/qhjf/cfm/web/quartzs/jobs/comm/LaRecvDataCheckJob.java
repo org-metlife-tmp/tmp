@@ -68,7 +68,7 @@ public class LaRecvDataCheckJob implements Job{
 		
 		Integer size = detail.getInt("size");
 		BigDecimal sumAmount = detail.getBigDecimal("sum_amount");
-		if (zntotrec != size) {
+		if (zntotrec == null || size == null || zntotrec.intValue() != size.intValue()) {
 			log.error("LA批收数据校验，总笔数不一致id={}", total.getLong("id"));
 			updZDDHPF(LaRecvTotalStatus.SIZE_ERR.getKey(), total.getLong("id"));
 			return;

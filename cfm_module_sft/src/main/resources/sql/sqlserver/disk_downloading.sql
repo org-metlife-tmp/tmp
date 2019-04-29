@@ -311,4 +311,18 @@
     	detail.child_batchno = ? 
 #end
 
+#sql("findAccnoByBankcode")
+    select 
+      acc.acc_no
+    from
+    account  acc ,
+    channel_setting  channel
+    where 
+    acc.bankcode = channel.bankcode 
+    and
+    channel.is_checkout = 1
+    and
+    channel.channel_code = ? 
+#end
+
 

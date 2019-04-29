@@ -106,8 +106,8 @@ public class ZftOptypeMgr extends AbstractOptypeMgr {
                         "min", "max", "page_size", "page_num", "start_date", "end_date"}));
         //根据单据号,查询未核对交易号  checkAlreadyTradeList
         optypes.add(new Optype(Optype.Mode.NORMAL, "zft_checkTradeList")
-                .registKeepParams(new String[]{"id"})
-                .registerValidate(new RequiredParamsValidate(new String[]{"id"})));
+                .registKeepParams(new String[]{"id","date_validate","recv_validate"})
+                .registerValidate(new RequiredParamsValidate(new String[]{"id","date_validate","recv_validate"})));
         //根据单据号,查询已核对交易号  checkAlreadyTradeList
         optypes.add(new Optype(Optype.Mode.NORMAL, "zft_checkAlreadyTradeList")
                 .registKeepParams(new String[]{"id"})
@@ -391,9 +391,9 @@ public class ZftOptypeMgr extends AbstractOptypeMgr {
         //勾选 查找交易流水
         optypes.add(new Optype(Optype.Mode.NORMAL, "zftbatchcheck_checkNoCheckTradeList")
                 .registerValidate(new RequiredParamsValidate(new String[]{
-                        "id"
+                        "id","date_validate","recv_validate"
                 }))
-                .registKeepParams(new String[]{"id"}));
+                .registKeepParams(new String[]{"id","date_validate","recv_validate"}));
 
         //确认交易
         optypes.add(new Optype(Optype.Mode.NORMAL, "zftbatchcheck_confirmCheck")

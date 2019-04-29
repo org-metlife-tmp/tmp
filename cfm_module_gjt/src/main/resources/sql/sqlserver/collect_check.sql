@@ -28,6 +28,7 @@ SELECT
 	cei.collect_amount  AS payment_amount,
 	cei.collect_status,
 	cei.create_on,
+	cei.create_on AS apply_on,
 	cei.update_on,
 	cei.percentage,
 	cei.persist_version,
@@ -89,9 +90,13 @@ FROM
 where is_checked = 0
 	and direction = 1
 	and acc_no = #para(map.pay_account_no)
-	and opp_acc_no = #para(map.recv_account_no)
+	#if(1 == map.recv_validate  || "1".equals(map.recv_validate))
+		and opp_acc_no = #para(map.recv_account_no)
+    #end
 	and amount = #para(map.collect_amount)
-	and convert(varchar,trans_date)+' '+convert(varchar,trans_time) >= #para(map.create_on)
+	#if(1 == map.date_validate  || "1".equals(map.date_validate))
+	   and DATEDIFF(day,#para(map.create_on),trans_date) >= 0
+    #end
 UNION ALL  
 SELECT
 	id,
@@ -109,9 +114,13 @@ FROM
 where is_checked = 0
 	and direction = 2
 	and acc_no = #para(map.recv_account_no)
-	and opp_acc_no = #para(map.pay_account_no)
+	#if(1 == map.recv_validate  || "1".equals(map.recv_validate))
+	   and opp_acc_no = #para(map.pay_account_no)
+    #end	
 	and amount = #para(map.collect_amount)
-	and convert(varchar,trans_date)+' '+convert(varchar,trans_time) >= #para(map.create_on)
+	#if(1 == map.date_validate  || "1".equals(map.date_validate))
+	   and DATEDIFF(day,#para(map.create_on),trans_date) >= 0
+    #end
 #end
 
 

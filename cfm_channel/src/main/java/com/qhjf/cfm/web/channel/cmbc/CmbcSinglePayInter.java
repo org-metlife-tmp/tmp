@@ -35,7 +35,9 @@ public class CmbcSinglePayInter  implements ISingleResultChannelInter{
 
         //摘要处理
 		String summary = CommKit.isNullOrEmpty(record.getStr("summary")) ? "cfm" : record.getStr("summary");
-		summary = ChannelStringUtil.getCmbFixLenStr(StringKit.filterSpecialChar(summary),62);
+		//注：应客户要求，摘要最多上送字数调整为：少上送6个汉字（招行会在中文两边加1个字符）
+		//后台存储中，如出现中文字符和西文字符交错，在每段中文字符前后会添加转义字符，每一段中文前后加两个字符
+		summary = ChannelStringUtil.getCmbFixLenStr(StringKit.filterSpecialChar(summary), 50);
 		detailMap1.put("NUSAGE",summary);
 		//指令码放到招行接口接口的BUSNAR字段，做自动核对用，同交易信息中的BUSNAR比对
 		detailMap1.put("BUSNAR", record.getStr("instruct_code"));

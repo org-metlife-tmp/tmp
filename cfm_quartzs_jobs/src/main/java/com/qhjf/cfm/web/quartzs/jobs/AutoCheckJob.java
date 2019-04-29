@@ -1,5 +1,6 @@
 package com.qhjf.cfm.web.quartzs.jobs;
 
+import com.alibaba.fastjson.util.TypeUtils;
 import com.jfinal.kit.Kv;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.IAtom;
@@ -17,8 +18,11 @@ import org.slf4j.LoggerFactory;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class AutoCheckJob implements Job {
 
@@ -118,6 +122,14 @@ public class AutoCheckJob implements Job {
             final Integer billId = record.getInt("id");
             if (trans == null || trans.size() != 2) {
                 continue;
+            }
+            //union all 得到两条数据,这里需要校验判断是否为一收,一付
+            Set<String>  set = new HashSet<String>();
+            for (int i = 0; i < trans.size(); i++) {
+            	set.add(TypeUtils.castToString(trans.get(i).get("direction")));
+			}
+            if(set.size() != 2) {
+            	continue;
             }
             boolean flag = Db.tx(new IAtom() {
                 public boolean run() throws SQLException {

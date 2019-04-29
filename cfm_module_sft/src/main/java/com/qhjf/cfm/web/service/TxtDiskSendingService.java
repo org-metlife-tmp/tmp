@@ -232,7 +232,7 @@ public class TxtDiskSendingService {
      * @param version
      * @return
      */
-	public String getFileName(Integer document_moudle, Integer document_type, String version) {
+	public String getFileName(Integer document_moudle, Integer document_type, String version, String channel_code) {
 		String fileName = "";
 		//广银联/通联文件名称格式
 		StringBuffer  sb = new  StringBuffer();
@@ -242,27 +242,23 @@ public class TxtDiskSendingService {
 		String sfFlag = this.getSfFlag(document_type);	
 		//提交日期
 		String time = DateKit.toStr(new Date(), DateKit.datePattern).replaceAll("-", "");
-		if( WebConstant.Channel.RP.getKey() == document_moudle
-				 ||WebConstant.Channel.GP.getKey() == document_moudle
-				 ||WebConstant.Channel.GS.getKey() == document_moudle
-				 ||WebConstant.Channel.TP.getKey() == document_moudle
-				){
+		if("B3,B1".contains(channel_code)){
 			//5位的序列号
-			final String seq = RedisSericalnoGenTool.genDiskFileSeqNo();
+			final String seq = RedisSericalnoGenTool.genDiskFileSeqNo(channel_code);
 			fileName = sb.append(shh).append("_").append(sfFlag).append(version).append(time)
 					             .append("_").append(seq).toString();
 			logger.info("=========生成盘片的文件名==="+fileName);			
-		}else if(WebConstant.Channel.GX.getKey() == document_moudle) {
+		}else if("54".equalsIgnoreCase(channel_code)) {
 			//广银联信用卡
 			//3位的序列号
 			final String seq = RedisSericalnoGenTool.genThreeDiskFileSeqNo();
 			fileName = sb.append(shh).append("_").append(sfFlag).append(version).append(time)
 		             .append("_").append("54").append(seq).toString();
             logger.info("=========生成盘片的文件名==="+fileName);
-		}else{
+		}else if("U9".equalsIgnoreCase(channel_code)){
 			// 建行   CCB_F_**********_++++++++.TXT
 			fileName = "CCB_"+ this.getSfFlag(document_type) + "_U9" + 
-			            RedisSericalnoGenTool.genCCBCDiskFileSeqNo() + "_" + 
+			            RedisSericalnoGenTool.genCCBCDiskFileSeqNo(channel_code) + "_" + 
 					    DateKit.toStr(new Date(), DateKit.datePattern).replaceAll("-", "");
 			logger.info("=========生成盘片的文件名==="+fileName);
 		}		
@@ -274,9 +270,10 @@ public class TxtDiskSendingService {
      * @param document_moudle
      * @param document_type
      * @param version
+	 * @param channel_code 
      * @return
      */
-	public String getSFileName(Integer document_moudle, Integer document_type, String version) {
+	public String getSFileName(Integer document_moudle, Integer document_type, String version, String channel_code, int i ,String uuid,String date) {
 		String fileName = "";
 		//广银联/通联文件名称格式
 		StringBuffer  sb = new  StringBuffer();
@@ -286,28 +283,40 @@ public class TxtDiskSendingService {
 		String sfFlag = this.getSfFlag(document_type);	
 		//提交日期
 		String time = DateKit.toStr(new Date(), DateKit.datePattern).replaceAll("-", "");
-		if(WebConstant.Channel.GP.getKey() == document_moudle
-				 ||WebConstant.Channel.GS.getKey() == document_moudle
-				 ||WebConstant.Channel.TP.getKey() == document_moudle
-				 ||WebConstant.Channel.GX.getKey() == document_moudle
-				){
+		if("B0,50,B2".contains(channel_code)){
 			//5位的序列号
-			final String seq = RedisSericalnoGenTool.genDiskFileSeqNo();
+			final String seq = RedisSericalnoGenTool.genDiskFileSeqNo(channel_code);
 			fileName = sb.append(shh).append("_").append(sfFlag).append(version).append(time)
 					             .append("_").append(seq).toString();
 			logger.info("=========生成盘片的文件名==="+fileName);			
-		}else if( WebConstant.Channel.RP.getKey() == document_moudle) {
+		}else if("U3,U6,U0,U5".contains(channel_code)) {
+			String banktype = "";
+			switch (channel_code) {
+			case "U3":
+				banktype = "102";
+				break;
+			case "U6":
+				banktype = "103";
+				break;
+			case "U0":
+				banktype = "104";
+				break;
+			case "U5":
+				banktype = "302";
+				break;
+			default:
+				break;
+			}
 			//融汇通
-			//8位的序列号
-			final String seq = RedisSericalnoGenTool.genCCBCDiskFileSeqNo();
+			//5位的序列号
+			final String seq = RedisSericalnoGenTool.genDiskFileSeqNo(channel_code);
 			fileName = sb.append("FINGARD").append("_").append(sfFlag).append(version).append(time)
-		             .append("_").append(seq).toString();
+		             .append("_").append(banktype).append(seq).toString();
             logger.info("=========生成盘片的文件名==="+fileName);
-		}else{
+		}else if("T9".equalsIgnoreCase(channel_code)){
 			// 建行   CCB_K_**********_++++++++.TXT
-			fileName = "CCB_K"+ "_T9" + 
-			            RedisSericalnoGenTool.genCCBCDiskFileSeqNo() + "_" + 
-					    DateKit.toStr(new Date(), DateKit.datePattern).replaceAll("-", "");
+			fileName = "CCB_K"+ "_T9" + uuid+ "_" + 
+					date+"_" + i;
 			logger.info("=========生成盘片的文件名==="+fileName);
 		}		
 		return fileName + ".TXT" ;

@@ -1,10 +1,12 @@
 package com.qhjf.cfm.web.controller;
 
+import com.jfinal.ext.kit.DateKit;
 import com.jfinal.log.Log;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Page;
 import com.jfinal.plugin.activerecord.Record;
 import com.qhjf.cfm.exceptions.ReqDataException;
+import com.qhjf.cfm.utils.RedisSericalnoGenTool;
 import com.qhjf.cfm.web.UserInfo;
 import com.qhjf.cfm.web.constant.WebConstant;
 import com.qhjf.cfm.web.plugins.jwt.Auth;
@@ -14,7 +16,10 @@ import com.qhjf.cfm.web.service.RecvDiskSendingService;
 import com.qhjf.cfm.web.service.RecvTxtDiskSendingService;
 import com.qhjf.cfm.web.service.TxtDiskSendingService;
 
+import java.util.Date;
 import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
 
 
 /**
@@ -49,8 +54,13 @@ public class RecvDiskSendingController extends CFMBaseController {
      */
     public  void  sendbank() throws ReqDataException {
     	Record record = getRecordByParamsStrong();
-    	service.sendbank(record);
-		renderOk(null);
+    	UserInfo userInfo = getUserInfo();
+    	try {
+    		service.sendbank(record, userInfo);
+    		renderOk(null);
+		} catch (ReqDataException e) {
+			renderFail(e);
+		}
     }
    
     
@@ -72,6 +82,8 @@ public class RecvDiskSendingController extends CFMBaseController {
     		Record record = getParamsToRecordStrong();
     		UserInfo userInfo = getUserInfo();
     		Long pay_master_id = record.getLong("recv_master_id"); //主批次id
+    		Record recv_batch_total_master = Db.findById("recv_batch_total_master", "id", pay_master_id);
+    		String master_batchno = recv_batch_total_master.getStr("master_batchno");
     		Long pay_id = record.getLong("recv_id"); //子批次id
     		//通道编码
         	String channel_code = record.getStr("channel_code");
@@ -101,10 +113,29 @@ public class RecvDiskSendingController extends CFMBaseController {
             	logger.info("========已经是多次下载");
             	is_download = true ;
             }
-        	//
+        	
+                       
         	logger.info("=========网盘是TXT格式的文件");
         	if(!is_download){
-        		String fileName = txtservice.getSFileName(document_moudle,document_type,document_version);
+        		
+        		//查表确定uuid 和 文件名后缀_i  CCB_K_T900000330_20190218_1
+                String uuid = null  ;
+                int i = 1  ; 
+                String date = null  ;
+                if("T9".equalsIgnoreCase(channel_code)) {
+                	Record maxFile = Db.findFirst(Db.getSql("recv_disk_downloading.findMaxName"), master_batchno);
+                	if(null == maxFile || null == maxFile.get("maxname") || StringUtils.isBlank(maxFile.getStr("maxname"))) {
+                		uuid = RedisSericalnoGenTool.genCCBCDiskFileSeqNo(channel_code);
+                		date = DateKit.toStr(new Date(), DateKit.datePattern).replaceAll("-", "");
+                	}else {
+                		String[] names = maxFile.getStr("maxname").split("_", -1);
+                		uuid = names[2].replace("T9", "");
+                		i = Integer.valueOf(names[4].split("\\.", -1)[0])+1 ;
+                		date = names[3];
+                	}
+                }
+        		
+        		String fileName = txtservice.getSFileName(document_moudle,document_type,document_version,channel_code,i,uuid,date);
         		String diskDownLoad = recvTxtDiskSendingService.diskDownLoadNewThread(pay_master_id,pay_id,document_moudle,fileName,document_type,configs_tail);
         		render(new ByteArrayRender(fileName,diskDownLoad.getBytes("GBK")));
         	}else{

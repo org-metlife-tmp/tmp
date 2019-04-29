@@ -132,7 +132,7 @@
 		success_amount = 0,
 		fail_num = total_num,
 		fail_amount = total_amount,
-		service_status = 6
+		service_status = 5
 	where id = ?
 #end
 

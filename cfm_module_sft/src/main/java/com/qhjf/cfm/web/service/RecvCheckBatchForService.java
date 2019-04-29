@@ -107,8 +107,20 @@ public class RecvCheckBatchForService {
 		OaDataDoubtfulCache oaDataDoubtfulCache = new OaDataDoubtfulCache();
 		final Record main_record = new Record(); // 主批次对象
 		final Record channel_setting = Db.findById("channel_setting", "id", channel_id);
-		Integer interactive_mode = channel_setting.getInt("interactive_mode");
+		final Integer interactive_mode = channel_setting.getInt("interactive_mode");
 		try {
+			// 首期  :  biz_Type : IP  ,  续期 : biz_Type : MP ,PP ,RP ,TP
+			if(StringUtils.isNotBlank(TypeUtils.castToString(record.get("biz_type")))) {
+				if(WebConstant.Sft_BizType.SQ.getKey() ==  TypeUtils.castToInt(record.get("biz_type"))) {
+					record.set("biz_type", new String[]{
+							"IP"
+					});
+				}else {
+					record.set("biz_type", new String[]{
+							"MP" ,"PP" ,"RP" ,"TP"
+					});
+				}
+			}
 			final Record user_record = Db.findById("user_info", "usr_id", userInfo.getUsr_id());
 			if (null == user_record) {
 				throw new ReqDataException("当前登录人未在用户信息表内配置");
@@ -186,12 +198,16 @@ public class RecvCheckBatchForService {
 						   error_message.set("error_message", "请选择至少一条交易数据进行组批");
 						   return false ;
 					   }
-					// 封装 recv_batch_total 和 recv_batch_detail
-					Integer detail_id = channel_setting.getInt("document_moudle");
-			    	logger.info("============报盘模板详情Id==="+detail_id);
-			    	Record configs_tail = Db.findById("document_detail_config", "id", detail_id);
-			    	int document_moudle = Integer.valueOf(configs_tail.getStr("document_moudle")) ;
 	
+					 Integer document_moudle = null;
+					  if(interactive_mode == 1) {
+					    	logger.info("=========报盘模式");
+					    	Integer detail_id = channel_setting.getInt("document_moudle");
+					    	logger.info("============报盘模板详情Id==="+detail_id);
+					    	Record configs_tail = Db.findById("document_detail_config", "id", detail_id);
+					    	document_moudle = Integer.valueOf(configs_tail.getStr("document_moudle")) ;
+					  }
+					   
 					BigDecimal limit = channel_setting.get("single_file_limit") == null ? new BigDecimal(ids.size())
 							: new BigDecimal(channel_setting.getInt("single_file_limit"));
 					BigDecimal num = new BigDecimal(ids.size()).divide(limit, 0, BigDecimal.ROUND_UP);
@@ -288,7 +304,7 @@ public class RecvCheckBatchForService {
 									.set("pay_code", rec.get("pay_code"))
 									.set("master_batchno", main_record.get("master_batchno"))
 									.set("child_batchno", recv_batch_total.get("child_batchno"));
-							if (WebConstant.Channel.JP.getKey() == document_moudle) {
+							if (null != document_moudle && WebConstant.Channel.JP.getKey() == document_moudle) {
 								recv_batch_detail.set("package_seq", i + 1);
 							} else {
 								recv_batch_detail.set("package_seq", txtDiskSendingService.getCode(i + 1, 6));
@@ -341,10 +357,13 @@ public class RecvCheckBatchForService {
 	 * 核对组批撤回
 	 * 
 	 * @param record
+	 * @param userInfo 
 	 * @return
 	 * @throws ReqDataException
 	 */
-	public void revokeToLaOrEbs(Record record) throws ReqDataException {
+	public void revokeToLaOrEbs(Record record, UserInfo userInfo) throws ReqDataException {
+		Long usr_id = userInfo.getUsr_id();
+		final Record user_record = Db.findById("user_info", "usr_id", usr_id);
 		final Integer id = TypeUtils.castToInt(record.get("id"));
 		final Integer persist_version = TypeUtils.castToInt(record.get("persist_version"));
 		final String feed_back = record.getStr("feed_back");
@@ -363,7 +382,8 @@ public class RecvCheckBatchForService {
 			public boolean run() throws SQLException {
 				boolean update = CommonService.update("recv_legal_data",
 						new Record().set("status", WebConstant.SftLegalData.REVOKE.getKey())
-								.set("process_msg", feed_back).set("persist_version", persist_version + 1),
+								.set("process_msg", feed_back).set("persist_version", persist_version + 1)
+								.set("op_date", new Date()).set("op_user_name", user_record.get("name")),
 						new Record().set("id", id).set("persist_version", persist_version));
 				logger.info("====撤回更新recv_legal_data====" + update);
 				if (update) {

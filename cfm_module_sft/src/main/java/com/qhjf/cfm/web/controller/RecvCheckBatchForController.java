@@ -52,7 +52,7 @@ public class RecvCheckBatchForController extends CFMBaseController{
 		logger.info("============撤回至LA");
 		Record record = getRecordByParamsStrong();
         try {
-        	service.revokeToLaOrEbs(record);	
+        	service.revokeToLaOrEbs(record,getUserInfo());	
         	renderOk(null);
 		} catch (BusinessException e) {
 			logger.error("核对组批撤回失败");

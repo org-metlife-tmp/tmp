@@ -1,5 +1,6 @@
 package com.qhjf.cfm.web.queue;
 
+import com.alibaba.fastjson.util.TypeUtils;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
 import com.qhjf.cfm.web.constant.WebConstant;
@@ -46,6 +47,7 @@ public class DiskDownloadingQueue implements  Runnable {
 		List<Record> find = Db.find(Db.getSql("disk_downloading.findTotalByMainBatchNo"),master_batchno);
 		Integer detail_id = channel.getInt("document_moudle"); //报盘模板
     	Integer pay_attr = channel.getInt("pay_attr");  //收付属性 0--收，1--付
+    	String channel_code = TypeUtils.castToString(channel.get("channel_code"));
     	Integer document_type = pay_attr == 0 ? WebConstant.DocumentType.SB.getKey() : WebConstant.DocumentType.FB.getKey();
     	log.info("============报盘模板详情Id==="+detail_id);
     	Record configs_tail = Db.findById("document_detail_config", "id", detail_id);
@@ -60,7 +62,7 @@ public class DiskDownloadingQueue implements  Runnable {
 		if(null != find  && find.size()> 0){
 			for (Record record : find) {				
 	        		log.info("=========网盘是TXT格式的文件");
-	        		String fileName = txtservice.getFileName(document_moudle,document_type,document_version);
+	        		String fileName = txtservice.getFileName(document_moudle,document_type,document_version,channel_code);
 	        		try {
 						txtservice.diskDownLoadNewThread(main_record.getLong("id"),record.getLong("id"),document_moudle,fileName,document_type,configs_tail);
 					} catch (Exception e) {

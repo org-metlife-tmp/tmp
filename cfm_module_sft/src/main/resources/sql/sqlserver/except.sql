@@ -182,3 +182,27 @@ WHERE
 	and inst.step_number = 1
 #end
 
+#sql("updIntrDetailForException")
+	update
+		detail
+	set
+		status = 4
+	from
+		batch_pay_instr_queue_detail detail,
+		batch_pay_instr_queue_total total
+	where detail.base_id=total.id
+		and total.bill_id = ?
+#end
+
+#sql("recvUpdIntrDetailForException")
+	update
+		detail
+	set
+		status = 4
+	from
+		batch_recv_instr_queue_detail detail,
+		batch_recv_instr_queue_total total
+	where detail.base_id=total.id
+		and total.bill_id = ?
+#end
+

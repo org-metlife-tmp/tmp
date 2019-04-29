@@ -175,11 +175,12 @@ SELECT
    cca.child_acc_bank_name,
    cca.child_acc_bank_cnaps_code,
    cca.child_acc_bank_prov,
-   cca.child_acc_bank_city 
+   cca.child_acc_bank_city,
+   topic.summary 
    FROM 
-   collect_main_account cma,collect_child_account cca 
-   WHERE 
-   cma.id = cca.collect_main_account_id and cma.collect_id = ?
+   collect_topic topic, collect_main_account cma,collect_child_account cca 
+   WHERE
+   topic.id = cma.collect_id and cma.id = cca.collect_main_account_id and cma.collect_id = ?
 #end
    
 #sql("findExecuteList")

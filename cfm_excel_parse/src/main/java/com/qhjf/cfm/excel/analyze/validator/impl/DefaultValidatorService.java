@@ -481,10 +481,10 @@ public class DefaultValidatorService implements IValidatorService {
 		anchor.setDx2(0);
 		anchor.setDy1(0);
 		anchor.setDy2(0);
-		anchor.setCol1(0);
-		anchor.setRow1(0);
-		anchor.setCol2(0);
-		anchor.setRow2(0);
+		anchor.setCol1(3);
+		anchor.setRow1(3);
+		anchor.setCol2(5);
+		anchor.setRow2(7);
 		Drawing<?> drawing = this.sheet.createDrawingPatriarch();
 		Comment comment = drawing.createCellComment(anchor);
 		RichTextString richText = this.workbookVersionAdapter.createRichTextString(text);

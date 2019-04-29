@@ -202,7 +202,7 @@ public class LoadSheetConfigUtil implements ILoadSheetConfigUtil {
 					continue;
 				}
 				//单元格配置
-				if ("[cellConfigs]".equals(kv[0].toLowerCase())) {
+				if ("[cellconfigs]".equals(kv[0].toLowerCase())) {
 					if (StringUtils.isBlank(kv[1])) {
 						continue;
 					}
