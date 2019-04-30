@@ -307,7 +307,8 @@
             </el-table>
             <div class="allData">
                 <div class="btn-left">
-                    <el-button type="warning" size="mini" @click="submit">提交</el-button>
+                    <el-button type="warning" size="mini" @click="submit"
+                               :disabled="selectId.length == 0">提交</el-button>
                 </div>
             </div>
         </section>
