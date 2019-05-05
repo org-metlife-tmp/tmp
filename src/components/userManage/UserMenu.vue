@@ -252,7 +252,7 @@
             </span>
                 <el-dialog :visible.sync="innerVisible"
                            width="50%" title="添加用户"
-                           append-to-body top="76px"
+                           append-to-body top="100px"
                            :close-on-click-modal="false">
                     <el-table :data="selectUserList"
                               size="mini">

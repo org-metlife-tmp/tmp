@@ -1,41 +1,6 @@
 <style scoped lang="less" type="text/less">
     #historyData {
-        width: 100%;
-        height: 100%;
-        box-sizing: border-box;
-        position: relative;
-        .modeUpload{
-            position: absolute;
-            width: 100%;
-            top: 200px;
-        }
-        .title-text{
-            font-size: 14px;
-            float: left;
-            width: 200px;
-            text-align: right;
-            padding-right: 15px;
-            line-height: 40px;
-        }
-        .btnList{
-            position: absolute;
-            top: 300px;
-            right: 55px;
-        }
-        .el-input-group {
-            width: 68%;
-            float: left;
-        }
-        .dataBox{
-            position: absolute;
-            top: 140px;
-            line-height: 40px;
-            height: 40px;
-        }
-        .title-content{
-            float: left;
-        }
-
+        /*错误信息*/
         .errorTip{
             width: 100%;
             display: inline-block;
@@ -50,6 +15,42 @@
             }
         }
 
+        /*上传列*/
+        .modeUpload{
+            position: absolute;
+            width: 100%;
+            top: 220px;
+        }
+        /*标签文字*/
+        .title-text{
+            font-size: 14px;
+            float: left;
+            width: 200px;
+            text-align: right;
+            padding-right: 15px;
+            line-height: 40px;
+        }
+        /*按钮列*/
+        .btnList{
+            position: absolute;
+            top: 320px;
+            right: 55px;
+        }
+        .el-input-group {
+            width: 68%;
+            float: left;
+        }
+        /*导入方式*/
+        .dataBox{
+            position: absolute;
+            top: 160px;
+            line-height: 40px;
+            height: 40px;
+
+            .title-content{
+                float: left;
+            }
+        }
     }
 </style>
 <style lang="less">
@@ -62,41 +63,47 @@
 
 
 <template>
-    <div id="historyData">
-        <div class="dataBox" v-show="!isPending">
-            <div class="title-text">导入范围</div>
-            <div class="title-content">截止到{{limitDate}}，<span style="color:red">只能导入非直连账户，导入模式为覆盖。</span></div>
-        </div>
-        <div class="errorTip" v-show="errorTipShow">
-            <div class="error-name">文档内容不符合要求</div>
-            <a class="downLoad" href="javascript:;"
-               @click = "downLoadExcel"
-               v-text=" queryUrl + 'normal/excel/downExcel?object_id='+currentUpload.download_object_id"
-            ></a>
-        </div>
-        <div class="modeUpload">
-            <div class="title-text" v-show="isPending">当日余额数据文件上传</div>
-            <div class="title-text" v-show="!isPending">历史余额数据文件上传</div>
-            <el-input v-model="currentUpload.original_file_name" readonly>
-                <template slot="append">
-                    <el-upload
-                            class="upload-demo"
-                            :action="queryUrl + 'normal/excel/upload'"
-                            :headers="uploadHeaders"
-                            multiple
-                            accept=".xlsx,.xls"
-                            :on-success="uploadSuccess">
-                        <span class="">浏览</span>
-                    </el-upload>
-                </template>
-            </el-input>
-        </div>
-        <div class="btnList">
-            <el-button type="warning" size="small" plain @click="templateDownLoad">模板下载</el-button>
-            <el-button type="warning" size="small" plain>取 消</el-button>
-            <el-button type="warning" size="small" @click="subConfirm">确 定</el-button>
-        </div>
-    </div>
+    <el-container id="historyData">
+        <el-header>
+        </el-header>
+        <el-main>
+            <div class="dataBox" v-show="!isPending">
+                <div class="title-text">导入范围</div>
+                <div class="title-content">截止到{{limitDate}}，<span style="color:red">只能导入非直连账户，导入模式为覆盖。</span></div>
+            </div>
+            <div class="errorTip" v-show="errorTipShow">
+                <div class="error-name">文档内容不符合要求</div>
+                <a class="downLoad" href="javascript:;"
+                   @click = "downLoadExcel"
+                   v-text=" queryUrl + 'normal/excel/downExcel?object_id='+currentUpload.download_object_id"
+                ></a>
+            </div>
+            <div class="modeUpload">
+                <div class="title-text" v-show="isPending">当日余额数据文件上传</div>
+                <div class="title-text" v-show="!isPending">历史余额数据文件上传</div>
+                <el-input v-model="currentUpload.original_file_name" readonly>
+                    <template slot="append">
+                        <el-upload
+                                class="upload-demo"
+                                :action="queryUrl + 'normal/excel/upload'"
+                                :headers="uploadHeaders"
+                                multiple
+                                accept=".xlsx,.xls"
+                                :on-success="uploadSuccess">
+                            <span class="">浏览</span>
+                        </el-upload>
+                    </template>
+                </el-input>
+            </div>
+            <div class="btnList">
+                <el-button type="warning" size="small" plain @click="templateDownLoad">模板下载</el-button>
+                <el-button type="warning" size="small" plain>取 消</el-button>
+                <el-button type="warning" size="small" @click="subConfirm">确 定</el-button>
+            </div>
+        </el-main>
+        <el-footer>
+        </el-footer>
+    </el-container>
 </template>
 
 <script>

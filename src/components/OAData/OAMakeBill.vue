@@ -2,8 +2,9 @@
     #OAMakeBill {
         min-width: 980px;
         width: 80%;
-        height: 100%;
+        height: 554px;
         margin: 0 auto;
+        padding-top: 16px;
 
         /*标题*/
         header button {

@@ -314,7 +314,7 @@
                        class="comDialog"
                        width="810px" title="请选择公司"
                        :close-on-click-modal="false"
-                       top="56px">
+                       top="100px">
                 <h1 slot="title" class="dialog-title">请选择公司</h1>
                 <div class="dialog-content">
                     <el-tree :data="orgTreeList"
@@ -339,7 +339,7 @@
             <el-dialog :visible.sync="bankDialogVisible"
                        width="600px" title="请选择账户性质"
                        :close-on-click-modal="false"
-                       top="56px">
+                       top="100px">
                 <h1 slot="title" class="dialog-title">请选择银行</h1>
                 <div class="dialog-content">
                     <el-checkbox :indeterminate="insureIndeter" v-model="insureAll"

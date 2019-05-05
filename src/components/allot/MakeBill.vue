@@ -2,13 +2,13 @@
     #makeBill {
         min-width: 980px;
         width: 80%;
-        height: 100%;
+        height: 554px;
         margin: 0 auto;
+        padding-top: 16px;
 
         /*标题*/
         header button {
             float: right;
-            margin-top: -40px;
         }
 
         /*内容*/
@@ -189,24 +189,6 @@
         }
 
         /*设置弹出框公共样式*/
-        .el-dialog {
-            text-align: left;
-            margin-bottom: 10px;
-            /*设置标题*/
-            .dialog-title {
-                margin-bottom: 0;
-            }
-            .el-dialog__body {
-                padding-top: 10px;
-                padding-bottom: 0;
-            }
-            .el-form {
-                width: 94%;
-                .el-select {
-                    width: 100%;
-                }
-            }
-        }
         .el-radio-group {
             .el-radio {
                 display: block;
@@ -231,22 +213,12 @@
         }
     }
 </style>
-<style lang="less" type="text/less">
-    #makeBill {
-        .el-dialog__wrapper {
-            .el-dialog__body {
-                max-height: 400px;
-                overflow-y: auto;
-            }
-        }
-    }
-</style>
+
 <template>
     <div id="makeBill">
         <!--顶部标题-按钮-->
         <header>
             <h1>内部调拨-制单</h1>
-            <!-- <el-button type="warning" size="small">打印</el-button> -->
         </header>
         <!--表单部分-->
         <section>
@@ -389,7 +361,7 @@
         <!--提交弹框-->
         <el-dialog :visible.sync="innerVisible"
                    width="50%" title="提交审批流程"
-                   top="76px"
+                   top="100px"
                    :close-on-click-modal="false">
             <el-radio-group v-model="selectWorkflow">
                 <el-radio v-for="workflow in workflows"

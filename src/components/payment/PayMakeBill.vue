@@ -3,19 +3,15 @@
         position: relative;
         min-width: 980px;
         width: 80%;
-        height: 100%;
+        height: 554px;
         margin: 0 auto;
+        padding-top: 16px;
 
-        /*标题*/
-        header button {
-            float: right;
-            margin-top: -40px;
-        }
 
         /*顶部按钮*/
         .button-list-left {
             position: absolute;
-            top: 8px;
+            top: 18px;
         }
 
         /*内容*/
@@ -270,7 +266,6 @@
         <!--顶部标题-按钮-->
         <header>
             <h1>资金支付-制单</h1>
-            <!--<el-button type="warning" size="small">打印</el-button>-->
         </header>
         <!--表单部分-->
         <section>
@@ -476,7 +471,7 @@
         <!--提交弹框-->
         <el-dialog :visible.sync="innerVisible"
                    width="50%" title="提交审批流程"
-                   top="76px"
+                   top="100px"
                    :close-on-click-modal="false">
             <el-radio-group v-model="selectWorkflow">
                 <el-radio v-for="workflow in workflows"

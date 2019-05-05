@@ -2,8 +2,9 @@
     #receiveMakeBill{
         min-width: 980px;
         width: 80%;
-        height: 100%;
+        height: 554px;
         margin: 0 auto;
+        padding-top: 16px;
 
         /*标题*/
         header button {
@@ -230,7 +231,6 @@
         <!--顶部标题-按钮-->
         <header>
             <h1>资金收款-制单</h1>
-            <!-- <el-button type="warning" size="small">打印</el-button>-->
         </header>
         <!--表单部分-->
         <section>

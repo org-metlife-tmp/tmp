@@ -280,7 +280,7 @@
                        width="810px" title=""
                        :close-on-click-modal="false"
                        @close="closeLookDialog"
-                       top="56px">
+                       top="100px">
                 <h1 slot="title" class="dialog-title">{{searchDetailData.batchno}}</h1>
                 <section class="dialog-section">
                     <div class="search-setion">
@@ -367,7 +367,7 @@
             <!--支付作废弹出框-->
             <el-dialog title="作废"
                        :visible.sync="payVisible"
-                       width="600px" top="76px"
+                       width="600px" top="100px"
                        :close-on-click-modal="false">
                 <div style="margin-bottom:16px">请输入作废原因：</div>
                 <el-input

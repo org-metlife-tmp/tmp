@@ -103,7 +103,6 @@ import MoreWide from '@/components/wideUnionpay/MoreWide'
 import FundPoolAccSet from '@/components/fundAllocation/FundPoolAccSet'
 import AutoAllocationSet from '@/components/fundAllocation/AutoAllocationSet'
 import AutoAllocationManage from '@/components/fundAllocation/AutoAllocationManage'
-import AllocationDealCheck from '@/components/fundAllocation/AllocationDealCheck'
 import AllocationChart from '@/components/fundAllocation/AllocationChart'
 import AutoAllocationView from '@/components/fundAllocation/AutoAllocationView'
 import AutoAllocationMoreBills from '@/components/fundAllocation/AutoAllocationMoreBills'
@@ -317,8 +316,6 @@ const router = new Router({
                         {path: '/payment/deal-check', name: 'DealCheck', component: DealCheck, meta: {requireAuth: true}},
                         //调拨通交易核对
                         {path: '/allot/allot-deal-check', name: 'AllotDealCheck', component: AllotDealCheck, meta: {requireAuth: true}},
-                        //资金下拨交易核对
-                        {path: '/allocation/allocation-deal-check', name: 'AllocationDealCheck', component: AllocationDealCheck, meta: {requireAuth: true}},
                         //OA数据
                         {path: '/OA-data/head-office-pay', name: 'HeadOfficePay', component: HeadOfficePay, meta: {requireAuth: true}},
                         {path: '/OA-data/filiale-payment', name: 'FilialePayment', component: FilialePayment, meta: {requireAuth: true}},

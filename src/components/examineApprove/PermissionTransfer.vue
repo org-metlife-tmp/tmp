@@ -94,7 +94,7 @@
             <el-dialog :visible.sync="dialogVisible"
                        width="800px" title="新增被授权人"
                        :close-on-click-modal="false"
-                       top="56px">
+                       top="100px">
                 <h1 slot="title" class="dialog-title">新增被授权人</h1>
                 <el-form :model="dialogData" size="small"
                          class="addDialog"

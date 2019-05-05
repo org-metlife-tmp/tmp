@@ -58,6 +58,7 @@
 
         .el-table .el-button {
             padding: 3px 3px;
+
             + .el-button {
                 margin-left: 4px;
             }

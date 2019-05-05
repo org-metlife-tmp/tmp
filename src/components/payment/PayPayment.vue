@@ -246,7 +246,7 @@
             <!--查看弹出框-->
             <el-dialog title="支付信息"
                        :visible.sync="dialogVisible"
-                       width="900px" top="76px"
+                       width="900px" top="100px"
                        :close-on-click-modal="false">
                 <div class="bill-status">
                     <div class="i-status">

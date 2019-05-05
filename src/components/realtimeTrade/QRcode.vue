@@ -198,7 +198,7 @@
             <!--详情弹出框-->
             <el-dialog title="详情"
                        :visible.sync="dialogVisible"
-                       width="800px" top="76px"
+                       width="800px" top="100px"
                        :close-on-click-modal="false">
                 <el-form :model="dialogData" size="mini">
                     <el-row>

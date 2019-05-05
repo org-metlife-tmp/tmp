@@ -272,7 +272,7 @@
             <!--查看弹出框-->
             <el-dialog title="支付单信息"
                        :visible.sync="dialogVisible"
-                       width="900px" top="76px"
+                       width="900px" top="100px"
                        :close-on-click-modal="false">
                 <div class="switchover">
                     <el-button-group>

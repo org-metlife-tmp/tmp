@@ -352,7 +352,7 @@
             <el-dialog :visible.sync="dialogVisible"
                        class="tableDialog"
                        width="860px" title="添加被下拨账户"
-                       top="76px" :close-on-click-modal="false">
+                       top="100px" :close-on-click-modal="false">
                 <el-form :inline="true" :model="searchData" size="mini">
                     <el-row>
                         <el-col :span="6">
@@ -448,7 +448,7 @@
                 </span>
             </el-dialog>
             <el-dialog :visible.sync="commitVisible"
-                       width="50%" title="提交审批流程" top="76px"
+                       width="50%" title="提交审批流程" top="100px"
                        :close-on-click-modal="false" class="workFlow">
                 <h1 slot="title" class="dialog-title">提交审批流程</h1>
                 <el-radio-group v-model="selectWorkflow">

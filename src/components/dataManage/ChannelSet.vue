@@ -90,7 +90,7 @@
             <!--新增弹出框-->
             <el-dialog title="新增"
                        :visible.sync="dialogVisible"
-                       width="800px" top="76px"
+                       width="800px" top="100px"
                        :close-on-click-modal="false">
                 <el-form :model="dialogData" size="small"
                          :label-width="formLabelWidth"

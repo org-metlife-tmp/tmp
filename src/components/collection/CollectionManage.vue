@@ -261,7 +261,7 @@
         </el-main>
         <el-footer>
             <el-dialog :visible.sync="dialogVisible"
-                       width="1000px" top="76px"
+                       width="1000px" top="100px"
                        title="日志"
                        :close-on-click-modal="false">
                 <div class="dialog-title">

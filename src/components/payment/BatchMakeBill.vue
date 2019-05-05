@@ -3,19 +3,14 @@
         position: relative;
         min-width: 980px;
         width: 80%;
-        height: 100%;
+        height: 554px;
         margin: 0 auto;
-
-        /*标题*/
-        header button {
-            float: right;
-            margin-top: -40px;
-        }
+        padding-top: 16px;
 
         /*顶部按钮*/
         .button-list-left {
             position: absolute;
-            top: 8px;
+            top: 18px;
         }
 
         /*内容*/
@@ -470,7 +465,6 @@
         </div>
         <header>
             <h1>批量支付-制单</h1>
-            <!-- <el-button type="warning" size="small">打印</el-button>-->
         </header>
         <!--表单部分-->
         <section>
@@ -625,7 +619,7 @@
         <!--提交弹框-->
         <el-dialog :visible.sync="innerVisible"
                    width="50%" title="提交审批流程"
-                   top="76px"
+                   top="100px"
                    :close-on-click-modal="false">
             <el-radio-group v-model="selectWorkflow">
                 <el-radio v-for="workflow in workflows"
@@ -655,7 +649,7 @@
         <!--查看弹出框-->
         <el-dialog title="详细信息"
                    :visible.sync="listDialogVisible"
-                   width="900px" top="76px"
+                   width="900px" top="100px"
                    :close-on-click-modal="false">
             <div class="list-table">
                 <el-table :data="dialogList"

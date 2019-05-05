@@ -2,8 +2,10 @@
     #lotMakeBill{
         min-width: 980px;
         width: 80%;
-        height: 100%;
+        height: 554px;
         margin: 0 auto;
+        padding-top: 16px;
+
         .top-edit{
             position: relative;
             .tip-box{
@@ -31,7 +33,7 @@
                 }
             }
             .head-select2{
-                widows: 180px;
+                width: 180px;
                 position: absolute;
                 top: -38px;
                 left: 0;
@@ -520,12 +522,6 @@
                 }
             }
         }
-        .el-dialog__wrapper {
-            .el-dialog__body {
-                max-height: 440px;
-                overflow-y: auto;
-            }
-        }
         .el-radio-group {
             text-align: left;
             .el-radio {
@@ -581,7 +577,6 @@
                             :value="k">
                 </el-option>
             </el-select>
-            <!-- <el-button type="warning" size="small">打印</el-button> -->
         </div>
         <!--表单部分-->
         <section>

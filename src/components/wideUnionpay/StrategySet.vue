@@ -381,7 +381,7 @@
             <!--提交弹框-->
             <el-dialog :visible.sync="innerVisible"
                        width="50%" title="提交审批流程"
-                       top="76px"
+                       top="100px"
                        :close-on-click-modal="false">
                 <el-radio-group v-model="selectWorkflow">
                     <el-radio v-for="workflow in workflows"

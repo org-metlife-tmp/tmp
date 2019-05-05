@@ -1,37 +1,5 @@
 <style scoped lang="less" type="text/less">
     #headOfficePay {
-        width: 100%;
-        height: 100%;
-        box-sizing: border-box;
-        position: relative;
-
-        /*搜索区*/
-        .search-setion {
-            text-align: left;
-
-            /*时间控件*/
-            .el-date-editor {
-                width: 96%;
-            }
-        }
-
-        /*分隔栏*/
-        .split-bar {
-            width: 106%;
-            height: 6px;
-            margin-left: -20px;
-            background-color: #E7E7E7;
-            margin-bottom: 20px;
-        }
-
-        /*分页部分*/
-        .botton-pag {
-            position: absolute;
-            width: 100%;
-            height: 8%;
-            bottom: -6px;
-        }
-
         /*撤回样式*/
         .withdraw {
             width: 20px;
@@ -75,102 +43,83 @@
                 border-left: none;
             }
         }
-
-        //顶部按钮
-        .button-list-right {
-            position: absolute;
-            top: -60px;
-            right: -18px;
-        }
-    }
-</style>
-<style lang="less" type="text/less">
-    #headOfficePay {
-        .el-dialog__wrapper {
-            .el-dialog__body {
-                height: 480px;
-                overflow-y: scroll;
-            }
-        }
     }
 </style>
 
 <template>
-    <div id="headOfficePay">
-        <!-- 顶部按钮-->
-        <div class="button-list-right">
-            <el-button type="warning" size="mini" @click="exportFun">导出</el-button>
-        </div>
-        <!--搜索区-->
-        <div class="search-setion">
-            <el-form :inline="true" :model="searchData" size="mini">
-                <el-row>
-                    <el-col :span="5">
-                        <el-date-picker
-                                v-model="dateValue"
-                                type="daterange"
-                                range-separator="至"
-                                start-placeholder="开始日期"
-                                end-placeholder="结束日期"
-                                value-format="yyyy-MM-dd"
-                                size="mini" clearable
-                                unlink-panels
-                                :picker-options="pickerOptions"
-                                @change="">
-                        </el-date-picker>
-                    </el-col>
-                    <el-col :span="4">
-                        <el-form-item>
-                            <el-input v-model="searchData.bill_no" clearable
-                                      placeholder="请输入报销单申请号"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="4">
-                        <el-form-item>
-                            <el-input v-model="searchData.recv_account_query_key" clearable
-                                      placeholder="请输入收款方账户号或名称"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="4">
-                        <el-form-item>
-                            <el-input v-model="searchData.org_name" clearable placeholder="请输入申请单位"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="5">
-                        <el-form-item>
-                            <el-col :span="11">
-                                <el-input v-model="searchData.min" clearable placeholder="最小金额"></el-input>
-                            </el-col>
-                            <el-col class="line" :span="1" style="text-align:center">-</el-col>
-                            <el-col :span="11">
-                                <el-input v-model="searchData.max" clearable placeholder="最大金额"></el-input>
-                            </el-col>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="2">
-                        <el-form-item>
-                            <el-button type="primary" plain @click="queryData" size="mini">搜索</el-button>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="24">
-                        <el-form-item style="margin-bottom:0px">
-                            <el-checkbox-group v-model="searchData.service_status">
-                                <el-checkbox v-for="(name,k) in statusList"
-                                             :label="k" name="type" :key="k">
-                                    {{ name }}
-                                </el-checkbox>
-                            </el-checkbox-group>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-            </el-form>
-        </div>
-        <!--分隔栏-->
-        <div class="split-bar"></div>
-        <!--数据展示区-->
-        <section class="table-content">
+    <el-container id="headOfficePay">
+        <el-header>
+            <div class="button-list-right">
+                <el-button type="warning" size="mini" @click="exportFun">导出</el-button>
+            </div>
+            <div class="search-setion">
+                <el-form :inline="true" :model="searchData" size="mini">
+                    <el-row>
+                        <el-col :span="5">
+                            <el-date-picker
+                                    v-model="dateValue"
+                                    type="daterange"
+                                    range-separator="至"
+                                    start-placeholder="开始日期"
+                                    end-placeholder="结束日期"
+                                    value-format="yyyy-MM-dd"
+                                    size="mini" clearable
+                                    unlink-panels
+                                    :picker-options="pickerOptions"
+                                    @change="">
+                            </el-date-picker>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-input v-model="searchData.bill_no" clearable
+                                          placeholder="请输入报销单申请号"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-input v-model="searchData.recv_account_query_key" clearable
+                                          placeholder="请输入收款方账户号或名称"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-input v-model="searchData.org_name" clearable placeholder="请输入申请单位"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="5">
+                            <el-form-item>
+                                <el-col :span="11">
+                                    <el-input v-model="searchData.min" clearable placeholder="最小金额"></el-input>
+                                </el-col>
+                                <el-col class="line" :span="1" style="text-align:center">-</el-col>
+                                <el-col :span="11">
+                                    <el-input v-model="searchData.max" clearable placeholder="最大金额"></el-input>
+                                </el-col>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="2">
+                            <el-form-item>
+                                <el-button type="primary" plain @click="queryData" size="mini">搜索</el-button>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="24">
+                            <el-form-item style="margin-bottom:0px">
+                                <el-checkbox-group v-model="searchData.service_status">
+                                    <el-checkbox v-for="(name,k) in statusList"
+                                                 :label="k" name="type" :key="k">
+                                        {{ name }}
+                                    </el-checkbox>
+                                </el-checkbox-group>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                </el-form>
+            </div>
+            <div class="split-bar"></div>
+        </el-header>
+        <el-main>
             <el-table :data="tableList" border
-                      size="mini"
+                      size="mini" height="100%"
                       highlight-current-row>
                 <el-table-column prop="bill_no" label="报销单申请号" :show-overflow-tooltip="true"
                                  width="120"></el-table-column>
@@ -235,9 +184,8 @@
                     </template>
                 </el-table-column>
             </el-table>
-        </section>
-        <!--分页部分-->
-        <div class="botton-pag">
+        </el-main>
+        <el-footer>
             <el-pagination
                     background
                     layout="sizes, prev, pager, next, jumper"
@@ -249,77 +197,77 @@
                     @size-change="sizeChange"
                     :current-page="pagCurrent">
             </el-pagination>
-        </div>
-        <!--查看弹出框-->
-        <el-dialog title="总公司付款信息"
-                   :visible.sync="dialogVisible"
-                   width="900px" top="76px"
-                   :close-on-click-modal="false">
-            <div class="serial-number">
-                [编号:
-                <span v-text="dialogData.service_serial_number"></span>
-                ]
-            </div>
-            <ul class="dialog-talbe">
-                <li class="table-li-title">报销单申请号</li>
-                <li class="table-li-content" v-text="dialogData.bill_no"></li>
-                <li class="table-li-title">申请公司</li>
-                <li class="table-li-content" v-text="dialogData.org_name"></li>
+            <!--查看弹出框-->
+            <el-dialog title="总公司付款信息"
+                       :visible.sync="dialogVisible"
+                       width="900px" top="76px"
+                       :close-on-click-modal="false">
+                <div class="serial-number">
+                    [编号:
+                    <span v-text="dialogData.service_serial_number"></span>
+                    ]
+                </div>
+                <ul class="dialog-talbe">
+                    <li class="table-li-title">报销单申请号</li>
+                    <li class="table-li-content" v-text="dialogData.bill_no"></li>
+                    <li class="table-li-title">申请公司</li>
+                    <li class="table-li-content" v-text="dialogData.org_name"></li>
 
-                <li class="table-li-title">付款账户号</li>
-                <li class="table-li-content" v-text="dialogData.pay_account_no"></li>
-                <li class="table-li-title">付款账户名称</li>
-                <li class="table-li-content" v-text="dialogData.pay_account_name"></li>
+                    <li class="table-li-title">付款账户号</li>
+                    <li class="table-li-content" v-text="dialogData.pay_account_no"></li>
+                    <li class="table-li-title">付款账户名称</li>
+                    <li class="table-li-content" v-text="dialogData.pay_account_name"></li>
 
-                <li class="table-li-title">付款银行名称</li>
-                <li class="table-li-content" v-text="dialogData.pay_account_bank"></li>
-                <li class="table-li-title">CNAPS号</li>
-                <li class="table-li-content" v-text="dialogData.pay_bank_cnaps"></li>
+                    <li class="table-li-title">付款银行名称</li>
+                    <li class="table-li-content" v-text="dialogData.pay_account_bank"></li>
+                    <li class="table-li-title">CNAPS号</li>
+                    <li class="table-li-content" v-text="dialogData.pay_bank_cnaps"></li>
 
-                <li class="table-li-title">银行所在省</li>
-                <li class="table-li-content" v-text="dialogData.pay_bank_prov"></li>
-                <li class="table-li-title">银行所在市</li>
-                <li class="table-li-content" v-text="dialogData.pay_bank_city"></li>
+                    <li class="table-li-title">银行所在省</li>
+                    <li class="table-li-content" v-text="dialogData.pay_bank_prov"></li>
+                    <li class="table-li-title">银行所在市</li>
+                    <li class="table-li-content" v-text="dialogData.pay_bank_city"></li>
 
-                <li class="table-li-title">收款账户号</li>
-                <li class="table-li-content" v-text="dialogData.recv_account_no"></li>
-                <li class="table-li-title">收款账户名称</li>
-                <li class="table-li-content" v-text="dialogData.recv_account_name"></li>
+                    <li class="table-li-title">收款账户号</li>
+                    <li class="table-li-content" v-text="dialogData.recv_account_no"></li>
+                    <li class="table-li-title">收款账户名称</li>
+                    <li class="table-li-content" v-text="dialogData.recv_account_name"></li>
 
-                <li class="table-li-title">收款银行名称</li>
-                <li class="table-li-content" v-text="dialogData.recv_account_bank"></li>
-                <li class="table-li-title">CNAPS号</li>
-                <li class="table-li-content" v-text="dialogData.recv_bank_cnaps"></li>
+                    <li class="table-li-title">收款银行名称</li>
+                    <li class="table-li-content" v-text="dialogData.recv_account_bank"></li>
+                    <li class="table-li-title">CNAPS号</li>
+                    <li class="table-li-content" v-text="dialogData.recv_bank_cnaps"></li>
 
-                <li class="table-li-title">银行所在省</li>
-                <li class="table-li-content" v-text="dialogData.recv_bank_prov"></li>
-                <li class="table-li-title">银行所在市</li>
-                <li class="table-li-content" v-text="dialogData.recv_bank_city"></li>
+                    <li class="table-li-title">银行所在省</li>
+                    <li class="table-li-content" v-text="dialogData.recv_bank_prov"></li>
+                    <li class="table-li-title">银行所在市</li>
+                    <li class="table-li-content" v-text="dialogData.recv_bank_city"></li>
 
-                <li class="table-li-title">付款方式</li>
-                <li class="table-li-content" v-text="dialogData.pay_mode"></li>
-                <li class="table-li-title">付款金额</li>
-                <li class="table-li-content" style="color:#fd7d2f">￥{{ dialogData.payment_amount }}</li>
+                    <li class="table-li-title">付款方式</li>
+                    <li class="table-li-content" v-text="dialogData.pay_mode"></li>
+                    <li class="table-li-title">付款金额</li>
+                    <li class="table-li-content" style="color:#fd7d2f">￥{{ dialogData.payment_amount }}</li>
 
-                <li class="table-li-title">单据状态</li>
-                <li class="table-li-content" v-text="statusList[dialogData.service_status]"></li>
-                <li class="table-li-title"></li>
-                <li class="table-li-content"></li>
+                    <li class="table-li-title">单据状态</li>
+                    <li class="table-li-content" v-text="statusList[dialogData.service_status]"></li>
+                    <li class="table-li-title"></li>
+                    <li class="table-li-content"></li>
 
-                <li class="table-li-title">摘要</li>
-                <li class="table-li-content table-two-row" v-text="dialogData.payment_summary"></li>
+                    <li class="table-li-title">摘要</li>
+                    <li class="table-li-content table-two-row" v-text="dialogData.payment_summary"></li>
 
-                <li class="table-li-title" style="height:60px;line-height:60px">附件</li>
-                <li class="table-li-content table-two-row" style="height:60px;padding-top:6px;overflow-y:auto">
-                    <Upload :emptyFileList="emptyFileList"
-                            :fileMessage="fileMessage"
-                            :triggerFile="triggerFile"
-                            :isPending="false"></Upload>
-                </li>
-            </ul>
-            <BusinessTracking :businessParams="businessParams"></BusinessTracking>
-        </el-dialog>
-    </div>
+                    <li class="table-li-title" style="height:60px;line-height:60px">附件</li>
+                    <li class="table-li-content table-two-row" style="height:60px;padding-top:6px;overflow-y:auto">
+                        <Upload :emptyFileList="emptyFileList"
+                                :fileMessage="fileMessage"
+                                :triggerFile="triggerFile"
+                                :isPending="false"></Upload>
+                    </li>
+                </ul>
+                <BusinessTracking :businessParams="businessParams"></BusinessTracking>
+            </el-dialog>
+        </el-footer>
+    </el-container>
 </template>
 
 <script>

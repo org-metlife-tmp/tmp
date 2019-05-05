@@ -1,24 +1,5 @@
 <style scoped lang="less" type="text/less">
     #openAccountMessage {
-        width: 100%;
-        height: 100%;
-        box-sizing: border-box;
-        position: relative;
-
-        /*搜索区*/
-        .search-setion {
-            text-align: left;
-        }
-
-        /*分隔栏*/
-        .split-bar {
-            width: 106%;
-            height: 6px;
-            margin-left: -20px;
-            background-color: #E7E7E7;
-            margin-bottom: 20px;
-        }
-
         /*按钮样式*/
         .withdraw{
             width: 20px;
@@ -31,19 +12,6 @@
         /*按钮-撤回*/
         .withdraw{
             background-position: -48px 0;
-        }
-
-        /*数据展示区*/
-        .table-content {
-            height: 289px;
-        }
-
-        /*分页部分*/
-        .botton-pag {
-            position: absolute;
-            width: 100%;
-            height: 8%;
-            bottom: -6px;
         }
 
         /*详情弹出框区域分割样式*/
@@ -79,7 +47,7 @@
         }
     }
     .el-radio-group {
-        // margin-top: -16px;
+
         .el-radio {
             display: block;
             margin-left: 30px;
@@ -102,75 +70,64 @@
         padding: 0;
     }
 </style>
-<style lang="less" type="text/less">
-    #openAccountMessage {
-        .el-dialog__wrapper {
-            .el-dialog__body {
-                max-height: 400px;
-                overflow-y: auto;
-            }
-        }
-    }
-</style>
 
 <template>
-    <div id="openAccountMessage">
-        <!--搜索区-->
-        <div class="search-setion">
-            <el-form :inline="true" :model="searchData" size="mini">
-                <el-row>
-                    <el-col :span="7" v-if="!isPending">
-                        <el-form-item>
-                            <el-col :span="11">
-                                <el-date-picker type="date" placeholder="起始日期"
-                                                v-model="searchData.start_date"
-                                                value-format="yyyy-MM-dd"
-                                                style="width: 100%;"></el-date-picker>
-                            </el-col>
-                            <el-col class="line" :span="1" style="text-align:center">-</el-col>
-                            <el-col :span="11">
-                                <el-date-picker
-                                        v-model="searchData.end_date"
-                                        type="date"
-                                        placeholder="结束日期"
-                                        value-format="yyyy-MM-dd"
-                                        style="width: 100%;">
-                                </el-date-picker>
-                            </el-col>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="4">
-                        <el-form-item>
-                            <el-input v-model="searchData.query_key" clearable placeholder="请输入事由摘要关键字"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="2">
-                        <el-form-item>
-                            <!--<el-button type="primary" plain @click="" size="mini">清空</el-button>-->
-                            <el-button type="primary" plain @click="queryData" size="mini">搜索</el-button>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="24">
-                        <el-form-item style="margin-bottom:0px">
-                            <el-checkbox-group v-model="searchData.service_status" v-if="isPending">
-                                <el-checkbox label="12" name="type">待处理</el-checkbox>
-                                <el-checkbox label="1" name="type">已保存</el-checkbox>
-                                <el-checkbox label="5" name="type">审批拒绝</el-checkbox>
-                            </el-checkbox-group>
-                            <el-checkbox-group v-model="searchData.service_status" v-else>
-                                <el-checkbox label="2" name="type">已提交</el-checkbox>
-                                <el-checkbox label="3" name="type">审批中</el-checkbox>
-                                <el-checkbox label="4" name="type">审批通过</el-checkbox>
-                            </el-checkbox-group>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-            </el-form>
-        </div>
-        <!--分隔栏-->
-        <div class="split-bar"></div>
-        <!--数据展示区-->
-        <section :class="['table-content']">
+    <el-container id="openAccountMessage">
+        <el-header>
+            <div class="search-setion">
+                <el-form :inline="true" :model="searchData" size="mini">
+                    <el-row>
+                        <el-col :span="7" v-if="!isPending">
+                            <el-form-item>
+                                <el-col :span="11">
+                                    <el-date-picker type="date" placeholder="起始日期"
+                                                    v-model="searchData.start_date"
+                                                    value-format="yyyy-MM-dd"
+                                                    style="width: 100%;"></el-date-picker>
+                                </el-col>
+                                <el-col class="line" :span="1" style="text-align:center">-</el-col>
+                                <el-col :span="11">
+                                    <el-date-picker
+                                            v-model="searchData.end_date"
+                                            type="date"
+                                            placeholder="结束日期"
+                                            value-format="yyyy-MM-dd"
+                                            style="width: 100%;">
+                                    </el-date-picker>
+                                </el-col>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-input v-model="searchData.query_key" clearable placeholder="请输入事由摘要关键字"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="2">
+                            <el-form-item>
+                                <!--<el-button type="primary" plain @click="" size="mini">清空</el-button>-->
+                                <el-button type="primary" plain @click="queryData" size="mini">搜索</el-button>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="24">
+                            <el-form-item style="margin-bottom:0px">
+                                <el-checkbox-group v-model="searchData.service_status" v-if="isPending">
+                                    <el-checkbox label="12" name="type">待处理</el-checkbox>
+                                    <el-checkbox label="1" name="type">已保存</el-checkbox>
+                                    <el-checkbox label="5" name="type">审批拒绝</el-checkbox>
+                                </el-checkbox-group>
+                                <el-checkbox-group v-model="searchData.service_status" v-else>
+                                    <el-checkbox label="2" name="type">已提交</el-checkbox>
+                                    <el-checkbox label="3" name="type">审批中</el-checkbox>
+                                    <el-checkbox label="4" name="type">审批通过</el-checkbox>
+                                </el-checkbox-group>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                </el-form>
+            </div>
+            <div class="split-bar"></div>
+        </el-header>
+        <el-main>
             <el-table :data="tableList"
                       border
                       height="100%"
@@ -208,9 +165,8 @@
                     </template>
                 </el-table-column>
             </el-table>
-        </section>
-        <!--分页部分-->
-        <div class="botton-pag">
+        </el-main>
+        <el-footer>
             <el-pagination
                     background
                     layout="sizes, prev, pager, next, jumper"
@@ -222,392 +178,392 @@
                     @current-change="getCurrentPage"
                     @size-change="sizeChange">
             </el-pagination>
-        </div>
-        <!--待处理编辑弹出框-->
-        <el-dialog :visible.sync="dialogVisible"
-                   width="860px" title="销户信息补录申请"
-                   :close-on-click-modal="false"
-                   top="56px">
-            <h1 slot="title" class="dialog-title">开户信息补录申请</h1>
-            <el-form :model="dialogData" size="small"
-                     :label-width="formLabelWidth"
-                     :rules="rules" ref="dialogForm">
-                <el-row>
-                    <el-col :span="24" class="form-small-title">
-                        <span></span>
-                        <span>申请日期:</span>
-                        <span>{{dialogData.apply_on}}</span>
-                    </el-col>
-                    <el-col :span="22">
-                        <el-form-item label="事由摘要">
-                            <el-input v-model="dialogData.up_memo" :disabled="true"
-                                      placeholder="请输入事由摘要(15字以内)"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="2" style="height:52px">
+            <!--待处理编辑弹出框-->
+            <el-dialog :visible.sync="dialogVisible"
+                       width="860px" title="销户信息补录申请"
+                       :close-on-click-modal="false"
+                       top="100px">
+                <h1 slot="title" class="dialog-title">开户信息补录申请</h1>
+                <el-form :model="dialogData" size="small"
+                         :label-width="formLabelWidth"
+                         :rules="rules" ref="dialogForm">
+                    <el-row>
+                        <el-col :span="24" class="form-small-title">
+                            <span></span>
+                            <span>申请日期:</span>
+                            <span>{{dialogData.apply_on}}</span>
+                        </el-col>
+                        <el-col :span="22">
+                            <el-form-item label="事由摘要">
+                                <el-input v-model="dialogData.up_memo" :disabled="true"
+                                          placeholder="请输入事由摘要(15字以内)"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="2" style="height:52px">
                         <span class="upload-icon" @click="showRelationFile = !showRelationFile">
                             <i></i>{{ dialogData.up_attachment_count }}
                         </span>
-                    </el-col>
-                    <el-col :span="24">
-                        <el-form-item label="事由说明">
-                            <el-input v-model="dialogData.detail"
-                                      :disabled="true"
-                                      type="textarea" :rows="3"
-                                      placeholder="请输入事由说明(100字以内)"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="24" v-show="showRelationFile">
-                        <el-form-item label="附件">
-                            <Upload :fileMessage="relationFile"
-                                    :triggerFile="todoRelationTrigger"
-                                    :emptyFileList="emptyFileList"
-                                    :isPending="false"></Upload>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="24" class="form-small-title">
-                        <span></span>
-                        <span>信息补录</span>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="账户号" prop="acc_no">
-                            <el-input v-model="dialogData.acc_no"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="账户名称" prop="acc_name">
-                            <el-input v-model="dialogData.acc_name"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="所属机构">
-                            <el-input v-model="dialogData.org_name" :disabled="true"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="账户法人">
-                            <el-input v-model="dialogData.lawfull_man" :disabled="true"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="18">
-                        <el-form-item label="开户行" :label-width="formLabelWidth" prop="cnaps_code">
-                            <el-select v-model="dialogData.bank_cnaps_code" placeholder="请选择银行"
-                                       clearable filterable
-                                       :disabled="true">
-                                <el-option v-for="bankType in bankList"
-                                           :key="bankType.cnaps_code"
-                                           :label="bankType.name"
-                                           :value="bankType.cnaps_code">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="开户行地址">
-                            <el-input v-model="dialogData.bank_address"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="开户行联系人">
-                            <el-input v-model="dialogData.bank_contact"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="联系电话">
-                            <el-input v-model="dialogData.bank_contact_phone"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="币种">
-                            <el-input v-model="dialogData.curr_name" :disabled="true"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="开户日期" prop="open_date">
-                            <el-date-picker
-                                    v-model="dialogData.open_date"
-                                    placeholder="请选择日期"
-                                    style="width:100%"
-                                    format="yyyy-MM-dd"
-                                    value-format="yyyy-MM-dd"
-                                    type="date">
-                            </el-date-picker>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="账户性质">
-                            <el-input v-model="dialogData.acc_attr_name" :disabled="true"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="账户用途">
-                            <el-input v-model="dialogData.acc_purpose_name" :disabled="true"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="账户模式">
-                            <el-input v-model="interList[dialogData.interactive_mode]" :disabled="true"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="存款类型">
-                            <el-input v-model="depositsList[dialogData.deposits_mode]" :disabled="true"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="预留印鉴" prop="reserved_seal">
-                            <el-input v-model="dialogData.reserved_seal"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="24" class="form-small-title">
-                        <span></span>
-                        <span>备注与附件</span>
-                    </el-col>
-                    <el-col :span="24">
-                        <el-form-item label="备注" prop="memo">
-                            <el-input type="textarea" v-model="dialogData.memo"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="24">
-                        <el-form-item label="附件">
-                            <Upload @currentFielList="setFileList"
-                                    :emptyFileList="emptyFileList"
-                                    :fileMessage="fileMessage"
-                                    :triggerFile="todoTriggerFile"
-                                    :isPending="isPending"></Upload>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-            </el-form>
-            <BusinessTracking
-                v-show="dialogData.service_status==5"
-                :businessParams="todoBusinessParams"
-            ></BusinessTracking>
-            <span slot="footer" class="dialog-footer">
+                        </el-col>
+                        <el-col :span="24">
+                            <el-form-item label="事由说明">
+                                <el-input v-model="dialogData.detail"
+                                          :disabled="true"
+                                          type="textarea" :rows="3"
+                                          placeholder="请输入事由说明(100字以内)"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="24" v-show="showRelationFile">
+                            <el-form-item label="附件">
+                                <Upload :fileMessage="relationFile"
+                                        :triggerFile="todoRelationTrigger"
+                                        :emptyFileList="emptyFileList"
+                                        :isPending="false"></Upload>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="24" class="form-small-title">
+                            <span></span>
+                            <span>信息补录</span>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="账户号" prop="acc_no">
+                                <el-input v-model="dialogData.acc_no"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="账户名称" prop="acc_name">
+                                <el-input v-model="dialogData.acc_name"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="所属机构">
+                                <el-input v-model="dialogData.org_name" :disabled="true"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="账户法人">
+                                <el-input v-model="dialogData.lawfull_man" :disabled="true"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="18">
+                            <el-form-item label="开户行" :label-width="formLabelWidth" prop="cnaps_code">
+                                <el-select v-model="dialogData.bank_cnaps_code" placeholder="请选择银行"
+                                           clearable filterable
+                                           :disabled="true">
+                                    <el-option v-for="bankType in bankList"
+                                               :key="bankType.cnaps_code"
+                                               :label="bankType.name"
+                                               :value="bankType.cnaps_code">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="开户行地址">
+                                <el-input v-model="dialogData.bank_address"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="开户行联系人">
+                                <el-input v-model="dialogData.bank_contact"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="联系电话">
+                                <el-input v-model="dialogData.bank_contact_phone"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="币种">
+                                <el-input v-model="dialogData.curr_name" :disabled="true"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="开户日期" prop="open_date">
+                                <el-date-picker
+                                        v-model="dialogData.open_date"
+                                        placeholder="请选择日期"
+                                        style="width:100%"
+                                        format="yyyy-MM-dd"
+                                        value-format="yyyy-MM-dd"
+                                        type="date">
+                                </el-date-picker>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="账户性质">
+                                <el-input v-model="dialogData.acc_attr_name" :disabled="true"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="账户用途">
+                                <el-input v-model="dialogData.acc_purpose_name" :disabled="true"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="账户模式">
+                                <el-input v-model="interList[dialogData.interactive_mode]" :disabled="true"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="存款类型">
+                                <el-input v-model="depositsList[dialogData.deposits_mode]" :disabled="true"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="预留印鉴" prop="reserved_seal">
+                                <el-input v-model="dialogData.reserved_seal"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="24" class="form-small-title">
+                            <span></span>
+                            <span>备注与附件</span>
+                        </el-col>
+                        <el-col :span="24">
+                            <el-form-item label="备注" prop="memo">
+                                <el-input type="textarea" v-model="dialogData.memo"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="24">
+                            <el-form-item label="附件">
+                                <Upload @currentFielList="setFileList"
+                                        :emptyFileList="emptyFileList"
+                                        :fileMessage="fileMessage"
+                                        :triggerFile="todoTriggerFile"
+                                        :isPending="isPending"></Upload>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                </el-form>
+                <BusinessTracking
+                        v-show="dialogData.service_status==5"
+                        :businessParams="todoBusinessParams"
+                ></BusinessTracking>
+                <span slot="footer" class="dialog-footer">
                 <el-button type="warning" plain size="mini" @click="dialogVisible=false">取 消</el-button>
                 <el-button type="warning" size="mini" @click="subTodoChange">确 定</el-button>
                 <el-button type="warning" size="mini" @click="subFlow">提 交</el-button>
             </span>
-            <el-dialog :visible.sync="innerVisible"
-                       width="50%" title="提交审批流程"
-                       append-to-body top="76px"
-                       @close="beforeCloseDialog"
-                       :close-on-click-modal="false">
-                <el-radio-group v-model="selectWorkflow">
-                    <el-radio v-for="workflow in workflows"
-                              :key="workflow.define_id"
-                              :label="workflow.define_id"
-                    >{{ workflow.workflow_name }}
-                        <el-button class="flow-tip-box" @click="showFlowDialog(workflow)"></el-button>
-                    </el-radio>
-                </el-radio-group>
-                <span slot="footer" class="dialog-footer" style="text-align:center">
+                <el-dialog :visible.sync="innerVisible"
+                           width="50%" title="提交审批流程"
+                           append-to-body top="100px"
+                           @close="beforeCloseDialog"
+                           :close-on-click-modal="false">
+                    <el-radio-group v-model="selectWorkflow">
+                        <el-radio v-for="workflow in workflows"
+                                  :key="workflow.define_id"
+                                  :label="workflow.define_id"
+                        >{{ workflow.workflow_name }}
+                            <el-button class="flow-tip-box" @click="showFlowDialog(workflow)"></el-button>
+                        </el-radio>
+                    </el-radio-group>
+                    <span slot="footer" class="dialog-footer" style="text-align:center">
                     <el-button type="warning" size="mini" plain @click="innerVisible = false">取 消</el-button>
                     <el-button type="warning" size="mini" @click="confirmWorkflow">确 定</el-button>
                 </span>
+                </el-dialog>
             </el-dialog>
-        </el-dialog>
-        <!--已处理查看弹出框-->
-        <el-dialog :visible.sync="lookDialog"
-                   width="810px" title="新增"
-                   :close-on-click-modal="false"
-                   top="56px">
-            <h1 slot="title" class="dialog-title">补录信息查看</h1>
-            <el-form :model="lookDialogData" size="small"
-                     :label-width="formLabelWidth">
-                <el-row>
-                    <el-col :span="24" class="form-small-title">
-                        <span></span>
-                        <span>申请日期:</span>
-                        <span>{{lookDialogData.apply_on}}</span>
-                    </el-col>
-                    <el-col :span="22">
-                        <el-form-item label="事由摘要">
-                            <el-input v-model="lookDialogData.up_memo" :readonly="true"
-                                      placeholder="请输入事由摘要(15字以内)"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="2" style="height:52px">
+            <!--已处理查看弹出框-->
+            <el-dialog :visible.sync="lookDialog"
+                       width="810px" title="新增"
+                       :close-on-click-modal="false"
+                       top="100px">
+                <h1 slot="title" class="dialog-title">补录信息查看</h1>
+                <el-form :model="lookDialogData" size="small"
+                         :label-width="formLabelWidth">
+                    <el-row>
+                        <el-col :span="24" class="form-small-title">
+                            <span></span>
+                            <span>申请日期:</span>
+                            <span>{{lookDialogData.apply_on}}</span>
+                        </el-col>
+                        <el-col :span="22">
+                            <el-form-item label="事由摘要">
+                                <el-input v-model="lookDialogData.up_memo" :readonly="true"
+                                          placeholder="请输入事由摘要(15字以内)"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="2" style="height:52px">
                         <span class="upload-icon" @click="showRelationFile = !showRelationFile">
                             <i></i>{{ lookDialogData.up_attachment_count }}
                         </span>
-                    </el-col>
-                    <el-col :span="24">
-                        <el-form-item label="事由说明">
-                            <el-input v-model="lookDialogData.detail"
-                                      :readonly="true"
-                                      type="textarea" :rows="3"
-                                      placeholder="请输入事由说明(100字以内)"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="24" v-show="showRelationFile">
-                        <el-form-item label="附件">
-                            <Upload :fileMessage="relationFile"
-                                    :triggerFile="doneRelationTrigger"
-                                    :emptyFileList="emptyFileList"
-                                    :isPending="false"></Upload>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="24" class="form-small-title">
-                        <span></span>
-                        <span>信息补录</span>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="账户号">
-                            <el-input v-model="lookDialogData.acc_no" :readonly="true"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="账户名称">
-                            <el-input v-model="lookDialogData.acc_name" :readonly="true"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="所属机构">
-                            <el-input v-model="lookDialogData.org_name" :readonly="true"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="账户法人">
-                            <el-input v-model="lookDialogData.lawfull_man" :readonly="true"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="18">
-                        <el-form-item label="开户行" prop="cnaps_code">
-                            <el-select v-model="lookDialogData.bank_cnaps_code" placeholder="请选择银行"
-                                       clearable filterable
-                                       :readonly="true"
-                                       :disabled="true">
-                                <el-option v-for="bankType in bankList"
-                                           :key="bankType.cnaps_code"
-                                           :label="bankType.name"
-                                           :value="bankType.cnaps_code">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="开户行地址">
-                            <el-input v-model="lookDialogData.bank_address" :readonly="true"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="开户行联系人">
-                            <el-input v-model="lookDialogData.bank_contact" :readonly="true"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="联系电话">
-                            <el-input v-model="lookDialogData.bank_contact_phone" :readonly="true"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="币种">
-                            <el-select v-model="lookDialogData.curr_id" placeholder="请选择币种"
-                                       :disabled="true" filterable clearable>
-                                <el-option v-for="currency in currencyList"
-                                           :key="currency.id"
-                                           :label="currency.name"
-                                           :value="currency.id">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="开户日期">
-                            <el-date-picker
-                                    v-model="lookDialogData.open_date"
-                                    placeholder="请选择日期"
-                                    style="width:100%"
-                                    :readonly="true"
-                                    format="yyyy-MM-dd"
-                                    value-format="yyyy-MM-dd"
-                                    type="date">
-                            </el-date-picker>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="账户性质">
-                            <el-select v-model="lookDialogData.acc_attr" placeholder="请选择账户性质"
-                                       :disabled="true" filterable clearable>
-                                <el-option v-for="attr in attrList"
-                                           :key="attr.key"
-                                           :label="attr.value"
-                                           :value="attr.key">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="账户用途">
-                            <el-select v-model="lookDialogData.acc_purpose" placeholder="请选择账户用途"
-                                       :disabled="true" filterable clearable>
-                                <el-option v-for="purpose in purposeList"
-                                           :key="purpose.key"
-                                           :label="purpose.value"
-                                           :value="purpose.key">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="账户模式">
-                            <el-select v-model="lookDialogData.interactive_mode" placeholder="请选择账户模式"
-                                       :disabled="true" filterable clearable>
-                                <el-option v-for="(name,k) in interList"
-                                           :key="k"
-                                           :label="name"
-                                           :value="k">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="存款类型">
-                            <el-input v-model="depositsList[lookDialogData.deposits_mode]" :readonly="true"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="预留印鉴">
-                            <el-input v-model="lookDialogData.reserved_seal" :readonly="true"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="24" class="form-small-title">
-                        <span></span>
-                        <span>备注与附件</span>
-                    </el-col>
-                    <el-col :span="24">
-                        <el-form-item label="备注">
-                            <el-input type="textarea" v-model="lookDialogData.memo" :readonly="true"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="24">
-                        <el-form-item label="附件">
-                            <Upload @currentFielList="setFileList"
-                                    :emptyFileList="emptyFileList"
-                                    :fileMessage="fileMessage"
-                                    :triggerFile="doneTriggerFile"
-                                    :isPending="isPending"></Upload>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-            </el-form>
-            <BusinessTracking
-                :businessParams="doneBusinessParams"
-            ></BusinessTracking>
-        </el-dialog>
-        <!--查看工作流弹出框-->
-        <el-dialog :visible.sync="lookFlowDialogVisible"
-                   width="800px" title="查看流程"
-                   :close-on-click-modal="false"
-                   :before-close="cancelLookFlow"
-                   top="120px">
-            <WorkFlow
-                    :flowList="flowList"
-                    :isEmptyFlow="isEmptyFlow"
-            ></WorkFlow>
-        </el-dialog>
-    </div>
+                        </el-col>
+                        <el-col :span="24">
+                            <el-form-item label="事由说明">
+                                <el-input v-model="lookDialogData.detail"
+                                          :readonly="true"
+                                          type="textarea" :rows="3"
+                                          placeholder="请输入事由说明(100字以内)"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="24" v-show="showRelationFile">
+                            <el-form-item label="附件">
+                                <Upload :fileMessage="relationFile"
+                                        :triggerFile="doneRelationTrigger"
+                                        :emptyFileList="emptyFileList"
+                                        :isPending="false"></Upload>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="24" class="form-small-title">
+                            <span></span>
+                            <span>信息补录</span>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="账户号">
+                                <el-input v-model="lookDialogData.acc_no" :readonly="true"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="账户名称">
+                                <el-input v-model="lookDialogData.acc_name" :readonly="true"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="所属机构">
+                                <el-input v-model="lookDialogData.org_name" :readonly="true"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="账户法人">
+                                <el-input v-model="lookDialogData.lawfull_man" :readonly="true"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="18">
+                            <el-form-item label="开户行" prop="cnaps_code">
+                                <el-select v-model="lookDialogData.bank_cnaps_code" placeholder="请选择银行"
+                                           clearable filterable
+                                           :readonly="true"
+                                           :disabled="true">
+                                    <el-option v-for="bankType in bankList"
+                                               :key="bankType.cnaps_code"
+                                               :label="bankType.name"
+                                               :value="bankType.cnaps_code">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="开户行地址">
+                                <el-input v-model="lookDialogData.bank_address" :readonly="true"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="开户行联系人">
+                                <el-input v-model="lookDialogData.bank_contact" :readonly="true"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="联系电话">
+                                <el-input v-model="lookDialogData.bank_contact_phone" :readonly="true"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="币种">
+                                <el-select v-model="lookDialogData.curr_id" placeholder="请选择币种"
+                                           :disabled="true" filterable clearable>
+                                    <el-option v-for="currency in currencyList"
+                                               :key="currency.id"
+                                               :label="currency.name"
+                                               :value="currency.id">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="开户日期">
+                                <el-date-picker
+                                        v-model="lookDialogData.open_date"
+                                        placeholder="请选择日期"
+                                        style="width:100%"
+                                        :readonly="true"
+                                        format="yyyy-MM-dd"
+                                        value-format="yyyy-MM-dd"
+                                        type="date">
+                                </el-date-picker>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="账户性质">
+                                <el-select v-model="lookDialogData.acc_attr" placeholder="请选择账户性质"
+                                           :disabled="true" filterable clearable>
+                                    <el-option v-for="attr in attrList"
+                                               :key="attr.key"
+                                               :label="attr.value"
+                                               :value="attr.key">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="账户用途">
+                                <el-select v-model="lookDialogData.acc_purpose" placeholder="请选择账户用途"
+                                           :disabled="true" filterable clearable>
+                                    <el-option v-for="purpose in purposeList"
+                                               :key="purpose.key"
+                                               :label="purpose.value"
+                                               :value="purpose.key">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="账户模式">
+                                <el-select v-model="lookDialogData.interactive_mode" placeholder="请选择账户模式"
+                                           :disabled="true" filterable clearable>
+                                    <el-option v-for="(name,k) in interList"
+                                               :key="k"
+                                               :label="name"
+                                               :value="k">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="存款类型">
+                                <el-input v-model="depositsList[lookDialogData.deposits_mode]" :readonly="true"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="预留印鉴">
+                                <el-input v-model="lookDialogData.reserved_seal" :readonly="true"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="24" class="form-small-title">
+                            <span></span>
+                            <span>备注与附件</span>
+                        </el-col>
+                        <el-col :span="24">
+                            <el-form-item label="备注">
+                                <el-input type="textarea" v-model="lookDialogData.memo" :readonly="true"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="24">
+                            <el-form-item label="附件">
+                                <Upload @currentFielList="setFileList"
+                                        :emptyFileList="emptyFileList"
+                                        :fileMessage="fileMessage"
+                                        :triggerFile="doneTriggerFile"
+                                        :isPending="isPending"></Upload>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                </el-form>
+                <BusinessTracking
+                        :businessParams="doneBusinessParams"
+                ></BusinessTracking>
+            </el-dialog>
+            <!--查看工作流弹出框-->
+            <el-dialog :visible.sync="lookFlowDialogVisible"
+                       width="800px" title="查看流程"
+                       :close-on-click-modal="false"
+                       :before-close="cancelLookFlow"
+                       top="120px">
+                <WorkFlow
+                        :flowList="flowList"
+                        :isEmptyFlow="isEmptyFlow"
+                ></WorkFlow>
+            </el-dialog>
+        </el-footer>
+    </el-container>
 </template>
 
 <script>

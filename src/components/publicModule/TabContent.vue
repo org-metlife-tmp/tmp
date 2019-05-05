@@ -3,32 +3,57 @@
         width: 90%;
         height: 100%;
         margin: 0 auto;
-        min-width: 920px;
+        min-width: 960px;
+        min-height: 552px;
         position: relative;
 
-        .content {
-            width: 100%;
-            height: 90%;
-            min-height: 500px;
-            box-sizing: border-box;
-            position: relative;
-            padding: 20px;
+        .el-header {
             background-color: #fff;
+            height: auto !important;
+        }
+        .el-main {
+            width: 100%;
+            background-color: #fff;
+            box-sizing: border-box;
+            padding: 0;
+
+            > .el-container{
+                height: 100%;
+
+                > .el-header {
+                    overflow: visible;
+                }
+            }
+        }
+        .el-footer {
+            background-color: #fff;
+            padding: 0;
+            height: auto !important;
+
+            .el-pagination {
+                margin-top: 14px;
+            }
         }
 
-        //表格内部操作按钮
-        .el-table .el-button {
-            padding: 3px 3px;
+        > .el-header {
+            line-height: 52px;
+            background-color: #E7E7E7;
+
+            h1 {
+                margin-bottom: 0;
+            }
         }
 
-        .el-button + .el-button {
-            margin-left: 4px;
+        > .el-main {
+            padding: 20px;
+            padding-bottom: 14px;
+            overflow: hidden;
         }
 
         //标签页按钮
         .tab-left {
             position: absolute;
-            top: 12px;
+            top: 22px;
             height: 30px;
             color: #b1b1b1;
 
@@ -56,55 +81,35 @@
                 }
             }
         }
-
-        /*设置弹出框公共样式*/
-        .el-dialog {
-            text-align: left;
-            margin-bottom: 10px;
-            /*设置标题*/
-            .dialog-title {
-                margin-bottom: 0;
-            }
-            .el-dialog__body {
-                padding-top: 10px;
-                padding-bottom: 0;
-            }
-            .el-form {
-                width: 94%;
-                .el-select {
-                    width: 100%;
-                }
-            }
-        }
     }
 </style>
 
 <template>
-    <div id="tabContent">
-        <header>
+    <el-container id="tabContent" v-loading="loading"
+                  element-loading-background="rgba(230, 230, 230, 0.5)">
+        <el-header>
             <h1 v-text="currentTitle"></h1>
-        </header>
-        <!--标签页按钮-->
-        <div class="tab-left">
-            <ul>
-                <li :class="{'tab-active':isActive}" @click="activeCurrentTab(true)">
-                    <i class="el-icon-time"></i>
-                    待处理
-                </li>
-                <li :class="{'tab-active':!isActive}" @click="activeCurrentTab(false)">
-                    <i class="el-icon-circle-check-outline"></i>
-                    已处理
-                </li>
-            </ul>
-        </div>
-        <section class="content" v-loading="loading">
+            <div class="tab-left">
+                <ul>
+                    <li :class="{'tab-active':isActive}" @click="activeCurrentTab(true)">
+                        <i class="el-icon-time"></i>
+                        待处理
+                    </li>
+                    <li :class="{'tab-active':!isActive}" @click="activeCurrentTab(false)">
+                        <i class="el-icon-circle-check-outline"></i>
+                        已处理
+                    </li>
+                </ul>
+            </div>
+        </el-header>
+        <el-main>
             <router-view @transmitTitle="currentTitle= $event"
                          @getTableData="setRouterMessage"
                          :tableData="childData"
                          :isPending="isPending"
-                         ></router-view>
-        </section>
-    </div>
+            ></router-view>
+        </el-main>
+    </el-container>
 </template>
 
 <script>

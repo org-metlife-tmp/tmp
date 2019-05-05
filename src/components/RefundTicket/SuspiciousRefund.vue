@@ -153,7 +153,7 @@
             <!--查看弹出框-->
             <el-dialog title="可疑退票信息"
                        :visible.sync="dialogVisible"
-                       width="900px" top="76px"
+                       width="900px" top="100px"
                        :close-on-click-modal="false">
                 <el-select v-model="bizType" placeholder="请选择业务类型"
                            filterable size="mini"

@@ -112,7 +112,7 @@
         </el-dropdown>
         <!--个人设置 弹出框-->
         <el-dialog :visible.sync="dialogVisible"
-                   width="800px" top="76px" title="个人设置"
+                   width="800px" top="100px" title="个人设置"
                    :append-to-body="true"
                    :close-on-click-modal="false">
             <el-form :model="dialogData" size="small"
@@ -173,7 +173,7 @@
         </el-dialog>
         <!--修改密码 弹出框-->
         <el-dialog :visible.sync="passdialogVisible"
-                   width="600px" top="76px" title="修改密码"
+                   width="600px" top="100px" title="修改密码"
                    :append-to-body="true"
                    :close-on-click-modal="false">
             <el-form :model="passDialogData" size="small"

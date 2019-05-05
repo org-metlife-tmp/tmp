@@ -72,7 +72,7 @@
             <el-dialog :visible.sync="dialogVisible"
                        width="800px"
                        :close-on-click-modal="false"
-                       top="56px">
+                       top="100px">
                 <h1 slot="title" v-text="dialogTitle" class="dialog-title"></h1>
                 <el-form :model="dialogData" size="small"
                          :label-width="formLabelWidth">

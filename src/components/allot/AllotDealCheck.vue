@@ -1,49 +1,14 @@
 <style scoped lang="less" type="text/less">
+
     #allotDealCheck {
-        width: 100%;
-        height: 100%;
-        box-sizing: border-box;
-        position: relative;
-
-        /*搜索区*/
-        .search-setion {
-            text-align: left;
-            .line {
-                text-align: center;
-            }
-            /*时间控件*/
-            .el-date-editor {
-                width: 100%;
-            }
-        }
-
-        /*分隔栏*/
-        .split-bar {
-            width: 106%;
-            height: 6px;
-            margin-left: -20px;
-            background-color: #E7E7E7;
-            margin-bottom: 20px;
-        }
-
         /*数据展示区*/
         .table-content {
-            height: 181px;
-        }
-        .table-content.height1 {
-            height: 325px;
-        }
-        .childTable {
-            // min-height: 96px;
-            // max-height: 192px;
+            height: 100%;
         }
 
         /*分页部分*/
         .botton-pag {
-            position: absolute;
             width: 100%;
-            height: 8%;
-            bottom: -6px;
 
             .el-button {
                 float: right;
@@ -56,38 +21,10 @@
                 margin-right: 70px;
             }
         }
-        .botton-pag-center {
-            top: 287px;
-        }
-
-        /*分割线*/
-        .split-form {
-            width: 100%;
-            height: 26px;
-            border-bottom: 1px solid #ccc;
-            margin-bottom: 10px;
-            h4 {
-                margin: 0;
-                float: left;
-            }
-        }
-
-        /*顶部按钮*/
-        .button-list-right {
-            position: absolute;
-            top: -56px;
-            right: -21px;
-        }
     }
 </style>
 <style lang="less">
     #allotDealCheck {
-        .el-dialog__wrapper {
-            .el-dialog__body {
-                height: 400px;
-                overflow-y: scroll;
-            }
-        }
         .el-table__expanded-cell[class*=cell] {
             padding: 20px;
         }
@@ -103,88 +40,88 @@
 </style>
 
 <template>
-    <div id="allotDealCheck">
-        <!--顶部按钮-->
-        <div class="button-list-right" v-show="isAllot">
-            <el-select v-model="searchData.payment_type" placeholder="请选择调拨类型" size="mini"
-                       @change="queryByPayType">
-                <el-option v-for="(name,k) in paymentTypeList"
-                           :key="k"
-                           :label="name"
-                           :value="k">
-                </el-option>
-            </el-select>
-        </div>
-        <!--搜索区-->
-        <div class="search-setion">
-            <el-form :inline="true" :model="searchData" size="mini">
-                <el-row>
-                    <el-col :span="5" v-if="biz_type!=100">
-                        <el-form-item>
-                            <el-date-picker
-                                    v-model="dateValue"
-                                    type="daterange"
-                                    range-separator="至"
-                                    start-placeholder="开始日期"
-                                    end-placeholder="结束日期"
-                                    value-format="yyyy-MM-dd"
-                                    size="mini" clearable
-                                    unlink-panels
-                                    :picker-options="pickerOptions"
-                                    @change="">
-                            </el-date-picker>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="4" v-if="biz_type!=100">
-                        <el-form-item>
-                            <el-input v-model="searchData.pay_query_key" placeholder="请输入付款方账号" clearable></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="4" v-if="isPending&&biz_type!=100">
-                        <el-form-item>
-                            <el-input v-model="searchData.recv_query_key" placeholder="请输入收款方账号" clearable></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="4" v-if="biz_type==100">
-                        <el-form-item>
-                            <el-select v-model="searchData.credit_or_debit" placeholder="请选择借贷方向" clearable>
-                                <el-option
-                                        v-for="(item,k) in credirOrDebit"
-                                        :key="k"
-                                        :label="item"
-                                        :value="k">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="4" v-if="biz_type==100">
-                        <el-form-item>
-                            <el-input v-model="searchData.query_key" placeholder="请输入账号" clearable></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="7">
-                        <el-form-item>
-                            <el-col :span="11">
-                                <el-input v-model="searchData.min" placeholder="最小金额" clearable></el-input>
-                            </el-col>
-                            <el-col class="line" :span="1" style="text-align:center">-</el-col>
-                            <el-col :span="11">
-                                <el-input v-model="searchData.max" placeholder="最大金额" clearable></el-input>
-                            </el-col>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="2">
-                        <el-form-item>
-                            <el-button type="primary" plain @click="queryData" size="mini">搜索</el-button>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-            </el-form>
-        </div>
-        <!--分隔栏-->
-        <div class="split-bar"></div>
-        <!--数据展示区-->
-        <section class="table-content" :class="[isPending ? '' : 'height1']" style="height:210px">
+    <el-container id="allotDealCheck">
+        <el-header>
+            <div class="button-list-right" v-show="isAllot">
+                <el-select v-model="searchData.payment_type" placeholder="请选择调拨类型" size="mini"
+                           @change="queryByPayType">
+                    <el-option v-for="(name,k) in paymentTypeList"
+                               :key="k"
+                               :label="name"
+                               :value="k">
+                    </el-option>
+                </el-select>
+            </div>
+            <div class="search-setion">
+                <el-form :inline="true" :model="searchData" size="mini">
+                    <el-row>
+                        <el-col :span="5" v-if="biz_type!=100">
+                            <el-form-item>
+                                <el-date-picker
+                                        v-model="dateValue"
+                                        type="daterange"
+                                        range-separator="至"
+                                        start-placeholder="开始日期"
+                                        end-placeholder="结束日期"
+                                        value-format="yyyy-MM-dd"
+                                        size="mini" clearable
+                                        unlink-panels
+                                        :picker-options="pickerOptions"
+                                        @change="">
+                                </el-date-picker>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4" v-if="biz_type!=100">
+                            <el-form-item>
+                                <el-input v-model="searchData.pay_query_key" placeholder="请输入付款方账号"
+                                          clearable></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4" v-if="isPending&&biz_type!=100">
+                            <el-form-item>
+                                <el-input v-model="searchData.recv_query_key" placeholder="请输入收款方账号"
+                                          clearable></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4" v-if="biz_type==100">
+                            <el-form-item>
+                                <el-select v-model="searchData.credit_or_debit" placeholder="请选择借贷方向" clearable>
+                                    <el-option
+                                            v-for="(item,k) in credirOrDebit"
+                                            :key="k"
+                                            :label="item"
+                                            :value="k">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4" v-if="biz_type==100">
+                            <el-form-item>
+                                <el-input v-model="searchData.query_key" placeholder="请输入账号" clearable></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="7">
+                            <el-form-item>
+                                <el-col :span="11">
+                                    <el-input v-model="searchData.min" placeholder="最小金额" clearable></el-input>
+                                </el-col>
+                                <el-col class="line" :span="1" style="text-align:center">-</el-col>
+                                <el-col :span="11">
+                                    <el-input v-model="searchData.max" placeholder="最大金额" clearable></el-input>
+                                </el-col>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="2">
+                            <el-form-item>
+                                <el-button type="primary" plain @click="queryData" size="mini">搜索</el-button>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                </el-form>
+            </div>
+            <div class="split-bar"></div>
+        </el-header>
+        <el-main>
             <el-table :data="tableList"
                       border
                       height="100%"
@@ -249,48 +186,50 @@
                 <el-table-column v-if="biz_type!=100" prop="create_on" label="日期"
                                  :show-overflow-tooltip="true"></el-table-column>
             </el-table>
-        </section>
-        <!--分页部分-->
-        <div class="botton-pag" :class="{'botton-pag-center':isPending}">
-            <el-pagination
-                    background
-                    layout="sizes, prev, pager, next, jumper"
-                    :page-size="pagSize"
-                    :total="pagTotal"
-                    :page-sizes="[5, 7, 50, 100, 500]"
-                    :pager-count="5"
-                    :current-page="pagCurrent"
-                    @current-change="getCurrentPage"
-                    @size-change="sizeChange">
-            </el-pagination>
-            <el-button type="warning" size="mini" @click="transactionConfirm" v-show="isPending">确认</el-button>
-            <div class="check-select" v-show="isPending">
-                <el-checkbox v-model="dateCheck" @change="getCurRowData(currentData)">日期校验</el-checkbox>
-                <el-checkbox v-model="recvCheck" @change="getCurRowData(currentData)">收款方校验</el-checkbox>
+        </el-main>
+        <el-footer>
+            <div class="botton-pag">
+                <el-pagination
+                        background
+                        layout="sizes, prev, pager, next, jumper"
+                        :page-size="pagSize"
+                        :total="pagTotal"
+                        :page-sizes="[7, 50, 100, 500]"
+                        :pager-count="5"
+                        :current-page="pagCurrent"
+                        @current-change="getCurrentPage"
+                        @size-change="sizeChange">
+                </el-pagination>
+                <el-button type="warning" size="mini" @click="transactionConfirm" v-show="isPending">确认</el-button>
+                <div class="check-select" v-show="isPending">
+                    <el-checkbox v-model="dateCheck">日期校验</el-checkbox>
+                    <el-checkbox v-model="recvCheck">收款方校验</el-checkbox>
+                </div>
             </div>
-        </div>
-        <!--主数据关联数据-->
-        <section class="table-content" style="margin-top:40px;height:150px" v-if="isPending">
-            <el-table :data="childList"
-                      border
-                      height="100%"
-                      @selection-change="handleSelectionChange"
-                      size="mini">
-                <el-table-column type="selection" width="40"></el-table-column>
-                <el-table-column prop="acc_no" label="账户号" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="acc_name" label="账户名称" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="bank_name" label="开户行" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="direction" label="收付方向" :show-overflow-tooltip="true"
-                                 width="80"></el-table-column>
-                <el-table-column prop="opp_acc_no" label="对方账户号" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="opp_acc_name" label="对方账户号名称" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="amount" label="交易金额" :show-overflow-tooltip="true"
-                                 :formatter="transitAmount"></el-table-column>
-                <el-table-column prop="summary" label="摘要" :show-overflow-tooltip="true" width="80"></el-table-column>
-                <el-table-column prop="trans_date" label="交易时间" :show-overflow-tooltip="true"></el-table-column>
-            </el-table>
-        </section>
-    </div>
+            <section style="margin-top:14px;height:180px" v-if="isPending">
+                <el-table :data="childList"
+                          border
+                          height="100%"
+                          @selection-change="handleSelectionChange"
+                          size="mini">
+                    <el-table-column type="selection" width="40"></el-table-column>
+                    <el-table-column prop="acc_no" label="账户号" :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column prop="acc_name" label="账户名称" :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column prop="bank_name" label="开户行" :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column prop="direction" label="收付方向" :show-overflow-tooltip="true"
+                                     width="80"></el-table-column>
+                    <el-table-column prop="opp_acc_no" label="对方账户号" :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column prop="opp_acc_name" label="对方账户号名称"
+                                     :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column prop="amount" label="交易金额" :show-overflow-tooltip="true"
+                                     :formatter="transitAmount"></el-table-column>
+                    <el-table-column prop="summary" label="摘要" :show-overflow-tooltip="true"
+                                     width="80"></el-table-column>
+                    <el-table-column prop="trans_date" label="交易时间" :show-overflow-tooltip="true"></el-table-column>
+                </el-table>
+            </section>
+        </el-footer>
+    </el-container>
 </template>
 
 <script>
@@ -429,7 +368,7 @@
             },
             //获取未核对下第二个表格数据
             getCurRowData: function (row, event, column) {
-                if(this.tableList.length === 0 || !row){
+                if (this.tableList.length === 0 || !row) {
                     this.currentData = "";
                     return;
                 }

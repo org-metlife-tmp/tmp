@@ -127,7 +127,7 @@
             <!--编辑弹出框-->
             <el-dialog title="详情"
                        :visible.sync="dialogVisible"
-                       width="860px" top="76px"
+                       width="860px" top="100px"
                        :close-on-click-modal="false">
                 <el-form :model="dialogData" size="mini"
                          :label-width="formLabelWidth"

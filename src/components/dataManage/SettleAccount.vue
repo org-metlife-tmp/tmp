@@ -108,7 +108,7 @@
             </div>
             <!--新增/修改 弹出框-->
             <el-dialog :visible.sync="dialogVisible"
-                       width="860px" top="76px"
+                       width="860px" top="100px"
                        :close-on-click-modal="false">
                 <h1 slot="title" v-text="dialogTitle" class="dialog-title"></h1>
                 <el-form :model="dialogData" size="small"
