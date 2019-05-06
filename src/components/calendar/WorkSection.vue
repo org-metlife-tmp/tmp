@@ -10,7 +10,7 @@
 
             .month {
                 float: left;
-                width: 336px;
+                width: 30%;
                 height: 200px;
                 box-sizing: border-box;
                 padding-left: 5px;
