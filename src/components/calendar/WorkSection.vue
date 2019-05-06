@@ -10,11 +10,11 @@
 
             .month {
                 float: left;
-                width: 30%;
+                width: 336px;
                 height: 200px;
                 box-sizing: border-box;
                 padding-left: 5px;
-                margin: 0 20px 30px 10px;
+                margin: 0 10px 30px 10px;
                 border: 1px solid #4FB1E2;
                 border-radius: 6px;
                 box-shadow: 0px 2px 12px 0 #ccc;
