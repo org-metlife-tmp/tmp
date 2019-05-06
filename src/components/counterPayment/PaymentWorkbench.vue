@@ -249,19 +249,19 @@
                          :rules="rules" ref="dialogForm">
                     <el-row>
                         <el-col :span="12">
-                            <el-form-item label="收款账号户名">
+                            <el-form-item label="收款账号户名" prop="recv_acc_name">
                                 <el-input v-model="dialogData.recv_acc_name" clearable
                                           placeholder="请输入收款账号户名"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
-                            <el-form-item label="收款银行账号">
+                            <el-form-item label="收款银行账号" prop="recv_acc_no">
                                 <el-input v-model="dialogData.recv_acc_no" clearable
                                           placeholder="请输入收款银行账号"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="16">
-                            <el-form-item label="开户行">
+                            <el-form-item label="开户行" prop="recv_bank_name">
                                 <el-input v-model="dialogData.recv_bank_name"
                                           placeholder="请选择开户行" @focus="getBank"></el-input>
                             </el-form-item>

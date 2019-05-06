@@ -255,8 +255,8 @@
                        :visible.sync="dialogVisible"
                        :close-on-click-modal="false">
                 <el-select v-model="rejectMessage" placeholder="请选择拒绝理由" clearable size="small">
-                    <el-option label="TMP:变更支付方式" value="TMP:变更支付方式"></el-option>
-                    <el-option label="TMP:拒绝支付" value="TMP:拒绝支付"></el-option>
+                    <el-option label="TMPPJ:变更支付方式" value="TMPPJ:变更支付方式"></el-option>
+                    <el-option label="TMPPJ:拒绝支付" value="TMPPJ:拒绝支付"></el-option>
                 </el-select>
                 <span slot="footer" class="dialog-footer">
                 <el-button type="warning" plain @click="dialogVisible = false" size="mini">取 消</el-button>
