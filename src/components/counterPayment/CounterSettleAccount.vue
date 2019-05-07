@@ -137,10 +137,9 @@
                       @current-change="selectChange"
                       highlight-current-row
                       height="200px" border size="mini">
-                <el-table-column prop="check_date" label="操作日期" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="send_on" label="付款日期" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="org_name" label="机构名称" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="pay_mode" label="支付方式" :show-overflow-tooltip="true"
-                                 :formatter="transitMode"></el-table-column>
+                <el-table-column prop="pay_mode" label="支付方式" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="biz_code" label="业务号码" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="preinsure_bill_no" label="投保单号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="insure_bill_no" label="保单号" :show-overflow-tooltip="true"></el-table-column>
