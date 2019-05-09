@@ -700,9 +700,9 @@
                     <p class="mg-four">柜面付款</p>
                 </template>
                 <el-menu-item-group>
-                    <el-menu-item index="/counter-payment/counter-settle-account" v-if="menuList.PayCounterCheck">结算对账
-                    </el-menu-item>
                     <el-menu-item index="/counter-payment/payment-workbench" v-if="menuList.PayCounterPlat">付款工作台
+                    </el-menu-item>
+                    <el-menu-item index="/counter-payment/counter-settle-account" v-if="menuList.PayCounterCheck">结算对账
                     </el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
