@@ -594,7 +594,7 @@
                 }
 
                 if (this.$refs.dialogForm) {
-                    this.$refs.postForm.clearValidate();
+                    this.$refs.dialogForm.clearValidate();
                 }
 
                 this.currentData = row;
