@@ -48,6 +48,7 @@
         .el-main {
             background-color: #E7E7E7;
             text-align: center;
+            height: 100%;
         }
 
         h1 {

@@ -697,7 +697,7 @@
             <el-submenu index="22" v-if="menuList.COUNTERPAY">
                 <template slot="title" height="200px">
                     <i class="icon-gmfk"></i>
-                    <p class="mg-four">柜面付款</p>
+                    <p class="mg-four">网银付款</p>
                 </template>
                 <el-menu-item-group>
                     <el-menu-item index="/counter-payment/payment-workbench" v-if="menuList.PayCounterPlat">付款工作台
