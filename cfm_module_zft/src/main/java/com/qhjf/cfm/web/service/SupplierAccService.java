@@ -8,6 +8,7 @@ import com.qhjf.cfm.exceptions.DbProcessException;
 import com.qhjf.cfm.exceptions.ReqDataException;
 import com.qhjf.cfm.utils.CommonService;
 import com.qhjf.cfm.utils.StringKit;
+import com.qhjf.cfm.utils.TableDataCacheUtil;
 import com.qhjf.cfm.web.UserInfo;
 
 import java.sql.SQLException;
@@ -151,6 +152,7 @@ public class SupplierAccService {
                 new Record().set("id", id).set("persist_version", old_version));
 
         if (flag) {
+        	TableDataCacheUtil.getInstance().removeRowData("supplier_acc_info", "id", id+"");
             return Db.findById("supplier_acc_info", "id", id);
         }
 
@@ -184,6 +186,8 @@ public class SupplierAccService {
         if (!flag) {
             throw new DbProcessException("删除供应商信息失败!");
         }
+        
+        TableDataCacheUtil.getInstance().removeRowData("supplier_acc_info", "id", id+"");
     }
 
     public boolean chgSupplierAccInfoByIdAndVersion(final Record set, final Record where) {

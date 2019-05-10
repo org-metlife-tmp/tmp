@@ -39,7 +39,7 @@ public class CheckBatchForService {
 
 	private final static Log logger = LogbackLog.getLog(CheckBatchForService.class);
 	TxtDiskSendingService txtDiskSendingService = new TxtDiskSendingService();
-
+	DbtService dbtService = new DbtService();
 	private static String la_pre = "pay_la_batch";
 	private static String ebs_pre = "pay_ebs_batch";
 	/**
@@ -487,6 +487,8 @@ public class CheckBatchForService {
 						List<Record> find = Db.find(Db.getSql("supplier.querySupplier"),main_record.get("pay_acc_no"));
 						insertRecord.set("recv_bank_cnaps", find.get(0).get("cnaps_code"));
 						insertRecord.set("recv_account_id", find.get(0).get("id"));
+						insertRecord.set("recv_bank_prov", find.get(0).get("province"));
+						insertRecord.set("recv_bank_city", find.get(0).get("city"));
 						insertRecord.set("payment_summary", payment_summary);
 						boolean save = Db.save("outer_zf_payment", "id", insertRecord);
 						logger.info("===============入库支付通的结果==="+ save + "==id=="+ insertRecord.getLong("id"));
@@ -495,14 +497,22 @@ public class CheckBatchForService {
 						logger.info("===============此处需要开启一个调拨的审批流");
 						type = WebConstant.MajorBizType.INNERDB;
 						// 获取配置的调拨付款方账号
+						Long payOrgLevel = TypeUtils.castToLong(payRec.get("level_num"));
+						Record recvRec = Db.findFirst(Db.getSql("nbdb.findAccountByAccno"), main_record.get("pay_acc_no"));
+						Long recvOrgLevel = TypeUtils.castToLong(recvRec.get("level_num"));
+						int paymenType = dbtService.getPayMentType(recvOrgLevel, payOrgLevel);
+						insertRecord.set("payment_type", paymenType);
 						serviceSerialNumber = BizSerialnoGenTool.getInstance().getSerial(WebConstant.MajorBizType.INNERDB);
 						insertRecord.set("biz_id", "11e1d8f2dbe14c41a241e0a430743c6b")
 						            .set("biz_name", "保单支出户充值")
 								    .set("service_serial_number", serviceSerialNumber);
+						insertRecord.set("process_bank_type",payRec.get("bank_type")); //付款方银行大类
 						//封装 recv_account_id
-						List<Record> find = Db.find(Db.getSql("acc.findAccountByAccNo"),main_record.get("pay_acc_no"));
-						insertRecord.set("recv_account_id", find.get(0).get("acc_id"));
-						insertRecord.set("recv_bank_cnaps", find.get(0).get("bank_cnaps_code"));
+						//List<Record> find = Db.find(Db.getSql("acc.findAccountByAccNo"),);
+						insertRecord.set("recv_account_id", recvRec.get("acc_id"));
+						insertRecord.set("recv_bank_cnaps", recvRec.get("bank_cnaps_code"));
+						insertRecord.set("recv_bank_prov",recvRec.get("province"));
+						insertRecord.set("recv_bank_city", recvRec.get("city"));
 						insertRecord.set("payment_summary", payment_summary);
 						boolean save = Db.save("inner_db_payment", "id", insertRecord);
 						logger.info("===============入库调拨通的结果==="+ save + "==id=="+ insertRecord.getLong("id"));
@@ -732,4 +742,5 @@ public class CheckBatchForService {
 		}
 		return Db.findFirst(sqlPara);
 	}
+		
 }
