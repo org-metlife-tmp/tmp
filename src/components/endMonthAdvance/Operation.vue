@@ -1,190 +1,133 @@
 <style scoped lang="less" type="text/less">
     #operation {
-        width: 100%;
-        height: 100%;
-        box-sizing: border-box;
-        position: relative;
-
-        /*顶部按钮*/
-        .button-list-right {
-            position: absolute;
-            top: -60px;
-            right: -18px;
-        }
-        .button-list-left {
-            position: absolute;
-            top: -50px;
-            left: -20px;
-
-            ul {
-                font-size: 14px;
-                color: #b1b1b1;
-                text-align: center;
-                height: 30px;
-                line-height: 30px;
-
-                li {
-                    float: left;
-                    margin-right: 4px;
-                    height: 100%;
-                    width: 100px;
-                    border-radius: 3px 3px 0 0;
-                    cursor: pointer;
-                    background-color: #f2f2f2;
-                }
-
-                .active {
-                    color: #00b3ed;
-                    background-color: #fff;
-                }
-            }
-        }
-
-        /*搜索区*/
-        .search-setion {
-            text-align: left;
-
-            /*时间控件*/
-            .el-date-editor {
-                width: 100%;
-                max-width: 210px;
-            }
-        }
-
-        /*分隔栏*/
-        .split-bar {
-            width: 106%;
-            height: 6px;
-            margin-left: -20px;
-            background-color: #E7E7E7;
-            margin-bottom: 20px;
-        }
-
-        /*数据展示区*/
-        .table-content {
-            height: 60%;
-        }
-
-        /*汇总数据*/
-        .allData {
-            height: 36px;
-            line-height: 36px;
-            width: 100%;
-            background-color: #F8F8F8;
-            border: 1px solid #ebeef5;
-            border-top: none;
-            box-sizing: border-box;
-
-            /*确认按钮*/
-            .btn-left {
-                float: right;
-                margin-right: 16px;
-            }
-
-        }
-
-
-        /*撤回按钮*/
-        .withdraw {
-            width: 20px;
-            height: 20px;
-            background-image: url(../../assets/icon_common.png);
-            background-position: -48px 0;
-            border: none;
-            padding: 0;
-            vertical-align: middle;
-        }
-
-        /*分页部分*/
-        .botton-pag {
-            position: absolute;
-            width: 100%;
-            height: 8%;
-            bottom: -6px;
-        }
 
     }
 </style>
 
 <template>
-    <div id="operation">
-        <!-- 顶部按钮-->
-        <div class="button-list-left">
+    <el-container id="operation">
+        <el-header>
+            <div class="search-setion">
+                <el-form :inline="true" :model="searchData" size="mini">
+                    <el-row>
+                        <el-col :span="5">
+                            <el-form-item>
+                                <el-date-picker
+                                        v-model="searchData.dateValue"
+                                        type="daterange"
+                                        range-separator="至"
+                                        start-placeholder="开始日期"
+                                        end-placeholder="结束日期"
+                                        value-format="yyyy-MM-dd"
+                                        size="mini" clearable
+                                        unlink-panels
+                                        :picker-options="pickerOptions">
+                                </el-date-picker>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-select v-model="searchData.org_id" placeholder="请选择开户机构"
+                                           clearable filterable
+                                           @change="getAccData"
+                                           style="width:100%">
+                                    <el-option v-for="item in orgList"
+                                               :key="item.org_id"
+                                               :label="item.name"
+                                               :value="item.org_id">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-select v-model="searchData.acc_no" placeholder="请选择银行账号"
+                                           clearable filterable
+                                           style="width:100%">
+                                    <el-option v-for="accItem in accList"
+                                               :key="accItem.acc_id"
+                                               :label="accItem.acc_no"
+                                               :value="accItem.acc_no">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-select v-model="searchData.acc_no" placeholder="请选择bankcode"
+                                           clearable filterable
+                                           style="width:100%">
+                                    <el-option v-for="accItem in accList"
+                                               :key="accItem.acc_id"
+                                               :label="accItem.bankcode"
+                                               :value="accItem.bankcode">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-date-picker
+                                        v-model="searchData.period_date"
+                                        type="month"
+                                        value-format="yyyy-MM"
+                                        placeholder="请选择财务月">
+                                </el-date-picker>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="2">
+                            <el-form-item>
+                                <el-button type="primary" plain @click="queryData" size="mini">搜索</el-button>
+                            </el-form-item>
+                        </el-col>
 
-        </div>
-        <div class="button-list-right">
-        </div>
-        <!--搜索区-->
-        <div class="search-setion">
-            <el-form :inline="true" :model="searchData" size="mini">
-                <el-row>
-                    <el-col :span="5">
-                        <el-form-item>
-                            <el-date-picker
-                                    v-model="searchData.dateValue"
-                                    type="daterange"
-                                    range-separator="至"
-                                    start-placeholder="开始日期"
-                                    end-placeholder="结束日期"
-                                    value-format="yyyy-MM-dd"
-                                    size="mini" clearable
-                                    unlink-panels
-                                    :picker-options="pickerOptions">
-                            </el-date-picker>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="5">
-                        <el-form-item>
-                            <el-col :span="11">
-                                <el-input v-model="searchData.min" placeholder="最小金额"></el-input>
-                            </el-col>
-                            <el-col class="line" :span="1" style="text-align:center">-</el-col>
-                            <el-col :span="11">
-                                <el-input v-model="searchData.max" placeholder="最大金额"></el-input>
-                            </el-col>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="4">
-                        <el-form-item>
-                            <el-select v-model="searchData.is_checked" placeholder="请选择对账状态"
-                                       clearable filterable style="width:100%">
-                                <el-option label="未核对" value="0"></el-option>
-                                <el-option label="已核对" value="1"></el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="4">
-                        <el-form-item>
-                            <el-input v-model="searchData.check_user_name" clearable placeholder="请输入操作人"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="2">
-                        <el-form-item>
-                            <el-button type="primary" plain @click="clearData" size="mini">清空筛选</el-button>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="2">
-                        <el-form-item>
-                            <el-button type="primary" plain @click="queryData" size="mini">搜索</el-button>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="11">
-                        <el-form-item style="margin-bottom:0px">
-                            <el-checkbox-group v-model="searchData.precondition">
-                                <el-checkbox v-for="(name,k) in statusList"
-                                             :label="k" name="name" :key="k">
-                                    {{ name }}
-                                </el-checkbox>
-                            </el-checkbox-group>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-            </el-form>
-        </div>
-        <!--分隔栏-->
-        <div class="split-bar"></div>
-        <!--数据展示区-->
-        <section class="table-content">
+                        <el-col :span="5">
+                            <el-form-item>
+                                <el-col :span="11">
+                                    <el-input v-model="searchData.min" placeholder="最小金额"></el-input>
+                                </el-col>
+                                <el-col class="line" :span="1" style="text-align:center">-</el-col>
+                                <el-col :span="11">
+                                    <el-input v-model="searchData.max" placeholder="最大金额"></el-input>
+                                </el-col>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-select v-model="searchData.is_checked" placeholder="请选择对账状态"
+                                           clearable filterable style="width:100%">
+                                    <el-option label="未核对" value="0"></el-option>
+                                    <el-option label="已核对" value="1"></el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-input v-model="searchData.presubmit_user_name" clearable
+                                          placeholder="请输入操作人"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="8">
+                            <el-form-item style="margin-bottom:0px">
+                                <el-checkbox-group v-model="searchData.precondition">
+                                    <el-checkbox v-for="(name,k) in statusList"
+                                                 :label="k" name="name" :key="k">
+                                        {{ name }}
+                                    </el-checkbox>
+                                </el-checkbox-group>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="2">
+                            <el-form-item>
+                                <el-button type="primary" plain @click="clearData" size="mini">清空筛选</el-button>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                </el-form>
+            </div>
+            <div class="split-bar"></div>
+        </el-header>
+        <el-main>
             <el-table :data="tableList" height="100%" border size="mini"
                       @selection-change="saveId">
                 <el-table-column type="selection" width="40"></el-table-column>
@@ -226,8 +169,10 @@
                     </template>
                 </el-table-column>-->
             </el-table>
+        </el-main>
+        <el-footer>
             <div class="allData">
-                <div class="btn-left">
+                <div class="btn-right">
                     <el-button type="warning" size="mini" @click="affirm"
                                :disabled="mayAffirm">确认生成
                     </el-button>
@@ -236,9 +181,6 @@
                     </el-button>
                 </div>
             </div>
-        </section>
-        <!--分页部分-->
-        <div class="botton-pag">
             <el-pagination
                     background
                     layout="sizes, prev, pager, next, jumper"
@@ -250,8 +192,8 @@
                     @size-change="sizeChange"
                     :current-page="pagCurrent">
             </el-pagination>
-        </div>
-    </div>
+        </el-footer>
+    </el-container>
 </template>
 
 <script>
@@ -328,12 +270,11 @@
                 params.page_num = 1;
 
                 for (var k in searchData) {
-                    if(k == "dateValue"){
+                    if (k == "dateValue") {
                         var val = searchData[k];
                         params.start_date = val ? val[0] : "";
                         params.end_date = val ? val[1] : "";
-                        params.page_num = 1;
-                    }else{
+                    } else {
                         params[k] = searchData[k];
                     }
                 }
@@ -408,7 +349,7 @@
                 }
             },
             //设置当前勾选的id
-            saveId: function(selection){
+            saveId: function (selection) {
                 this.selectId = [];
 
                 selection.forEach((row) => {
@@ -539,8 +480,3 @@
         }
     }
 </script>
-
-
-
-
-
