@@ -727,6 +727,8 @@
                 </template>
                 <el-menu-item-group>
                     <el-menu-item index="/endmonth-advance/operation">操作</el-menu-item>
+                    <el-menu-item index="/endmonth-advance/review">复核</el-menu-item>
+                    <el-menu-item index="/endmonth-advance/advance-query">查询</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
         </el-menu>

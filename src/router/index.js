@@ -147,6 +147,8 @@ import InitialBalance from '@/components/reconciliation/InitialBalance'
 import BalanceAdjust from '@/components/reconciliation/BalanceAdjust'
 //月末预提凭证
 import Operation from '@/components/endMonthAdvance/Operation'
+import Review from '@/components/endMonthAdvance/Review'
+import AdvanceQuery from '@/components/endMonthAdvance/AdvanceQuery'
 
 
 Vue.use(Router)
@@ -283,6 +285,8 @@ const router = new Router({
                         {path: '/reconciliation/balance-adjust', name: 'BalanceAdjust', component: BalanceAdjust, meta: {requireAuth: true}},
                         //月末预提凭证
                         {path: '/endmonth-advance/operation', name: 'Operation', component: Operation, meta: {requireAuth: true}},
+                        {path: '/endmonth-advance/review', name: 'Review', component: Review, meta: {requireAuth: true}},
+                        {path: '/endmonth-advance/advance-query', name: 'AdvanceQuery', component: AdvanceQuery, meta: {requireAuth: true}},
                     ]
                 },
                 //基础样式三（tab页）
