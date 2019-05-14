@@ -131,7 +131,8 @@
             <el-table :data="tableList" height="100%" border size="mini"
                       @selection-change="saveId">
                 <el-table-column type="selection" width="40"></el-table-column>
-                <el-table-column prop="trans_date" label="对账单日期" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="trans_date" label="对账单日期" width="110px"
+                                 :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="bankcode" label="BankCode" width="110px"
                                  :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="acc_no" label="银行账号" :show-overflow-tooltip="true"></el-table-column>
