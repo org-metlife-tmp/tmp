@@ -13,7 +13,7 @@
                         <el-col :span="5">
                             <el-form-item>
                                 <el-date-picker
-                                        v-model="searchData.dateValue"
+                                        v-model="dateValue"
                                         type="daterange"
                                         range-separator="至"
                                         start-placeholder="开始日期"
@@ -47,7 +47,7 @@
                                     <el-option v-for="accItem in accList"
                                                :key="accItem.acc_id"
                                                :label="accItem.acc_no"
-                                               :value="accItem.acc_no">
+                                               :value="accItem.acc_id">
                                     </el-option>
                                 </el-select>
                             </el-form-item>
@@ -60,7 +60,7 @@
                                     <el-option v-for="accItem in accList"
                                                :key="accItem.acc_id"
                                                :label="accItem.bankcode"
-                                               :value="accItem.bankcode">
+                                               :value="accItem.acc_id">
                                     </el-option>
                                 </el-select>
                             </el-form-item>
@@ -148,6 +148,7 @@
                                  :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="period_date" label="财务月" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="summary" label="摘要" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="amount" label="金额" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="is_checked" label="对账状态" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="precondition" label="预提状态" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="presubmit_confirm_user_name" label="操作人" :show-overflow-tooltip="true"></el-table-column>
@@ -220,7 +221,6 @@
                     }
                 },
                 searchData: { //搜索条件
-                    dateValue: "",
                     start_date: "",
                     end_date: "",
                     org_id: "",
@@ -233,6 +233,7 @@
                     presubmit_user_name: "",
                     precondition: []
                 },
+                dateValue: "",
                 pickerOptions: {
                     disabledDate(time) {
                         return time.getTime() > Date.now();
@@ -271,14 +272,12 @@
                 params.page_num = 1;
 
                 for (var k in searchData) {
-                    if (k == "dateValue") {
-                        var val = searchData[k];
-                        params.start_date = val ? val[0] : "";
-                        params.end_date = val ? val[1] : "";
-                    } else {
-                        params[k] = searchData[k];
-                    }
+                    params[k] = searchData[k];
                 }
+
+                let dateValue = this.dateValue;
+                params.start_date = dateValue ? dateValue[0] : "";
+                params.end_date = dateValue ? dateValue[1] : "";
 
                 this.$emit("getCommTable", this.routerMessage);
             },
