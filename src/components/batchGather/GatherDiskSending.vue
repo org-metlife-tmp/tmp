@@ -19,7 +19,7 @@
 </style>
 
 <template>
-    <el-container id="operation">
+    <el-container id="gatherDiskSending">
         <el-header>
             <div class="button-list-left">
                 <el-select v-model="searchData.source_sys"
