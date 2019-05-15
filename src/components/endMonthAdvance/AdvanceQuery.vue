@@ -7,6 +7,10 @@
 <template>
     <el-container id="advanceQuery">
         <el-header>
+            <div class="button-list-right">
+                <el-button type="warning" size="mini" @click="exportFun">导出业务明细</el-button>
+                <el-button type="warning" size="mini" @click="exportFun1">导出财务账</el-button>
+            </div>
             <div class="search-setion">
                 <el-form :inline="true" :model="searchData" size="mini">
                     <el-row>
@@ -152,6 +156,10 @@
                 <el-table-column prop="is_checked" label="对账状态" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="precondition" label="预提状态" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="presubmit_confirm_user_name" label="操作人" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="presubmit_date" label="预提日期" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="chargeoff_date" label="冲销日期" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="presubmit_code" label="预提凭证号" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="chargeoff_code" label="冲销凭证号" :show-overflow-tooltip="true"></el-table-column>
                 <!--<el-table-column
                         label="操作" width="50"
                         fixed="right">
@@ -363,6 +371,51 @@
                     method: "post",
                     data: {
                         optype: "checkbatch_listexport",
+                        params: params
+                    },
+                    responseType: 'blob'
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                    } else {
+                        var fileName = decodeURI(result.headers["content-disposition"]).split("=")[1];
+                        //ie兼容
+                        if (window.navigator && window.navigator.msSaveOrOpenBlob) {
+                            window.navigator.msSaveOrOpenBlob(new Blob([result.data]), fileName);
+                        } else {
+                            let url = window.URL.createObjectURL(new Blob([result.data]));
+                            let link = document.createElement('a');
+                            link.style.display = 'none';
+                            link.href = url;
+                            link.setAttribute('download', fileName);
+                            document.body.appendChild(link);
+                            link.click();
+                        }
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                })
+            },
+            //导出
+            exportFun1: function () {
+                if (!this.tableList.length) {
+                    this.$message({
+                        type: "warning",
+                        message: "当前数据为空",
+                        duration: 2000
+                    });
+                    return;
+                }
+                var params = this.routerMessage.params;
+                this.$axios({
+                    url: this.queryUrl + "normalProcess",
+                    method: "post",
+                    data: {
+                        optype: "sftvoucherlist_voucherexport",
                         params: params
                     },
                     responseType: 'blob'

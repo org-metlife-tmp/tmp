@@ -7,6 +7,9 @@
 <template>
     <el-container id="review">
         <el-header>
+            <div class="button-list-right">
+                <el-button type="warning" size="mini" @click="exportFun">导出财务账</el-button>
+            </div>
             <div class="search-setion">
                 <el-form :inline="true" :model="searchData" size="mini">
                     <el-row>
@@ -152,6 +155,10 @@
                 <el-table-column prop="is_checked" label="对账状态" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="precondition" label="预提状态" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="presubmit_confirm_user_name" label="操作人" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="presubmit_date" label="预提日期" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="chargeoff_date" label="冲销日期" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="presubmit_code" label="预提凭证号" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="chargeoff_code" label="冲销凭证号" :show-overflow-tooltip="true"></el-table-column>
                 <!--<el-table-column
                         label="操作" width="50"
                         fixed="right">
@@ -434,7 +441,7 @@
                     url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
-                        optype: "checkbatch_listexport",
+                        optype: "sftvoucherlist_voucherexport",
                         params: params
                     },
                     responseType: 'blob'
