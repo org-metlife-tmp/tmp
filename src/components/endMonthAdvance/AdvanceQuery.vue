@@ -7,6 +7,19 @@
 <template>
     <el-container id="advanceQuery">
         <el-header>
+            <div class="button-list-left">
+                <el-date-picker
+                        v-model="dateValue"
+                        type="daterange"
+                        range-separator="至"
+                        start-placeholder="开始日期"
+                        end-placeholder="结束日期"
+                        value-format="yyyy-MM-dd"
+                        size="mini" clearable
+                        unlink-panels
+                        :picker-options="pickerOptions">
+                </el-date-picker>
+            </div>
             <div class="button-list-right">
                 <el-button type="warning" size="mini" @click="exportFun">导出业务明细</el-button>
                 <el-button type="warning" size="mini" @click="exportFun1"
@@ -15,21 +28,6 @@
             <div class="search-setion">
                 <el-form :inline="true" :model="searchData" size="mini">
                     <el-row>
-                        <el-col :span="5">
-                            <el-form-item>
-                                <el-date-picker
-                                        v-model="dateValue"
-                                        type="daterange"
-                                        range-separator="至"
-                                        start-placeholder="开始日期"
-                                        end-placeholder="结束日期"
-                                        value-format="yyyy-MM-dd"
-                                        size="mini" clearable
-                                        unlink-panels
-                                        :picker-options="pickerOptions">
-                                </el-date-picker>
-                            </el-form-item>
-                        </el-col>
                         <el-col :span="4">
                             <el-form-item>
                                 <el-select v-model="searchData.org_id" placeholder="请选择开户机构"
@@ -80,6 +78,20 @@
                                 </el-date-picker>
                             </el-form-item>
                         </el-col>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-select v-model="searchData.is_checked" placeholder="请选择对账状态"
+                                           clearable filterable style="width:100%">
+                                    <el-option label="未核对" value="0"></el-option>
+                                    <el-option label="已核对" value="1"></el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="2">
+                            <el-form-item>
+                                <el-button type="primary" plain @click="clearData" size="mini">清空筛选</el-button>
+                            </el-form-item>
+                        </el-col>
                         <el-col :span="2">
                             <el-form-item>
                                 <el-button type="primary" plain @click="queryData" size="mini">搜索</el-button>
@@ -99,20 +111,11 @@
                         </el-col>
                         <el-col :span="4">
                             <el-form-item>
-                                <el-select v-model="searchData.is_checked" placeholder="请选择对账状态"
-                                           clearable filterable style="width:100%">
-                                    <el-option label="未核对" value="0"></el-option>
-                                    <el-option label="已核对" value="1"></el-option>
-                                </el-select>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="4">
-                            <el-form-item>
                                 <el-input v-model="searchData.presubmit_user_name" clearable
                                           placeholder="请输入操作人"></el-input>
                             </el-form-item>
                         </el-col>
-                        <el-col :span="8">
+                        <el-col :span="15">
                             <el-form-item style="margin-bottom:0px">
                                 <el-checkbox-group v-model="searchData.precondition">
                                     <el-checkbox v-for="(name,k) in statusList"
@@ -120,11 +123,6 @@
                                         {{ name }}
                                     </el-checkbox>
                                 </el-checkbox-group>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="2">
-                            <el-form-item>
-                                <el-button type="primary" plain @click="clearData" size="mini">清空筛选</el-button>
                             </el-form-item>
                         </el-col>
                     </el-row>

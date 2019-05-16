@@ -210,7 +210,7 @@
         name: "Operation",
         created: function () {
             this.$emit("transmitTitle", "操作");
-            // this.$emit("getCommTable", this.routerMessage);
+            this.$emit("getCommTable", this.routerMessage);
 
             //机构列表
             this.getOrgList();

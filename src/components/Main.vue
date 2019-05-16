@@ -151,6 +151,12 @@
             position: absolute;
             top: 18px;
             left: 0;
+
+            /*时间控件*/
+            .el-date-editor {
+                width: 100%;
+                max-width: 210px;
+            }
         }
         /*********
          公共样式设置结束
