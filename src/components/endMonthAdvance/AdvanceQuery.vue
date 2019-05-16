@@ -200,7 +200,7 @@
         name: "AdvanceQuery",
         created: function () {
             this.$emit("transmitTitle", "查询");
-            this.$emit("getCommTable", this.routerMessage);
+            // this.$emit("getCommTable", this.routerMessage);
 
             //机构列表
             this.getOrgList();
@@ -251,6 +251,7 @@
                 orgList: [], //常量数据
                 accList: [],
                 selectId: [], //选中数据
+                canUse: true, //是否可导出财务账
             }
         },
         methods: {
@@ -280,6 +281,12 @@
                 params.end_date = dateValue ? dateValue[1] : "";
 
                 this.$emit("getCommTable", this.routerMessage);
+
+                if(searchData.precondition.indexOf("2") > -1 || searchData.precondition.indexOf("5") > -1){
+                    this.canUse = false;
+                }else{
+                    this.canUse = true;
+                }
             },
             //换页后获取数据
             getCurrentPage: function (currPage) {
@@ -446,13 +453,6 @@
                 }).catch(function (error) {
                     console.log(error);
                 })
-            },
-        },
-        computed: {
-            //是否可导出财务账
-            canUse: function(){
-                return !(this.routerMessage.params.precondition &&
-                        (this.routerMessage.params.precondition.indexOf(2) > -1 || this.routerMessage.params.precondition.indexOf(5) > -1));
             }
         },
         watch: {
