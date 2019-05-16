@@ -8,7 +8,7 @@
     <el-container id="review">
         <el-header>
             <div class="button-list-right">
-                <el-button type="warning" size="mini" @click="exportFun">导出财务账</el-button>
+                <el-button type="warning" size="mini" @click="exportFun">导出业务明细</el-button>
             </div>
             <div class="search-setion">
                 <el-form :inline="true" :model="searchData" size="mini">
@@ -251,9 +251,8 @@
                 pagTotal: 1,
                 pagCurrent: 1,
                 statusList: { //常量数据
-                    0: "未预提",
-                    1: "已提交",
-                    2: "已冲销"
+                    1: "预提复核中",
+                    3: "撤销复核中"
                 },
                 orgList: [], //常量数据
                 accList: [],
@@ -441,7 +440,7 @@
                     url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
-                        optype: "sftvoucherlist_voucherexport",
+                        optype: "sftvoucherlist_tradxport",
                         params: params
                     },
                     responseType: 'blob'

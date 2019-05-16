@@ -252,8 +252,7 @@
                 pagCurrent: 1,
                 statusList: { //常量数据
                     0: "未预提",
-                    1: "已提交",
-                    2: "已冲销"
+                    1: "已预提"
                 },
                 orgList: [], //常量数据
                 accList: [],
