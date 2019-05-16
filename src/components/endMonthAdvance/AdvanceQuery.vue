@@ -9,7 +9,8 @@
         <el-header>
             <div class="button-list-right">
                 <el-button type="warning" size="mini" @click="exportFun">导出业务明细</el-button>
-                <el-button type="warning" size="mini" @click="exportFun1">导出财务账</el-button>
+                <el-button type="warning" size="mini" @click="exportFun1"
+                           :disabled="canUse">导出财务账</el-button>
             </div>
             <div class="search-setion">
                 <el-form :inline="true" :model="searchData" size="mini">
@@ -448,6 +449,12 @@
                     console.log(error);
                 })
             },
+        },
+        computed: {
+            //是否可导出财务账
+            canUse: function(){
+                return !(this.routerMessage.params.precondition && this.routerMessage.params.precondition.indexOf(2) > -1 && this.routerMessage.params.precondition.indexOf(5) > -1);
+            }
         },
         watch: {
             tableData: function (val, oldVal) {
