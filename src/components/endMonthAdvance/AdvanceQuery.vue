@@ -154,7 +154,7 @@
                 <el-table-column prop="amount" label="金额" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="is_checked" label="对账状态" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="precondition" label="预提状态" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="presubmit_confirm_user_name" label="操作人" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="presubmit_user_name" label="操作人" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="presubmit_date" label="预提日期" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="chargeoff_date" label="冲销日期" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="presubmit_code" label="预提凭证号" :show-overflow-tooltip="true"></el-table-column>
@@ -372,7 +372,7 @@
                     url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
-                        optype: "checkbatch_listexport",
+                        optype: "sftvoucherlist_tradxport",
                         params: params
                     },
                     responseType: 'blob'
@@ -451,7 +451,8 @@
         computed: {
             //是否可导出财务账
             canUse: function(){
-                return !(this.routerMessage.params.precondition && this.routerMessage.params.precondition.indexOf(2) > -1 && this.routerMessage.params.precondition.indexOf(5) > -1);
+                return !(this.routerMessage.params.precondition &&
+                        (this.routerMessage.params.precondition.indexOf(2) > -1 || this.routerMessage.params.precondition.indexOf(5) > -1));
             }
         },
         watch: {

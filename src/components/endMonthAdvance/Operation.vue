@@ -154,7 +154,7 @@
                 <el-table-column prop="amount" label="金额" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="is_checked" label="对账状态" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="precondition" label="预提状态" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="presubmit_confirm_user_name" label="操作人" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="presubmit_user_name" label="操作人" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="presubmit_date" label="预提日期" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="chargeoff_date" label="冲销日期" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="presubmit_code" label="预提凭证号" :show-overflow-tooltip="true"></el-table-column>
