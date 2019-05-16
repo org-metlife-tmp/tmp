@@ -200,7 +200,7 @@
         name: "AdvanceQuery",
         created: function () {
             this.$emit("transmitTitle", "查询");
-            // this.$emit("getCommTable", this.routerMessage);
+            this.$emit("getCommTable", this.routerMessage);
 
             //机构列表
             this.getOrgList();
@@ -282,10 +282,15 @@
 
                 this.$emit("getCommTable", this.routerMessage);
 
-                if(searchData.precondition.indexOf("2") > -1 || searchData.precondition.indexOf("5") > -1){
-                    this.canUse = false;
-                }else{
-                    this.canUse = true;
+                switch(searchData.precondition.length){
+                    case 1:
+                        this.canUse = !(searchData.precondition.indexOf("2") > -1 || searchData.precondition.indexOf("5") > -1);
+                        break;
+                    case 2:
+                        this.canUse = !(searchData.precondition.indexOf("2") > -1 && searchData.precondition.indexOf("5") > -1);
+                        break;
+                    default:
+                        this.canUse = true;
                 }
             },
             //换页后获取数据
