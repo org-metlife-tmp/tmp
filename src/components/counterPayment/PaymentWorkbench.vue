@@ -345,11 +345,6 @@
                                 </el-select>
                             </el-form-item>
                         </el-col>
-                        <el-col :span="24">
-                            <el-form-item label="CNAPS" :label-width="formLabelWidth">
-                                <el-input v-model="bankdialogData.cnaps_code" readonly></el-input>
-                            </el-form-item>
-                        </el-col>
                     </el-row>
                 </el-form>
 
@@ -357,6 +352,21 @@
                     <el-button type="warning" size="mini" plain @click="bankdialogVisible = false">取 消</el-button>
                     <el-button type="warning" size="mini" @click="saveBankinfo">确 定</el-button>
                 </span>
+            </el-dialog>
+
+            <!--拒绝弹框-->
+            <el-dialog title="拒绝理由"
+                       top="200px" width="310px"
+                       :visible.sync="rejectDialogVisible"
+                       :close-on-click-modal="false">
+                <el-select v-model="rejectMessage" placeholder="请选择拒绝理由" clearable size="small">
+                    <el-option label="TMPPJ:变更支付方式" value="TMPPJ:变更支付方式"></el-option>
+                    <el-option label="TMPPJ:拒绝支付" value="TMPPJ:拒绝支付"></el-option>
+                </el-select>
+                <span slot="footer" class="dialog-footer">
+                <el-button type="warning" plain @click="rejectDialogVisible = false" size="mini">取 消</el-button>
+                <el-button type="warning" @click="submitReject" size="mini">确 定</el-button>
+            </span>
             </el-dialog>
         </el-footer>
     </el-container>
@@ -416,7 +426,8 @@
                     params: {
                         page_size: 20,
                         page_num: 1,
-                        source_sys: "0"
+                        source_sys: "0",
+                        status: ["0"]
                     }
                 },
                 searchData: { //搜索条件
@@ -429,7 +440,7 @@
                     pay_mode: "",
                     biz_code: "",
                     service_status: "",
-                    status: []
+                    status: ["0"]
                 },
                 dateValue: "", //时间控件
                 pickerOptions: {
@@ -499,6 +510,8 @@
                 currentData: "", //当前项
                 selectId: [],
                 selectVersion: [],
+                rejectDialogVisible: false, //拒绝弹框
+                rejectMessage: ""
             }
         },
         methods: {
@@ -544,7 +557,7 @@
                     if (k == "source_sys") {
                         searchData[k] = tab;
                     } else if (k == "status") {
-                        searchData[k] = [];
+                        searchData[k] = ["0"];
                     } else {
                         searchData[k] = "";
                     }
@@ -839,52 +852,44 @@
             },
             //拒绝
             rejectData: function (row) {
-                this.$prompt('请输入拒绝原因', '提示', {
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                    title: "拒绝原因",
-                    inputValidator: function (value) {
-                        if (!value) {
-                            return false;
-                        } else {
-                            return true;
+                this.rejectDialogVisible = true;
+                this.rejectMessage = "";
+                this.currentData = row;
+            },
+            //确定拒绝
+            submitReject: function () {
+                let currentData = this.currentData;
+                this.$axios({
+                    url: this.queryUrl + "normalProcess",
+                    method: "post",
+                    data: {
+                        optype: "paycounter_revokeToLaOrEbs",
+                        params: {
+                            pay_id: currentData.pay_id,
+                            source_sys: currentData.source_sys,
+                            persist_version: currentData.persist_version,
+                            feed_back: this.rejectMessage
                         }
-                    },
-                    inputErrorMessage: '请输入拒绝原因'
-                }).then(({value}) => {
-                    this.$axios({
-                        url: this.queryUrl + "normalProcess",
-                        method: "post",
-                        data: {
-                            optype: "paycounter_revokeToLaOrEbs",
-                            params: {
-                                pay_id: row.pay_id,
-                                source_sys: row.source_sys,
-                                persist_version: row.persist_version,
-                                feed_back: value
-                            }
-                        }
-                    }).then((result) => {
-                        if (result.data.error_msg) {
-                            this.$message({
-                                type: "error",
-                                message: result.data.error_msg,
-                                duration: 2000
-                            });
-                            return;
-                        } else {
-                            this.$message({
-                                type: "success",
-                                message: "拒绝成功",
-                                duration: 2000
-                            });
-                            this.$emit("getCommTable", this.routerMessage);
-                        }
-                    }).catch(function (error) {
-                        console.log(error);
-                    })
-                }).catch(() => {
-
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        });
+                        return;
+                    } else {
+                        this.$message({
+                            type: "success",
+                            message: "拒绝成功",
+                            duration: 2000
+                        });
+                        this.rejectDialogVisible = false;
+                        this.$emit("getCommTable", this.routerMessage);
+                    }
+                }).catch(function (error) {
+                    console.log(error);
                 });
             },
             //当前列是否可以勾选
