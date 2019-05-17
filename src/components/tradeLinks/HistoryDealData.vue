@@ -76,10 +76,11 @@
                     <el-option label="增量导入" value="2"></el-option>
                 </el-select>
                 <el-select v-model="uploadHeaders.pk" size="mini">
-                    <el-option label="自带模板" value="6"></el-option>
-                    <el-option label="建设银行" value="10"></el-option>
-                    <el-option label="中国银行" value="11"></el-option>
-                    <!--<el-option label="中信银行" value="12"></el-option>-->
+                    <el-option v-for="(name,k) in bankList"
+                               :key="k"
+                               :label="name"
+                               :value="k">
+                    </el-option>
                 </el-select>
             </div>
         </el-header>
@@ -137,6 +138,12 @@
             this.uploadHeaders.pk = this.isPending ? '5' : '6';
             var date = new Date();
             this.limitDate = new Date(date.setDate(date.getDate() - 1)).toLocaleDateString().replace(/\//g, "-");
+
+            //银行列表
+            var constants = JSON.parse(window.sessionStorage.getItem("constants"));
+            if(constants.HisTransImportBankList){
+                this.bankList = constants.HisTransImportBankList;
+            }
         },
         props: ["isPending"],
         data: function () {
@@ -150,7 +157,8 @@
                 },
                 errorTipShow: false,
                 limitDate: "",
-                inportType: "1"
+                inportType: "1",
+                bankList: {}
             }
         },
         methods: {
