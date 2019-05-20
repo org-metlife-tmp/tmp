@@ -748,7 +748,7 @@
                                     :span="detail.pspan">{{ transtSourceSys(true,true,dialogData.source_sys) }}
                             </el-col>
 
-                            <el-col v-else-if="detail.prop=='payment_amount' || detail.prop=='total_amount'"
+                            <el-col v-else-if="detail.prop=='payment_amount' || detail.prop=='total_amount' || detail.prop=='pay_master_total_amount'"
                                     :key="detail.id"
                                     :span="detail.pspan">
                                 <span>￥</span>
