@@ -160,13 +160,6 @@
             </el-table>
         </el-main>
         <el-footer>
-            <div class="allData">
-                <div class="btn-right">
-                    <el-button type="warning" size="mini" @click="affirm"
-                               :disabled="mayAffirm">确认生成
-                    </el-button>
-                </div>
-            </div>
             <el-pagination
                     background
                     layout="sizes, prev, pager, next, jumper"

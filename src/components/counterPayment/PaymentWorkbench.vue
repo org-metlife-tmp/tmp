@@ -206,8 +206,15 @@
                         fixed="right">
                     <template slot-scope="scope" class="operationBtn">
                         <el-tooltip content="补录" placement="bottom" effect="light"
-                                    :enterable="false" :open-delay="500">
+                                    :enterable="false" :open-delay="500"
+                                    v-show="scope.row.status == 0">
                             <el-button type="primary" icon="el-icon-edit-outline" size="mini"
+                                       @click="addRecord(scope.row)"></el-button>
+                        </el-tooltip>
+                        <el-tooltip content="查看" placement="bottom" effect="light"
+                                    :enterable="false" :open-delay="500"
+                                    v-show="scope.row.status == 1">
+                            <el-button type="primary" icon="el-icon-search" size="mini"
                                        @click="addRecord(scope.row)"></el-button>
                         </el-tooltip>
                         <el-tooltip content="拒绝" placement="bottom" effect="light"
@@ -251,25 +258,25 @@
                         <el-col :span="12">
                             <el-form-item label="收款账号户名" prop="recv_acc_name">
                                 <el-input v-model="dialogData.recv_acc_name" clearable
-                                          placeholder="请输入收款账号户名"></el-input>
+                                          placeholder="请输入收款账号户名" :disabled="isLook"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
                             <el-form-item label="收款银行账号" prop="recv_acc_no">
                                 <el-input v-model="dialogData.recv_acc_no" clearable
-                                          placeholder="请输入收款银行账号"></el-input>
+                                          placeholder="请输入收款银行账号" :disabled="isLook"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="16">
                             <el-form-item label="开户行" prop="recv_bank_name">
-                                <el-input v-model="dialogData.recv_bank_name"
+                                <el-input v-model="dialogData.recv_bank_name" :disabled="isLook"
                                           placeholder="请选择开户行" @focus="getBank"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="24">
                             <el-form-item label="摘要">
                                 <el-input v-model="dialogData.payment_summary" clearable
-                                          placeholder="请输入摘要"></el-input>
+                                          placeholder="请输入摘要" :disabled="isLook"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="24">
@@ -278,7 +285,7 @@
                                         :emptyFileList="emptyFileList"
                                         :fileMessage="fileMessage"
                                         :triggerFile="triggerFile"
-                                        :isPending="true"></Upload>
+                                        :isPending="!isLook"></Upload>
                             </el-form-item>
                         </el-col>
                     </el-row>
@@ -466,6 +473,7 @@
                     recv_cnaps_code: "",
                 },
                 formLabelWidth: "120px",
+                isLook: false,
                 //校验规则设置
                 rules: {
                     recv_acc_name: {
@@ -611,9 +619,12 @@
                 }
 
                 this.currentData = row;
+
+                this.isLook = row.status == 0 ? false : true;
+
                 //附件数据
                 this.emptyFileList = [];
-                this.fileMessage.bill_id = row.id;
+                this.fileMessage.bill_id = row.gmf_id ? row.gmf_id : row.pay_id;
                 this.triggerFile = !this.triggerFile;
             },
             //选择开户行

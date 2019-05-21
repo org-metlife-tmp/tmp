@@ -147,6 +147,10 @@
             .icon-ymyt{
                 background-position: -470px -161px;
             }
+
+            .icon-gmsk{
+                background-position: -212px -284px;
+            }
             /*首页背景图定位结束*/
         }
 
@@ -232,6 +236,9 @@
             }
             .icon-ymyt{
                 background-position: -434px -161px;
+            }
+            .icon-gmsk{
+                background-position: -182px -284px;
             }
 
             .el-submenu__title p {
@@ -341,6 +348,10 @@
 
             .el-submenu__title:hover .icon-ymyt{
                 background-position: -470px -161px;
+            }
+
+            .el-submenu__title:hover .icon-gmsk{
+                background-position: -212px -284px;
             }
 
             .el-submenu__title:hover p {
@@ -742,6 +753,17 @@
                     <el-menu-item index="/endmonth-advance/advance-query" v-if="menuList.VOUCHERQUERY">查询</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
+            <!--<el-submenu index="25">
+                <template slot="title" height="200px">
+                    <i class="icon-gmsk"></i>
+                    <p>柜面收款</p>
+                </template>
+                <el-menu-item-group>
+                    <el-menu-item index="/counter-gather/single-gather">个单收款</el-menu-item>
+                    <el-menu-item index="/counter-gather/mass-single-gather">团单收款</el-menu-item>
+                    <el-menu-item index="/counter-gather/counter-account">结算对账</el-menu-item>
+                </el-menu-item-group>
+            </el-submenu>-->
         </el-menu>
     </div>
 </template>
