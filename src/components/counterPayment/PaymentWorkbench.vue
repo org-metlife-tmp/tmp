@@ -174,7 +174,7 @@
                       @selection-change="setId"
                       border size="mini" height="100%">
                 <el-table-column type="selection" width="40" :selectable="isSelect"></el-table-column>
-                <el-table-column prop="pay_date" label="业务操作日期" width="110px"
+                <el-table-column prop="push_date" label="业务操作日期" width="110px"
                                  :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="name" label="机构名称" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="pay_mode" label="支付方式" :show-overflow-tooltip="true"></el-table-column>
@@ -611,7 +611,7 @@
                 this.dialogVisible = true;
                 let dialogData = this.dialogData;
                 for (let k in dialogData) {
-                    dialogData[k] = "";
+                    dialogData[k] = row[k];
                 }
 
                 if (this.$refs.dialogForm) {
