@@ -143,6 +143,10 @@
             .icon-dzt {
                 background-position: -333px -254px;
             }
+
+            .icon-ymyt{
+                background-position: -470px -161px;
+            }
             /*首页背景图定位结束*/
         }
 
@@ -225,6 +229,9 @@
             }
             .icon-dzt {
                 background-position: -302px -254px;
+            }
+            .icon-ymyt{
+                background-position: -434px -161px;
             }
 
             .el-submenu__title p {
@@ -330,6 +337,10 @@
 
             .el-submenu__title:hover .icon-dzt {
                 background-position: -333px -254px;
+            }
+
+            .el-submenu__title:hover .icon-ymyt{
+                background-position: -470px -161px;
             }
 
             .el-submenu__title:hover p {
