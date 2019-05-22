@@ -569,6 +569,14 @@
             },
             //确定拒绝
             submitReject: function () {
+                if(!this.rejectMessage){
+                    this.$message({
+                        type: "warning",
+                        message: "请选择拒绝理由",
+                        duration: 2000
+                    });
+                    return;
+                }
                 let currentData = this.currentData;
                 this.$axios({
                     url: this.queryUrl + "normalProcess",

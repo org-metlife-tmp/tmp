@@ -230,19 +230,17 @@
                     <span v-text="totalData.total_amount" class="numText"></span>
                 </div>
             </div>
-            <div class="botton-pag">
-                <el-pagination
-                        background
-                        layout="sizes, prev, pager, next, jumper"
-                        :page-size="pagSize"
-                        :total="pagTotal"
-                        :page-sizes="[20, 50, 100, 500]"
-                        :pager-count="5"
-                        @current-change="getCurrentPage"
-                        @size-change="sizeChange"
-                        :current-page="pagCurrent">
-                </el-pagination>
-            </div>
+            <el-pagination
+                    background
+                    layout="sizes, prev, pager, next, jumper"
+                    :page-size="pagSize"
+                    :total="pagTotal"
+                    :page-sizes="[20, 50, 100, 500]"
+                    :pager-count="5"
+                    @current-change="getCurrentPage"
+                    @size-change="sizeChange"
+                    :current-page="pagCurrent">
+            </el-pagination>
         </el-footer>
     </el-container>
 </template>
