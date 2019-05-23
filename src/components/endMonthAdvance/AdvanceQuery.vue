@@ -274,7 +274,7 @@
 
                 for (var k in searchData) {
                     if(k == "min" || k == "max"){
-                        params[k] = searchData[k] ? (typeof(searchData[k] == "number" ? searchData[k] : "")) : searchData[k];
+                        params[k] = searchData[k] ? (typeof(searchData[k]) == "number" ? searchData[k] : "") : searchData[k];
                     }else{
                         params[k] = searchData[k];
                     }
