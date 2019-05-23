@@ -184,7 +184,7 @@
                 <el-table-column prop="type_name" label="业务类型" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="amount" label="金额" :show-overflow-tooltip="true"
                                  :formatter="transitAmount"></el-table-column>
-                <el-table-column prop="recv_acc_name" label="客户名称" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="consumer_acc_name" label="客户名称" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="recv_cert_code" label="证件号码" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="recv_acc_name" label="收款账号户名" width="110px"
                                  :show-overflow-tooltip="true"></el-table-column>
