@@ -753,7 +753,7 @@
                     <el-menu-item index="/endmonth-advance/advance-query" v-if="menuList.VOUCHERQUERY">查询</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
-            <!--<el-submenu index="25">
+            <el-submenu index="25">
                 <template slot="title" height="200px">
                     <i class="icon-gmsk"></i>
                     <p>柜面收款</p>
@@ -763,7 +763,7 @@
                     <el-menu-item index="/counter-gather/mass-single-gather">团单收款</el-menu-item>
                     <el-menu-item index="/counter-gather/counter-account">结算对账</el-menu-item>
                 </el-menu-item-group>
-            </el-submenu>-->
+            </el-submenu>
         </el-menu>
     </div>
 </template>

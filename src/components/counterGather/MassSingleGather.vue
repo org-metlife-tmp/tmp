@@ -221,8 +221,7 @@
             </el-table>
         </el-main>
         <el-footer>
-            <div class="botton-pag">
-                <el-pagination
+            <el-pagination
                         background
                         layout="sizes, prev, pager, next, jumper"
                         :page-size="pagSize"
@@ -233,7 +232,6 @@
                         @size-change="sizeChange"
                         :current-page="pagCurrent">
                 </el-pagination>
-            </div>
         </el-footer>
     </el-container>
 </template>
