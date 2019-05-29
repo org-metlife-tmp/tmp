@@ -397,7 +397,6 @@
                             </el-form-item>
                         </el-col>
 
-
                         <el-col :span="24" style="position:relative">
                             <h4 class="small-title">保单</h4>
                         </el-col>
@@ -464,7 +463,7 @@
                 </el-form>
                 <span slot="footer" class="dialog-footer">
                 <el-button type="warning" size="mini" plain @click="dialogVisible = false">取 消</el-button>
-                <el-button type="warning" size="mini" @click="saveData">确 定</el-button>
+                <el-button type="warning" size="mini" @click="saveData" v-show="!isLook">确 定</el-button>
             </span>
             </el-dialog>
         </el-footer>
@@ -754,7 +753,6 @@
                         let curDate = new Date();
                         dialogData[k] = curDate.getFullYear() + "-" + (curDate.getMonth() + 1) + "-" + curDate.getDate();
                     }else if(k == "batch_process_no"){
-                        continue;
                         this.$axios({
                             url: this.queryUrl + "normalProcess",
                             method: "post",
