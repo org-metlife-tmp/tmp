@@ -12,6 +12,7 @@ import java.util.Map;
 import com.alibaba.fastjson.util.TypeUtils;
 import com.qhjf.cfm.excel.bean.ExcelResultBean;
 import com.qhjf.cfm.exceptions.ReqDataException;
+import com.qhjf.cfm.web.constant.WebConstant;
 /**
  * 中行历史交易导入
  * @author CHT
@@ -22,8 +23,8 @@ public class BocTransPick extends ATransColPickStrategy {
 	private static final String BOC_DATE_FORMAT = "yyyyMMdd";
 
 	@Override
-	public String getPk() {
-		return ATransColPickStrategy.TemplatePk.BOC.getPk();
+	public int getPk() {
+		return WebConstant.HisTransImportBankList.BOC.getKey();
 	}
 
 	@Override
@@ -46,9 +47,6 @@ public class BocTransPick extends ATransColPickStrategy {
 		Map<String, Date> dateRange = getDateRange(cellData);
 		
 		List<Map<String, Object>> result = new ArrayList<>();
-		if (data == null || data.size() == 0) {
-			return result;
-		}
 		
 		int payTotalNumDetail = 0, recvTotalNumDetail = 0;
 		BigDecimal payAmountDetail = new BigDecimal(0), recvAmountDetail = new BigDecimal(0);

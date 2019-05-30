@@ -90,6 +90,22 @@ public class PayCounterController extends CFMBaseController{
 			}			
 		}
 		
+       
+       /**
+	    * 柜面付平台业务类型列表
+	    */	
+       @Auth(hasForces = {"PayCounterPlat"}) 
+		public  void  typecode() {		
+			try {
+				Record record = getRecordByParamsStrong();	
+				List<Record> rec = service.typecode(record);
+				renderOk(rec);
+			}catch (BusinessException e) {
+				logger.error("=====柜面付获取业务类型列表失败");
+				e.printStackTrace();
+				renderFail(e);
+			}			
+		}
 		
 		  /**
 		    * 柜面拒绝

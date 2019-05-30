@@ -1,5 +1,31 @@
 #sql("paylist")
-select * from v_gmf_index gmf
+SELECT
+	id,
+	source_sys,
+	org_id,
+	org_name,
+	case pay_mode when 'C' then '批量收付' when 'Q' then '实时收付' when 'H' then '第三方' when '0' then '网银' else '' end pay_mode,
+	biz_code,
+	preinsure_bill_no,
+	insure_bill_no,
+	biz_type,
+	amount,
+	service_status,
+	recv_acc_name,
+	recv_cert_code,
+	recv_account_name,
+	recv_account_no,
+	recv_account_no recv_acc_no,
+	recv_bank_name,
+	pay_account_no,
+	pay_bank_name,
+	is_checked,
+	check_service_number,
+	check_user_name,
+	check_date,
+	send_on
+FROM
+	v_gmf_index gmf
 where 1 = 1
   #if(map != null)
     #for(x : map)

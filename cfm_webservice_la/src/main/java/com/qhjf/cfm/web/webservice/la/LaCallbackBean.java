@@ -34,14 +34,14 @@ public class LaCallbackBean {
 		}
 	}
 	
-	public Map<String,Object> toMap(){
-		Map<String,Object> map = new HashMap<String,Object>();
-		map.put("id", this.id);
-		map.put("company", this.company);
-		map.put("branch", this.branch);
-		map.put("reqnno", this.reqnno);
-		map.put("stflag", this.stflag);
-		map.put("txtline", this.txtline);
+	public Map<String,String> toMap(){
+		Map<String,String> map = new HashMap<String,String>();
+		map.put("id", String.valueOf(this.id));
+		map.put("COMPANY", this.company);
+		map.put("BRANCH", this.branch);
+		map.put("REQNNO", this.reqnno);
+		map.put("STFLAG", this.stflag);
+		map.put("TXTLINE", this.txtline);
 		return map;
 	}
 	

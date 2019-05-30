@@ -586,7 +586,7 @@ public class SftOptypeMgr extends AbstractOptypeMgr {
         optypes.add(new Optype(Optype.Mode.NORMAL, "paycounter_supplement")
                 .registKeepParams(new String[]{"source_sys", "pay_id", "recv_bank_name", "recv_cnaps_code", "recv_acc_no", "recv_acc_name", "payment_summary"
                 		, "files", "persist_version"})
-                .registerValidate(new RequiredParamsValidate(new String[]{"source_sys", "pay_id", "recv_bank_name", "recv_cnaps_code", "recv_acc_no", "persist_version"})));
+                .registerValidate(new RequiredParamsValidate(new String[]{"source_sys", "pay_id", "recv_bank_name", "recv_acc_no", "persist_version"})));
         //作废按钮
         optypes.add(new Optype(Optype.Mode.NORMAL, "paycounter_revokeToLaOrEbs")
                 .registKeepParams(new String[]{"source_sys", "pay_id", "feed_back", "persist_version"})
@@ -650,7 +650,14 @@ public class SftOptypeMgr extends AbstractOptypeMgr {
                 .registerValidate(new RequiredParamsValidate(new String[]{
                         "batch_list"
                 })));
-        
+        //业务类型下拉框
+        optypes.add(new Optype(Optype.Mode.NORMAL, "paycounter_typecode")
+                .registKeepParams(new String[]{
+                        "source_sys"
+                })
+                .registerValidate(new RequiredParamsValidate(new String[]{
+                        "source_sys"
+                })));
         
         /** ============================ 柜面付 付款工作台 end ============================ */
 
@@ -680,31 +687,45 @@ public class SftOptypeMgr extends AbstractOptypeMgr {
 
         //列表
         optypes.add(new Optype(Optype.Mode.NORMAL, "sftvoucherlist_voucherlist")
-                .registKeepParams(new String[]{"org_id", "acc_no", "bankcode", "min", "max",
+                .registKeepParams(new String[]{"org_id", "acc_no", "bankcode", "min", "max", "page_flag",
                         "period_date", "start_date", "end_date", "is_checked", "precondition",
-                        "check_user_name", "page_size", "page_num"}));
+                        "presubmit_user_name", "page_size", "page_num"})
+                .registerValidate(new RequiredParamsValidate(new String[]{"page_flag"})));
 
         //根据机构获取用户
         optypes.add(new Optype(Optype.Mode.NORMAL, "sftvoucherlist_getaccbyorg")
                 .registKeepParams(new String[]{"org_id"})
                 .registerValidate(new RequiredParamsValidate(new String[]{"org_id"})));
 
-        //对账确认
-        optypes.add(new Optype(Optype.Mode.NORMAL, "sftvoucherlist_confirm")
+        //预提提交
+        optypes.add(new Optype(Optype.Mode.NORMAL, "sftvoucherlist_presubmit")
+                .registKeepParams(new String[]{"id"})
+                .registerValidate(new RequiredParamsValidate(new String[]{"id"})));
+        //预提提交确认
+        optypes.add(new Optype(Optype.Mode.NORMAL, "sftvoucherlist_presubmitconfirm")
+                .registKeepParams(new String[]{"id"})
+                .registerValidate(new RequiredParamsValidate(new String[]{"id"})));
+        //撤销提交
+        optypes.add(new Optype(Optype.Mode.NORMAL, "sftvoucherlist_precancel")
+                .registKeepParams(new String[]{"id"})
+                .registerValidate(new RequiredParamsValidate(new String[]{"id"})));
+        //撤销提交确认
+        optypes.add(new Optype(Optype.Mode.NORMAL, "sftvoucherlist_precancelconfirm")
                 .registKeepParams(new String[]{"id"})
                 .registerValidate(new RequiredParamsValidate(new String[]{"id"})));
 
         //导出业务明细
         optypes.add(new Optype(Optype.Mode.NORMAL, "sftvoucherlist_tradxport")
-                .registKeepParams(new String[]{"org_id", "acc_no", "bankcode", "min", "max",
-                        "period_date", "start_date", "end_date", "is_checked", "precondition",
-                        "check_user_name"}));
+                .registKeepParams(new String[]{"org_id", "acc_no", "bankcode", "min", "max", "page_flag",
+                        "period_date", "start_date", "end_date", "is_checked", "precondition", "amount",
+                        "presubmit_user_name"})
+                .registerValidate(new RequiredParamsValidate(new String[]{"page_flag"})));
 
         //导出财务账
         optypes.add(new Optype(Optype.Mode.NORMAL, "sftvoucherlist_voucherexport")
-                .registKeepParams(new String[]{"org_id", "acc_no", "bankcode", "min", "max",
+                .registKeepParams(new String[]{"org_id", "acc_no", "bankcode", "min", "max", "page_flag",
                         "period_date", "start_date", "end_date", "is_checked", "precondition",
-                        "check_user_name"})
+                        "presubmit_user_name"})
                 .registerValidate(new RequiredParamsValidate(new String[]{"precondition"})));
 
         /** ============================ 资金系统月末预提凭证操作 end ============================ */

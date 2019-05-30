@@ -193,6 +193,7 @@ public class DoubtfulService {
         legalRecord.set("recv_bank_name", TypeUtils.castToString(doubtfulRecord.get("recv_bank_name")));
         legalRecord.set("recv_bank_type", TypeUtils.castToString(doubtfulRecord.get("recv_bank_type")));
         legalRecord.set("recv_acc_no", TypeUtils.castToString(doubtfulRecord.get("recv_acc_no")));
+        legalRecord.set("consumer_acc_name", TypeUtils.castToString(doubtfulRecord.get("consumer_acc_name")));
         legalRecord.set("status", 0);
         legalRecord.set("persist_version", 0);
 

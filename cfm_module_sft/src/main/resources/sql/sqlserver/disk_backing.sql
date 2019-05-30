@@ -178,8 +178,6 @@
              detail.pay_code = #para(x.value)
           #elseif("child_batchno".equals(x.key))
              detail.child_batchno = #para(x.value)
-          #elseif("package_seq".equals(x.key))
-             detail.package_seq = #para(x.value) 
           #else
              1 = 1
         #end

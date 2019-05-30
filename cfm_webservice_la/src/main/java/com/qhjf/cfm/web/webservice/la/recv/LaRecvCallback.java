@@ -8,6 +8,7 @@ import com.qhjf.cfm.web.config.IConfigSectionType;
 import com.qhjf.cfm.web.constant.WebConstant;
 import com.qhjf.cfm.web.webservice.la.queue.recv.LaRecvProductQueue;
 import com.qhjf.cfm.web.webservice.la.queue.recv.LaRecvQueueBean;
+import com.qhjf.cfm.web.webservice.la.util.LaRecvOMElementSkipEAIUtil;
 import com.qhjf.cfm.web.webservice.la.util.LaRecvOMElementUtil;
 import org.apache.axiom.om.OMElement;
 import org.slf4j.Logger;
@@ -29,6 +30,7 @@ public class LaRecvCallback {
 			.getExtraConfig(IConfigSectionType.DDHConfigSectionType.DDHLaRecv);
 //	private static final LaRecvOMElementOldUtil oldUtil= new LaRecvOMElementOldUtil();
 	private static final LaRecvOMElementUtil util= new LaRecvOMElementUtil();
+//	private static final LaRecvOMElementSkipEAIUtil util= new LaRecvOMElementSkipEAIUtil();
 
 	/**
 	 * 

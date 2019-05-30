@@ -7,6 +7,7 @@ import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.IAtom;
 import com.jfinal.plugin.activerecord.Record;
 import com.qhjf.cfm.exceptions.BusinessException;
+import com.qhjf.cfm.utils.CommKit;
 import com.qhjf.cfm.utils.CommonService;
 import com.qhjf.cfm.utils.StringKit;
 import com.qhjf.cfm.utils.XmlTool;
@@ -17,14 +18,12 @@ import com.qhjf.cfm.web.constant.WebConstant;
 import com.qhjf.cfm.web.service.CheckVoucherService;
 import com.qhjf.cfm.web.webservice.la.LaCallbackBean;
 import com.qhjf.cfm.web.webservice.la.logger.pay.BatchPayLogger;
-
 import org.apache.axiom.om.OMElement;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.client.Options;
 import org.apache.axis2.client.ServiceClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
@@ -40,10 +39,16 @@ public class LaConsumerQueue implements Runnable{
 	private static Logger track = LoggerFactory.getLogger(BatchPayLogger.class);
 	private static Logger log = LoggerFactory.getLogger(LaConsumerQueue.class);
 	private static DDHLAConfigSection config = GlobalConfigSection.getInstance().getExtraConfig(IConfigSectionType.DDHConfigSectionType.DDHLA);
-
+	private static final int MAX_TIME = 5;
+	
 	@Override
 	public void run() {
+		int i = 1;
 		while(true){
+			if (i > MAX_TIME) {
+				return;
+			}
+			
 			try{
 				LaQueueBean queueBean = null;
 				queueBean = LaQueue.getInstance().getQueue().take();
@@ -52,28 +57,65 @@ public class LaConsumerQueue implements Runnable{
 				track.debug("send={}",send);
 				
 				ServiceClient sc = new ServiceClient();
-				Options opts = new Options();   
-				EndpointReference end = new EndpointReference(config.getUrl());   
-				opts.setTo(end); 
-				opts.setAction("http://eai.metlife.com/ESBWebEntry/ProcessMessage");
-				sc.setOptions(opts);
+//				sendSkipEAI(sc);
+				sendEAI(sc);
+				
 				OMElement res = sc.sendReceive(queueBean.getoMElement());
 				String laBean = StringKit.removeControlCharacter(res.toString());
 				track.debug("response={}",laBean);
+				
 				JSONObject json = XmlTool.documentToJSONObject(res.toString());
-				JSONObject rec = json.getJSONArray("ESBEnvelopeResult").getJSONObject(0).getJSONArray("MsgBody").getJSONObject(0).getJSONArray("PMTUPDO_REC").getJSONObject(0);
-				String status = rec.getString("STATUS");
+				
+//				String status = getStatusSkipEAI(json);
+				String status = getStatusEAI(json);
 				if(status.equals("0")){
 					processSuccess(json);
 				}else{
 					processFail(queueBean);
 				}
 			}catch(Exception e){
+				i++;
 				e.printStackTrace();
 				continue;
 			}
 		}
 		
+	}
+	private void sendEAI(ServiceClient sc) throws Exception{
+		Options opts = new Options();   
+		EndpointReference end = new EndpointReference(config.getUrl());   
+		opts.setTo(end); 
+		opts.setAction("http://eai.metlife.com/ESBWebEntry/ProcessMessage");
+		sc.setOptions(opts);
+	}
+	private void sendSkipEAI(ServiceClient sc) throws Exception {
+		Options opts = new Options();
+		EndpointReference end = new EndpointReference(config.getUrl());
+		opts.setTo(end);
+		opts.setAction("PMTUPD");// 方法
+		sc.setOptions(opts);
+	}
+
+	private String getStatusEAI(JSONObject json) {
+		try {
+			JSONObject rec = json.getJSONArray("ESBEnvelopeResult").getJSONObject(0).getJSONArray("MsgBody")
+					.getJSONObject(0).getJSONArray("PMTUPDO_REC").getJSONObject(0);
+			return rec.getString("STATUS");
+		} catch (Exception e) {
+			CommKit.errorPrint(log,"解析LA批付回调响应状态失败(ESBEnvelopeResult-MsgBody-PMTUPDO_REC-STATUS)={}",json.toJSONString());
+		}
+		return "";
+	}
+	private String getStatusSkipEAI(JSONObject json){
+		return json.getString("STATUS");
+	}
+	private JSONArray getRecordListEAI(JSONObject json){
+		return json.getJSONArray("ESBEnvelopeResult").getJSONObject(0)
+				.getJSONArray("MsgBody").getJSONObject(0).getJSONArray("PMTUPDO_REC").getJSONObject(0)
+				.getJSONArray("ADDITIONAL_FIELDS").getJSONObject(0).getJSONArray("PMTOUT");
+	}
+	private JSONArray getRecordListSkipEAI(JSONObject json){
+		return json.getJSONArray("ADDITIONAL_FIELDS").getJSONObject(0).getJSONArray("PMTOUT");
 	}
 
 	
@@ -100,9 +142,8 @@ public class LaConsumerQueue implements Runnable{
 	}
 	
 	private void processSuccess(JSONObject resp){
-		JSONArray array = resp.getJSONArray("ESBEnvelopeResult").getJSONObject(0)
-				.getJSONArray("MsgBody").getJSONObject(0).getJSONArray("PMTUPDO_REC").getJSONObject(0)
-				.getJSONArray("ADDITIONAL_FIELDS").getJSONObject(0).getJSONArray("PMTOUT");
+//		JSONArray array = getRecordListSkipEAI(resp);
+		JSONArray array = getRecordListEAI(resp);
 		
 		for(int i = 0;i<array.size();i++){
 			final JSONObject json = array.getJSONObject(i);

@@ -91,20 +91,22 @@ public class PayCounterService {
 		if(StringUtils.isBlank(service_status_origin)) {
 			record.remove("service_status");			
 		}else {
+		record.set("service_status_origin",record.get("service_status"));
 		List<Integer> service_status = new ArrayList<>();
 		switch (TypeUtils.castToInt(service_status_origin)) {
 			case 0 :  //WebConstant.Sft_Billstatus.WJF.getKey()
-				service_status.add(1);  //WebConstant.BillStatus.SUBMITED.getKey()
-				service_status.add(2);
+				service_status.add(1);  //WebConstant.BillStatus.SUBMITED.getKey()				
 				break;
 			case 1 :
 				service_status.add(3);
+				service_status.add(2);
 				break;
 			case 2 :
 				service_status.add(5);
 				break;
 			case 3 :
 				service_status.add(4);
+				service_status.add(6);
 				break;
 			case 4 :
 				service_status.add(7);
@@ -117,6 +119,7 @@ public class PayCounterService {
 			}
 		record.set("service_status", service_status);
 		}
+		// 如果状态 未给付 , 可以是未提交.  其他状态必须是已提交 .否则查找任何状态都会带出未给付状态
 		String pay_mode = record.getStr("pay_mode");
 		//柜面付  默认网银
 		if( StringUtils.isBlank(pay_mode) ) {
@@ -167,6 +170,11 @@ public class PayCounterService {
 			logger.error("====此状态的数据不能进行补录==="+pay_legal_data.getInt("status"));
 			throw new ReqDataException("只有未提交数据才可以进行补录");
 		}
+		if(StringUtils.isBlank(record.getStr("recv_cnaps_code"))) {
+			Record findFirst = Db.findFirst(Db.getSql("oa_interface.getBankJQ"), record.get("recv_bank_name"));
+			record.set("recv_cnaps_code", findFirst.get("cnaps_code"));
+		}
+		
 		
 		SymmetricEncryptUtil  util = SymmetricEncryptUtil.getInstance();
 		String recv_acc_no = record.getStr("recv_acc_no");
@@ -298,10 +306,13 @@ public class PayCounterService {
 			for (Record sta : statuss) {
 				if(sta.getInt("status") == WebConstant.SftLegalData.GROUPBATCH.getKey() 
 						|| sta.getInt("status") == WebConstant.SftLegalData.REVOKE.getKey() ) {
-					throw new ReqDataException("选中提交的数据中包含已提交/已作废数据");
+					throw new ReqDataException("选中提交的数据中不能包含已提交/已作废数据");
+				}
+				if(sta.getInt("supply_status") == WebConstant.Sft_supplyStatus.WBL.getKey()) {
+					throw new ReqDataException("选中提交的数据中不能包含未补录数据");
 				}
 			}
-		}		
+		}
 		List<Record> Details = null ;
 		if(0 == source_sys) {
 			logger.info("===========LA数据进行提交");
@@ -310,6 +321,9 @@ public class PayCounterService {
 			logger.info("===========EBS数据进行提交");
 			Details = Db.find(Db.getSqlPara("pay_counter.checkBatchEBSDetail", Kv.by("map", pay_ids)));			
 		}
+		
+		
+		
         if(null == Details || pay_ids.size() != Details.size()) {
         	throw new ReqDataException("勾选数据中部分数据已过期,请刷新页面");
         }
@@ -327,6 +341,7 @@ public class PayCounterService {
         	          .set("org_id", org_id)
         	          .set("dept_id",uodpInfo.getDept_id())
         	          .set("amount", rec.get("amount"))
+        	          .set("payment_summary", rec.get("payment_summary"))
         	          .set("pay_account_no", pay_account_no)
         	          .set("pay_account_name", payRec.get("acc_name"))
         	          .set("pay_account_cur", payRec.get("curr_code"))
@@ -365,6 +380,7 @@ public class PayCounterService {
 			    if(updateResult) {
 			    	    //int[] batchSave = Db.batchSave("gmf_bill", insertRecords, 1000);
 			    		for (Record rec : insertRecords) {
+			    			Db.update(Db.getSql("pay_counter.updateDeleteByLegal"), rec.get("legal_id"),0);
 			    			boolean save = Db.save("gmf_bill", "id", rec);
 			    			logger.info("=======插入gmf_bill表结果==="+save);			    			
 			    			if(save) {
@@ -444,6 +460,14 @@ public class PayCounterService {
 		} catch (Exception e) {
 			throw new ReqDataException("此条数据已过期");
 		}
+		//解密,并改为掩码
+		SymmetricEncryptUtil  util = SymmetricEncryptUtil.getInstance();
+		try {
+			util.recvmaskforSingle(findFirst);
+		} catch (Exception e) {			
+			e.printStackTrace();
+			logger.error("===解密修改为掩码失败");
+		} 
 		return findFirst;
 	}
 
@@ -516,7 +540,7 @@ public class PayCounterService {
 			public boolean run() throws SQLException {
 				
 				boolean update  = CommonService.update("gmf_bill", 
-				   new Record().set("update_by", userInfo.getUsr_id()).set("update_on", new Date()).set("delete_num", id)
+				   new Record().set("update_by", userInfo.getUsr_id()).set("update_on", new Date())/*.set("delete_num", id)*/
 				   .set("persist_version", rec.getInt("persist_version")+1 ), 
 				   new Record().set("id", id));
 				logger.info("========更新gmf_bill状态====="+update);
@@ -574,7 +598,7 @@ public class PayCounterService {
                 boolean save = Db.save("single_pay_instr_queue", instr);
                 if (save) {
                     return Db.update(Db.getSql("pay_counter.updBillById"), instr.getStr("bank_serial_number"),
-                            instr.getInt("repeat_count"), WebConstant.BillStatus.PROCESSING.getKey(), instr.getStr("instruct_code"), new Date() , id,
+                            instr.getInt("repeat_count"), WebConstant.BillStatus.PROCESSING.getKey(), instr.getStr("instruct_code"), new Date() , new Date(), id,
                             status, old_repeat_count) == 1;
                 }
                 return save;
@@ -588,6 +612,43 @@ public class PayCounterService {
             throw new DbProcessException("发送失败，请联系管理员！");
         }
     }
+
+    /**
+     * 业务类型列表
+     * @param record
+     * @throws ReqDataException 
+     */
+	public List<Record> typecode(Record record) throws ReqDataException {
+		Integer source_sys = TypeUtils.castToInt(record.get("source_sys"));
+		List<Record> records  = new ArrayList<>() ;
+		if(0==source_sys) {
+			records = Db.find(Db.getSql(""));
+		}else if(1==source_sys){
+			Record rec1 = new Record();
+			Record rec2 = new Record();
+			Record rec3 = new Record();
+			Record rec4 = new Record();
+			Record rec5 = new Record();
+			rec1.set("type_code", "1");
+			rec1.set("type_name", "定期结算退费");
+			rec2.set("type_code", "5");
+			rec2.set("type_name", "理赔给付");
+			rec3.set("type_code", "10");
+			rec3.set("type_name", "保全退费");
+			rec4.set("type_code", "12");
+			rec4.set("type_name", "基金单满期退费");
+			rec5.set("type_code", "13");
+			rec5.set("type_name", "客户账户退费");
+			records.add(rec1);
+			records.add(rec2);
+			records.add(rec3);
+			records.add(rec4);
+			records.add(rec5);
+		}else {
+			throw new ReqDataException("数据来源系统错误");
+		}
+		return records ;
+	}
        
 }
 

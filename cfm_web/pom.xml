@@ -1,430 +1,333 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<parent>
-		<artifactId>metlife_cfm_main</artifactId>
-		<groupId>com.qhjf.cfm</groupId>
-		<version>1.0-SNAPSHOT</version>
-	</parent>
-	<modelVersion>4.0.0</modelVersion>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>metlife_cfm_main</artifactId>
+        <groupId>com.qhjf.cfm</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
 
-	<artifactId>cfm_web</artifactId>
-	<packaging>war</packaging>
-	<description>统一收付费平台web入口</description>
+    <artifactId>cfm_web</artifactId>
+    <packaging>war</packaging>
+    <description>统一收付费平台web入口</description>
 
-	<dependencies>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.qhjf.cfm</groupId>
-			<artifactId>cfm_utils</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.qhjf.cfm</groupId>
-			<artifactId>cfm_quartzs_jobs</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.qhjf.cfm</groupId>
-			<artifactId>cfm_queue</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.qhjf.cfm</groupId>
-			<artifactId>cfm_webservice</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.qhjf.cfm</groupId>
-			<artifactId>cfm_common</artifactId>
-			<version>${project.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>com.jfinal</groupId>
-					<artifactId>jfinal</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.alibaba</groupId>
-					<artifactId>druid</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.alibaba</groupId>
-					<artifactId>fastjson</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>mysql</groupId>
-					<artifactId>mysql-connector-java</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>com.jfinal</groupId>
-			<artifactId>jfinal</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.alibaba</groupId>
-			<artifactId>druid</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>mysql</groupId>
-			<artifactId>mysql-connector-java</artifactId>
-			<version>5.1.37</version>
-			<scope>runtime</scope>
-		</dependency>
+    <dependencies>
+        <!-- 外部jar引入 start -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.jfinal</groupId>
+            <artifactId>jfinal</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.jfinal</groupId>
+            <artifactId>jetty-server</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.ws</groupId>
+            <artifactId>jaxws-rt</artifactId>
+        </dependency>
 
-		<dependency>
-			<groupId>com.microsoft.sqlserver</groupId>
-			<artifactId>mssql-jdbc</artifactId>
-			<version>6.4.0.jre7</version>
-			<scope>runtime</scope>
-		</dependency>
+        <!-- ##数据库连接 start##-->
+        <dependency>
+            <groupId>com.microsoft.sqlserver</groupId>
+            <artifactId>mssql-jdbc</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <!-- ##数据库连接 end##-->
+        <!-- 外部jar引入 end -->
 
-		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpclient</artifactId>
-		</dependency>
+        <!-- 内部模块引入 start -->
+        <!-- ##公用模块 start## -->
+        <dependency>
+            <groupId>com.qhjf.cfm</groupId>
+            <artifactId>cfm_module_admin</artifactId>  <!-- 管理员模块 -->
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.qhjf.cfm</groupId>
+            <artifactId>cfm_module_account</artifactId> <!--账户通模块 -->
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.qhjf.cfm</groupId>
+            <artifactId>cfm_module_jyyet</artifactId>   <!-- 交易余额通模块 -->
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.qhjf.cfm</groupId>
+            <artifactId>cfm_module_dbt</artifactId>     <!-- 调拨通模块 -->
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.qhjf.cfm</groupId>
+            <artifactId>cfm_module_zft</artifactId>     <!-- 支付通模块 -->
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.qhjf.cfm</groupId>
+            <artifactId>cfm_module_gjt</artifactId>      <!-- 归集通模块 -->
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.qhjf.cfm</groupId>
+            <artifactId>cfm_module_electronic</artifactId>  <!-- 电子回单模块 -->
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.qhjf.cfm</groupId>
+            <artifactId>cfm_module_workflow</artifactId>    <!-- 工作流模块 -->
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.qhjf.cfm</groupId>
+            <artifactId>cfm_module_working_cal</artifactId>  <!-- 工作日历模块 -->
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.qhjf.cfm</groupId>
+            <artifactId>cfm_quartzs_jobs</artifactId>        <!-- 自动任务 -->
+            <version>${project.version}</version>
+        </dependency>
+        <!-- ##公用模块 end## -->
 
-		<dependency>
-			<groupId>com.jfinal</groupId>
-			<artifactId>jetty-server</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.alibaba</groupId>
-			<artifactId>fastjson</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.qhjf.cfm</groupId>
-			<artifactId>cfm_module_admin</artifactId>
-			<version>${project.version}</version>
-			<scope>compile</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>*</groupId>
-					<artifactId>*</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>com.qhjf.cfm</groupId>
-			<artifactId>cfm_module_comm</artifactId>
-			<version>${project.version}</version>
-			<scope>compile</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>com.qhjf.cfm</groupId>
-					<artifactId>cfm_common</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.jfinal</groupId>
-					<artifactId>jfinal</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.qhjf.cfm</groupId>
-					<artifactId>cfm_utils</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>redis.clients</groupId>
-			<artifactId>jedis</artifactId>
-			<version>2.7.2</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-pool2</artifactId>
-			<version>2.3</version>
-		</dependency>
-		<dependency>
-			<groupId>de.ruedigermoeller</groupId>
-			<artifactId>fst</artifactId>
-			<version>2.29</version>
-			<exclusions>
-				<exclusion>
-					<groupId>com.fasterxml.jackson.core</groupId>
-					<artifactId>jackson-core</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.poi</groupId>
-			<artifactId>poi</artifactId>
-		</dependency>
+        <!-- ##项目特定模块模块 start## -->
 
-		<dependency>
-			<groupId>com.qhjf.cfm</groupId>
-			<artifactId>cfm_module_account</artifactId>
-			<version>${project.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>com.jfinal</groupId>
-					<artifactId>jfinal</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.qhjf.cfm</groupId>
-					<artifactId>cfm_common</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>com.qhjf.cfm</groupId>
-			<artifactId>cfm_module_workflow</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.qhjf.cfm</groupId>
-			<artifactId>cfm_module_jyyet</artifactId>
-			<version>${project.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>com.jfinal</groupId>
-					<artifactId>jfinal</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.qhjf.cfm</groupId>
-					<artifactId>cfm_common</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>com.qhjf.cfm</groupId>
-			<artifactId>cfm_module_dbt</artifactId>
-			<version>${project.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>com.jfinal</groupId>
-					<artifactId>jfinal</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.qhjf.cfm</groupId>
-					<artifactId>cfm_common</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>com.qhjf.cfm</groupId>
-			<artifactId>cfm_module_zft</artifactId>
-			<version>${project.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>com.jfinal</groupId>
-					<artifactId>jfinal</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.qhjf.cfm</groupId>
-					<artifactId>cfm_common</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>com.qhjf.cfm</groupId>
-			<artifactId>cfm_module_working_cal</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.qhjf.cfm</groupId>
-			<artifactId>cfm_module_pooling_acc</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.qhjf.cfm</groupId>
-			<artifactId>cfm_module_skt</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<!-- 收付通start -->
-		<dependency>
-			<groupId>com.qhjf.cfm</groupId>
-			<artifactId>cfm_module_sft</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<!-- 收付通end -->
-		<!-- 归集通start -->
-		<dependency>
-			<groupId>com.qhjf.cfm</groupId>
-			<artifactId>cfm_module_gjt</artifactId>
-			<version>${project.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>com.jfinal</groupId>
-					<artifactId>jfinal</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.qhjf.cfm</groupId>
-					<artifactId>cfm_common</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<!-- 归集通end -->
+        <!-- #### 大都会特定模块 start ####-->
+        <dependency>
+            <groupId>com.qhjf.cfm</groupId>
+            <artifactId>cfm_webservice</artifactId>     <!-- OA webservice service and client  -->
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.qhjf.cfm</groupId>
+            <artifactId>cfm_module_pooling_acc</artifactId>  <!-- 资金池账户模块 -->
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.qhjf.cfm</groupId>
+            <artifactId>cfm_module_skt</artifactId>    <!-- 收款通模块 -->
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.qhjf.cfm</groupId>
+            <artifactId>cfm_module_sft</artifactId>     <!-- 收付通模块 -->
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.qhjf.cfm</groupId>
+            <artifactId>cfm_module_gyl</artifactId>
+            <version>${project.version}</version>       <!--  广银联备付金 -->
+        </dependency>
+        <dependency>
+            <groupId>com.qhjf.cfm</groupId>
+            <artifactId>cfm_module_dzt</artifactId>      <!--  对账通模块 -->
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.qhjf.cfm</groupId>
+            <artifactId>cfm_module_monitor</artifactId>   <!-- 资金监控模块 -->
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.qhjf.cfm</groupId>
+            <artifactId>cfm_module_oa</artifactId>        <!-- OA 数据管理模块 -->
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.qhjf.cfm</groupId>
+            <artifactId>cfm_module_refund</artifactId>    <!-- 退票模块 -->
+            <version>${project.version}</version>
+        </dependency>
+        <!-- #### 大都会特定模块 end ####-->
+        <!-- ##项目特定模块模块 end## -->
+        <!-- 内部模块引入 end -->
+    </dependencies>
 
-		<!-- 电子回单 start -->
-		<dependency>
-			<groupId>com.qhjf.cfm</groupId>
-			<artifactId>cfm_module_electronic</artifactId>
-			<version>${project.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>com.jfinal</groupId>
-					<artifactId>jfinal</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.qhjf.cfm</groupId>
-					<artifactId>cfm_common</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<!-- 电子回单 end -->
-
-		<dependency>
-			<groupId>com.qhjf.cfm</groupId>
-			<artifactId>cfm_excel_parse</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-
-		<!-- 广银联备付金start -->
-		<dependency>
-			<groupId>com.qhjf.cfm</groupId>
-			<artifactId>cfm_module_gyl</artifactId>
-			<version>${project.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>com.jfinal</groupId>
-					<artifactId>jfinal</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.qhjf.cfm</groupId>
-					<artifactId>cfm_common</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<!-- 广银联备付金end -->
-
-		<!-- 对账通 start -->
-		<dependency>
-			<groupId>com.qhjf.cfm</groupId>
-			<artifactId>cfm_module_dzt</artifactId>
-			<version>${project.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>com.jfinal</groupId>
-					<artifactId>jfinal</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.qhjf.cfm</groupId>
-					<artifactId>cfm_common</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<!-- 对账通 end -->
-
-		<!-- 资金监控 start -->
-		<dependency>
-			<groupId>com.qhjf.cfm</groupId>
-			<artifactId>cfm_module_monitor</artifactId>
-			<version>${project.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>com.jfinal</groupId>
-					<artifactId>jfinal</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.qhjf.cfm</groupId>
-					<artifactId>cfm_common</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<!-- 资金监控 end -->
-
-		<!-- oa start -->
-		<dependency>
-			<groupId>com.qhjf.cfm</groupId>
-			<artifactId>cfm_module_oa</artifactId>
-			<version>${project.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>com.jfinal</groupId>
-					<artifactId>jfinal</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.qhjf.cfm</groupId>
-					<artifactId>cfm_common</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>com.sun.xml.ws</groupId>
-			<artifactId>jaxws-rt</artifactId>
-			<version>${jaxws-rt.version}</version>
-		</dependency>
-		<!-- oa end -->
-		<!-- 退票 start -->
-		<dependency>
-			<groupId>com.qhjf.cfm</groupId>
-			<artifactId>cfm_module_refund</artifactId>
-			<version>${project.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>com.jfinal</groupId>
-					<artifactId>jfinal</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.qhjf.cfm</groupId>
-					<artifactId>cfm_common</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<!-- 退票 end -->
-	</dependencies>
+    <profiles>
+        <!-- 开发环境  start -->
+        <profile>
+            <id>dev</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <envconfig>dev</envconfig>
+                <package.name>cfm</package.name>
+            </properties>
+        </profile>
+        <profile>
+            <!-- 大都会1期开发环境 -->
+            <id>dev-ddh1</id>
+            <properties>
+                <envconfig>dev-ddh1</envconfig>
+                <package.name>cfm</package.name>
+            </properties>
+        </profile>
+        <profile>
+            <!-- 大都会2期开发环境 -->
+            <id>dev-ddh2</id>
+            <properties>
+                <envconfig>dev-ddh2</envconfig>
+                <package.name>cfm</package.name>
+            </properties>
+        </profile>
+        <profile>
+            <!-- 大都会2期北京开发环境 -->
+            <id>dev-beijin-ddh2</id>
+            <properties>
+                <envconfig>dev-beijin-ddh2</envconfig>
+                <package.name>cfm</package.name>
+            </properties>
+        </profile>
+        <!-- 开发环境  end -->
 
 
-	<build>
-		<finalName>cfm</finalName>
-		<resources>
-			<resource>
-				<directory>src/main/resources</directory>
-				<filtering>true</filtering>
-				<includes>
-					<include>cfm_web.ini</include>
-				</includes>
-			</resource>
-			<resource>
-				<directory>src/main/resources</directory>
-			</resource>
-		</resources>
-		<pluginManagement>
-			<plugins>
+        <!-- 测试环境  start-->
+        <profile>
+            <id>test</id>
+            <properties>
+                <envconfig>test</envconfig>
+                <package.name>cfm</package.name>
+            </properties>
+        </profile>
+        <profile>
+            <!-- 大都会1期测试环境 -->
+            <id>test-ddh1</id>
+            <properties>
+                <envconfig>test-ddh1</envconfig>
+                <package.name>cfm</package.name>
+            </properties>
+        </profile>
+        <profile>
+            <!-- 大都会2期测试环境 -->
+            <id>sit-ddh2</id>
+            <properties>
+                <envconfig>sit-ddh2</envconfig>
+                <package.name>cfm</package.name>
+            </properties>
+        </profile>
+        <!-- 测试环境  end-->
 
-				<plugin>
-					<groupId>org.apache.tomcat.maven</groupId>
-					<artifactId>tomcat7-maven-plugin</artifactId>
-					<version>2.2</version>
-					<configuration>
-						<path>/cfm</path>
-						<port>8080</port>
-						<uriEncoding>UTF-8</uriEncoding>
-					</configuration>
-				</plugin>
+        <!-- 预发布环境 start-->
+        <profile>
+            <id>release</id>
+            <properties>
+                <envconfig>release</envconfig>
+                <package.name>cfm</package.name>
+            </properties>
+        </profile>
+        <profile>
+            <!-- 大都会1期预发布环境 -->
+            <id>release-ddh1</id>
+            <properties>
+                <envconfig>release-ddh1</envconfig>
+                <package.name>cfm</package.name>
+            </properties>
+        </profile>
+        <profile>
+            <!-- 大都会2期预发布环境 -->
+            <id>uat-ddh2</id>
+            <properties>
+                <envconfig>uat-ddh2</envconfig>
+                <package.name>cfm</package.name>
+            </properties>
+        </profile>
+        <!-- 预发布环境 end-->
 
-				<plugin>
-					<groupId>org.mortbay.jetty</groupId>
-					<artifactId>jetty-maven-plugin</artifactId>
-					<version>7.6.12.v20130726</version>
-					<configuration>
-						<stopKey>stop</stopKey>
-						<stopPort>8081</stopPort>
-						<webApp>
-							<contextPath>/cfm</contextPath>
-						</webApp>
-						<connectors>
-							<connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
-								<port>9001</port>
-								<maxIdleTime>60000</maxIdleTime>
-							</connector>
-						</connectors>
-					</configuration>
-				</plugin>
-			</plugins>
-		</pluginManagement>
-	</build>
+        <!-- 正式环境 start-->
+        <profile>
+            <id>formal</id>
+            <properties>
+                <envconfig>formal</envconfig>
+                <package.name>cfm</package.name>
+            </properties>
+        </profile>
+        <profile>
+            <!-- 大都会92正式环境 -->
+            <id>formal-92-ddh2</id>
+            <properties>
+                <envconfig>formal-92-ddh2</envconfig>
+                <package.name>cfm</package.name>
+            </properties>
+        </profile>
+        <profile>
+            <!-- 大都会93正式环境 -->
+            <id>formal-93-ddh2</id>
+            <properties>
+                <envconfig>formal-93-ddh2</envconfig>
+                <package.name>cfm</package.name>
+            </properties>
+        </profile>
+        <!-- 正式环境 end-->
+    </profiles>
+
+    <build>
+        <finalName>${package.name}</finalName>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <excludes>
+                    <exclude>env_config/**</exclude>
+                </excludes>
+            </resource>
+            <resource>
+                <directory>src/main/resources/env_config/${envconfig}</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.tomcat.maven</groupId>
+                    <artifactId>tomcat7-maven-plugin</artifactId>
+                    <version>2.2</version>
+                    <configuration>
+                        <path>/cfm</path>
+                        <port>8080</port>
+                        <uriEncoding>UTF-8</uriEncoding>
+                    </configuration>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.mortbay.jetty</groupId>
+                    <artifactId>jetty-maven-plugin</artifactId>
+                    <version>7.6.12.v20130726</version>
+                    <configuration>
+                        <stopKey>stop</stopKey>
+                        <stopPort>8081</stopPort>
+                        <webApp>
+                            <contextPath>/cfm</contextPath>
+                        </webApp>
+                        <connectors>
+                            <connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
+                                <port>9001</port>
+                                <maxIdleTime>60000</maxIdleTime>
+                            </connector>
+                        </connectors>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
 </project>

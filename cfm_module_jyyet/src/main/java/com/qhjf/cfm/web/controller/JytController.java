@@ -253,9 +253,14 @@ public class JytController extends CFMBaseController {
 			ExcelResultBean bean = ExcelCacheUtil.getExcelResultBean(paramsToRecord);
 			
 			//根据不同银行的模板，获取历史交易导入必要字段
-			String pk = paramsToRecord.getStr("pk");
+//			String pk = paramsToRecord.getStr("pk");
+			Integer pk = TypeUtils.castToInt(paramsToRecord.get("pk"));
+			if (null == pk) {
+				renderFail(new ReqDataException("未选择模板！"));
+				return;
+			}
 			List<Map<String, Object>> listHandle = null;
-			if ("6".equals(pk)) {
+			if (6 == pk.intValue()) {
 				listHandle = bean.getRowData();
 			}else{
 				listHandle = TransColPickFactory.getInstance().getStrategyByPk(pk).colPick(bean);

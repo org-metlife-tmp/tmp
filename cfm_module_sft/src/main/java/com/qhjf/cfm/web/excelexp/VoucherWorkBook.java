@@ -11,6 +11,7 @@ import com.qhjf.cfm.web.plugins.excelexp.POIUtil;
 import com.qhjf.cfm.web.plugins.log.LogbackLog;
 import org.apache.poi.ss.usermodel.Workbook;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -38,7 +39,9 @@ public class VoucherWorkBook extends AbstractWorkBook {
 
     @Override
     public Workbook getWorkbook() {
-        SqlPara sqlPara = Db.getSqlPara("voucher.getvoucherlist", Kv.by("map", getRecord().getColumns()));
+        Record record = getRecord();
+        record.remove("page_flag");
+        SqlPara sqlPara = Db.getSqlPara("voucher.getvoucherlist", Kv.by("map", record.getColumns()));
         List<Record> recordList = Db.find(sqlPara);
         return POIUtil.createExcel(recordList, this);
     }

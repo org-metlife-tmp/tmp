@@ -10,6 +10,7 @@ import com.qhjf.cfm.web.plugins.log.LogbackLog;
 import com.qhjf.cfm.web.service.AccCommonService;
 import com.qhjf.cfm.web.service.PayCounterCheckService;
 
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 /**
@@ -41,6 +42,9 @@ public class PayCounterCheckController extends CFMBaseController {
         } catch (BusinessException e) {
             e.printStackTrace();
             renderFail(e);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            renderFail(null);
         }
     }
 
@@ -67,6 +71,9 @@ public class PayCounterCheckController extends CFMBaseController {
         } catch (BusinessException e) {
             e.printStackTrace();
             renderFail(e);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            renderFail(null);
         }
     }
 

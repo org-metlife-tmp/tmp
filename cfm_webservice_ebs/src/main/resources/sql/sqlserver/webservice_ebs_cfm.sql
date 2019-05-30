@@ -27,8 +27,7 @@
 #sql("getPayGmLegalByPayCode")
   SELECT
     legal.*,
-    gmf.pay_account_no,
-    gmf.back_on
+    gmf.pay_account_no
   FROM
     pay_legal_data legal,
     gmf_bill gmf

@@ -6,6 +6,7 @@ import com.jfinal.plugin.activerecord.IAtom;
 import com.jfinal.plugin.activerecord.Record;
 import com.qhjf.cfm.exceptions.BusinessException;
 import com.qhjf.cfm.utils.CommonService;
+import com.qhjf.cfm.utils.DateFormatThreadLocal;
 import com.qhjf.cfm.web.constant.WebConstant;
 import com.qhjf.cfm.web.service.CheckVoucherService;
 import org.joda.time.DateTime;
@@ -35,19 +36,26 @@ public class ChargeOffJob implements Job {
         //判断今天是否为财务月的下一天
         Calendar cal = Calendar.getInstance();
         cal.setTime(new Date());
-        cal.set(Calendar.DAY_OF_MONTH, -1);
-        Record calRecord = Db.findFirst(Db.getSql("charge_off_cfm.getcalbydate"),
-                cal.getTime());
-        if(calRecord != null){
-            //查询所有预提交交易
-            List<Record> tradList = Db.find(Db.getSql("charge_off_cfm.chargeofflist"), new Date());
-            try {
-                //生成凭证信息
-                CheckVoucherService.sunVoucherData(tradList, WebConstant.MajorBizType.CWCX.getKey());
-            } catch (BusinessException e) {
-                e.printStackTrace();
-            }
+        cal.add(Calendar.DATE, -1);
 
+        Record calRecord = Db.findFirst(Db.getSql("charge_off_cfm.getcalbydate"),
+                DateFormatThreadLocal.format("yyyy-MM-dd",cal.getTime()));
+        if(calRecord != null){
+            boolean flag = Db.tx(new IAtom() {
+                @Override
+                public boolean run() throws SQLException {
+                    //查询所有预提交交易
+                    List<Record> tradList = Db.find(Db.getSql("charge_off_cfm.chargeofflist"), new Date());
+                    try {
+                        //生成凭证信息
+                        CheckVoucherService.sunVoucherData(tradList, WebConstant.MajorBizType.CWCX.getKey());
+                    } catch (BusinessException e) {
+                        e.printStackTrace();
+                        return false;
+                    }
+                    return true;
+                }
+            });
         }else{
             log.debug("【不是财务月下一天或者无已提交的交易】");
         }

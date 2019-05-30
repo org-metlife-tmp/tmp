@@ -12,6 +12,7 @@ import com.qhjf.cfm.utils.RedisSericalnoGenTool;
 import com.qhjf.cfm.web.channel.inter.api.ISingleResultChannelInter;
 import com.qhjf.cfm.web.channel.util.IcbcResultParseUtil;
 import com.qhjf.cfm.web.inter.impl.SysOaSinglePayInter;
+import com.qhjf.cfm.web.inter.impl.SysSftSinglePayInter;
 import com.qhjf.cfm.web.inter.impl.SysSinglePayInter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,7 +75,9 @@ public class IcbcTradeResultQueryInter  implements ISingleResultChannelInter{
 						String sourceRef = record.getStr("source_ref");//单据表
 						if ("oa_branch_payment_item".equals(sourceRef) || "oa_head_payment".equals(sourceRef)) {
 							sysInter = new SysOaSinglePayInter();
-						}else {
+						}else if("gmf_bill".equals(sourceRef)){
+							sysInter = new SysSftSinglePayInter();
+			            }else {
 							sysInter = new SysSinglePayInter();
 						}
 						sysInter.setInnerInstr(record);

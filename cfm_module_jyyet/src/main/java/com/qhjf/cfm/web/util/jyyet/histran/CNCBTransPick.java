@@ -12,6 +12,7 @@ import java.util.Map;
 import com.alibaba.fastjson.util.TypeUtils;
 import com.qhjf.cfm.excel.bean.ExcelResultBean;
 import com.qhjf.cfm.exceptions.ReqDataException;
+import com.qhjf.cfm.web.constant.WebConstant;
 /**
  * 中信历史交易导入
  * @author CHT
@@ -20,8 +21,8 @@ import com.qhjf.cfm.exceptions.ReqDataException;
 public class CNCBTransPick extends ATransColPickStrategy {
 
 	@Override
-	public String getPk() {
-		return ATransColPickStrategy.TemplatePk.CNCB.getPk();
+	public int getPk() {
+		return WebConstant.HisTransImportBankList.CNCB.getKey();
 	}
 
 	@Override
@@ -48,9 +49,6 @@ public class CNCBTransPick extends ATransColPickStrategy {
 		validateHeader(qryAccNo, startDate, endDate, min, max);
 		
 		List<Map<String, Object>> result = new ArrayList<>();
-		if (data == null || data.size() == 0) {
-			throw new ReqDataException("导入Excel数据为空！");
-		}
 		
 		BigDecimal zero = new BigDecimal(0);
 		int i=1;

@@ -145,6 +145,16 @@
     and DATEDIFF(day,bi.create_on,GETDATE())=1
   #end
 
+
+  ###获取会计区间个数
+  #sql("sun_voucher_period")
+    select DISTINCT account_period account_period from sun_voucher_data where file_name is null and isnull(voucher_type,-1) not in(1,2)
+  #end
+  ###获取会计区间个数 预提凭证
+  #sql("sun_voucher_period_yt")
+    select DISTINCT account_period account_period from sun_voucher_data where file_name is null and voucher_type in(1,2)
+  #end
+
   ###生成凭证
   #sql("sun_voucher_data_list")
     SELECT
@@ -173,7 +183,39 @@
       export_count
     FROM
       sun_voucher_data
-    WHERE file_name IS NULL
+    WHERE file_name IS NULL AND isnull(voucher_type,-1) not in(1,2)
+    AND account_period = ?
+  #end
+  ###生成预提和冲销凭证凭证
+  #sql("sun_presubmit_voucher_data_list")
+    SELECT
+      id,
+      trans_id,
+      isnull(
+      	account_code,''
+      ) as account_code,
+      account_period,
+      a_code1,
+      a_code2,
+      a_code3,
+      a_code5,
+      a_code6,
+      a_code7,
+      a_code10,
+      base_amount,
+      currency_code,
+      debit_credit,
+      description,
+      journal_source,
+      transaction_amount,
+      transaction_date,
+      transaction_reference,
+      file_name,
+      export_count
+    FROM
+      sun_voucher_data
+    WHERE file_name IS NULL AND voucher_type in(1,2)
+    AND account_period = ?
   #end
 
 #end

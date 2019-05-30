@@ -3,7 +3,8 @@ select
     tab.* ,
     case isnull(gmf.service_status,'-1') when '2' then '审批中'  when '-1' then '未给付' when '7' then '给付成功'  when '5' then '审批拒绝' when '3' then '审批中'
          when '8' then '给付失败'   when '4' then '审批通过,给付中' when '6' then '审批通过,给付中'   end service_status ,
-    gmf.actual_payment_date
+    gmf.actual_payment_date,
+    gmf.id AS gmf_id
 from  
  (
 SELECT
@@ -17,6 +18,7 @@ SELECT
 	pay.org_id,
 	pay.org_code,
 	pay.amount,
+	pay.consumer_acc_name,
 	pay.recv_acc_name,
 	pay.recv_cert_type,
 	pay.recv_cert_code,
@@ -27,6 +29,7 @@ SELECT
 	pay.bank_fb_msg,
 	pay.create_time,
 	pay.persist_version,
+	pay.payment_summary,
 	la.bank_key,
 	la.id AS la_id,
 	la.legal_id ,
@@ -41,26 +44,31 @@ SELECT
 	la.op_code ,
 	la.op_name ,
 	org.name,
-	biztype.type_name
+	biztype.type_name ,
+	origin.create_time AS push_date
 FROM
 	pay_legal_data AS pay,
 	la_pay_legal_data_ext AS  la ,
 	organization AS org ,
-	la_biz_type AS biztype 
+	la_biz_type AS biztype ,
+	la_origin_pay_data AS origin
 WHERE
 	pay.id = la.legal_id AND
 	org.org_id = pay.org_id AND
-	biztype.type_code = la.biz_type 
+	biztype.type_code = la.biz_type AND
+	origin.id = pay.origin_id
   #if(map != null)
     #for(x : map)
       #if(x.value&&x.value!="")
          AND
         #if("source_sys".equals(x.key))
         	pay.source_sys = #para(x.value)
+        #elseif("type_code".equals(x.key))
+            la.biz_type = #para(x.value)
         #elseif("start_date".equals(x.key))
-             DATEDIFF(day,#para(x.value),la.pay_date) >= 0
+             DATEDIFF(day,#para(x.value),origin.create_time) >= 0
         #elseif("end_date".equals(x.key))
-              DATEDIFF(day,#para(x.value),la.pay_date) <= 0
+              DATEDIFF(day,#para(x.value),origin.create_time) <= 0
         #elseif("preinsure_bill_no".equals(x.key))
             la.preinsure_bill_no  like convert(varchar(5),'%')+convert(varchar(255),#para(x.value))+convert(varchar(5),'%')
         #elseif("insure_bill_no".equals(x.key))
@@ -97,9 +105,9 @@ WHERE
       #end
     #end
   #end
-  )  tab  left join (
-     select gmf_bill.* from gmf_bill where id in (select max(gmf.id) from gmf_bill gmf group by gmf.legal_id))  gmf
+  )  tab  left join gmf_bill gmf
      on gmf.legal_id = tab.pay_id
+     and gmf.delete_num = 0
      #if(map != null)
     #for(x : map)
       #if(x.value&&x.value!="")
@@ -117,6 +125,11 @@ WHERE
       #end
     #end
   #end
+  where 1=1
+  #if(null != map.service_status_origin && 
+       0 != map.service_status_origin && !"0".equals(map.service_status_origin))
+	   and gmf.service_status is not null 
+	#end
 #end
 
 
@@ -133,7 +146,8 @@ select
 	tab.org_id,
 	tab.org_code,
 	tab.amount,
-	case isnull(tab.company_name,'') when '' then tab.recv_acc_name else tab.company_name end  recv_acc_name,
+	tab.consumer_acc_name,
+	tab.recv_acc_name,
 	tab.recv_cert_type,
 	(case  tab.insure_type when  '1'  then  tab.company_customer_no  else  tab.recv_cert_code end ) recv_cert_code,
 	tab.recv_bank_name,
@@ -159,11 +173,14 @@ select
 	tab.op_name ,
 	tab.company_name ,
 	tab.company_customer_no ,
+	tab.payment_summary,
 	tab.biz_code ,
 	tab.name,
-    case isnull(gmf.service_status,'-1') when '2' then '审批中'  when '-1' then '未给付' when '7' then '给付成功'  when '5' then '审批拒绝' when '3' then '审批中'
-         when '8' then '给付失败'   when '4' then '审批通过,给付中'   end service_status  ,
-    gmf.actual_payment_date  
+	tab.push_date,
+	case isnull(gmf.service_status,'-1') when '2' then '审批中'  when '-1' then '未给付' when '7' then '给付成功'  when '5' then '审批拒绝' when '3' then '审批中'
+         when '8' then '给付失败'   when '4' then '审批通过,给付中' when '6' then '审批通过,给付中'   end service_status ,
+    gmf.actual_payment_date  ,
+    gmf.id AS gmf_id
 from  
  (
 SELECT
@@ -177,6 +194,7 @@ SELECT
 	pay.org_id,
 	pay.org_code,
 	pay.amount,
+	pay.consumer_acc_name,
 	pay.recv_acc_name,
 	pay.recv_cert_type,
 	pay.recv_cert_code,
@@ -184,6 +202,7 @@ SELECT
 	pay.recv_acc_no,	
 	pay.status ,
 	pay.process_msg,
+	pay.payment_summary,
 	pay.bank_fb_msg,
 	pay.create_time,
 	pay.persist_version,
@@ -203,24 +222,29 @@ SELECT
 	ebs.company_name ,
 	ebs.company_customer_no ,
 	ebs.biz_code ,
-	org.name
+	org.name ,
+	origin.create_time AS push_date
 	FROM
 	pay_legal_data AS pay,
 	ebs_pay_legal_data_ext AS  ebs ,
-	organization AS org 
+	organization AS org ,
+	ebs_origin_pay_data AS origin 
 WHERE
 	pay.id = ebs.legal_id AND
-	org.org_id = pay.org_id 
+	org.org_id = pay.org_id AND
+	origin.id = pay.origin_id
   #if(map != null)
     #for(x : map)
       #if(x.value&&x.value!="")
          AND
         #if("source_sys".equals(x.key))
         	pay.source_sys = #para(x.value)
+        #elseif("type_code".equals(x.key))
+            ebs.biz_type = #para(x.value)
         #elseif("start_date".equals(x.key))
-             DATEDIFF(day,#para(x.value),ebs.pay_date) >= 0
+             DATEDIFF(day,#para(x.value),origin.create_time) >= 0
         #elseif("end_date".equals(x.key))
-              DATEDIFF(day,#para(x.value),ebs.pay_date) <= 0
+              DATEDIFF(day,#para(x.value),origin.create_time) <= 0
         #elseif("preinsure_bill_no".equals(x.key))
             ebs.preinsure_bill_no  like convert(varchar(5),'%')+convert(varchar(255),#para(x.value))+convert(varchar(5),'%')
         #elseif("insure_bill_no".equals(x.key))
@@ -259,9 +283,9 @@ WHERE
       #end
     #end
   #end
-  )  tab  left join (
-     select gmf_bill.* from gmf_bill where id in (select max(gmf.id) from gmf_bill gmf group by gmf.legal_id)) gmf
+  )  tab  left join gmf_bill gmf
      on gmf.legal_id = tab.pay_id
+     and gmf.delete_num = 0
      #if(map != null)
     #for(x : map)
       #if(x.value&&x.value!="")
@@ -279,6 +303,11 @@ WHERE
       #end
     #end
   #end
+   where 1=1
+  #if(null != map.service_status_origin && 
+       0 != map.service_status_origin && !"0".equals(map.service_status_origin))
+	   and gmf.service_status is not null 
+	#end
 #end
 
 
@@ -286,7 +315,8 @@ WHERE
 
 #sql("findDistinctStatus")
 SELECT
-  DISTINCT(status) AS status
+  DISTINCT(status) AS status ,
+  supply_status AS supply_status 
 FROM
   pay_legal_data AS pay
 WHERE 
@@ -325,7 +355,8 @@ select
 	gmf.pay_account_name,
 	gmf.pay_account_cur,
 	gmf.recv_account_no,
-	gmf.recv_account_name AS recv_account_name,
+	gmf.recv_account_no AS recv_acc_no,
+	gmf.recv_account_name,
 	gmf.recv_bank_name,
 	gmf.recv_bank_cnaps,
 	gmf.persist_version,
@@ -419,6 +450,7 @@ UNION ALL
 	gmf.pay_account_name,
 	gmf.pay_account_cur,
 	gmf.recv_account_no,
+	gmf.recv_account_no AS recv_acc_no,
     case isnull(ebs.company_name,'') when '' then pay.recv_acc_name else ebs.company_name end  recv_account_name,
 	gmf.recv_bank_name,
 	gmf.recv_bank_cnaps,
@@ -533,7 +565,7 @@ WHERE gmf.id = cwrei.bill_id  AND
 #end
 
 #sql("updBillById")
-   update gmf_bill set bank_serial_number = ?,repeat_count = ?,service_status = ? ,instruct_code = ?,actual_payment_date = ?
+   update gmf_bill set bank_serial_number = ?,repeat_count = ?,service_status = ? ,instruct_code = ?,actual_payment_date = ?,send_on = ?
    where id =  ? and service_status = ? and repeat_count = ?
 #end
 
@@ -562,6 +594,7 @@ WHERE gmf.id = cwrei.bill_id  AND
 	pay.bank_fb_msg,
 	pay.create_time,
 	pay.persist_version,
+	pay.payment_summary,
 	la.bank_key,
 	la.id AS la_id,
 	la.legal_id ,
@@ -616,6 +649,7 @@ WHERE gmf.id = cwrei.bill_id  AND
 	pay.create_time,
 	pay.persist_version,
 	pay.recv_bank_cnaps,
+	pay.payment_summary,
 	ebs.id AS ebs_id,
 	ebs.legal_id ,
 	ebs.insure_type ,
@@ -652,6 +686,7 @@ WHERE gmf.id = cwrei.bill_id  AND
 #sql("findLaDetailById")
     select 
       gmf.* ,
+      gmf.recv_account_no AS recv_acc_no ,
       biztype.type_name
     from
     gmf_bill AS gmf,
@@ -669,6 +704,7 @@ WHERE gmf.id = cwrei.bill_id  AND
 #sql("findEBSDetailById")
     select 
       gmf.* ,
+      gmf.recv_account_no AS recv_acc_no ,
       CASE ebs.biz_type  WHEN 1 THEN '定期结算退费' WHEN 5 THEN '理赔给付' WHEN 10 THEN '保全退费' WHEN 12 THEN
       '基金单满期退费'  WHEN 13 THEN '客户账户退费'  END type_name
     from
@@ -679,4 +715,15 @@ WHERE gmf.id = cwrei.bill_id  AND
      gmf.legal_id = pay.id AND
      pay.id = ebs.legal_id AND
      gmf.id = ?
+#end
+
+#sql("updateDeleteByLegal")
+    update
+    gmf_bill 
+    set 
+    gmf_bill.delete_num = gmf_bill.id
+    where
+    gmf_bill.legal_id = ?
+    and
+    gmf_bill.delete_num = ?
 #end

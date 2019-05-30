@@ -33,6 +33,7 @@
 
 #sql("getEBSUnCheckedOriginList")
   select id,source_sys,pay_code,org_code,insure_type,preinsure_bill_no,insure_bill_no,biz_type,pay_mode,pay_date,amount,recv_acc_name,recv_cert_type,recv_cert_code,recv_bank_name,recv_acc_no,sale_code,sale_name,op_code,op_name,persist_version
+  	,biz_code,create_time,company_name
   from ebs_origin_pay_data
   where is_process = ?
 #end
@@ -92,7 +93,8 @@
 #sql("getpaylegal")
   SELECT
     legal.id,
-    legal.origin_id
+    legal.origin_id,
+    legal.pay_code
   FROM
     pay_legal_data legal,
     ebs_pay_legal_data_ext ext
@@ -103,6 +105,7 @@
     AND ext.insure_bill_no =?
     AND legal.recv_acc_name =?
     AND legal.amount =?
+    AND CONVERT(varchar(100), legal.create_time, 112) = ?
 #end
 #sql("delebspaylegalext")
   delete from ebs_pay_legal_data_ext where legal_id=?
@@ -117,6 +120,7 @@ WHERE is_doubtful = 1
 	AND insure_bill_no =?
 	AND recv_acc_name =?
 	AND amount =?
+	AND CONVERT(varchar(100), create_time, 112) = ?
 #end
 
 #end

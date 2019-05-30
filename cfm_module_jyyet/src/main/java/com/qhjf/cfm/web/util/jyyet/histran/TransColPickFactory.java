@@ -35,10 +35,10 @@ public class TransColPickFactory {
 		findClasses(ATransColPickStrategy.class);
 	}
 
-	public ATransColPickStrategy getStrategyByPk(String pk) throws ReqDataException {
+	public ATransColPickStrategy getStrategyByPk(int pk) throws ReqDataException {
 		ATransColPickStrategy result = null;
 		for (ATransColPickStrategy strategy : strategyList) {
-			if (strategy.getPk().equals(pk)) {
+			if (strategy.getPk() == pk) {
 				result = strategy;
 			}
 		}

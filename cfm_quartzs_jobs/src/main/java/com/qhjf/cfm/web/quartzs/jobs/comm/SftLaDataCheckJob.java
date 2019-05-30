@@ -7,6 +7,7 @@ import com.jfinal.plugin.activerecord.Record;
 import com.qhjf.cfm.exceptions.EncryAndDecryException;
 import com.qhjf.cfm.exceptions.ReqValidateException;
 import com.qhjf.cfm.utils.CommonService;
+import com.qhjf.cfm.utils.DateFormatThreadLocal;
 import com.qhjf.cfm.utils.MD5Kit;
 import com.qhjf.cfm.utils.SymmetricEncryptUtil;
 import com.qhjf.cfm.web.config.GmfConfigAccnoSection;
@@ -96,6 +97,7 @@ public class SftLaDataCheckJob implements Job{
                         payLegal.set("recv_bank_type", laOiriginData.getStr("recv_bank_type"));
                         payLegal.set("recv_bank_name", laOiriginData.getStr("recv_bank_name"));
                         payLegal.set("recv_acc_no", laOiriginData.getStr("recv_acc_no"));
+                        payLegal.set("consumer_acc_name", laOiriginData.get("recv_acc_name"));
                         if (!Db.save("pay_legal_data", payLegal)) {
                             return false;
                         }
@@ -161,7 +163,7 @@ public class SftLaDataCheckJob implements Job{
         }
 
         String payMode = TypeUtils.castToString(laOiriginData.get("pay_mode"));
-        if ("C".equalsIgnoreCase(payMode)) {
+        if ("C".equalsIgnoreCase(payMode) || "H".equalsIgnoreCase(payMode)) {
             List<Record> channels = Db.find(Db.getSql("la_cfm.getChannel")
                     , 0
                     , org.getLong("org_id")
@@ -180,6 +182,9 @@ public class SftLaDataCheckJob implements Job{
             laOiriginData.set("channel_code", channel.getStr("channel_code"));
             laOiriginData.set("recv_bank_type", channel.getStr("bank_type"));
             laOiriginData.set("recv_bank_name", channel.getStr("name"));
+            if ("H".equalsIgnoreCase(payMode)) {
+            	laOiriginData.set("pay_mode", "C");
+			}
         }else {
             log.debug("批收原始数据校验，pay_mode不等于c，不校验通道！");
             laOiriginData.set("channel_id", 0);
@@ -197,7 +202,8 @@ public class SftLaDataCheckJob implements Job{
     private void accNoValidate(Record r) throws ReqValidateException, EncryAndDecryException{
 
         String oldRecvAccNo = r.getStr("recv_acc_no");
-        if ("C".equalsIgnoreCase(TypeUtils.castToString(r.get("pay_mode")))) {
+        String payMode = TypeUtils.castToString(r.get("pay_mode"));
+        if ("C".equalsIgnoreCase(payMode) || "H".equalsIgnoreCase(payMode)) {
             // 数据库解密
             String recvAccNo = DDHSafeUtil.decrypt(oldRecvAccNo);
             if (null == recvAccNo) {
@@ -217,14 +223,16 @@ public class SftLaDataCheckJob implements Job{
             r.set("recv_acc_no", newRecvAccNo);
 
         } else {//柜面付特俗处理
+        	String recvAccNo = "";
             if (StringUtils.isBlank(oldRecvAccNo)) {
-                return;
-            }
-            // 数据库解密
-            String recvAccNo = DDHSafeUtil.decrypt(oldRecvAccNo);
-            if (null == recvAccNo) {
-                r.set("recv_acc_no", "");
-            }
+            	recvAccNo = " ";
+            }else {
+            	// 数据库解密
+            	recvAccNo = DDHSafeUtil.decrypt(oldRecvAccNo);
+            	if (null == recvAccNo) {
+            		recvAccNo = " ";
+            	}
+			}
 
             // 对称加密
             String newRecvAccNo = SymmetricEncryptUtil.getInstance().encrypt(recvAccNo);
@@ -243,7 +251,7 @@ public class SftLaDataCheckJob implements Job{
         Record checkDoubtful = new Record();
 
         String payMode = TypeUtils.castToString(originData.get("pay_mode"));
-        if ("C".equalsIgnoreCase(payMode)) {
+        if ("C".equalsIgnoreCase(payMode) || "H".equalsIgnoreCase(payMode)) {
             Record bankRecord = Db.findById("bankkey_setting",
                     "bankkey",
                     TypeUtils.castToString(originData.get("bank_key")));
@@ -271,18 +279,19 @@ public class SftLaDataCheckJob implements Job{
             }
             checkDoubtful.set(key, entry.getValue());
         }
+        String createTime = DateFormatThreadLocal.format("yyyyMMdd",originData.getDate("create_time"));
         String identification = MD5Kit.string2MD5(originData.getStr("insure_bill_no")
                 + "_" +originData.getStr("recv_acc_name")
-                + "_" +originData.getStr("amount"));
+                + "_" +originData.getStr("amount"))
+                + "_" +createTime;
 
         checkDoubtful.set("identification", identification);
+        checkDoubtful.set("consumer_acc_name", originData.get("recv_acc_name"));
         //判断可疑表中是否存在可疑数据
         List<Record> checkRecordList = Db.find(Db.getSql("la_cfm.getpaycheck"),originData.getStr("insure_bill_no"),originData.getStr("recv_acc_name"),
-                originData.getStr("amount"));
+                originData.getStr("amount"),createTime);
         if(checkRecordList!=null && checkRecordList.size()!=0){
             checkDoubtful.set("is_doubtful", 1);
-            Db.save("la_check_doubtful", checkDoubtful);
-            return WebConstant.YesOrNo.YES;
         }else{
             checkDoubtful.set("is_doubtful", 0);
         }
@@ -293,7 +302,7 @@ public class SftLaDataCheckJob implements Job{
          * 根据保单号，收款人，金额查询合法表中是否存在数据，如果存在视为可疑数据，将合法表中的数据删除，更新可疑表数据状态为可疑
          */
         List<Record> legalRecordList = Db.find(Db.getSql("la_cfm.getpaylegal"),originData.getStr("insure_bill_no"),originData.getStr("recv_acc_name"),
-                originData.getStr("amount"));
+                originData.getStr("amount"),createTime);
         if(legalRecordList!=null && legalRecordList.size()!=0){
             //可疑数据
             CommonService.update("la_check_doubtful",
@@ -305,7 +314,7 @@ public class SftLaDataCheckJob implements Job{
                 Db.delete(Db.getSql("la_cfm.dellapaylegalext"),legalRecord.getLong("id"));
                 CommonService.update("la_check_doubtful",
                         new Record().set("is_doubtful", 1),
-                        new Record().set("origin_id", legalRecord.getLong("origin_id")));
+                        new Record().set("pay_code", TypeUtils.castToString(legalRecord.get("pay_code"))));
             }
             return WebConstant.YesOrNo.YES;
 

@@ -29,7 +29,7 @@ import java.util.Map;
  * @author pc_liweibing
  *
  */
-public class SysSftSinglePayInter implements ISysAtomicInterface {
+public class SysSftSinglePayInter extends SysSinglePayInter {
 
     private static Logger log = LoggerFactory.getLogger(SysSftSinglePayInter.class);
     private ISingleResultChannelInter channelInter;

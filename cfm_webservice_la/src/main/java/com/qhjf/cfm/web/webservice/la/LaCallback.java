@@ -8,6 +8,9 @@ import com.qhjf.cfm.web.config.IConfigSectionType;
 import com.qhjf.cfm.web.constant.WebConstant;
 import com.qhjf.cfm.web.webservice.la.queue.LaProductQueue;
 import com.qhjf.cfm.web.webservice.la.queue.LaQueueBean;
+import com.qhjf.cfm.web.webservice.la.util.LaPayOMElementSkipEAIUtil2;
+import com.qhjf.cfm.web.webservice.la.util.LaRecvOMElementSkipEAIUtil;
+
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
@@ -26,6 +29,7 @@ public class LaCallback {
 	private static Logger log = LoggerFactory.getLogger(LaCallback.class);
 	private static DDHLAConfigSection config = GlobalConfigSection.getInstance()
 			.getExtraConfig(IConfigSectionType.DDHConfigSectionType.DDHLA);
+//	private static final LaPayOMElementSkipEAIUtil2 util= new LaPayOMElementSkipEAIUtil2();
 
 	public void callBack(List<Record> records) {
 		if (records == null || records.size() == 0) {
@@ -40,6 +44,7 @@ public class LaCallback {
 				LaCallbackBean bean = createBean(origin);
 				callbackBeans.add(bean);
 				if (callbackBeans.size() == batchNum) {
+//					OMElement oMElement = util.createOMElement(callbackBeans);
 					OMElement oMElement = createOMElement(callbackBeans);
 					LaQueueBean queueBean = new LaQueueBean(callbackBeans, oMElement);
 					LaProductQueue productQueue = new LaProductQueue(queueBean);
@@ -54,12 +59,12 @@ public class LaCallback {
 		if (callbackBeans.size() > 0) {
 			OMElement oMElement;
 			try {
+//				oMElement = util.createOMElement(callbackBeans);
 				oMElement = createOMElement(callbackBeans);
 				LaQueueBean queueBean = new LaQueueBean(callbackBeans, oMElement);
 				LaProductQueue productQueue = new LaProductQueue(queueBean);
 				new Thread(productQueue).start();
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			

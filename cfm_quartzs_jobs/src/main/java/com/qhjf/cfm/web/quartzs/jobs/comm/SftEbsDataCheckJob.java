@@ -6,15 +6,14 @@ import com.jfinal.plugin.activerecord.IAtom;
 import com.jfinal.plugin.activerecord.Record;
 import com.qhjf.cfm.exceptions.EncryAndDecryException;
 import com.qhjf.cfm.exceptions.ReqValidateException;
-import com.qhjf.cfm.utils.CommonService;
-import com.qhjf.cfm.utils.MD5Kit;
-import com.qhjf.cfm.utils.SymmetricEncryptUtil;
-import com.qhjf.cfm.utils.TableDataCacheUtil;
+import com.qhjf.cfm.utils.*;
 import com.qhjf.cfm.web.constant.WebConstant;
 import com.qhjf.cfm.web.quartzs.jobs.pub.PubJob;
 import com.qhjf.cfm.web.quartzs.jobs.utils.DDHSafeUtil;
 import com.qhjf.cfm.web.quartzs.jobs.utils.ValidateUtil;
 import com.qhjf.cfm.web.webservice.sft.SftCallBack;
+
+import org.apache.commons.lang3.StringUtils;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -97,6 +96,12 @@ public class SftEbsDataCheckJob implements Job{
                         payLegal.set("recv_bank_type", ebsOriginData.getStr("recv_bank_type"));
                         payLegal.set("recv_bank_name", ebsOriginData.getStr("recv_bank_name"));
                         payLegal.set("recv_acc_no", ebsOriginData.getStr("recv_acc_no"));
+                        String company_name = ebsOriginData.getStr("company_name");
+                        if(org.apache.commons.lang.StringUtils.isEmpty(company_name)){
+                            payLegal.set("consumer_acc_name", ebsOriginData.getStr("recv_acc_name"));
+                        }else{
+                            payLegal.set("consumer_acc_name", company_name);
+                        }
                         if (!Db.save("pay_legal_data", payLegal)) {
                             return false;
                         }
@@ -170,42 +175,54 @@ public class SftEbsDataCheckJob implements Job{
         if(recvBank == null){
             throw new ReqValidateException("未匹配到收款银行");
         }*/
-        String bankKey = ebsOriginData.getStr("recv_bank_name");//recvBank.getStr("code");
-        ebsOriginData.set("bank_key", bankKey);
+        
+        String payMode = TypeUtils.castToString(ebsOriginData.get("pay_mode"));
+        if ("C".equalsIgnoreCase(payMode)) {
+        	String bankKey = ebsOriginData.getStr("recv_bank_name");//recvBank.getStr("code");
+            ebsOriginData.set("bank_key", bankKey);
 
-        List<Record> channels = Db.find(Db.getSql("ebs_cfm.getChannel")
-                , 1
-                , org.getLong("org_id")
-                , bankKey);
-        if (channels == null || channels.size() == 0) {
-            throw new ReqValidateException("TMPPJ:未匹配到通道");
+            List<Record> channels = Db.find(Db.getSql("ebs_cfm.getChannel")
+                    , 1
+                    , org.getLong("org_id")
+                    , bankKey);
+            if (channels == null || channels.size() == 0) {
+                throw new ReqValidateException("TMPPJ:未匹配到通道");
+            }
+            if (channels.size() > 1) {
+                throw new ReqValidateException("TMPPJ:匹配到多个通道");
+            }
+
+            Record channel = channels.get(0);
+           /* Integer bankkeyStatus = channel.getInt("bankkey_status");
+            if (null == bankkeyStatus || bankkeyStatus != 1) {
+                throw new ReqValidateException("bankkey状态未启用");
+            }
+            Integer isCheckout = channel.getInt("is_checkout");
+            if (null == isCheckout || isCheckout != 1) {
+                throw new ReqValidateException("通道状态未启用");
+            }*/
+
+            /*ebsOriginData.set("channel_id", channel.getLong("channel_id"));
+            ebsOriginData.set("channel_code", channel.getStr("channel_code"));
+            ebsOriginData.set("recv_bank_type", bankKey);
+            ebsOriginData.set("recv_bank_name", recvBank.getStr("name"));*/
+
+            String bankType = channel.getStr("bank_type");
+            Map<String, Object> constBankType = TableDataCacheUtil.getInstance().getARowData("const_bank_type", "code", bankType);
+
+            ebsOriginData.set("channel_id", channel.getLong("channel_id"));
+            ebsOriginData.set("channel_code", channel.getStr("channel_code"));
+            ebsOriginData.set("recv_bank_type", bankType);
+            ebsOriginData.set("recv_bank_name", TypeUtils.castToString(constBankType.get("name")));
+		}else {
+            log.debug("批收原始数据校验，pay_mode不等于c，不校验通道！");
+            ebsOriginData.set("channel_id", 0);
+            ebsOriginData.set("channel_code", "");
+            ebsOriginData.set("recv_bank_type", "");
+            ebsOriginData.set("recv_bank_name", "");
         }
-        if (channels.size() > 1) {
-            throw new ReqValidateException("TMPPJ:匹配到多个通道");
-        }
-
-        Record channel = channels.get(0);
-       /* Integer bankkeyStatus = channel.getInt("bankkey_status");
-        if (null == bankkeyStatus || bankkeyStatus != 1) {
-            throw new ReqValidateException("bankkey状态未启用");
-        }
-        Integer isCheckout = channel.getInt("is_checkout");
-        if (null == isCheckout || isCheckout != 1) {
-            throw new ReqValidateException("通道状态未启用");
-        }*/
-
-        /*ebsOriginData.set("channel_id", channel.getLong("channel_id"));
-        ebsOriginData.set("channel_code", channel.getStr("channel_code"));
-        ebsOriginData.set("recv_bank_type", bankKey);
-        ebsOriginData.set("recv_bank_name", recvBank.getStr("name"));*/
-
-        String bankType = channel.getStr("bank_type");
-        Map<String, Object> constBankType = TableDataCacheUtil.getInstance().getARowData("const_bank_type", "code", bankType);
-
-        ebsOriginData.set("channel_id", channel.getLong("channel_id"));
-        ebsOriginData.set("channel_code", channel.getStr("channel_code"));
-        ebsOriginData.set("recv_bank_type", bankType);
-        ebsOriginData.set("recv_bank_name", TypeUtils.castToString(constBankType.get("name")));
+        
+        
     }
     /**
      * 银行账号解密-》校验-》加密
@@ -215,24 +232,43 @@ public class SftEbsDataCheckJob implements Job{
      */
     private void accNoValidate(Record r) throws ReqValidateException, EncryAndDecryException{
         String oldRecvAccNo = r.getStr("recv_acc_no");
-        //数据库解密
-        String recvAccNo = DDHSafeUtil.decrypt(oldRecvAccNo);
-        if (null == recvAccNo) {
-            throw new ReqValidateException("TMPPJ:银行账号数据库解密失败");
-        }
+        
+        if ("C".equalsIgnoreCase(TypeUtils.castToString(r.get("pay_mode")))) {
+        	//数据库解密
+        	String recvAccNo = DDHSafeUtil.decrypt(oldRecvAccNo);
+        	if (null == recvAccNo) {
+        		throw new ReqValidateException("TMPPJ:银行账号数据库解密失败");
+        	}
+        	
+        	//账号非法校验
+        	log.debug("数据库解密[{}]=[{}]", oldRecvAccNo, SymmetricEncryptUtil.accNoAddMask(recvAccNo));
+        	boolean accNoValidate = ValidateUtil.accNoValidate(recvAccNo);
+        	if (!accNoValidate) {
+        		throw new ReqValidateException("TMPPJ:银行账号非法");
+        	}
+        	
+        	//对称加密
+        	String newRecvAccNo = null;
+        	newRecvAccNo = SymmetricEncryptUtil.getInstance().encrypt(recvAccNo);
+        	log.debug("对称加密后的密文=[{}]", newRecvAccNo);
+        	r.set("recv_acc_no", newRecvAccNo);
+        }else {
+        	String recvAccNo = "";
+        	if (StringUtils.isBlank(oldRecvAccNo)) {
+        		recvAccNo = " ";
+            }else {
+            	// 数据库解密
+            	recvAccNo = DDHSafeUtil.decrypt(oldRecvAccNo);
+            	if (null == recvAccNo) {
+            		recvAccNo = " ";
+            	}
+			}
 
-        //账号非法校验
-        log.debug("数据库解密[{}]=[{}]", oldRecvAccNo, SymmetricEncryptUtil.accNoAddMask(recvAccNo));
-        boolean accNoValidate = ValidateUtil.accNoValidate(recvAccNo);
-        if (!accNoValidate) {
-            throw new ReqValidateException("TMPPJ:银行账号非法");
-        }
-
-        //对称加密
-        String newRecvAccNo = null;
-        newRecvAccNo = SymmetricEncryptUtil.getInstance().encrypt(recvAccNo);
-        log.debug("对称加密后的密文=[{}]", newRecvAccNo);
-        r.set("recv_acc_no", newRecvAccNo);
+            // 对称加密
+            String newRecvAccNo = SymmetricEncryptUtil.getInstance().encrypt(recvAccNo);
+            log.debug("对称加密后的密文=[{}]", newRecvAccNo);
+            r.set("recv_acc_no", newRecvAccNo);
+		}
     }
 
     private WebConstant.YesOrNo checkDoubtful(Record originData) throws Exception {
@@ -250,19 +286,24 @@ public class SftEbsDataCheckJob implements Job{
             }
             checkDoubtful.set(key, entry.getValue());
         }
+        String createTime = DateFormatThreadLocal.format("yyyyMMdd",originData.getDate("create_time"));
         String identification = MD5Kit.string2MD5(originData.getStr("insure_bill_no")
                 + "_" +originData.getStr("recv_acc_name")
-                + "_" +originData.getStr("amount"));
+                + "_" +originData.getStr("amount"))
+                + "_" +createTime;
 
         checkDoubtful.set("identification", identification);
-
+        String company_name = originData.getStr("company_name");
+        if(org.apache.commons.lang.StringUtils.isEmpty(company_name)){
+            checkDoubtful.set("consumer_acc_name", originData.getStr("recv_acc_name"));
+        }else{
+            checkDoubtful.set("consumer_acc_name", company_name);
+        }
         //判断可疑表中是否存在可疑数据
         List<Record> checkRecordList = Db.find(Db.getSql("ebs_cfm.getpaycheck"),originData.getStr("insure_bill_no"),originData.getStr("recv_acc_name"),
-                originData.getStr("amount"));
+                originData.getStr("amount"),createTime);
         if(checkRecordList!=null && checkRecordList.size()!=0){
             checkDoubtful.set("is_doubtful", 1);
-            Db.save("ebs_check_doubtful", checkDoubtful);
-            return WebConstant.YesOrNo.YES;
         }else{
             checkDoubtful.set("is_doubtful", 0);
         }
@@ -273,7 +314,7 @@ public class SftEbsDataCheckJob implements Job{
          * 根据保单号，收款人，金额查询合法表中是否存在数据，如果存在视为可疑数据，将合法表中的数据删除，更新可疑表数据状态为可疑
          */
         List<Record> legalRecordList = Db.find(Db.getSql("ebs_cfm.getpaylegal"),originData.getStr("insure_bill_no"),originData.getStr("recv_acc_name"),
-                originData.getStr("amount"));
+                originData.getStr("amount"),createTime);
         if(legalRecordList!=null && legalRecordList.size()!=0){
             //可疑数据
             CommonService.update("ebs_check_doubtful",
@@ -285,7 +326,7 @@ public class SftEbsDataCheckJob implements Job{
                 Db.delete(Db.getSql("ebs_cfm.delebspaylegalext"),legalRecord.getLong("id"));
                 CommonService.update("ebs_check_doubtful",
                         new Record().set("is_doubtful", 1),
-                        new Record().set("origin_id", legalRecord.getLong("origin_id")));
+                        new Record().set("pay_code", TypeUtils.castToString(legalRecord.get("pay_code"))));
             }
             return WebConstant.YesOrNo.YES;
         }
@@ -299,7 +340,6 @@ public class SftEbsDataCheckJob implements Job{
     	}
     	return true;
     }*/
-
-
+    
 }
 

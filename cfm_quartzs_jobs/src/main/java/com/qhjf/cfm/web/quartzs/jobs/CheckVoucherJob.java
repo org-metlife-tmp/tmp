@@ -47,26 +47,34 @@ public class CheckVoucherJob implements Job {
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         log.debug("【自动生成凭证任务---begin】");
 
-        checkVoucher("auto_check_cfm.sun_voucher_data_list");
+        List<Record> period = Db.find(Db.getSqlPara("auto_check_cfm.sun_voucher_period"));
+        for(Record r : period){
+            checkVoucher("auto_check_cfm.sun_voucher_data_list", "voucherfileseqno:%s", "SST_SSAL_%s_%s",
+                    "SST_SSAL_%s_%s_%s", "SSAL", r);
+        }
+        List<Record> periodYt = Db.find(Db.getSqlPara("auto_check_cfm.sun_voucher_period_yt"));
+        for(Record r : periodYt){
+            checkVoucher("auto_check_cfm.sun_presubmit_voucher_data_list", "presubmitvoucherfileseqno:%s", "SST_SALL_%s_%s",
+                    "SST_SALL_%s_%s_%s", "SALL", r);
+        }
 
         log.debug("【自动生成凭证任务---end】");
     }
 
-    private void checkVoucher(String sql) {
+    private void checkVoucher(String sql, String seq, String xmlName, String controName, String type, Record record) {
         //查询凭证表(sun_voucher_data) 未生成凭证的数据(file_name 为 NULL)
-        SqlPara sqlPara = Db.getSqlPara(sql);
-        final List<Record> voucherList = Db.find(sqlPara);
+        final List<Record> voucherList = Db.find(Db.getSql(sql), record.getStr("account_period"));
 
         if (voucherList != null && voucherList.size() > 0) {
             //获取当前日期
             String nowDate = format.format(new Date());
             //生成序列号
-            final String seq = RedisSericalnoGenTool.genVoucherFileSeqNo();
-            final String fileNameXML = String.format(FILE_ANME_XML, nowDate, seq);
-            final String fileNameTXT = String.format(FILE_ANME_TXT, nowDate, seq, "CONTROL");
+            final String serialNumber = RedisSericalnoGenTool.genVoucherFileSeqNo(seq);
+            final String fileNameXML = String.format(xmlName, nowDate, serialNumber);
+            final String fileNameTXT = String.format(controName, nowDate, serialNumber, "CONTROL");
 
             //生成xml文件
-            String xml = createXML(voucherList, fileNameXML);
+            String xml = createXML(voucherList, fileNameXML, type);
             //生成txt文件
             String txt = createControl(voucherList, fileNameXML);
 
@@ -116,7 +124,7 @@ public class CheckVoucherJob implements Job {
      * @param fileName
      * @return 生成xml
      */
-    private String createXML(List<Record> list, String fileName) {
+    private String createXML(List<Record> list, String fileName, String type) {
         builder = new StringBuilder();
         builder.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
         builder.append("<SSC>\n");
@@ -137,7 +145,7 @@ public class CheckVoucherJob implements Job {
         builder.append("\t\t\t<AllowPostToSuspended>").append("N").append("</AllowPostToSuspended>\n");
         builder.append("\t\t\t<BalancingOptions>").append("T9").append("</BalancingOptions>\n");
         builder.append("\t\t\t<Description>").append(fileName).append("</Description>\n");
-        builder.append("\t\t\t<JournalType>").append("SSAL").append("</JournalType>\n");
+        builder.append("\t\t\t<JournalType>").append(type).append("</JournalType>\n");
         builder.append("\t\t\t<LayoutCode />\n");
         builder.append("\t\t\t<LoadOnly>").append("N").append("</LoadOnly>\n");
         builder.append("\t\t\t<PostProvisional>").append("N").append("</PostProvisional>\n");

@@ -275,7 +275,7 @@ public class RecvDiskBackingService {
 						}
 						backamount = backamount.add(new BigDecimal(linefile.split("\\|",-1)[amount - 1]));
 						updateDetailRecord.set("child_batchno", recv_batch_total.getStr("child_batchno"));
-						updateDetailRecord.set("package_seq", linefile.split("\\|",-1)[package_seq - 1]);
+						//updateDetailRecord.set("package_seq", linefile.split("\\|",-1)[package_seq - 1]);
 						if (linefile.split("\\|",-1)[response_code - 1].contains("0000")
 								|| linefile.split("\\|",-1)[response_code - 1].contains("成功")) {
 							// 0000 S0000 F0000 成功 都表示交易成功
@@ -314,7 +314,7 @@ public class RecvDiskBackingService {
 					updateDetailRecord.set("bank_err_code", linefile.split("\\|",-1)[response_code - 1]);
 					updateDetailRecord.set("bank_err_msg", linefile.split("\\|",-1)[response_message - 1]);
 					updateDetailRecord.set("child_batchno", recv_batch_total.getStr("child_batchno"));
-					updateDetailRecord.set("package_seq", linefile.split("\\|",-1)[package_seq - 1]);
+					//updateDetailRecord.set("package_seq", linefile.split("\\|",-1)[package_seq - 1]);
 					// 建行不校验了
 					backamount = backamount.add(new BigDecimal(linefile.split("\\|",-1)[amount - 1]));
 					updateDetailRecords.add(updateDetailRecord);
@@ -359,7 +359,7 @@ public class RecvDiskBackingService {
 				updateDetailRecord.set("bank_err_code", linefile.split(",",-1)[response_code - 1]);
 				updateDetailRecord.set("bank_err_msg", linefile.split(",",-1)[response_message - 1]);
 				updateDetailRecord.set("child_batchno", recv_batch_total.getStr("child_batchno"));
-				updateDetailRecord.set("package_seq", linefile.split(",",-1)[package_seq - 1]);
+				//updateDetailRecord.set("package_seq", linefile.split(",",-1)[package_seq - 1]);
 				backamount = backamount.add(new BigDecimal(linefile.split(",",-1)[amount - 1])
 						.divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP));
 				updateDetailRecords.add(updateDetailRecord);
@@ -385,7 +385,7 @@ public class RecvDiskBackingService {
 			String package_seq_faild = this.circleSelect(updateDetailRecords);			
 			result.put("success", false);
 			result.put("error_code", "FileDetailDataError");
-			result.put("error_message", "序号为"+package_seq_faild+"的详情数据错误");
+			result.put("error_message", "支付号为"+package_seq_faild+"的详情数据错误");
 			return result;
 		}
 		
@@ -403,14 +403,14 @@ public class RecvDiskBackingService {
 						new Record().set("id", recv_id));
 				logger.info("=====更新recv_batch_total结果===" + update);
 				if (update) {
-					int[] batchUpdate = Db.batchUpdate("recv_batch_detail", "package_seq,child_batchno,amount,pay_code",updateDetailRecords, 1000);
+					int[] batchUpdate = Db.batchUpdate("recv_batch_detail", "child_batchno,amount,pay_code",updateDetailRecords, 1000);
 					
 					logger.info("=====更新pay_batch_detail结果===" + batchUpdate.length + "==文件中跑出的详情个数=="+final_sonnum);
-					if( batchUpdate.length != final_sonnum || !ArrayUtil.checkDbResult(batchUpdate)) {
+					if(!ArrayUtil.checkDbResult(batchUpdate)) {
 						detail_flag.set("detail_flag", "faild") ;
+						logger.error("====更新详情表存在数据匹配不上====");
 						return false ;
 					}
-					if ( batchUpdate.length == final_sonnum && ArrayUtil.checkDbResult(batchUpdate)) {
 						// 开始更新原始数据状态
 						Boolean origin_flag = false;
 						if (source_sys == 0) {
@@ -428,17 +428,16 @@ public class RecvDiskBackingService {
 								return false;
 							}
 						}
-					}
 				}
 				return false;
 			}
 		});
 		
 		if("faild".equals(detail_flag.getStr("detail_flag"))) {
-			String package_seq_faild = this.circleSelect(updateDetailRecords);			
+			String package_seq_faild = this.circleSelect(updateDetailRecords);	
 			result.put("success", false);
 			result.put("error_code", "FileDetailDataError");
-			result.put("error_message", "序号为"+package_seq_faild+"的详情数据错误");
+			result.put("error_message", "支付号为"+package_seq_faild+"的详情数据错误");
 			return result;
 		}
 		
@@ -478,7 +477,7 @@ public class RecvDiskBackingService {
 		for (Record record : updateDetailRecords) {
 			List<Record> find = Db.find(Db.getSqlPara("recv_disk_backing.findDetail", Kv.by("map", record.getColumns()))) ;			
 		    if( null == find || find.size() == 0) {
-		    	package_seq = record.getStr("package_seq");
+		    	package_seq = record.getStr("pay_code");
 		    	break ;
 		    }
 		}

@@ -69,20 +69,22 @@ public class PayCounterWorkBook extends AbstractWorkBook {
     			if(StringUtils.isBlank(service_status_origin)) {
     				record.remove("service_status");			
     			}else {
+    			record.set("service_status_origin",record.get("service_status"));
     			List<Integer> service_status = new ArrayList<>();
     			switch (TypeUtils.castToInt(service_status_origin)) {
     				case 0 :  //WebConstant.Sft_Billstatus.WJF.getKey()
-    					service_status.add(1);  //WebConstant.BillStatus.SUBMITED.getKey()
-    					service_status.add(2);
+    					service_status.add(1);  //WebConstant.BillStatus.SUBMITED.getKey()				
     					break;
     				case 1 :
     					service_status.add(3);
+    					service_status.add(2);
     					break;
     				case 2 :
     					service_status.add(5);
     					break;
     				case 3 :
     					service_status.add(4);
+    					service_status.add(6);
     					break;
     				case 4 :
     					service_status.add(7);
@@ -95,6 +97,7 @@ public class PayCounterWorkBook extends AbstractWorkBook {
     				}
     			record.set("service_status", service_status);
     			}
+    			// 如果状态 未给付 , 可以是未提交.  其他状态必须是已提交 .否则查找任何状态都会带出未给付状态
     			String pay_mode = record.getStr("pay_mode");
     			//柜面付  默认网银
     			if( StringUtils.isBlank(pay_mode) ) {

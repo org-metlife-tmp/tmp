@@ -41,10 +41,16 @@ public class LaRecvConsumerQueue implements Runnable{
 	private static DDHLARecvConfigSection config = GlobalConfigSection.getInstance()
 			.getExtraConfig(IConfigSectionType.DDHConfigSectionType.DDHLaRecv);
 	private static final String LA_ORIGIN = "la_origin_recv_data";
+	private static final int MAX_TIME = 5;
 
 	@Override
 	public void run() {
+		int i = 1;
 		while(true){
+			if (i > MAX_TIME) {
+				return;
+			}
+			
 			try{
 				LaRecvQueueBean queueBean = null;
 				queueBean = LaRecvQueue.getInstance().getQueue().take();
@@ -53,28 +59,17 @@ public class LaRecvConsumerQueue implements Runnable{
 				track.debug("LA批收send={}",send);
 				
 				ServiceClient sc = new ServiceClient();
-				Options opts = new Options();
-				EndpointReference end = new EndpointReference(config.getUrl());
-//				EndpointReference end = new EndpointReference("http://10.164.26.43/esbwebentry/ESBWebEntry.asmx?wsdl");
-				opts.setTo(end); 
-				opts.setAction("http://eai.metlife.com/ESBWebEntry/ProcessMessage");
-				sc.setOptions(opts);
+//				sendSkipEAI(sc);
+				sendEAI(sc);
+				
 				OMElement res = sc.sendReceive(queueBean.getoMElement());
 				CommKit.debugPrint(track,"LA批收回调response={}",res.toString());
 
 
 				JSONObject json = XmlTool.documentToJSONObject(res.toString());
 				
-				JSONObject rec = null;
-				String status = "";
-				try {
-					rec = json.getJSONArray("ESBEnvelopeResult").getJSONObject(0)
-							.getJSONArray("MsgBody").getJSONObject(0)
-							.getJSONArray("DRNADDO_REC").getJSONObject(0);
-					status = rec.getString("STATUS");
-				} catch (Exception e) {
-					CommKit.errorPrint(log,"解析LA批收回调响应状态失败(ESBEnvelopeResult-MsgBody-DRNADDO_REC-STATUS)={}",json.toJSONString());
-				}
+//				String status = getStatusSkipEAI(json);
+				String status = getStatusEAI(json);
 				
 				if(status.equals("0")){
 					processSuccess(json, queueBean);
@@ -82,11 +77,51 @@ public class LaRecvConsumerQueue implements Runnable{
 					processFail(queueBean);
 				}
 			}catch(Exception e){
+				i++;
 				e.printStackTrace();
 				continue;
 			}
 		}
 		
+	}
+	
+	private void sendEAI(ServiceClient sc) throws Exception{
+		Options opts = new Options();
+		EndpointReference end = new EndpointReference(config.getUrl());
+		opts.setTo(end); 
+		opts.setAction("http://eai.metlife.com/ESBWebEntry/ProcessMessage");
+		sc.setOptions(opts);
+	}
+	private void sendSkipEAI(ServiceClient sc) throws Exception {
+		Options opts = new Options();   
+		EndpointReference end = new EndpointReference(config.getUrl());   
+		opts.setTo(end); 
+		opts.setAction("DRNADD");
+		sc.setOptions(opts);
+	}
+	private String getStatusEAI(JSONObject json) {
+		try {
+			JSONObject rec = json.getJSONArray("ESBEnvelopeResult").getJSONObject(0)
+					.getJSONArray("MsgBody").getJSONObject(0)
+					.getJSONArray("DRNADDO_REC").getJSONObject(0);
+			return rec.getString("STATUS");
+		} catch (Exception e) {
+			CommKit.errorPrint(log,"解析LA批收回调响应状态失败(ESBEnvelopeResult-MsgBody-DRNADDO_REC-STATUS)={}",json.toJSONString());
+		}
+		return "";
+	}
+	private String getStatusSkipEAI(JSONObject json){
+		return json.getString("STATUS");
+	}
+	private JSONArray getRecordListEAI(JSONObject json){
+		return json.getJSONArray("ESBEnvelopeResult").getJSONObject(0)
+				.getJSONArray("MsgBody").getJSONObject(0)
+				.getJSONArray("DRNADDO_REC").getJSONObject(0)
+				.getJSONArray("ADDITIONAL_FIELDS").getJSONObject(0)
+				.getJSONArray("DRNOUTRECS");
+	}
+	private JSONArray getRecordListSkipEAI(JSONObject json){
+		return json.getJSONArray("ADDITIONAL_FIELDS").getJSONObject(0).getJSONArray("DRNOUTRECS");
 	}
 
 	
@@ -118,11 +153,8 @@ public class LaRecvConsumerQueue implements Runnable{
 	private void processSuccess(JSONObject resp, LaRecvQueueBean queueBean){
 		log.debug("LA批收推送核心系统，核心系统接收成功！");
 		
-		JSONArray array = resp.getJSONArray("ESBEnvelopeResult").getJSONObject(0)
-				.getJSONArray("MsgBody").getJSONObject(0)
-				.getJSONArray("DRNADDO_REC").getJSONObject(0)
-				.getJSONArray("ADDITIONAL_FIELDS").getJSONObject(0)
-				.getJSONArray("DRNOUTRECS");
+//		JSONArray array = getRecordListSkipEAI(resp);
+		JSONArray array = getRecordListEAI(resp);
 		
 		for(int i = 0;i<array.size();i++){
 			

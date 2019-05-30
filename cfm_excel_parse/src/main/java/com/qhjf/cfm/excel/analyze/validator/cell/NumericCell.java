@@ -34,6 +34,8 @@ public class NumericCell extends CellValueGetterStrategy {
 				cellValue = doubleCellValue;
 			} else if (item.getColumnClass().getName().equals(SHORT_CLASSANME)) {
 				cellValue = doubleCellValue.shortValue();
+			} else {
+				cellValue = doubleCellValue;
 			}
 		}
 		

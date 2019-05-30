@@ -8,12 +8,14 @@ import com.qhjf.cfm.exceptions.DbProcessException;
 import com.qhjf.cfm.exceptions.ReqDataException;
 import com.qhjf.cfm.utils.CommonService;
 import com.qhjf.cfm.utils.RedisSericalnoGenTool;
+import com.qhjf.cfm.utils.SymmetricEncryptUtil;
 import com.qhjf.cfm.web.UserInfo;
 import com.qhjf.cfm.web.constant.WebConstant;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -36,9 +38,16 @@ public class PayCounterCheckService {
      * @param record
      * @return
      */
-    public Page<Record> batchlist(int pageNum, int pageSize, final Record record) throws BusinessException {
+    public Page<Record> batchlist(int pageNum, int pageSize, final Record record) throws BusinessException,UnsupportedEncodingException {
+        SymmetricEncryptUtil util = SymmetricEncryptUtil.getInstance();
+        String recv_account_no = record.getStr("recv_account_no");
+        recv_account_no = util.encrypt(recv_account_no);
+        record.set("recv_account_no", recv_account_no);
         SqlPara sqlPara = Db.getSqlPara("paycountercheck.paylist", Kv.by("map", record.getColumns()));
-        return Db.paginate(pageNum, pageSize, sqlPara);
+        Page<Record> paginate = Db.paginate(pageNum, pageSize, sqlPara);
+        List<Record> list = paginate.getList();
+        util.recvmask(list);
+        return paginate;
     }
 
     /**
@@ -58,7 +67,7 @@ public class PayCounterCheckService {
      * @return
      * @throws BusinessException
      */
-    public List<Record> tradingListAuto(final Record record) throws BusinessException {
+    public List<Record> tradingListAuto(final Record record) throws BusinessException, UnsupportedEncodingException {
         /**
          * (1)当业务流水记录行被选中时，银行流水表中按照以下先后顺序查询，如查到记录则完成匹配查询，把结果显示在银行流水表中
          *     (a) 按照指令码匹配查询。
@@ -81,6 +90,8 @@ public class PayCounterCheckService {
                 return hisList;
             }
         }
+        SymmetricEncryptUtil util = SymmetricEncryptUtil.getInstance();
+        bill.set("recv_account_no", new String(util.decrypt(bill.getStr("recv_account_no")), "utf-8"));
         return Db.find(Db.getSqlPara("paycountercheck.getHisByInfos", Kv.by("map", bill.getColumns())));
     }
 
@@ -139,9 +150,11 @@ public class PayCounterCheckService {
             @Override
             public boolean run() throws SQLException {
                 //更新交易
+                String seqnoOrstatmentCode = RedisSericalnoGenTool.genVoucherSeqNo();//生成十六进制序列号/凭证号
                 for(Integer trad : tradingNo){
                     boolean s = CommonService.update("acc_his_transaction",
                                     new Record().set("is_checked", 1)
+                                                .set("statement_code", seqnoOrstatmentCode)
                                                 .set("check_service_number", checkSerialSeqNo)
                                                 .set("check_user_id", userInfo.getUsr_id())
                                                 .set("check_user_name", userInfo.getName())
@@ -151,7 +164,6 @@ public class PayCounterCheckService {
                         return false;
                     }
                 }
-                String seqnoOrstatmentCode = RedisSericalnoGenTool.genVoucherSeqNo();//生成十六进制序列号/凭证号
                 //更新单据
                 boolean s = CommonService.update("gmf_bill",
                         new Record().set("is_checked", 1)

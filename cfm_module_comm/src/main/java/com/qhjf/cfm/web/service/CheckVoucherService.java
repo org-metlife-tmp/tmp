@@ -626,6 +626,7 @@ public class CheckVoucherService {
         //根据账号找对应的bankcode
         acc = Db.findById("account", "acc_id", TypeUtils.castToLong(tradRecordList.get(0).get("acc_id")));
         //根据机构id查询机构信息
+        Record chann = Db.findFirst(Db.getSql("channel_setting.getchannelbybankcode"), acc.get("bankcode"));
         curr = TypeUtils.castToString(
                 Db.findById("currency","id", TypeUtils.castToLong(acc.get("curr_id")))
                         .get("iso_code"));
@@ -638,7 +639,7 @@ public class CheckVoucherService {
         //凭证1
         list.add(CommonService.gmfPayVorcher(acc, description, "SYS", transactionReference, 1, periodDate, allLastDate, billRecord, curr, orgcode));
         //凭证2
-        list.add(CommonService.gmfPayVorcher(acc, description, acc.getStr("bankcode"), transactionReference, 2, periodDate, allLastDate, billRecord, curr, orgcode));
+        list.add(CommonService.gmfPayVorcher(acc, description, chann.getStr("channel_code")+acc.getStr("bankcode"), transactionReference, 2, periodDate, allLastDate, billRecord, curr, orgcode));
 
         if (!CommonService.saveCheckVoucher(list)) {
             throw new ReqDataException("生成凭证失败!");
@@ -662,7 +663,7 @@ public class CheckVoucherService {
                 Record chann=null, acc=null;
                 String description=null, code6=null, transactionReference=null;
                 //生成对账流水号
-                String seqnoOrstatmentCode = RedisSericalnoGenTool.genCheckSerialSeqNo();//生成十六进制流水号
+                String seqnoOrstatmentCode = RedisSericalnoGenTool.genVoucherSeqNo();//生成十六进制流水号
                 String curr="",orgcode="";
                 acc = Db.findById("account", "acc_id", TypeUtils.castToLong(tradRecord.get("acc_id")));
 
@@ -676,7 +677,7 @@ public class CheckVoucherService {
                         Db.findById("organization","org_id", TypeUtils.castToLong(acc.get("org_id")))
                                 .get("code"));
                 Record sftcheck = Db.findById("sftcheck_org_mapping", "tmp_org_code", orgcode);
-                transactionReference = "SS" + sftcheck.getStr("code_abbre") + DateFormatThreadLocal.format("YYMM",new Date()) + seqnoOrstatmentCode;
+                transactionReference = "SA" + sftcheck.getStr("code_abbre") + DateFormatThreadLocal.format("YYMM",new Date()) + seqnoOrstatmentCode;
                 String direction = tradRecord.getStr("direction");
                 Date periodDate = CommonService.getPeriodByCurrentDay(tradRecord.getDate("trans_date"));
                 //1付 2收
@@ -722,7 +723,7 @@ public class CheckVoucherService {
                 Record chann=null, acc=null;
                 String description=null, code6=null, transactionReference=null;
                 //生成对账流水号
-                String seqnoOrstatmentCode = RedisSericalnoGenTool.genCheckSerialSeqNo();//生成十六进制流水号
+                String seqnoOrstatmentCode = RedisSericalnoGenTool.genVoucherSeqNo();//生成十六进制流水号
                 String curr="",orgcode="";
                 acc = Db.findById("account", "acc_id", TypeUtils.castToLong(tradRecord.get("acc_id")));
 
@@ -736,9 +737,9 @@ public class CheckVoucherService {
                         Db.findById("organization","org_id", TypeUtils.castToLong(acc.get("org_id")))
                                 .get("code"));
                 Record sftcheck = Db.findById("sftcheck_org_mapping", "tmp_org_code", orgcode);
-                transactionReference = "SS" + sftcheck.getStr("code_abbre") + DateFormatThreadLocal.format("YYMM",new Date()) + seqnoOrstatmentCode;
+                transactionReference = "SA" + sftcheck.getStr("code_abbre") + DateFormatThreadLocal.format("YYMM",new Date()) + seqnoOrstatmentCode;
                 String direction = tradRecord.getStr("direction");
-                Date periodDate = CommonService.getPeriodByCurrentDay(tradRecord.getDate("trans_date"));
+                Date periodDate = CommonService.getPeriodByCurrentDay(new Date());
                 //1付 2收
                 if("1".equals(direction)){
                     description = "冲销暂付" + chann.getStr("bankcode") + DateFormatThreadLocal.format("yyMMdd",tradRecord.getDate("trans_date")) + "暂付" +
@@ -756,6 +757,14 @@ public class CheckVoucherService {
                     list.add(CommonService.presubmitchargeoffVorcher(acc, description, "SYS", transactionReference, 7, periodDate, tradRecord.getDate("trans_date"), tradRecord, curr, orgcode));
                     //凭证2
                     list.add(CommonService.presubmitchargeoffVorcher(acc, description, chann.getStr("channel_code")+chann.getStr("bankcode"), transactionReference, 8, periodDate, tradRecord.getDate("trans_date"), tradRecord, curr, orgcode));
+                }
+                //更新交易扩展表状态
+                boolean extFlag = CommonService.update("acc_his_transaction_ext",
+                        new Record().set("chargeoff_date", new Date()).set("chargeoff_code", seqnoOrstatmentCode).set("precondition",WebConstant.PreSubmitStatus.YCHONGX.getKey())
+                                    .set("create_on", new Date()),
+                        new Record().set("id", tradRecord.getInt("ext_id")));
+                if(!extFlag){
+                    throw new ReqDataException("冲销凭证更新失败!");
                 }
             }
         }

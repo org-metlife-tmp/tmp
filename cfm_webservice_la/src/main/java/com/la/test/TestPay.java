@@ -14,7 +14,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
 
-public class Test {
+public class TestPay {
 		
 	public void testCase() {
 		try {
@@ -200,7 +200,7 @@ public class Test {
 	}
 	
 	public static void main(String[] args) {
-		Test test =new Test();
+		TestPay test =new TestPay();
 		test.testCase();
 	}
 }

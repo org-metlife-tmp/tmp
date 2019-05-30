@@ -75,7 +75,7 @@
    recv.org_id = org.org_id AND
    la.legal_id = recv.id AND
    pbd.base_id = ? 
-   order by pbd.package_seq asc
+   order by convert(int,pbd.package_seq) asc
 #end
 
 #sql("findOfferDocument")

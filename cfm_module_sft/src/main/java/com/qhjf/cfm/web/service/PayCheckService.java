@@ -181,10 +181,12 @@ public class PayCheckService {
                     checkName = "is_checked";
                     biz_type = WebConstant.MajorBizType.SFF_PLF_INNER.getKey();
                 }
+                String seqnoOrstatmentCode = RedisSericalnoGenTool.genVoucherSeqNo();//生成十六进制序列号/凭证号
                 for(Integer trad : tradingNo){
 
                     boolean s = CommonService.update("acc_his_transaction",
                                     new Record().set(checkName, 1)
+                                                .set("statement_code", seqnoOrstatmentCode)
                                                 .set("check_service_number", checkSerialSeqNo)
                                                 .set("check_user_id", userInfo.getUsr_id())
                                                 .set("check_user_name", userInfo.getName())
@@ -194,7 +196,6 @@ public class PayCheckService {
                         return false;
                     }
                 }
-                String seqnoOrstatmentCode = RedisSericalnoGenTool.genVoucherSeqNo();//生成十六进制序列号/凭证号
                 //更新批次
                 for(int num=0; num<batchNo.size(); num++){
                     boolean s = CommonService.update("pay_batch_total",

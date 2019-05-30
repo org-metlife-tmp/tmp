@@ -1,0 +1,15 @@
+pk=13
+templateId=
+startRow=9
+startColumn=0
+excelDataType=3
+sheetNumber=
+sheetName=
+[columnConfigs]=dataType:string, required:0, tips:提示信息, columnName:A列,dbColumnName:a, validator:none, convertor:none, statistics:none
+[columnConfigs]=dataType:string, required:0, tips:提示信息, columnName:B列,dbColumnName:b, validator:none, convertor:none, statistics:none
+[columnConfigs]=dataType:string, required:0, tips:提示信息, columnName:C列,dbColumnName:c, validator:none, convertor:none, statistics:none
+[columnConfigs]=dataType:string, required:0, tips:提示信息, columnName:D列,dbColumnName:d, validator:none, convertor:none, statistics:none
+[columnConfigs]=dataType:string, required:0, tips:提示信息, columnName:E列,dbColumnName:e, validator:none, convertor:none, statistics:none
+[columnConfigs]=dataType:string, required:0, tips:提示信息, columnName:F列,dbColumnName:f, validator:none, convertor:none, statistics:none
+[columnConfigs]=dataType:string, required:0, tips:提示信息, columnName:G列,dbColumnName:g, validator:none, convertor:none, statistics:none
+[cellConfigs]=dataType:string, position:B8, required:1, tips:提示信息, columnName:银行账号,dbColumnName:acc_no, validator:com.qhjf.cfm.excel.config.validator.impl.AccNoValidator, convertor:none, statistics:none

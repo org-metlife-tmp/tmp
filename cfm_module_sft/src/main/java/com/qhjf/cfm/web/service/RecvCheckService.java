@@ -133,10 +133,12 @@ public class RecvCheckService {
             @Override
             public boolean run() throws SQLException {
                 //更新交易
+                String seqnoOrstatmentCode = RedisSericalnoGenTool.genVoucherSeqNo();//生成十六进制序列号/凭证号
                 for(Integer trad : tradingNo){
 
                     boolean s = CommonService.update("acc_his_transaction",
                             new Record().set("is_checked", 1)
+                                    .set("statement_code", seqnoOrstatmentCode)
                                     .set("check_service_number", checkSerialSeqNo)
                                     .set("check_user_id", userInfo.getUsr_id())
                                     .set("check_user_name", userInfo.getName())
@@ -146,7 +148,6 @@ public class RecvCheckService {
                         return false;
                     }
                 }
-                String seqnoOrstatmentCode = RedisSericalnoGenTool.genVoucherSeqNo();//生成十六进制序列号/凭证号
                 //更新批次
                 for(int num=0; num<batchNo.size(); num++){
                     boolean s = CommonService.update("recv_batch_total",

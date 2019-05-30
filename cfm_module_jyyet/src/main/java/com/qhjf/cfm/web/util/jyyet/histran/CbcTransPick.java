@@ -10,6 +10,7 @@ import java.util.Map;
 
 import com.qhjf.cfm.excel.bean.ExcelResultBean;
 import com.qhjf.cfm.exceptions.ReqDataException;
+import com.qhjf.cfm.web.constant.WebConstant;
 /**
  * 建行历史交易导入
  * @author CHT
@@ -20,8 +21,8 @@ public class CbcTransPick extends ATransColPickStrategy {
 	protected static final String CCB_DATE_FORMAT = "yyyyMMdd HH:mm:ss";
 
 	@Override
-	public String getPk() {
-		return ATransColPickStrategy.TemplatePk.CBC.getPk();
+	public int getPk() {
+		return WebConstant.HisTransImportBankList.CBC.getKey();
 	}
 
 	@Override
@@ -32,9 +33,6 @@ public class CbcTransPick extends ATransColPickStrategy {
 		}
 		
 		List<Map<String, Object>> result = new ArrayList<>();
-		if (data == null || data.size() == 0) {
-			return result;
-		}
 		
 		for (Map<String, Object> map : data) {
 			Map<String, Object> ccbMap = new HashMap<>();

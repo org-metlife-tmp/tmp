@@ -12,6 +12,7 @@ import com.qhjf.cfm.web.channel.inter.api.ISingleResultChannelInter;
 import com.qhjf.cfm.web.channel.util.DateUtil;
 import com.qhjf.cfm.web.config.CMBCTestConfigSection;
 import com.qhjf.cfm.web.inter.impl.SysOaSinglePayInter;
+import com.qhjf.cfm.web.inter.impl.SysSftSinglePayInter;
 import com.qhjf.cfm.web.inter.impl.SysSinglePayInter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,7 +56,7 @@ public class CmbcTradeResultQueryInter  implements ISingleResultChannelInter{
 		}
 		JSONArray jsonArray = json.getJSONArray("NTSTLLSTZ");
 		if(jsonArray == null || jsonArray.size() == 0){
-			reSend(json.getString("bank_serial_number"));
+//			reSend(json.getString("bank_serial_number"));
 			record.set("status", 3);
 			return record;
 		}
@@ -76,7 +77,7 @@ public class CmbcTradeResultQueryInter  implements ISingleResultChannelInter{
 		}
 	}
 	
-	private void reSend(String bank_serial_number){
+	/*private void reSend(String bank_serial_number){
 		log.error("没有符合条件的记录，讲交易重新加入队列");
 		
 		String sql = "select * from single_pay_instr_queue where bank_serial_number='%s' and status='3'";
@@ -87,7 +88,9 @@ public class CmbcTradeResultQueryInter  implements ISingleResultChannelInter{
 			String sourceRef = record.getStr("source_ref");//单据表
 			if ("oa_branch_payment_item".equals(sourceRef) || "oa_head_payment".equals(sourceRef)) {
 				sysInter = new SysOaSinglePayInter();
-			}else {
+			}else if("gmf_bill".equals(sourceRef)){
+				sysInter = new SysSftSinglePayInter();
+            }else {
 				sysInter = new SysSinglePayInter();
 			}
 			sysInter.setInnerInstr(record);
@@ -96,7 +99,7 @@ public class CmbcTradeResultQueryInter  implements ISingleResultChannelInter{
 			ProductQueue productQueue = new ProductQueue(bean);
 			new Thread(productQueue).start();
 		}
-	}
+	}*/
 
 	
 	@Override
