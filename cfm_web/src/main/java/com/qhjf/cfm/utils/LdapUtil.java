@@ -166,7 +166,8 @@ public class LdapUtil {
     /**** 测试 ****/
     public static void main(String[] args) {
         try {
-            LdapUtil.authentication("hq01233", "Windows2006");
+        	LdapUtil.authentication("DongXiaog", "Hello001");
+//            LdapUtil.authentication("hq01233", "Windows2006");
         } catch (BusinessException e) {
             e.printStackTrace();
         }
