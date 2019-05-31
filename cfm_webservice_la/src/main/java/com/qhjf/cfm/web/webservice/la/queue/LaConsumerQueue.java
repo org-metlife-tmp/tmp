@@ -18,6 +18,8 @@ import com.qhjf.cfm.web.constant.WebConstant;
 import com.qhjf.cfm.web.service.CheckVoucherService;
 import com.qhjf.cfm.web.webservice.la.LaCallbackBean;
 import com.qhjf.cfm.web.webservice.la.logger.pay.BatchPayLogger;
+import com.qhjf.cfm.web.webservice.la.queue.recv.LaRecvQueue;
+
 import org.apache.axiom.om.OMElement;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.client.Options;
@@ -39,17 +41,13 @@ public class LaConsumerQueue implements Runnable{
 	private static Logger track = LoggerFactory.getLogger(BatchPayLogger.class);
 	private static Logger log = LoggerFactory.getLogger(LaConsumerQueue.class);
 	private static DDHLAConfigSection config = GlobalConfigSection.getInstance().getExtraConfig(IConfigSectionType.DDHConfigSectionType.DDHLA);
-	private static final int MAX_TIME = 5;
 	
 	@Override
 	public void run() {
-		int i = 1;
 		while(true){
-			if (i > MAX_TIME) {
-				return;
-			}
 			
 			try{
+				log.debug("LA pifu queue size = {}", LaQueue.getInstance().getQueue().size());
 				LaQueueBean queueBean = null;
 				queueBean = LaQueue.getInstance().getQueue().take();
 				log.debug("LA批付回调核心系统web url={}", StringKit.removeControlCharacter(config.getUrl()));
@@ -74,8 +72,8 @@ public class LaConsumerQueue implements Runnable{
 					processFail(queueBean);
 				}
 			}catch(Exception e){
-				i++;
 				e.printStackTrace();
+				log.error(e.getMessage());
 				continue;
 			}
 		}

@@ -41,17 +41,13 @@ public class LaRecvConsumerQueue implements Runnable{
 	private static DDHLARecvConfigSection config = GlobalConfigSection.getInstance()
 			.getExtraConfig(IConfigSectionType.DDHConfigSectionType.DDHLaRecv);
 	private static final String LA_ORIGIN = "la_origin_recv_data";
-	private static final int MAX_TIME = 5;
 
 	@Override
 	public void run() {
-		int i = 1;
 		while(true){
-			if (i > MAX_TIME) {
-				return;
-			}
 			
 			try{
+				log.debug("LA pishou queue size = {}", LaRecvQueue.getInstance().getQueue().size());
 				LaRecvQueueBean queueBean = null;
 				queueBean = LaRecvQueue.getInstance().getQueue().take();
 				log.debug("LA批收回调核心系统webservice url="+config.getUrl());
@@ -77,8 +73,8 @@ public class LaRecvConsumerQueue implements Runnable{
 					processFail(queueBean);
 				}
 			}catch(Exception e){
-				i++;
 				e.printStackTrace();
+				log.error(e.getMessage());
 				continue;
 			}
 		}
