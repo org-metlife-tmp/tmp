@@ -48,6 +48,8 @@ public class CFMAppConfig extends JFinalConfig {
 
     private static final GlobalConfigSection iniMgr = GlobalConfigSection.getInstance();
     private static Logger log = LoggerFactory.getLogger(CFMAppConfig.class);
+    /*private SocketServer socketServer = null;
+    private PreSocketServer preSocketServer = null;*/
 
     private RedisPlugin cfmRedis = null;
     private static final BootScanRegisterMgr bootScanRegisterMgr = BootScanRegisterMgr.getInstance();
@@ -118,7 +120,7 @@ public class CFMAppConfig extends JFinalConfig {
 
         plugins.add(arp);
 
-
+        
         log.debug("添加reids plugin！");
         if (iniMgr.hasConfig(IConfigSectionType.DefaultConfigSectionType.Redis)) {
             RedisCacheConfigSection redisSection = iniMgr.getExtraConfig(IConfigSectionType.DefaultConfigSectionType.Redis);
@@ -144,12 +146,12 @@ public class CFMAppConfig extends JFinalConfig {
         plugins.add(new LaQueuePlugin());
         plugins.add(new EbsQueuePlugin());
         plugins.add(new LaRecvQueuePlugin());
-        
 
 
         if(iniMgr.hasConfig(IConfigSectionType.DDHConfigSectionType.DDHOAWS)){
             plugins.add(new WebServiceQueuePlugin());
         }
+        
 
         log.debug("Finsh configPlugin(Plugins plugins) !");
     }
@@ -174,7 +176,7 @@ public class CFMAppConfig extends JFinalConfig {
     public void afterJFinalStart() {
 /*    	String address = "http://127.0.0.1:9090/oa";
         Endpoint.publish(address, new OAServer());*/
-
+        
         LoadAtomicInterfaceUtils.getInstance();
         if (iniMgr.hasConfig(IConfigSectionType.DefaultConfigSectionType.Redis)) {
             JwtKit.setMode(JwtKit.Mode.REDIS);

@@ -146,8 +146,10 @@ public class SktOptypeMgr extends AbstractOptypeMgr {
         optypes.add(new Optype(Optype.Mode.NORMAL, "skttrad_tradingList")
                 .registerValidate(new RequiredParamsValidate(new String[]{
                         "pay_account_no", "recv_account_no", "payment_amount", "apply_on"
+                        ,"date_validate","recv_validate"
                 }))
-                .registKeepParams(new String[]{"pay_account_no", "recv_account_no", "payment_amount", "apply_on"}));
+                .registKeepParams(new String[]{"pay_account_no", "recv_account_no", "payment_amount", "apply_on"
+                		,"date_validate","recv_validate"}));
 
         //确认交易
         optypes.add(new Optype(Optype.Mode.NORMAL, "skttrad_confirm")
