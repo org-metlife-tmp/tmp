@@ -153,7 +153,8 @@ import BalanceAdjust from '@/components/reconciliation/BalanceAdjust'
 import Operation from '@/components/endMonthAdvance/Operation'
 import Review from '@/components/endMonthAdvance/Review'
 import AdvanceQuery from '@/components/endMonthAdvance/AdvanceQuery'
-
+//凭证
+import VoucherQuery from '@/components/voucher/VoucherQuery'
 
 Vue.use(Router)
 
@@ -295,6 +296,8 @@ const router = new Router({
                         {path: '/endmonth-advance/operation', name: 'Operation', component: Operation, meta: {requireAuth: true}},
                         {path: '/endmonth-advance/review', name: 'Review', component: Review, meta: {requireAuth: true}},
                         {path: '/endmonth-advance/advance-query', name: 'AdvanceQuery', component: AdvanceQuery, meta: {requireAuth: true}},
+                        //系统设置
+                        {path: '/voucher/voucher-query', name: 'VoucherQuery', component: VoucherQuery, meta: {requireAuth: true}},
                     ]
                 },
                 //基础样式三（tab页）

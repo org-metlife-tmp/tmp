@@ -151,6 +151,9 @@
             .icon-gmsk{
                 background-position: -212px -284px;
             }
+            .icon-pzgl{
+                background-position: -331px -284px;
+            }
             /*首页背景图定位结束*/
         }
 
@@ -240,7 +243,9 @@
             .icon-gmsk{
                 background-position: -182px -284px;
             }
-
+            .icon-pzgl{
+                background-position: -301px -284px;
+            }
             .el-submenu__title p {
                 color: rgba(0, 0, 0, 0.5);
             }
@@ -353,7 +358,9 @@
             .el-submenu__title:hover .icon-gmsk{
                 background-position: -212px -284px;
             }
-
+            .el-submenu__title:hover .icon-pzgl{
+                background-position: -331px -284px;
+            }
             .el-submenu__title:hover p {
                 color: #fff;
             }
@@ -764,6 +771,15 @@
                     <el-menu-item index="/counter-gather/counter-account">结算对账</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
+            <el-submenu index="26" v-if="menuList.VOUCHER">
+                <template slot="title" height="200px">
+                    <i class="icon-pzgl"></i>
+                    <p>凭证</p>
+                </template>
+                <el-menu-item-group>
+                    <el-menu-item index="/voucher/voucher-query" v-if="menuList.VoucherQuery">凭证查询</el-menu-item>
+                </el-menu-item-group>
+            </el-submenu>
         </el-menu>
     </div>
 </template>
@@ -935,6 +951,9 @@
                     VOUCHEROPERATION: false, //操作
                     VOUCHERCONFIRM: false, //复核
                     VOUCHERQUERY: false, //查询
+
+                    VOUCHER: false,//凭证
+                    VoucherQuery: false,//凭证查询
                 }
             }
         },
