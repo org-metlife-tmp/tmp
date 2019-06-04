@@ -299,6 +299,22 @@ public class SftRecvLaDataCheckJob implements Job{
         if(checkRecordList!=null && checkRecordList.size()!=0){
             checkDoubtful.set("is_doubtful", 1);
             Db.save("la_recv_check_doubtful", checkDoubtful);
+            List<Record> legalRecordList = Db.find(Db.getSql("la_recv_cfm.getrecvlegal")
+                    ,originData.getStr("insure_bill_no")
+                    ,originData.getStr("pay_acc_name")
+                    ,originData.getStr("amount")
+                    ,originData.getStr("recv_date"));
+            if(legalRecordList!=null && legalRecordList.size()!=0){
+                for(Record legalRecord : legalRecordList){
+                    //删除合法表中数据和合法扩展表数据
+                    Db.deleteById("recv_legal_data","id",legalRecord.getLong("id"));
+                    Db.delete(Db.getSql("la_recv_cfm.dellarecvlegalext"),legalRecord.getLong("id"));
+
+                    CommonService.update("la_recv_check_doubtful",
+                            new Record().set("is_doubtful", 1),
+                            new Record().set("origin_id", legalRecord.getLong("origin_id")));
+                }
+            }
             return WebConstant.YesOrNo.YES;
         }else{
             checkDoubtful.set("is_doubtful", 0);

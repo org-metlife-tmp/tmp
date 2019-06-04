@@ -83,6 +83,7 @@
 FROM
 	la_check_doubtful
 WHERE is_doubtful = 1
+  AND status = 0
 	AND insure_bill_no =?
 	AND recv_acc_name =?
 	AND amount =?

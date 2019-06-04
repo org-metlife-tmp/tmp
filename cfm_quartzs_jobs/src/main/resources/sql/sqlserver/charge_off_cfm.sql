@@ -52,4 +52,15 @@
     and DATEDIFF(day,?,trans_date) < 0
   #end
 
+  #sql("findTradList")
+    SELECT
+      ext.*
+    FROM
+      acc_his_transaction trans,
+      acc_his_transaction_ext ext
+    WHERE
+      trans.id = ext.trans_id
+      AND ext.precondition = 3
+  #end
+
 #end

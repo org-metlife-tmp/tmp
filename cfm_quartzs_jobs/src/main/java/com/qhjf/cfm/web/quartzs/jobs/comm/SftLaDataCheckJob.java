@@ -292,6 +292,23 @@ public class SftLaDataCheckJob implements Job{
                 originData.getStr("amount"),createTime);
         if(checkRecordList!=null && checkRecordList.size()!=0){
             checkDoubtful.set("is_doubtful", 1);
+            Db.save("la_check_doubtful", checkDoubtful);
+            /**
+             * 将合法表中数据迁移到可疑表中，并更新状态为未处理
+             */
+            List<Record> legalRecordList = Db.find(Db.getSql("la_cfm.getpaylegal"),originData.getStr("insure_bill_no"),originData.getStr("recv_acc_name"),
+                    originData.getStr("amount"),createTime);
+            if(legalRecordList!=null && legalRecordList.size()!=0){
+                for(Record legalRecord : legalRecordList){
+                    //删除合法表中数据和合法扩展表数据
+                    Db.deleteById("pay_legal_data","id",legalRecord.getLong("id"));
+                    Db.delete(Db.getSql("la_cfm.dellapaylegalext"),legalRecord.getLong("id"));
+                    CommonService.update("la_check_doubtful",
+                            new Record().set("is_doubtful", 1).set("status", 0),
+                            new Record().set("pay_code", TypeUtils.castToString(legalRecord.get("pay_code"))));
+                }
+            }
+            return WebConstant.YesOrNo.YES;
         }else{
             checkDoubtful.set("is_doubtful", 0);
         }
@@ -317,7 +334,6 @@ public class SftLaDataCheckJob implements Job{
                         new Record().set("pay_code", TypeUtils.castToString(legalRecord.get("pay_code"))));
             }
             return WebConstant.YesOrNo.YES;
-
         }
         return WebConstant.YesOrNo.NO;
     }

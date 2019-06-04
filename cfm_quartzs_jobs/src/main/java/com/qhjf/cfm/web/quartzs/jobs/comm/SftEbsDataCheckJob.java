@@ -96,12 +96,20 @@ public class SftEbsDataCheckJob implements Job{
                         payLegal.set("recv_bank_type", ebsOriginData.getStr("recv_bank_type"));
                         payLegal.set("recv_bank_name", ebsOriginData.getStr("recv_bank_name"));
                         payLegal.set("recv_acc_no", ebsOriginData.getStr("recv_acc_no"));
-                        String company_name = ebsOriginData.getStr("company_name");
-                        if(org.apache.commons.lang.StringUtils.isEmpty(company_name)){
-                            payLegal.set("consumer_acc_name", ebsOriginData.getStr("recv_acc_name"));
+
+
+                        String payMode = TypeUtils.castToString(ebsOriginData.get("pay_mode"));
+                        if ("C".equalsIgnoreCase(payMode)) {
                         }else{
-                            payLegal.set("consumer_acc_name", company_name);
+                            //柜面付
+                            String company_name = ebsOriginData.getStr("company_name");
+                            if(org.apache.commons.lang.StringUtils.isEmpty(company_name)){
+                                payLegal.set("consumer_acc_name", ebsOriginData.getStr("recv_acc_name"));
+                            }else{
+                                payLegal.set("consumer_acc_name", company_name);
+                            }
                         }
+
                         if (!Db.save("pay_legal_data", payLegal)) {
                             return false;
                         }
@@ -293,17 +301,41 @@ public class SftEbsDataCheckJob implements Job{
                 + "_" +createTime;
 
         checkDoubtful.set("identification", identification);
-        String company_name = originData.getStr("company_name");
-        if(org.apache.commons.lang.StringUtils.isEmpty(company_name)){
-            checkDoubtful.set("consumer_acc_name", originData.getStr("recv_acc_name"));
+
+        String payMode = TypeUtils.castToString(originData.get("pay_mode"));
+        if ("C".equalsIgnoreCase(payMode)) {
         }else{
-            checkDoubtful.set("consumer_acc_name", company_name);
+            //柜面付
+            String company_name = originData.getStr("company_name");
+            if(org.apache.commons.lang.StringUtils.isEmpty(company_name)){
+                checkDoubtful.set("consumer_acc_name", originData.getStr("recv_acc_name"));
+            }else{
+                checkDoubtful.set("consumer_acc_name", company_name);
+            }
         }
+
         //判断可疑表中是否存在可疑数据
         List<Record> checkRecordList = Db.find(Db.getSql("ebs_cfm.getpaycheck"),originData.getStr("insure_bill_no"),originData.getStr("recv_acc_name"),
                 originData.getStr("amount"),createTime);
         if(checkRecordList!=null && checkRecordList.size()!=0){
             checkDoubtful.set("is_doubtful", 1);
+            Db.save("ebs_check_doubtful", checkDoubtful);
+            /**
+             * 将合法表中数据迁移到可疑表中，并更新状态为未处理
+             */
+            List<Record> legalRecordList = Db.find(Db.getSql("ebs_cfm.getpaylegal"),originData.getStr("insure_bill_no"),originData.getStr("recv_acc_name"),
+                    originData.getStr("amount"),createTime);
+            if(legalRecordList!=null && legalRecordList.size()!=0){
+                for(Record legalRecord : legalRecordList){
+                    //删除合法表中数据和合法扩展表数据
+                    Db.deleteById("pay_legal_data","id",legalRecord.getLong("id"));
+                    Db.delete(Db.getSql("ebs_cfm.delebspaylegalext"),legalRecord.getLong("id"));
+                    CommonService.update("ebs_check_doubtful",
+                            new Record().set("is_doubtful", 1).set("status", 0),
+                            new Record().set("pay_code", TypeUtils.castToString(legalRecord.get("pay_code"))));
+                }
+                return WebConstant.YesOrNo.YES;
+            }
         }else{
             checkDoubtful.set("is_doubtful", 0);
         }

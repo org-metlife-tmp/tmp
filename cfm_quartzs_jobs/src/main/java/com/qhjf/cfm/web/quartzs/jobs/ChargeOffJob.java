@@ -29,7 +29,7 @@ public class ChargeOffJob implements Job {
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
-        log.debug("【冲销凭证---begin】");
+        log.info("【冲销凭证---begin】");
         /**
          * 下一财务月第一天,自动对已提交交易做冲销处理
          */
@@ -57,10 +57,10 @@ public class ChargeOffJob implements Job {
                 }
             });
         }else{
-            log.debug("【不是财务月下一天或者无已提交的交易】");
+            log.info("【不是财务月下一天或者无已提交的交易】");
         }
 
-        log.debug("【冲销凭证---end】");
+        log.info("【冲销凭证---end】");
     }
 
 }
