@@ -18,7 +18,7 @@ module.exports = {
                 // target: 'http://10.1.1.111:8080/cfm/', //圆圆
                 // target: 'http://10.1.1.193:9001/cfm/', //海涛
                 // target: 'http://10.1.1.159:8080/cfm/', //高俊峰
-                target: 'http://10.1.1.157:8080/cfm/',
+                target: 'http://10.1.1.157:8001/cfm/',
                 //设置为true 解决跨域问题
                 changeOrigin: true,
                 //请求路径中会用后面的替换前面的

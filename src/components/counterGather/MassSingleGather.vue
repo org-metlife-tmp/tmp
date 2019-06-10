@@ -189,7 +189,8 @@
                                  :formatter="transitAmount"></el-table-column>
                 <el-table-column prop="send_on" label="客户银行" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="send_on" label="客户账号" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="send_on" label="第三方缴费" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="send_on" label="第三方缴费" width="110px"
+                                 :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="send_on" label="缴费人" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="send_on" label="缴费编码" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="send_on" label="操作人" :show-overflow-tooltip="true"></el-table-column>
