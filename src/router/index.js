@@ -146,6 +146,8 @@ import PaymentWorkbench from '@/components/counterPayment/PaymentWorkbench'
 import SingleGather from '@/components/counterGather/SingleGather'
 import MassSingleGather from '@/components/counterGather/MassSingleGather'
 import CounterAccount from '@/components/counterGather/CounterAccount'
+import PosAccount from '@/components/counterGather/PosAccount'
+import PosBankAccount from '@/components/counterGather/PosBankAccount'
 //对账通
 import InitialBalance from '@/components/reconciliation/InitialBalance'
 import BalanceAdjust from '@/components/reconciliation/BalanceAdjust'
@@ -289,6 +291,8 @@ const router = new Router({
                         {path: '/counter-gather/single-gather', name: 'SingleGather', component: SingleGather, meta: {requireAuth: true}},
                         {path: '/counter-gather/mass-single-gather', name: 'MassSingleGather', component: MassSingleGather, meta: {requireAuth: true}},
                         {path: '/counter-gather/counter-account', name: 'CounterAccount', component: CounterAccount, meta: {requireAuth: true}},
+                        {path: '/counter-gather/pos-account', name: 'PosAccount', component: PosAccount, meta: {requireAuth: true}},
+                        {path: '/counter-gather/pos-bank-account', name: 'PosBankAccount', component: PosBankAccount, meta: {requireAuth: true}},
                         //对账通
                         {path: '/reconciliation/initial-balance', name: 'InitialBalance', component: InitialBalance, meta: {requireAuth: true}},
                         {path: '/reconciliation/balance-adjust', name: 'BalanceAdjust', component: BalanceAdjust, meta: {requireAuth: true}},

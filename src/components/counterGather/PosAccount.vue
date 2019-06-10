@@ -1,5 +1,5 @@
 <style scoped lang="less" type="text/less">
-    #counterAccount {
+    #posAccount {
         /*分页部分*/
         .botton-pag {
             width: 100%;
@@ -21,7 +21,7 @@
 </style>
 
 <template>
-    <el-container id="counterAccount">
+    <el-container id="posAccount">
         <el-header>
 
         </el-header>
@@ -46,25 +46,17 @@
                         </el-col>
                         <el-col :span="4">
                             <el-form-item>
-                                <el-select v-model="searchData.bill_type" placeholder="请选择业务类型"
-                                           clearable filterable
-                                           style="width:100%">
-                                    <el-option v-for="(item,key) in billList"
-                                               :key="key"
-                                               :label="item"
-                                               :value="key">
-                                    </el-option>
-                                </el-select>
+                                <el-input v-model="searchData.recv_org_id" clearable placeholder="请输入收款机构"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="4">
                             <el-form-item>
-                                <el-input v-model="searchData.batch_no" clearable placeholder="请输入批单号"></el-input>
+                                <el-input v-model="searchData.batch_process_no" clearable placeholder="请输入批处理号"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="4">
                             <el-form-item>
-                                <el-input v-model="searchData.preinsure_bill_no" clearable placeholder="请输入投保单号"></el-input>
+                                <el-input v-model="searchData.insure_bill_no" clearable placeholder="请输入保单号"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="5">
@@ -86,49 +78,20 @@
 
                         <el-col :span="4">
                             <el-form-item>
-                                <el-input v-model="searchData.insure_bill_no" clearable placeholder="请输入保单号"></el-input>
+                                <el-input v-model="searchData.terminal_no" clearable placeholder="请输入终端机编号"></el-input>
                             </el-form-item>
                         </el-col>
-                        <el-col :span="4">
-                            <el-form-item>
-                                <el-input v-model="searchData.consumer_no" clearable placeholder="请输入客户号"></el-input>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="4">
-                            <el-form-item>
-                                <el-select v-model="searchData.recv_mode" placeholder="请选择收款方式"
-                                           clearable filterable
-                                           style="width:100%">
-                                    <el-option v-for="(item,key) in groupList"
-                                               :key="key"
-                                               :label="item"
-                                               :value="key">
-                                    </el-option>
-                                </el-select>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="4">
-                            <el-form-item>
-                                <el-input v-model="searchData.recv_bank_name" clearable placeholder="请输入收款银行"></el-input>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="4">
-                            <el-form-item>
-                                <el-input v-model="searchData.recv_acc_no" clearable placeholder="请输入收款账号"></el-input>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="2">
-                            <el-form-item>
-                                <el-button type="primary" plain @click="clearData" size="mini">清空筛选</el-button>
-                            </el-form-item>
-                        </el-col>
-
-                        <el-col :span="20">
+                        <el-col :span="18">
                             <el-form-item style="margin-bottom:0px">
                                 <el-checkbox-group v-model="searchData.is_checked">
                                     <el-checkbox :label="0" name="未核对">未核对</el-checkbox>
                                     <el-checkbox :label="1" name="已核对">已核对</el-checkbox>
                                 </el-checkbox-group>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="2">
+                            <el-form-item>
+                                <el-button type="primary" plain @click="clearData" size="mini">清空筛选</el-button>
                             </el-form-item>
                         </el-col>
                     </el-row>
@@ -139,30 +102,23 @@
                       @select-all="selectChange"
                       height="200px" border size="mini">
                 <el-table-column type="selection" width="40" ></el-table-column>
-                <el-table-column prop="bill_type" label="业务类型" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="recv_date" label="收款日期" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="batch_process_no" label="批处理号" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="batch_no" label="批单号" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="preinsure_bill_no" label="投保单号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="insure_bill_no" label="保单号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="recv_mode" label="收款方式" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="recv_bank_name" label="收款银行" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="recv_acc_no" label="收款账号" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="use_funds" label="资金用途" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="bill_number" label="票据编号" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="insure_acc_no" label="投保人客户号"  width="110px"
+                <el-table-column prop="source_sys" label="核心系统" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="terminal_no" label="终端机编号" width="100px"
                                  :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="insure_name" label="投保人" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="business_acc_no" label="业务所属客户号" width="120px"
-                                 :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="business_acc" label="业务所属客户"  width="110px"
-                                 :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="consumer_no" label="客户号" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="consumer_acc_name" label="客户名称" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="amount" label="金额" :show-overflow-tooltip="true"
                                  :formatter="transitAmount"></el-table-column>
+                <el-table-column prop="use_funds" label="资金用途" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="consumer_bank_name" label="客户银行"  width="110px"
+                                 :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="consumer_acc_no" label="客户账号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="check_user_name" label="操作人" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="recv_org_name" label="收款机构" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="is_checked" label="状态" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="check_date" label="操作日期" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="check_service_number" label="对账流水号"  width="100px"
                                  :show-overflow-tooltip="true"></el-table-column>
             </el-table>
@@ -201,7 +157,27 @@
                         </el-col>
                         <el-col :span="4">
                             <el-form-item>
-                                <el-input v-model="childSearch.summary" clearable placeholder="请输入摘要"></el-input>
+                                <el-input v-model="childSearch.terminal_no" clearable placeholder="请输入终端机编号"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-input v-model="childSearch.serial_number" clearable placeholder="请输入流水号"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-input v-model="childSearch.trade_type" clearable placeholder="请输入交易类型"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-input v-model="childSearch.card_no" clearable placeholder="请输入卡号"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-input v-model="childSearch.card_issue_bank" clearable placeholder="请输入发卡行"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="5">
@@ -242,42 +218,25 @@
                       @select-all="childChange"
                       height="200px" size="mini">
                 <el-table-column type="selection" width="40"></el-table-column>
+                <el-table-column prop="liquidation_date" label="清算日期" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="trans_date" label="交易日期" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="bankcode" label="BankCode" width="100px"
-                                 :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="acc_no" label="银行账号" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="acc_name" label="账户名称" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="bank_name" label="开户行" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="direction" label="收付方向" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="opp_acc_no" label="对方银行账号" width="110px"
-                                 :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="opp_acc_name" label="对方账户名称" width="110px"
-                                 :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="opp_acc_bank" label="对方开户行" width="100px"
-                                 :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="amount" label="交易金额" :show-overflow-tooltip="true"
+                <el-table-column prop="trade_time" label="交易时间" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="terminal_no" label="终端机编号" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="trade_amount" label="交易金额" :show-overflow-tooltip="true"
                                  :formatter="transitAmount"></el-table-column>
-                <el-table-column prop="summary" label="摘要" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="is_checked" label="状态" :show-overflow-tooltip="true"
-                                 :formatter="transitStatus"></el-table-column>
-                <el-table-column prop="check_service_number" label="对账流水号" width="100px"
-                                 :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="check_user_name" label="操作人" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="check_date" label="操作日期" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="procedures_amount" label="手续费" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="entry_account_amount" label="入账金额" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="system_track_number" label="系统跟踪号" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="retrieval_reference_number" label="检索参考号" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="serial_number" label="流水号" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="trade_type" label="交易类型" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="card_no" label="卡号" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="card_type" label="卡类型" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="card_issue_bank" label="发卡行" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="no_identity_mark" label="非接标识" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="import_date" label="导入日期" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="bill_check_service_number" label="对账流水号" :show-overflow-tooltip="true"></el-table-column>
             </el-table>
-            <div class="allData">
-                <div class="btn-right">
-                    <span>交易金额(收)：</span>
-                    <span v-text="childTotalData.recvAmount" class="numText"></span>
-                    <span>交易金额(付)：</span>
-                    <span v-text="childTotalData.payAmount" class="numText"></span>
-                    <span>合计金额：</span>
-                    <span v-show="!isZero && !isPay">收</span>
-                    <span v-show="!isZero && isPay">付</span>
-                    <span v-show="isZero">-</span>
-                    <span v-text="childTotalData.totalAmount" class="numText"></span>
-                </div>
-            </div>
         </el-main>
         <el-footer>
 
@@ -287,50 +246,39 @@
 
 <script>
     export default {
-        name: "CounterAccount",
+        name: "PosAccount",
         created: function () {
-            this.$emit("transmitTitle", "结算对账");
+            this.$emit("transmitTitle", "PSO记录与明细对账");
             // this.$emit("getCommTable", this.routerMessage);
-
-            /*获取常量数据*/
-            var constants = JSON.parse(window.sessionStorage.getItem("constants"));
-            //业务类型
-            if (constants.SftRecvType) {
-                this.billList = constants.SftRecvType;
-            }
-            //收款方式
-            if(constants.Sft_RecvGroupCounter_Recvmode){
-                this.groupList = constants.Sft_RecvGroupCounter_Recvmode;
-            }
         },
         props: ["tableData"],
         data: function () {
             return {
                 queryUrl: this.$store.state.queryUrl,
                 routerMessage: {
-                    optype: "recvcountercheck_list",
+                    optype: "recvcounterposrecordcheck_list",
                     params: {
                         page_size: 20,
                         page_num: 1
                     }
                 },
                 searchData: { //搜索条件
-                    bill_type: "",
-                    batch_no: "",
-                    preinsure_bill_no: "",
+                    recv_org_id: "",
+                    batch_process_no: "",
+                    insure_bill_no: "",
+                    terminal_no: "",
                     min: "",
                     max: "",
-                    insure_bill_no: "",
-                    consumer_no: "",
-                    recv_mode: "",
-                    recv_bank_name: "",
-                    recv_acc_no: "",
                     is_checked: []
                 },
                 childSearch: {
                     min: "",
                     max: "",
-                    summary: "",
+                    terminal_no: "",
+                    serial_number: "",
+                    trade_type: "",
+                    card_no: "",
+                    card_issue_bank: "",
                     is_checked: [],
                 },
                 dateValue: "", //时间控件
@@ -345,18 +293,10 @@
                 pagSize: 8, //分页数据
                 pagTotal: 1,
                 pagCurrent: 1,
-                billList: {}, //常量数据
-                groupList: {},
                 batchidList: [], //选中数据
                 versionList: [],
                 tradingList: [],
-                childTotalData: {
-                    payAmount: "",
-                    recvAmount: "",
-                    totalAmount: ""
-                },
-                isPay: false,
-                isZero: true
+                childVersion: []
             }
         },
         methods: {
@@ -411,7 +351,7 @@
                     url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
-                        optype: "recvcountercheck_tradingList",
+                        optype: "recvcounterposrecordcheck_tradingList",
                         params: params
                     }
                 }).then((result) => {
@@ -461,6 +401,7 @@
             },
             childChange: function (val) {
                 this.tradingList = [];
+                this.childVersion = [];
                 var payAmount = 0;
                 var recvAmount = 0;
                 for (var i = 0; i < val.length; i++) {
@@ -471,22 +412,7 @@
                         payAmount += item.amount;
                     }
                     this.tradingList.push(item.id);
-                }
-
-                this.childTotalData.payAmount = this.$common.transitSeparator(payAmount);
-                this.childTotalData.recvAmount = this.$common.transitSeparator(recvAmount);
-                if(payAmount > recvAmount){
-                    this.isPay = true;
-                    this.isZero = false;
-                    this.childTotalData.totalAmount = this.$common.transitSeparator(payAmount - recvAmount);
-                }else if(payAmount == recvAmount){
-                    this.isPay = false;
-                    this.isZero = true;
-                    this.childTotalData.totalAmount = "";
-                }else{
-                    this.isPay = false;
-                    this.isZero = false;
-                    this.childTotalData.totalAmount = this.$common.transitSeparator(recvAmount - payAmount);
+                    this.childVersion.push(item.persist_version);
                 }
             },
             //对账确认
@@ -495,11 +421,12 @@
                     url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
-                        optype: "recvcountercheck_confirm",
+                        optype: "recvcounterposrecordcheck_confirm",
                         params: {
-                            batchid: this.batchidList,
-                            persist_version: this.versionList,
-                            trading_no: this.tradingList,
+                            detail_id: this.batchidList,
+                            detail_persist: this.versionList,
+                            pos_id: this.tradingList,
+                            pos_persist: this.childVersion,
                         }
                     }
                 }).then((result) => {
@@ -534,3 +461,4 @@
         }
     }
 </script>
+
