@@ -54,7 +54,7 @@ public class SktTradService {
      * @throws DbProcessException
      * @throws ReqDataException
      */
-    public Page<Record> confirm(final Record record, UserInfo userInfo) throws BusinessException {
+    public Page<Record> confirm(final Record record, final UserInfo userInfo) throws BusinessException {
         final Long billId = TypeUtils.castToLong(record.get("bill_no"));
 
         Record innerRec = Db.findById("outer_sk_receipts", "id", billId);
@@ -97,7 +97,7 @@ public class SktTradService {
 
                     try {
                         //生成凭证信息
-                        CheckVoucherService.sunVoucherData(tradingNo, billId, WebConstant.MajorBizType.SKT.getKey(), tradMap);
+                        CheckVoucherService.sunVoucherData(tradingNo, billId, WebConstant.MajorBizType.SKT.getKey(), tradMap, userInfo);
                     } catch (BusinessException e) {
                         e.printStackTrace();
                         return false;

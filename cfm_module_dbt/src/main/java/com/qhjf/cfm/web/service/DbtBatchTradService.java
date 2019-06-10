@@ -54,7 +54,7 @@ public class DbtBatchTradService {
      * @throws DbProcessException
      * @throws ReqDataException
      */
-    public Page<Record> confirm(final Record record, UserInfo userInfo) throws BusinessException {
+    public Page<Record> confirm(final Record record, final UserInfo userInfo) throws BusinessException {
         final Long billId = TypeUtils.castToLong(record.get("bill_no"));
 
         Record innerRec = Db.findById("inner_batchpay_bus_attach_detail", "detail_id", billId);
@@ -102,7 +102,7 @@ public class DbtBatchTradService {
 
                     try {
                         //生成凭证信息
-                        CheckVoucherService.sunVoucherData(tradingNo, billId, WebConstant.MajorBizType.INNERDB_BATCH.getKey(), tradMap);
+                        CheckVoucherService.sunVoucherData(tradingNo, billId, WebConstant.MajorBizType.INNERDB_BATCH.getKey(), tradMap, userInfo);
                     } catch (BusinessException e) {
                         e.printStackTrace();
                         return false;

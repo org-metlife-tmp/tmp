@@ -108,7 +108,7 @@ public class BranchOrgOaCheckService {
      * @throws DbProcessException
      * @OA分公司交易核对_核对
      */
-    public Page<Record> confirm(Record record, UserInfo userInfo) throws ReqDataException, DbProcessException {
+    public Page<Record> confirm(Record record, final UserInfo userInfo) throws ReqDataException, DbProcessException {
         final Long billId = TypeUtils.castToLong((record.get("bill_id")));
         Record innerRec = Db.findById("oa_branch_payment_item", "id", billId);
         if (innerRec == null) {
@@ -164,7 +164,7 @@ public class BranchOrgOaCheckService {
 
                     try {
                         //生成凭证信息
-                        CheckVoucherService.sunVoucherData(tradingId, billId, WebConstant.MajorBizType.OA_BRANCH_PAY.getKey(), tradMap);
+                        CheckVoucherService.sunVoucherData(tradingId, billId, WebConstant.MajorBizType.OA_BRANCH_PAY.getKey(), tradMap, userInfo);
                     } catch (BusinessException e) {
                         e.printStackTrace();
                         return false;

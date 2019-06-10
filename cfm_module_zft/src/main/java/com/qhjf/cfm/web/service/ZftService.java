@@ -707,7 +707,7 @@ public class ZftService {
      * @throws DbProcessException
      * @throws ReqDataException
      */
-    public Page<Record> confirm(Record record, UserInfo userInfo) throws DbProcessException, ReqDataException {
+    public Page<Record> confirm(Record record, final UserInfo userInfo) throws DbProcessException, ReqDataException {
         final Long billId = TypeUtils.castToLong((record.get("bill_id")));
         Record innerRec = Db.findById("outer_zf_payment", "id", billId);
         if (innerRec == null) {
@@ -747,7 +747,7 @@ public class ZftService {
 
                     try {
                         //生成凭证信息
-                        CheckVoucherService.sunVoucherData(tradingId, billId, WebConstant.MajorBizType.ZFT.getKey(), tradMap);
+                        CheckVoucherService.sunVoucherData(tradingId, billId, WebConstant.MajorBizType.ZFT.getKey(), tradMap, userInfo);
                     } catch (BusinessException e) {
                         e.printStackTrace();
                         return false;
@@ -914,13 +914,14 @@ public class ZftService {
 
     /**
      * 渠道设置更新收款人信息 (对外支付的情况下)
+     *
      * @param set
-     * @param userInfo 
+     * @param userInfo
      */
-	public Boolean chgSupplier(Record set, UserInfo userInfo) {
-		set.set("update_by", userInfo.getUsr_id())
-		   .set("update_on", new Date());   
-		boolean flag = CommonService.update("supplier_acc_info", set, new Record().set("acc_no", set.get("acc_no")));
-		return flag ;
-	}
+    public Boolean chgSupplier(Record set, UserInfo userInfo) {
+        set.set("update_by", userInfo.getUsr_id())
+                .set("update_on", new Date());
+        boolean flag = CommonService.update("supplier_acc_info", set, new Record().set("acc_no", set.get("acc_no")));
+        return flag;
+    }
 }

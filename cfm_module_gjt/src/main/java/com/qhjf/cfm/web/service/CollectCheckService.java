@@ -107,7 +107,7 @@ public class CollectCheckService {
      * @return
      * @throws Exception
      */
-    public Page<Record> confirm(Record record, UserInfo userInfo) throws Exception {
+    public Page<Record> confirm(Record record, final UserInfo userInfo) throws Exception {
         final Long billId = TypeUtils.castToLong(record.get("bill_id"));
 
         Record innerRec = Db.findById("collect_execute_instruction", "id", billId);
@@ -151,7 +151,7 @@ public class CollectCheckService {
 
                     try {
                         //生成凭证信息
-                        CheckVoucherService.sunVoucherData(trade_id, billId, WebConstant.MajorBizType.GJT.getKey(), tradMap);
+                        CheckVoucherService.sunVoucherData(trade_id, billId, WebConstant.MajorBizType.GJT.getKey(), tradMap, userInfo);
                     } catch (BusinessException e) {
                         e.printStackTrace();
                         return false;

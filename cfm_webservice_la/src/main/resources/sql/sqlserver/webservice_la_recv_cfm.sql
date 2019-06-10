@@ -23,13 +23,16 @@
   #sql("getPayLegalByPayCode")
     SELECT
       legal.*,
+			ext.insure_bill_no,
       total.back_on
     FROM
       recv_batch_total total,
       recv_batch_detail detail,
-      recv_legal_data legal
+      recv_legal_data legal,
+			la_recv_legal_data_ext ext
     WHERE
       legal.id = detail.legal_id
+			AND legal.id = ext.legal_id
       AND detail.base_id = total.id
       AND legal.source_sys = 0
       AND legal.pay_code = ?

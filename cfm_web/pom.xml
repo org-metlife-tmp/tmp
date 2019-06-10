@@ -158,6 +158,11 @@
             <artifactId>cfm_module_refund</artifactId>    <!-- 退票模块 -->
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.qhjf.cfm</groupId>
+            <artifactId>cfm_module_voucher</artifactId>    <!-- 凭证查询模块 -->
+            <version>${project.version}</version>
+        </dependency>
         <!-- #### 大都会特定模块 end ####-->
         <!-- ##项目特定模块模块 end## -->
         <!-- 内部模块引入 end -->

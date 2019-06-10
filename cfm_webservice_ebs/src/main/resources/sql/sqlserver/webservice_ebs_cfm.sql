@@ -12,13 +12,16 @@
 #sql("getPayLegalByPayCode")
   SELECT
     legal.*,
+		ext.insure_bill_no,
     total.back_on
   FROM
     pay_batch_total total,
     pay_batch_detail detail,
-    pay_legal_data legal
+    pay_legal_data legal,
+		ebs_pay_legal_data_ext ext
   WHERE
     legal.id = detail.legal_id
+		AND legal.id = ext.legal_id
     AND detail.base_id = total.id
     AND legal.source_sys = 1
     AND legal.pay_code = ?
@@ -27,12 +30,15 @@
 #sql("getPayGmLegalByPayCode")
   SELECT
     legal.*,
+		ext.insure_bill_no,
     gmf.pay_account_no
   FROM
     pay_legal_data legal,
+		ebs_pay_legal_data_ext ext,
     gmf_bill gmf
   WHERE
     legal.id = gmf.legal_id
+		AND legal.id = ext.legal_id
     AND legal.source_sys = 1
     AND legal.pay_code = ?
 #end

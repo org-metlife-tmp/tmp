@@ -8,6 +8,7 @@ import com.jfinal.plugin.activerecord.SqlPara;
 import com.qhjf.cfm.utils.ArrayUtil;
 import com.qhjf.cfm.utils.RedisSericalnoGenTool;
 import com.qhjf.cfm.web.config.DDHVoucherConfigSection;
+import com.qhjf.cfm.web.constant.WebConstant;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -100,7 +101,8 @@ public class CheckVoucherJob implements Job {
                             Record update = new Record();
                             update.set("file_name", fileNameXML + suffixXml)
                                     .set("export_count", (expCount + 1))
-                                    .set("id", TypeUtils.castToLong(record.get("id")));
+                                    .set("id", TypeUtils.castToLong(record.get("id")))
+                                    .set("docking_status", WebConstant.YesOrNo.YES.getKey());//是否已生成xml文件 0:否 1:是
 
                             updateList.add(update);
                         }

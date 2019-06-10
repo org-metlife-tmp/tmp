@@ -173,7 +173,7 @@ public class RecvCheckService {
                 }
                 try {
                     //生成凭证信息
-                    return CheckVoucherService.sunVoucherData(batchNo, tradingNo, batchList, tradList, WebConstant.MajorBizType.PLS.getKey(), seqnoOrstatmentCode);
+                    return CheckVoucherService.sunVoucherData(batchNo, tradingNo, batchList, tradList, WebConstant.MajorBizType.PLS.getKey(), seqnoOrstatmentCode, userInfo);
                 } catch (BusinessException e) {
                     e.printStackTrace();
                     return false;

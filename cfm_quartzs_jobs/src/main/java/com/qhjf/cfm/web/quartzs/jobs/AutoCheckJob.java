@@ -95,7 +95,7 @@ public class AutoCheckJob implements Job {
                         try {
                             Map<Integer, Date> tradMap = CommonService.getPeriod(transIdList);//key= transid , value=所属结账日的年月
                             //生成凭证信息
-                            CheckVoucherService.sunVoucherData(transIdList, billId, biz_type, tradMap);
+                            CheckVoucherService.sunVoucherData(transIdList, billId, biz_type, tradMap,null);
                         } catch (BusinessException e) {
                             e.printStackTrace();
                             return false;
@@ -153,7 +153,7 @@ public class AutoCheckJob implements Job {
                         try {
                             Map<Integer, Date> tradMap = CommonService.getPeriod(transIdList);//key= transid , value=所属结账日的年月
                             //生成凭证信息
-                            CheckVoucherService.sunVoucherData(transIdList, billId, biz_type, tradMap);
+                            CheckVoucherService.sunVoucherData(transIdList, billId, biz_type, tradMap,null);
                         } catch (BusinessException e) {
                             e.printStackTrace();
                             return false;

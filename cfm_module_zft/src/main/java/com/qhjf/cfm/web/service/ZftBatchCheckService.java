@@ -82,7 +82,7 @@ public class ZftBatchCheckService {
      * @throws DbProcessException
      * @throws ReqDataException
      */
-    public Page<Record> confirm(final Record record, UserInfo userInfo) throws BusinessException {
+    public Page<Record> confirm(final Record record, final UserInfo userInfo) throws BusinessException {
         final Long billId = TypeUtils.castToLong(record.get("bill_id"));
         Record innerRec = Db.findById("outer_batchpay_bus_attach_detail", "detail_id", billId);
         if (innerRec == null) {
@@ -121,7 +121,7 @@ public class ZftBatchCheckService {
 
                     try {
                         //生成凭证信息
-                        CheckVoucherService.sunVoucherData(trade_id, billId, WebConstant.MajorBizType.OBP.getKey(), tradMap);
+                        CheckVoucherService.sunVoucherData(trade_id, billId, WebConstant.MajorBizType.OBP.getKey(), tradMap, userInfo);
                     } catch (BusinessException e) {
                         e.printStackTrace();
                         return false;

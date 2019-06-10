@@ -221,7 +221,7 @@ public class PayCheckService {
                 }
                 try {
                     //生成凭证信息
-                    return CheckVoucherService.sunVoucherData(batchNo, tradingNo, batchList, tradList, biz_type, seqnoOrstatmentCode);
+                    return CheckVoucherService.sunVoucherData(batchNo, tradingNo, batchList, tradList, biz_type, seqnoOrstatmentCode, userInfo);
                 } catch (BusinessException e) {
                     e.printStackTrace();
                     return false;

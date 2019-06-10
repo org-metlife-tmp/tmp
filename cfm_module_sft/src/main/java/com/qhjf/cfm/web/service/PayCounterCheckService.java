@@ -187,7 +187,7 @@ public class PayCounterCheckService {
                 }
                 try {
                     //生成凭证信息
-                    return CheckVoucherService.sunVoucherData(bill, tradingNo, tradList, WebConstant.MajorBizType.GMF.getKey(), seqnoOrstatmentCode);
+                    return CheckVoucherService.sunVoucherData(bill, tradingNo, tradList, WebConstant.MajorBizType.GMF.getKey(), seqnoOrstatmentCode, userInfo);
                 } catch (BusinessException e) {
                     e.printStackTrace();
                     return false;
