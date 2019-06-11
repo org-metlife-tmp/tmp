@@ -57,20 +57,22 @@
                         </el-col>
                         <el-col :span="4">
                             <el-form-item>
-                                <el-select v-model="searchData.source_sys"
-                                           clearable filterable size="mini"
-                                           placeholder="请选择核心系统">
-                                    <el-option v-for="(item,key) in sourceList"
-                                               :key="key"
-                                               :label="item"
-                                               :value="key">
-                                    </el-option>
-                                </el-select>
+                                <el-input v-model="searchData.insure_bill_no" clearable placeholder="请输入批单号"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-input v-model="searchData.insure_bill_no" clearable placeholder="请输入投保单号"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="4">
                             <el-form-item>
                                 <el-input v-model="searchData.insure_bill_no" clearable placeholder="请输入保单号"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-input v-model="searchData.insure_bill_no" clearable placeholder="请输入客户号"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="4">
@@ -91,17 +93,6 @@
                                 <el-input v-model="searchData.recv_bank_name" clearable placeholder="请输入收款银行"></el-input>
                             </el-form-item>
                         </el-col>
-                        <el-col :span="2">
-                            <el-form-item>
-                                <el-button type="primary" plain @click="clearData" size="mini">清空筛选</el-button>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="2">
-                            <el-form-item>
-                                <el-button type="primary" plain @click="queryData" size="mini">搜索</el-button>
-                            </el-form-item>
-                        </el-col>
-
                         <el-col :span="4">
                             <el-form-item>
                                 <el-select v-model="searchData.bill_status" placeholder="请选择票据状态"
@@ -113,11 +104,6 @@
                                                :value="key">
                                     </el-option>
                                 </el-select>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="4">
-                            <el-form-item>
-                                <el-input v-model="searchData.terminal_no" clearable placeholder="请输入终端机编号"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="4">
@@ -157,7 +143,6 @@
                                 </el-col>
                             </el-form-item>
                         </el-col>
-
                         <el-col :span="24">
                             <el-form-item style="margin-bottom:0px">
                                 <el-checkbox-group v-model="searchData.pay_status">
@@ -166,6 +151,18 @@
                                         {{ name }}
                                     </el-checkbox>
                                 </el-checkbox-group>
+                            </el-form-item>
+                        </el-col>
+
+
+                        <el-col :span="2">
+                            <el-form-item>
+                                <el-button type="primary" plain @click="clearData" size="mini">清空筛选</el-button>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="2">
+                            <el-form-item>
+                                <el-button type="primary" plain @click="queryData" size="mini">搜索</el-button>
                             </el-form-item>
                         </el-col>
                     </el-row>
@@ -519,7 +516,7 @@
             return {
                 queryUrl: this.$store.state.queryUrl,
                 routerMessage: {
-                    optype: "recvcounter_list",
+                    optype: "recvgroupcounter_list",
                     params: {
                         page_size: 20,
                         page_num: 1

@@ -913,7 +913,7 @@
                     url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
-                        optype: "recvcounter_add",
+                        optype: "recvcounter_detail",
                         params: {
                             id: row.id
                         }
