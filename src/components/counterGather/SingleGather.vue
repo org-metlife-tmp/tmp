@@ -179,7 +179,7 @@
                 <el-table-column prop="batch_process_no" label="批处理号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="source_sys" label="核心系统" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="insure_bill_no" label="保单号" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="bill_org" label="保单机构" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="bill_org_name" label="保单机构" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="recv_mode" label="收款方式" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="recv_bank_name" label="收款银行" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="recv_acc_no" label="收款账号" :show-overflow-tooltip="true"></el-table-column>
@@ -201,7 +201,7 @@
                 <el-table-column prop="payer_cer_no" label="缴费人证件号" width="110px"
                                  :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="create_user_name" label="操作人" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="recv_org" label="收款机构" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="recv_org_name" label="收款机构" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="xxx" label="状态" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column
                         label="操作" width="50"
@@ -605,7 +605,8 @@
                 emptyFileList: [],
                 eidttrigFile: false,
                 isLook: false,
-                fileList: []
+                fileList: [],
+                currentData: ""
             }
         },
         methods: {
@@ -714,7 +715,7 @@
                     url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
-                        optype: "recvgroupcounter_listexport",
+                        optype: "recvcounter_listexport",
                         params: params
                     },
                     responseType: 'blob'
@@ -770,7 +771,7 @@
                                     duration: 2000
                                 });
                             } else {
-                                dialogData[k] = result.data.data;
+                                dialogData[k] = result.data.data.batch_process_no;
                             }
                         }).catch(function (error) {
                             console.log(error);
@@ -845,20 +846,27 @@
             saveData: function(){
                 let dialogData = this.dialogData;
                 let items = this.items;
+
                 let params = {
                     files: this.fileList,
                     policy_infos: items
                 };
 
-                for(let k in dialogData){
-                    params[k] = dialogData[k];
+                if(this.dialogTitle == "查看"){
+                    params.id = this.currentData.id;
+                }else{
+                    for(let k in dialogData){
+                        params[k] = dialogData[k];
+                    }
                 }
+
+                let optype = this.dialogTitle == "查看" ? "recvcounter_detailConfirm" : "recvcounter_add";
 
                 this.$axios({
                     url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
-                        optype: "recvcounter_add",
+                        optype: optype,
                         params: params
                     }
                 }).then((result) => {
@@ -878,15 +886,37 @@
             },
             //查看
             lookCurrent: function(row){
-                this.addData();
                 this.dialogTitle = "查看";
+                this.currentData = row;
+
+                let dialogData = this.dialogData;
+                for(let k in dialogData){
+                    dialogData[k] = "";
+                }
+                this.items = [
+                    {
+                        insure_bill_no: "",
+                        amount: "",
+                        bill_org_id: "",
+                        source_sys: "",
+                        insure_name: "",
+                        insure_cer_no: "",
+                        isnot_electric_pay: "",
+                        isnot_bank_transfer_premium: "",
+                        $id: 1
+                    }
+                ];
+
+                this.dialogVisible = true;
 
                 this.$axios({
                     url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "recvcounter_add",
-                        params: params
+                        params: {
+                            id: row.id
+                        }
                     }
                 }).then((result) => {
                     if (result.data.error_msg) {
@@ -909,14 +939,14 @@
                                 dialogData[k] = data[k];
                             }
                         }
-
-                        this.isLook = true;
-                        this.fileMessage.bill_id = row.id;
-                        this.triggerFile = !this.triggerFile;
                     }
                 }).catch(function (error) {
                     console.log(error);
                 });
+
+                this.isLook = true;
+                this.fileMessage.bill_id = row.id;
+                this.triggerFile = !this.triggerFile;
             },
 
 
