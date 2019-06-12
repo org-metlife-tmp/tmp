@@ -57,12 +57,12 @@
                         </el-col>
                         <el-col :span="4">
                             <el-form-item>
-                                <el-input v-model="searchData.insure_bill_no" clearable placeholder="请输入批单号"></el-input>
+                                <el-input v-model="searchData.batch_no" clearable placeholder="请输入批单号"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="4">
                             <el-form-item>
-                                <el-input v-model="searchData.insure_bill_no" clearable placeholder="请输入投保单号"></el-input>
+                                <el-input v-model="searchData.preinsure_bill_no" clearable placeholder="请输入投保单号"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="4">
@@ -72,7 +72,7 @@
                         </el-col>
                         <el-col :span="4">
                             <el-form-item>
-                                <el-input v-model="searchData.insure_bill_no" clearable placeholder="请输入客户号"></el-input>
+                                <el-input v-model="searchData.consumer_no" clearable placeholder="请输入客户号"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="4">
@@ -88,6 +88,7 @@
                                 </el-select>
                             </el-form-item>
                         </el-col>
+
                         <el-col :span="4">
                             <el-form-item>
                                 <el-input v-model="searchData.recv_bank_name" clearable placeholder="请输入收款银行"></el-input>
@@ -143,7 +144,13 @@
                                 </el-col>
                             </el-form-item>
                         </el-col>
-                        <el-col :span="24">
+                        <el-col :span="2">
+                            <el-form-item>
+                                <el-button type="primary" plain @click="clearData" size="mini">清空筛选</el-button>
+                            </el-form-item>
+                        </el-col>
+
+                        <el-col :span="21">
                             <el-form-item style="margin-bottom:0px">
                                 <el-checkbox-group v-model="searchData.pay_status">
                                     <el-checkbox v-for="(name,k) in statusList"
@@ -151,13 +158,6 @@
                                         {{ name }}
                                     </el-checkbox>
                                 </el-checkbox-group>
-                            </el-form-item>
-                        </el-col>
-
-
-                        <el-col :span="2">
-                            <el-form-item>
-                                <el-button type="primary" plain @click="clearData" size="mini">清空筛选</el-button>
                             </el-form-item>
                         </el-col>
                         <el-col :span="2">
@@ -175,30 +175,35 @@
                 <el-table-column prop="recv_date" label="收款日期" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="batch_process_no" label="批处理号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="source_sys" label="核心系统" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="batch_no" label="批单号" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="preinsure_bill_no" label="投保单号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="insure_bill_no" label="保单号" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="bill_org" label="保单机构" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="bill_org_name" label="保单机构" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="recv_mode" label="收款方式" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="recv_bank_name" label="收款银行" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="recv_acc_no" label="收款账号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="use_funds" label="资金用途" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="bill_status" label="票据状态" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="bill_number" label="票据票号" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="terminal_no" label="终端机编号" width="110px"
+                <el-table-column prop="insure_acc_no" label="投保人客户号" width="110px"
                                  :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="insure_name" label="投保人" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="business_acc_no" label="业务所属客户号" width="120px"
+                                 :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="business_acc" label="业务所属客户" width="110px"
+                                 :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="consumer_no" label="客户号" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="consumer_acc_name" label="客户名称" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="amount" label="金额" :show-overflow-tooltip="true"
                                  :formatter="transitAmount"></el-table-column>
                 <el-table-column prop="consumer_bank_name" label="客户银行" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="consumer_acc_no" label="客户账号" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="insure_name" label="投保人" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="insure_cer_no" label="投保人证件号" width="120px"
-                                 :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="third_payment" label="第三方缴费" width="110px"
                                  :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="payer" label="缴费人" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="payer_cer_no" label="缴费人证件号" width="110px"
-                                 :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="pay_code" label="缴费编码" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="create_user_name" label="操作人" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="recv_org" label="收款机构" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="recv_org_name" label="收款机构" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="xxx" label="状态" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column
                         label="操作" width="50"
@@ -263,6 +268,19 @@
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
+                            <el-form-item label="核心系统">
+                                <el-select v-model="dialogData.source_sys"
+                                           clearable filterable size="mini"
+                                           placeholder="请选择核心系统">
+                                    <el-option v-for="(item,key) in sourceList"
+                                               :key="key"
+                                               :label="item"
+                                               :value="key">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
                             <el-form-item label="收款方式">
                                 <el-select v-model="dialogData.recv_mode" placeholder="请选择收款方式"
                                            clearable filterable
@@ -270,19 +288,6 @@
                                     <el-option v-for="(recvmode,key) in recvmodeList"
                                                :key="key"
                                                :label="recvmode"
-                                               :value="key">
-                                    </el-option>
-                                </el-select>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="12">
-                            <el-form-item label="资金用途">
-                                <el-select v-model="dialogData.use_funds" placeholder="请选择资金用途"
-                                           clearable filterable
-                                           style="width:100%">
-                                    <el-option v-for="(useFund,key) in useFundList"
-                                               :key="key"
-                                               :label="useFund"
                                                :value="key">
                                     </el-option>
                                 </el-select>
@@ -331,7 +336,27 @@
                         </el-col>
                         <el-col :span="12">
                             <el-form-item label="银行账号">
-                                <el-input v-model="dialogData.recv_acc_no" placeholder="请输入银行账号"></el-input>
+                                <el-select v-model="dialogData.recv_bank_name" disabled
+                                           filterable clearable>
+                                    <el-option v-for="bank in recvBankList"
+                                               :key="bank.id"
+                                               :label="bank.acc_no"
+                                               :value="bank.id">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="资金用途">
+                                <el-select v-model="dialogData.use_funds" placeholder="请选择资金用途"
+                                           clearable filterable
+                                           style="width:100%">
+                                    <el-option v-for="(useFund,key) in useFundList"
+                                               :key="key"
+                                               :label="useFund"
+                                               :value="key">
+                                    </el-option>
+                                </el-select>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
@@ -345,8 +370,53 @@
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
-                            <el-form-item label="终端机编号">
-                                <el-input v-model="dialogData.terminal_no" placeholder="请输入终端机编号"></el-input>
+                            <el-form-item label="客户号">
+                                <el-input v-model="dialogData.consumer_no" placeholder="请输入客户号"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="客户名称">
+                                <el-input v-model="dialogData.consumer_acc_name" placeholder="请输入客户名称"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="保单机构">
+                                <el-input v-model="dialogData.bill_org_id"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="投保单号">
+                                <el-input v-model="dialogData.preinsure_bill_no"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="保单号">
+                                <el-input v-model="dialogData.insure_bill_no" placeholder="请输入保单号"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="批单号">
+                                <el-input v-model="dialogData.batch_no" placeholder="请输入批单号"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="投保人">
+                                <el-input v-model="dialogData.insure_name"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="投保人客户号">
+                                <el-input v-model="dialogData.insure_acc_no"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="业务所属客户">
+                                <el-input v-model="dialogData.business_acc"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="业务所属客户号">
+                                <el-input v-model="dialogData.business_acc_no"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
@@ -369,18 +439,18 @@
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
-                            <el-form-item label="缴费人证件号">
-                                <el-input v-model="dialogData.payer_cer_no" placeholder="请输入缴费人证件号"></el-input>
+                            <el-form-item label="缴费编码">
+                                <el-input v-model="dialogData.pay_code" placeholder="请输入缴费人"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
                             <el-form-item label="与投保人关系">
-                                <el-input v-model="dialogData.payer_relation_insu" placeholder="请输入与投保人关系"></el-input>
+                                <el-input v-model="dialogData.payer_relation_insured" placeholder="请输入与投保人关系"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
                             <el-form-item label="代缴费原因">
-                                <el-input v-model="dialogData.payer_reason" placeholder="请输入代缴费原因"></el-input>
+                                <el-input v-model="dialogData.pay_reason" placeholder="请输入代缴费原因"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="24">
@@ -393,69 +463,6 @@
                                 </Upload>
                             </el-form-item>
                         </el-col>
-
-                        <el-col :span="24" style="position:relative">
-                            <h4 class="small-title">保单</h4>
-                        </el-col>
-                    </el-row>
-                    <el-row v-for="item in items"
-                            :key="item.$id">
-                        <el-col :span="24">
-                            <div class="split-form">
-                                <el-button-group>
-                                    <el-button size="mini" @click="removeAccount(item)"
-                                               v-show="showDel">删除
-                                    </el-button>
-                                    <el-button size="mini" style="margin-left:0"
-                                               @click="addAccount">新增
-                                    </el-button>
-                                </el-button-group>
-                            </div>
-                        </el-col>
-                        <el-col :span="12">
-                            <el-form-item label="保单号">
-                                <el-input v-model="item.insure_bill_no" placeholder="请输入保单号"
-                                          @change="setBillInfo"></el-input>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="12">
-                            <el-form-item label="金额">
-                                <el-input v-model="item.amount" placeholder="请输入金额"></el-input>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="12">
-                            <el-form-item label="保单机构">
-                                <el-input v-model="item.bill_org_id" disabled></el-input>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="12">
-                            <el-form-item label="核心系统">
-                                <el-input v-model="item.source_sys" disabled></el-input>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="12">
-                            <el-form-item label="投保人">
-                                <el-input v-model="item.insure_name" disabled></el-input>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="12">
-                            <el-form-item label="投保人证件号">
-                                <el-input v-model="item.insure_cer_no" disabled></el-input>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="12">
-                            <el-form-item label="允许垫交">
-                                <el-input v-model="item.isnot_electric_pay" disabled></el-input>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="12">
-                            <el-form-item label="是否银行转账">
-                                <el-input v-model="item.isnot_bank_transfer_premium" disabled></el-input>
-                            </el-form-item>
-                        </el-col>
-                    </el-row>
-                    <el-row>
-
                     </el-row>
                 </el-form>
                 <span slot="footer" class="dialog-footer">

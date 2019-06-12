@@ -162,7 +162,8 @@
                 <el-table-column prop="amount" label="金额" :show-overflow-tooltip="true"
                                  :formatter="transitAmount"></el-table-column>
                 <el-table-column prop="check_user_name" label="操作人" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="is_checked" label="状态" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="is_checked" label="状态" :show-overflow-tooltip="true"
+                                 :formatter="transitStatus"></el-table-column>
                 <el-table-column prop="check_service_number" label="对账流水号"  width="100px"
                                  :show-overflow-tooltip="true"></el-table-column>
             </el-table>

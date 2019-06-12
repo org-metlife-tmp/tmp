@@ -235,6 +235,8 @@
                 <el-table-column prop="card_issue_bank" label="发卡行" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="no_identity_mark" label="非接标识" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="import_date" label="导入日期" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="bill_checked" label="对账状态" :show-overflow-tooltip="true"
+                                 :formatter="transitStatus"></el-table-column>
                 <el-table-column prop="bill_check_service_number" label="对账流水号" :show-overflow-tooltip="true"></el-table-column>
             </el-table>
         </el-main>
@@ -423,10 +425,10 @@
                     data: {
                         optype: "recvcounterposrecordcheck_confirm",
                         params: {
-                            detail_id: this.batchidList,
-                            detail_persist: this.versionList,
-                            pos_id: this.tradingList,
-                            pos_persist: this.childVersion,
+                            pos_id: this.batchidList,
+                            pos_persist: this.versionList,
+                            detail_id: this.tradingList,
+                            detail_persist: this.childVersion,
                         }
                     }
                 }).then((result) => {
