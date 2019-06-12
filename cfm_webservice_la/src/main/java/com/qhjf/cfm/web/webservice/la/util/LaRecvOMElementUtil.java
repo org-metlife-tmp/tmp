@@ -21,8 +21,33 @@ import java.util.Map.Entry;
 public class LaRecvOMElementUtil {
 	private static DDHLARecvConfigSection config = GlobalConfigSection.getInstance()
 			.getExtraConfig(IConfigSectionType.DDHConfigSectionType.DDHLaRecv);
-	
-	private static Map<String, String> headKv = new LinkedHashMap<>();
+	private Map<String, String> genHeadKv(){
+		Map<String, String> headKv = new LinkedHashMap<>();
+		Date currentTime = new Date();
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+		String dateString = formatter.format(currentTime);
+		headKv.put("SrvDate", dateString);
+		
+		SimpleDateFormat formatter1 = new SimpleDateFormat("HH:mm:ss");
+		String dateString1 = formatter1.format(currentTime);
+		headKv.put("SrvTime", dateString1);
+		
+		headKv.put("SenderID", "TMP");
+		headKv.put("ReceiverID", "LA");
+		headKv.put("SrvOpName", config.getSrvOpName());//"DRNService"
+		headKv.put("SrvOpVer", "20120606_1.1");
+		headKv.put("MsgID", UUID.randomUUID().toString());
+		headKv.put("CorrID", UUID.randomUUID().toString());
+		headKv.put("ESBRspCode", "0");
+		headKv.put("ESBRspDec", "Success");
+		headKv.put("ResField1", null);
+		headKv.put("ResField2", null);
+		headKv.put("ResField3", null);
+		headKv.put("ResField4", null);
+		headKv.put("ResField5", null);
+		return headKv;
+	}
+	/*private static Map<String, String> headKv = new LinkedHashMap<>();
 	static{
 		Date currentTime = new Date();
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
@@ -46,7 +71,7 @@ public class LaRecvOMElementUtil {
 		headKv.put("ResField3", null);
 		headKv.put("ResField4", null);
 		headKv.put("ResField5", null);
-	}
+	}*/
 	
 	/**
 	 * 创建WS请求报文
@@ -84,7 +109,7 @@ public class LaRecvOMElementUtil {
 	 */
 	private OMElement setHeaderNs(OMFactory fac) {
 		OMElement headerNs = fac.createOMElement("ESBHeader", null);
-		addChildList(fac, headerNs, headKv);
+		addChildList(fac, headerNs, genHeadKv());
 		return headerNs;
 	}
 

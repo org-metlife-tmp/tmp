@@ -1,22 +1,22 @@
 package cfm_webservice_la;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+import org.apache.axiom.om.OMElement;
+import org.apache.axis2.addressing.EndpointReference;
+import org.apache.axis2.client.Options;
+import org.apache.axis2.client.ServiceClient;
+import org.junit.Before;
+import com.alibaba.fastjson.JSONObject;
 import com.jfinal.plugin.activerecord.ActiveRecordPlugin;
 import com.jfinal.plugin.activerecord.Record;
 import com.jfinal.plugin.activerecord.dialect.SqlServerDialect;
 import com.jfinal.plugin.druid.DruidPlugin;
-import com.jfinal.plugin.redis.RedisPlugin;
-import com.jfinal.plugin.redis.serializer.JdkSerializer;
 import com.jfinal.template.source.ClassPathSourceFactory;
-import com.qhjf.cfm.web.plugins.CfmRedisPlugin;
-import com.qhjf.cfm.web.webservice.la.queue.recv.LaRecvQueuePlugin;
-import com.qhjf.cfm.web.webservice.la.recv.LaRecvCallback;
+import com.qhjf.cfm.utils.XmlTool;
 import com.qhjf.cfm.web.webservice.la.recv.LaRecvCallbackBean;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.qhjf.cfm.web.webservice.la.util.LaRecvOMElementUtil;
 
 /**
  * 批收 回调核心系统测试
@@ -25,136 +25,12 @@ import java.util.List;
  *
  */
 public class LaRecvCallbackTest {
-	DruidPlugin dp = null;
-	RedisPlugin cfmRedis = null;
-	ActiveRecordPlugin arp = null;
-
-	@Before
-	public void before() {
-		dp = new DruidPlugin("jdbc:sqlserver://10.164.26.24:1433;DatabaseName=TreasureDB", "tmpadmin", "User123$");
-		arp = new ActiveRecordPlugin(dp);
-		arp.setDevMode(true);
-		arp.setDialect(new SqlServerDialect());
-		arp.setShowSql(true);
-		arp.setBaseSqlTemplatePath(null);
-		arp.getEngine().setSourceFactory(new ClassPathSourceFactory());
-		arp.addSqlTemplate("/sql/sqlserver/webservice_la_recv_cfm.sql");
-		arp.addSqlTemplate("/sql/sqlserver/webservice_la_cfm.sql");
-		cfmRedis = new CfmRedisPlugin("cfm", "192.168.62.91");
-		cfmRedis.setSerializer(new JdkSerializer());
-		
-		LaRecvQueuePlugin larecv = new LaRecvQueuePlugin();
-		dp.start();
-		arp.start();
-		cfmRedis.start();
-		larecv.start();
-	}
-
-	@After
-	public void after() {
-		if (null != arp)
-			arp.stop();
-		if (null != dp)
-			dp.stop();
-		if (null != dp)
-			dp.stop();
-	}
-
-	@Test
-	public void callBackNullTest() {
-		List<Record> records = new ArrayList<>();
-		LaRecvCallback callBack = new LaRecvCallback();
-		callBack.callBack(records);
-	}
-
 	/**
-	 * LA批收测试
-	 *//*
-	@Test
-	public void callBackRecvTest() {
-		try {
-			List<Record> records = new ArrayList<>();
-			String sql = "insert into la_origin_recv_data(tmp_status,source_sys,pay_code,branch_code,org_code,preinsure_bill_no,insure_bill_no,biz_type,fee_mode,pay_mode,recv_date,amount,pay_acc_name,pay_cert_type,pay_cert_code,pay_bank_name,pay_acc_no,bank_key,sale_code,sale_name,op_code,op_name,sacscode,sacstyp,trans_code,job_no)values(2,'LA','1','branchCode','SH','1','1','1','1','1','2019-01-01',23,'张三','1','1','中国银行','651234254243','QQq','e','ee','地方','1','1','1','2','3')";
-			int update = Db.update(sql);
-			System.out.println("成功插入："+update+"条");
-			
-			Record find = Db.findFirst("select * from la_origin_recv_data where pay_code='1'");
-			records.add(find);
-			LaRecvCallback callBack = new LaRecvCallback();
-			callBack.callBack(records);
-		} finally {
-			int delete = Db.delete("delete la_origin_recv_data where pay_code='1'");
-			System.out.println("成功删除："+delete+"条");
-		}
-	}
-	*//**
-	 * LA批付测试
-	 *//*
-	@Test
-	public void callBackPayTest() {
-		try {
-			List<Record> records = new ArrayList<>();
-			String sql = "INSERT INTO [dbo].[la_origin_pay_data](tmp_status,[source_sys],[pay_code],[branch_code],[org_code],[preinsure_bill_no],[insure_bill_no],[biz_type],[pay_mode],[pay_date],[amount],[recv_acc_name],[recv_cert_type],[recv_cert_code],[recv_bank_name],[recv_acc_no],[bank_key],[sale_code],[sale_name],[op_code],[op_name])     VALUES	 (2, 'LA','1','5','BJ','020000420622','00647979','T512','C','2019-02-11',12863.91,'高艳丽','01','370303198301013987',NULL,'6228270011300456176','ABC_YL','01','顾问行销（代理人）','60004482','CLIENT00079715')";
-			int update = Db.update(sql);
-			System.out.println("成功插入："+update+"条");
-			
-			Record find = Db.findFirst("select * from la_origin_pay_data where pay_code='1'");
-			records.add(find);
-			LaCallback callBack = new LaCallback();
-			callBack.callBack(records);
-		} finally {
-			int delete = Db.delete("delete la_origin_pay_data where pay_code='1'");
-			System.out.println("成功删除："+delete+"条");
-		}
-	}
-	public static void main(String[] args) {
-		DruidPlugin dp = null;
-		RedisPlugin cfmRedis = null;
-		ActiveRecordPlugin arp = null;
-		dp = new DruidPlugin("jdbc:sqlserver://10.164.26.24:1433;DatabaseName=TreasureDB", "tmpadmin", "User123$");
-		arp = new ActiveRecordPlugin(dp);
-		arp.setDevMode(true);
-		arp.setDialect(new SqlServerDialect());
-		arp.setShowSql(true);
-		arp.setBaseSqlTemplatePath(null);
-		arp.getEngine().setSourceFactory(new ClassPathSourceFactory());
-		arp.addSqlTemplate("/sql/sqlserver/webservice_la_recv_cfm.sql");
-		arp.addSqlTemplate("/sql/sqlserver/webservice_la_cfm.sql");
-		cfmRedis = new CfmRedisPlugin("cfm", "192.168.62.91");
-		cfmRedis.setSerializer(new JdkSerializer());
-		
-		LaRecvQueuePlugin larecv = new LaRecvQueuePlugin();
-		dp.start();
-		arp.start();
-		cfmRedis.start();
-		larecv.start();
-		
-		
-		
-		try {
-			List<Record> records = new ArrayList<>();
-			String sql = "INSERT INTO [dbo].[la_origin_pay_data](tmp_status,[source_sys],[pay_code],[branch_code],[org_code],[preinsure_bill_no],[insure_bill_no],[biz_type],[pay_mode],[pay_date],[amount],[recv_acc_name],[recv_cert_type],[recv_cert_code],[recv_bank_name],[recv_acc_no],[bank_key],[sale_code],[sale_name],[op_code],[op_name])     VALUES	 (2, 'LA','1','5','BJ','020000420622','00647979','T512','C','2019-02-11',12863.91,'高艳丽','01','370303198301013987',NULL,'6228270011300456176','ABC_YL','01','顾问行销（代理人）','60004482','CLIENT00079715')";
-			int update = Db.update(sql);
-			System.out.println("成功插入："+update+"条");
-			
-			Record find = Db.findFirst("select * from la_origin_pay_data where pay_code='1'");
-			records.add(find);
-			LaCallback callBack = new LaCallback();
-			callBack.callBack(records);
-		} finally {
-			int delete = Db.delete("delete la_origin_pay_data where pay_code='1'");
-			System.out.println("成功删除："+delete+"条");
-			
-			if (null != arp)
-				arp.stop();
-			if (null != dp)
-				dp.stop();
-			if (null != dp)
-				dp.stop();
-		}
-	}*/
-	@Test
-	public void tt(){
+	 * 测试数据
+	 * @return
+	 */
+	public List<LaRecvCallbackBean> getTestData(){
+		List<LaRecvCallbackBean> callbackBeans = new ArrayList<>();
 		Record origin = new Record();
 		origin.set("id", 21345l);
 		origin.set("branch_code", "1");
@@ -162,7 +38,7 @@ public class LaRecvCallbackTest {
 		origin.set("fee_mode", "1");
 		origin.set("recv_date", "2019-11-05");
 		origin.set("amount", "72.20");
-		origin.set("pay_acc_no", "1235786754321434265543");
+		origin.set("pay_acc_no", "0x00B84F0E73331A29DBEB513B4EFB192101000000757C6D2EEC44E9E01B07C70E524C2940C74EC2BF52952B41EA8AC087093D6D19B6825B1E13B94E769F4A3502A2D52E8A");
 		origin.set("pay_bank_name", null);
 		origin.set("insure_bill_no", "01285168");
 		origin.set("pay_code", "20");
@@ -175,11 +51,110 @@ public class LaRecvCallbackTest {
 		origin.set("tmp_status", 1);
 		origin.set("tmp_err_message", "0::成功::交易成功");
 		origin.set("bankcode", "LU");
+		/*Record origin1 = new Record();
+		origin1.set("id", 21346l);
+		origin1.set("branch_code", "1");
+		origin1.set("org_code", "SH");
+		origin1.set("fee_mode", "3");
+		origin1.set("recv_date", "3");
+		origin1.set("amount", "3");
+		origin1.set("pay_acc_no", "0x00B84F0E73331A29DBEB513B4EFB192101000000757C6D2EEC44E9E01B07C70E524C2940C74EC2BF52952B41EA8AC087093D6D19B6825B1E13B94E769F4A3502A2D52E8A");
+		origin1.set("pay_bank_name", "3");
+		origin1.set("insure_bill_no", "3");
+		origin1.set("pay_code", "3");
+		origin1.set("pay_acc_name", "3");
+		origin1.set("insure_bill_no", "3");
+		origin1.set("job_no", "3");
+		origin1.set("trans_code", "3");
+		origin1.set("sacscode", "3");
+		origin1.set("sacstyp", "3");
+		origin1.set("tmp_status", 2);
+		origin1.set("tmp_err_message", "测试错误信息3");
+		origin1.set("bankcode", "LU");*/
 		try {
-			String s = new LaRecvCallbackBean(origin).decrypt("0x00B84F0E73331A29DBEB513B4EFB19210100000021C77BCDC9B718F674241024A432DCED21E3466A03AFB4EB620AAE82A64BD0C5FD0B606B22342C7E95D524EF499D78F8");
-			System.out.println(s);
+			LaRecvCallbackBean bean = new LaRecvCallbackBean(origin);
+			callbackBeans.add(bean);
+			/*LaRecvCallbackBean bean1 = new LaRecvCallbackBean(origin1);
+			callbackBeans.add(bean1);*/
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return callbackBeans;
+	}
+		
+	public void testCase() {
+		try {
+			ServiceClient sc = new ServiceClient();
+			Options opts = new Options();   
+			EndpointReference end = new EndpointReference("http://10.164.26.43/esbwebentry/ESBWebEntry.asmx?wsdl");   
+			opts.setTo(end); 
+			opts.setAction("http://eai.metlife.com/ESBWebEntry/ProcessMessage");
+			sc.setOptions(opts);
+			
+			
+
+			OMElement msgBodyNs = null;
+			try {
+				msgBodyNs = new LaRecvOMElementUtil().createOMElement(getTestData());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			System.out.println("send:"+msgBodyNs);
+			//发送请求LA服务
+			OMElement res = sc.sendReceive(msgBodyNs);
+			System.out.println("response:"+res);
+			
+			JSONObject json = XmlTool.documentToJSONObject(res.toString());
+			System.out.println(json);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} 
+		
+	}
+	
+	DruidPlugin dp = null;
+	ActiveRecordPlugin arp = null;
+	@Before
+	public void before() {
+		dp = new DruidPlugin("jdbc:sqlserver://10.164.26.24:1433;DatabaseName=TreasureDB", "tmpadmin", "User123$");
+		arp = new ActiveRecordPlugin(dp);
+		arp.setDevMode(true);
+		arp.setDialect(new SqlServerDialect());
+		arp.setShowSql(true);
+		arp.setBaseSqlTemplatePath(null);
+		arp.getEngine().setSourceFactory(new ClassPathSourceFactory());
+		arp.addSqlTemplate("/sql/sqlserver/webservice_la_recv_cfm.sql");
+		arp.addSqlTemplate("/sql/sqlserver/webservice_la_cfm.sql");
+		
+		dp.start();
+		arp.start();
+	}
+	
+	/**
+	 * 按q 退出单元测试
+	 */
+	@org.junit.Test
+	public void test123() {
+		LaRecvCallbackTest test =new LaRecvCallbackTest();
+		test.testCase();
+		test.testCase();
+		System.out.print("请输入值：");        
+		Scanner s = new Scanner(System.in);        
+		while(s.hasNext()){           
+			String a = s.next();  //将s.next()赋值给变量a           
+			if("q".equals(a)){   
+				if (s != null) {
+					s.close();
+				}
+				break;           
+			}else{               
+				System.out.println(a);           
+			}        	
+		}
+		
+		if (null != arp)
+			arp.stop();
+		if (null != dp)
+			dp.stop();
 	}
 }
