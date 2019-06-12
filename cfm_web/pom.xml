@@ -272,7 +272,7 @@
             <id>formal-92-ddh2</id>
             <properties>
                 <envconfig>formal-92-ddh2</envconfig>
-                <package.name>cfm</package.name>
+                <package.name>cfm.war</package.name>
             </properties>
         </profile>
         <profile>
@@ -280,7 +280,7 @@
             <id>formal-93-ddh2</id>
             <properties>
                 <envconfig>formal-93-ddh2</envconfig>
-                <package.name>cfm</package.name>
+                <package.name>cfm.war</package.name>
             </properties>
         </profile>
         <!-- 正式环境 end-->
