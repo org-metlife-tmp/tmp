@@ -29,6 +29,7 @@ import com.qhjf.cfm.web.webservice.sft.SftCallBack;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -294,10 +295,11 @@ public class PayCounterService {
 		String pay_account_no = GmfConfigAccnoSection.getInstance().getAccno();
 		logger.info("============配置文件中柜面付账号=="+pay_account_no);
 		Record payRec = Db.findFirst(Db.getSql("nbdb.findAccountByAccno"), pay_account_no);
-		if (payRec == null) {
-			logger.error("=============未在系统内找到此账户======" + pay_account_no);
-		}
-		
+		//查询此账号余额
+		List<Record> find = Db.find(Db.getSql("curyet.findCurrentBal"),pay_account_no);
+		if(null == find || find.size() == 0 ){
+			throw new ReqDataException("未在系统内查询到付款账号的留存余额");
+		} 
 		Integer source_sys = TypeUtils.castToInt(record.get("source_sys"));
 		List<Integer> pay_ids = record.get("pay_id");
 		final Long org_id = uodpInfo.getOrg_id();
@@ -321,15 +323,14 @@ public class PayCounterService {
 			logger.info("===========EBS数据进行提交");
 			Details = Db.find(Db.getSqlPara("pay_counter.checkBatchEBSDetail", Kv.by("map", pay_ids)));			
 		}
-		
-		
-		
+				
         if(null == Details || pay_ids.size() != Details.size()) {
         	throw new ReqDataException("勾选数据中部分数据已过期,请刷新页面");
         }
         final List<Record>  insertRecords = new ArrayList<>();
         final List<Record>  updateLegalRecords = new ArrayList<>();
         //产生单据,并开启审批流
+        BigDecimal taotal_amount = new BigDecimal(0);
         for (Record rec : Details) {
             String serviceSerialNumber = BizSerialnoGenTool.getInstance().getSerial(WebConstant.MajorBizType.GMF);
         	Record updateLegalRecord  = new Record();
@@ -367,7 +368,14 @@ public class PayCounterService {
         	                 .set("status", WebConstant.SftLegalData.GROUPBATCH.getKey());
         	insertRecords.add(insertrec);
         	updateLegalRecords.add(updateLegalRecord);
+        	taotal_amount = taotal_amount.add(TypeUtils.castToBigDecimal(rec.get("amount")))
+        			         .setScale(2, BigDecimal.ROUND_HALF_UP);
 		}	
+        Record rec = find.get(0);
+		BigDecimal amount = TypeUtils.castToBigDecimal(rec.get("bal"));
+        if(taotal_amount.compareTo(amount)>0) {
+        	throw new ReqDataException("此付款账号余额小于勾选数据的支付金额");
+        }
         // 单据入库 ,合法数据表更新状态
       boolean flag = Db.tx(new IAtom() {			
 			@Override
