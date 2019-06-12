@@ -28,7 +28,7 @@
         <dependency>
             <groupId>com.qhjf.cfm</groupId>
             <artifactId>cfm_common</artifactId>
-            <version>${parent.version}</version>
+            <version>${project.parent.version}</version>
         </dependency>
 
         <dependency>
@@ -39,13 +39,13 @@
         <dependency>
             <groupId>com.qhjf.cfm</groupId>
             <artifactId>cfm_module_account</artifactId>
-            <version>${parent.version}</version>
+            <version>${project.parent.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.qhjf.cfm</groupId>
             <artifactId>cfm_excel_parse</artifactId>
-            <version>${parent.version}</version>
+            <version>${project.parent.version}</version>
         </dependency>
         <dependency>
             <groupId>com.qhjf.cfm</groupId>

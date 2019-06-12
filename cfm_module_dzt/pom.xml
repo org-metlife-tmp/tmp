@@ -20,12 +20,12 @@
         <dependency>
             <groupId>com.qhjf.cfm</groupId>
             <artifactId>cfm_common</artifactId>
-            <version>${parent.version}</version>
+            <version>${project.parent.version}</version>
         </dependency>
         <dependency>
             <groupId>com.qhjf.cfm</groupId>
             <artifactId>cfm_module_comm</artifactId>
-            <version>${parent.version}</version>
+            <version>${project.parent.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>

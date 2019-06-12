@@ -23,7 +23,7 @@
         <dependency>
             <groupId>com.qhjf.cfm</groupId>
             <artifactId>cfm_common</artifactId>
-            <version>${parent.version}</version>
+            <version>${project.parent.version}</version>
         </dependency>
 
         <dependency>
