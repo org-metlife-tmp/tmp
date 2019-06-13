@@ -203,7 +203,7 @@
                                  :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="create_user_name" label="操作人" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="recv_org_name" label="收款机构" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="xxx" label="状态" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="pay_status" label="状态" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column
                         label="操作" width="50"
                         fixed="right">
@@ -340,7 +340,18 @@
                         </el-col>
                         <el-col :span="12">
                             <el-form-item label="客户银行">
-                                <el-input v-model="dialogData.consumer_bank_name" placeholder="请输入客户银行"></el-input>
+                                <el-select v-model="dialogData.consumer_bank_name" placeholder="请选择银行大类"
+                                           clearable filterable
+                                           style="width:100%"
+                                           :filter-method="filterBankType"
+                                           :loading="bankLongding"
+                                           @visible-change="clearSearch">
+                                    <el-option v-for="bankType in bankTypeList"
+                                               :key="bankType.name"
+                                               :label="bankType.display_name"
+                                               :value="bankType.code">
+                                    </el-option>
+                                </el-select>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
@@ -511,6 +522,16 @@
             this.getOrgList();
             //收款银行
             this.getRecvBank();
+
+            //银行大类
+            var bankTypeList = JSON.parse(window.sessionStorage.getItem("bankTypeList"));
+            if (bankTypeList) {
+                this.bankAllList = bankTypeList;
+            }
+            var bankAllTypeList = JSON.parse(window.sessionStorage.getItem("bankAllTypeList"));
+            if(bankAllTypeList){
+                this.bankAllTypeList = bankAllTypeList;
+            }
         },
         props: ["tableData"],
         components: {
@@ -607,7 +628,12 @@
                 eidttrigFile: false,
                 isLook: false,
                 fileList: [],
-                currentData: ""
+                currentData: "",
+                outTime: "", //银行大类搜索控制
+                bankLongding: false,
+                bankAllList: [],
+                bankTypeList: [],
+                bankAllTypeList: [], //银行大类全部(不重复)
             }
         },
         methods: {
@@ -745,6 +771,47 @@
                 }).catch(function (error) {
                     console.log(error);
                 })
+            },
+            //银行大类搜索筛选
+            filterBankType: function (value) {
+                this.bankLongding = true;
+                clearTimeout(this.outTime);
+                this.outTime = setTimeout(() => {
+                    if (value && value.trim()) {
+                        this.bankTypeList = this.bankAllList.filter(item => {
+                            var chineseReg = /^[\u0391-\uFFE5]+$/; //判断是否为中文
+                            var englishReg = /^[a-zA-Z]+$/; //判断是否为字母
+                            var quanpinReg = /(a[io]?|ou?|e[inr]?|ang?|ng|[bmp](a[io]?|[aei]ng?|ei|ie?|ia[no]|o|u)|pou|me|m[io]u|[fw](a|[ae]ng?|ei|o|u)|fou|wai|[dt](a[io]?|an|e|[aeio]ng|ie?|ia[no]|ou|u[ino]?|uan)|dei|diu|[nl][gh]ei|[jqx](i(ao?|ang?|e|ng?|ong|u)?|u[en]?|uan)|([csz]h?|r)([ae]ng?|ao|e|i|ou|u[ino]?|uan)|[csz](ai?|ong)|[csz]h(ai?|uai|uang)|zei|[sz]hua|([cz]h|r)ong|y(ao?|[ai]ng?|e|i|ong|ou|u[en]?|uan))/; //判断是否为全拼
+
+                            if (chineseReg.test(value)) {
+                                return item.name.toLowerCase().indexOf(value.toLowerCase()) > -1;
+                            } else if (englishReg.test(value)) {
+                                if (quanpinReg.test(value)) {
+                                    return item.pinyin.toLowerCase().indexOf(value.toLowerCase()) > -1;
+                                } else {
+                                    return item.jianpin.toLowerCase().indexOf(value.toLowerCase()) > -1;
+                                }
+                            }
+                        });
+                        this.bankTypeList = this.bankTypeList.filter((item,index,arr) => {
+                            for(var i = index+1; i < arr.length; i++){
+                                if(item.display_name == arr[i].display_name){
+                                    return false;
+                                }
+                            }
+                            return true;
+                        });
+                    } else {
+                        this.bankTypeList = this.bankAllTypeList.slice(0,200);
+                    }
+                    this.bankLongding = false;
+                }, 1200);
+            },
+            //银行大类展开时重置数据
+            clearSearch: function (val) {
+                if (this.bankTypeList != this.bankAllTypeList && val) {
+                    this.bankTypeList = this.bankAllTypeList.slice(0,200);
+                }
             },
             //新增
             addData: function () {
