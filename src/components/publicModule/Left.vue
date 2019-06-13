@@ -749,15 +749,15 @@
                     </el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="24" v-if="menuList.VOUCHERSUBMIT">
+            <el-submenu index="24" v-if="menuList.PREVOUCHERSUBMIT">
                 <template slot="title" height="200px">
                     <i class="icon-ymyt"></i>
                     <p>月末预提</p>
                 </template>
                 <el-menu-item-group>
-                    <el-menu-item index="/endmonth-advance/operation" v-if="menuList.VOUCHEROPERATION">操作</el-menu-item>
-                    <el-menu-item index="/endmonth-advance/review" v-if="menuList.VOUCHERCONFIRM">复核</el-menu-item>
-                    <el-menu-item index="/endmonth-advance/advance-query" v-if="menuList.VOUCHERQUERY">查询</el-menu-item>
+                    <el-menu-item index="/endmonth-advance/operation" v-if="menuList.PREVOUCHEROPERATION">操作</el-menu-item>
+                    <el-menu-item index="/endmonth-advance/review" v-if="menuList.PREVOUCHERCONFIRM">复核</el-menu-item>
+                    <el-menu-item index="/endmonth-advance/advance-query" v-if="menuList.PREVOUCHERQUERY">查询</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
             <el-submenu index="25">
@@ -949,10 +949,10 @@
                     DztBalAdjust: false, //余额调节表
                     DztInitCheck: false, //期初数据核对
 
-                    VOUCHERSUBMIT: false, //月末预提
-                    VOUCHEROPERATION: false, //操作
-                    VOUCHERCONFIRM: false, //复核
-                    VOUCHERQUERY: false, //查询
+                    PREVOUCHERSUBMIT: false, //月末预提
+                    PREVOUCHEROPERATION: false, //操作
+                    PREVOUCHERCONFIRM: false, //复核
+                    PREVOUCHERQUERY: false, //查询
 
                     VOUCHER: false,//凭证
                     VoucherQuery: false,//凭证查询
