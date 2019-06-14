@@ -370,32 +370,13 @@
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
-                            <el-form-item label="是否第三方缴费">
-                                <el-switch
-                                        v-model="dialogData.third_payment"
-                                        active-value="1"
-                                        inactive-value="0">
-                                </el-switch>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="12">
-                            <el-form-item label="缴费人">
-                                <el-input v-model="dialogData.payer" placeholder="请输入缴费人"></el-input>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="12">
-                            <el-form-item label="缴费人证件号">
-                                <el-input v-model="dialogData.payer_cer_no" placeholder="请输入缴费人证件号"></el-input>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="12">
                             <el-form-item label="与投保人关系">
-                                <el-input v-model="dialogData.payer_relation_insu" placeholder="请输入与投保人关系"></el-input>
+                                <el-input v-model="dialogData.payer_relation_insured" placeholder="请输入与投保人关系"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
                             <el-form-item label="代缴费原因">
-                                <el-input v-model="dialogData.payer_reason" placeholder="请输入代缴费原因"></el-input>
+                                <el-input v-model="dialogData.pay_reason" placeholder="请输入代缴费原因"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="24">
@@ -430,7 +411,7 @@
                         <el-col :span="12">
                             <el-form-item label="保单号">
                                 <el-input v-model="item.insure_bill_no" placeholder="请输入保单号"
-                                          @change="setBillInfo"></el-input>
+                                          @change="setBillInfo(item)"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
@@ -440,7 +421,7 @@
                         </el-col>
                         <el-col :span="12">
                             <el-form-item label="保单机构">
-                                <el-input v-model="item.bill_org_id" disabled></el-input>
+                                <el-input v-model="item.bill_org_name" disabled></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
@@ -468,6 +449,25 @@
                                 <el-input v-model="item.isnot_bank_transfer_premium" disabled></el-input>
                             </el-form-item>
                         </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="是否第三方缴费">
+                                <el-switch
+                                        v-model="item.third_payment"
+                                        active-value="1"
+                                        inactive-value="0">
+                                </el-switch>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="缴费人">
+                                <el-input v-model="item.payer" placeholder="请输入缴费人"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="缴费人证件号">
+                                <el-input v-model="item.payer_cer_no" placeholder="请输入缴费人证件号"></el-input>
+                            </el-form-item>
+                        </el-col>
                     </el-row>
                     <el-row>
 
@@ -475,7 +475,8 @@
                 </el-form>
                 <span slot="footer" class="dialog-footer">
                 <el-button type="warning" size="mini" plain @click="dialogVisible = false">取 消</el-button>
-                <el-button type="warning" size="mini" @click="saveData" v-show="!isLook">确 定</el-button>
+                <el-button type="warning" size="mini" @click="saveData">确 定</el-button>
+                <el-button type="warning" size="mini" @click="revocationData" v-show="isLook">撤 销</el-button>
             </span>
             </el-dialog>
         </el-footer>
@@ -600,22 +601,22 @@
                     consumer_acc_no: "",
                     terminal_no: "",
                     amount: "",
-                    third_payment: "",
-                    payer: "",
-                    payer_cer_no: "",
-                    payer_relation_insu: "",
-                    payer_reason: "",
+                    payer_relation_insured: "",
+                    pay_reason: "",
                 },
                 items: [
                     {
                         insure_bill_no: "",
                         amount: "",
-                        bill_org_id: "",
+                        bill_org_name: "",
                         source_sys: "",
                         insure_name: "",
                         insure_cer_no: "",
                         isnot_electric_pay: "",
                         isnot_bank_transfer_premium: "",
+                        third_payment: "",
+                        payer: "",
+                        payer_cer_no: "",
                         $id: 1
                     }
                 ],
@@ -846,8 +847,6 @@
                         });
                     }else if(k == "currency"){
                         dialogData[k] = 1;
-                    }else if(k == "third_payment"){
-                        dialogData[k] = "0";
                     }else{
                         dialogData[k] = "";
                     }
@@ -857,12 +856,15 @@
                     {
                         insure_bill_no: "",
                         amount: "",
-                        bill_org_id: "",
+                        bill_org_name: "",
                         source_sys: "",
                         insure_name: "",
                         insure_cer_no: "",
                         isnot_electric_pay: "",
                         isnot_bank_transfer_premium: "",
+                        third_payment: "0",
+                        payer: "",
+                        payer_cer_no: "",
                         $id: 1
                     }
                 ];
@@ -878,12 +880,15 @@
                 var item = {
                     insure_bill_no: "",
                     amount: "",
-                    bill_org_id: "",
+                    bill_org_name: "",
                     source_sys: "",
                     insure_name: "",
                     insure_cer_no: "",
                     isnot_electric_pay: "",
                     isnot_bank_transfer_premium: "",
+                    third_payment: "0",
+                    payer: "",
+                    payer_cer_no: "",
                     $id: Date.now()
                 };
                 this.items.push(item);
@@ -896,9 +901,35 @@
                 }
             },
             //根据保单号设置相关信息
-            setBillInfo: function(val){
-                if(val){
-
+            setBillInfo: function(item){
+                if(item.insure_bill_no){
+                    this.$axios({
+                        url: this.queryUrl + "normalProcess",
+                        method: "post",
+                        data: {
+                            optype: "recvcounter_getPolicyInfo",
+                            params: {
+                                insure_bill_no: item.insure_bill_no
+                            }
+                        }
+                    }).then((result) => {
+                        if (result.data.error_msg) {
+                            this.$message({
+                                type: "error",
+                                message: result.data.error_msg,
+                                duration: 2000
+                            });
+                        } else {
+                            let data = result.data.data;
+                            for(let k in item){
+                                if(data[k]){
+                                    item[k] = data[k];
+                                }
+                            }
+                        }
+                    }).catch(function (error) {
+                        console.log(error);
+                    });
                 }
             },
             //设置当前项上传附件
@@ -912,44 +943,57 @@
             },
             //保存新增数据
             saveData: function(){
-                let dialogData = this.dialogData;
-                let items = this.items;
+                this.$confirm('是否确认完成当前业务收款?', '提示', {
+                    confirmButtonText: '确认',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    let dialogData = this.dialogData;
+                    let items = this.items;
 
-                let params = {
-                    files: this.fileList,
-                    policy_infos: items
-                };
+                    let params = {
+                        files: this.fileList,
+                        policy_infos: items,
+                        wait_match_flag: 0
+                    };
 
-                if(this.dialogTitle == "查看"){
-                    params.id = this.currentData.id;
-                }else{
-                    for(let k in dialogData){
-                        params[k] = dialogData[k];
+                    if(this.dialogTitle == "查看"){
+                        params.id = this.currentData.id;
+                    }else{
+                        for(let k in dialogData){
+                            params[k] = dialogData[k];
+                        }
                     }
-                }
 
-                let optype = this.dialogTitle == "查看" ? "recvcounter_detailConfirm" : "recvcounter_add";
+                    let optype = this.dialogTitle == "查看" ? "recvcounter_detailConfirm" : "recvcounter_add";
 
-                this.$axios({
-                    url: this.queryUrl + "normalProcess",
-                    method: "post",
-                    data: {
-                        optype: optype,
-                        params: params
-                    }
-                }).then((result) => {
-                    if (result.data.error_msg) {
-                        this.$message({
-                            type: "error",
-                            message: result.data.error_msg,
-                            duration: 2000
-                        });
-                    } else {
-                        this.dialogVisible = false;
-                        this.$emit("getCommTable", this.routerMessage);
-                    }
-                }).catch(function (error) {
-                    console.log(error);
+                    this.$axios({
+                        url: this.queryUrl + "normalProcess",
+                        method: "post",
+                        data: {
+                            optype: optype,
+                            params: params
+                        }
+                    }).then((result) => {
+                        if (result.data.error_msg) {
+                            this.$message({
+                                type: "error",
+                                message: result.data.error_msg,
+                                duration: 2000
+                            });
+                        } else {
+                            this.dialogVisible = false;
+                            this.$message({
+                                type: "success",
+                                message: "保存成功",
+                                duration: 2000
+                            });
+                            this.$emit("getCommTable", this.routerMessage);
+                        }
+                    }).catch(function (error) {
+                        console.log(error);
+                    });
+                }).catch(() => {
                 });
             },
             //查看
@@ -965,12 +1009,15 @@
                     {
                         insure_bill_no: "",
                         amount: "",
-                        bill_org_id: "",
+                        bill_org_name: "",
                         source_sys: "",
                         insure_name: "",
                         insure_cer_no: "",
                         isnot_electric_pay: "",
                         isnot_bank_transfer_premium: "",
+                        third_payment: "0",
+                        payer: "",
+                        payer_cer_no: "",
                         $id: 1
                     }
                 ];
@@ -1016,11 +1063,45 @@
                 this.fileMessage.bill_id = row.id;
                 this.triggerFile = !this.triggerFile;
             },
+            //撤销
+            revocationData: function(){
+                this.$confirm('是否确认撤销当前业务收款?', '提示', {
+                    confirmButtonText: '确认',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    let params = {
+                        id : this.currentData.id
+                    };
 
-
-            //展示格式转换-来源系统
-            transitSource: function (row, column, cellValue, index) {
-                return this.sourceList[cellValue];
+                    this.$axios({
+                        url: this.queryUrl + "normalProcess",
+                        method: "post",
+                        data: {
+                            optype: "recvcounter_revoke",
+                            params: params
+                        }
+                    }).then((result) => {
+                        if (result.data.error_msg) {
+                            this.$message({
+                                type: "error",
+                                message: result.data.error_msg,
+                                duration: 2000
+                            });
+                        } else {
+                            this.dialogVisible = false;
+                            this.$message({
+                                type: "success",
+                                message: "撤销成功",
+                                duration: 2000
+                            });
+                            this.$emit("getCommTable", this.routerMessage);
+                        }
+                    }).catch(function (error) {
+                        console.log(error);
+                    });
+                }).catch(() => {
+                });
             },
         },
         computed: {
