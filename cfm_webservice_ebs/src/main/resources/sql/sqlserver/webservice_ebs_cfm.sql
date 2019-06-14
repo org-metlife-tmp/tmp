@@ -13,6 +13,7 @@
   SELECT
     legal.*,
 		ext.insure_bill_no,
+		detail.id detailId,
     total.back_on
   FROM
     pay_batch_total total,
@@ -31,6 +32,7 @@
   SELECT
     legal.*,
 		ext.insure_bill_no,
+		gmf.id detailId,
     gmf.pay_account_no
   FROM
     pay_legal_data legal,

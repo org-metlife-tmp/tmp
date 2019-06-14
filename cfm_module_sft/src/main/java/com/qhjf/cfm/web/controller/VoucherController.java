@@ -36,7 +36,7 @@ public class VoucherController extends CFMBaseController {
     /**
      * 列表
      */
-    @Auth(hasForces = {"VOUCHEROPERATION", "VOUCHERCONFIRM", "VOUCHERQUERY"})
+    @Auth(hasForces = {"PREVOUCHEROPERATION", "PREVOUCHERCONFIRM", "PREVOUCHERQUERY"})
     public void voucherlist() {
         Record record = getRecordByParamsStrong();
         int pageFlag = record.getInt("page_flag");
@@ -83,7 +83,7 @@ public class VoucherController extends CFMBaseController {
     /**
      * 预提提交
      */
-    @Auth(hasForces = {"VOUCHEROPERATION"})
+    @Auth(hasForces = {"PREVOUCHEROPERATION"})
     public void presubmit() {
         try {
             Record record = getRecordByParamsStrong();
@@ -101,7 +101,7 @@ public class VoucherController extends CFMBaseController {
     /**
      * 预提提交确认
      */
-    @Auth(hasForces = {"VOUCHERCONFIRM"})
+    @Auth(hasForces = {"PREVOUCHERCONFIRM"})
     public void presubmitconfirm() {
         try {
             Record record = getRecordByParamsStrong();
@@ -119,7 +119,7 @@ public class VoucherController extends CFMBaseController {
     /**
      * 撤销提交
      */
-    @Auth(hasForces = {"VOUCHEROPERATION"})
+    @Auth(hasForces = {"PREVOUCHEROPERATION"})
     public void precancel() {
         try {
             Record record = getRecordByParamsStrong();
@@ -137,7 +137,7 @@ public class VoucherController extends CFMBaseController {
     /**
      * 撤销提交确认
      */
-    @Auth(hasForces = {"VOUCHERCONFIRM"})
+    @Auth(hasForces = {"PREVOUCHERCONFIRM"})
     public void precancelconfirm() {
         try {
             Record record = getRecordByParamsStrong();
@@ -155,7 +155,7 @@ public class VoucherController extends CFMBaseController {
     /**
      * 导出业务明细
      */
-    @Auth(hasForces = {"VOUCHEROPERATION", "VOUCHERCONFIRM", "VOUCHERQUERY"})
+    @Auth(hasForces = {"PREVOUCHEROPERATION", "PREVOUCHERCONFIRM", "PREVOUCHERQUERY"})
     public void tradxport() {
         doExport();
     }
@@ -163,7 +163,7 @@ public class VoucherController extends CFMBaseController {
     /**
      * 导出财务账
      */
-    @Auth(hasForces = {"VOUCHERQUERY"})
+    @Auth(hasForces = {"PREVOUCHERQUERY"})
     public void voucherexport() {
         doExport();
     }

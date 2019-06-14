@@ -35,7 +35,7 @@ public class ChargeOffConfirmJob implements Job {
         /**
          * 每天八点执行
          */
-        final List<Record> tradlist = Db.find(Db.getSqlPara("voucher.findConfirmCancelTrad"));
+        final List<Record> tradlist = Db.find(Db.getSqlPara("charge_off_cfm.findConfirmCancelTrad"));
         if(tradlist==null || tradlist.size()==0){
             log.info("未找到撤销未复核的数据！");
         }
@@ -46,8 +46,8 @@ public class ChargeOffConfirmJob implements Job {
                 for(Record r : tradlist){
                     if(CommonService.updateRows("acc_his_transaction_ext",
                             new Record().set("precondition", WebConstant.PreSubmitStatus.YYT.getKey()),
-                            new Record().set("id", r.getLong("extId"))) != 1){
-                        log.debug("【撤销未复核id为"+r.getLong("extId")+"的更新失败】");
+                            new Record().set("id", r.getLong("id"))) != 1){
+                        log.debug("【撤销未复核id为"+r.getLong("id")+"的更新失败】");
                     }
                 }
                 return true;

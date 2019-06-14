@@ -1,5 +1,6 @@
 package com.qhjf.cfm.web.service;
 
+import com.alibaba.fastjson.util.TypeUtils;
 import com.jfinal.kit.Kv;
 import com.jfinal.plugin.activerecord.*;
 import com.qhjf.cfm.exceptions.BusinessException;
@@ -11,6 +12,7 @@ import com.qhjf.cfm.utils.RedisSericalnoGenTool;
 import com.qhjf.cfm.web.UodpInfo;
 import com.qhjf.cfm.web.UserInfo;
 import com.qhjf.cfm.web.constant.WebConstant;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -157,6 +159,18 @@ public class VoucherService {
      * @throws ReqDataException
      */
     public void precancel(final Record record, final UserInfo userInfo, final UodpInfo uodpInfo) throws BusinessException {
+        //20点之后不允许 操作 获取自动任务的时间戳
+        Calendar now = Calendar.getInstance();
+        Record jobTime = Db.findById("cfm_quartz", "class_name", "com.qhjf.cfm.web.quartzs.jobs.ChargeOffConfirmJob");
+        if(jobTime == null){
+            throw new ReqDataException("未找到设置的对应自动任务!");
+        }
+        String hour = TypeUtils.castToString(jobTime.get("cron")).split(" ")[2];
+        String minute = TypeUtils.castToString(jobTime.get("cron")).split(" ")[1];
+
+        if((now.get(Calendar.HOUR_OF_DAY)+""+now.get(Calendar.MINUTE)).compareTo(hour+minute) > 0){
+            throw new ReqDataException("【"+hour+":"+minute+"】之后不允许撤销!");
+        }
 
         final List<Integer> idList = record.get("id");
         /** 当天的已经预提且预提通过的交易才能撤销 */

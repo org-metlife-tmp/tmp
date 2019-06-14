@@ -52,7 +52,7 @@
     and DATEDIFF(day,?,trans_date) < 0
   #end
 
-  #sql("findTradList")
+  #sql("findConfirmCancelTrad")
     SELECT
       ext.*
     FROM

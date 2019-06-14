@@ -832,6 +832,8 @@ public class CheckVoucherService {
         String seqnoOrstatmentCode = RedisSericalnoGenTool.genVoucherSeqNo();//生成十六进制序列号/凭证号
         List<Record> list = new ArrayList<>();
         if (payMode.equals(WebConstant.SftDoubtPayMode.PLSF.getKeyc())) {
+            payLegalRecord.set("xx_biz_type", WebConstant.MajorBizType.PLF_HD_VOUCHER.getKey())
+                    .set("xx_ref_bill_id", TypeUtils.castToInt(payLegalRecord.get("detailId"))).set("xx_ref_bill", "pay_batch_detail");
             if ("LA".equals(source)) {
                 //凭证1
                 list.add(CommonService.plfLaBackCheckVoucher(payLegalRecord, 1, seqnoOrstatmentCode));
@@ -845,6 +847,8 @@ public class CheckVoucherService {
                 list.add(CommonService.plfLaBackCheckVoucher(payLegalRecord, 4, seqnoOrstatmentCode));
             }
         } else if (payMode.equals(WebConstant.SftDoubtPayMode.WY.getKeyc())) {
+            payLegalRecord.set("xx_biz_type", WebConstant.MajorBizType.GMF_HD_VOUCHER.getKey())
+                    .set("xx_ref_bill_id", TypeUtils.castToInt(payLegalRecord.get("detailId"))).set("xx_ref_bill", "gmf_bill");
             if ("LA".equals(source)) {
                 //凭证1
                 list.add(CommonService.gmfLaBackCheckVoucher(payLegalRecord, 1, seqnoOrstatmentCode));
@@ -879,6 +883,8 @@ public class CheckVoucherService {
         String seqnoOrstatmentCode = RedisSericalnoGenTool.genVoucherSeqNo();//生成十六进制序列号/凭证号
         List<Record> list = new ArrayList<>();
         if ("LA".equals(source)) {
+            recvLegalRecord.set("xx_biz_type", WebConstant.MajorBizType.PLS_HD_VOUCHER.getKey())
+                    .set("xx_ref_bill_id", TypeUtils.castToInt(recvLegalRecord.get("detailId"))).set("xx_ref_bill", "recv_batch_detail");
             //凭证1
             list.add(CommonService.plsLaBackCheckVoucher(recvLegalRecord, 1, seqnoOrstatmentCode));
             //凭证2

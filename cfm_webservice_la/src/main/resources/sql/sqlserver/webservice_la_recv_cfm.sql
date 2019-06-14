@@ -24,6 +24,7 @@
     SELECT
       legal.*,
 			ext.insure_bill_no,
+			recv_batch_detail.id detailId,
       total.back_on
     FROM
       recv_batch_total total,
