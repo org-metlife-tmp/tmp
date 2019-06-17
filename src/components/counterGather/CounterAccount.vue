@@ -452,7 +452,7 @@
             },
             //展示格式转换-业务类型
             transitType: function (row, column, cellValue, index) {
-                return this.billList(cellValue);
+                return this.billList[cellValue];
             },
             //列表选择框改变后
             selectChange: function (val,row) {
