@@ -552,7 +552,7 @@
     import Upload from "../publicModule/Upload.vue";
 
     export default {
-        name: "massSingleGather",
+        name: "MassSingleGather",
         created: function () {
             this.$emit("transmitTitle", "团单收款");
             // this.$emit("getCommTable", this.routerMessage);
@@ -599,6 +599,10 @@
             this.getOrgList();
             //收款银行
             this.getRecvBank();
+
+            //从待匹配页面进入反写数据
+            let matchData = this.$route.params.matchData;
+            this.setMatchData(matchData);
         },
         props: ["tableData"],
         components: {
@@ -702,6 +706,7 @@
                 bankAllList: [],
                 bankTypeList: [],
                 bankAllTypeList: [], //银行大类全部(不重复)
+                currentData: ""
             }
         },
         methods: {
@@ -852,6 +857,7 @@
             //新增
             addData: function () {
                 this.dialogTitle = "新增";
+                this.currentData = "";
                 let dialogData = this.dialogData;
                 for (let k in dialogData) {
                     if (k == "recv_date") {
@@ -958,10 +964,11 @@
             //保存新增数据
             saveData: function () {
                 let dialogData = this.dialogData;
+                let currentData = this.currentData;
                 let params = {
                     files: this.fileList,
-                    wait_match_flag: 0
-                // wait_match_id: 待匹配数据id
+                    wait_match_flag: currentData.wait_match_flag ? currentData.wait_match_flag : 0,
+                    wait_match_id: currentData.wait_match_id
                 };
 
                 for (let k in dialogData) {
@@ -1074,6 +1081,18 @@
                     this.bankTypeList = this.bankAllTypeList.slice(0, 200);
                 }
             },
+            //反写待匹配数据
+            setMatchData: function(matchData){
+                this.dialogTitle = "新增";
+                this.currentData = matchData;
+
+                let dialogData = this.dialogData;
+                this.dialogVisible = true;
+
+                for(let k in matchData){
+                    dialogData[k] = matchData[k];
+                }
+            }
         },
         watch: {
             tableData: function (val, oldVal) {

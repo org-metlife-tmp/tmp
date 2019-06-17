@@ -533,6 +533,10 @@
             if(bankAllTypeList){
                 this.bankAllTypeList = bankAllTypeList;
             }
+
+            //从待匹配页面进入反写数据
+            let matchData = this.$route.params.matchData;
+            this.setMatchData(matchData);
         },
         props: ["tableData"],
         components: {
@@ -817,6 +821,7 @@
             //新增
             addData: function () {
                 this.dialogTitle = "新增";
+                this.currentData = "";
                 let dialogData = this.dialogData;
                 for(let k in dialogData){
                     if(k == "recv_date"){
@@ -949,12 +954,14 @@
                     type: 'warning'
                 }).then(() => {
                     let dialogData = this.dialogData;
+                    let currentData = this.currentData;
                     let items = this.items;
 
                     let params = {
                         files: this.fileList,
                         policy_infos: items,
-                        wait_match_flag: 0
+                        wait_match_flag: currentData.wait_match_flag ? currentData.wait_match_flag : 0,
+                        wait_match_id: currentData.wait_match_id
                     };
 
                     if(this.dialogTitle == "查看"){
@@ -1103,6 +1110,18 @@
                 }).catch(() => {
                 });
             },
+            //反写待匹配数据
+            setMatchData: function(matchData){
+                this.dialogTitle = "新增";
+                this.currentData = matchData;
+
+                let dialogData = this.dialogData;
+                this.dialogVisible = true;
+
+                for(let k in matchData){
+                    dialogData[k] = matchData[k];
+                }
+            }
         },
         computed: {
             showDel: function () {

@@ -3,6 +3,11 @@
 
     }
 </style>
+<style>
+    .el-popover {
+        min-width: 10px;
+    }
+</style>
 
 <template>
     <el-container id="waitToMatch">
@@ -60,7 +65,8 @@
                         </el-col>
                         <el-col :span="4">
                             <el-form-item>
-                                <el-input v-model="searchData.recv_bank_name" clearable placeholder="请输入收款银行"></el-input>
+                                <el-input v-model="searchData.recv_bank_name" clearable
+                                          placeholder="请输入收款银行"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="4">
@@ -118,8 +124,10 @@
             </div>
         </el-header>
         <el-main>
-            <el-table :data="tableList"
-                      border size="mini" height="100%">
+            <el-table :data="tableList" border
+                      highlight-current-row
+                      size="mini" height="100%"
+                      @current-change="saveCurrent">
                 <el-table-column prop="recv_date" label="收款日期" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="batch_process_no" label="批处理号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="recv_mode" label="收款方式" :show-overflow-tooltip="true"></el-table-column>
@@ -178,6 +186,23 @@
             </el-table>
         </el-main>
         <el-footer>
+            <div class="allData">
+                <div class="btn-right">
+                    <el-popover
+                            placement="top"
+                            trigger="click">
+                        <el-button-group>
+                            <el-button size="mini" type="primary" @clcick="matching('SingleGather')">个单</el-button>
+                            <el-button type="primary" size="mini" @clcick="matching('MassSingleGather')">团单</el-button>
+                        </el-button-group>
+                        <el-button slot="reference" type="warning" size="mini" :disabled="!hasSelect">匹配</el-button>
+                    </el-popover>
+
+                    <el-button type="warning" size="mini" :disabled="!hasSelect"
+                               @click="refundData">回退
+                    </el-button>
+                </div>
+            </div>
             <el-pagination
                     background
                     layout="sizes, prev, pager, next, jumper"
@@ -341,11 +366,11 @@
                 this.sourceList = constants.SftOsSource;
             }
             //票据状态
-            if(constants.SftRecvCounterBillStatus){
+            if (constants.SftRecvCounterBillStatus) {
                 this.billStatusList = constants.SftRecvCounterBillStatus;
             }
             //收款方式
-            if(constants.Sft_RecvPersonalCounter_Recvmode){
+            if (constants.Sft_RecvPersonalCounter_Recvmode) {
                 this.recvmodeList = constants.Sft_RecvPersonalCounter_Recvmode;
             }
             //币种
@@ -363,7 +388,7 @@
                 this.bankAllList = bankTypeList;
             }
             var bankAllTypeList = JSON.parse(window.sessionStorage.getItem("bankAllTypeList"));
-            if(bankAllTypeList){
+            if (bankAllTypeList) {
                 this.bankAllTypeList = bankAllTypeList;
             }
         },
@@ -435,16 +460,17 @@
                 },
                 formLabelWidth: "120px",
                 currentData: "",
+                hasSelect: false
             }
         },
         methods: {
             //清空搜索条件
-            clearData: function(){
+            clearData: function () {
                 var searchData = this.searchData;
                 for (var k in searchData) {
-                    if(k == "match_status"){
+                    if (k == "match_status") {
                         searchData[k] = [];
-                    }else{
+                    } else {
                         searchData[k] = "";
                     }
                 }
@@ -549,16 +575,16 @@
                                 }
                             }
                         });
-                        this.bankTypeList = this.bankTypeList.filter((item,index,arr) => {
-                            for(var i = index+1; i < arr.length; i++){
-                                if(item.display_name == arr[i].display_name){
+                        this.bankTypeList = this.bankTypeList.filter((item, index, arr) => {
+                            for (var i = index + 1; i < arr.length; i++) {
+                                if (item.display_name == arr[i].display_name) {
                                     return false;
                                 }
                             }
                             return true;
                         });
                     } else {
-                        this.bankTypeList = this.bankAllTypeList.slice(0,200);
+                        this.bankTypeList = this.bankAllTypeList.slice(0, 200);
                     }
                     this.bankLongding = false;
                 }, 1200);
@@ -566,7 +592,7 @@
             //银行大类展开时重置数据
             clearSearch: function (val) {
                 if (this.bankTypeList != this.bankAllTypeList && val) {
-                    this.bankTypeList = this.bankAllTypeList.slice(0,200);
+                    this.bankTypeList = this.bankAllTypeList.slice(0, 200);
                 }
             },
             //导出
@@ -584,7 +610,7 @@
                     url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
-                        optype: "recvcounter_listexport",
+                        optype: "recvcounterwaitingformatch_listexport",
                         params: params
                     },
                     responseType: 'blob'
@@ -618,11 +644,11 @@
             addData: function () {
                 this.dialogTitle = "新增";
                 let dialogData = this.dialogData;
-                for(let k in dialogData){
-                    if(k == "recv_date"){
+                for (let k in dialogData) {
+                    if (k == "recv_date") {
                         let curDate = new Date();
                         dialogData[k] = curDate.getFullYear() + "-" + (curDate.getMonth() + 1) + "-" + curDate.getDate();
-                    }else if(k == "batch_process_no"){
+                    } else if (k == "batch_process_no") {
                         this.$axios({
                             url: this.queryUrl + "normalProcess",
                             method: "post",
@@ -645,9 +671,9 @@
                         }).catch(function (error) {
                             console.log(error);
                         });
-                    }else if(k == "currency"){
+                    } else if (k == "currency") {
                         dialogData[k] = 1;
-                    }else{
+                    } else {
                         dialogData[k] = "";
                     }
                 }
@@ -655,11 +681,11 @@
                 this.dialogVisible = true;
             },
             //保存新增数据
-            saveData: function(){
+            saveData: function () {
                 let dialogData = this.dialogData;
 
                 let params = {};
-                for(let k in dialogData){
+                for (let k in dialogData) {
                     params[k] = dialogData[k];
                 }
 
@@ -690,15 +716,90 @@
                     console.log(error);
                 });
             },
-
+            //保存当前数据
+            saveCurrent: function (row) {
+                if (row) {
+                    this.currentData = row;
+                    this.hasSelect = true;
+                } else {
+                    this.currentData = "";
+                    this.hasSelect = false;
+                }
+            },
+            //匹配
+            matching: function (pushName) {
+                if (this.currentData.id) {
+                    this.$axios({
+                        url: this.queryUrl + "normalProcess",
+                        method: "post",
+                        data: {
+                            optype: "recvcounterwaitingformatch_match",
+                            params: {
+                                id: this.currentData.id
+                            }
+                        }
+                    }).then((result) => {
+                        if (result.data.error_msg) {
+                            this.$message({
+                                type: "error",
+                                message: result.data.error_msg,
+                                duration: 2000
+                            });
+                        } else {
+                            let data = this.data.data;
+                            this.$router.push({
+                                name: pushName,
+                                params: {
+                                    matchData: data
+                                }
+                            });
+                        }
+                    }).catch(function (error) {
+                        console.log(error);
+                    });
+                }
+            },
+            //回退
+            refundData: function () {
+                if (this.currentData.id) {
+                    this.$axios({
+                        url: this.queryUrl + "normalProcess",
+                        method: "post",
+                        data: {
+                            optype: "recvcounterwaitingformatch_refund",
+                            params: {
+                                id: this.currentData.id
+                            }
+                        }
+                    }).then((result) => {
+                        if (result.data.error_msg) {
+                            this.$message({
+                                type: "error",
+                                message: result.data.error_msg,
+                                duration: 2000
+                            });
+                        } else {
+                            let data = this.data.data;
+                            this.$router.push({
+                                name: "PaymentWorkbench",
+                                params: {
+                                    matchData: data
+                                }
+                            });
+                        }
+                    }).catch(function (error) {
+                        console.log(error);
+                    });
+                }
+            },
 
             //查看
-            lookCurrent: function(row){
+            lookCurrent: function (row) {
                 this.dialogTitle = "查看";
                 this.currentData = row;
 
                 let dialogData = this.dialogData;
-                for(let k in dialogData){
+                for (let k in dialogData) {
                     dialogData[k] = "";
                 }
                 this.items = [
@@ -739,14 +840,14 @@
                     } else {
                         let data = result.data.data;
                         let dialogData = this.dialogData;
-                        for(let k in data){
-                            if(k == "policy_infos"){
+                        for (let k in data) {
+                            if (k == "policy_infos") {
                                 let infoList = data[k];
                                 infoList.forEach((item) => {
                                     item.$id = new Date();
                                 });
                                 this.items = infoList;
-                            }else{
+                            } else {
                                 dialogData[k] = data[k];
                             }
                         }
@@ -759,55 +860,6 @@
                 this.fileMessage.bill_id = row.id;
                 this.triggerFile = !this.triggerFile;
             },
-            //撤销
-            revocationData: function(){
-                this.$confirm('是否确认撤销当前业务收款?', '提示', {
-                    confirmButtonText: '确认',
-                    cancelButtonText: '取消',
-                    type: 'warning'
-                }).then(() => {
-                    let params = {
-                        id : this.currentData.id
-                    };
-
-                    this.$axios({
-                        url: this.queryUrl + "normalProcess",
-                        method: "post",
-                        data: {
-                            optype: "recvcounter_revoke",
-                            params: params
-                        }
-                    }).then((result) => {
-                        if (result.data.error_msg) {
-                            this.$message({
-                                type: "error",
-                                message: result.data.error_msg,
-                                duration: 2000
-                            });
-                        } else {
-                            this.dialogVisible = false;
-                            this.$message({
-                                type: "success",
-                                message: "撤销成功",
-                                duration: 2000
-                            });
-                            this.$emit("getCommTable", this.routerMessage);
-                        }
-                    }).catch(function (error) {
-                        console.log(error);
-                    });
-                }).catch(() => {
-                });
-            },
-        },
-        computed: {
-            showDel: function () {
-                if (this.items.length > 1) {
-                    return true;
-                } else {
-                    return false;
-                }
-            }
         },
         watch: {
             tableData: function (val, oldVal) {
