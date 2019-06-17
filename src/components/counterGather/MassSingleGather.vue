@@ -431,6 +431,22 @@
                                 <el-input v-model="dialogData.insure_acc_no" disabled></el-input>
                             </el-form-item>
                         </el-col>
+
+                        <el-col :span="12">
+                            <el-form-item label="中介业务">
+                                <el-switch
+                                        v-model="dialogData.agent_com"
+                                        active-value="1"
+                                        inactive-value="0">
+                                </el-switch>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="业务号码">
+                                <el-input v-model="dialogData.bussiness_no" disabled></el-input>
+                            </el-form-item>
+                        </el-col>
+
                         <el-col :span="12">
                             <el-form-item label="业务所属客户">
                                 <el-input v-model="dialogData.business_acc" disabled></el-input>
@@ -651,6 +667,8 @@
                     consumer_acc_no: "",
                     voucher_type: "",
                     consumer_no: "",
+                    agent_com: "",
+                    bussiness_no: "",
                     consumer_acc_name: "",
                     bill_org_id: "",
                     preinsure_bill_no: "",
@@ -864,7 +882,7 @@
                         });
                     } else if (k == "currency") {
                         dialogData[k] = 1;
-                    } else if (k == "third_payment") {
+                    } else if (k == "third_payment" || k == "agent_com") {
                         dialogData[k] = "0";
                     } else {
                         dialogData[k] = "";
@@ -942,6 +960,8 @@
                 let dialogData = this.dialogData;
                 let params = {
                     files: this.fileList,
+                    wait_match_flag: 0
+                // wait_match_id: 待匹配数据id
                 };
 
                 for (let k in dialogData) {

@@ -139,7 +139,8 @@
                       @select-all="selectChange"
                       height="200px" border size="mini">
                 <el-table-column type="selection" width="40" ></el-table-column>
-                <el-table-column prop="bill_type" label="业务类型" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="bill_type" label="业务类型" :show-overflow-tooltip="true"
+                                 :formatter="transitType"></el-table-column>
                 <el-table-column prop="recv_date" label="收款日期" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="batch_process_no" label="批处理号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="batch_no" label="批单号" :show-overflow-tooltip="true"></el-table-column>
@@ -448,6 +449,10 @@
             //展示格式转换-金额
             transitAmount: function (row, column, cellValue, index) {
                 return this.$common.transitSeparator(cellValue);
+            },
+            //展示格式转换-业务类型
+            transitType: function (row, column, cellValue, index) {
+                return this.billList(cellValue);
             },
             //列表选择框改变后
             selectChange: function (val,row) {

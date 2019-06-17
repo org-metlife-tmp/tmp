@@ -769,7 +769,7 @@
                     <el-menu-item index="/counter-gather/single-gather">个单收款</el-menu-item>
                     <el-menu-item index="/counter-gather/mass-single-gather">团单收款</el-menu-item>
                     <el-menu-item index="/counter-gather/counter-account">结算对账</el-menu-item>
-                    <el-menu-item index="/counter-gather/pos-account">POS记录与明细对账</el-menu-item>
+                    <el-menu-item index="/counter-gather/pos-account">POS记录</el-menu-item>
                     <el-menu-item index="/counter-gather/pos-bank-account">POS明细与流水对账</el-menu-item>
                     <el-menu-item index="/counter-gather/pos-query">POS机明细导入</el-menu-item>
                     <el-menu-item index="/counter-gather/wait-to-match">待匹配收款</el-menu-item>

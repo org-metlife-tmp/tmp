@@ -250,7 +250,7 @@
     export default {
         name: "PosAccount",
         created: function () {
-            this.$emit("transmitTitle", "PSO记录与明细对账");
+            this.$emit("transmitTitle", "PSO记录");
             // this.$emit("getCommTable", this.routerMessage);
         },
         props: ["tableData"],
