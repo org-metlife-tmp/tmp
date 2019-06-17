@@ -149,6 +149,7 @@ import CounterAccount from '@/components/counterGather/CounterAccount'
 import PosAccount from '@/components/counterGather/PosAccount'
 import PosBankAccount from '@/components/counterGather/PosBankAccount'
 import POSQuery from '@/components/counterGather/POSQuery'
+import WaitToMatch from '@/components/counterGather/WaitToMatch'
 //对账通
 import InitialBalance from '@/components/reconciliation/InitialBalance'
 import BalanceAdjust from '@/components/reconciliation/BalanceAdjust'
@@ -295,6 +296,7 @@ const router = new Router({
                         {path: '/counter-gather/pos-account', name: 'PosAccount', component: PosAccount, meta: {requireAuth: true}},
                         {path: '/counter-gather/pos-bank-account', name: 'PosBankAccount', component: PosBankAccount, meta: {requireAuth: true}},
                         {path: '/counter-gather/pos-query', name: 'POSQuery', component: POSQuery, meta: {requireAuth: true}},
+                        {path: '/counter-gather/wait-to-match', name: 'WaitToMatch', component: WaitToMatch, meta: {requireAuth: true}},
                         //对账通
                         {path: '/reconciliation/initial-balance', name: 'InitialBalance', component: InitialBalance, meta: {requireAuth: true}},
                         {path: '/reconciliation/balance-adjust', name: 'BalanceAdjust', component: BalanceAdjust, meta: {requireAuth: true}},
