@@ -528,7 +528,7 @@
             var constants = JSON.parse(window.sessionStorage.getItem("constants"));
             //来源系统
             if (constants.SftOsSource) {
-                this.sourceList = constants.SftOsSource;
+                this.sourceList = constants.SftOsSourceCounter;
             }
             //票据状态
             if(constants.SftRecvCounterBillStatus){
