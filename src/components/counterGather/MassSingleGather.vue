@@ -390,7 +390,7 @@
                         </el-col>
                         <el-col :span="10">
                             <el-form-item label-width="15px">
-                                <el-button type="primary" plain @click="getVoucherData(dialogData.voucher_type)" size="mini"
+                                <el-button type="primary" plain @click="getVoucherData(true)" size="mini"
                                            :disabled="!dialogData.voucher_type">搜索</el-button>
                             </el-form-item>
                         </el-col>
@@ -516,17 +516,69 @@
                            width="50%" title="关联业务"
                            append-to-body top="100px"
                            :close-on-click-modal="false">
+                    <el-form :inline="true" :model="voucherSearch" size="mini">
+                        <el-row>
+                            <el-col :span="4" v-show="dialogData.voucher_type == '0'">
+                                <el-form-item>
+                                    <el-input v-model="voucherSearch.customerNo" clearable placeholder="请输入客户号"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="4" v-show="dialogData.voucher_type == '0'">
+                                <el-form-item>
+                                    <el-input v-model="voucherSearch.customerName" clearable placeholder="请输入客户姓名"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="4" v-show="dialogData.voucher_type == '0'">
+                                <el-form-item>
+                                    <el-input v-model="voucherSearch.money" clearable placeholder="请输入账户金额"></el-input>
+                                </el-form-item>
+                            </el-col>
+
+                            <el-col :span="4" v-show="dialogData.voucher_type != '0'">
+                                <el-form-item>
+                                    <el-input v-model="voucherSearch.preinsureBillNo" clearable placeholder="请输入投保单号"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="4" v-show="dialogData.voucher_type != '0'">
+                                <el-form-item>
+                                    <el-input v-model="voucherSearch.insureBillNo" clearable placeholder="请输入保单号"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="4" v-show="dialogData.voucher_type != '0'">
+                                <el-form-item>
+                                    <el-input v-model="voucherSearch.bussinessNo" clearable placeholder="请输入业务号"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="4" v-show="dialogData.voucher_type != '0'">
+                                <el-form-item>
+                                    <el-select v-model="voucherSearch.bizType" placeholder="请选择业务类型"
+                                               clearable filterable
+                                               style="width:100%">
+                                        <el-option v-for="(item,key) in billList"
+                                                   :key="key"
+                                                   :label="item"
+                                                   :value="key">
+                                        </el-option>
+                                    </el-select>
+                                </el-form-item>
+                            </el-col>
+
+                            <el-col :span="2">
+                                <el-form-item>
+                                    <el-button type="primary" plain @click="getVoucherData(false)" size="mini">搜索</el-button>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                    </el-form>
                     <el-table :data="voucherList"
                               highlight-current-row
                               @current-change="saveCurrent"
                               border size="mini">
-                        <el-table-column prop="customerNo" label="客户号" :show-overflow-tooltip="true"
-                                         v-if="dialogData.voucher_type == '0'"></el-table-column>
-                        <el-table-column prop="customerName" label="客户姓名" :show-overflow-tooltip="true"
-                                         v-if="dialogData.voucher_type == '0'"></el-table-column>
+                        <el-table-column prop="customerNo" label="客户号" :show-overflow-tooltip="true"></el-table-column>
+                        <el-table-column prop="customerName" label="客户姓名" :show-overflow-tooltip="true"></el-table-column>
+
                         <el-table-column prop="money" label="账户金额" :show-overflow-tooltip="true"
-                                         :formatter="transitAmount"
-                                         v-if="dialogData.voucher_type == '0'"></el-table-column>
+                                         :formatter="transitAmount" v-if="dialogData.voucher_type == '0'"></el-table-column>
 
                         <el-table-column prop="preinsureBillNo" label="投保单号" :show-overflow-tooltip="true"
                                          v-if="dialogData.voucher_type != '0'"></el-table-column>
@@ -534,11 +586,15 @@
                                          v-if="dialogData.voucher_type != '0'"></el-table-column>
                         <el-table-column prop="bussinessNo" label="业务号" :show-overflow-tooltip="true"
                                          v-if="dialogData.voucher_type != '0'"></el-table-column>
+                        <el-table-column prop="appntName" label="该业务下的主客户名" :show-overflow-tooltip="true"
+                                         width="110px" v-if="dialogData.voucher_type != '0'"></el-table-column>
+                        <el-table-column prop="manageCom" label="保单所属机构" :show-overflow-tooltip="true"
+                                         width="110px" v-if="dialogData.voucher_type != '0'"></el-table-column>
                         <el-table-column prop="needPayMoney" label="业务所需缴费金额" :show-overflow-tooltip="true"
-                                         :formatter="transitAmount" width="130px"
+                                         width="130px" :formatter="transitAmount"
                                          v-if="dialogData.voucher_type != '0'"></el-table-column>
-                        <el-table-column prop="havePayMoney" label="业务已缴费金额" :show-overflow-tooltip="true"
-                                         :formatter="transitAmount" width="120px"
+                        <el-table-column prop="havePayMoney" label="业务已经缴费金额" :show-overflow-tooltip="true"
+                                         width="130px" :formatter="transitAmount"
                                          v-if="dialogData.voucher_type != '0'"></el-table-column>
                     </el-table>
                     <span slot="footer" class="dialog-footer" style="text-align:center">
@@ -576,6 +632,10 @@
             //来源系统
             if (constants.SftOsSource) {
                 this.sourceList = constants.SftOsSource;
+            }
+            //业务类型
+            if (constants.SftRecvType) {
+                this.billList = constants.SftRecvType;
             }
             //收款方式
             if (constants.Sft_RecvPersonalCounter_Recvmode) {
@@ -653,6 +713,7 @@
                     0: "撤销",
                     1: "确认",
                 },
+                billList: {},
                 orgList: [],
                 recvmodeList: {},
                 billStatusList: {},
@@ -705,6 +766,15 @@
                 fileList: [],
                 innerVisible: false, //资金用途相关数据
                 voucherList: [],
+                voucherSearch: {
+                    customerNo: "",
+                    customerName: "",
+                    money: "",
+                    preinsureBillNo: "",
+                    insureBillNo: "",
+                    bussinessNo: "",
+                    bizType: "",
+                },
                 currentVoucher: "",
                 outTime: "", //银行大类搜索控制
                 bankLongding: false,
@@ -934,19 +1004,24 @@
                 }
             },
             //查询资金用途相关数据
-            getVoucherData: function(voucherType){
+            getVoucherData: function(getAll){
+                let voucherSearch = this.voucherSearch;
                 this.voucherList = [];
-                this.innerVisible = true;
                 this.currentVoucher = "";
+
+                if(getAll){
+                    this.innerVisible = true;
+                    for(let k in voucherSearch){
+                        voucherSearch[k] = "";
+                    }
+                }
 
                 this.$axios({
                     url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "recvgroupcounter_groupusefunds",
-                        params: {
-                            use_funds: voucherType
-                        }
+                        params: voucherSearch
                     }
                 }).then((result) => {
                     if (result.data.error_msg) {

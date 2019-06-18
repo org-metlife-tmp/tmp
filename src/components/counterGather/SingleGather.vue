@@ -444,7 +444,13 @@
                         </el-col>
                         <el-col :span="12">
                             <el-form-item label="核心系统">
-                                <el-input v-model="item.source_sys" disabled></el-input>
+                                <el-select v-model="item.source_sys" disabled>
+                                    <el-option v-for="(item,key) in sourceList"
+                                               :key="key"
+                                               :label="item"
+                                               :value="key">
+                                    </el-option>
+                                </el-select>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
@@ -459,12 +465,24 @@
                         </el-col>
                         <el-col :span="12">
                             <el-form-item label="允许垫交">
-                                <el-input v-model="item.isnot_electric_pay" disabled></el-input>
+                                <el-select v-model="item.isnot_electric_pay" disabled>
+                                    <el-option v-for="(item,key) in YesOrNo"
+                                               :key="key"
+                                               :label="item"
+                                               :value="key">
+                                    </el-option>
+                                </el-select>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
                             <el-form-item label="是否银行转账">
-                                <el-input v-model="item.isnot_bank_transfer_premium" disabled></el-input>
+                                <el-select v-model="item.isnot_bank_transfer_premium" disabled>
+                                    <el-option v-for="(item,key) in YesOrNo"
+                                               :key="key"
+                                               :label="item"
+                                               :value="key">
+                                    </el-option>
+                                </el-select>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
@@ -629,6 +647,7 @@
                         insure_bill_no: "",
                         amount: "",
                         bill_org_name: "",
+                        bill_org_id: "",
                         source_sys: "",
                         insure_name: "",
                         insure_cer_no: "",
@@ -882,6 +901,7 @@
                         insure_bill_no: "",
                         amount: "",
                         bill_org_name: "",
+                        bill_org_id: "",
                         source_sys: "",
                         insure_name: "",
                         insure_cer_no: "",
@@ -906,6 +926,7 @@
                     insure_bill_no: "",
                     amount: "",
                     bill_org_name: "",
+                    bill_org_id: "",
                     source_sys: "",
                     insure_name: "",
                     insure_cer_no: "",
@@ -1037,6 +1058,7 @@
                         insure_bill_no: "",
                         amount: "",
                         bill_org_name: "",
+                        bill_org_id: "",
                         source_sys: "",
                         insure_name: "",
                         insure_cer_no: "",
