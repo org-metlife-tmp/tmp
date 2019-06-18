@@ -16,6 +16,17 @@
             position: absolute;
             top: 18px;
         }
+
+        /*按钮样式*/
+        .withdraw {
+            width: 20px;
+            height: 20px;
+            background-image: url(../../assets/icon_common.png);
+            border: none;
+            padding: 0;
+            vertical-align: middle;
+            background-position: -48px 0;
+        }
     }
 </style>
 
@@ -203,15 +214,22 @@
                                  :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="create_user_name" label="操作人" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="recv_org_name" label="收款机构" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="pay_status" label="状态" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="pay_status" label="状态" :show-overflow-tooltip="true"
+                                 :formatter="transitStatus"></el-table-column>
                 <el-table-column
-                        label="操作" width="50"
+                        label="操作" width="80"
                         fixed="right">
                     <template slot-scope="scope" class="operationBtn">
                         <el-tooltip content="查看" placement="bottom" effect="light"
                                     :enterable="false" :open-delay="500">
                             <el-button type="primary" icon="el-icon-search" size="mini"
                                        @click="lookCurrent(scope.row)"></el-button>
+                        </el-tooltip>
+                        <el-tooltip content="撤销" placement="bottom" effect="light"
+                                    :enterable="false" :open-delay="500"
+                                    v-if="scope.row.pay_status == 1">
+                            <el-button size="mini" class="withdraw"
+                                       @click="revocationData(scope.row)"></el-button>
                         </el-tooltip>
                     </template>
                 </el-table-column>
@@ -469,14 +487,10 @@
                             </el-form-item>
                         </el-col>
                     </el-row>
-                    <el-row>
-
-                    </el-row>
                 </el-form>
                 <span slot="footer" class="dialog-footer">
                 <el-button type="warning" size="mini" plain @click="dialogVisible = false">取 消</el-button>
                 <el-button type="warning" size="mini" @click="saveData">确 定</el-button>
-                <el-button type="warning" size="mini" @click="revocationData" v-show="isLook">撤 销</el-button>
             </span>
             </el-dialog>
         </el-footer>
@@ -683,6 +697,10 @@
             //展示格式转换-金额
             transitAmount: function (row, column, cellValue, index) {
                 return this.$common.transitSeparator(cellValue);
+            },
+            //展示格式转换-状态
+            transitStatus: function (row, column, cellValue, index) {
+                return this.$common.statusList[cellValue];
             },
             //获取机构列表
             getOrgList: function () {
@@ -1056,6 +1074,7 @@
                             if(k == "policy_infos"){
                                 let infoList = data[k];
                                 infoList.forEach((item) => {
+                                    item.third_payment += "";
                                     item.$id = new Date();
                                 });
                                 this.items = infoList;
@@ -1070,25 +1089,23 @@
 
                 this.isLook = true;
                 this.fileMessage.bill_id = row.id;
-                this.triggerFile = !this.triggerFile;
+                this.eidttrigFile = !this.eidttrigFile;
             },
             //撤销
-            revocationData: function(){
+            revocationData: function(row){
                 this.$confirm('是否确认撤销当前业务收款?', '提示', {
                     confirmButtonText: '确认',
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(() => {
-                    let params = {
-                        id : this.currentData.id
-                    };
-
                     this.$axios({
                         url: this.queryUrl + "normalProcess",
                         method: "post",
                         data: {
                             optype: "recvcounter_revoke",
-                            params: params
+                            params: {
+                                id: row.id
+                            }
                         }
                     }).then((result) => {
                         if (result.data.error_msg) {

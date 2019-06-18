@@ -1061,7 +1061,7 @@
                 //附件
                 this.isLook = true;
                 this.fileMessage.bill_id = row.id;
-                this.triggerFile = !this.triggerFile;
+                this.eidttrigFile = !this.eidttrigFile;
             },
             //银行大类搜索筛选
             filterBankType: function (value) {

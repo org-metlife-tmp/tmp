@@ -423,7 +423,9 @@
 
             //从待匹配页面进入反写数据
             let matchData = this.$route.params.matchData;
-            this.setMatchData(matchData);
+            if(matchData){
+                this.setMatchData(matchData);
+            }
         },
         props: ["tableData"],
         components: {
