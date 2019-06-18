@@ -182,11 +182,14 @@
                 <el-table-column prop="preinsure_bill_no" label="投保单号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="insure_bill_no" label="保单号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="bill_org_name" label="保单机构" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="recv_mode" label="收款方式" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="recv_mode" label="收款方式" :show-overflow-tooltip="true"
+                                 :formatter="transitMode"></el-table-column>
                 <el-table-column prop="recv_bank_name" label="收款银行" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="recv_acc_no" label="收款账号" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="use_funds" label="资金用途" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="bill_status" label="票据状态" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="use_funds" label="资金用途" :show-overflow-tooltip="true"
+                                 :formatter="transitFunds"></el-table-column>
+                <el-table-column prop="bill_status" label="票据状态" :show-overflow-tooltip="true"
+                                 :formatter="transitBill"></el-table-column>
                 <el-table-column prop="bill_number" label="票据票号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="insure_acc_no" label="投保人客户号" width="110px"
                                  :show-overflow-tooltip="true"></el-table-column>
@@ -202,7 +205,7 @@
                 <el-table-column prop="consumer_bank_name" label="客户银行" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="consumer_acc_no" label="客户账号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="third_payment" label="第三方缴费" width="110px"
-                                 :show-overflow-tooltip="true"></el-table-column>
+                                 :show-overflow-tooltip="true" :formatter="transitPayment"></el-table-column>
                 <el-table-column prop="payer" label="缴费人" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="pay_code" label="缴费编码" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="create_user_name" label="操作人" :show-overflow-tooltip="true"></el-table-column>
@@ -274,7 +277,7 @@
                         <el-col :span="12">
                             <el-form-item label="核心系统">
                                 <el-select v-model="dialogData.source_sys"
-                                           clearable filterable size="mini"
+                                           clearable disabled size="mini"
                                            placeholder="请选择核心系统">
                                     <el-option v-for="(item,key) in sourceList"
                                                :key="key"
@@ -332,7 +335,7 @@
                                            filterable clearable>
                                     <el-option v-for="bank in recvBankList"
                                                :key="bank.id"
-                                               :label="bank.name"
+                                               :label="bank.bankcode"
                                                :value="bank.id">
                                     </el-option>
                                 </el-select>
@@ -341,7 +344,7 @@
                         <el-col :span="12">
                             <el-form-item label="银行账号">
                                 <el-select v-model="dialogData.recv_bank_name"
-                                           filterable clearable>
+                                           filterable clearable disabled>
                                     <el-option v-for="bank in recvBankList"
                                                :key="bank.id"
                                                :label="bank.acc_no"
@@ -576,7 +579,7 @@
             }
             //收款方式
             if (constants.Sft_RecvPersonalCounter_Recvmode) {
-                this.recvmodeList = constants.Sft_RecvPersonalCounter_Recvmode;
+                this.recvmodeList = constants.Sft_RecvGroupCounter_Recvmode;
             }
             //票据状态
             if (constants.SftRecvCounterBillStatus) {
@@ -584,7 +587,7 @@
             }
             //资金用途
             if (constants.SftRecvPersonalCounterUseFunds) {
-                this.useFundList = constants.SftRecvPersonalCounterUseFunds;
+                this.useFundList = constants.SftRecvGroupCounterUseFunds;
             }
             //是否第三方
             if (constants.YesOrNo) {
@@ -602,7 +605,9 @@
 
             //从待匹配页面进入反写数据
             let matchData = this.$route.params.matchData;
-            this.setMatchData(matchData);
+            if(matchData){
+                this.setMatchData(matchData);
+            }
         },
         props: ["tableData"],
         components: {
@@ -661,7 +666,7 @@
                     recv_date: "",
                     batch_process_no: "",
                     currency: "",
-                    source_sys: "",
+                    source_sys: "1",
                     recv_mode: "",
                     bill_status: "",
                     bill_number: "",
@@ -758,6 +763,22 @@
             //展示格式转换-来源系统
             transitSource: function (row, column, cellValue, index) {
                 return this.sourceList[cellValue];
+            },
+            //展示格式转换-收款方式
+            transitMode: function (row, column, cellValue, index) {
+                return this.recvmodeList[cellValue];
+            },
+            //展示格式转换-资金用途
+            transitFunds: function (row, column, cellValue, index) {
+                return this.useFundList[cellValue];
+            },
+            //展示格式转换-票据状态
+            transitBill: function (row, column, cellValue, index) {
+                return this.billStatusList[cellValue];
+            },
+            //展示格式转换-第三方缴费
+            transitPayment: function (row, column, cellValue, index) {
+                return this.YesOrNo[cellValue];
             },
             //获取机构列表
             getOrgList: function () {
@@ -881,7 +902,7 @@
                                     duration: 2000
                                 });
                             } else {
-                                dialogData[k] = result.data.data;
+                                dialogData[k] = result.data.data.batch_process_no;
                             }
                         }).catch(function (error) {
                             console.log(error);
@@ -890,6 +911,8 @@
                         dialogData[k] = 1;
                     } else if (k == "third_payment" || k == "agent_com") {
                         dialogData[k] = "0";
+                    } else if (k == "source_sys") {
+                        dialogData[k] = "1";
                     } else {
                         dialogData[k] = "";
                     }

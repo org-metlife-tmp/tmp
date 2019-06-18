@@ -299,7 +299,7 @@
                                            filterable clearable>
                                     <el-option v-for="bank in recvBankList"
                                                :key="bank.id"
-                                               :label="bank.name"
+                                               :label="bank.bankcode"
                                                :value="bank.id">
                                     </el-option>
                                 </el-select>

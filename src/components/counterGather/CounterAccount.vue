@@ -146,10 +146,12 @@
                 <el-table-column prop="batch_no" label="批单号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="preinsure_bill_no" label="投保单号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="insure_bill_no" label="保单号" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="recv_mode" label="收款方式" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="recv_mode" label="收款方式" :show-overflow-tooltip="true"
+                                 :formatter="transitMode"></el-table-column>
                 <el-table-column prop="recv_bank_name" label="收款银行" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="recv_acc_no" label="收款账号" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="use_funds" label="资金用途" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="use_funds" label="资金用途" :show-overflow-tooltip="true"
+                                 :formatter="transitFunds"></el-table-column>
                 <el-table-column prop="bill_number" label="票据编号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="insure_acc_no" label="投保人客户号"  width="110px"
                                  :show-overflow-tooltip="true"></el-table-column>
@@ -453,6 +455,15 @@
             //展示格式转换-业务类型
             transitType: function (row, column, cellValue, index) {
                 return this.billList[cellValue];
+            },
+            //展示格式转换-收款方式
+            transitMode: function (row, column, cellValue, index) {
+                return this.recvmodeList[cellValue];
+            },
+            //展示格式转换-资金用途
+            transitFunds: function (row, column, cellValue, index) {
+                let constants = JSON.parse(window.sessionStorage.getItem("constants"));
+                return constants.SftRecvGroupCounterUseFunds[cellValue];
             },
             //列表选择框改变后
             selectChange: function (val,row) {

@@ -327,7 +327,7 @@
                                            filterable clearable>
                                     <el-option v-for="bank in recvBankList"
                                                :key="bank.id"
-                                               :label="bank.name"
+                                               :label="bank.bankcode"
                                                :value="bank.id">
                                     </el-option>
                                 </el-select>
@@ -536,7 +536,9 @@
 
             //从待匹配页面进入反写数据
             let matchData = this.$route.params.matchData;
-            this.setMatchData(matchData);
+            if(matchData){
+                this.setMatchData(matchData);
+            }
         },
         props: ["tableData"],
         components: {
