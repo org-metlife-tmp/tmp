@@ -719,7 +719,7 @@
             },
             //展示格式转换-状态
             transitStatus: function (row, column, cellValue, index) {
-                return this.$common.statusList[cellValue];
+                return this.statusList[cellValue];
             },
             //获取机构列表
             getOrgList: function () {
