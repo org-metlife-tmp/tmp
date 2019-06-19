@@ -785,7 +785,7 @@
                                 duration: 2000
                             });
                         } else {
-                            let data = this.data.data;
+                            let data = result.data.data;
                             this.$router.push({
                                 name: pushName,
                                 params: {
