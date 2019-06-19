@@ -303,9 +303,9 @@
                                 <el-select v-model="dialogData.recv_bank_name" placeholder="请选择收款银行"
                                            filterable clearable>
                                     <el-option v-for="bank in recvBankList"
-                                               :key="bank.id"
+                                               :key="bank.bankcode"
                                                :label="bank.bankcode"
-                                               :value="bank.id">
+                                               :value="bank.bankcode">
                                     </el-option>
                                 </el-select>
                             </el-form-item>
