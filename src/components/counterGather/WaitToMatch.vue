@@ -130,23 +130,28 @@
                       @current-change="saveCurrent">
                 <el-table-column prop="recv_date" label="收款日期" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="batch_process_no" label="批处理号" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="recv_mode" label="收款方式" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="recv_mode" label="收款方式" :show-overflow-tooltip="true"
+                                 :formatter="transitMode"></el-table-column>
                 <el-table-column prop="recv_bank_name" label="收款银行" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="recv_bank_no" label="收款账号" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="bill_status" label="票据状态" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="recv_acc_no" label="收款账号" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="bill_status" label="票据状态" :show-overflow-tooltip="true"
+                                 :formatter="transitBill"></el-table-column>
                 <el-table-column prop="bill_number" label="票据编号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="bill_date" label="票据日期" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="terminal_no" label="终端机编号" width="100px"
                                  :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="amount" label="金额" :show-overflow-tooltip="true"
                                  :formatter="transitAmount"></el-table-column>
-                <el-table-column prop="consumer_bank_name" label="客户银行" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="name" label="客户银行" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="consumer_acc_no" label="客户账号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="create_user_name" label="操作人" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="recv_org_name" label="收款机构" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="match_status" label="状态" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="bill_type" label="业务类型" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="source_sys" label="核心系统" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="match_status" label="状态" :show-overflow-tooltip="true"
+                                 :formatter="transitStatus"></el-table-column>
+                <el-table-column prop="bill_type" label="业务类型" :show-overflow-tooltip="true"
+                                 :formatter="transitBillType"></el-table-column>
+                <el-table-column prop="source_sys" label="核心系统" :show-overflow-tooltip="true"
+                                 :formatter="transitSource"></el-table-column>
                 <el-table-column prop="batch_no" label="批单号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="preinsure_bill_no" label="投保单号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="insure_bill_no" label="保单号" :show-overflow-tooltip="true"></el-table-column>
@@ -341,6 +346,16 @@
                                 <el-input v-model="dialogData.amount" placeholder="请输入金额"></el-input>
                             </el-form-item>
                         </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="缴费人">
+                                <el-input v-model="dialogData.payer" placeholder="请输入缴费人"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="缴费人证件号">
+                                <el-input v-model="dialogData.payer_cer_no" placeholder="请输入缴费人证件号"></el-input>
+                            </el-form-item>
+                        </el-col>
                     </el-row>
                 </el-form>
                 <span slot="footer" class="dialog-footer">
@@ -456,7 +471,9 @@
                     consumer_bank_name: "",
                     consumer_acc_no: "",
                     terminal_no: "",
-                    amount: ""
+                    amount: "",
+                    payer: "",
+                    payer_cer_no: "",
                 },
                 formLabelWidth: "120px",
                 currentData: "",
@@ -503,6 +520,28 @@
             //展示格式转换-金额
             transitAmount: function (row, column, cellValue, index) {
                 return this.$common.transitSeparator(cellValue);
+            },
+            //展示格式转换-收款方式
+            transitMode: function (row, column, cellValue, index) {
+                return this.recvmodeList[cellValue];
+            },
+            //展示格式转换-票据状态
+            transitBill: function (row, column, cellValue, index) {
+                return this.billStatusList[cellValue];
+            },
+            //展示格式转换-状态
+            transitStatus: function (row, column, cellValue, index) {
+                let constants = JSON.parse(window.sessionStorage.getItem("constants"));
+                return constants.SftRecvCounterMatchStatus[cellValue];
+            },
+            //展示格式转换-来源系统
+            transitSource: function (row, column, cellValue, index) {
+                return this.sourceList[cellValue];
+            },
+            //展示格式转换-业务类型
+            transitBillType: function (row, column, cellValue, index) {
+                let constants = JSON.parse(window.sessionStorage.getItem("constants"));
+                return constants.SftRecvType[cellValue];
             },
             //获取机构列表
             getOrgList: function () {

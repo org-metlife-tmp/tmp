@@ -1008,19 +1008,22 @@
                 let voucherSearch = this.voucherSearch;
                 this.voucherList = [];
                 this.currentVoucher = "";
+                this.innerVisible = true;
 
                 if(getAll){
-                    this.innerVisible = true;
                     for(let k in voucherSearch){
                         voucherSearch[k] = "";
                     }
+                    return;
                 }
+
+                let optype = this.dialogData.voucher_type == '0' ? "recvgroupcounter_customlist" : "recvgroupcounter_customotherlist";
 
                 this.$axios({
                     url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
-                        optype: "recvgroupcounter_groupusefunds",
+                        optype: optype,
                         params: voucherSearch
                     }
                 }).then((result) => {
@@ -1126,7 +1129,11 @@
                         let data = result.data.data;
                         let dialogData = this.dialogData;
                         for (let k in data) {
-                            dialogData[k] = data[k];
+                            if(k == "source_sys" || k == "recv_mode" || k == "bill_status" || k == "use_funds"){
+                                dialogData[k] = data[k] + "";
+                            }else{
+                                dialogData[k] = data[k];
+                            }
                         }
                     }
                 }).catch(function (error) {
