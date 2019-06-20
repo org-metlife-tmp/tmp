@@ -982,6 +982,7 @@
             //反写待匹配数据
             setMatchData: function(matchData){
                 this.currentData = matchData;
+                this.switchTab('2');
 
                 let dialogData = this.dialogData;
                 this.dialogVisible = true;
