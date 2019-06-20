@@ -197,8 +197,8 @@
                             placement="top"
                             trigger="click">
                         <el-button-group>
-                            <el-button size="mini" type="primary" @clcick="matching('SingleGather')">个单</el-button>
-                            <el-button type="primary" size="mini" @clcick="matching('MassSingleGather')">团单</el-button>
+                            <el-button size="mini" type="primary" @click="matching('SingleGather')">个单</el-button>
+                            <el-button type="primary" size="mini" @click="matching('MassSingleGather')">团单</el-button>
                         </el-button-group>
                         <el-button slot="reference" type="warning" size="mini" :disabled="!hasSelect">匹配</el-button>
                     </el-popover>
