@@ -655,6 +655,7 @@
                         isnot_bank_transfer_premium: "",
                         third_payment: "",
                         payer: "",
+                        bank_code: "",
                         payer_cer_no: "",
                         $id: 1
                     }
@@ -909,6 +910,7 @@
                         isnot_bank_transfer_premium: "",
                         third_payment: "0",
                         payer: "",
+                        bank_code: "",
                         payer_cer_no: "",
                         $id: 1
                     }
@@ -934,6 +936,7 @@
                     isnot_bank_transfer_premium: "",
                     third_payment: "0",
                     payer: "",
+                    bank_code: "",
                     payer_cer_no: "",
                     $id: Date.now()
                 };
@@ -1066,6 +1069,7 @@
                         isnot_bank_transfer_premium: "",
                         third_payment: "0",
                         payer: "",
+                        bank_code: "",
                         payer_cer_no: "",
                         $id: 1
                     }
@@ -1100,7 +1104,9 @@
                                     item.$id = new Date();
                                 });
                                 this.items = infoList;
-                            }else{
+                            } else if(k == "currency" || k == "recv_mode" || k == "bill_status" || k == "consumer_bank_name"){
+                                dialogData[k] = data[k] + "";
+                            } else {
                                 dialogData[k] = data[k];
                             }
                         }
@@ -1160,7 +1166,11 @@
                 this.dialogVisible = true;
 
                 for(let k in matchData){
-                    dialogData[k] = matchData[k];
+                    if(k == "currency" || k == "recv_mode" || k == "bill_status" || k == "consumer_bank_name"){
+                        dialogData[k] = matchData[k] + "";
+                    }else{
+                        dialogData[k] = matchData[k];
+                    }
                 }
             }
         },

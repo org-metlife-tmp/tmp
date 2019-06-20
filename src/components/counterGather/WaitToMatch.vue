@@ -167,7 +167,7 @@
                 <el-table-column prop="consumer_no" label="客户号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="consumer_acc_name" label="客户名称" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="third_payment" label="第三方缴费" width="100px"
-                                 :show-overflow-tooltip="true"></el-table-column>
+                                 :show-overflow-tooltip="true" :formatter="transitPayment"></el-table-column>
                 <el-table-column prop="payer" label="缴费人" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="pay_code" label="缴费人编码" width="100px"
                                  :show-overflow-tooltip="true"></el-table-column>
@@ -378,7 +378,7 @@
             var constants = JSON.parse(window.sessionStorage.getItem("constants"));
             //来源系统
             if (constants.SftOsSource) {
-                this.sourceList = constants.SftOsSource;
+                this.sourceList = constants.SftOsSourceCounter;
             }
             //票据状态
             if (constants.SftRecvCounterBillStatus) {
@@ -387,6 +387,10 @@
             //收款方式
             if (constants.Sft_RecvPersonalCounter_Recvmode) {
                 this.recvmodeList = constants.Sft_RecvPersonalCounter_Recvmode;
+            }
+            //资金用途
+            if (constants.SftRecvPersonalCounterUseFunds) {
+                this.useFundList = constants.SftRecvGroupCounterUseFunds;
             }
             //币种
             var currencyList = JSON.parse(window.sessionStorage.getItem("selectCurrencyList"));
@@ -439,6 +443,7 @@
                 pagTotal: 1,
                 pagCurrent: 1,
                 sourceList: {}, //常量数据
+                useFundList: {},
                 statusList: {
                     0: "待匹配",
                     1: "已撤销",
@@ -542,6 +547,11 @@
             transitBillType: function (row, column, cellValue, index) {
                 let constants = JSON.parse(window.sessionStorage.getItem("constants"));
                 return constants.SftRecvType[cellValue];
+            },
+            //展示格式转换-第三方缴费
+            transitPayment: function (row, column, cellValue, index) {
+                var constants = JSON.parse(window.sessionStorage.getItem("constants"));
+                return constants.YesOrNo[cellValue];
             },
             //获取机构列表
             getOrgList: function () {
