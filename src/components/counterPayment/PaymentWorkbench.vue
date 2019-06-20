@@ -55,6 +55,7 @@
                 <ul>
                     <li :class="{'active': searchData.source_sys == '0'}" @click="switchTab('0')">LA</li>
                     <li :class="{'active': searchData.source_sys == '1'}" @click="switchTab('1')">EBS</li>
+                    <li :class="{'active': searchData.source_sys == ''}" @click="switchTab('2')">TMP</li>
                 </ul>
             </div>
             <div class="button-list-right">
@@ -566,17 +567,31 @@
             },
             //切换标签
             switchTab: function (tab) {
-                var searchData = this.searchData;
-                for (var k in searchData) {
-                    if (k == "source_sys") {
-                        searchData[k] = tab;
-                    } else if (k == "status") {
-                        searchData[k] = ["0"];
-                    } else {
-                        searchData[k] = "";
+                let searchData = this.searchData;
+                this.dateValue = "";
+                if(tab == "2"){
+                    this.routerMessage.optype = "paycountertmp_list";
+                    for (var k in searchData) {
+                        if (k == "source_sys") {
+                            searchData[k] = "";
+                        } else if (k == "status") {
+                            searchData[k] = ["0"];
+                        } else {
+                            searchData[k] = "";
+                        }
+                    }
+                }else{
+                    this.routerMessage.optype = "paycounter_list";
+                    for (var k in searchData) {
+                        if (k == "source_sys") {
+                            searchData[k] = tab;
+                        } else if (k == "status") {
+                            searchData[k] = ["0"];
+                        } else {
+                            searchData[k] = "";
+                        }
                     }
                 }
-                this.dateValue = "";
                 this.queryData();
             },
             //获取机构列表
@@ -787,12 +802,13 @@
                         for (let k in dialogData) {
                             params[k] = dialogData[k];
                         }
+                        let optype = this.searchData.source_sys == "" ? "paycountertmp_supplement" : "paycounter_supplement";
 
                         this.$axios({
                             url: this.queryUrl + "normalProcess",
                             method: "post",
                             data: {
-                                optype: "paycounter_supplement",
+                                optype: optype,
                                 params: params
                             }
                         }).then((result) => {
@@ -833,11 +849,12 @@
                     return;
                 }
                 var params = this.routerMessage.params;
+                let optype = this.searchData.source_sys == "" ? "paycountertmp_listexport" : "paycounter_listexport";
                 this.$axios({
                     url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
-                        optype: "paycounter_listexport",
+                        optype: optype,
                         params: params
                     },
                     responseType: 'blob'
@@ -876,17 +893,20 @@
             //确定拒绝
             submitReject: function () {
                 let currentData = this.currentData;
+                let optype = this.searchData.source_sys == "" ? "paycountertmp_revokeToTMP" : "paycounter_revokeToLaOrEbs";
+                let params = {
+                    pay_id: currentData.pay_id,
+                    source_sys: this.searchData.source_sys == "" ? "" : currentData.source_sys,
+                    persist_version: currentData.persist_version,
+                    feed_back: this.rejectMessage
+                }
+
                 this.$axios({
                     url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
-                        optype: "paycounter_revokeToLaOrEbs",
-                        params: {
-                            pay_id: currentData.pay_id,
-                            source_sys: currentData.source_sys,
-                            persist_version: currentData.persist_version,
-                            feed_back: this.rejectMessage
-                        }
+                        optype: optype,
+                        params: params
                     }
                 }).then((result) => {
                     if (result.data.error_msg) {
@@ -928,7 +948,7 @@
             //提交
             submit: function () {
                 let params = {
-                    source_sys: this.routerMessage.params.source_sys,
+                    source_sys: this.searchData.source_sys == "" ? "" :this.routerMessage.params.source_sys,
                     pay_id: this.selectId,
                     persist_version: this.selectVersion,
                 }
@@ -936,7 +956,7 @@
                     url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
-                        optype: "paycounter_confirm",
+                        optype: optype,
                         params: params
                     }
                 }).then((result) => {
