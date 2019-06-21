@@ -346,9 +346,9 @@
                                 <el-select v-model="dialogData.recv_bank_name"
                                            filterable clearable disabled>
                                     <el-option v-for="bank in recvBankList"
-                                               :key="bank.id"
+                                               :key="bank.bankcode"
                                                :label="bank.acc_no"
-                                               :value="bank.id">
+                                               :value="bank.bankcode">
                                     </el-option>
                                 </el-select>
                             </el-form-item>
@@ -377,7 +377,7 @@
 
                         <el-col :span="14">
                             <el-form-item label="资金用途">
-                                <el-select v-model="dialogData.voucher_type" placeholder="请选择资金用途"
+                                <el-select v-model="dialogData.use_funds" placeholder="请选择资金用途"
                                            clearable filterable
                                            style="width:100%">
                                     <el-option v-for="(useFund,key) in useFundList"
@@ -391,7 +391,7 @@
                         <el-col :span="10">
                             <el-form-item label-width="15px">
                                 <el-button type="primary" plain @click="getVoucherData(true)" size="mini"
-                                           :disabled="!dialogData.voucher_type">搜索</el-button>
+                                           :disabled="!dialogData.use_funds">搜索</el-button>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
@@ -449,7 +449,6 @@
                                 <el-input v-model="dialogData.bussiness_no" disabled></el-input>
                             </el-form-item>
                         </el-col>
-
                         <el-col :span="12">
                             <el-form-item label="业务所属客户">
                                 <el-input v-model="dialogData.business_acc" disabled></el-input>
@@ -518,48 +517,30 @@
                            :close-on-click-modal="false">
                     <el-form :inline="true" :model="voucherSearch" size="mini">
                         <el-row>
-                            <el-col :span="4" v-show="dialogData.voucher_type == '0'">
+                            <el-col :span="4" v-show="dialogData.use_funds == '0'">
                                 <el-form-item>
                                     <el-input v-model="voucherSearch.customerNo" clearable placeholder="请输入客户号"></el-input>
                                 </el-form-item>
                             </el-col>
-                            <el-col :span="4" v-show="dialogData.voucher_type == '0'">
+                            <el-col :span="4" v-show="dialogData.use_funds == '0'">
                                 <el-form-item>
                                     <el-input v-model="voucherSearch.customerName" clearable placeholder="请输入客户姓名"></el-input>
                                 </el-form-item>
                             </el-col>
-                            <el-col :span="4" v-show="dialogData.voucher_type == '0'">
-                                <el-form-item>
-                                    <el-input v-model="voucherSearch.money" clearable placeholder="请输入账户金额"></el-input>
-                                </el-form-item>
-                            </el-col>
 
-                            <el-col :span="4" v-show="dialogData.voucher_type != '0'">
+                            <el-col :span="4" v-show="dialogData.use_funds != '0'">
                                 <el-form-item>
                                     <el-input v-model="voucherSearch.preinsureBillNo" clearable placeholder="请输入投保单号"></el-input>
                                 </el-form-item>
                             </el-col>
-                            <el-col :span="4" v-show="dialogData.voucher_type != '0'">
+                            <el-col :span="4" v-show="dialogData.use_funds != '0'">
                                 <el-form-item>
                                     <el-input v-model="voucherSearch.insureBillNo" clearable placeholder="请输入保单号"></el-input>
                                 </el-form-item>
                             </el-col>
-                            <el-col :span="4" v-show="dialogData.voucher_type != '0'">
+                            <el-col :span="4" v-show="dialogData.use_funds != '0'">
                                 <el-form-item>
                                     <el-input v-model="voucherSearch.bussinessNo" clearable placeholder="请输入业务号"></el-input>
-                                </el-form-item>
-                            </el-col>
-                            <el-col :span="4" v-show="dialogData.voucher_type != '0'">
-                                <el-form-item>
-                                    <el-select v-model="voucherSearch.bizType" placeholder="请选择业务类型"
-                                               clearable filterable
-                                               style="width:100%">
-                                        <el-option v-for="(item,key) in billList"
-                                                   :key="key"
-                                                   :label="item"
-                                                   :value="key">
-                                        </el-option>
-                                    </el-select>
                                 </el-form-item>
                             </el-col>
 
@@ -578,24 +559,24 @@
                         <el-table-column prop="customerName" label="客户姓名" :show-overflow-tooltip="true"></el-table-column>
 
                         <el-table-column prop="money" label="账户金额" :show-overflow-tooltip="true"
-                                         :formatter="transitAmount" v-if="dialogData.voucher_type == '0'"></el-table-column>
+                                         :formatter="transitAmount" v-if="dialogData.use_funds == '0'"></el-table-column>
 
                         <el-table-column prop="preinsureBillNo" label="投保单号" :show-overflow-tooltip="true"
-                                         v-if="dialogData.voucher_type != '0'"></el-table-column>
+                                         v-if="dialogData.use_funds != '0'"></el-table-column>
                         <el-table-column prop="insureBillNo" label="保单号" :show-overflow-tooltip="true"
-                                         v-if="dialogData.voucher_type != '0'"></el-table-column>
+                                         v-if="dialogData.use_funds != '0'"></el-table-column>
                         <el-table-column prop="bussinessNo" label="业务号" :show-overflow-tooltip="true"
-                                         v-if="dialogData.voucher_type != '0'"></el-table-column>
+                                         v-if="dialogData.use_funds != '0'"></el-table-column>
                         <el-table-column prop="appntName" label="该业务下的主客户名" :show-overflow-tooltip="true"
-                                         width="110px" v-if="dialogData.voucher_type != '0'"></el-table-column>
+                                         width="110px" v-if="dialogData.use_funds != '0'"></el-table-column>
                         <el-table-column prop="manageCom" label="保单所属机构" :show-overflow-tooltip="true"
-                                         width="110px" v-if="dialogData.voucher_type != '0'"></el-table-column>
+                                         width="110px" v-if="dialogData.use_funds != '0'"></el-table-column>
                         <el-table-column prop="needPayMoney" label="业务所需缴费金额" :show-overflow-tooltip="true"
                                          width="130px" :formatter="transitAmount"
-                                         v-if="dialogData.voucher_type != '0'"></el-table-column>
+                                         v-if="dialogData.use_funds != '0'"></el-table-column>
                         <el-table-column prop="havePayMoney" label="业务已经缴费金额" :show-overflow-tooltip="true"
                                          width="130px" :formatter="transitAmount"
-                                         v-if="dialogData.voucher_type != '0'"></el-table-column>
+                                         v-if="dialogData.use_funds != '0'"></el-table-column>
                     </el-table>
                     <span slot="footer" class="dialog-footer" style="text-align:center">
                         <el-button type="warning" size="mini" plain @click="innerVisible = false">取 消</el-button>
@@ -735,7 +716,7 @@
                     recv_bank_name: "",
                     consumer_bank_name: "",
                     consumer_acc_no: "",
-                    voucher_type: "",
+                    use_funds: "",
                     consumer_no: "",
                     agent_com: "",
                     bussiness_no: "",
@@ -769,11 +750,9 @@
                 voucherSearch: {
                     customerNo: "",
                     customerName: "",
-                    money: "",
                     preinsureBillNo: "",
                     insureBillNo: "",
                     bussinessNo: "",
-                    bizType: "",
                 },
                 currentVoucher: "",
                 outTime: "", //银行大类搜索控制
@@ -1015,9 +994,11 @@
                         voucherSearch[k] = "";
                     }
                     return;
+                }else{
+                    voucherSearch.use_funds = this.dialogData.use_funds == '0' ? "" : this.dialogData.use_funds;
                 }
 
-                let optype = this.dialogData.voucher_type == '0' ? "recvgroupcounter_customlist" : "recvgroupcounter_customotherlist";
+                let optype = this.dialogData.use_funds == '0' ? "recvgroupcounter_customlist" : "recvgroupcounter_customotherlist";
 
                 this.$axios({
                     url: this.queryUrl + "normalProcess",
@@ -1054,11 +1035,20 @@
                     consumer_acc_name: "customerName",
                     preinsure_bill_no: "preinsureBillNo",
                     insure_bill_no: "insureBillNo",
+                    bill_org_id: "manageCom",
+                    batch_no: "",
+                    insure_name: "customerName",
+                    insure_acc_no: "customerNo",
+                    agent_com: "agentCom",
+                    bussiness_no: "",
+                    business_acc: "appntName",
+                    business_acc_no: "appntNo",
                 }
 
                 let dialogData = this.dialogData;
                 let currentVoucher = this.currentVoucher;
                 for(let k in keyValue){
+                    dialogData[k] = "";
                     dialogData[k] = currentVoucher[keyValue[k]];
                 }
             },
