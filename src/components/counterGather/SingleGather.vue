@@ -1125,6 +1125,7 @@
                                         display_name: data.display_name,
                                     })
                                 }
+                                dialogData[k] = data[k];
                             } else {
                                 dialogData[k] = data[k];
                             }
