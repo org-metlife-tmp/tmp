@@ -213,13 +213,19 @@
                 <el-table-column prop="pay_status" label="状态" :show-overflow-tooltip="true"
                                  :formatter="transitStatus"></el-table-column>
                 <el-table-column
-                        label="操作" width="50"
+                        label="操作" width="80"
                         fixed="right">
                     <template slot-scope="scope" class="operationBtn">
                         <el-tooltip content="查看" placement="bottom" effect="light"
                                     :enterable="false" :open-delay="500">
                             <el-button type="primary" icon="el-icon-search" size="mini"
                                        @click="lookCurrent(scope.row)"></el-button>
+                        </el-tooltip>
+                        <el-tooltip content="撤销" placement="bottom" effect="light"
+                                    :enterable="false" :open-delay="500"
+                                    v-if="scope.row.pay_status == 1">
+                            <el-button size="mini" class="withdraw"
+                                       @click="revocationData(scope.row)"></el-button>
                         </el-tooltip>
                     </template>
                 </el-table-column>
@@ -265,7 +271,7 @@
                         <el-col :span="12">
                             <el-form-item label="币种">
                                 <el-select v-model="dialogData.currency" placeholder="请选择币种"
-                                           filterable clearable>
+                                           filterable clearable :disabled="isLook">
                                     <el-option v-for="currency in currencyList"
                                                :key="currency.id"
                                                :label="currency.name"
@@ -290,7 +296,7 @@
                         <el-col :span="12">
                             <el-form-item label="收款方式">
                                 <el-select v-model="dialogData.recv_mode" placeholder="请选择收款方式"
-                                           clearable filterable
+                                           clearable filterable :disabled="isLook"
                                            style="width:100%">
                                     <el-option v-for="(recvmode,key) in recvmodeList"
                                                :key="key"
@@ -303,7 +309,7 @@
                         <el-col :span="12">
                             <el-form-item label="票据状态">
                                 <el-select v-model="dialogData.bill_status" placeholder="请选择票据状态"
-                                           clearable filterable
+                                           clearable filterable :disabled="isLook"
                                            style="width:100%">
                                     <el-option v-for="(billStatus,key) in billStatusList"
                                                :key="key"
@@ -315,7 +321,8 @@
                         </el-col>
                         <el-col :span="12">
                             <el-form-item label="票据编号">
-                                <el-input v-model="dialogData.bill_number" placeholder="请输入票据编号"></el-input>
+                                <el-input v-model="dialogData.bill_number" placeholder="请输入票据编号"
+                                          :disabled="isLook"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
@@ -325,14 +332,15 @@
                                         type="date"
                                         placeholder="请选择票据日期"
                                         value-format="yyyy-MM-dd"
-                                        style="width:100%">
+                                        style="width:100%"
+                                        :disabled="isLook">
                                 </el-date-picker>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
                             <el-form-item label="收款银行">
                                 <el-select v-model="dialogData.recv_bank_name" placeholder="请选择收款银行"
-                                           filterable clearable @change="saveAccNo">
+                                           filterable clearable @change="saveAccNo" :disabled="isLook">
                                     <el-option v-for="bank in recvBankList"
                                                :key="bank.bankcode"
                                                :label="bank.bankcode"
@@ -360,7 +368,8 @@
                                            style="width:100%"
                                            :filter-method="filterBankType"
                                            :loading="bankLongding"
-                                           @visible-change="clearSearch">
+                                           @visible-change="clearSearch"
+                                           :disabled="isLook">
                                     <el-option v-for="bankType in bankTypeList"
                                                :key="bankType.name"
                                                :label="bankType.display_name"
@@ -371,14 +380,15 @@
                         </el-col>
                         <el-col :span="12">
                             <el-form-item label="客户账号">
-                                <el-input v-model="dialogData.consumer_acc_no" placeholder="请输入客户账号"></el-input>
+                                <el-input v-model="dialogData.consumer_acc_no" placeholder="请输入客户账号"
+                                          :disabled="isLook"></el-input>
                             </el-form-item>
                         </el-col>
 
                         <el-col :span="14">
                             <el-form-item label="资金用途">
                                 <el-select v-model="dialogData.use_funds" placeholder="请选择资金用途"
-                                           clearable filterable
+                                           clearable filterable :disabled="isLook"
                                            style="width:100%">
                                     <el-option v-for="(useFund,key) in useFundList"
                                                :key="key"
@@ -391,7 +401,7 @@
                         <el-col :span="10">
                             <el-form-item label-width="15px">
                                 <el-button type="primary" plain @click="getVoucherData(true)" size="mini"
-                                           :disabled="!dialogData.use_funds">搜索</el-button>
+                                           :disabled="isLook || !dialogData.use_funds">搜索</el-button>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
@@ -462,12 +472,13 @@
 
                         <el-col :span="12">
                             <el-form-item label="金额">
-                                <el-input v-model="dialogData.amount" placeholder="请输入金额"></el-input>
+                                <el-input v-model="dialogData.amount" placeholder="请输入金额"
+                                          :disabled="isLook"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
                             <el-form-item label="是否第三方缴费">
-                                <el-switch
+                                <el-switch :disabled="isLook"
                                         v-model="dialogData.third_payment"
                                         active-value="1"
                                         inactive-value="0">
@@ -476,23 +487,27 @@
                         </el-col>
                         <el-col :span="12">
                             <el-form-item label="缴费人">
-                                <el-input v-model="dialogData.payer" placeholder="请输入缴费人"></el-input>
+                                <el-input v-model="dialogData.payer" placeholder="请输入缴费人"
+                                          :disabled="isLook"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
                             <el-form-item label="缴费编码">
-                                <el-input v-model="dialogData.pay_code" placeholder="请输入缴费人"></el-input>
+                                <el-input v-model="dialogData.pay_code" placeholder="请输入缴费人"
+                                          :disabled="isLook"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
                             <el-form-item label="与投保人关系">
                                 <el-input v-model="dialogData.payer_relation_insured"
+                                          :disabled="isLook"
                                           placeholder="请输入与投保人关系"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
                             <el-form-item label="代缴费原因">
-                                <el-input v-model="dialogData.pay_reason" placeholder="请输入代缴费原因"></el-input>
+                                <el-input v-model="dialogData.pay_reason" placeholder="请输入代缴费原因"
+                                          :disabled="isLook"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="24">
@@ -509,7 +524,7 @@
                 </el-form>
                 <span slot="footer" class="dialog-footer">
                     <el-button type="warning" size="mini" plain @click="dialogVisible = false">取 消</el-button>
-                    <el-button type="warning" size="mini" @click="saveData" v-show="!isLook">确 定</el-button>
+                    <el-button type="warning" size="mini" @click="saveData">确 定</el-button>
                 </span>
                 <el-dialog :visible.sync="innerVisible"
                            width="50%" title="关联业务"
@@ -973,6 +988,44 @@
 
                 this.dialogVisible = true;
             },
+            //撤销
+            revocationData: function(row){
+                this.$confirm('是否确认撤销当前业务收款?', '提示', {
+                    confirmButtonText: '确认',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.$axios({
+                        url: this.queryUrl + "normalProcess",
+                        method: "post",
+                        data: {
+                            optype: "recvgroupcounter_revoke",
+                            params: {
+                                id: row.id
+                            }
+                        }
+                    }).then((result) => {
+                        if (result.data.error_msg) {
+                            this.$message({
+                                type: "error",
+                                message: result.data.error_msg,
+                                duration: 2000
+                            });
+                        } else {
+                            this.dialogVisible = false;
+                            this.$message({
+                                type: "success",
+                                message: "撤销成功",
+                                duration: 2000
+                            });
+                            this.$emit("getCommTable", this.routerMessage);
+                        }
+                    }).catch(function (error) {
+                        console.log(error);
+                    });
+                }).catch(() => {
+                });
+            },
             //设置当前项上传附件
             setFileList: function ($event) {
                 this.fileList = [];
@@ -1095,21 +1148,27 @@
             saveData: function () {
                 let dialogData = this.dialogData;
                 let currentData = this.currentData;
+
                 let params = {
                     files: this.fileList,
                     wait_match_flag: currentData.wait_match_flag ? currentData.wait_match_flag : 0,
                     wait_match_id: currentData.wait_match_id
                 };
 
-                for (let k in dialogData) {
-                    params[k] = dialogData[k];
+                if(this.isLook){
+                    params.id = currentData.id;
+                }else{
+                    for (let k in dialogData) {
+                        params[k] = dialogData[k];
+                    }
                 }
+                let optype = this.isLook ? "recvgroupcounter_detailconfirm" : "recvgroupcounter_add";
 
                 this.$axios({
                     url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
-                        optype: "recvgroupcounter_add",
+                        optype: optype,
                         params: params
                     }
                 }).then((result) => {
@@ -1158,7 +1217,7 @@
                         let data = result.data.data;
                         let dialogData = this.dialogData;
                         for (let k in data) {
-                            if(k == "source_sys" || k == "recv_mode" || k == "bill_status" || k == "use_funds"){
+                            if(k == "source_sys" || k == "recv_mode" || k == "bill_status" || k == "use_funds" || k == "agent_com" || k == "third_payment"){
                                 dialogData[k] = data[k] + "";
                             }else{
                                 dialogData[k] = data[k];
