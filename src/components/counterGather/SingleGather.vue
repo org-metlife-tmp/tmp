@@ -564,6 +564,7 @@
             var bankAllTypeList = JSON.parse(window.sessionStorage.getItem("bankAllTypeList"));
             if(bankAllTypeList){
                 this.bankAllTypeList = bankAllTypeList;
+                this.bankTypeList = this.bankAllTypeList.slice(0, 200);
             }
 
             //从待匹配页面进入反写数据
@@ -1104,8 +1105,26 @@
                                     item.$id = new Date();
                                 });
                                 this.items = infoList;
-                            } else if(k == "currency" || k == "recv_mode" || k == "bill_status" || k == "consumer_bank_name"){
+                            } else if(k == "currency" || k == "recv_mode" || k == "bill_status"){
                                 dialogData[k] = data[k] + "";
+                            } else if (k == "consumer_bank_name"){
+                                let bankTypeList = this.bankTypeList;
+                                let flag = false;
+                                for(let i = 0; i < bankTypeList.length; i++){
+                                    if(bankTypeList.code == data.code){
+                                        flag = true;
+                                        continue;
+                                    }
+                                }
+                                if(flag){
+                                    this.bankTypeList = this.bankAllTypeList.slice(0, 200);
+                                }else{
+                                    this.bankTypeList.push({
+                                        code: data.code,
+                                        name: data.name,
+                                        display_name: data.display_name,
+                                    })
+                                }
                             } else {
                                 dialogData[k] = data[k];
                             }

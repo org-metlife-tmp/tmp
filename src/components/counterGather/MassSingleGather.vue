@@ -621,6 +621,7 @@
             var bankAllTypeList = JSON.parse(window.sessionStorage.getItem("bankAllTypeList"));
             if (bankAllTypeList) {
                 this.bankAllTypeList = bankAllTypeList;
+                this.bankTypeList = this.bankAllTypeList.slice(0, 200);
             }
 
 
@@ -1219,7 +1220,25 @@
                         for (let k in data) {
                             if(k == "source_sys" || k == "recv_mode" || k == "bill_status" || k == "use_funds" || k == "agent_com" || k == "third_payment"){
                                 dialogData[k] = data[k] + "";
-                            }else{
+                            } else if (k == "consumer_bank_name"){
+                                let bankTypeList = this.bankTypeList;
+                                let flag = false;
+                                for(let i = 0; i < bankTypeList.length; i++){
+                                    if(bankTypeList.code == data.code){
+                                        flag = true;
+                                        continue;
+                                    }
+                                }
+                                if(flag){
+                                    this.bankTypeList = this.bankAllTypeList.slice(0, 200);
+                                }else{
+                                    this.bankTypeList.push({
+                                        code: data.code,
+                                        name: data.name,
+                                        display_name: data.display_name,
+                                    })
+                                }
+                            } else {
                                 dialogData[k] = data[k];
                             }
                         }
