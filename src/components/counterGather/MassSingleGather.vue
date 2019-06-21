@@ -332,7 +332,7 @@
                         <el-col :span="12">
                             <el-form-item label="收款银行">
                                 <el-select v-model="dialogData.recv_bank_name" placeholder="请选择收款银行"
-                                           filterable clearable>
+                                           filterable clearable @change="saveAccNo">
                                     <el-option v-for="bank in recvBankList"
                                                :key="bank.bankcode"
                                                :label="bank.bankcode"
@@ -343,12 +343,12 @@
                         </el-col>
                         <el-col :span="12">
                             <el-form-item label="银行账号">
-                                <el-select v-model="dialogData.recv_bank_name"
+                                <el-select v-model="dialogData.recv_acc_no"
                                            filterable clearable disabled>
                                     <el-option v-for="bank in recvBankList"
-                                               :key="bank.bankcode"
+                                               :key="bank.acc_no"
                                                :label="bank.acc_no"
-                                               :value="bank.bankcode">
+                                               :value="bank.acc_no">
                                     </el-option>
                                 </el-select>
                             </el-form-item>
@@ -1027,6 +1027,21 @@
                     this.currentVoucher = val;
                 }
             },
+            //根据收款银行保存银行账号
+            saveAccNo: function(val){
+                if(val){
+                    let recvBankList = this.recvBankList;
+                    for(let i = 0; i < recvBankList.length; i++){
+                        let item = recvBankList[i];
+                        if(item.bankcode == val){
+                            this.dialogData.recv_acc_no = item.acc_no;
+                            continue;
+                        }
+                    }
+                }else{
+                    this.dialogData.recv_acc_no = "";
+                }
+            },
             //设置资金用途相关数据
             setVoucherData: function(){
                 this.innerVisible = false;
@@ -1043,13 +1058,37 @@
                     bussiness_no: "",
                     business_acc: "appntName",
                     business_acc_no: "appntNo",
+                };
+                let accKey = {
+                    consumer_no: "customerNo",
+                    consumer_acc_name: "customerName",
+                };
+                let elseKey = {
+                    preinsure_bill_no: "preinsureBillNo",
+                    insure_bill_no: "insureBillNo",
+                    bill_org_id: "manageCom",
+                    batch_no: "",
+                    insure_name: "customerName",
+                    insure_acc_no: "customerNo",
+                    agent_com: "agentCom",
+                    bussiness_no: "",
+                    business_acc: "appntName",
+                    business_acc_no: "appntNo",
                 }
 
                 let dialogData = this.dialogData;
                 let currentVoucher = this.currentVoucher;
                 for(let k in keyValue){
                     dialogData[k] = "";
-                    dialogData[k] = currentVoucher[keyValue[k]];
+                }
+                if(this.dialogData.use_funds == '0'){
+                    for(let k in accKey){
+                        dialogData[k] = currentVoucher[accKey[k]];
+                    }
+                }else{
+                    for(let k in elseKey){
+                        dialogData[k] = currentVoucher[elseKey[k]];
+                    }
                 }
             },
             //保存新增数据
