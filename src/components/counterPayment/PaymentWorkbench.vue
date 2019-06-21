@@ -775,8 +775,8 @@
             },
             //保存选中的银行
             saveBankinfo: function () {
-                this.dialogData.recv_bank_name = this.bankdialogData.bank_name;
-                this.dialogData.recv_cnaps_code = this.bankdialogData.cnaps_code;
+                this.dialogData.match_recv_bank_name = this.bankdialogData.bank_name;
+                this.dialogData.match_recv_cnaps_code = this.bankdialogData.cnaps_code;
                 this.bankdialogVisible = false;
             },
             //设置当前项上传附件
