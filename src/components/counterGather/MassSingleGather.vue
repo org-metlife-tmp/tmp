@@ -16,6 +16,17 @@
             position: absolute;
             top: 18px;
         }
+
+        /*撤回按钮*/
+        .withdraw {
+            width: 20px;
+            height: 20px;
+            background-image: url(../../assets/icon_common.png);
+            border: none;
+            padding: 0;
+            vertical-align: middle;
+            background-position: -48px 0;
+        }
     }
 </style>
 
