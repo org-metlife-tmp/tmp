@@ -12,17 +12,20 @@
 #sql("getPayLegalByPayCode")
   SELECT
     legal.*,
-		ext.insure_bill_no,
-		detail.id detailId,
+    ext.insure_bill_no,
+    detail.id detailId,
+    origin.ebs_callback_resp_time resp_time,
     total.back_on
   FROM
     pay_batch_total total,
     pay_batch_detail detail,
     pay_legal_data legal,
-		ebs_pay_legal_data_ext ext
+    ebs_pay_legal_data_ext ext,
+    ebs_origin_pay_data origin
   WHERE
     legal.id = detail.legal_id
-		AND legal.id = ext.legal_id
+    AND legal.id = ext.legal_id
+    AND origin.id = legal.origin_id
     AND detail.base_id = total.id
     AND legal.source_sys = 1
     AND legal.pay_code = ?

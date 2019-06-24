@@ -52,11 +52,16 @@ public class CitiTransPick extends ATransColPickStrategy {
 		}
 		String accNo = TypeUtils.castToString(cellData.get("B8"));
 //		String accNo = getData(cellData.get("B8"), String.class, "B8");
+		Map<String, Object> account = TableDataCacheUtil.getInstance().getARowData("account", "acc_no", accNo);
+		if (null == account) {
+			throw new ReqDataException("导入Excel单元格[B8]，账户号码在系统中没有维护！");
+		}
 		
 		List<Map<String, Object>> result = new ArrayList<>();
 		
 		String reportDate = null;//报表日期
-		String mainAccNo = null;//主账号
+		Date reportDateFormat = null;//报表日期
+//		String mainAccNo = null;//主账号
 		//收款是 借记 ，付款是贷记
 		int creditCount = 0; //贷记次数
 		int debitCount = 0; //借方计数
@@ -73,11 +78,19 @@ public class CitiTransPick extends ATransColPickStrategy {
 			
 			//一天历史交易记录的开始
 			if (DYA_CUT.equals(aCol)) {
-				reportDate = getStrTrim(map, "b");//报表日期
-				if (StringUtils.isBlank(reportDate)) {
+				String tmp = getStrTrim(map, "b");//报表日期
+				if (StringUtils.isBlank(tmp)) {
 					throw new ReqDataException(String.format("导入Excel第[%s]行，报表日期为空！", (i + 10)));
 				}
-				mainAccNo = getStrTrim(map, "d");//账户号码
+				
+				try {
+					reportDateFormat = new SimpleDateFormat("MM/dd/yyyy").parse(tmp);
+					reportDate = new SimpleDateFormat("yyyy-MM-dd").format(reportDateFormat);
+				} catch (ParseException e) {
+					throw new ReqDataException(String.format("导入Excel第[%s]行，报表日期[%s]格式错误，应为:MM/dd/yyyy！", (i + 10), reportDate));
+				}
+				
+				/*mainAccNo = getStrTrim(map, "d");//账户号码
 				if (StringUtils.isBlank(mainAccNo)) {
 					mainAccNo = accNo;
 				}else {
@@ -85,7 +98,7 @@ public class CitiTransPick extends ATransColPickStrategy {
 					if (null == account) {
 						throw new ReqDataException(String.format("导入Excel第[%s]行，账户号码在系统中没有维护！", (i + 10)));
 					}
-				}
+				}*/
 				continue;
 			}
 			
@@ -107,7 +120,8 @@ public class CitiTransPick extends ATransColPickStrategy {
 			if (YHCKH.equals(aCol)) {
 				if ((i + 1) < size) {
 					Map<String, Object> citiMap = new HashMap<>();
-					citiMap.put("acc_no", mainAccNo);
+//					citiMap.put("acc_no", mainAccNo);
+					citiMap.put("acc_no", accNo);
 					
 					Map<String, Object> detail = data.get(i + 1);
 					String oppAccNo = getStrTrim(detail, "a");//银行参考号
@@ -122,7 +136,8 @@ public class CitiTransPick extends ATransColPickStrategy {
 							valueDate, amount);
 					
 					putOppAcc(citiMap, oppAccNo);
-					putTransDate(citiMap, reportDate, valueDate, i);
+//					putTransDate(citiMap, reportDate, valueDate, i);
+					citiMap.put("trans_date", reportDate);
 					
 					if (StringUtils.isNotBlank(amount)) {
 						if (amount.indexOf(',') != 0) {

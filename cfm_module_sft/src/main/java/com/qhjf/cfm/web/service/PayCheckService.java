@@ -7,6 +7,7 @@ import com.qhjf.cfm.exceptions.BusinessException;
 import com.qhjf.cfm.exceptions.DbProcessException;
 import com.qhjf.cfm.exceptions.ReqDataException;
 import com.qhjf.cfm.utils.CommonService;
+import com.qhjf.cfm.utils.DateFormatThreadLocal;
 import com.qhjf.cfm.utils.RedisSericalnoGenTool;
 import com.qhjf.cfm.web.UserInfo;
 import com.qhjf.cfm.web.constant.WebConstant;
@@ -181,7 +182,8 @@ public class PayCheckService {
                     checkName = "is_checked";
                     biz_type = WebConstant.MajorBizType.SFF_PLF_INNER.getKey();
                 }
-                String seqnoOrstatmentCode = RedisSericalnoGenTool.genVoucherSeqNo();//生成十六进制序列号/凭证号
+                String seqnoOrstatmentCode = DateFormatThreadLocal.format("yyyyMMddhhmmss", new Date()) +
+                        RedisSericalnoGenTool.genVoucherSeqNo();//生成十六进制序列号/凭证号
                 for(Integer trad : tradingNo){
 
                     boolean s = CommonService.update("acc_his_transaction",

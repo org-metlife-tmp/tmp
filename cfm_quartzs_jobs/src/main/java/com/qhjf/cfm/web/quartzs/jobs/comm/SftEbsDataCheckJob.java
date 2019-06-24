@@ -96,6 +96,7 @@ public class SftEbsDataCheckJob implements Job{
                         payLegal.set("recv_bank_type", ebsOriginData.getStr("recv_bank_type"));
                         payLegal.set("recv_bank_name", ebsOriginData.getStr("recv_bank_name"));
                         payLegal.set("recv_acc_no", ebsOriginData.getStr("recv_acc_no"));
+                        payLegal.set("create_time", ebsOriginData.getDate("create_time"));
 
 
                         String payMode = TypeUtils.castToString(ebsOriginData.get("pay_mode"));
@@ -334,8 +335,8 @@ public class SftEbsDataCheckJob implements Job{
                             new Record().set("is_doubtful", 1).set("status", 0),
                             new Record().set("pay_code", TypeUtils.castToString(legalRecord.get("pay_code"))));
                 }
-                return WebConstant.YesOrNo.YES;
             }
+            return WebConstant.YesOrNo.YES;
         }else{
             checkDoubtful.set("is_doubtful", 0);
         }

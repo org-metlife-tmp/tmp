@@ -6,6 +6,7 @@ import com.jfinal.plugin.activerecord.*;
 import com.qhjf.cfm.exceptions.BusinessException;
 import com.qhjf.cfm.exceptions.DbProcessException;
 import com.qhjf.cfm.exceptions.ReqDataException;
+import com.qhjf.cfm.utils.BizSerialnoGenTool;
 import com.qhjf.cfm.utils.CommonService;
 import com.qhjf.cfm.utils.DateFormatThreadLocal;
 import com.qhjf.cfm.utils.RedisSericalnoGenTool;
@@ -78,7 +79,8 @@ public class VoucherService {
                 try{
                     for (Record r : tradlist) {
                         Record extRecord = new Record();
-                        String seqnoOrstatmentCode = RedisSericalnoGenTool.genVoucherSeqNo();//生成十六进制流水号
+                        String seqnoOrstatmentCode = DateFormatThreadLocal.format("yyyyMMddhhmmss", new Date()) +
+                                RedisSericalnoGenTool.genVoucherSeqNo();//生成十六进制序列号/凭证号
                         extRecord.set("trans_id", r.getLong("id"));
                         extRecord.set("presubmit_date", new Date());
                         extRecord.set("presubmit_user_name", userInfo.getName());
@@ -128,9 +130,11 @@ public class VoucherService {
             @Override
             public boolean run() throws SQLException {
                 for (Record r : tradlist) {
+                    String serviceSerialNumber = BizSerialnoGenTool.getInstance().getSerial(WebConstant.MajorBizType.CWYTJ);
                     if(CommonService.updateRows("acc_his_transaction_ext",
                             new Record().set("precondition", WebConstant.PreSubmitStatus.YYT.getKey())
                                 .set("presubmit_confirm_date", new Date())
+                                .set("service_serial_number", serviceSerialNumber)
                                 .set("presubmit_confirm_user_name", userInfo.getName()),
                             new Record().set("id", r.getLong("extId"))) != 1){
                         return false;
@@ -138,7 +142,7 @@ public class VoucherService {
                 }
                 try {
                     //生成凭证信息
-                    CheckVoucherService.sunVoucherData(tradlist, WebConstant.MajorBizType.CWYTJ.getKey());
+                    CheckVoucherService.sunVoucherData(tradlist, WebConstant.MajorBizType.CWYTJ.getKey(), userInfo);
                 } catch (BusinessException e) {
                     e.printStackTrace();
                     return false;

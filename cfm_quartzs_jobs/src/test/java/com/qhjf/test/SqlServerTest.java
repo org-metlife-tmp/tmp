@@ -81,7 +81,7 @@ public class SqlServerTest {
                     List<Record> tradList = Db.find(Db.getSql("charge_off_cfm.chargeofflist"), new Date());
                     try {
                         //生成凭证信息
-                        CheckVoucherService.sunVoucherData(tradList, WebConstant.MajorBizType.CWCX.getKey());
+                        CheckVoucherService.sunVoucherData(tradList, WebConstant.MajorBizType.CWCX.getKey(), null);
                     } catch (BusinessException e) {
                         e.printStackTrace();
                         return false;

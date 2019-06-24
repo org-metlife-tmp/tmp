@@ -145,12 +145,12 @@ public class CheckVoucherService {
         return flag;
     }
 
-    public static boolean sunVoucherData(List<Record> tradNoList, int biz_type) throws BusinessException {
+    public static boolean sunVoucherData(List<Record> tradNoList, int biz_type, UserInfo userInfo) throws BusinessException {
         WebConstant.MajorBizType majorBizType = WebConstant.MajorBizType.getBizType(biz_type);
         boolean flag = false;
         switch (majorBizType) {
             case CWYTJ:
-                flag = cwytjCheckVoucher(tradNoList);
+                flag = cwytjCheckVoucher(tradNoList, userInfo);
                 break;
             case CWCX:
                 flag = cwycxCheckVoucher(tradNoList);
@@ -439,7 +439,7 @@ public class CheckVoucherService {
             if (netMode == 0) {
 
                 for(Record detailRecord : detailLsit){
-                    detailRecord.set("xx_insure_bill_no", getInsureBill_no(detailRecord)).set("xx_seqnoOrstatmentCode", seqnoOrstatmentCode)
+                    detailRecord.set("xx_insure_bill_no", getplfInsureBill_no(detailRecord)).set("xx_seqnoOrstatmentCode", seqnoOrstatmentCode)
                             .set("xx_operator", userInfo.getUsr_id()).set("xx_operator_org", userInfo.getCurUodp().getOrg_id())
                             .set("xx_biz_type", bizType.getKey());
                     int status = TypeUtils.castToInt(detailRecord.get("status"));
@@ -455,7 +455,7 @@ public class CheckVoucherService {
             } else if (netMode == 1) {
 
                 for(Record detailRecord : detailLsit){
-                    detailRecord.set("xx_insure_bill_no", getInsureBill_no(detailRecord)).set("xx_seqnoOrstatmentCode", seqnoOrstatmentCode)
+                    detailRecord.set("xx_insure_bill_no", getplfInsureBill_no(detailRecord)).set("xx_seqnoOrstatmentCode", seqnoOrstatmentCode)
                             .set("xx_operator", userInfo.getUsr_id()).set("xx_operator_org", userInfo.getCurUodp().getOrg_id())
                             .set("xx_biz_type", bizType.getKey());
                     int status = TypeUtils.castToInt(detailRecord.get("status"));
@@ -492,7 +492,7 @@ public class CheckVoucherService {
                 transactionReference = "SS" + sftcheck.getStr("code_abbre") + DateFormatThreadLocal.format("YYMM", transDate) + seqnoOrstatmentCode;
             }
             for(Record detailRecord : detailLsit){
-                detailRecord.set("xx_insure_bill_no", getInsureBill_no(detailRecord)).set("xx_seqnoOrstatmentCode", seqnoOrstatmentCode)
+                detailRecord.set("xx_insure_bill_no", getplfInsureBill_no(detailRecord)).set("xx_seqnoOrstatmentCode", seqnoOrstatmentCode)
                         .set("xx_operator", userInfo.getUsr_id()).set("xx_operator_org", userInfo.getCurUodp().getOrg_id())
                         .set("xx_biz_type", bizType.getKey());
                 int status = TypeUtils.castToInt(detailRecord.get("status"));
@@ -529,16 +529,34 @@ public class CheckVoucherService {
      * @param detailRecord
      * @return
      */
-    private static String getInsureBill_no(Record detailRecord){
+    private static String getplfInsureBill_no(Record detailRecord){
         Record legal = Db.findById("pay_legal_data", "id", TypeUtils.castToLong(detailRecord.get("legal_id")));
         int osSource = TypeUtils.castToInt(legal.get("source_sys"));
         String inuserBill = "";
         if(WebConstant.SftOsSource.LA.getKey() == osSource){
             Record extRecord = Db.findById("la_pay_legal_data_ext", "legal_id", TypeUtils.castToLong(detailRecord.get("legal_id")));
-            inuserBill = TypeUtils.castToString("insure_bill_no");
+            inuserBill = TypeUtils.castToString(extRecord.get("insure_bill_no"));
         }else if(WebConstant.SftOsSource.EBS.getKey() == osSource){
             Record extRecord = Db.findById("ebs_pay_legal_data_ext", "legal_id", TypeUtils.castToLong(detailRecord.get("legal_id")));
-            inuserBill = TypeUtils.castToString("insure_bill_no");
+            inuserBill = TypeUtils.castToString(extRecord.get("insure_bill_no"));
+        }else{
+            log.info("明细id【"+detailRecord.get("id")+"】生成凭证未找到对应的业务系统");
+        }
+        return inuserBill;
+    }
+
+    /**
+     * 根据明细表找到合法表，然后根据和发表的业务系统字段确定是LA或者EBS，然后查对应的扩展表找到保单号
+     * @param detailRecord
+     * @return
+     */
+    private static String getPlsInsureBill_no(Record detailRecord){
+        Record legal = Db.findById("recv_legal_data", "id", TypeUtils.castToLong(detailRecord.get("legal_id")));
+        int osSource = TypeUtils.castToInt(legal.get("source_sys"));
+        String inuserBill = "";
+        if(WebConstant.SftOsSource.LA.getKey() == osSource){
+            Record extRecord = Db.findById("la_recv_legal_data_ext", "legal_id", TypeUtils.castToLong(detailRecord.get("legal_id")));
+            inuserBill = TypeUtils.castToString(extRecord.get("insure_bill_no"));
         }else{
             log.info("明细id【"+detailRecord.get("id")+"】生成凭证未找到对应的业务系统");
         }
@@ -601,7 +619,7 @@ public class CheckVoucherService {
             transactionReference = "SS" + sftcheck.getStr("code_abbre") + DateFormatThreadLocal.format("YYMM", new Date()) + seqnoOrstatmentCode;
         }
         for(Record detailRecord : detailLsit){
-            detailRecord.set("xx_insure_bill_no", getInsureBill_no(detailRecord)).set("xx_seqnoOrstatmentCode", seqnoOrstatmentCode)
+            detailRecord.set("xx_insure_bill_no", getPlsInsureBill_no(detailRecord)).set("xx_seqnoOrstatmentCode", seqnoOrstatmentCode)
                     .set("xx_operator", userInfo.getUsr_id()).set("xx_operator_org", userInfo.getCurUodp().getOrg_id())
                     .set("xx_biz_type", bizType.getKey());
             int status = TypeUtils.castToInt(detailRecord.get("status"));
@@ -673,7 +691,7 @@ public class CheckVoucherService {
         Record sftcheck = Db.findById("sftcheck_org_mapping", "tmp_org_code", orgcode);
         transactionReference = "SS" + sftcheck.getStr("code_abbre") + DateFormatThreadLocal.format("YYMM",new Date()) + seqnoOrstatmentCode;
         description = DateFormatThreadLocal.format("yyMMdd",allLastDate) + acc.getStr("bankcode") + "柜面付款资金到帐";
-        billRecord.set("xx_insure_bill_no", getInsureBill_no(billRecord)).set("xx_seqnoOrstatmentCode", seqnoOrstatmentCode)
+        billRecord.set("xx_insure_bill_no", getplfInsureBill_no(billRecord)).set("xx_seqnoOrstatmentCode", seqnoOrstatmentCode)
                 .set("xx_operator", userInfo.getUsr_id()).set("xx_operator_org", userInfo.getCurUodp().getOrg_id())
                 .set("xx_biz_type", bizType.getKey());
         //凭证1
@@ -696,7 +714,7 @@ public class CheckVoucherService {
      * @return
      * @throws BusinessException
      */
-    private static boolean cwytjCheckVoucher(List<Record> tradNoList) throws BusinessException {
+    private static boolean cwytjCheckVoucher(List<Record> tradNoList, UserInfo userInfo) throws BusinessException {
 
         List<Record> list = new ArrayList<>();
         if (tradNoList != null && tradNoList.size() > 0) {
@@ -722,6 +740,8 @@ public class CheckVoucherService {
                 String direction = tradRecord.getStr("direction");
                 Date periodDate = CommonService.getPeriodByCurrentDay(tradRecord.getDate("trans_date"));
                 //1付 2收
+                tradRecord.set("xx_seqnoOrstatmentCode", TypeUtils.castToString(tradRecord.get("presubmit_code"))).set("xx_operator", userInfo.getUsr_id()).set("xx_operator_org", userInfo.getCurUodp().getOrg_id())
+                        .set("xx_biz_type", WebConstant.MajorBizType.CWYTJ.getKey());
                 if ("1".equals(direction)) {
                     description = DateFormatThreadLocal.format("yyMMdd", tradRecord.getDate("trans_date")) + chann.getStr("bankcode") + "暂付" +
                             TypeUtils.castToString(tradRecord.get("opp_acc_name")) +
@@ -766,6 +786,7 @@ public class CheckVoucherService {
                 String description = null, code6 = null, transactionReference = null;
                 //生成对账流水号
                 String seqnoOrstatmentCode = RedisSericalnoGenTool.genVoucherSeqNo();//生成十六进制流水号
+                String newStatmentCode = DateFormatThreadLocal.format("yyyyMMddhhmmss", new Date()) + seqnoOrstatmentCode;
                 String curr = "", orgcode = "";
                 acc = Db.findById("account", "acc_id", TypeUtils.castToLong(tradRecord.get("acc_id")));
 
@@ -782,6 +803,8 @@ public class CheckVoucherService {
                 transactionReference = "SA" + sftcheck.getStr("code_abbre") + DateFormatThreadLocal.format("YYMM", new Date()) + seqnoOrstatmentCode;
                 String direction = tradRecord.getStr("direction");
                 Date periodDate = CommonService.getPeriodByCurrentDay(new Date());
+                tradRecord.set("xx_seqnoOrstatmentCode", newStatmentCode).set("xx_operator", null).set("xx_operator_org", null)
+                        .set("xx_biz_type", WebConstant.MajorBizType.CWCX.getKey());
                 //1付 2收
                 if ("1".equals(direction)) {
                     description = "冲销暂付" + chann.getStr("bankcode") + DateFormatThreadLocal.format("yyMMdd", tradRecord.getDate("trans_date")) + "暂付" +
@@ -849,6 +872,7 @@ public class CheckVoucherService {
         } else if (payMode.equals(WebConstant.SftDoubtPayMode.WY.getKeyc())) {
             payLegalRecord.set("xx_biz_type", WebConstant.MajorBizType.GMF_HD_VOUCHER.getKey())
                     .set("xx_ref_bill_id", TypeUtils.castToInt(payLegalRecord.get("detailId"))).set("xx_ref_bill", "gmf_bill");
+
             if ("LA".equals(source)) {
                 //凭证1
                 list.add(CommonService.gmfLaBackCheckVoucher(payLegalRecord, 1, seqnoOrstatmentCode));

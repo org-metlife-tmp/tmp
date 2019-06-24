@@ -98,6 +98,7 @@ public class SftLaDataCheckJob implements Job{
                         payLegal.set("recv_bank_name", laOiriginData.getStr("recv_bank_name"));
                         payLegal.set("recv_acc_no", laOiriginData.getStr("recv_acc_no"));
                         payLegal.set("consumer_acc_name", laOiriginData.get("recv_acc_name"));
+                        payLegal.set("create_time", laOiriginData.getDate("create_time"));
                         if (!Db.save("pay_legal_data", payLegal)) {
                             return false;
                         }

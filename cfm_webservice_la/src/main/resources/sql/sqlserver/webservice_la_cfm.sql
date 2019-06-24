@@ -14,16 +14,19 @@
     legal.*,
 		ext.insure_bill_no,
 		detail.id detailId,
+		origin.la_callback_resp_time resp_time,
     total.back_on
   FROM
     pay_batch_total total,
     pay_batch_detail detail,
     pay_legal_data legal,
+		la_origin_pay_data origin,
 		la_pay_legal_data_ext ext
   WHERE
     legal.id = detail.legal_id
     AND detail.base_id = total.id
 		AND legal.id = ext.legal_id
+		AND legal.origin_id = origin.id
     AND legal.source_sys = 0
     AND legal.pay_code = ?
 #end

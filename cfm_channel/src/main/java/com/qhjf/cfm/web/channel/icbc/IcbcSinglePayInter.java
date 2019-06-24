@@ -69,7 +69,8 @@ public class IcbcSinglePayInter  implements ISingleResultChannelInter{
 		String summary = CommKit.isNullOrEmpty(record.getStr("summary")) ? "cfm" : record.getStr("summary");
 		summary = StringKit.filterSpecialChar(summary);
 		rd.put("Summary",ChannelStringUtil.getFixLenStr(summary,20)); //摘要，工行要求上送20字节
-		rd.put("UseCN", ChannelStringUtil.getFixLenStr(summary,10)) ;//用途中文描述
+		rd.put("UseCN", ChannelStringUtil.getFixLenStr(summary,20)) ;//用途中文描述
+		rd.put("PostScript", ChannelStringUtil.getFixLenStr(summary,60)) ;//用途中文描述
 
 
 		//指令码放到工行接口的Ref字段，做自动核对用

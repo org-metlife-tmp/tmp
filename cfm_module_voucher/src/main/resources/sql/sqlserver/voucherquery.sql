@@ -52,6 +52,8 @@ WHERE 1=1
           usr.name like convert(varchar(5),'%')+convert(varchar(255),#para(x.value))+convert(varchar(5),'%')
         #elseif("level_code".equals(x.key))
           org.level_code like convert(varchar(5),'%')+convert(varchar(255),#para(x.value))+convert(varchar(5),'%')
+        #elseif("statement_code".equals(x.key))
+          voucher.statement_code like convert(varchar(5),'%')+convert(varchar(255),#para(x.value))+convert(varchar(5),'%')
         #elseif("level_num".equals(x.key))
           org.level_num >= #para(x.value)
         #elseif("min".equals(x.key))
