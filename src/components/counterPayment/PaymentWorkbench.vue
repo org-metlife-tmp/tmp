@@ -956,6 +956,8 @@
                     pay_id: this.selectId,
                     persist_version: this.selectVersion,
                 }
+                let optype = this.searchData.source_sys == "" ? "paycountertmp_confirm" : "paycounter_confirm";
+
                 this.$axios({
                     url: this.queryUrl + "normalProcess",
                     method: "post",
