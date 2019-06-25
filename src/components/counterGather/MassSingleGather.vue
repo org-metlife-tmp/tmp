@@ -1314,7 +1314,11 @@
                 this.dialogVisible = true;
 
                 for(let k in matchData){
-                    dialogData[k] = matchData[k];
+                    if(k == "recv_mode" || k == "bill_status"){
+                        dialogData[k] = matchData[k] + "";
+                    }else{
+                        dialogData[k] = matchData[k];
+                    }
                 }
             }
         },
