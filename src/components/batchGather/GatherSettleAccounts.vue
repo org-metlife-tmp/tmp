@@ -223,11 +223,11 @@
                         <el-col :span="5">
                             <el-form-item>
                                 <el-col :span="11">
-                                    <el-input v-model="childSearch.min" clearable placeholder="最小金额"></el-input>
+                                    <el-input v-model.number="childSearch.min" clearable placeholder="最小金额"></el-input>
                                 </el-col>
                                 <el-col class="line" :span="1" style="text-align:center">-</el-col>
                                 <el-col :span="11">
-                                    <el-input v-model="childSearch.max" clearable placeholder="最大金额"></el-input>
+                                    <el-input v-model.number="childSearch.max" clearable placeholder="最大金额"></el-input>
                                 </el-col>
                             </el-form-item>
                         </el-col>
@@ -424,7 +424,11 @@
                 var searchData = this.childSearch;
                 var params = {};
                 for (var k in searchData) {
-                    params[k] = searchData[k];
+                    if(k == "min" || k == "max"){
+                        params[k] = searchData[k] ? (typeof(searchData[k]) == "number" ? searchData[k] : "") : searchData[k];
+                    }else{
+                        params[k] = searchData[k];
+                    }
                 }
                 var val = this.ChildDateValue;
                 params.start_date = val ? val[0] : "";

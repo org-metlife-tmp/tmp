@@ -75,11 +75,11 @@
                         <el-col :span="8">
                             <el-form-item>
                                 <el-col :span="11">
-                                    <el-input v-model="searchData.min" placeholder="最小金额" clearable></el-input>
+                                    <el-input v-model.number="searchData.min" placeholder="最小金额" clearable></el-input>
                                 </el-col>
                                 <el-col class="line" :span="1" style="text-align:center">-</el-col>
                                 <el-col :span="11">
-                                    <el-input v-model="searchData.max" placeholder="最大金额" clearable></el-input>
+                                    <el-input v-model.number="searchData.max" placeholder="最大金额" clearable></el-input>
                                 </el-col>
                             </el-form-item>
                         </el-col>
@@ -119,8 +119,8 @@
                                 </el-select>
                             </el-form-item>
                         </el-col>
-                        
-                        
+
+
                         <el-col :span="4">
                             <el-form-item>
                                 <el-input v-model="searchData.operator" clearable placeholder="操作人"></el-input>
@@ -273,11 +273,17 @@
         methods: {
             //根据条件查询数据
             queryData: function () {
+                let params = this.routerMessage.params;
                 var searchData = this.searchData;
+
                 for (var k in searchData) {
-                    this.routerMessage.params[k] = searchData[k];
+                    if(k == "min" || k == "max"){
+                        params[k] = searchData[k] ? (typeof(searchData[k]) == "number" ? searchData[k] : "") : searchData[k];
+                    }else{
+                        params[k] = searchData[k];
+                    }
                 }
-                this.routerMessage.params.page_num = 1;
+                params.page_num = 1;
                 this.$emit("getCommTable", this.routerMessage);
             },
             //清空搜索条件
