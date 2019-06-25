@@ -1,6 +1,15 @@
 <style scoped lang="less" type="text/less">
     #waitToMatch {
-
+        /*撤回按钮*/
+        .withdraw {
+            width: 20px;
+            height: 20px;
+            background-image: url(../../assets/icon_common.png);
+            border: none;
+            padding: 0;
+            vertical-align: middle;
+            background-position: -48px 0;
+        }
     }
 </style>
 <style>
@@ -178,13 +187,19 @@
                 <el-table-column prop="refund_acc_no" label="退款银行账号" width="110px"
                                  :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column
-                        label="操作" width="50"
+                        label="操作" width="80"
                         fixed="right">
                     <template slot-scope="scope" class="operationBtn">
                         <el-tooltip content="查看" placement="bottom" effect="light"
                                     :enterable="false" :open-delay="500">
                             <el-button type="primary" icon="el-icon-search" size="mini"
                                        @click="lookCurrent(scope.row)"></el-button>
+                        </el-tooltip>
+                        <el-tooltip content="撤销" placement="bottom" effect="light"
+                                    :enterable="false" :open-delay="500"
+                                    v-if="scope.row.match_status == 2">
+                            <el-button size="mini" class="withdraw"
+                                       @click="revocationData(scope.row)"></el-button>
                         </el-tooltip>
                     </template>
                 </el-table-column>
@@ -841,7 +856,44 @@
                     });
                 }
             },
-
+            //撤销
+            revocationData: function(row){
+                this.$confirm('是否确认撤销当前数据?', '提示', {
+                    confirmButtonText: '确认',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.$axios({
+                        url: this.queryUrl + "normalProcess",
+                        method: "post",
+                        data: {
+                            optype: "recvcounterwaitingformatch_revoke",
+                            params: {
+                                id: row.id
+                            }
+                        }
+                    }).then((result) => {
+                        if (result.data.error_msg) {
+                            this.$message({
+                                type: "error",
+                                message: result.data.error_msg,
+                                duration: 2000
+                            });
+                        } else {
+                            this.dialogVisible = false;
+                            this.$message({
+                                type: "success",
+                                message: "撤销成功",
+                                duration: 2000
+                            });
+                            this.$emit("getCommTable", this.routerMessage);
+                        }
+                    }).catch(function (error) {
+                        console.log(error);
+                    });
+                }).catch(() => {
+                });
+            },
             //查看
             lookCurrent: function (row) {
                 this.dialogTitle = "查看";
