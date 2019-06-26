@@ -254,7 +254,7 @@
         name: "PosBankAccount",
         created: function () {
             this.$emit("transmitTitle", "POS流水与银行流水对账");
-            // this.$emit("getCommTable", this.routerMessage);
+            this.$emit("getCommTable", this.routerMessage);
         },
         props: ["tableData"],
         data: function () {

@@ -294,7 +294,7 @@
         name: "CounterAccount",
         created: function () {
             this.$emit("transmitTitle", "结算对账");
-            // this.$emit("getCommTable", this.routerMessage);
+            this.$emit("getCommTable", this.routerMessage);
 
             /*获取常量数据*/
             var constants = JSON.parse(window.sessionStorage.getItem("constants"));

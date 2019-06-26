@@ -3,12 +3,32 @@
 
     }
 </style>
+<style lang="less">
+    #POSQuery{
+        .upload-demo {
+            .el-upload-list {
+                display: none;
+            }
+        }
+    }
+</style>
 
 <template>
     <el-container id="POSQuery">
         <el-header>
             <div class="button-list-right">
-                <el-button type="warning" size="mini" @click="exportFun">导出</el-button>
+                <el-upload
+                        style="float:left;margin-right:10px"
+                        class="upload-demo"
+                        :action="queryUrl + 'normal/excel/upload'"
+                        :headers="uploadHeaders"
+                        multiple
+                        accept=".xlsx,.xls"
+                        :on-success="uploadSuccess">
+                    <el-button type="warning" size="mini">导入</el-button>
+                </el-upload>
+                <el-button type="warning" size="mini"
+                           @click="exportFun">导出</el-button>
             </div>
             <div class="search-setion">
                 <el-form :inline="true" :model="searchData" size="mini">
@@ -146,7 +166,7 @@
         name: "POSQuery",
         created: function () {
             this.$emit("transmitTitle", "POS机明细导入");
-            // this.$emit("getCommTable", this.routerMessage);
+            this.$emit("getCommTable", this.routerMessage);
         },
         props: ["tableData"],
         data: function () {
@@ -183,6 +203,11 @@
                     0: "未核对",
                     1: "已核对",
                 },
+                uploadHeaders: {
+                    Authorization: "",
+                    pk: "14"
+                },
+                currentUpload: {},
             }
         },
         methods: {
@@ -271,6 +296,96 @@
                 }).catch(function (error) {
                     console.log(error);
                 })
+            },
+            //上传成功后
+            uploadSuccess: function (response, file, fileList) {
+                this.currentUpload = response;
+                var message = response.success ? '上传成功' : response.error_message;
+                var type = response.success ? 'success' : 'warning';
+                this.$message({
+                    type: type,
+                    message: message,
+                    duration: 2000
+                });
+                if (!response.success && response.download_object_id) {
+                    this.errorTipShow = true;
+                    this.downLoadExcel(response);
+                } else {
+                    this.errorTipShow = false;
+                    this.subConfirm(response);
+                }
+            },
+            //下载错误文档
+            downLoadExcel: function (currentUpload) {
+                var params = {};
+                params.object_id = currentUpload.download_object_id;
+
+                this.$axios({
+                    url: this.queryUrl + "normal/excel/downExcel",
+                    method: "post",
+                    data: {
+                        params: params
+                    },
+                    responseType: 'blob'
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                    } else {
+                        var fileName = decodeURI(result.headers["content-disposition"]).split("=")[1];
+                        //ie兼容
+                        if (window.navigator && window.navigator.msSaveOrOpenBlob) {
+                            window.navigator.msSaveOrOpenBlob(new Blob([result.data]), fileName);
+                        } else {
+                            let url = window.URL.createObjectURL(new Blob([result.data]));
+                            let link = document.createElement('a');
+                            link.style.display = 'none';
+                            link.href = url;
+                            link.setAttribute('download', fileName);
+                            document.body.appendChild(link);
+                            link.click();
+                        }
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            },
+            //上传成功后确定上传
+            subConfirm: function (currentUpload) {
+                var params = {
+                    pk: this.uploadHeaders.pk
+                };
+                for (var k in currentUpload) {
+                    params[k] = currentUpload[k];
+                }
+                var url = this.queryUrl + 'normal/recvcounterposrecordcheck/importPos';
+
+                this.$axios({
+                    url: url,
+                    method: "post",
+                    data: {
+                        params: params
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        })
+                    } else {
+                        this.$message({
+                            type: "success",
+                            message: "确认成功",
+                            duration: 2000
+                        });
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                });
             },
         },
         watch: {

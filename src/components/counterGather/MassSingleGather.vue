@@ -621,7 +621,7 @@
         name: "MassSingleGather",
         created: function () {
             this.$emit("transmitTitle", "团单收款");
-            // this.$emit("getCommTable", this.routerMessage);
+            this.$emit("getCommTable", this.routerMessage);
 
             /*获取常量数据*/
             //银行大类

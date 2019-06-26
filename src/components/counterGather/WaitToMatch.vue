@@ -387,7 +387,7 @@
         name: "WaitToMatch",
         created: function () {
             this.$emit("transmitTitle", "待匹配收款");
-            // this.$emit("getCommTable", this.routerMessage);
+            this.$emit("getCommTable", this.routerMessage);
 
             /*获取常量数据*/
             var constants = JSON.parse(window.sessionStorage.getItem("constants"));

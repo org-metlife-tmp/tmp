@@ -59,9 +59,11 @@
     }
 </style>
 <style lang="less">
-    .upload-demo {
-        .el-upload-list {
-            display: none;
+    #historyDealData{
+        .upload-demo {
+            .el-upload-list {
+                display: none;
+            }
         }
     }
 </style>

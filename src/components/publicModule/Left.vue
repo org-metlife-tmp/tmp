@@ -760,19 +760,19 @@
                     <el-menu-item index="/endmonth-advance/advance-query" v-if="menuList.PREVOUCHERQUERY">查询</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="25">
+            <el-submenu index="25" v-if="menuList.RECVCOUNTER">
                 <template slot="title" height="200px">
                     <i class="icon-gmsk"></i>
                     <p>柜面收款</p>
                 </template>
                 <el-menu-item-group>
-                    <el-menu-item index="/counter-gather/single-gather">个单收款</el-menu-item>
-                    <el-menu-item index="/counter-gather/mass-single-gather">团单收款</el-menu-item>
-                    <el-menu-item index="/counter-gather/counter-account">结算对账</el-menu-item>
-                    <el-menu-item index="/counter-gather/pos-account">POS记录与明细对账</el-menu-item>
-                    <el-menu-item index="/counter-gather/pos-bank-account">POS明细与流水对账</el-menu-item>
-                    <el-menu-item index="/counter-gather/pos-query">POS机明细导入</el-menu-item>
-                    <el-menu-item index="/counter-gather/wait-to-match">待匹配收款</el-menu-item>
+                    <el-menu-item index="/counter-gather/single-gather" v-if="menuList.RECVCOUNTERPERSON">个单收款</el-menu-item>
+                    <el-menu-item index="/counter-gather/mass-single-gather" v-if="menuList.RECVCOUNTERGROUP">团单收款</el-menu-item>
+                    <el-menu-item index="/counter-gather/counter-account" v-if="menuList.RECVCOUNTERCHECK">结算对账</el-menu-item>
+                    <el-menu-item index="/counter-gather/pos-account" v-if="menuList.RECVCOUNTERPOSCHECK">POS记录与明细对账</el-menu-item>
+                    <el-menu-item index="/counter-gather/pos-bank-account" v-if="menuList.RECVCOUNTERPOSDETAILCHECK">POS明细与流水对账</el-menu-item>
+                    <el-menu-item index="/counter-gather/pos-query" v-if="menuList.RECVCOUNTEPOSIMPORT">POS机明细导入</el-menu-item>
+                    <el-menu-item index="/counter-gather/wait-to-match" v-if="menuList.RECVCOUNTERMATCH">待匹配收款</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
             <el-submenu index="26" v-if="menuList.VOUCHER">
@@ -958,6 +958,15 @@
 
                     VOUCHER: false,//凭证
                     VoucherQuery: false,//凭证查询
+
+                    RECVCOUNTER: false, //柜面收
+                    RECVCOUNTERPERSON: false, //个单收款
+                    RECVCOUNTERGROUP: false, //团单收款
+                    RECVCOUNTERCHECK: false, //结算对账
+                    RECVCOUNTERPOSCHECK: false, //POS记录与明细对账
+                    RECVCOUNTERPOSDETAILCHECK: false, //POS记录与流水对账
+                    RECVCOUNTEPOSIMPORT: false, //POS机明细导入
+                    RECVCOUNTERMATCH: false, //待匹配收款
                 }
             }
         },

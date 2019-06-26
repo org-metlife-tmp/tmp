@@ -251,7 +251,7 @@
         name: "PosAccount",
         created: function () {
             this.$emit("transmitTitle", "POS记录与明细对账");
-            // this.$emit("getCommTable", this.routerMessage);
+            this.$emit("getCommTable", this.routerMessage);
         },
         props: ["tableData"],
         data: function () {
