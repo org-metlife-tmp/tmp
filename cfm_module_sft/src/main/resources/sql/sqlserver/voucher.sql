@@ -256,6 +256,7 @@ from(
   SELECT
     trans.*,
     ext.presubmit_code,
+    ext.service_serial_number,
     ext.id extId
   FROM
     acc_his_transaction trans,

@@ -740,8 +740,9 @@ public class CheckVoucherService {
                 String direction = tradRecord.getStr("direction");
                 Date periodDate = CommonService.getPeriodByCurrentDay(tradRecord.getDate("trans_date"));
                 //1付 2收
+                Record detailRec = Db.findById("acc_his_transaction_ext", "id", tradRecord.getLong("extId"));
                 tradRecord.set("xx_seqnoOrstatmentCode", TypeUtils.castToString(tradRecord.get("presubmit_code"))).set("xx_operator", userInfo.getUsr_id()).set("xx_operator_org", userInfo.getCurUodp().getOrg_id())
-                        .set("xx_biz_type", WebConstant.MajorBizType.CWYTJ.getKey());
+                        .set("xx_biz_type", WebConstant.MajorBizType.CWYTJ.getKey()).set("xx_service_serial_number", TypeUtils.castToString(detailRec.get("service_serial_number")));
                 if ("1".equals(direction)) {
                     description = DateFormatThreadLocal.format("yyMMdd", tradRecord.getDate("trans_date")) + chann.getStr("bankcode") + "暂付" +
                             TypeUtils.castToString(tradRecord.get("opp_acc_name")) +
