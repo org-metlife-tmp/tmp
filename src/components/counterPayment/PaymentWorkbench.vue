@@ -632,10 +632,10 @@
                 this.dialogVisible = true;
                 let dialogData = this.dialogData;
                 for (let k in dialogData) {
-                    if(k != "payment_summary" && k != "recv_cnaps_code"){
+                    if(k == "payment_summary" || k == "recv_cnaps_code"){
                         dialogData[k] = row[k];
                     }else{
-                        dialogData["match_" + k] = row[k];
+                        dialogData[k] = row[k.slice(6)];
                     }
                 }
 
