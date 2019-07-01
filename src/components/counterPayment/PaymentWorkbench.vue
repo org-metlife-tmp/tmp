@@ -257,20 +257,20 @@
                          :rules="rules" ref="dialogForm">
                     <el-row>
                         <el-col :span="12">
-                            <el-form-item label="收款账号户名" prop="match_recv_acc_name">
-                                <el-input v-model="dialogData.match_recv_acc_name" clearable
+                            <el-form-item label="收款账号户名" prop="recv_acc_name">
+                                <el-input v-model="dialogData.recv_acc_name" clearable
                                           placeholder="请输入收款账号户名" :disabled="isLook"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
-                            <el-form-item label="收款银行账号" prop="match_recv_acc_no">
-                                <el-input v-model="dialogData.match_recv_acc_no" clearable
+                            <el-form-item label="收款银行账号" prop="recv_acc_no">
+                                <el-input v-model="dialogData.recv_acc_no" clearable
                                           placeholder="请输入收款银行账号" :disabled="isLook"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="16">
-                            <el-form-item label="开户行" prop="match_recv_bank_name">
-                                <el-input v-model="dialogData.match_recv_bank_name" :disabled="isLook"
+                            <el-form-item label="开户行" prop="recv_bank_name">
+                                <el-input v-model="dialogData.recv_bank_name" :disabled="isLook"
                                           placeholder="请选择开户行" @focus="getBank"></el-input>
                             </el-form-item>
                         </el-col>
@@ -473,9 +473,9 @@
                 statusList: {},
                 dialogVisible: false, //弹框数据
                 dialogData: {
-                    match_recv_acc_name: "",
-                    match_recv_acc_no: "",
-                    match_recv_bank_name: "",
+                    recv_acc_name: "",
+                    recv_acc_no: "",
+                    recv_bank_name: "",
                     payment_summary: "",
                     recv_cnaps_code: "",
                 },
@@ -483,17 +483,17 @@
                 isLook: false,
                 //校验规则设置
                 rules: {
-                    match_recv_acc_name: {
+                    recv_acc_name: {
                         required: true,
                         message: "请输入收款账号户名",
                         trigger: "blur"
                     },
-                    match_recv_acc_no: {
+                    recv_acc_no: {
                         required: true,
                         message: "请输入收款银行账号",
                         trigger: "blur"
                     },
-                    match_recv_bank_name: {
+                    recv_bank_name: {
                         required: true,
                         message: "请选择开户行",
                         trigger: "change"
@@ -634,8 +634,6 @@
                 for (let k in dialogData) {
                     if(k == "payment_summary" || k == "recv_cnaps_code"){
                         dialogData[k] = row[k];
-                    }else{
-                        dialogData[k] = row[k.slice(6)];
                     }
                 }
 
@@ -779,8 +777,8 @@
             },
             //保存选中的银行
             saveBankinfo: function () {
-                this.dialogData.match_recv_bank_name = this.bankdialogData.bank_name;
-                this.dialogData.match_recv_cnaps_code = this.bankdialogData.cnaps_code;
+                this.dialogData.recv_bank_name = this.bankdialogData.bank_name;
+                this.dialogData.recv_cnaps_code = this.bankdialogData.cnaps_code;
                 this.bankdialogVisible = false;
             },
             //设置当前项上传附件

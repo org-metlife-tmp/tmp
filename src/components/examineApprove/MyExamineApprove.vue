@@ -2709,7 +2709,6 @@
                         // this.dialogData.memo = data.memo;
                         // this.dialogData.bill_code = data.service_serial_number;
                         //拿附件数据
-                        console.log(this.dialogData)
                         this.fileMessage.bill_id = id;
                         this.fileMessage.biz_type = bizType;
 
