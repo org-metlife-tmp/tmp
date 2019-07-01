@@ -926,7 +926,7 @@
                     url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
-                        optype: "recvcounter_detail",
+                        optype: "recvcounterwaitingformatch_detail",
                         params: {
                             id: row.id
                         }

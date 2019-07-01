@@ -1372,6 +1372,16 @@
                     reject: "paycounter_reject",
                     'more-addLots': "paycounter_batchappend",
                     'more-agree': "paycounter_batchagree"
+                },
+                "43": {
+                    text: "柜面收撤销审批",
+                    detail: "recvgroupcounter_detail",
+                    list: "recvgroupcounter_pendingtasks",
+                    addLots: "recvgroupcounter_append",
+                    agree: "recvgroupcounter_agree",
+                    reject: "recvgroupcounter_reject",
+                    'more-addLots': "recvgroupcounter_batchappend",
+                    'more-agree': "recvgroupcounter_batchagree"
                 }
             };
 
@@ -1979,6 +1989,26 @@
                     {id: "17", lspan: 4, label: "摘要"},
                     {id: "18", pspan: 8, prop: "payment_summary"}
                 ],
+                "43": [
+                    {id: "1", lspan: 4, label: "核心系统"},
+                    {id: "2", pspan: 8, prop: "source_sys"},
+                    {id: "3", lspan: 4, label: "批处理号"},
+                    {id: "4", pspan: 8, prop: "batch_process_no"},
+                    {id: "5", lspan: 4, label: "收款日期"},
+                    {id: "6", pspan: 8, prop: "recv_date"},
+                    {id: "7", lspan: 4, label: "收款方式"},
+                    {id: "8", pspan: 8, prop: "recv_mode"},
+                    {id: "9", lspan: 4, label: "收款银行"},
+                    {id: "10", pspan: 8, prop: "recv_bank_name"},
+                    {id: "11", lspan: 4, label: "银行账号"},
+                    {id: "12", pspan: 8, prop: "recv_acc_no"},
+                    {id: "13", lspan: 4, label: "金额"},
+                    {id: "14", pspan: 8, prop: "amount"},
+                    {id: "15", lspan: 4, label: "资金用途"},
+                    {id: "16", pspan: 8, prop: "use_funds"},
+                    {id: "17", lspan: 4, label: "操作人"},
+                    {id: "18", pspan: 8, prop: "create_user_name"}
+                ],
             }
         },
         mounted: function () {
@@ -2260,6 +2290,17 @@
                         {id: '11', prop: "amount", name: '金额'},
                         {id: '12', prop: "op_user_name", name: '操作人'},
                         {id: '13', prop: "nextUserList", name: '下级审批人'},
+                    ],
+                    "43": [
+                        {id: '1', prop: "source_sys", name: '核心系统'},
+                        {id: '3', prop: "batch_process_no", name: '批处理号'},
+                        {id: '4', prop: "recv_date", name: '收款日期'},
+                        {id: '5', prop: "recv_mode", name: '收款方式'},
+                        {id: '6', prop: "recv_bank_name", name: '收款银行'},
+                        {id: '7', prop: "recv_acc_no", name: '银行账号'},
+                        {id: '8', prop: "amount", name: '金额'},
+                        {id: '9', prop: "use_funds", name: '资金用途'},
+                        {id: '10', prop: "create_user_name", name: '操作人'}
                     ]
                 },
                 editableTabsList: {},
