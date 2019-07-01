@@ -24,6 +24,7 @@ import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -178,6 +179,14 @@ public class SftLaDataCheckJob implements Job{
             }
 
             Record channel = channels.get(0);
+            //如果超出通道设置金额，返回核心
+            if(channel.get("single_amount_limit")!=null && channel.getBigDecimal("single_amount_limit").compareTo(new BigDecimal(0))!=0){
+                BigDecimal chanAmount = channel.getBigDecimal("single_amount_limit");
+                BigDecimal origAmount = laOiriginData.getBigDecimal("amount");
+                if(chanAmount.compareTo(origAmount) <=0 ){
+                    throw new ReqValidateException("TMPPJ:拒付,超通道限额");
+                }
+            }
 
             laOiriginData.set("channel_id", channel.getLong("channel_id"));
             laOiriginData.set("channel_code", channel.getStr("channel_code"));

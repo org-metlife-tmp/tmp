@@ -20,6 +20,7 @@ import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -215,7 +216,14 @@ public class SftEbsDataCheckJob implements Job{
             ebsOriginData.set("channel_code", channel.getStr("channel_code"));
             ebsOriginData.set("recv_bank_type", bankKey);
             ebsOriginData.set("recv_bank_name", recvBank.getStr("name"));*/
-
+            //如果超出通道设置金额，返回核心
+            if(channel.get("single_amount_limit")!=null && channel.getBigDecimal("single_amount_limit").compareTo(new BigDecimal(0))!=0){
+                BigDecimal chanAmount = channel.getBigDecimal("single_amount_limit");
+                BigDecimal origAmount = ebsOriginData.getBigDecimal("amount");
+                if(chanAmount.compareTo(origAmount) <=0 ){
+                    throw new ReqValidateException("TMPPJ:拒付,超通道限额");
+                }
+            }
             String bankType = channel.getStr("bank_type");
             Map<String, Object> constBankType = TableDataCacheUtil.getInstance().getARowData("const_bank_type", "code", bankType);
 
