@@ -117,7 +117,6 @@ public class ChannelSettingController extends CFMBaseController {
     /**
      * 获取所有bankcode
      */
-    @Auth(hasForces = {"ChannelSet"})
     public void getallbankcode() {
         List<Record> records = service.getallbankcode();
         renderOk(records);

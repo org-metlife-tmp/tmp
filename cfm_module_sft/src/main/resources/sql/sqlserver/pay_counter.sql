@@ -149,7 +149,7 @@ select
 	tab.consumer_acc_name,
 	tab.recv_acc_name,
 	tab.recv_cert_type,
-	(case  tab.insure_type when  '1'  then  tab.company_customer_no  else  tab.recv_cert_code end ) recv_cert_code,
+	(case  tab.insure_type when  '1'  then  tab.op_code  else  tab.recv_cert_code end ) recv_cert_code,
 	tab.recv_bank_name,
 	tab.recv_acc_no,	
 	tab.status ,
