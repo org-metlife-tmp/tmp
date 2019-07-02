@@ -349,7 +349,7 @@
                     url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
-                        optype:"voucher_export",
+                        optype:"voucher_listexport",
                         params:params
                     },
                     responseType: 'blob'
