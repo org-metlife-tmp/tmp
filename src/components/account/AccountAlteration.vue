@@ -918,7 +918,6 @@
                             files: dialogData.files,
                             change_content: paramsData
                         };
-                        debugger;
 
                         if (!dialogData.id) {
                             optype = "openchg_add";

@@ -357,7 +357,6 @@
                     } else {
                         var data = result.data.data;
                         this.dialogList = data;
-                        console.log(data);
                     }
                 }).catch(function (error) {
                     console.log(error);

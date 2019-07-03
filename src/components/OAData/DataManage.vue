@@ -345,7 +345,6 @@
             },
             //查看
             lookData: function(row){
-                console.log(row);
                 this.dialogVisible = true;
                 var dialogData = this.dialogData;
                 for(var k in row){

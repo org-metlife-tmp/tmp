@@ -543,7 +543,6 @@
                         this.dialogList = data.data;
                         this.dialogPagCurrent = data.page_num;
                         this.dialogTotal = data.ext;
-                        console.log(data);
                     }
                 }).catch(function (error) {
                     console.log(error);

@@ -876,7 +876,6 @@
                         this.$set(item,"$disabled",false);
                     })
                     tabList.forEach((tabItem) => {
-                        debugger;
                         if (tabItem.name != tabActive && tabItem.main_acc_id) {
                             for(var i = 0; i < accOptions.length; i++){
                                 if(tabItem.main_acc_id == accOptions[i].main_acc_id){

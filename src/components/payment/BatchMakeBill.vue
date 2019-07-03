@@ -988,7 +988,6 @@
             },
             //删除
             delUpFile: function (file) {
-                console.log(file);
                 var params = {
                     batchno: file.batchno,
                     uuid: file.uuid,

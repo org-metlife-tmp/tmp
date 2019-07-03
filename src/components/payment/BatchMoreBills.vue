@@ -640,8 +640,6 @@
             },
             //删除
             removeBill: function (row, index, rows) {
-                console.log(row);
-
                 this.$confirm('确认删除当前单据吗?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
@@ -690,7 +688,6 @@
             },
             //撤回
             withdrawBill: function (row) {
-                console.log(row);
                 this.$confirm('确认撤回当前单据吗?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
