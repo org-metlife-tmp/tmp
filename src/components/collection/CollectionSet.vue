@@ -875,15 +875,28 @@
                     accOptions.forEach((item) => {
                         this.$set(item,"$disabled",false);
                     })
-                    var exclude_ids = [];
                     tabList.forEach((tabItem) => {
+                        debugger;
                         if (tabItem.name != tabActive && tabItem.main_acc_id) {
                             for(var i = 0; i < accOptions.length; i++){
                                 if(tabItem.main_acc_id == accOptions[i].main_acc_id){
                                     this.$set(accOptions[i],"$disabled",true);
+                                    continue;
                                 }
                             }
-                            exclude_ids.push(tabItem.main_acc_id);
+                        }
+                        if(tabItem.child_list.length > 0){
+                            let childList = tabItem.child_list;
+                            childList.forEach( childItem => {
+                                if(childItem.is_main_acc == "1"){
+                                    for(var i = 0; i < accOptions.length; i++){
+                                        if(childItem.child_acc_id == accOptions[i].main_acc_id){
+                                            this.$set(accOptions[i],"$disabled",true);
+                                            continue;
+                                        }
+                                    }
+                                }
+                            });
                         }
                     });
 
@@ -934,6 +947,15 @@
                 });
                 params.exclude_ids = exclude_ids;
 
+                let tabList = this.editableTabs;
+                let exclude_main_ids = [];
+                tabList.forEach((tabItem) => {
+                    if (tabItem.main_acc_id) {
+                        exclude_main_ids.push(tabItem.main_acc_id);
+                    }
+                });
+                params.exclude_main_ids = exclude_main_ids;
+
                 this.$axios({
                     url: this.queryUrl + "normalProcess",
                     method: "post",
@@ -942,7 +964,6 @@
                         params: params
                     }
                 }).then((result) => {
-                    console.log(result.data.data);
                     this.dialogList = result.data.data;
                 });
                 this.dialogVisible = true;
