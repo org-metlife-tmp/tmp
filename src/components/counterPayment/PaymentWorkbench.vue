@@ -101,13 +101,13 @@
                         </el-col>
                         <el-col :span="4">
                             <el-form-item>
-                                <el-select v-model="searchData.pay_mode" placeholder="请选择支付方式"
+                                <el-select v-model="searchData.source_sys" placeholder="请选择来源系统"
                                            clearable filterable
                                            style="width:100%">
-                                    <el-option v-for="(payMode,key) in payModeList"
-                                               :key="key"
-                                               :label="payMode"
-                                               :value="key">
+                                    <el-option v-for="item in payModeList"
+                                               :key="item.type_code"
+                                               :label="item.type_name"
+                                               :value="item.type_code">
                                     </el-option>
                                 </el-select>
                             </el-form-item>
@@ -186,7 +186,10 @@
                 <el-table-column prop="amount" label="金额" :show-overflow-tooltip="true"
                                  :formatter="transitAmount"></el-table-column>
                 <el-table-column prop="consumer_acc_name" label="客户名称" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="recv_cert_code" label="证件号码" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="recv_cert_code" label="证件号码" :show-overflow-tooltip="true"
+                                 v-if="searchData.source_sys=='0'"></el-table-column>
+                <el-table-column prop="recv_cert_code" label="客户号码" :show-overflow-tooltip="true"
+                                 v-if="searchData.source_sys=='1'"></el-table-column>
                 <el-table-column prop="recv_acc_name" label="收款账号户名" width="110px"
                                  :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="recv_acc_no" label="收款银行账号" width="110px"
@@ -196,6 +199,7 @@
                 <el-table-column prop="service_status" label="支付结果" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="pay_acc_no" label="付款账号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="pay_bank_name" label="付款银行" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="feed_back" label="失败原因" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="status" label="状态" :show-overflow-tooltip="true"
                                  :formatter="transitStatus"></el-table-column>
                 <el-table-column prop="op_user_name" label="操作人" :show-overflow-tooltip="true"></el-table-column>
@@ -395,13 +399,6 @@
             if (constants.SftOsSource) {
                 this.sourceList = constants.SftOsSource;
             }
-            //支付方式
-            if (constants.SftDoubtPayMode) {
-                // this.payModeList = constants.SftDoubtPayMode;
-                this.payModeList = {
-                    "3": "网银"
-                }
-            }
             //支付结果
             if (constants.Sft_Billstatus) {
                 this.billstatusList = constants.Sft_Billstatus;
@@ -419,6 +416,8 @@
             if (bankAllTypeList) {
                 this.bankAllTypeList = bankAllTypeList;
             }
+            //来源系统
+            this.getSourceList();
             //机构列表
             this.getOrgList();
 
@@ -488,11 +487,25 @@
                         message: "请输入收款账号户名",
                         trigger: "blur"
                     },
-                    recv_acc_no: {
-                        required: true,
-                        message: "请输入收款银行账号",
-                        trigger: "blur"
-                    },
+                    recv_acc_no: [
+                        {
+                            required: true,
+                            message: "请输入收款银行账号",
+                            trigger: "blur"
+                        },
+                        {
+                            validator: function (rule, value, callback, source, options) {
+                                var reg = /^[\w-]+$/;
+                                if (reg.test(value)) {
+                                    callback();
+                                } else {
+                                    var errors = [];
+                                    callback(new Error("只能输入字母、数字和符号-"));
+                                }
+                            },
+                            trigger: "blur"
+                        }
+                    ],
                     recv_bank_name: {
                         required: true,
                         message: "请选择开户行",
@@ -613,6 +626,31 @@
                     } else {
                         var data = result.data.data;
                         this.orgList = data;
+                    }
+
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            },
+            //来源系统
+            getSourceList: function () {
+                this.$axios({
+                    url: this.queryUrl + "normalProcess",
+                    method: "post",
+                    data: {
+                        optype: "paycounter_typecode",
+                        params: {}
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        });
+                    } else {
+                        var data = result.data.data;
+                        this.payModeList = data;
                     }
 
                 }).catch(function (error) {
