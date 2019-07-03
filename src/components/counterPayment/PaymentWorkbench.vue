@@ -102,7 +102,7 @@
                         <el-col :span="4">
                             <el-form-item>
                                 <el-select v-model="searchData.type_code" placeholder="请选择业务类型"
-                                           clearable filterable
+                                           clearable filterable @visible-change="getSourceList"
                                            style="width:100%">
                                     <el-option v-for="item in payModeList"
                                                :key="item.type_code"
@@ -633,31 +633,34 @@
                 });
             },
             //来源系统
-            getSourceList: function () {
-                this.$axios({
-                    url: this.queryUrl + "normalProcess",
-                    method: "post",
-                    data: {
-                        optype: "paycounter_typecode",
-                        params: {
-                            source_sys: this.searchData.source_sys
+            getSourceList: function (val) {
+                this.payModeList = [];
+                if(val){
+                    this.$axios({
+                        url: this.queryUrl + "normalProcess",
+                        method: "post",
+                        data: {
+                            optype: "paycounter_typecode",
+                            params: {
+                                source_sys: this.searchData.source_sys
+                            }
                         }
-                    }
-                }).then((result) => {
-                    if (result.data.error_msg) {
-                        this.$message({
-                            type: "error",
-                            message: result.data.error_msg,
-                            duration: 2000
-                        });
-                    } else {
-                        var data = result.data.data;
-                        this.payModeList = data;
-                    }
+                    }).then((result) => {
+                        if (result.data.error_msg) {
+                            this.$message({
+                                type: "error",
+                                message: result.data.error_msg,
+                                duration: 2000
+                            });
+                        } else {
+                            var data = result.data.data;
+                            this.payModeList = data;
+                        }
 
-                }).catch(function (error) {
-                    console.log(error);
-                });
+                    }).catch(function (error) {
+                        console.log(error);
+                    });
+                }
             },
             //展示格式转换-金额
             transitAmount: function (row, column, cellValue, index) {
@@ -672,9 +675,7 @@
                 this.dialogVisible = true;
                 let dialogData = this.dialogData;
                 for (let k in dialogData) {
-                    if(k == "payment_summary" || k == "recv_cnaps_code"){
-                        dialogData[k] = row[k];
-                    }
+                    dialogData[k] = row[k];
                 }
 
                 if (this.$refs.dialogForm) {
