@@ -66,8 +66,7 @@
                         <el-col :span="4">
                             <el-form-item>
                                 <el-select v-model="searchData.pay_mode" placeholder="请选择支付方式"
-                                           clearable filterable
-                                           style="width:100%">
+                                           filterable style="width:100%">
                                     <el-option v-for="(payMode,key) in payModeList"
                                                :key="key"
                                                :label="payMode"
@@ -267,12 +266,13 @@
                         page_size: 20,
                         page_num: 1,
                         os_source: "0",
+                        pay_mode: "0",
                         status: [0]
                     }
                 },
                 searchData: { //搜索条件
                     os_source: "0",
-                    pay_mode: "",
+                    pay_mode: "0",
                     channel_id_one: "",
                     channel_id_two: "",
                     bank_key: "",
@@ -317,7 +317,7 @@
                 for (var k in searchData) {
                     if(k == "status"){
                         searchData[k] = [];
-                    }else if (k != "os_source"){
+                    }else if (k != "os_source" && k != "pay_mode"){
                         searchData[k] = "";
                     }
                 }
@@ -341,6 +341,8 @@
                     if(k == "os_source"){
                         searchData[k] = tab;
                     }else if(k == "status"){
+                        searchData[k] = [0];
+                    }else if(k == "pay_mode"){
                         searchData[k] = [0];
                     }else{
                         searchData[k] = "";
