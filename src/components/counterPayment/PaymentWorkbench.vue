@@ -101,7 +101,7 @@
                         </el-col>
                         <el-col :span="4">
                             <el-form-item>
-                                <el-select v-model="searchData.source_sys" placeholder="请选择来源系统"
+                                <el-select v-model="searchData.type_code" placeholder="请选择业务类型"
                                            clearable filterable
                                            style="width:100%">
                                     <el-option v-for="item in payModeList"
@@ -416,7 +416,7 @@
             if (bankAllTypeList) {
                 this.bankAllTypeList = bankAllTypeList;
             }
-            //来源系统
+            //业务类型
             this.getSourceList();
             //机构列表
             this.getOrgList();
@@ -450,7 +450,7 @@
                     org_id: "",
                     recv_cert_code: "",
                     recv_acc_name: "",
-                    pay_mode: "",
+                    type_code: "",
                     biz_code: "",
                     service_status: "",
                     status: ["0"]
@@ -639,7 +639,9 @@
                     method: "post",
                     data: {
                         optype: "paycounter_typecode",
-                        params: {}
+                        params: {
+                            source_sys: this.searchData.source_sys
+                        }
                     }
                 }).then((result) => {
                     if (result.data.error_msg) {
