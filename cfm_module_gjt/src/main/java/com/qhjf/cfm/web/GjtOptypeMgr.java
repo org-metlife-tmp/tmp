@@ -121,7 +121,7 @@ public class GjtOptypeMgr extends AbstractOptypeMgr {
                 .registerValidate(new RequiredParamsValidate(new String[]{"id"})));
 
         optypes.add(new Optype(Optype.Mode.NORMAL, "collectsetting_getchildacclist")
-                .registKeepParams(new String[]{"query_key", "bank_type", "acc_type", "exclude_ids"}));
+                .registKeepParams(new String[]{"query_key", "bank_type", "acc_type", "exclude_ids", "exclude_main_ids"}));
 
         optypes.add(new Optype(Optype.Mode.NORMAL, "collectsetting_morebill")
                 .registKeepParams(new String[]{

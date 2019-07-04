@@ -4,7 +4,8 @@ select
     case isnull(gmf.service_status,'-1') when '2' then '审批中'  when '-1' then '未给付' when '7' then '给付成功'  when '5' then '审批拒绝' when '3' then '审批中'
          when '8' then '给付失败'   when '4' then '审批通过,给付中' when '6' then '审批通过,给付中'   end service_status ,
     gmf.actual_payment_date,
-    gmf.id AS gmf_id
+    gmf.id AS gmf_id,
+    gmf.feed_back 
 from  
  (
 SELECT
@@ -84,9 +85,9 @@ WHERE
                 #(y)
               #end
             )
-        #elseif("codes".equals(x.key))
-            org.code in(
-              #for(z : map.codes)
+        #elseif("org_ids".equals(x.key))
+            pay.org_id in(
+              #for(z : map.org_ids)
                 #if(for.index > 0)
                   #(",")
                 #end
@@ -146,7 +147,7 @@ select
 	tab.org_id,
 	tab.org_code,
 	tab.amount,
-	tab.consumer_acc_name,
+	(case  tab.insure_type when  '1'  then  tab.op_name  else tab.consumer_acc_name end ) consumer_acc_name,
 	tab.recv_acc_name,
 	tab.recv_cert_type,
 	(case  tab.insure_type when  '1'  then  tab.op_code  else  tab.recv_cert_code end ) recv_cert_code,
@@ -180,7 +181,8 @@ select
 	case isnull(gmf.service_status,'-1') when '2' then '审批中'  when '-1' then '未给付' when '7' then '给付成功'  when '5' then '审批拒绝' when '3' then '审批中'
          when '8' then '给付失败'   when '4' then '审批通过,给付中' when '6' then '审批通过,给付中'   end service_status ,
     gmf.actual_payment_date  ,
-    gmf.id AS gmf_id
+    gmf.id AS gmf_id,
+    gmf.feed_back 
 from  
  (
 SELECT
@@ -266,9 +268,9 @@ WHERE
             )
         #elseif("recv_acc_name".equals(x.key))
            pay.recv_acc_name = #para(x.value)
-        #elseif("codes".equals(x.key))
-            org.code in(
-              #for(z : map.codes)
+        #elseif("org_ids".equals(x.key))
+            pay.org_id in(
+              #for(z : map.org_ids)
                 #if(for.index > 0)
                   #(",")
                 #end
@@ -726,4 +728,27 @@ WHERE gmf.id = cwrei.bill_id  AND
     gmf_bill.legal_id = ?
     and
     gmf_bill.delete_num = ?
+#end
+
+#sql("getSonOrg")
+     SELECT 
+      org2.org_id,
+      org2.name as org_name
+    FROM
+      organization org
+    JOIN organization org2 ON charindex(
+      org.level_code,
+      org2.level_code
+    ) = 1
+    WHERE
+      org.org_id = ? 
+#end
+
+#sql("gettypecode")
+     SELECT 
+      *
+    FROM
+      la_biz_type
+    WHERE
+      [type] = ? 
 #end

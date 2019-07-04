@@ -31,13 +31,12 @@
   ) org ON acc.org_id = org.org_id
   JOIN all_bank_info bank ON bank.cnaps_code = acc.bank_cnaps_code
   WHERE
-    acc.org_id != #para(map.org_id)
-    and acc.is_activity = 1
+    acc.is_activity = 1
     and acc.status = 1
     and acc.interactive_mode = 1
     #if(map!=null)
       #for(x : map)
-        #if(x.value&&x.value!="")
+        #if(x.value&&x.value!=""&&!"[]".equals(x.value.toString()))
 
           #if("org_id".equals(x.key))
             #continue
@@ -60,6 +59,15 @@
           #elseif("exclude_ids".equals(x.key))
             acc.acc_id not in(
               #for(y : map.exclude_ids)
+                #if(for.index > 0)
+                  #(",")
+                #end
+                #(y)
+              #end
+            )
+            #elseif("exclude_main_ids".equals(x.key))
+            acc.acc_id not in(
+              #for(y : map.exclude_main_ids)
                 #if(for.index > 0)
                   #(",")
                 #end

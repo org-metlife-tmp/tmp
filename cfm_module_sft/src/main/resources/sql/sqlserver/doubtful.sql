@@ -85,7 +85,7 @@ and la.is_doubtful = 1
 #sql("doubtfulEbslist")
 SELECT
 	ebs.id,
-	origin.create_time push_date,
+	ebs.push_date,
 	ebs.pay_code,
 	case ebs.pay_mode when 'C' then '批量收付' when 'Q' then '实时收付' when 'H' then '第三方' when '0' then '网银' end pay_mode,
 	ebs.bank_key,
@@ -103,22 +103,22 @@ SELECT
 	ebs.op_reason,
 	ebs.persist_version,
 	'1' os_source,
+	ebs.org_name,
+	tab.bankkey_desc
+FROM
+	(
+SELECT
+	ebs.*,
 	org.name org_name,
-	bankkey.bankkey_desc
+	origin.create_time push_date
 FROM
 	ebs_check_doubtful ebs,
-	bankkey_setting bankkey,
-	ebs_origin_pay_data origin ,
-	channel_setting chan,
-	organization org2,
+	ebs_origin_pay_data origin,
 	organization org
-where ebs.bank_key = bankkey.bankkey
-and ebs.tmp_org_id = bankkey.org_id
-and ebs.channel_id = chan.id
-and ebs.origin_id = origin.id
-and chan.org_id = org.org_id
-and org2.org_id = chan.org_id
-and ebs.is_doubtful = 1
+WHERE
+	ebs.origin_id = origin.id
+	AND ebs.tmp_org_id = org.org_id
+	AND ebs.is_doubtful = 1
   #if(map != null)
     #for(x : map)
       #if(x.value&&x.value!=""&&(!"[]".equals(x.value.toString())))
@@ -145,6 +145,41 @@ and ebs.is_doubtful = 1
             #end
           )
         #elseif("codes".equals(x.key))
+          1 = 1
+        #else
+          ebs.#(x.key) = #para(x.value)
+        #end
+      #end
+    #end
+  #end
+	) ebs
+	LEFT JOIN (
+SELECT
+	bankkey.bankkey,
+	bankkey.bankkey_desc,
+	chan.id,
+	bankkey.org_id
+FROM
+	bankkey_setting bankkey,
+	channel_setting chan,
+	organization org2
+WHERE
+	bankkey.pay_mode = 1
+	AND chan.id = bankkey.channel_id
+	AND chan.org_id = org2.org_id
+  #if(map != null)
+    #for(x : map)
+      #if(x.value&&x.value!=""&&(!"[]".equals(x.value.toString())))
+        AND
+        #if("bank_key".equals(x.key))
+          ebs.bank_key like convert(varchar(5),'%')+convert(varchar(255),#para(x.value))+convert(varchar(5),'%')
+        #elseif("bankkey_desc".equals(x.key))
+          bankkey.bankkey_desc like convert(varchar(5),'%')+convert(varchar(255),#para(x.value))+convert(varchar(5),'%')
+        #elseif("channel_id_one".equals(x.key))
+          chan.channel_id = #para(x.value)
+        #elseif("channel_id_two".equals(x.key))
+          chan.channel_id = #para(x.value)
+        #elseif("codes".equals(x.key))
           org2.code in(
             #for(y : map.codes)
               #if(for.index > 0)
@@ -154,11 +189,14 @@ and ebs.is_doubtful = 1
             #end
           )
         #else
-          ebs.#(x.key) = #para(x.value)
+          1 = 1
         #end
       #end
     #end
   #end
+	) tab ON ebs.bank_key = tab.bankkey
+	AND ebs.channel_id = tab.id
+	AND ebs.tmp_org_id = tab.org_id
   order by ebs.id desc
 #end
 

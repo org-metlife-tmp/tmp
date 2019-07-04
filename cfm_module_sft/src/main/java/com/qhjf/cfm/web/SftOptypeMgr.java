@@ -170,7 +170,7 @@ public class SftOptypeMgr extends AbstractOptypeMgr {
         optypes.add(new Optype(Optype.Mode.NORMAL, "sftdoubtful_doubtfullist")
                 .registKeepParams(new String[]{"os_source", "start_date", "end_date", "channel_id_one", "channel_id_two", "pay_mode", "bank_key", "bankkey_desc",
                         "tmp_org_id", "preinsure_bill_no", "insure_bill_no", "status", "page_size", "page_num"})
-                .registerValidate(new RequiredParamsValidate(new String[]{"os_source"})));
+                .registerValidate(new RequiredParamsValidate(new String[]{"os_source", "pay_mode"})));
 
         //拒绝
         optypes.add(new Optype(Optype.Mode.NORMAL, "sftdoubtful_reject")
@@ -548,7 +548,7 @@ public class SftOptypeMgr extends AbstractOptypeMgr {
         optypes.add(new Optype(Optype.Mode.NORMAL, "sftrecvdoubtful_doubtfullist")
                 .registKeepParams(new String[]{"os_source", "start_date", "end_date", "channel_id_one", "channel_id_two", "pay_mode", "bank_key", "bankkey_desc",
                         "tmp_org_id", "preinsure_bill_no", "insure_bill_no", "status", "page_size", "page_num"})
-                .registerValidate(new RequiredParamsValidate(new String[]{"os_source"})));
+                .registerValidate(new RequiredParamsValidate(new String[]{"os_source", "pay_mode"})));
 
         //拒绝
         optypes.add(new Optype(Optype.Mode.NORMAL, "sftrecvdoubtful_reject")
@@ -573,13 +573,13 @@ public class SftOptypeMgr extends AbstractOptypeMgr {
         //列表
         optypes.add(new Optype(Optype.Mode.NORMAL, "paycounter_list")
                 .registKeepParams(new String[]{"source_sys", "page_size", "page_num", "start_date", "end_date", "insure_bill_no", "preinsure_bill_no"
-                		, "org_id", "recv_cert_code", "recv_acc_name", "pay_mode", "status", "service_status", "biz_code"})
+                		, "org_id", "recv_cert_code", "recv_acc_name", "pay_mode", "status", "service_status", "biz_code","type_code"})
                 .registerValidate(new RequiredParamsValidate(new String[]{"source_sys", "page_size", "page_num"})));
        
         //列表导出
         optypes.add(new Optype(Optype.Mode.NORMAL, "paycounter_listexport")
                 .registKeepParams(new String[]{"source_sys",  "start_date", "end_date", "insure_bill_no", "preinsure_bill_no"
-                		, "org_id", "recv_cert_code", "recv_acc_name", "pay_mode", "status", "service_status", "biz_code"})
+                		, "org_id", "recv_cert_code", "recv_acc_name", "pay_mode", "status", "service_status", "biz_code","type_code"})
                 .registerValidate(new RequiredParamsValidate(new String[]{"source_sys"})));
         
         //补录保存按钮

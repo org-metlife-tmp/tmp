@@ -72,18 +72,16 @@ public class PayCounterService {
 		if(null == findById){
 			throw new ReqDataException("当前登录人的机构信息未维护");
 		}
-		Integer source_sys = TypeUtils.castToInt(record.get("source_sys"));
-		
-		/*List<String> codes = new ArrayList<>();
-		if(findById.getInt("level_num") == 1){
-			logger.info("========目前登录机构为总公司");
-			codes = Arrays.asList("0102","0101","0201","0202","0203","0204","0205","0500");
-		}else{
-			logger.info("========目前登录机构为分公司公司");
-			Record findFirst = Db.findFirst(Db.getSql("org.getCurrentUserOrgs"), org_id);
-			codes.add(findFirst.getStr("code"));
+		Integer source_sys = TypeUtils.castToInt(record.get("source_sys"));		
+		if(findById.getInt("level_num") != 1){
+			logger.info("====目前登录机构非总公司,只能查询当前及以下机构保单====");
+			List<Integer> org_ids = new ArrayList<>();
+			List<Record> find = Db.find(Db.getSql("pay_counter.getSonOrg"), org_id);
+			for (int i = 0; i < find.size(); i++) {
+				org_ids.add(find.get(i).getInt("org_id"));
+			}
+			record.set("org_ids", org_ids);
 		}
-		record.set("codes", codes);*/
 		List<Integer> status = record.get("status");
 		String service_status_origin = TypeUtils.castToString(record.get("service_status"));
 		if(null == status || status.size() == 0) {
@@ -630,7 +628,7 @@ public class PayCounterService {
 		Integer source_sys = TypeUtils.castToInt(record.get("source_sys"));
 		List<Record> records  = new ArrayList<>() ;
 		if(0==source_sys) {
-			records = Db.find(Db.getSql(""));
+			records = Db.find(Db.getSql("pay_counter.gettypecode"),1);
 		}else if(1==source_sys){
 			Record rec1 = new Record();
 			Record rec2 = new Record();
@@ -653,10 +651,10 @@ public class PayCounterService {
 			records.add(rec4);
 			records.add(rec5);
 		}else {
-			throw new ReqDataException("数据来源系统错误");
+			return null;
 		}
 		return records ;
 	}
-       
+      
 }
 

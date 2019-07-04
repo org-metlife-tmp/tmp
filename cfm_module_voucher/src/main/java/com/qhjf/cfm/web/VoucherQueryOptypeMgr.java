@@ -26,5 +26,14 @@ public class VoucherQueryOptypeMgr extends AbstractOptypeMgr {
                         "operator", "operator_org"
                 })
                 .registerValidate(new RequiredParamsValidate(new String[]{})));
+
+        optypes.add(new Optype(Optype.Mode.NORMAL, "voucher_listexport")
+                .registKeepParams(new String[]{
+                        "start_trans_date", "end_trans_date", "statement_code", "account_code", "a_code10",
+                        "min", "max", "docking_status", "start_accounting_period", "end_accounting_period",
+                        "operator", "operator_org"
+                })
+                .registerValidate(new RequiredParamsValidate(new String[]{})));
+
     }
 }

@@ -19,7 +19,7 @@ import java.util.List;
 public class VoucherQueryWorkBook extends AbstractWorkBook {
 
     public VoucherQueryWorkBook() {
-        this.optype = "voucher_export";
+        this.optype = "voucher_listexport";
         this.fileName = "凭证查询导出.xls";
         this.titleNames = new String[]{
                 "statement_code", "business_ref_no", "account_code", "account_period", "base_amount", "debit_credit_name",

@@ -52,7 +52,7 @@
 
 #sql("getChannel")
   select 
-  	c.id as channel_id,c.channel_code,c.channel_desc
+  	c.id as channel_id,c.channel_code,c.channel_desc,c.single_amount_limit
   	,b.bankkey_status, c.is_checkout, b.bank_type
   from 
   	bankkey_setting b,channel_setting c

@@ -53,14 +53,14 @@ public class PayCounterWorkBook extends AbstractWorkBook {
     	    	Record findById = Db.findById("organization", "org_id", org_id);
     			Integer source_sys = TypeUtils.castToInt(record.get("source_sys"));
     			
-    			/*List<String> codes = new ArrayList<>();
-    			if(findById.getInt("level_num") == 1){
-    				codes = Arrays.asList("0102","0101","0201","0202","0203","0204","0205","0500");
-    			}else{
-    				Record findFirst = Db.findFirst(Db.getSql("org.getCurrentUserOrgs"), org_id);
-    				codes.add(findFirst.getStr("code"));
+    			if(findById.getInt("level_num") != 1){
+    				List<Integer> org_ids = new ArrayList<>();
+    				List<Record> find = Db.find(Db.getSql("pay_counter.getSonOrg"), org_id);
+    				for (int i = 0; i < find.size(); i++) {
+    					org_ids.add(find.get(i).getInt("org_id"));
+    				}
+    				record.set("org_ids", org_ids);
     			}
-    			record.set("codes", codes);*/
     			List<Integer> status = record.get("status");
     			String service_status_origin = TypeUtils.castToString(record.get("service_status"));
     			if(null == status || status.size() == 0) {

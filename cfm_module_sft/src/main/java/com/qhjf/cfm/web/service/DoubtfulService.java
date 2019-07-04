@@ -50,7 +50,8 @@ public class DoubtfulService {
         }
 
         List<String> codes = new ArrayList<>();
-        if(findById.getInt("level_num") == 1){
+        if(findById.getInt("level_num")==1 &&
+                (!WebConstant.SftDoubtPayMode.WY.getKeyc().equals(record.getStr("pay_mode")))){
             log.info("========目前登录机构为总公司");
             codes = Arrays.asList("0102","0101","0201","0202","0203","0204","0205","0500");
         }else{

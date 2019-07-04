@@ -49,6 +49,10 @@ public class VoucherQueryController extends CFMBaseController {
 
     }
 
+    public void listexport() {
+        doExport();
+    }
+
     /**
      * 凭证查询导出xml文件
      */

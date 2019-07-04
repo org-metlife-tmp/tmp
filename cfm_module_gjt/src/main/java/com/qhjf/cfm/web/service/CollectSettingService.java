@@ -378,6 +378,8 @@ public class CollectSettingService {
         if (list != null && list.size() > 0) {
             for (Record ca : list) {
                 long child_acc_org_id = TypeUtils.castToLong(ca.get("child_acc_org_id"));
+                //判断是否为主账户
+                ca.set("is_main_acc", child_acc_org_id == org_id ? WebConstant.YesOrNo.YES.getKey() : WebConstant.YesOrNo.NO.getKey() );
                 String child_acc_org_name = TypeUtils.castToString(ca.get("child_acc_org_name"));
 
                 if (accs.size() > 0) {

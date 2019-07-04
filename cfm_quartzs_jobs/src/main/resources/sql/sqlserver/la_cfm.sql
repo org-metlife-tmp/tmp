@@ -26,7 +26,7 @@
 
 #sql("getChannel")
   select 
-  	c.id as channel_id,c.channel_code,c.channel_desc,b.bank_type,d.name
+  	c.id as channel_id,c.channel_code,c.channel_desc,b.bank_type,d.name,c.single_amount_limit
   	,b.bankkey_status, c.is_checkout, c.bankcode
   from 
   	bankkey_setting b,channel_setting c,const_bank_type d
