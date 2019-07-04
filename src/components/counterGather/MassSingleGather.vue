@@ -538,33 +538,33 @@
                     <el-button type="warning" size="mini" @click="saveData">确 定</el-button>
                 </span>
                 <el-dialog :visible.sync="innerVisible"
-                           width="50%" title="关联业务"
+                           width="760px" title="关联业务"
                            append-to-body top="100px"
                            :close-on-click-modal="false">
                     <el-form :inline="true" :model="voucherSearch" size="mini">
                         <el-row>
-                            <el-col :span="4" v-show="dialogData.use_funds == '0'">
+                            <el-col :span="6" v-show="dialogData.use_funds == '0'">
                                 <el-form-item>
                                     <el-input v-model="voucherSearch.customerNo" clearable placeholder="请输入客户号"></el-input>
                                 </el-form-item>
                             </el-col>
-                            <el-col :span="4" v-show="dialogData.use_funds == '0'">
+                            <el-col :span="6" v-show="dialogData.use_funds == '0'">
                                 <el-form-item>
                                     <el-input v-model="voucherSearch.customerName" clearable placeholder="请输入客户姓名"></el-input>
                                 </el-form-item>
                             </el-col>
 
-                            <el-col :span="4" v-show="dialogData.use_funds != '0'">
+                            <el-col :span="6" v-show="dialogData.use_funds != '0'">
                                 <el-form-item>
                                     <el-input v-model="voucherSearch.preinsureBillNo" clearable placeholder="请输入投保单号"></el-input>
                                 </el-form-item>
                             </el-col>
-                            <el-col :span="4" v-show="dialogData.use_funds != '0'">
+                            <el-col :span="6" v-show="dialogData.use_funds != '0'">
                                 <el-form-item>
                                     <el-input v-model="voucherSearch.insureBillNo" clearable placeholder="请输入保单号"></el-input>
                                 </el-form-item>
                             </el-col>
-                            <el-col :span="4" v-show="dialogData.use_funds != '0'">
+                            <el-col :span="6" v-show="dialogData.use_funds != '0'">
                                 <el-form-item>
                                     <el-input v-model="voucherSearch.bussinessNo" clearable placeholder="请输入业务号"></el-input>
                                 </el-form-item>
@@ -594,7 +594,7 @@
                         <el-table-column prop="bussinessNo" label="业务号" :show-overflow-tooltip="true"
                                          v-if="dialogData.use_funds != '0'"></el-table-column>
                         <el-table-column prop="appntName" label="该业务下的主客户名" :show-overflow-tooltip="true"
-                                         width="110px" v-if="dialogData.use_funds != '0'"></el-table-column>
+                                         width="140px" v-if="dialogData.use_funds != '0'"></el-table-column>
                         <el-table-column prop="manageCom" label="保单所属机构" :show-overflow-tooltip="true"
                                          width="110px" v-if="dialogData.use_funds != '0'"></el-table-column>
                         <el-table-column prop="needPayMoney" label="业务所需缴费金额" :show-overflow-tooltip="true"
