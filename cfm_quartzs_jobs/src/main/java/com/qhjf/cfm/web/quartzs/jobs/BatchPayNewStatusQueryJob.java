@@ -22,7 +22,7 @@ public class BatchPayNewStatusQueryJob extends PubJob {
 
 	@Override
 	public String getJobCode() {
-		return "BatchPayRecvStatusQuery";
+		return "BatchPayStatusQuery";
 	}
 
 	@Override

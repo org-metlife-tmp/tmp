@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8'?>
+	<Root>
+		<Policy>
+			<PayNo>$!map.get('PayNo')</PayNo>
+			<PayType>1</PayType>
+			<CPayNo>$!map.get('CPayNo')</CPayNo>
+			<PayCustomerNo/>
+			<PayWay/>
+			<PayMoney/>
+			<ChequeNo/>
+			<ChequeDate/>
+			<BankCode/>
+			<BankAccNo/>
+			<BankAccName/>
+			<InBankCode/>
+			<InBankAccNo/>
+		</Policy>
+	</Root>

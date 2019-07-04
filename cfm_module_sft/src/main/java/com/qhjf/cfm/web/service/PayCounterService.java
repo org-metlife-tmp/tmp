@@ -460,9 +460,11 @@ public class PayCounterService {
 		try {
 			if(0 == TypeUtils.castToInt(findById.get("source_sys"))) {
 				findFirst = Db.findFirst(Db.getSql("pay_counter.findLaDetailById"), id);
-			} else {
+			} else if(1 == TypeUtils.castToInt(findById.get("source_sys"))) {
 				findFirst = Db.findFirst(Db.getSql("pay_counter.findEBSDetailById"), id);
-			}		
+			}else {
+				findFirst = Db.findFirst(Db.getSql("pay_counter.findTMPDetailById"), id);
+			}	
 		} catch (Exception e) {
 			throw new ReqDataException("此条数据已过期");
 		}
@@ -496,7 +498,7 @@ public class PayCounterService {
             } else {
                 errMsg = e.getMessage();
             }
-
+            logger.error("====发送银行错误信息===="+errMsg);
             final Record innerRec = Db.findById("gmf_bill", "id", id);
             final Integer status = innerRec.getInt("service_status");
             final int persist_version = TypeUtils.castToInt(innerRec.get("persist_version"));
@@ -504,7 +506,6 @@ public class PayCounterService {
             boolean flag = Db.tx(new IAtom() {
                 @Override
                 public boolean run() throws SQLException {
-
                     if (WebConstant.BillStatus.PASS.getKey() != status && WebConstant.BillStatus.FAILED.getKey() != status) {
                         logger.error("单据状态有误!======"+status);
                         return false;
@@ -515,7 +516,25 @@ public class PayCounterService {
                     setRecord.set("service_status", WebConstant.BillStatus.FAILED.getKey()).set("feed_back", feedBack)
                             .set("persist_version", persist_version + 1);
                     whereRecord.set("id", id).set("service_status", status).set("persist_version", persist_version);
-                    return CommonService.updateRows("gmf_bill", setRecord, whereRecord) == 1;
+                    boolean update = CommonService.updateRows("gmf_bill", setRecord, whereRecord) == 1;
+                    if(update) {
+                    	if(WebConstant.YesOrNo.YES.getKey() == TypeUtils.castToInt(innerRec.get("is_match"))
+                    			&&  WebConstant.BillStatus.FAILED.getKey() == status) {
+                			Record recv_counter_match = Db.findById("recv_counter_match", "id", innerRec.get("legal_id"));
+                			boolean upd = CommonService.update("recv_counter_match", 
+                					new Record().set("delete_flag", 1),
+                					new Record().set("id", innerRec.get("legal_id")));
+                			if(!upd) {
+                				logger.error("====更新recv_counter_match为删除失败===="+innerRec.get("legal_id"));
+                				return update ;
+                			}
+                			recv_counter_match.remove("id");
+                			recv_counter_match.set("status", WebConstant.SftLegalData.NOGROUP.getKey());
+                			recv_counter_match.set("match_status", WebConstant.SftRecvCounterMatchStatus.DPP.getKey());
+                			return Db.save("recv_counter_match", "id", recv_counter_match);
+                    	}
+                    }
+                    return false ;
                 }
             });
             if (!flag) {
@@ -540,6 +559,7 @@ public class PayCounterService {
 			logger.error("===========根据id未在表中查找到此单据");
 			return false ;
 		}
+		final Integer source_sys = TypeUtils.castToInt(rec.get("source_sys"));
 		boolean flag = Db.tx(new IAtom() {
 			
 			@Override
@@ -551,9 +571,16 @@ public class PayCounterService {
 				   new Record().set("id", id));
 				logger.info("========更新gmf_bill状态====="+update);
 				if(update) {
-					return CommonService.update("pay_legal_data", 
-							new Record().set("status", WebConstant.SftLegalData.NOGROUP.getKey()),
-							new Record().set("id", rec.get("legal_id")));					
+					if(source_sys == 3) {
+						logger.info("====此柜面付数据来源于TMP====");
+						return CommonService.update("recv_counter_match", 
+								new Record().set("status", WebConstant.SftLegalData.NOGROUP.getKey()),
+								new Record().set("id", rec.get("legal_id")));
+					}else {
+						return CommonService.update("pay_legal_data", 
+								new Record().set("status", WebConstant.SftLegalData.NOGROUP.getKey()),
+								new Record().set("id", rec.get("legal_id")));											
+					}
 				}
 				return false;
 			}

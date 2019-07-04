@@ -1,0 +1,411 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.qhjf.cfm</groupId>
+    <artifactId>sunlife_cfm_main</artifactId>
+    <packaging>pom</packaging>
+    <version>1.0-SNAPSHOT</version>
+    <description>统一收付费平台打包环境</description>
+    <modules>
+        <module>cfm_web</module>                <!-- web 门户 -->
+        <module>cfm_common</module>
+        <module>cfm_utils</module>
+        <module>cfm_excel_parse</module>
+        <module>cfm_module_comm</module>
+        <module>cfm_module_workflow</module>    <!-- 工作流模块 -->
+        <module>cfm_module_admin</module>       <!-- 管理员模块 -->
+        <module>cfm_module_account</module>     <!-- 账户通模块 -->
+        <module>cfm_module_jyyet</module>       <!-- 交易通余额通模块 -->
+        <module>cfm_module_dbt</module>         <!-- 调拨通模块 -->
+        <module>cfm_module_zft</module>         <!-- 支付通模块 -->
+        <module>cfm_module_gjt</module>         <!-- 归集通模块 -->
+        <module>cfm_module_electronic</module>  <!-- 电子回单模块 -->
+        <module>cfm_module_working_cal</module> <!-- 工作日历模块 -->
+
+
+
+        <!-- 光大特有模块 start-->
+        <!--
+        <module>cfm_module_extserv_comm</module>
+        <module>cfm_module_extserv</module> &lt;!&ndash; 光大外部接口模块 &ndash;&gt;
+        <module>cfm_module_ssdata</module>      &lt;!&ndash; 光大外部数据管理模块 &ndash;&gt;
+        <module>cfm_preapp_connector</module>
+        <module>cfm_module_extserv_gx_notify</module>
+        <module>cfm_quartz</module>
+        <module>cfm_quartz_jobs</module>
+        -->
+        <!-- 光大特有模块 end-->
+
+        <!-- 大都会特有模块 start -->
+        <module>cfm_module_skt</module>          <!-- 收款通 -->
+        <module>cfm_module_gyl</module>          <!-- 广银联 -->
+        <module>cfm_module_dzt</module>          <!-- 对账通 -->
+        <module>cfm_module_monitor</module>      <!-- 资金监控 -->
+        <module>cfm_module_oa</module>           <!-- OA付款 -->
+        <module>cfm_module_refund</module>       <!-- 退票管理 -->
+        <module>cfm_module_pooling_acc</module>  <!-- 资金池账户 -->
+        <module>cfm_module_sft</module>          <!-- 收付通，LA ，EBS 对接 -->
+        <module>cfm_webservice</module>          <!-- OA webservice service and client -->
+        <module>cfm_webservice_la</module>       <!-- LA webservice client -->
+        <module>cfm_webservice_ebs</module>      <!-- EBS webservice client -->
+        <module>cfm_webservice_sft</module>      <!-- delegate LA and EBS webservice client -->
+        <module>cfm_module_voucher</module>      <!-- 凭证查询 -->
+        <module>cfm_quartzs</module>
+        <module>cfm_quartzs_jobs</module>
+        <module>cfm_channel</module>
+        <module>cfm_queue</module>
+        <module>cfm_sysInter</module>
+        <!-- 大都会特有模块 end-->
+    </modules>
+
+    <properties>
+        <!-- 公用属性 start -->
+        <maven.compiler.source>1.7</maven.compiler.source>
+        <maven.compiler.target>1.7</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- 公用属性 end -->
+
+        <!-- 依赖jar包版本 start -->
+        <axiom.version>1.2.7</axiom.version>
+        <axis.version>1.4</axis.version>
+        <axis2.version>1.4.1</axis2.version>
+        <bcprov-jdk16.version>1.46</bcprov-jdk16.version>
+        <bs_mvnbuild.version>1.1.2-SNAPSHOT</bs_mvnbuild.version>
+        <cglib.version>3.2.5</cglib.version>
+        <commons-beanutils.version>1.9.2</commons-beanutils.version>
+        <commons-codec.version>1.11</commons-codec.version>
+        <commons-io.version>2.4</commons-io.version>
+        <commons-lang3.version>3.4</commons-lang3.version>
+        <druid.version>1.1.9</druid.version>
+        <dom4j.version>1.6.1</dom4j.version>
+        <fastjson.version>1.2.20</fastjson.version>
+        <guava.version>25.0-jre</guava.version>
+        <httpcomponents.version>4.5.3</httpcomponents.version>
+        <jaxws-rt.version>2.2.8</jaxws-rt.version>
+        <jaxen.version>1.1.1</jaxen.version>
+        <jedis.version>2.9.0</jedis.version>
+        <jetty-server.version>8.1.8</jetty-server.version>
+        <jfianl.cos.version>2017.5</jfianl.cos.version>
+        <jfianl.version>3.4</jfianl.version>
+        <jfinal-quartz.version>0.2</jfinal-quartz.version>
+        <jjwt.version>0.9.0</jjwt.version>
+        <jsoup.version>1.10.1</jsoup.version>
+        <junit.version>4.12</junit.version>
+        <logback.version>1.2.3</logback.version>
+        <mongodb.version>3.3.0</mongodb.version>
+        <mysql.version>5.1.37</mysql.version>
+        <mssql.version>6.4.0.jre7</mssql.version>
+        <!-- Excel start -->
+        <ooxml-schemas.version>1.3</ooxml-schemas.version>
+        <poi-contrib.version>3.1-FINAL</poi-contrib.version>
+        <poi-ooxml.version>3.17</poi-ooxml.version>
+        <poi-scratchpad.version>3.15</poi-scratchpad.version>
+        <poi.version>3.17</poi.version>
+        <!--  Excel end -->
+        <quartz.version>2.2.3</quartz.version>
+        <servlet-api>3.1.0</servlet-api>
+        <slf4j-api.version>1.7.21</slf4j-api.version>
+        <staxon.version>1.3</staxon.version>
+        <velocity.version>1.7</velocity.version>
+        <!-- 依赖jar包版本 end -->
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${junit.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>javax.servlet</groupId>
+                <artifactId>javax.servlet-api</artifactId>
+                <version>${servlet-api}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>axis</groupId>
+                <artifactId>axis</artifactId>
+                <version>${axis.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.jfinal</groupId>
+                <artifactId>jfinal</artifactId>
+                <version>${jfianl.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.jfinal</groupId>
+                <artifactId>cos</artifactId>
+                <version>${jfianl.cos.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.dreampie</groupId>
+                <artifactId>jfinal-quartz</artifactId>
+                <version>${jfinal-quartz.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.jfinal</groupId>
+                <artifactId>jetty-server</artifactId>
+                <version>${jetty-server.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>druid</artifactId>
+                <version>${druid.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cglib</groupId>
+                <artifactId>cglib-nodep</artifactId>
+                <version>${cglib.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>${logback.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>fastjson</artifactId>
+                <version>${fastjson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt</artifactId>
+                <version>${jjwt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j-api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.ws.commons.axiom</groupId>
+                <artifactId>axiom-impl</artifactId>
+                <version>${axiom.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.ws.commons.axiom</groupId>
+                <artifactId>axiom-api</artifactId>
+                <version>${axiom.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.axis2</groupId>
+                <artifactId>axis2-kernel</artifactId>
+                <version>${axis2.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>javax.servlet</groupId>
+                        <artifactId>servlet-api</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${commons-io.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-codec</groupId>
+                <artifactId>commons-codec</artifactId>
+                <version>${commons-codec.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${commons-lang3.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-beanutils</groupId>
+                <artifactId>commons-beanutils</artifactId>
+                <version>${commons-beanutils.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.xml.ws</groupId>
+                <artifactId>jaxws-rt</artifactId>
+                <version>${jaxws-rt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.bouncycastle</groupId>
+                <artifactId>bcprov-jdk16</artifactId>
+                <version>${bcprov-jdk16.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>de.odysseus.staxon</groupId>
+                <artifactId>staxon</artifactId>
+                <version>${staxon.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.poi</groupId>
+                <artifactId>poi</artifactId>
+                <version>${poi.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.poi</groupId>
+                <artifactId>poi-ooxml</artifactId>
+                <version>${poi-ooxml.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.poi</groupId>
+                <artifactId>ooxml-schemas</artifactId>
+                <version>${ooxml-schemas.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.poi</groupId>
+                <artifactId>poi-scratchpad</artifactId>
+                <version>${poi-scratchpad.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.poi</groupId>
+                <artifactId>poi-contrib</artifactId>
+                <version>${poi-contrib.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.velocity</groupId>
+                <artifactId>velocity</artifactId>
+                <version>${velocity.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jsoup</groupId>
+                <artifactId>jsoup</artifactId>
+                <version>${jsoup.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>dom4j</groupId>
+                <artifactId>dom4j</artifactId>
+                <version>${dom4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>jaxen</groupId>
+                <artifactId>jaxen</artifactId>
+                <version>${jaxen.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpclient</artifactId>
+                <version>${httpcomponents.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>redis.clients</groupId>
+                <artifactId>jedis</artifactId>
+                <version>${jedis.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>mysql</groupId>
+                <artifactId>mysql-connector-java</artifactId>
+                <version>${mysql.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.microsoft.sqlserver</groupId>
+                <artifactId>mssql-jdbc</artifactId>
+                <version>${mssql.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mongodb</groupId>
+                <artifactId>mongodb-driver</artifactId>
+                <version>${mongodb.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.quartz-scheduler</groupId>
+                <artifactId>quartz</artifactId>
+                <version>${quartz.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>slf4j-api</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>com.qhjf.bankinterface</groupId>
+                <artifactId>bs_baseservice</artifactId>
+                <version>${bs_mvnbuild.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.qhjf.bankinterface</groupId>
+                <artifactId>bs_abc</artifactId>
+                <version>${bs_mvnbuild.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.qhjf.bankinterface</groupId>
+                <artifactId>bs_cebmerchant</artifactId>
+                <version>${bs_mvnbuild.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.qhjf.bankinterface</groupId>
+                <artifactId>bs_cebunionpay</artifactId>
+                <version>${bs_mvnbuild.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.qhjf.bankinterface</groupId>
+                <artifactId>bs_chinapay</artifactId>
+                <version>${bs_mvnbuild.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.qhjf.bankinterface</groupId>
+                <artifactId>bs_jrmf360</artifactId>
+                <version>${bs_mvnbuild.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.qhjf.bankinterface</groupId>
+                <artifactId>bs_tjunionpay</artifactId>
+                <version>${bs_mvnbuild.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.qhjf.bankinterface</groupId>
+                <artifactId>bs_cmbc</artifactId>
+                <version>${bs_mvnbuild.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.qhjf.bankinterface</groupId>
+                <artifactId>bs_icbc</artifactId>
+                <version>${bs_mvnbuild.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.qhjf.bankinterface</groupId>
+                <artifactId>bs_jlwj</artifactId>
+                <version>${bs_mvnbuild.version}</version>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
+
+    <distributionManagement>
+        <repository>
+            <id>releases</id>
+            <url>http://10.1.1.2:8081/nexus/content/repositories/releases</url>
+        </repository>
+        <snapshotRepository>
+            <id>snapshots</id>
+            <url>http://10.1.1.2:8081/nexus/content/repositories/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.tomcat.maven</groupId>
+                <artifactId>tomcat7-maven-plugin</artifactId>
+                <version>2.2</version>
+                <configuration>
+                    <path>/cfm</path>
+                    <port>8080</port>
+                    <uriEncoding>UTF-8</uriEncoding>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

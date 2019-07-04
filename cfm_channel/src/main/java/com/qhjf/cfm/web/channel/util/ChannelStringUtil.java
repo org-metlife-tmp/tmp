@@ -79,7 +79,7 @@ public class ChannelStringUtil {
 	}
 
 	public static void main(String[] args) {
-		String str = getCmbFixLenStr("中国TCL集团", 11);
+		String str = getFixLenStr("要了解这个服务发布要了解这个服务发布", 20);
 		System.out.println(str);
 	}
 }

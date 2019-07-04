@@ -169,3 +169,57 @@
 		status = 1 and
 		reqsta = 0
 #end
+
+#sql("selInstrDetailByPackageSeq")
+   select
+   	*
+   from
+   	batch_recv_instr_queue_detail
+   where
+   	base_id = ? and
+   	package_seq = ?
+#end
+
+#sql("qryMaxBusTypeFromTotal")
+   select
+   	max(bus_type) as bus_type_max
+   from
+   	batch_recv_instr_queue_total
+   where
+   	recv_bank_cnaps like '102%' and
+   	init_send_time = ?
+#end
+
+#sql("updProtocolDetail")
+   update 
+	detail 
+   set 
+   	status = ?, dead_line = ?
+   from 
+   	protocol_import_instr_detail detail, 
+   	protocol_import_instr_total total
+   where 
+   	detail.base_id=total.id and detail.package_seq = ?
+#end
+
+#sql("qryProtocolDetail")
+   select detail.*
+   from 
+   	protocol_import_instr_detail detail, 
+   	protocol_import_instr_total total
+   where 
+   	detail.base_id=total.id and 
+   	total.bank_seriral_no = ? and
+   	detail.package_seq = ?
+#end
+
+#sql("qryHandllingProtocolSize")
+   select count(*) size
+   from 
+   	protocol_import_instr_detail detail, 
+   	protocol_import_instr_total total
+   where
+   	detail.base_id=total.id and 
+   	total.id = ? and
+   	detail.status in (0,3)
+#end

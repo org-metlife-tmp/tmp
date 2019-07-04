@@ -29,4 +29,27 @@ public class IcbcResultParseUtil {
         return out0;
 	}
 	
+	public static JSONObject getEB(String respStr) throws Exception{
+		JSONObject json = JSONObject.parseObject(respStr);
+		return json.getJSONArray("eb").getJSONObject(0);
+	}
+	
+	public static JSONObject getPUB(String respStr) throws Exception{
+		JSONObject eb0 = getEB(respStr);
+		JSONArray pubArray = eb0.getJSONArray("pub");
+		return pubArray.getJSONObject(0);
+	}
+	
+	public static JSONArray getOUT(JSONObject eb0) throws Exception{
+		JSONObject pub0 = eb0.getJSONArray("pub").getJSONObject(0);
+        String retCode = pub0.getString("RetCode");
+        String retMsg = pub0.getString("RetMsg");
+        if ("0".equals(retCode)) {
+        	return eb0.getJSONArray("out");
+		}else {
+			throw new Exception(String.format(ERROR_MSG, retCode, retMsg));
+		}
+	}
+	
+	
 }

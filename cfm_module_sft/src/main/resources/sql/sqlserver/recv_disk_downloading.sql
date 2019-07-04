@@ -297,4 +297,13 @@
 #end
 
 
-
+#sql("qryProtocolDetailBeforeImp")
+    select
+    	detail.id
+    from
+    	(select * from protocol_import_instr_total where protocol_no = ?) total,
+    	(select * from protocol_import_instr_detail where pay_acc_no = ? and pay_no = ?) detail
+    where
+    	total.id = detail.base_id
+    	
+#end

@@ -7,9 +7,11 @@ import com.jfinal.plugin.activerecord.IAtom;
 import com.jfinal.plugin.activerecord.Record;
 import com.jfinal.plugin.activerecord.SqlPara;
 import com.qhjf.bankinterface.api.exceptions.BankInterfaceException;
+import com.qhjf.cfm.exceptions.ReqDataException;
 import com.qhjf.cfm.utils.ArrayUtil;
 import com.qhjf.cfm.utils.CommKit;
 import com.qhjf.cfm.utils.CommonService;
+import com.qhjf.cfm.utils.StringKit;
 import com.qhjf.cfm.web.channel.inter.api.IChannelBatchInter;
 import com.qhjf.cfm.web.channel.inter.api.IChannelInter;
 import com.qhjf.cfm.web.channel.manager.ChannelManager;
@@ -18,10 +20,13 @@ import com.qhjf.cfm.web.constant.WebConstant;
 import com.qhjf.cfm.web.inter.api.ISysAtomicInterface;
 import com.qhjf.cfm.web.inter.manager.SysInterManager;
 import com.qhjf.cfm.web.webservice.sft.SftRecvCallBack;
+
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.math.BigDecimal;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -127,21 +132,29 @@ public class SysBatchRecvInter implements ISysAtomicInterface {
                 if (instrTotalRecord.getStr("recv_bank_cnaps").startsWith("308")) {
                 	String oldReqnbr = instrTotalRecord.getStr("reqnbr");
                 	if (oldReqnbr == null || "".equals(oldReqnbr.trim())) {
-                		//招行该字段叫：流程实例号
-                        String reqnbr = parseRecord.getStr("reqnbr");
+                		
                     	//更新指令汇总表的‘流程实例号’
                     	Record instrTotalSet = new Record();
                     	instrTotalSet.set("init_resp_time", new Date());
-                    	instrTotalSet.set("reqnbr", reqnbr);
+                    	
+                    	if (instrTotal.getStr("recv_bank_cnaps").startsWith("308") ) {
+                    		//招行该字段叫：流程实例号
+                            String reqnbr = parseRecord.getStr("reqnbr");
+                    		//CMBC会返回流程实例号reqnbr，用于查询交易状态与交易明细
+                    		instrTotalSet.set("reqnbr", reqnbr);
+						}
+                    	
+                    	if (StringUtils.isNotEmpty(parseRecord.getStr("bankErrMsg"))) {
+                    		instrTotalSet.set("bank_err_msg", parseRecord.getStr("bankErrMsg"));
+                    		instrTotalSet.set("bank_err_code", parseRecord.getStr("bankErrCode"));
+						}
                     	
                     	Record instrTotalWhere = new Record();
                     	instrTotalWhere.set("id", instrTotalId);
                     	
                     	int updIntrTotal = CommonService.updateRows(BATCH_RECV_INSTR_TOTLE_TALBE, instrTotalSet, instrTotalWhere);
                     	if (updIntrTotal != 1) {
-    						log.error("*****************************需要人工处理***************************");
-    						log.error("******需要人工处理：批收指令银行响应的‘流程实例号’回写指令汇总表失败！reqnbr={}*****", reqnbr);
-    						log.error("*****************************需要人工处理***************************");
+    						log.error("******需要人工处理：批收指令回写指令汇总表失败！*****");
     					}
 					}else {
 						log.error("批量收付回调, 指令汇总表的reqnbr字段已经回写，又再次回写，请人工核查原因 ！");
@@ -307,6 +320,7 @@ public class SysBatchRecvInter implements ISysAtomicInterface {
         total.set("init_send_time", new Date());
         return total;
     }
+    
     /**
 	 * 生成发送日期
 	 * @param cnaps
@@ -413,11 +427,12 @@ public class SysBatchRecvInter implements ISysAtomicInterface {
 
     /**
      * 保存付款指令
+     * @throws ReqDataException 
      */
-    public boolean saveIntr() {
+    public boolean saveIntr() throws ReqDataException {
         Record total = (Record) this.instr.get("total");
         //保存：收款指令汇总信息表
-        boolean save = Db.save(BATCH_RECV_INSTR_TOTLE_TALBE, total);
+        boolean save = saveTotal(total);
 
         if (save) {
             //向收款指令明细信息表反写 上一步生成的汇总表主键
@@ -433,5 +448,29 @@ public class SysBatchRecvInter implements ISysAtomicInterface {
         
         log.error("批收单据发送时，保存指令汇总表失败！");
         return false;
+    }
+    
+    /**
+     * 保存指令汇总表，工行会生成：业务种类编号
+     * @param total
+     * @return
+     * @throws ReqDataException 
+     */
+    private static synchronized boolean saveTotal(Record total) throws ReqDataException{
+    	String cnaps = total.getStr("recv_bank_cnaps");
+    	if (cnaps.startsWith("102")) {
+    		//查询当天bus_type最大的值,如果为空，则值为2
+    		String today = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+			Record findFirst = Db.findFirst(Db.getSql("batchrecv.qryMaxBusTypeFromTotal"), today);
+			Integer busType = null == findFirst ? 1 : findFirst.getInt("bus_type_max");
+			busType = null == busType || busType == 0 ? 1 : busType;
+			if (++busType > 99) {
+				throw new ReqDataException("工行一天只支持97笔批收指令！");
+			}
+			total.set("bus_type",busType);
+		}
+    	
+    	boolean save = Db.save(BATCH_RECV_INSTR_TOTLE_TALBE, total);
+    	return save;
     }
 }

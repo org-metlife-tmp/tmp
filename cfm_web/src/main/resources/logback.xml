@@ -81,6 +81,12 @@
     <logger name="com.qhjf.cfm.web.webservice.la.logger.recv" level="DEBUG" additivity="false">
         <appender-ref ref="BATCHRECV" />
     </logger>
+    <logger name="com.qhjf.cfm.web.webservice.la.eai.tool" level="DEBUG" additivity="false">
+        <appender-ref ref="BATCHRECV" />
+    </logger>
+    <logger name="com.qhjf.cfm.web.webservice.ebs.counter.recv" level="DEBUG" additivity="false">
+        <appender-ref ref="BATCHRECV" />
+    </logger>
 
     <root level="debug">
         <appender-ref ref="STDOUT"/>

@@ -20,6 +20,7 @@ import java.util.Map;
  * @author CHT
  *
  */
+@Deprecated
 public class CmbcTradeResultBatchQueryInter implements IMoreResultChannelInter {
 	private static final Logger log = LoggerFactory.getLogger(CmbcTradeResultBatchQueryInter.class);
 	private static CMBCTestConfigSection configSection = CMBCTestConfigSection.getInstance();

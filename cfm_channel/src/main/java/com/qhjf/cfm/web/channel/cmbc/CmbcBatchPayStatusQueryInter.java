@@ -22,8 +22,8 @@ import java.util.Map;
  * @author CHT
  *
  */
-public class CmbcBatchPayRecvStatusQueryInter  implements IMoreResultChannelInter {
-	private static Logger log = LoggerFactory.getLogger(CmbcBatchPayRecvStatusQueryInter.class);
+public class CmbcBatchPayStatusQueryInter  implements IMoreResultChannelInter {
+	private static Logger log = LoggerFactory.getLogger(CmbcBatchPayStatusQueryInter.class);
 	private static CMBCTestConfigSection configSection = CMBCTestConfigSection.getInstance();
 	public static final String ERROR_MSG = "批量收付状态查询，银行处理失败,失败原因:%s-%s";
 	private JSONArray rsArray;

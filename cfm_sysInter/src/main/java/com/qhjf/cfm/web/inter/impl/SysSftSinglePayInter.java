@@ -151,32 +151,60 @@ public class SysSftSinglePayInter extends SysSinglePayInter {
 
                     if (CommonService.updateRows(source_ref, bill_setRecord, bill_whereRecord) == 1) { //修改单据状态
                         if (CommonService.updateRows("single_pay_instr_queue", instr_setRecord, instr_whereRecord) == 1) {                        	                       	
-                        	if(0 == billRecord.getInt("source_sys")) {
-                        		log.info("====LA系统数据");
-                        		int update = Db.update(Db.getSql("pay_counter.updateLaOriginData"), origin_status ,bill_setRecord.get("feed_back") ,billRecord.get("origin_id"));
-                        		return  update > 0 ;
-                        	} else {
-                        		log.info("====EBS系统数据");
-                        		String pay_acc_no = GmfConfigAccnoSection.getInstance().getAccno();
-    							log.info("===========配置文件获取到的账号======="+pay_acc_no);
-    							
-    							final Map<String, Object> aRowData = TableDataCacheUtil.getInstance().getARowData("account", "acc_no", pay_acc_no);
+                        	
+                        	if(WebConstant.YesOrNo.YES.getKey()==TypeUtils.castToInt(billRecord.get("is_match"))) {
+                        		log.info("====来自未匹配数据====");     
+                        		//如果指令成功,更新为已退费 . 
+                        		if( 1== origin_status) {
+                        			log.info("====来自未匹配数据,指令成功===="); 
+                        			int	match_status = WebConstant.SftRecvCounterMatchStatus.YTF.getKey() ;
+                        			return CommonService.update("recv_counter_match", 
+                        					new Record().set("match_status", match_status),
+                        					new Record().set("id", billRecord.get("legal_id")));
+                        		} else {
+                        			log.info("====来自未匹配数据,指令失败===="); 
+                        			Record recv_counter_match = Db.findById("recv_counter_match", "id", billRecord.get("legal_id"));
+                        			boolean update = CommonService.update("recv_counter_match", 
+                        					new Record().set("delete_flag", 1),
+                        					new Record().set("id", billRecord.get("legal_id")));
+                        			if(!update) {
+                        				log.error("====更新recv_counter_match为删除失败===="+billRecord.get("legal_id"));
+                        				return update ;
+                        			}
+                        			recv_counter_match.remove("id");
+                        			recv_counter_match.set("status", WebConstant.SftLegalData.NOGROUP.getKey());
+                        			recv_counter_match.set("match_status",  WebConstant.SftRecvCounterMatchStatus.DPP.getKey());                       			
+                        			return Db.save("recv_counter_match", "id", recv_counter_match);
+                        		}
+                        		       		
+                        	}else {
+                        		if(0 == billRecord.getInt("source_sys")) {
+                            		log.info("====LA系统数据");
+                            		int update = Db.update(Db.getSql("pay_counter.updateLaOriginData"), origin_status ,bill_setRecord.get("feed_back") ,billRecord.get("origin_id"));
+                            		return  update > 0 ;
+                            	} else {
+                            		log.info("====EBS系统数据");
+                            		String pay_acc_no = GmfConfigAccnoSection.getInstance().getAccno();
+        							log.info("===========配置文件获取到的账号======="+pay_acc_no);
+        							
+        							final Map<String, Object> aRowData = TableDataCacheUtil.getInstance().getARowData("account", "acc_no", pay_acc_no);
 
-    							String bankcode = null;
-    							if (null != aRowData) {
-    								bankcode = TypeUtils.castToString(aRowData.get("bankcode"));
-    							}else {
-    								log.error("=====未查询到此账号");
-    								bankcode = String.format("银行账号：(%s)未维护到account表", pay_acc_no);
-    							}
-    							SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-    							SimpleDateFormat sdf1 = new SimpleDateFormat("HH:mm:ss");
-    							String pay_date = sdf.format(new Date());
-    							String pay_time = sdf1.format(new Date());
-    							int update = Db.update(Db.getSql("pay_counter.updateEbsOriginData"), origin_status ,bill_setRecord.get("feed_back"), pay_acc_no , 
-    									bankcode , pay_date ,pay_time , billRecord.get("origin_id")) ;
-                        		return update > 0 ;
-                        	}
+        							String bankcode = null;
+        							if (null != aRowData) {
+        								bankcode = TypeUtils.castToString(aRowData.get("bankcode"));
+        							}else {
+        								log.error("=====未查询到此账号");
+        								bankcode = String.format("银行账号：(%s)未维护到account表", pay_acc_no);
+        							}
+        							SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        							SimpleDateFormat sdf1 = new SimpleDateFormat("HH:mm:ss");
+        							String pay_date = sdf.format(new Date());
+        							String pay_time = sdf1.format(new Date());
+        							int update = Db.update(Db.getSql("pay_counter.updateEbsOriginData"), origin_status ,bill_setRecord.get("feed_back"), pay_acc_no , 
+        									bankcode , pay_date ,pay_time , billRecord.get("origin_id")) ;
+                            		return update > 0 ;
+                            	}
+                        	}                     	                        	
                         };
                         log.error("=======更新指令表失败");
                         return false ;
@@ -265,7 +293,27 @@ public class SysSftSinglePayInter extends SysSinglePayInter {
                     bill_setRecord.set("feed_back", errMsg);
 
                     if (CommonService.updateRows(source_ref, bill_setRecord, bill_whereRecord) == 1) { //修改单据状态
-                        return CommonService.updateRows("single_pay_instr_queue", instr_setRecord, instr_whereRecord) == 1;
+                        if (CommonService.updateRows("single_pay_instr_queue", instr_setRecord, instr_whereRecord) == 1) {                          
+                        	if(WebConstant.YesOrNo.YES.getKey()==TypeUtils.castToInt(billRecord.get("is_match"))) {
+                        			log.info("====来自未匹配数据,报错===="); 
+                        			Record recv_counter_match = Db.findById("recv_counter_match", "id", billRecord.get("legal_id"));
+                        			boolean update = CommonService.update("recv_counter_match", 
+                        					new Record().set("delete_flag", 1),
+                        					new Record().set("id", billRecord.get("legal_id")));
+                        			if(!update) {
+                        				log.error("====更新recv_counter_match为删除失败===="+billRecord.get("legal_id"));
+                        				return update ;
+                        			}
+                        			recv_counter_match.remove("id");
+                        			recv_counter_match.set("status", WebConstant.SftLegalData.NOGROUP.getKey());
+                        			recv_counter_match.set("match_status",  WebConstant.SftRecvCounterMatchStatus.DPP.getKey());                       			
+                        			return Db.save("recv_counter_match", "id", recv_counter_match);                 		       		
+                        	}
+                        	return true ;
+                        }else{
+                        	log.error("更新指令失败！");
+                            return false;
+                        }
                     } else {
                         log.error("数据过期！");
                         return false;

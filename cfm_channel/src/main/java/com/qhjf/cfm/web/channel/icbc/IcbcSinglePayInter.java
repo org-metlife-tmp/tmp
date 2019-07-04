@@ -152,15 +152,13 @@ public class IcbcSinglePayInter  implements ISingleResultChannelInter{
 		if ("7".equals(result)) {
 
 			record.set("status", 1);
-		} else if ("0".equals(result) || "1".equals(result) || "2".equals(result) || "3".equals(result)
-				|| "4".equals(result) || "5".equals(result) || "9".equals(result) || "20".equals(result)
-				|| "86".equals(result) || "95".equals(result)) {
-
-			record.set("status", 3);
-			record.set("message", iRetMsg);
-		} else {// 6,8,98
+		} else if ("6".equals(result) || "8".equals(result)) {
 
 			record.set("status", 2);
+			record.set("message", iRetMsg);
+		} else {
+
+			record.set("status", 3);
 			record.set("message", iRetMsg);
 		}
 		return record;

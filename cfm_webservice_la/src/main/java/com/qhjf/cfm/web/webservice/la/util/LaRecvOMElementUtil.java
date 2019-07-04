@@ -98,7 +98,6 @@ public class LaRecvOMElementUtil {
 		envelopeNs.addChild(msgBodyNs);
 
 		processMessage.addChild(envelopeNs);
-		System.out.println(processMessage);
 		return processMessage;
 	}
 

@@ -27,7 +27,8 @@ public class IcbcConsumerQueue implements Runnable{
 				if ("IcbcElectronicImgQueryInter".equals(channelInter.getClass().getSimpleName())) {//工行不支持下载电子回单图片
 
 				}else if ("IcbcCurrTransQueryInter".equals(channelInter.getClass().getSimpleName())
-						|| "IcbcHisTransQueryInter".equals(channelInter.getClass().getSimpleName())) {
+						|| "IcbcHisTransQueryInter".equals(channelInter.getClass().getSimpleName())
+						|| "IcbcProtocolImportQueryInter".equals(channelInter.getClass().getSimpleName())) {
 					jsonStr = IcbcTransQueryProcessPatch.process(channelInter.getInter(), queueBean.getParams());
 				}else {
 					/*Map<String, Object> params = queueBean.getParams();

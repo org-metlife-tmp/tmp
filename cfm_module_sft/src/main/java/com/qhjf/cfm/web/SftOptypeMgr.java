@@ -1,7 +1,10 @@
 package com.qhjf.cfm.web;
 
+import com.alibaba.fastjson.util.TypeUtils;
 import com.qhjf.cfm.web.validates.Optype;
 import com.qhjf.cfm.web.validates.RequiredParamsValidate;
+
+import java.util.ArrayList;
 
 /**
  * 收付费管理路由
@@ -730,5 +733,371 @@ public class SftOptypeMgr extends AbstractOptypeMgr {
 
         /** ============================ 资金系统月末预提凭证操作 end ============================ */
 
+        
+        /** ============================ 柜面收个单 start ============================ */
+        
+        //个单新增
+        optypes.add(new Optype(Optype.Mode.NORMAL, "recvcounter_add")
+                .registKeepParams(new String[]{"recv_date", "batch_process_no", "currency", "recv_mode", "use_funds",
+                        "bill_status", "bill_number", "bill_date", "recv_bank_name", "recv_acc_no","consumer_bank_name",
+                        "consumer_acc_no","terminal_no","third_payment","payer","payer_cer_no","payer_relation_insured",
+                        "pay_reason","files","policy_infos","wait_match_flag","wait_match_id","amount","bank_code"})
+                .registerValidate(new RequiredParamsValidate(new String[]{"recv_date","batch_process_no","currency","recv_mode",
+                		"use_funds","bill_status","bill_number","bill_date"/*,"recv_bank_name"*/,"recv_acc_no","consumer_bank_name",
+                		"consumer_acc_no"/*,"wait_match_flag"*/})));
+        //批处理号生成
+        optypes.add(new Optype(Optype.Mode.NORMAL, "recvcounter_getBatchProcessno")
+                .registKeepParams(new String[]{"recv_type"})
+                .registerValidate(new RequiredParamsValidate(new String[]{"recv_type"})));
+        
+        //个单查询列表        
+        optypes.add(new Optype(Optype.Mode.NORMAL, "recvcounter_list")
+                .registKeepParams(new String[]{"source_sys", "start_date", "end_date", "page_size", "page_num",
+                        "recv_org_id", "insure_bill_no", "recv_mode", "recv_bank_name", "bill_status","terminal_no",
+                        "use_funds","third_payment","min","max","pay_status"})
+                .registerValidate(new RequiredParamsValidate(new String[]{"page_size", "page_num"})));
+        
+        //个单详情       
+        optypes.add(new Optype(Optype.Mode.NORMAL, "recvcounter_detail")
+                .registKeepParams(new String[]{"id"})
+                .registerValidate(new RequiredParamsValidate(new String[]{"id"})));
+        //文件导出       
+        optypes.add(new Optype(Optype.Mode.NORMAL, "recvcounter_listexport")
+        		.registKeepParams(new String[]{"source_sys", "start_date", "end_date", 
+                        "recv_org_id", "insure_bill_no", "recv_mode", "recv_bank_name", "bill_status","terminal_no",
+                        "use_funds","third_payment","min","max","pay_status"}));
+        
+        //个单文件撤回     
+        optypes.add(new Optype(Optype.Mode.NORMAL, "recvcounter_revoke")
+        		.registKeepParams(new String[]{"id"})
+        		.registerValidate(new RequiredParamsValidate(new String[]{"id"})));
+        
+        //个单文件详情确认     
+        optypes.add(new Optype(Optype.Mode.NORMAL, "recvcounter_detailConfirm")
+        		.registKeepParams(new String[]{"id","files"})
+        		.registerValidate(new RequiredParamsValidate(new String[]{"id"})));
+
+         //个单根据保单号查询保单状态     
+        optypes.add(new Optype(Optype.Mode.NORMAL, "recvcounter_getPolicyInfo")
+        		.registKeepParams(new String[]{"insure_bill_no"})
+        		.registerValidate(new RequiredParamsValidate(new String[]{"insure_bill_no"})));
+
+        /** ============================ 柜面收个单 end ============================ */
+        
+        
+
+        /** ============================ 柜面收POS导入页面 start ============================ */
+        
+        //POS机明细导入 _ POS导入列表
+        optypes.add(new Optype(Optype.Mode.NORMAL, "recvcounterimportpos_list")
+                .registKeepParams(new String[]{"trade_type", "liquidation_start_date", "liquidation_end_date", "page_size", "page_num","trade_start_date","trade_end_date",
+                        "terminal_no","serial_number", "card_no", "card_issue_bank", "min", "max",
+                        "bill_checked"})
+                .registerValidate(new RequiredParamsValidate(new String[]{"page_size", "page_num"})));
+        
+        //POS机明细导入 _ POS导入页面的导出按钮
+        optypes.add(new Optype(Optype.Mode.NORMAL, "recvcounterimportpos_listexport")
+                .registKeepParams(new String[]{"trade_type", "liquidation_start_date", "liquidation_end_date","trade_start_date","trade_end_date",
+                        "terminal_no","serial_number", "card_no", "card_issue_bank", "min", "max",
+                        "bill_checked"}));
+        
+        /** ============================ 柜面收POS导入页面 end ============================ */
+        
+        /** ============================ 柜面收团单 start ============================ */
+
+        //团单新增
+        optypes.add(new Optype(Optype.Mode.NORMAL, "recvgroupcounter_add")
+                .registKeepParams(new String[]{"source_sys","recv_date","batch_process_no","recv_mode","recv_acc_no","recv_bank_name","currency",
+                        "use_funds","bill_status","bill_number","bill_date","consumer_bank_name","consumer_acc_no","bill_org_id","recv_org_id",
+                        "preinsure_bill_no","insure_bill_no","amount","consumer_no","consumer_acc_name","batch_no","insure_name","insure_acc_no",
+                        "third_payment","business_acc","business_acc_no","payer","payer_relation_insured","pay_reason","pay_code","files",
+                        "wait_match_flag","wait_match_id","agent_com","bussiness_no"})
+                .registerValidate(new RequiredParamsValidate(new String[]{"source_sys","recv_date","batch_process_no","recv_mode","recv_acc_no","recv_bank_name","currency",
+                        "use_funds","bill_status","bill_number","bill_date","consumer_bank_name","consumer_acc_no"})));
+
+       //团单查询列表
+        optypes.add(new Optype(Optype.Mode.NORMAL, "recvgroupcounter_list")
+                .registKeepParams(new String[]{"start_date", "end_date", "page_size", "page_num",
+                        "recv_org_id", "batch_no", "preinsure_bill_no", "insure_bill_no", "consumer_no", "recv_mode", "recv_bank_name",
+                        "bill_status", "use_funds", "third_payment", "min", "max", "pay_status"})
+                .registerValidate(new RequiredParamsValidate(new String[]{"page_size", "page_num"})));
+
+        //团单详情
+        optypes.add(new Optype(Optype.Mode.NORMAL, "recvgroupcounter_detail")
+                .registKeepParams(new String[]{"id"})
+                .registerValidate(new RequiredParamsValidate(new String[]{"id"})));
+
+        //团单文件详情确认
+        optypes.add(new Optype(Optype.Mode.NORMAL, "recvgroupcounter_detailconfirm")
+                .registKeepParams(new String[]{"id","files"})
+                .registerValidate(new RequiredParamsValidate(new String[]{"id"})));
+
+        //获取收款银行
+        optypes.add(new Optype(Optype.Mode.NORMAL, "recvgroupcounter_getBankcode"));
+
+        //导出
+        optypes.add(new Optype(Optype.Mode.NORMAL, "recvgroupcounter_listexport")
+        		.registKeepParams(new String[]{"start_date", "end_date",
+                        "recv_org_id", "batch_no", "preinsure_bill_no", "insure_bill_no", "consumer_no", "recv_mode", "recv_bank_name",
+                        "bill_status", "use_funds", "third_payment", "min", "max", "pay_status"}));
+
+        //撤销按钮
+        optypes.add(new Optype(Optype.Mode.NORMAL, "recvgroupcounter_revoke")
+                .registKeepParams(new String[]{"id"})
+                .registerValidate(new RequiredParamsValidate(new String[]{"id"})));
+
+        //客户账号的搜索
+        optypes.add(new Optype(Optype.Mode.NORMAL, "recvgroupcounter_customlist")
+                .registKeepParams(new String[]{"customerNo", "customerName"}));
+
+        //非客户账号类型的搜索
+        optypes.add(new Optype(Optype.Mode.NORMAL, "recvgroupcounter_customotherlist")
+                .registKeepParams(new String[]{"customerNo", "customerName", "preinsureBillNo", "insureBillNo", "bussinessNo"}));
+
+        //审批同意
+        optypes.add(new Optype(Optype.Mode.NORMAL, "recvgroupcounter_agree")
+                .registKeepParams(new String[]{
+                        "wf_inst_id", "define_id", "id", "service_status", "persist_version", "assignee_memo"
+                })
+                .registerValidate(new RequiredParamsValidate(new String[]{
+                        "wf_inst_id", "define_id", "id", "service_status", "persist_version"
+                })));
+
+        //批量审批同意
+        optypes.add(new Optype(Optype.Mode.NORMAL, "recvgroupcounter_batchagree")
+                .registKeepParams(new String[]{
+                        "batch_list"
+                })
+                .registerValidate(new RequiredParamsValidate(new String[]{
+                        "batch_list"
+                })));
+
+        //审批拒绝
+        optypes.add(new Optype(Optype.Mode.NORMAL, "recvgroupcounter_reject")
+                .registKeepParams(new String[]{
+                        "wf_inst_id", "define_id", "id", "service_status", "persist_version", "assignee_memo"
+                })
+                .registerValidate(new RequiredParamsValidate(new String[]{
+                        "wf_inst_id", "define_id", "id", "service_status", "persist_version", "assignee_memo"
+                })));
+
+        //审批加签
+        optypes.add(new Optype(Optype.Mode.NORMAL, "recvgroupcounter_append")
+                .registKeepParams(new String[]{
+                        "wf_inst_id", "define_id", "id", "service_status", "persist_version",
+                        "shadow_user_id", "shadow_user_name", "assignee_memo"
+                })
+                .registerValidate(new RequiredParamsValidate(new String[]{
+                        "wf_inst_id", "define_id", "id", "service_status", "persist_version",
+                        "shadow_user_id", "shadow_user_name"
+                })));
+
+        //批量审批加签
+        optypes.add(new Optype(Optype.Mode.NORMAL, "recvgroupcounter_batchappend")
+                .registKeepParams(new String[]{
+                        "batch_list"
+                })
+                .registerValidate(new RequiredParamsValidate(new String[]{
+                        "batch_list"
+                })));
+
+        //待办列表
+        optypes.add(new Optype(Optype.Mode.NORMAL, "recvgroupcounter_pendingtasks")
+                .registerValidate(new RequiredParamsValidate(new String[]{"biz_type"}))
+                .registKeepParams(new String[]{"page_size", "page_num", "biz_type"}));
+
+
+        /** ============================ 柜面收团单 end ============================ */
+
+        /** ============================ 柜面收个单团单对账 start ============================ */
+
+        //结算对账_单据列表
+        optypes.add(new Optype(Optype.Mode.NORMAL, "recvcountercheck_list")
+                .registKeepParams(new String[]{"start_date", "end_date", "page_size", "page_num", "bill_type",
+                        "batch_no", "preinsure_bill_no", "insure_bill_no", "consumer_no", "recv_mode", "recv_bank_name",
+                        "bill_status", "recv_acc_no", "min", "max", "is_checked"})
+                .registerValidate(new RequiredParamsValidate(new String[]{"page_size", "page_num"})));
+
+        //查找交易流水
+        optypes.add(new Optype(Optype.Mode.NORMAL, "recvcountercheck_tradingList")
+                .registKeepParams(new String[]{"start_date", "end_date", "min", "max", "summary", "is_checked"}));
+
+        //对账确认
+        optypes.add(new Optype(Optype.Mode.NORMAL, "recvcountercheck_confirm")
+                .registKeepParams(new String[]{"batchid", "persist_version", "trading_no"})
+                .registerValidate(new RequiredParamsValidate(new String[]{"batchid", "persist_version", "trading_no"})));
+
+        /** ============================ 柜面收个单团单对账 end ============================ */
+
+        /** ============================ POS记录与明细对账 start ============================ */
+        //结算对账_POS收款记录列表
+        optypes.add(new Optype(Optype.Mode.NORMAL, "recvcounterposrecordcheck_list")
+                .registKeepParams(new String[]{"start_date", "end_date","recv_org_id", "batch_process_no", "insure_bill_no", "page_size", "page_num","terminal_no",
+                        "min", "max","is_checked"})
+                .registerValidate(new RequiredParamsValidate(new String[]{"page_size", "page_num"})));
+
+        //POS机明细列表
+        optypes.add(new Optype(Optype.Mode.NORMAL, "recvcounterposrecordcheck_tradingList")
+                .registKeepParams(new String[]{"trade_type", "liquidation_start_date", "liquidation_end_date", "page_size", "page_num",
+                        "terminal_no","serial_number", "card_no", "card_issue_bank", "min", "max",
+                        "bill_checked"}));
+
+        //对账确认
+        optypes.add(new Optype(Optype.Mode.NORMAL, "recvcounterposrecordcheck_confirm")
+                .registKeepParams(new String[]{"detail_id", "detail_persist", "pos_id", "pos_persist"})
+                .registerValidate(new RequiredParamsValidate(new String[]{"detail_id", "detail_persist", "pos_id", "pos_persist"})));
+
+        /** ============================ POS记录与明细对账 end ============================ */
+
+        /** ============================ POS流水与银行流水对账 start ============================ */
+        //POS机明细列表
+        optypes.add(new Optype(Optype.Mode.NORMAL, "recvcounterpostranscheck_list")
+                .registKeepParams(new String[]{"trade_type", "liquidation_start_date", "liquidation_end_date", "page_size", "page_num",
+                        "terminal_no","serial_number", "card_no", "card_issue_bank", "min", "max",
+                        "trade_checked"})
+                .registerValidate(new RequiredParamsValidate(new String[]{"page_size", "page_num"})));
+
+        //银行流水列表
+        optypes.add(new Optype(Optype.Mode.NORMAL, "recvcounterpostranscheck_tradingList")
+                .registKeepParams(new String[]{"start_date", "end_date", "min", "max", "summary", "is_checked"}));
+
+        //对账确认
+        optypes.add(new Optype(Optype.Mode.NORMAL, "recvcounterpostranscheck_confirm")
+                .registKeepParams(new String[]{"batchid", "persist_version", "trading_no"})
+                .registerValidate(new RequiredParamsValidate(new String[]{"batchid", "persist_version", "trading_no"})));
+
+        /** ============================ POS流水与银行流水对账 end ============================ */
+        
+        
+        /** ============================ 柜面收待匹配 start ============================ */
+
+        //待匹配列表
+        optypes.add(new Optype(Optype.Mode.NORMAL, "recvcounterwaitingformatch_list")
+                .registKeepParams(new String[]{"start_date", "end_date", "page_size", "page_num", "recv_org_id",
+                        "recv_mode", "recv_bank_name", "bill_status", "terminal_no", "min", "max", "match_status"})
+                .registerValidate(new RequiredParamsValidate(new String[]{"page_size", "page_num"})));
+         
+        //待匹配导出
+        optypes.add(new Optype(Optype.Mode.NORMAL, "recvcounterwaitingformatch_listexport")
+                .registKeepParams(new String[]{"start_date", "end_date", "recv_org_id",
+                        "recv_mode", "recv_bank_name", "bill_status", "terminal_no", "min", "max", "match_status"}));
+        
+        
+        //未匹配新增
+        optypes.add(new Optype(Optype.Mode.NORMAL, "recvcounterwaitingformatch_add")
+                .registKeepParams(new String[]{"recv_date", "batch_process_no", "currency", "recv_mode", "bill_status", "bill_number"
+                		, "bill_date", "recv_acc_no", "recv_bank_name", "consumer_bank_name", "consumer_acc_no", "terminal_no"
+                		, "payer", "payer_cer_no","amount"})
+                /*.registerValidate(new RequiredParamsValidate(new String[]{"recv_date", "batch_process_no", "currency", "recv_mode", "bill_status", "bill_number"
+                		, "bill_date", "recv_acc_no", "recv_bank_name", "consumer_bank_name", "consumer_acc_no", "terminal_no"
+                		, "payer", "payer_cer_no"}))*/);
+
+        //未匹配页面_详情
+        optypes.add(new Optype(Optype.Mode.NORMAL, "recvcounterwaitingformatch_detail")
+                .registKeepParams(new String[]{"id"})
+                .registerValidate(new RequiredParamsValidate(new String[]{"id"})));
+        
+         //未匹配页面_匹配
+        optypes.add(new Optype(Optype.Mode.NORMAL, "recvcounterwaitingformatch_match")
+                .registKeepParams(new String[]{"id"})
+                .registerValidate(new RequiredParamsValidate(new String[]{"id"})));
+        
+        //未匹配页面_匹配
+        optypes.add(new Optype(Optype.Mode.NORMAL, "recvcounterwaitingformatch_refund")
+                .registKeepParams(new String[]{"id"})
+                .registerValidate(new RequiredParamsValidate(new String[]{"id"})));
+     
+        //个单文件撤回     
+        optypes.add(new Optype(Optype.Mode.NORMAL, "recvcounterwaitingformatch_revoke")
+        		.registKeepParams(new String[]{"id"})
+        		.registerValidate(new RequiredParamsValidate(new String[]{"id"})));   
+        
+        /** ============================ 柜面收待匹配 end ============================ */
+        
+        
+        /** ============================ 柜面付 TMP付款工作台 start ============================ */
+        
+        //列表
+        optypes.add(new Optype(Optype.Mode.NORMAL, "paycountertmp_list")
+                .registKeepParams(new String[]{"page_size", "page_num", "start_date", "end_date", "insure_bill_no", "preinsure_bill_no"
+                		, "org_id", "recv_cert_code", "recv_acc_name", "pay_mode", "status", "service_status", "biz_code"})
+                .registerValidate(new RequiredParamsValidate(new String[]{"page_size", "page_num"})));
+       
+        //列表导出
+        optypes.add(new Optype(Optype.Mode.NORMAL, "paycountertmp_listexport")
+                .registKeepParams(new String[]{"page_size", "page_num", "start_date", "end_date", "insure_bill_no", "preinsure_bill_no"
+                		, "org_id", "recv_cert_code", "recv_acc_name", "pay_mode", "status", "service_status", "biz_code"}));   
+        //补录保存按钮
+        optypes.add(new Optype(Optype.Mode.NORMAL, "paycountertmp_supplement")
+                .registKeepParams(new String[]{"pay_id", "recv_bank_name", "recv_cnaps_code", "recv_acc_no", "recv_acc_name", "payment_summary"
+                		, "files", "persist_version"})
+                .registerValidate(new RequiredParamsValidate(new String[]{"pay_id", "recv_bank_name", "recv_acc_no", "persist_version"})));
+        //作废按钮
+        optypes.add(new Optype(Optype.Mode.NORMAL, "paycountertmp_revokeToTMP")
+                .registKeepParams(new String[]{"pay_id", "feed_back", "persist_version"})
+                .registerValidate(new RequiredParamsValidate(new String[]{ "pay_id", "persist_version"})));
+       
+         //审批流详情
+        optypes.add(new Optype(Optype.Mode.NORMAL, "paycountertmp_detail")
+                .registKeepParams(new String[]{"id"})
+                .registerValidate(new RequiredParamsValidate(new String[]{"id"})));
+        
+        //提交按钮
+        optypes.add(new Optype(Optype.Mode.NORMAL, "paycountertmp_confirm")
+                .registKeepParams(new String[]{ "pay_id"})
+                .registerValidate(new RequiredParamsValidate(new String[]{ "pay_id"})));
+        
+        optypes.add(new Optype(Optype.Mode.NORMAL, "paycountertmp_pendingtasks")
+                .registerValidate(new RequiredParamsValidate(new String[]{"biz_type"}))
+                .registKeepParams(new String[]{"page_size", "page_num", "biz_type"}));
+        
+        optypes.add(new Optype(Optype.Mode.NORMAL, "paycountertmp_agree")
+                .registKeepParams(new String[]{
+                        "wf_inst_id", "define_id", "id", "service_status", "persist_version", "assignee_memo"
+                })
+                .registerValidate(new RequiredParamsValidate(new String[]{
+                        "wf_inst_id", "define_id", "id", "service_status", "persist_version"
+                })));
+                                                    
+        optypes.add(new Optype(Optype.Mode.NORMAL, "paycountertmp_batchagree")
+                .registKeepParams(new String[]{
+                        "batch_list"
+                })
+                .registerValidate(new RequiredParamsValidate(new String[]{
+                        "batch_list"
+                })));
+        
+       //拒绝
+        optypes.add(new Optype(Optype.Mode.NORMAL, "paycountertmp_reject")
+                .registKeepParams(new String[]{
+                        "wf_inst_id", "define_id", "id", "service_status", "persist_version", "assignee_memo"
+                })
+                .registerValidate(new RequiredParamsValidate(new String[]{
+                        "wf_inst_id", "define_id", "id", "service_status", "persist_version"
+                })));
+        
+        //加签
+        optypes.add(new Optype(Optype.Mode.NORMAL, "paycountertmp_append")
+                .registKeepParams(new String[]{
+                        "wf_inst_id", "define_id", "id", "service_status", "persist_version",
+                        "shadow_user_id", "shadow_user_name", "assignee_memo"
+                })
+                .registerValidate(new RequiredParamsValidate(new String[]{
+                        "wf_inst_id", "define_id", "id", "service_status", "persist_version",
+                        "shadow_user_id", "shadow_user_name"
+                })));
+
+        //批量加签
+        optypes.add(new Optype(Optype.Mode.NORMAL, "paycountertmp_batchappend")
+                .registKeepParams(new String[]{
+                        "batch_list"
+                })
+                .registerValidate(new RequiredParamsValidate(new String[]{
+                        "batch_list"
+                })));
+        
+        /** ============================ 柜面付 付款工作台TMP end ============================ */
+        
+        
     }
 }

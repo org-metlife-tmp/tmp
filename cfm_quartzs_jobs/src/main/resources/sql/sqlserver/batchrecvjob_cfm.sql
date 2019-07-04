@@ -39,7 +39,29 @@
 	where
 		status = 1 and
 		reqsta = 0 and
-		rtnflg in (0, 9)
+		rtnflg in (0, 9) and
+		recv_bank_cnaps like '308%'
+#end
+
+#sql('queryProtocolTotal')
+	select 
+		bank_seriral_no,
+		cnaps as bank_cnaps_code 
+	from 
+		protocol_import_instr_total
+	where
+		status = 0 or
+		status = 3
+#end
+
+#sql('queryOldProtocolImportQueryLock')
+	select 
+		* 
+	from 
+		protocol_import_instr_query_lock
+	where
+		bank_seriral_no = ? and
+		channel_code = ?
 #end
 
 #end

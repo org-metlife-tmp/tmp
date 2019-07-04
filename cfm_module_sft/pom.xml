@@ -31,12 +31,6 @@
         
         <dependency>
             <groupId>com.qhjf.cfm</groupId>
-            <artifactId>cfm_module_dbt</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
-        
-        <dependency>
-            <groupId>com.qhjf.cfm</groupId>
             <artifactId>cfm_common</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
@@ -75,6 +69,12 @@
             <groupId>com.qhjf.cfm</groupId>
             <artifactId>cfm_sysInter</artifactId>
             <version>${project.parent.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.qhjf.cfm</groupId>
+            <artifactId>cfm_excel_parse</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 

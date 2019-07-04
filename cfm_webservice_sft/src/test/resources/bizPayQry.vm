@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='UTF-8'?>
+	<Root>
+		<Policy>
+			#if(!$!map.get('customerNo') || $null.isNull($!map.get('customerNo')))
+				<CustomerNo/>
+			#else
+				<CustomerNo>$!map.get('customerNo')</CustomerNo>
+			#end
+			#if(!$!map.get('customerName') || $null.isNull($!map.get('customerName')))
+				<CustomerName/>
+			#else
+				<CustomerName>$!map.get('customerName')</CustomerName>
+			#end
+		    #if(!$!map.get('preinsureBillNo') || $null.isNull($!map.get('preinsureBillNo')))
+				<PrtNo/>
+			#else
+				<PrtNo>$!map.get('preinsureBillNo')</PrtNo>
+			#end
+		    #if(!$!map.get('insureBillNo') || $null.isNull($!map.get('insureBillNo')))
+				<GrpContNo/>
+			#else
+				<GrpContNo>$!map.get('insureBillNo')</GrpContNo>
+			#end
+		    #if(!$!map.get('bussinessNo') || $null.isNull($!map.get('bussinessNo')))
+				<BussinessNo/>
+			#else
+				<BussinessNo>$!map.get('bussinessNo')</BussinessNo>
+			#end
+		    #if(!$!map.get('bussinessType') || $null.isNull($!map.get('bussinessType')))
+				<BussinessType/>
+			#else
+				<BussinessType>$!map.get('bussinessType')</BussinessType>
+			#end
+		</Policy>
+	</Root>
