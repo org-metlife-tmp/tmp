@@ -183,7 +183,7 @@ public class SftLaDataCheckJob implements Job{
             if(channel.get("single_amount_limit")!=null && channel.getBigDecimal("single_amount_limit").compareTo(new BigDecimal(0))!=0){
                 BigDecimal chanAmount = channel.getBigDecimal("single_amount_limit");
                 BigDecimal origAmount = laOiriginData.getBigDecimal("amount");
-                if(chanAmount.compareTo(origAmount) <=0 ){
+                if(chanAmount.compareTo(origAmount) < 0 ){
                     throw new ReqValidateException("TMPPJ:拒付,超通道限额");
                 }
             }
