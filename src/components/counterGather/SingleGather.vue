@@ -150,11 +150,11 @@
                         <el-col :span="5">
                             <el-form-item>
                                 <el-col :span="11">
-                                    <el-input v-model="searchData.min" clearable placeholder="最小金额"></el-input>
+                                    <el-input v-model.number="searchData.min" clearable placeholder="最小金额"></el-input>
                                 </el-col>
                                 <el-col class="line" :span="1" style="text-align:center">-</el-col>
                                 <el-col :span="11">
-                                    <el-input v-model="searchData.max" clearable placeholder="最大金额"></el-input>
+                                    <el-input v-model.number="searchData.max" clearable placeholder="最大金额"></el-input>
                                 </el-col>
                             </el-form-item>
                         </el-col>
@@ -490,18 +490,21 @@
                                 <el-switch
                                         v-model="item.third_payment"
                                         active-value="1"
-                                        inactive-value="0">
+                                        inactive-value="0"
+                                        @change="setPayInfo(item)">
                                 </el-switch>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
                             <el-form-item label="缴费人">
-                                <el-input v-model="item.payer" placeholder="请输入缴费人"></el-input>
+                                <el-input v-model="item.payer" placeholder="请输入缴费人"
+                                          :disabled="item.third_payment == '0'"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
                             <el-form-item label="缴费人证件号">
-                                <el-input v-model="item.payer_cer_no" placeholder="请输入缴费人证件号"></el-input>
+                                <el-input v-model="item.payer_cer_no" placeholder="请输入缴费人证件号"
+                                          :disabled="item.third_payment == '0'"></el-input>
                             </el-form-item>
                         </el-col>
                     </el-row>
@@ -696,7 +699,11 @@
                 var searchData = this.searchData;
                 var params = this.routerMessage.params;
                 for (var k in searchData) {
-                    params[k] = searchData[k];
+                    if(k == "min" || k == "max"){
+                        params[k] = searchData[k] ? (typeof(searchData[k]) == "number" ? searchData[k] : "") : searchData[k];
+                    }else{
+                        params[k] = searchData[k];
+                    }
                 }
                 var val = this.dateValue;
                 params.start_date = val ? val[0] : "";
@@ -722,6 +729,13 @@
             //展示格式转换-状态
             transitStatus: function (row, column, cellValue, index) {
                 return this.statusList[cellValue];
+            },
+            //是否第三方缴费状态改变后设置缴费人信息
+            setPayInfo: function(item){
+                if(item.third_payment == "0"){
+                    item.payer_cer_no = "";
+                    item.payer = "";
+                }
             },
             //获取机构列表
             getOrgList: function () {

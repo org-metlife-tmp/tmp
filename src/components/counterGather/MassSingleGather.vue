@@ -149,11 +149,11 @@
                         <el-col :span="5">
                             <el-form-item>
                                 <el-col :span="11">
-                                    <el-input v-model="searchData.min" clearable placeholder="最小金额"></el-input>
+                                    <el-input v-model.number="searchData.min" clearable placeholder="最小金额"></el-input>
                                 </el-col>
                                 <el-col class="line" :span="1" style="text-align:center">-</el-col>
                                 <el-col :span="11">
-                                    <el-input v-model="searchData.max" clearable placeholder="最大金额"></el-input>
+                                    <el-input v-model.number="searchData.max" clearable placeholder="最大金额"></el-input>
                                 </el-col>
                             </el-form-item>
                         </el-col>
@@ -201,7 +201,7 @@
                                  :formatter="transitFunds"></el-table-column>
                 <el-table-column prop="bill_status" label="票据状态" :show-overflow-tooltip="true"
                                  :formatter="transitBill"></el-table-column>
-                <el-table-column prop="bill_number" label="票据票号" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="bill_number" label="票据编号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="insure_acc_no" label="投保人客户号" width="110px"
                                  :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="insure_name" label="投保人" :show-overflow-tooltip="true"></el-table-column>
@@ -808,7 +808,11 @@
                 var searchData = this.searchData;
                 var params = this.routerMessage.params;
                 for (var k in searchData) {
-                    params[k] = searchData[k];
+                    if(k == "min" || k == "max"){
+                        params[k] = searchData[k] ? (typeof(searchData[k]) == "number" ? searchData[k] : "") : searchData[k];
+                    }else{
+                        params[k] = searchData[k];
+                    }
                 }
                 var val = this.dateValue;
                 params.start_date = val ? val[0] : "";
