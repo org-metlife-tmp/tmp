@@ -80,7 +80,7 @@
 <template>
     <el-container id="electronicReceipt">
         <el-header>
-            <div class="btn-list-left">
+            <div class="button-list-left">
                 <el-select v-model="channel_code"
                            placeholder="渠道编码" size="mini"
                            @change="channelIsSelect">
