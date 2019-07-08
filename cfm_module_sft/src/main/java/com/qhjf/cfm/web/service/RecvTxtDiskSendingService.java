@@ -1,6 +1,7 @@
 package com.qhjf.cfm.web.service;
 
 
+import com.alibaba.fastjson.util.TypeUtils;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.IAtom;
 import com.jfinal.plugin.activerecord.Record;
@@ -169,7 +170,7 @@ public class RecvTxtDiskSendingService {
 						detail_map.remove("pay_cert_type");
 						detail_map.remove("pay_cert_code");
 					}
-				}}	        	        	
+				}	        	        	
 	        	datail_list.add(detail_map);
 			}
 	        map.put("details", datail_list);
