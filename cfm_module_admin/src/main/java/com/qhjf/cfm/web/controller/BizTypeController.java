@@ -3,7 +3,7 @@ package com.qhjf.cfm.web.controller;
 import com.alibaba.fastjson.util.TypeUtils;
 import com.jfinal.plugin.activerecord.Record;
 import com.qhjf.cfm.exceptions.BusinessException;
-import com.qhjf.cfm.web.constant.WebConstant;
+import com.qhjf.cfm.web.commconstant.WebConstant;
 import com.qhjf.cfm.web.plugins.jwt.Auth;
 import com.qhjf.cfm.web.plugins.log.LogbackLog;
 import com.qhjf.cfm.web.service.BizTypeService;
