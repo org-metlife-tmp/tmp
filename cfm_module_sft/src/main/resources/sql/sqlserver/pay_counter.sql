@@ -57,7 +57,8 @@ WHERE
 	pay.id = la.legal_id AND
 	org.org_id = pay.org_id AND
 	biztype.type_code = la.biz_type AND
-	origin.id = pay.origin_id
+	origin.id = pay.origin_id AND
+	biztype.[type] = 1 
   #if(map != null)
     #for(x : map)
       #if(x.value&&x.value!="")
@@ -411,7 +412,8 @@ WHERE gmf.id = cwrei.bill_id  AND
       pay.id = la.legal_id AND 
 	  biztype.type_code = la.biz_type AND
 	  gmf.legal_id = pay.id AND
-	  gmf.delete_num = 0	  
+	  gmf.delete_num = 0	AND
+	  biztype.[type] =1
   #for(x : map)
     #if("in".equals(x.key))
       #if(map.in != null)
@@ -699,6 +701,7 @@ WHERE gmf.id = cwrei.bill_id  AND
      gmf.legal_id = pay.id AND
      pay.id = la.legal_id AND
      biztype.type_code = la.biz_type AND
+     biztype.[type] = 1 AND
      gmf.id = ?
 #end
 
