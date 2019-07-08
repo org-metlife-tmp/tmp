@@ -401,19 +401,22 @@ select
 	la.preinsure_bill_no AS preinsure_bill_no,
 	la.insure_bill_no AS insure_bill_no,
 	null AS biz_code ,
-	biztype.type_name AS type_name
+	biztype.type_name AS type_name,
+	origin.create_time AS pay_date
 FROM
 	gmf_bill AS gmf,
 	cfm_workflow_run_execute_inst AS cwrei ,
 	la_pay_legal_data_ext AS  la ,
 	la_biz_type AS biztype ,
-	pay_legal_data AS pay	
+	pay_legal_data AS pay,
+	la_origin_pay_data AS origin
 WHERE gmf.id = cwrei.bill_id  AND
       pay.id = la.legal_id AND 
 	  biztype.type_code = la.biz_type AND
 	  gmf.legal_id = pay.id AND
 	  gmf.delete_num = 0	AND
-	  biztype.[type] =1
+	  biztype.[type] =1 AND
+      origin.id = pay.origin_id	  
   #for(x : map)
     #if("in".equals(x.key))
       #if(map.in != null)
@@ -498,16 +501,19 @@ UNION ALL
 	ebs.insure_bill_no AS insure_bill_no,
 	ebs.biz_code AS biz_code,
 	CASE ebs.biz_type  WHEN 1 THEN '定期结算退费' WHEN 5 THEN '理赔给付' WHEN 10 THEN '保全退费' WHEN 12 THEN
-       '基金单满期退费'  WHEN 13 THEN '客户账户退费'  END type_name	
+       '基金单满期退费'  WHEN 13 THEN '客户账户退费'  END type_name	,
+    origin.create_time AS pay_date
 FROM
 	gmf_bill AS gmf,
 	cfm_workflow_run_execute_inst AS cwrei ,
 	ebs_pay_legal_data_ext AS  ebs ,
-	pay_legal_data AS pay	
+	pay_legal_data AS pay	,
+	ebs_origin_pay_data AS origin
 WHERE gmf.id = cwrei.bill_id  AND
       pay.id = ebs.legal_id AND 
 	  gmf.legal_id = pay.id AND
-	  gmf.delete_num = 0	  
+	  gmf.delete_num = 0	AND
+	  origin.id = pay.origin_id
   #for(x : map)
     #if("in".equals(x.key))
       #if(map.in != null)
