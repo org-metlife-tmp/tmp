@@ -372,8 +372,10 @@ public class RecvGroupCounterService {
         if ("SUCCESS".equals(groupBizPayQryRespBean.getResultCode())) {
             //返回成功
             return groupBizPayQryRespBean.getList();
+        }else if("FAIL".equals(groupBizPayQryRespBean.getResultCode())){
+            throw new ReqDataException(groupBizPayQryRespBean.getResultMsg());
         }else {
-            throw new ReqDataException("查询出错");
+            throw new ReqDataException("未找到想要的数据");
         }
     }
 
@@ -392,8 +394,10 @@ public class RecvGroupCounterService {
         if ("SUCCESS".equals(groupCustomerAccQryRespBean.getResultCode())) {
             //返回成功
             return groupCustomerAccQryRespBean.getList();
+        }else if("FAIL".equals(groupCustomerAccQryRespBean.getResultCode())){
+            throw new ReqDataException(groupCustomerAccQryRespBean.getResultMsg());
         }else {
-            throw new ReqDataException("查询出错");
+            throw new ReqDataException("未找到想要的数据");
         }
     }
 
