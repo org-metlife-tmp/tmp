@@ -852,7 +852,7 @@ public class SftOptypeMgr extends AbstractOptypeMgr {
 
         //非客户账号类型的搜索
         optypes.add(new Optype(Optype.Mode.NORMAL, "recvgroupcounter_customotherlist")
-                .registKeepParams(new String[]{"customerNo", "customerName", "preinsureBillNo", "insureBillNo", "bussinessNo"}));
+                .registKeepParams(new String[]{"customerNo", "customerName", "preinsureBillNo", "insureBillNo", "bussinessNo", "use_funds"}));
 
         //审批同意
         optypes.add(new Optype(Optype.Mode.NORMAL, "recvgroupcounter_agree")

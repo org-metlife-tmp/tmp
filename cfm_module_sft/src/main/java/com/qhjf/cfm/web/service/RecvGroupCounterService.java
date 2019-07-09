@@ -366,7 +366,7 @@ public class RecvGroupCounterService {
                 TypeUtils.castToString(record.get("preinsureBillNo")),
                 TypeUtils.castToString(record.get("insureBillNo")),
                 TypeUtils.castToString(record.get("bussinessNo")),
-                WebConstant.SftRecvGroupCounterUseFunds.getSftRecvGroupCounterUseFundsByKey(2).getKeyc()
+                WebConstant.SftRecvGroupCounterUseFunds.getSftRecvGroupCounterUseFundsByKey(TypeUtils.castToInt(record.get("use_funds"))).getKeyc()
         );
         GroupBizPayQryRespBean groupBizPayQryRespBean = recvCounter.ebsBizPayQry(groupBizPayQryReqBean);
         if ("SUCCESS".equals(groupBizPayQryRespBean.getResultCode())) {
