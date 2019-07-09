@@ -48,13 +48,20 @@ public class DoubtfulService {
         if(null == findById){
             throw new ReqDataException("当前登录人的机构信息未维护");
         }
-
         List<String> codes = new ArrayList<>();
-        if(findById.getInt("level_num")==1 &&
-                (!WebConstant.SftDoubtPayMode.WY.getKeyc().equals(record.getStr("pay_mode")))){
-            log.info("========目前登录机构为总公司");
-            codes = Arrays.asList("0102","0101","0201","0202","0203","0204","0205","0500");
-        }else{
+        if(WebConstant.SftDoubtPayMode.WY.getKeyc().equals(record.getStr("pay_mode"))){
+            if(findById.getInt("level_num")==1){
+                log.info("========目前登录机构为总公司");
+                codes = Arrays.asList("0102","0101","0201","0202","0203","0204","0205","0500");
+                record.set("gmfcodes", codes);
+            }
+        }else {
+            if(findById.getInt("level_num")==1){
+                log.info("========目前登录机构为总公司");
+                codes = Arrays.asList("0102","0101","0201","0202","0203","0204","0205","0500");
+            }
+        }
+        if(findById.getInt("level_num")!=1){
             log.info("========目前登录机构为分公司公司");
             List<Record> rec = Db.find(Db.getSql("org.getCurrentUserOrgs"), org_id);
             for (Record o : rec) {
