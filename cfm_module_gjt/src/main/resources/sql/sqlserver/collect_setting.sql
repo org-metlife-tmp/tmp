@@ -307,6 +307,7 @@ WHERE cv.cat_code='acc_attr'
   AND acc.status = #para(status)
   AND acc.org_id = #para(org_id)
   AND acc.is_activity = 1
+  AND acc.interactive_mode = 1
   #if(exclude_ids != null && exclude_ids.size() > 0)
     and acc.acc_id not in(
     #for(y : exclude_ids)
