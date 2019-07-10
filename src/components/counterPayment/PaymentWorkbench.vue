@@ -688,7 +688,7 @@
 
                 //附件数据
                 this.emptyFileList = [];
-                this.fileMessage.bill_id = row.gmf_id ? row.gmf_id : row.pay_id;
+                this.fileMessage.bill_id = row.pay_id;
                 this.triggerFile = !this.triggerFile;
             },
             //选择开户行
