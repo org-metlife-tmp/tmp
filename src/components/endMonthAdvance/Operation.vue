@@ -1,6 +1,14 @@
 <style scoped lang="less" type="text/less">
     #operation {
-
+        .search-setion {
+            .el-select__tags-text {
+                display: inline-block;
+                max-width: 40px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+        }
     }
 </style>
 

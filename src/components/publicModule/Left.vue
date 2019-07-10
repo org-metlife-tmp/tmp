@@ -688,8 +688,6 @@
                     <p class="mg-four">批量付款</p>
                 </template>
                 <el-menu-item-group>
-                    <el-menu-item index="/batch-payment/prevent-repet" v-if="menuList.DataAntiDualWaring">防重预警
-                    </el-menu-item>
                     <el-menu-item index="/batch-payment/pay-check-batch" v-if="menuList.PayCheckAllot">核对组批
                     </el-menu-item>
                     <el-menu-item index="/batch-payment/pay-disk-sending" v-if="menuList.PayBatchSend">盘片发送
@@ -708,9 +706,6 @@
                     <p class="mg-four">批量收款</p>
                 </template>
                 <el-menu-item-group>
-                    <el-menu-item index="/batch-gather/gaterh-prevent-repet" v-if="menuList.RecvDataAntiDualWaring">
-                        防重预警
-                    </el-menu-item>
                     <el-menu-item index="/batch-gather/gather-check-batch" v-if="menuList.RecvCheckAllot">核对组批
                     </el-menu-item>
                     <el-menu-item index="/batch-gather/gather-disk-sending" v-if="menuList.RecvBatchSend">盘片发送
@@ -723,7 +718,19 @@
                     </el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="22" v-if="menuList.COUNTERPAY">
+            <el-submenu index="22" v-if="menuList.DATADOUBTFUL">
+                <template slot="title" height="200px">
+                    <i class="icon-fcyj"></i>
+                    <p class="mg-four">防重预警</p>
+                </template>
+                <el-menu-item-group>
+                    <el-menu-item index="/batch-payment/prevent-repet" v-if="menuList.DataAntiDualWaring">付款防重
+                    </el-menu-item>
+                    <el-menu-item index="/batch-gather/gaterh-prevent-repet" v-if="menuList.RecvDataAntiDualWaring">收款防重
+                    </el-menu-item>
+                </el-menu-item-group>
+            </el-submenu>
+            <el-submenu index="23" v-if="menuList.COUNTERPAY">
                 <template slot="title" height="200px">
                     <i class="icon-gmfk"></i>
                     <p class="mg-four">网银付款</p>
@@ -735,7 +742,7 @@
                     </el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="23" v-if="menuList.DZT">
+            <el-submenu index="24" v-if="menuList.DZT">
                 <template slot="title" height="200px">
                     <i class="icon-dzt"></i>
                     <p>对账通</p>
@@ -749,7 +756,7 @@
                     </el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="24" v-if="menuList.PREVOUCHERSUBMIT">
+            <el-submenu index="25" v-if="menuList.PREVOUCHERSUBMIT">
                 <template slot="title" height="200px">
                     <i class="icon-ymyt"></i>
                     <p>月末预提</p>
@@ -760,7 +767,7 @@
                     <el-menu-item index="/endmonth-advance/advance-query" v-if="menuList.PREVOUCHERQUERY">查询</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="25" v-if="menuList.RECVCOUNTER">
+            <el-submenu index="26" v-if="menuList.RECVCOUNTER">
                 <template slot="title" height="200px">
                     <i class="icon-gmsk"></i>
                     <p>柜面收款</p>
@@ -775,7 +782,7 @@
                     <el-menu-item index="/counter-gather/wait-to-match" v-if="menuList.RECVCOUNTERMATCH">待匹配收款</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="26" v-if="menuList.VOUCHER">
+            <el-submenu index="27" v-if="menuList.VOUCHER">
                 <template slot="title" height="200px">
                     <i class="icon-pzgl"></i>
                     <p>凭证</p>
@@ -928,7 +935,6 @@
                     ChannelSet: false, //通道设置
 
                     BATCHPAY: false, //批量付款
-                    DataAntiDualWaring: false, //支付数据防重预警
                     PayCheckAllot: false, //核对组批
                     PayBatchSend: false, //盘片发送
                     PayBatchResp: false, //盘片回盘
@@ -936,12 +942,15 @@
                     PayBatchDoExcp: false, //异常处理
 
                     BATCHRECV: false, //批量收款
-                    RecvDataAntiDualWaring: false, //支付数据防重预警
                     RecvCheckAllot: false, //核对组批
                     RecvBatchSend: false, //盘片发送
                     RecvBatchResp: false, //盘片回盘
                     RecvBatchCheck: false, //结算对账
                     RecvBatchDoExcp: false, //异常处理
+
+                    DATADOUBTFUL: false, //防重预警
+                    DataAntiDualWaring: false, //批付防重预警
+                    RecvDataAntiDualWaring: false, //批收防重预警
 
                     COUNTERPAY: false, //柜面付款
                     PayCounterCheck: false, //结算对账
