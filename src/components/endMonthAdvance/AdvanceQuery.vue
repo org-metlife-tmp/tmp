@@ -1,6 +1,14 @@
-<style scoped lang="less" type="text/less">
+<style lang="less" type="text/less">
     #advanceQuery {
-
+        .search-setion {
+            .el-select__tags-text {
+                display: inline-block;
+                max-width: 40px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+        }
     }
 </style>
 
@@ -31,7 +39,7 @@
                         <el-col :span="4">
                             <el-form-item>
                                 <el-select v-model="searchData.org_id" placeholder="请选择开户机构"
-                                           clearable filterable
+                                           clearable multiple collapse-tags
                                            @change="getAccData"
                                            style="width:100%">
                                     <el-option v-for="item in orgList"
@@ -45,7 +53,7 @@
                         <el-col :span="4">
                             <el-form-item>
                                 <el-select v-model="searchData.acc_no" placeholder="请选择银行账号"
-                                           clearable filterable
+                                           clearable multiple collapse-tags
                                            style="width:100%">
                                     <el-option v-for="accItem in accList"
                                                :key="accItem.acc_id"
@@ -58,7 +66,7 @@
                         <el-col :span="4">
                             <el-form-item>
                                 <el-select v-model="searchData.acc_no" placeholder="请选择bankcode"
-                                           clearable filterable
+                                           clearable multiple collapse-tags
                                            style="width:100%">
                                     <el-option v-for="accItem in accList"
                                                :key="accItem.acc_id"
