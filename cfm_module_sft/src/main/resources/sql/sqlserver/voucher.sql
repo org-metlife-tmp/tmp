@@ -109,7 +109,7 @@ from(
 
 #sql("getaccbyorg")
   SELECT
-    acc.acc_id,
+    distinct acc.acc_id,
     acc.acc_no,
     isnull( acc.bankcode, '' ) bankcode
   FROM
