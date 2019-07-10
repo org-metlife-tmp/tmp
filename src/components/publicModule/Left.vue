@@ -154,6 +154,9 @@
             .icon-pzgl{
                 background-position: -331px -284px;
             }
+            .icon-fcyj{
+                background-position: -32px -285px;
+            }
             /*首页背景图定位结束*/
         }
 
@@ -245,6 +248,9 @@
             }
             .icon-pzgl{
                 background-position: -301px -284px;
+            }
+            .icon-fcyj{
+                background-position: -2px -285px;
             }
             .el-submenu__title p {
                 color: rgba(0, 0, 0, 0.5);
@@ -360,6 +366,9 @@
             }
             .el-submenu__title:hover .icon-pzgl{
                 background-position: -331px -284px;
+            }
+            .el-submenu__title:hover .icon-fcyj{
+                background-position: -32px -285px;
             }
             .el-submenu__title:hover p {
                 color: #fff;
