@@ -391,7 +391,7 @@ public class PayCounterService {
 			    			logger.info("=======插入gmf_bill表结果==="+save);			    			
 			    			if(save) {
 			    				//这里新增一个附件关联关系
-			    				List<Record> files = Db.find(Db.getSql("attachment.files"),WebConstant.MajorBizType.GMF.getKey(),rec.get("legal_id"));
+			    				List<Record> files = Db.find(Db.getSql("pay_counter.getatchment"),WebConstant.MajorBizType.GMF.getKey(),rec.get("legal_id"));
 			    				if(null != files && files.size()>0) {
 			    					for (Record re : files) {
 			    						re.set("bill_id", rec.get("id"));
