@@ -48,7 +48,6 @@ public class DoubtfulService {
         if(null == findById){
             throw new ReqDataException("当前登录人的机构信息未维护");
         }
-
         List<String> codes = new ArrayList<>();
         if(findById.getInt("level_num")==1 &&
                 (!WebConstant.SftDoubtPayMode.WY.getKeyc().equals(record.getStr("pay_mode")))){
@@ -61,7 +60,11 @@ public class DoubtfulService {
                 codes.add(o.getStr("code"));
             }
         }
-        record.set("codes", codes);
+        if(WebConstant.SftDoubtPayMode.WY.getKeyc().equals(record.getStr("pay_mode"))){
+            record.set("gmfcodes", codes);
+        }else{
+            record.set("codes", codes);
+        }
 
         if(WebConstant.SftOsSource.LA.getKey() == osSource){
             //LA

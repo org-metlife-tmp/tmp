@@ -1,6 +1,7 @@
 package com.qhjf.cfm.web.service;
 
 
+import com.alibaba.fastjson.util.TypeUtils;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.IAtom;
 import com.jfinal.plugin.activerecord.Record;
@@ -163,6 +164,13 @@ public class RecvTxtDiskSendingService {
 	        			detail_map.put(datail_titleNames.split(",")[j], detailRecords.get(i).getStr(datail_titleNames.split(",")[j]));	        			
 	        		}
 				}
+				//B0渠道, 且银行大类为 303 的	中国光大银行 ,15/16行展示 开户证件类型/证件号 .其余B0渠道的银行都不展示
+				if("B0".equalsIgnoreCase(channel_code)) {
+					if(!"303".equals(TypeUtils.castToString(detail_map.get("pay_bank_type")))) {
+						detail_map.remove("pay_cert_type");
+						detail_map.remove("pay_cert_code");
+					}
+				}	        	        	
 	        	datail_list.add(detail_map);
 			}
 	        map.put("details", datail_list);

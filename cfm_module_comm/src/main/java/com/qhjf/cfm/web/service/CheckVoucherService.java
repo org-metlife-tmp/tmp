@@ -620,7 +620,7 @@ public class CheckVoucherService {
                     Db.findById("organization", "org_id", TypeUtils.castToLong(acc.get("org_id")))
                             .get("code"));
             Record sftcheck = Db.findById("sftcheck_org_mapping", "tmp_org_code", orgcode);
-            transactionReference = "SS" + sftcheck.getStr("code_abbre") + DateFormatThreadLocal.format("YYMM", new Date()) + seqnoOrstatmentCode;
+            transactionReference = "SS" + sftcheck.getStr("code_abbre") + DateFormatThreadLocal.format("YYMM", allLastDate) + seqnoOrstatmentCode;
         }
         for(Record detailRecord : detailLsit){
             detailRecord.set("xx_insure_bill_no", getPlsInsureBill_no(detailRecord)).set("xx_seqnoOrstatmentCode", seqnoOrstatmentCode)
@@ -695,7 +695,7 @@ public class CheckVoucherService {
                 Db.findById("organization", "org_id", TypeUtils.castToLong(acc.get("org_id")))
                         .get("code"));
         Record sftcheck = Db.findById("sftcheck_org_mapping", "tmp_org_code", orgcode);
-        transactionReference = "SS" + sftcheck.getStr("code_abbre") + DateFormatThreadLocal.format("YYMM",new Date()) + seqnoOrstatmentCode;
+        transactionReference = "SS" + sftcheck.getStr("code_abbre") + DateFormatThreadLocal.format("YYMM",allLastDate) + seqnoOrstatmentCode;
         description = DateFormatThreadLocal.format("yyMMdd",allLastDate) + acc.getStr("bankcode") + "柜面付款资金到帐";
         billRecord.set("xx_insure_bill_no", getplfInsureBill_no(billRecord)).set("xx_seqnoOrstatmentCode", seqnoOrstatmentCode)
                 .set("xx_operator", userInfo.getUsr_id()).set("xx_operator_org", userInfo.getCurUodp().getOrg_id())
