@@ -30,7 +30,7 @@ public class PayCounterWorkBook extends AbstractWorkBook {
 	public PayCounterWorkBook() {
 		this.optype = "paycounter_listexport";
 		this.titleNames = new String[] { "push_date", "name", "pay_mode", "biz_code", "preinsure_bill_no",
-				"insure_bill_no", "type_name", "amount", "recv_acc_name", "recv_cert_code", "recv_acc_name",
+				"insure_bill_no", "type_name", "amount", "consumer_acc_name", "recv_cert_code", "recv_acc_name",
 				"recv_acc_no", "recv_bank_name", "pay_code", "status", "pay_account_no", "pay_account_bank", "service_status",
 				"op_user_name", "op_date", "actual_payment_date"
 

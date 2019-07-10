@@ -96,7 +96,7 @@ WHERE
               #end
             )
          #elseif("recv_acc_name".equals(x.key))
-           pay.recv_acc_name = #para(x.value)
+           pay.consumer_acc_name = #para(x.value)
          #elseif("recv_cert_code".equals(x.key))
            pay.recv_cert_code = #para(x.value)
          #elseif("org_id".equals(x.key))
@@ -148,10 +148,10 @@ select
 	tab.org_id,
 	tab.org_code,
 	tab.amount,
-	(case  tab.insure_type when  '1'  then  tab.op_name  else tab.consumer_acc_name end ) consumer_acc_name,
+	tab.consumer_acc_name,
 	tab.recv_acc_name,
 	tab.recv_cert_type,
-	(case  tab.insure_type when  '1'  then  tab.op_code  else  tab.recv_cert_code end ) recv_cert_code,
+	(case  tab.insure_type when  '1'  then  tab.company_customer_no  else  tab.recv_cert_code end ) recv_cert_code,
 	tab.recv_bank_name,
 	tab.recv_acc_no,	
 	tab.status ,
@@ -268,7 +268,7 @@ WHERE
               #end
             )
         #elseif("recv_acc_name".equals(x.key))
-           pay.recv_acc_name = #para(x.value)
+           pay.consumer_acc_name = #para(x.value)
         #elseif("org_ids".equals(x.key))
             pay.org_id in(
               #for(z : map.org_ids)
@@ -396,7 +396,6 @@ select
 	cwrei.init_dept_id,
 	cwrei.init_dept_name,
 	cwrei.start_time ,
-	la.pay_date  AS pay_date,
 	pay.pay_code AS pay_code,
 	la.preinsure_bill_no AS preinsure_bill_no,
 	la.insure_bill_no AS insure_bill_no,
@@ -495,7 +494,6 @@ UNION ALL
 	cwrei.init_dept_id,
 	cwrei.init_dept_name,
 	cwrei.start_time ,
-	ebs.pay_date AS pay_date,
 	pay.pay_code AS pay_code,
 	ebs.preinsure_bill_no AS preinsure_bill_no,
 	ebs.insure_bill_no AS insure_bill_no,

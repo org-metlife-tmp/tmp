@@ -390,7 +390,14 @@ public class PayCounterService {
 			    			boolean save = Db.save("gmf_bill", "id", rec);
 			    			logger.info("=======插入gmf_bill表结果==="+save);			    			
 			    			if(save) {
-			    				Db.update(Db.getSql("pay_counter.updateFileRef"), rec.get("id")  , WebConstant.MajorBizType.GMF.getKey(),rec.get("legal_id"));						     
+			    				//这里新增一个附件关联关系
+			    				List<Record> files = Db.find(Db.getSql("attachment.files"),WebConstant.MajorBizType.GMF.getKey(),rec.get("legal_id"));
+			    				if(null != files && files.size()>0) {
+			    					for (Record re : files) {
+			    						re.set("bill_id", rec.get("id"));
+									}
+			    					Db.batchSave("common_attachment_info_ref", files, files.size());
+			    				}
 				    		    //开启审批流
 				    			List<Record> flows = null;
 								try {
