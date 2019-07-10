@@ -1,4 +1,4 @@
-#sql("findLAPayCounterList")
+﻿#sql("findLAPayCounterList")
 select 
     tab.* ,
     case isnull(gmf.service_status,'-1') when '2' then '审批中'  when '-1' then '未给付' when '7' then '给付成功'  when '5' then '审批拒绝' when '3' then '审批中'
@@ -758,4 +758,13 @@ WHERE gmf.id = cwrei.bill_id  AND
       la_biz_type
     WHERE
       [type] = ? 
+#end
+
+#sql("getatchment")
+    SELECT
+    *
+    FROM
+        common_attachment_info_ref  ct
+    WHERE 
+      ct.biz_type=? and ct.bill_id=?
 #end
