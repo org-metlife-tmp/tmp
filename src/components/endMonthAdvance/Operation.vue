@@ -337,7 +337,7 @@
             },
             //获取银行账号
             getAccData: function(val){
-                if(val){
+                if(val.length > 0){
                     this.$axios({
                         url: this.queryUrl + "normalProcess",
                         method: "post",
