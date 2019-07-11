@@ -18,7 +18,7 @@
             left: -20px;
         }
         .bgStyle{
-            height: 100%;
+            height: 527px;
             // background-image: url(../../assets/cmbc.jpg);
             background-repeat: no-repeat;
             position: relative;
@@ -237,7 +237,7 @@
             <el-dialog :visible.sync="dialogVisible"
                        width="851px" title="收款回单查看"
                        :close-on-click-modal="false"
-                       top="46px">
+                       top="100px">
                 <!-- <h1 slot="title" class="dialog-title">收款回单查看</h1> -->
                 <div class="bgStyle" :class="[bgImg]">
                     <div class="bankContentFir">
