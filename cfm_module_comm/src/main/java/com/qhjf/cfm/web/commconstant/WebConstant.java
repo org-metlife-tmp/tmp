@@ -509,7 +509,7 @@ public interface WebConstant {
         DOUBTFUL_REFUND(23, "可疑退票", "KYTP"), PLF(24, "组批审批", "SFF_PLF"), PLS(25, "批量收款", "PLS"),
         PLF_EXCEPT_BACK(26, "申请退回", "PLF_EXCEPT_BACK"), SFF_PLF_DSF(29, "收付费批量付款第三方", "SFF_PLF_DSF"),
         SFF_PLF_INNER(30, "收付费批量付款内部调拨", "SFF_PLF_INNER"), PLS_EXCEPT_BACK(31, "批量收申请退回", "PLS_EXCEPT_BACK"),
-        GMF(32, "柜面付", "GMF"), CWYTJ(33, "财务预提交", "CWYTJ"), CWCX(34, "财务冲销", "CWCX"),
+        GMF(32, "网银付款", "GMF"), CWYTJ(33, "财务预提交", "CWYTJ"), CWCX(34, "财务冲销", "CWCX"),
         VOUCHER_QUERY(35, "凭证查询", "VOUCHER_QUERY"),PLF_HD_VOUCHER(36, "批量付回调", "PLF_HD_VOUCHER"),
         PLS_HD_VOUCHER(37, "批量收回调", "PLS_HD_VOUCHER"),
         GMF_HD_VOUCHER(38, "柜面付回调", "GMF_HD_VOUCHER"),GMSGD(39, "柜面收个单", "GMSGD"),
