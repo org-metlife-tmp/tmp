@@ -251,7 +251,7 @@ public class RecvDiskSendingService {
 		List<Record> details = (List<Record>)genInstr.get("detail");
         List<Record> newDetails = new ArrayList<>();
         for (Record record : details) {
-			Record findFirst = Db.findFirst(Db.getSql("recv_disk_downloading.")
+			Record findFirst = Db.findFirst(Db.getSql("recv_disk_downloading.qryProtocolDetailBeforeImp")
 					, total.getStr("protocol_no")
 					, record.getStr("pay_acc_no")
 					, record.getStr("pay_no"));

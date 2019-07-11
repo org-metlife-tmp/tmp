@@ -305,5 +305,5 @@
     	(select * from protocol_import_instr_detail where pay_acc_no = ? and pay_no = ?) detail
     where
     	total.id = detail.base_id
-    	
+    	and detail.status in (1,3)
 #end
