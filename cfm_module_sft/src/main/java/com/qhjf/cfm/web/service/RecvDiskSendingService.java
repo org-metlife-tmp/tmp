@@ -145,7 +145,7 @@ public class RecvDiskSendingService {
 			l.set("pay_bank_prov", "");
 			l.set("pay_bank_city", "");
 			l.set("pay_bank_type", "");
-			
+			l.set("insure_bill_no",r.getStr("insure_bill_no"));
 			list.add(l);
 		}
 		Record instrRecord = new Record().set("list", list);

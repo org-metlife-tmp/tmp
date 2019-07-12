@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.qhjf.cfm.web.config.DDHLARecvConfigSection;
+import com.qhjf.cfm.web.config.GlobalConfigSection;
+import com.qhjf.cfm.web.config.IConfigSectionType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.alibaba.fastjson.JSONArray;
@@ -16,7 +20,11 @@ import com.qhjf.cfm.web.channel.inter.api.IChannelBatchInter;
 public class IcbcBatchRecvInter implements IChannelBatchInter {
 	private static final Logger log = LoggerFactory.getLogger(IcbcBatchRecvInter.class);
     public static final String ERROR_MSG = "批量收款，银行受理失败,失败原因:{}-{}";
-    private JSONObject pub0;
+
+	private static DDHLARecvConfigSection section = GlobalConfigSection.getInstance().getExtraConfig(IConfigSectionType.DDHConfigSectionType.DDHLaRecv);
+
+	private JSONObject pub0;
+
 	@Override
 	public Map<String, Object> genParamsMap(Record record) {
     	
@@ -44,9 +52,9 @@ public class IcbcBatchRecvInter implements IChannelBatchInter {
 				rd.put("PayAccNo", total.getStr("pay_account_no"));
 				rd.put("PayAccNameCN", total.getStr("pay_account_name"));
 				rd.put("PayBranch", total.getStr("pay_account_bank"));
-				rd.put("Portno", "?");//缴费编号
-				rd.put("ContractNo", "?");//协议编号
-				rd.put("CurrType", total.getStr("pay_account_cur"));// 币种
+				rd.put("Portno", total.getStr("insure_bill_no"));//缴费编号
+				rd.put("ContractNo", section.getProtocolNo());//协议编号
+				rd.put("CurrType", "CNY");// 币种total.getStr("pay_account_cur")
 				rd.put("PayAmt", r.getStr("amount"));// 金额
 				rd.put("Summary", "批量收款");
 				rdList.add(rd);
