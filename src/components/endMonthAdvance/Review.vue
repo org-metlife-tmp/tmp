@@ -191,10 +191,10 @@
             <div class="allData">
                 <div class="btn-right">
                     <el-button type="warning" size="mini" @click="affirm"
-                               :disabled="mayAffirm">生成复核
+                               :disabled="mayAffirm">生成凭证
                     </el-button>
                     <el-button type="warning" size="mini" @click="revocation"
-                               :disabled="mayAffirm">撤销复核
+                               :disabled="mayAffirm">撤销凭证
                     </el-button>
                 </div>
             </div>
@@ -427,7 +427,7 @@
                     } else {
                         this.$message({
                             type: "success",
-                            message: "撤销复核成功",
+                            message: "撤销凭证成功",
                             duration: 2000
                         });
                         this.$emit("getCommTable", this.routerMessage);

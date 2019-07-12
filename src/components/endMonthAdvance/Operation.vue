@@ -191,10 +191,10 @@
             <div class="allData">
                 <div class="btn-right">
                     <el-button type="warning" size="mini" @click="affirm"
-                               :disabled="mayAffirm">确认生成
+                               :disabled="mayAffirm">提交
                     </el-button>
                     <el-button type="warning" size="mini" @click="revocation"
-                               :disabled="mayAffirm">撤销确认
+                               :disabled="mayAffirm">撤销
                     </el-button>
                 </div>
             </div>
@@ -374,7 +374,7 @@
                     this.selectId.push(row.id);
                 })
             },
-            //确认生成
+            //提交
             affirm: function () {
                 this.$axios({
                     url: this.queryUrl + "normalProcess",
@@ -396,7 +396,7 @@
                     } else {
                         this.$message({
                             type: "success",
-                            message: "确认生成成功",
+                            message: "提交成功",
                             duration: 2000
                         });
                         this.$emit("getCommTable", this.routerMessage);
@@ -405,7 +405,7 @@
                     console.log(error);
                 });
             },
-            //撤销确认
+            //撤销
             revocation: function () {
                 this.$axios({
                     url: this.queryUrl + "normalProcess",
@@ -427,7 +427,7 @@
                     } else {
                         this.$message({
                             type: "success",
-                            message: "撤销确认成功",
+                            message: "撤销成功",
                             duration: 2000
                         });
                         this.$emit("getCommTable", this.routerMessage);

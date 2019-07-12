@@ -771,9 +771,9 @@
                     <p>月末预提</p>
                 </template>
                 <el-menu-item-group>
-                    <el-menu-item index="/endmonth-advance/operation" v-if="menuList.PREVOUCHEROPERATION">操作</el-menu-item>
-                    <el-menu-item index="/endmonth-advance/review" v-if="menuList.PREVOUCHERCONFIRM">复核</el-menu-item>
-                    <el-menu-item index="/endmonth-advance/advance-query" v-if="menuList.PREVOUCHERQUERY">查询</el-menu-item>
+                    <el-menu-item index="/endmonth-advance/operation" v-if="menuList.PREVOUCHEROPERATION">预提提交</el-menu-item>
+                    <el-menu-item index="/endmonth-advance/review" v-if="menuList.PREVOUCHERCONFIRM">预提复核</el-menu-item>
+                    <el-menu-item index="/endmonth-advance/advance-query" v-if="menuList.PREVOUCHERQUERY">查询记录</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
             <el-submenu index="26" v-if="menuList.RECVCOUNTER">
