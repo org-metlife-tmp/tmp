@@ -487,6 +487,7 @@ public class RecvCounterService {
 				
 		Record findById = Db.findById("organization", "code", orgRecord.get("tmp_org_code"));
 		Record rec = new Record();
+		String isPadPayment = qryBillByInsureBillNo.getIsPadPayment();
 		rec.set("insure_bill_no", record.getStr("insure_bill_no"));
 		rec.set("bill_org_name", findById.get("name"));
 		rec.set("bill_org_id", findById.get("org_id"));
@@ -495,7 +496,7 @@ public class RecvCounterService {
 		rec.set("bank_code", bankcode);
 		rec.set("insure_cer_no", qryBillByInsureBillNo.getPolicyHolderCert());
 		rec.set("insure_cer_no", qryBillByInsureBillNo.getPolicyHolderCert());
-		rec.set("isnot_electric_pay", qryBillByInsureBillNo.getIsPadPayment().equals("N") ? "0":"1");
+		rec.set("isnot_electric_pay", isPadPayment == null ? null :(isPadPayment.equals("N") ? "0":"1"));
 		rec.set("isnot_bank_transfer_premium", qryBillByInsureBillNo.getIsTransAccount());
 		return rec ;
 	}
