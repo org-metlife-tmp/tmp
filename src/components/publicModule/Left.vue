@@ -691,7 +691,19 @@
                     <el-menu-item index="/system-set/bankkey-set" v-if="menuList.ChannelSet">bankkey设置</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="20" v-if="menuList.BATCHPAY">
+            <el-submenu index="20" v-if="menuList.DATADOUBTFUL">
+                <template slot="title" height="200px">
+                    <i class="icon-fcyj"></i>
+                    <p class="mg-four">防重预警</p>
+                </template>
+                <el-menu-item-group>
+                    <el-menu-item index="/batch-payment/prevent-repet" v-if="menuList.DataAntiDualWaring">付款防重
+                    </el-menu-item>
+                    <el-menu-item index="/batch-gather/gaterh-prevent-repet" v-if="menuList.RecvDataAntiDualWaring">收款防重
+                    </el-menu-item>
+                </el-menu-item-group>
+            </el-submenu>
+            <el-submenu index="21" v-if="menuList.BATCHPAY">
                 <template slot="title" height="200px">
                     <i class="icon-plfk"></i>
                     <p class="mg-four">批量付款</p>
@@ -709,7 +721,7 @@
                     </el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="21" v-if="menuList.BATCHRECV">
+            <el-submenu index="22" v-if="menuList.BATCHRECV">
                 <template slot="title" height="200px">
                     <i class="icon-plsk"></i>
                     <p class="mg-four">批量收款</p>
@@ -724,18 +736,6 @@
                     <el-menu-item index="/batch-gather/gather-settle-accounts" v-if="menuList.RecvBatchCheck">结算对账
                     </el-menu-item>
                     <el-menu-item index="/batch-gather/gather-abnormal" v-if="menuList.RecvBatchDoExcp">异常处理
-                    </el-menu-item>
-                </el-menu-item-group>
-            </el-submenu>
-            <el-submenu index="22" v-if="menuList.DATADOUBTFUL">
-                <template slot="title" height="200px">
-                    <i class="icon-fcyj"></i>
-                    <p class="mg-four">防重预警</p>
-                </template>
-                <el-menu-item-group>
-                    <el-menu-item index="/batch-payment/prevent-repet" v-if="menuList.DataAntiDualWaring">付款防重
-                    </el-menu-item>
-                    <el-menu-item index="/batch-gather/gaterh-prevent-repet" v-if="menuList.RecvDataAntiDualWaring">收款防重
                     </el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
