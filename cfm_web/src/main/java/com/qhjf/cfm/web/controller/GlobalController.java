@@ -8,7 +8,7 @@ import com.qhjf.cfm.exceptions.BusinessException;
 import com.qhjf.cfm.utils.BeanKit;
 import com.qhjf.cfm.utils.RSAUtils;
 import com.qhjf.cfm.web.UserInfo;
-import com.qhjf.cfm.web.constant.ConstantCollectTool;
+import com.qhjf.cfm.web.commconstant.ConstantCollectTool;
 import com.qhjf.cfm.web.plugins.jwt.Auth;
 import com.qhjf.cfm.web.plugins.jwt.JwtKit;
 import com.qhjf.cfm.web.plugins.log.LogbackLog;

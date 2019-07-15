@@ -45,7 +45,7 @@
     legal.id = gmf.legal_id
 		AND legal.id = ext.legal_id
     AND legal.source_sys = 0
-		AND legal.pay_code = '000946222'
+		AND legal.pay_code = ?
 #end
 
 #end

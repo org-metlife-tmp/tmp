@@ -47,7 +47,8 @@ public class RecvDoubtfulWorkBook extends AbstractWorkBook {
         Long org_id = getUodpInfo().getOrg_id();
         Record findById = Db.findById("organization", "org_id", org_id);
         List<String> codes = new ArrayList<>();
-        if(findById.getInt("level_num") == 1){
+        if(findById.getInt("level_num")==1 &&
+                (!WebConstant.SftDoubtPayMode.WY.getKeyc().equals(record.getStr("pay_mode")))){
             codes = Arrays.asList("0102","0101","0201","0202","0203","0204","0205","0500");
         }else{
             List<Record> rec = Db.find(Db.getSql("org.getCurrentUserOrgs"), org_id);
@@ -55,7 +56,11 @@ public class RecvDoubtfulWorkBook extends AbstractWorkBook {
                 codes.add(o.getStr("code"));
             }
         }
-        record.set("codes", codes);
+        if(WebConstant.SftDoubtPayMode.WY.getKeyc().equals(record.getStr("pay_mode"))){
+            record.set("gmfcodes", codes);
+        }else{
+            record.set("codes", codes);
+        }
         if(WebConstant.SftOsSource.LA.getKey() == osSource){
             //LA
             this.fileName = "LA_DoubleCheck_"+DateKit.toStr(new Date(), "YYYYMMdd")+".xls";

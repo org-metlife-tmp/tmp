@@ -73,6 +73,15 @@ and la.is_doubtful = 1
               #(y)
             #end
           )
+        #elseif("gmfcodes".equals(x.key))
+          org.code in(
+            #for(y : map.gmfcodes)
+              #if(for.index > 0)
+                #(",")
+              #end
+              #(y)
+            #end
+          )
         #else
           la.#(x.key) = #para(x.value)
         #end

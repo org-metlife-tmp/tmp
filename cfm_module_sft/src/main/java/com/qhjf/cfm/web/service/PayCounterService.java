@@ -137,11 +137,15 @@ public class PayCounterService {
 		 Page<Record> paginate = Db.paginate(pageNum, pageSize, sqlPara);
 		 List<Record> list = paginate.getList();
 		 SymmetricEncryptUtil  util = SymmetricEncryptUtil.getInstance();
-		 util.recvmask(list);
+					   
 		 if(null != list && list.size() > 0) {
 			 for (Record rec : list) {
+				 String dec_recv_acc_no = StringUtils.isBlank(rec.getStr("recv_acc_no"))?null :
+					 util.decryptToStr(rec.getStr("recv_acc_no"));
 				 rec.set("pay_acc_no", pay_account_no);
 				 rec.set("pay_bank_name", pay_account_bank);
+				 rec.set("recv_acc_no", dec_recv_acc_no);
+				 rec.set("recv_account_no", dec_recv_acc_no);
 			}
 		 }
 		 return paginate ;
@@ -390,7 +394,14 @@ public class PayCounterService {
 			    			boolean save = Db.save("gmf_bill", "id", rec);
 			    			logger.info("=======插入gmf_bill表结果==="+save);			    			
 			    			if(save) {
-			    				Db.update(Db.getSql("pay_counter.updateFileRef"), rec.get("id")  , WebConstant.MajorBizType.GMF.getKey(),rec.get("legal_id"));						     
+			    				//这里新增一个附件关联关系
+			    				List<Record> files = Db.find(Db.getSql("pay_counter.getatchment"),WebConstant.MajorBizType.GMF.getKey(),rec.get("legal_id"));
+			    				if(null != files && files.size()>0) {
+			    					for (Record re : files) {
+			    						re.set("bill_id", rec.get("id"));
+									}
+			    					Db.batchSave("common_attachment_info_ref", files, files.size());
+			    				}
 				    		    //开启审批流
 				    			List<Record> flows = null;
 								try {
@@ -460,11 +471,13 @@ public class PayCounterService {
 		try {
 			if(0 == TypeUtils.castToInt(findById.get("source_sys"))) {
 				findFirst = Db.findFirst(Db.getSql("pay_counter.findLaDetailById"), id);
-			} else if(1 == TypeUtils.castToInt(findById.get("source_sys"))) {
+			}  else if(1 == TypeUtils.castToInt(findById.get("source_sys"))) {
 				findFirst = Db.findFirst(Db.getSql("pay_counter.findEBSDetailById"), id);
 			}else {
 				findFirst = Db.findFirst(Db.getSql("pay_counter.findTMPDetailById"), id);
-			}	
+			}		
+																			 
+	 
 		} catch (Exception e) {
 			throw new ReqDataException("此条数据已过期");
 		}
@@ -506,6 +519,7 @@ public class PayCounterService {
             boolean flag = Db.tx(new IAtom() {
                 @Override
                 public boolean run() throws SQLException {
+
                     if (WebConstant.BillStatus.PASS.getKey() != status && WebConstant.BillStatus.FAILED.getKey() != status) {
                         logger.error("单据状态有误!======"+status);
                         return false;
@@ -534,7 +548,7 @@ public class PayCounterService {
                 			return Db.save("recv_counter_match", "id", recv_counter_match);
                     	}
                     }
-                    return false ;
+                    return false ;				  
                 }
             });
             if (!flag) {
@@ -559,7 +573,7 @@ public class PayCounterService {
 			logger.error("===========根据id未在表中查找到此单据");
 			return false ;
 		}
-		final Integer source_sys = TypeUtils.castToInt(rec.get("source_sys"));
+		final Integer source_sys = TypeUtils.castToInt(rec.get("source_sys"));																
 		boolean flag = Db.tx(new IAtom() {
 			
 			@Override
@@ -683,5 +697,4 @@ public class PayCounterService {
 		return records ;
 	}
       
-}
-
+}												
