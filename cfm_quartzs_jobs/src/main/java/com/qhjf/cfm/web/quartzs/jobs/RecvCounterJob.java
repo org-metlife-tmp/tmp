@@ -222,7 +222,7 @@ public class RecvCounterJob implements Job {
 						groupBizPayConfirmReqBean.setBankAccNo("consumer_acc_no");  //客户付款银行账号;缴费方式 2和3时 必传
 						groupBizPayConfirmReqBean.setBankAccName(TypeUtils.castToString(faccount.get("acc_name")));  //客户付款银行户名;缴费方式 2和3时 必传
 						//根据bankcode做映射
-						Record stmpBank = Db.findById("const_bank_type", "name", TypeUtils.castToString(record.get("consumer_bank_name")));
+						Record stmpBank = Db.findById("const_bank_type", "code", TypeUtils.castToString(record.get("consumer_bank_name")));
 						Record sebsBank = Db.findById("ebs_bank_mapping", "tmp_bank_code", TypeUtils.castToString(stmpBank.getStr("code")));
 						groupBizPayConfirmReqBean.setInBankCode(TypeUtils.castToString(sebsBank.get("ebs_bank_code")));   //大都会收款银行编码 需要做Mapping
 						groupBizPayConfirmReqBean.setInBankAccNo("consumer_acc_no");  //大都会收款银行账号
