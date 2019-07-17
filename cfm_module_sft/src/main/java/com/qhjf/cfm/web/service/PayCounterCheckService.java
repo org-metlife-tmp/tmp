@@ -39,11 +39,26 @@ public class PayCounterCheckService {
      * @param record
      * @return
      */
-    public Page<Record> batchlist(int pageNum, int pageSize, final Record record) throws BusinessException,UnsupportedEncodingException {
+    public Page<Record> batchlist(int pageNum, int pageSize, final Record record, Long org_id) throws BusinessException,UnsupportedEncodingException {
         SymmetricEncryptUtil util = SymmetricEncryptUtil.getInstance();
         String recv_account_no = record.getStr("recv_account_no");
         recv_account_no = util.encrypt(recv_account_no);
         record.set("recv_account_no", recv_account_no);
+        log.info("=====当前登录人org_id==="+org_id);
+        Record findById = Db.findById("organization", "org_id", org_id);
+        if(null == findById){
+            throw new ReqDataException("当前登录人的机构信息未维护");
+        }
+        if(findById.getInt("level_num") != 1){
+            log.info("====目前登录机构非总公司,只能查询当前及以下机构保单====");
+            List<Integer> org_ids = new ArrayList<>();
+            List<Record> find = Db.find(Db.getSql("pay_counter.getSonOrg"), org_id);
+            for (int i = 0; i < find.size(); i++) {
+                org_ids.add(find.get(i).getInt("org_id"));
+            }
+            record.set("org_ids", org_ids);
+        }
+
         SqlPara sqlPara = Db.getSqlPara("paycountercheck.paylist", Kv.by("map", record.getColumns()));
         Page<Record> paginate = Db.paginate(pageNum, pageSize, sqlPara);
         List<Record> list = paginate.getList();

@@ -37,7 +37,7 @@ public class PayCounterCheckController extends CFMBaseController {
         AccCommonService.setInnerTradStatus(record, "service_status");
         try {
 
-            Page<Record> page = service.batchlist(pageNum, pageSize, record);
+            Page<Record> page = service.batchlist(pageNum, pageSize, record, getCurUodp().getOrg_id());
             renderOkPage(page);
         } catch (BusinessException e) {
             e.printStackTrace();
