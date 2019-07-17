@@ -9,6 +9,7 @@ import com.qhjf.cfm.exceptions.ReqDataException;
 import com.qhjf.cfm.utils.ArrayUtil;
 import com.qhjf.cfm.utils.CommonService;
 import com.qhjf.cfm.utils.DateFormatThreadLocal;
+import com.qhjf.cfm.utils.TableDataCacheUtil;
 import com.qhjf.cfm.web.UodpInfo;
 import com.qhjf.cfm.web.UserInfo;
 import com.qhjf.cfm.web.constant.WebConstant;
@@ -29,6 +30,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 柜面收_团单确认缴费按钮
@@ -110,7 +112,7 @@ public class RecvGroupCounterConfirmQueue implements Runnable {
                 //客户账号
                 GroupCustomerAccConfirmReqBean groupCustomerAccConfirmReqBean = new GroupCustomerAccConfirmReqBean();
                 groupCustomerAccConfirmReqBean.setPayNo(TypeUtils.castToString(record.get("zj_flow_number")));   //资金流水号
-                groupCustomerAccConfirmReqBean.setPayCustomerNo(TypeUtils.castToString(record.get("consumer_acc_no")));  //缴费人客户号。 对应缴费公司的客户号码， ebs查询不到该客户号会报错
+                groupCustomerAccConfirmReqBean.setPayCustomerNo(TypeUtils.castToString(record.get("consumer_no")));  //缴费人客户号。 对应缴费公司的客户号码， ebs查询不到该客户号会报错
                 groupCustomerAccConfirmReqBean.setPayWay(WebConstant.Sft_RecvGroupCounter_Recvmode.
                         getSft_RecvGroupCounter_RecvmodeByKey(Integer.valueOf(TypeUtils.castToString(record.get("recv_mode")))).getKeyc());  //缴费方式 2-现金缴款单 3-支票 4-转账汇款
                 groupCustomerAccConfirmReqBean.setPayMoney(TypeUtils.castToBigDecimal(record.get("amount")).setScale(2).
@@ -121,14 +123,15 @@ public class RecvGroupCounterConfirmQueue implements Runnable {
                 Record faccount = Db.findById("account", "bankcode", TypeUtils.castToString(record.get("recv_bank_name")));
                 Record ftmpBank = Db.findById("all_bank_info", "cnaps_code", TypeUtils.castToString(faccount.get("bank_cnaps_code")));
                 Record febsBank = Db.findById("ebs_bank_mapping", "tmp_bank_code", TypeUtils.castToString(ftmpBank.get("bank_type")));
-                groupCustomerAccConfirmReqBean.setBankCode(TypeUtils.castToString(febsBank.get("ebs_bank_code")));  //客户付款银行 需要做Mapping,缴费方式 2和3时 必传
-                groupCustomerAccConfirmReqBean.setBankAccNo("consumer_acc_no");  //客户付款银行账号;缴费方式 2和3时 必传
-                groupCustomerAccConfirmReqBean.setBankAccName(TypeUtils.castToString(faccount.get("acc_name")));  //客户付款银行户名;缴费方式 2和3时 必传
+                groupCustomerAccConfirmReqBean.setInBankCode(TypeUtils.castToString(febsBank.get("ebs_bank_code")));   //大都会收款银行编码 需要做Mapping
+                groupCustomerAccConfirmReqBean.setInBankAccNo("recv_acc_no");  //大都会收款银行账号
+
                 //根据bankcode做映射
                 Record stmpBank = Db.findById("const_bank_type", "code", TypeUtils.castToString(record.get("consumer_bank_name")));
                 Record sebsBank = Db.findById("ebs_bank_mapping", "tmp_bank_code", TypeUtils.castToString(stmpBank.getStr("code")));
-                groupCustomerAccConfirmReqBean.setInBankCode(TypeUtils.castToString(sebsBank.get("ebs_bank_code")));   //大都会收款银行编码 需要做Mapping
-                groupCustomerAccConfirmReqBean.setInBankAccNo("consumer_acc_no");  //大都会收款银行账号
+                groupCustomerAccConfirmReqBean.setBankCode(TypeUtils.castToString(sebsBank.get("ebs_bank_code")));  //客户付款银行 需要做Mapping,缴费方式 2和3时 必传
+                groupCustomerAccConfirmReqBean.setBankAccNo(TypeUtils.castToString(record.get("consumer_acc_no")));  //客户付款银行账号;缴费方式 2和3时 必传
+                groupCustomerAccConfirmReqBean.setBankAccName("");  //客户付款银行户名;缴费方式 2和3时 必传
 
                 GroupCustomerAccConfirmRespBean groupCustomerAccConfirmRespBean = recvCounter.ebsCustomerAccConfirm(groupCustomerAccConfirmReqBean);
                 if ("SUCCESS".equals(groupCustomerAccConfirmRespBean.getResultCode())) {
@@ -152,10 +155,10 @@ public class RecvGroupCounterConfirmQueue implements Runnable {
             } else {
                 //XDQF(1, "新单签发"), BQSF(2, "保全收费"), DQJSSF(3, "定期结算收费"), XQSF(4, "续期收费"), BDQSF(5, "不定期收费")
                 GroupBizPayConfirmReqBean groupBizPayConfirmReqBean = new GroupBizPayConfirmReqBean();
-                groupBizPayConfirmReqBean.setBussinessNo("bussiness_no");        //业务号码
+                groupBizPayConfirmReqBean.setBussinessNo(TypeUtils.castToString(record.get("bussiness_no")));        //业务号码
                 groupBizPayConfirmReqBean.setBussinessType(WebConstant.SftRecvGroupCounterUseFunds.getSftRecvGroupCounterUseFundsByKey(useFunds).getKeyc());
                 groupBizPayConfirmReqBean.setPayNo(TypeUtils.castToString(record.get("zj_flow_number")));   //资金流水号
-                groupBizPayConfirmReqBean.setPayCustomerNo(TypeUtils.castToString(record.get("consumer_acc_no")));  //缴费人客户号。 对应缴费公司的客户号码， ebs查询不到该客户号会报错
+                //groupBizPayConfirmReqBean.setPayCustomerNo(TypeUtils.castToString(record.get("consumer_acc_no")));  //不传 缴费人客户号。对应缴费公司的客户号码， ebs查询不到该客户号会报错
                 groupBizPayConfirmReqBean.setPayWay(WebConstant.Sft_RecvGroupCounter_Recvmode.
                         getSft_RecvGroupCounter_RecvmodeByKey(Integer.valueOf(Integer.valueOf(TypeUtils.castToString(record.get("recv_mode"))))).getKeyc());  //缴费方式 2-现金缴款单 3-支票 4-转账汇款
                 groupBizPayConfirmReqBean.setPayMoney(TypeUtils.castToBigDecimal(record.get("amount")).setScale(2).
@@ -166,14 +169,15 @@ public class RecvGroupCounterConfirmQueue implements Runnable {
                 Record faccount = Db.findById("account", "bankcode", TypeUtils.castToString(record.get("recv_bank_name")));
                 Record ftmpBank = Db.findById("all_bank_info", "cnaps_code", TypeUtils.castToString(faccount.get("bank_cnaps_code")));
                 Record febsBank = Db.findById("ebs_bank_mapping", "tmp_bank_code", TypeUtils.castToString(ftmpBank.get("bank_type")));
-                groupBizPayConfirmReqBean.setBankCode(TypeUtils.castToString(febsBank.get("ebs_bank_code")));  //客户付款银行 需要做Mapping,缴费方式 2和3时 必传
-                groupBizPayConfirmReqBean.setBankAccNo("consumer_acc_no");  //客户付款银行账号;缴费方式 2和3时 必传
-                groupBizPayConfirmReqBean.setBankAccName(TypeUtils.castToString(faccount.get("acc_name")));  //客户付款银行户名;缴费方式 2和3时 必传
+                groupBizPayConfirmReqBean.setInBankCode(TypeUtils.castToString(febsBank.get("ebs_bank_code")));   //大都会收款银行编码 需要做Mapping
+                groupBizPayConfirmReqBean.setInBankAccNo("recv_acc_no");  //大都会收款银行账号
+
                 //根据bankcode做映射
                 Record stmpBank = Db.findById("const_bank_type", "code", TypeUtils.castToString(record.get("consumer_bank_name")));
                 Record sebsBank = Db.findById("ebs_bank_mapping", "tmp_bank_code", TypeUtils.castToString(stmpBank.getStr("code")));
-                groupBizPayConfirmReqBean.setInBankCode(TypeUtils.castToString(sebsBank.get("ebs_bank_code")));   //大都会收款银行编码 需要做Mapping
-                groupBizPayConfirmReqBean.setInBankAccNo("consumer_acc_no");  //大都会收款银行账号
+                groupBizPayConfirmReqBean.setBankCode(TypeUtils.castToString(sebsBank.get("ebs_bank_code")));  //客户付款银行 需要做Mapping,缴费方式 2和3时 必传
+                groupBizPayConfirmReqBean.setBankAccNo(TypeUtils.castToString(record.get("consumer_acc_no")));  //客户付款银行账号;缴费方式 2和3时 必传
+                groupBizPayConfirmReqBean.setBankAccName("");  //客户付款银行户名;缴费方式 2和3时 必传
 
                 GroupBizPayConfirmRespBean groupBizPayConfirmRespBean = recvCounter.ebsBizPayConfirm(groupBizPayConfirmReqBean);
                 if ("SUCCESS".equals(groupBizPayConfirmRespBean.getResultCode())) {
