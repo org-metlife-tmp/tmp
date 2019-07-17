@@ -342,7 +342,7 @@
                         <el-col :span="12">
                             <el-form-item label="收款银行">
                                 <el-select v-model="dialogData.recv_bank_name" placeholder="请选择收款银行"
-                                           filterable clearable>
+                                           filterable clearable @change="setAccNo">
                                     <el-option v-for="bank in recvBankList"
                                                :key="bank.bankcode"
                                                :label="bank.bankcode"
@@ -525,7 +525,7 @@
         name: "SingleGather",
         created: function () {
             this.$emit("transmitTitle", "个单收款");
-            this.$emit("getCommTable", this.routerMessage);
+            // this.$emit("getCommTable", this.routerMessage);
 
             /*获取常量数据*/
             var constants = JSON.parse(window.sessionStorage.getItem("constants"));
@@ -786,6 +786,18 @@
                 }).catch(function (error) {
                     console.log(error);
                 });
+            },
+            //设置银行账号
+            setAccNo: function(val){
+                let recvBankList = this.recvBankList;
+                if(recvBankList.length > 0){
+                    for(let i = 0; i < recvBankList.length; i++){
+                        if(recvBankList[i].bankcode == val){
+                            this.dialogData.recv_acc_no = recvBankList[i].acc_no;
+                            break;
+                        }
+                    }
+                }
             },
             //导出
             exportFun: function () {

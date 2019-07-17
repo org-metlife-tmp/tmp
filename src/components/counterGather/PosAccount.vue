@@ -115,6 +115,7 @@
                 <el-table-column prop="consumer_bank_name" label="客户银行"  width="110px"
                                  :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="consumer_acc_no" label="客户账号" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="insure_name" label="投保人" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="check_user_name" label="操作人" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="recv_org_name" label="收款机构" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="is_checked" label="状态" :show-overflow-tooltip="true"></el-table-column>
@@ -419,6 +420,14 @@
             },
             //对账确认
             affirm: function () {
+                if(this.batchidList.length == 0 || this.tradingList.length == 0){
+                    this.$message({
+                        type: "warning",
+                        message: "请选择要对账的数据",
+                        duration: 2000
+                    });
+                    return;
+                }
                 this.$axios({
                     url: this.queryUrl + "normalProcess",
                     method: "post",

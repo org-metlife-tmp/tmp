@@ -70,11 +70,11 @@
                         <el-col :span="5">
                             <el-form-item>
                                 <el-col :span="11">
-                                    <el-input v-model="searchData.min" clearable placeholder="最小金额"></el-input>
+                                    <el-input v-model.number="searchData.min" clearable placeholder="最小金额"></el-input>
                                 </el-col>
                                 <el-col class="line" :span="1" style="text-align:center">-</el-col>
                                 <el-col :span="11">
-                                    <el-input v-model="searchData.max" clearable placeholder="最大金额"></el-input>
+                                    <el-input v-model.number="searchData.max" clearable placeholder="最大金额"></el-input>
                                 </el-col>
                             </el-form-item>
                         </el-col>
@@ -390,13 +390,18 @@
             //根据条件查询数据
             queryData: function () {
                 var searchData = this.searchData;
+                var params = this.routerMessage.params;
                 for (var k in searchData) {
-                    this.routerMessage.params[k] = searchData[k];
+                    if(k == "min" || k == "max"){
+                        params[k] = searchData[k] ? (typeof(searchData[k]) == "number" ? searchData[k] : "") : searchData[k];
+                    }else{
+                        params[k] = searchData[k];
+                    }
                 }
                 var val = this.dateValue;
-                this.routerMessage.params.start_date = val ? val[0] : "";
-                this.routerMessage.params.end_date = val ? val[1] : "";
-                this.routerMessage.params.page_num = 1;
+                params.start_date = val ? val[0] : "";
+                params.end_date = val ? val[1] : "";
+                params.page_num = 1;
                 this.$emit("getCommTable", this.routerMessage);
             },
             //查询交易流水

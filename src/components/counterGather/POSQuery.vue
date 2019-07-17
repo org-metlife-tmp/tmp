@@ -140,6 +140,7 @@
                 <el-table-column prop="card_type" label="卡类型" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="card_issue_bank" label="发卡行" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="no_identity_mark" label="非接标识" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="import_date" label="导入日期" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="bill_checked" label="状态" :show-overflow-tooltip="true"></el-table-column>
             </el-table>
         </el-main>
