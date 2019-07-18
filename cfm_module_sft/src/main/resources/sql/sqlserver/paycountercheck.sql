@@ -58,6 +58,8 @@ where 1 = 1
               #(y)
             #end
           )
+        #elseif("org_id".equals(x.key))
+          gmf.org_id = #para(x.value)
         #elseif("preinsure_bill_no".equals(x.key))
           gmf.preinsure_bill_no like convert(varchar(5),'%')+convert(varchar(255),#para(x.value))+convert(varchar(5),'%')
         #elseif("insure_bill_no".equals(x.key))

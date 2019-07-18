@@ -665,7 +665,7 @@ public class SftOptypeMgr extends AbstractOptypeMgr {
         //查询所有批次
         optypes.add(new Optype(Optype.Mode.NORMAL, "sftpaycountercheck_batchlist")
                 .registKeepParams(new String[]{"source_sys", "start_date", "end_date", "preinsure_bill_no", "insure_bill_no",
-                        "recv_acc_name", "recv_account_no", "min", "max", "is_checked", "page_size", "page_num"}));
+                        "org_id", "recv_acc_name", "recv_account_no", "min", "max", "is_checked", "page_size", "page_num"}));
 
         //查找交易流水 非自动
         optypes.add(new Optype(Optype.Mode.NORMAL, "sftpaycountercheck_tradingListNoAuto")
