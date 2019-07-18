@@ -15,7 +15,7 @@ import java.util.Map;
 public class AccNoValidator implements IValidator {
 	//错误信息
 	private String errorMessage;
-
+	private static final int INTERACTIVE_MODE = 1;
 	@Override
 	public boolean doValidat(Object data) {
 //		List<Object> query = Db.query(String.format("SELECT * FROM account WHERE acc_no='%s'", data.toString()));
