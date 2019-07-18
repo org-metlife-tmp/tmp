@@ -269,7 +269,7 @@
                         <el-col :span="12">
                             <el-form-item label="收款银行账号" prop="recv_acc_no">
                                 <el-input v-model="dialogData.recv_acc_no" clearable
-                                          placeholder="请输入收款银行账号" :disabled="isLook"></el-input>
+                                          placeholder="请输入收款银行账号" :disabled="currentData.recv_acc_no"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="16">

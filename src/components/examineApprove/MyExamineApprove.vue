@@ -2285,7 +2285,7 @@
                         {id: '6', prop: "type_name", name: '业务类型'},
                         {id: '7', prop: "pay_account_no", name: '付款账号'},
                         {id: '8', prop: "recv_account_no", name: '收款方账号'},
-                        {id: '9', prop: "consumer_acc_name", name: '客户名称'},
+                        {id: '9', prop: "submitter_name", name: '客户名称'},
                         {id: '10', prop: "recv_account_name", name: '收款账号户名'},
                         {id: '11', prop: "recv_bank_name", name: '开户名称'},
                         {id: '12', prop: "amount", name: '金额'},

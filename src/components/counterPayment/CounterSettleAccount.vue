@@ -120,9 +120,14 @@
                                 </el-checkbox-group>
                             </el-form-item>
                         </el-col>
-                        <el-col :span="7">
+                        <el-col :span="4">
                             <el-form-item style="margin-bottom:0px">
                                 <el-checkbox v-model="selfMotion">自动匹配</el-checkbox>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-input v-model="searchData.consumer_acc_name" clearable placeholder="请输入机构"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="2">
@@ -292,7 +297,7 @@
         name: "CounterSettleAccount",
         created: function () {
             this.$emit("transmitTitle", "结算对账");
-            this.$emit("getCommTable", this.routerMessage);
+            // this.$emit("getCommTable", this.routerMessage);
 
             /*获取常量数据*/
             var constants = JSON.parse(window.sessionStorage.getItem("constants"));
@@ -323,6 +328,7 @@
                     insure_bill_no: "",
                     recv_acc_name: "",
                     recv_account_no: "",
+                    consumer_acc_name: "",
                     min: "",
                     max: "",
                     is_checked: []
