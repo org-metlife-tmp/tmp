@@ -1,12 +1,12 @@
 ﻿#sql("findLAPayCounterList")
-select 
+select
     tab.* ,
     case isnull(gmf.service_status,'-1') when '2' then '审批中'  when '-1' then '未给付' when '7' then '给付成功'  when '5' then '审批拒绝' when '3' then '审批中'
          when '8' then '给付失败'   when '4' then '审批通过,给付中' when '6' then '审批通过,给付中'   end service_status ,
     gmf.actual_payment_date,
     gmf.id AS gmf_id,
-    gmf.feed_back 
-from  
+    gmf.feed_back
+from
  (
 SELECT
     pay.op_date ,
@@ -24,7 +24,7 @@ SELECT
 	pay.recv_cert_type,
 	pay.recv_cert_code,
 	pay.recv_bank_name,
-	pay.recv_acc_no,	
+	pay.recv_acc_no,
 	pay.status ,
 	pay.process_msg,
 	pay.bank_fb_msg,
@@ -58,7 +58,7 @@ WHERE
 	org.org_id = pay.org_id AND
 	biztype.type_code = la.biz_type AND
 	origin.id = pay.origin_id AND
-	biztype.[type] = 1 
+	biztype.[type] = 1
   #if(map != null)
     #for(x : map)
       #if(x.value&&x.value!="")
@@ -102,7 +102,7 @@ WHERE
          #elseif("org_id".equals(x.key))
            pay.org_id = #para(x.value)
          #else
-           1 = 1    
+           1 = 1
         #end
       #end
     #end
@@ -128,16 +128,16 @@ WHERE
     #end
   #end
   where 1=1
-  #if(null != map.service_status_origin && 
+  #if(null != map.service_status_origin &&
        0 != map.service_status_origin && !"0".equals(map.service_status_origin))
-	   and gmf.service_status is not null 
+	   and gmf.service_status is not null
 	#end
 #end
 
 
 
 #sql("findEBSPayCounterList")
-select 
+select
     tab.op_date ,
     tab.op_user_name ,
 	tab.pay_id ,
@@ -153,7 +153,7 @@ select
 	tab.recv_cert_type,
 	(case  tab.insure_type when  '1'  then  tab.company_customer_no  else  tab.recv_cert_code end ) recv_cert_code,
 	tab.recv_bank_name,
-	tab.recv_acc_no,	
+	tab.recv_acc_no,
 	tab.status ,
 	tab.process_msg,
 	tab.bank_fb_msg,
@@ -162,7 +162,7 @@ select
 	tab.bank_key,
 	tab.la_id,
 	tab.legal_id ,
-	tab.insure_type ,	
+	tab.insure_type ,
 	tab.preinsure_bill_no ,
 	tab.insure_bill_no ,
 	CASE tab.biz_type  WHEN 1 THEN '定期结算退费' WHEN 5 THEN '理赔给付' WHEN 10 THEN '保全退费' WHEN 12 THEN
@@ -183,8 +183,8 @@ select
          when '8' then '给付失败'   when '4' then '审批通过,给付中' when '6' then '审批通过,给付中'   end service_status ,
     gmf.actual_payment_date  ,
     gmf.id AS gmf_id,
-    gmf.feed_back 
-from  
+    gmf.feed_back
+from
  (
 SELECT
     pay.op_date ,
@@ -202,7 +202,7 @@ SELECT
 	pay.recv_cert_type,
 	pay.recv_cert_code,
 	pay.recv_bank_name,
-	pay.recv_acc_no,	
+	pay.recv_acc_no,
 	pay.status ,
 	pay.process_msg,
 	pay.payment_summary,
@@ -212,7 +212,7 @@ SELECT
 	ebs.bank_key,
 	ebs.id AS la_id,
 	ebs.legal_id ,
-	ebs.insure_type ,	
+	ebs.insure_type ,
 	ebs.preinsure_bill_no ,
 	ebs.insure_bill_no ,
 	ebs.biz_type ,
@@ -231,7 +231,7 @@ SELECT
 	pay_legal_data AS pay,
 	ebs_pay_legal_data_ext AS  ebs ,
 	organization AS org ,
-	ebs_origin_pay_data AS origin 
+	ebs_origin_pay_data AS origin
 WHERE
 	pay.id = ebs.legal_id AND
 	org.org_id = pay.org_id AND
@@ -281,7 +281,7 @@ WHERE
          #elseif("org_id".equals(x.key))
            pay.org_id = #para(x.value)
          #else
-           1 =1 
+           1 =1
         #end
       #end
     #end
@@ -307,9 +307,9 @@ WHERE
     #end
   #end
    where 1=1
-  #if(null != map.service_status_origin && 
+  #if(null != map.service_status_origin &&
        0 != map.service_status_origin && !"0".equals(map.service_status_origin))
-	   and gmf.service_status is not null 
+	   and gmf.service_status is not null
 	#end
 #end
 
@@ -319,10 +319,10 @@ WHERE
 #sql("findDistinctStatus")
 SELECT
   DISTINCT(status) AS status ,
-  supply_status AS supply_status 
+  supply_status AS supply_status
 FROM
   pay_legal_data AS pay
-WHERE 
+WHERE
 pay.id  in (
       #for(y : map)
           #if(for.index > 0)
@@ -337,11 +337,11 @@ pay.id  in (
 #sql("updateFileRef")
     update
     common_attachment_info_ref
-    set 
+    set
     bill_id = ?
-    where 
+    where
     biz_type = ?
-    and 
+    and
     bill_id = ?
 #end
 
@@ -349,7 +349,7 @@ pay.id  in (
 #sql("findPendingList")
 select
     tab.*
-	from 
+	from
 (SELECT
 	gmf.id as ipd_id,
 	gmf.org_id,
@@ -396,6 +396,7 @@ select
 	cwrei.init_dept_id,
 	cwrei.init_dept_name,
 	cwrei.start_time ,
+    pay.consumer_acc_name AS consumer_acc_name,
 	pay.pay_code AS pay_code,
 	la.preinsure_bill_no AS preinsure_bill_no,
 	la.insure_bill_no AS insure_bill_no,
@@ -410,12 +411,12 @@ FROM
 	pay_legal_data AS pay,
 	la_origin_pay_data AS origin
 WHERE gmf.id = cwrei.bill_id  AND
-      pay.id = la.legal_id AND 
+      pay.id = la.legal_id AND
 	  biztype.type_code = la.biz_type AND
 	  gmf.legal_id = pay.id AND
 	  gmf.delete_num = 0	AND
 	  biztype.[type] =1 AND
-      origin.id = pay.origin_id	  
+      origin.id = pay.origin_id
   #for(x : map)
     #if("in".equals(x.key))
       #if(map.in != null)
@@ -446,8 +447,8 @@ WHERE gmf.id = cwrei.bill_id  AND
     #elseif("biz_type".equals(x.key))
      AND  cwrei.#(x.key) = #(x.value)
     #end
-  #end 
-UNION ALL    
+  #end
+UNION ALL
   SELECT
 	gmf.id as ipd_id,
 	gmf.org_id,
@@ -494,6 +495,7 @@ UNION ALL
 	cwrei.init_dept_id,
 	cwrei.init_dept_name,
 	cwrei.start_time ,
+    pay.consumer_acc_name AS consumer_acc_name,
 	pay.pay_code AS pay_code,
 	ebs.preinsure_bill_no AS preinsure_bill_no,
 	ebs.insure_bill_no AS insure_bill_no,
@@ -508,7 +510,7 @@ FROM
 	pay_legal_data AS pay	,
 	ebs_origin_pay_data AS origin
 WHERE gmf.id = cwrei.bill_id  AND
-      pay.id = ebs.legal_id AND 
+      pay.id = ebs.legal_id AND
 	  gmf.legal_id = pay.id AND
 	  gmf.delete_num = 0	AND
 	  origin.id = pay.origin_id
@@ -543,33 +545,33 @@ WHERE gmf.id = cwrei.bill_id  AND
      AND  cwrei.#(x.key) = #(x.value)
     #end
   #end
-  ) tab  order by ipd_id 
+  ) tab  order by ipd_id
 #end
 
 
 
 #sql("updateLaOriginData")
    update
-   la_origin_pay_data  
-   set 
-   tmp_status = ? , 
-   tmp_err_message  = ?  
+   la_origin_pay_data
+   set
+   tmp_status = ? ,
+   tmp_err_message  = ?
    where
-   id  = ? 
+   id  = ?
 #end
 
 #sql("updateEbsOriginData")
    update
-   ebs_origin_pay_data  
-   set 
-   tmp_status = ? , 
+   ebs_origin_pay_data
+   set
+   tmp_status = ? ,
    tmp_err_message  = ?,
    paybankaccno = ?,
    paybankcode = ? ,
    paydate = ? ,
-   paytime = ? 
+   paytime = ?
    where
-     id  = ? 
+     id  = ?
 #end
 
 #sql("updBillById")
@@ -615,11 +617,11 @@ WHERE gmf.id = cwrei.bill_id  AND
 	la.sale_code ,
 	la.sale_name ,
 	la.op_code ,
-	la.op_name 
-   from 
+	la.op_name
+   from
      pay_legal_data AS pay ,
      la_pay_legal_data_ext AS la
-   where 
+   where
      pay.id = la.legal_id
      AND
      pay.id  in (
@@ -633,7 +635,7 @@ WHERE gmf.id = cwrei.bill_id  AND
 #end
 
 #sql("checkBatchEBSDetail")
-   select 
+   select
     pay.op_date ,
     pay.op_user_name ,
     pay.id AS pay_id ,
@@ -673,11 +675,11 @@ WHERE gmf.id = cwrei.bill_id  AND
 	ebs.sale_code ,
 	ebs.sale_name ,
 	ebs.op_code ,
-	ebs.op_name 
-   from 
+	ebs.op_name
+   from
      pay_legal_data AS pay ,
      ebs_pay_legal_data_ext AS ebs
-   where 
+   where
      pay.id = ebs.legal_id
      AND
      pay.id  in (
@@ -692,7 +694,7 @@ WHERE gmf.id = cwrei.bill_id  AND
 
 
 #sql("findLaDetailById")
-    select 
+    select
       gmf.* ,
       gmf.recv_account_no AS recv_acc_no ,
       biztype.type_name
@@ -701,7 +703,7 @@ WHERE gmf.id = cwrei.bill_id  AND
     pay_legal_data AS pay,
     la_pay_legal_data_ext AS la,
     la_biz_type AS biztype
-    where 
+    where
      gmf.legal_id = pay.id AND
      pay.id = la.legal_id AND
      biztype.type_code = la.biz_type AND
@@ -711,7 +713,7 @@ WHERE gmf.id = cwrei.bill_id  AND
 
 
 #sql("findEBSDetailById")
-    select 
+    select
       gmf.* ,
       gmf.recv_account_no AS recv_acc_no ,
       CASE ebs.biz_type  WHEN 1 THEN '定期结算退费' WHEN 5 THEN '理赔给付' WHEN 10 THEN '保全退费' WHEN 12 THEN
@@ -720,7 +722,7 @@ WHERE gmf.id = cwrei.bill_id  AND
     gmf_bill AS gmf,
     pay_legal_data AS pay,
     ebs_pay_legal_data_ext AS ebs
-    where 
+    where
      gmf.legal_id = pay.id AND
      pay.id = ebs.legal_id AND
      gmf.id = ?
@@ -728,8 +730,8 @@ WHERE gmf.id = cwrei.bill_id  AND
 
 #sql("updateDeleteByLegal")
     update
-    gmf_bill 
-    set 
+    gmf_bill
+    set
     gmf_bill.delete_num = gmf_bill.id
     where
     gmf_bill.legal_id = ?
@@ -738,7 +740,7 @@ WHERE gmf.id = cwrei.bill_id  AND
 #end
 
 #sql("getSonOrg")
-     SELECT 
+     SELECT
       org2.org_id,
       org2.name as org_name
     FROM
@@ -748,16 +750,16 @@ WHERE gmf.id = cwrei.bill_id  AND
       org2.level_code
     ) = 1
     WHERE
-      org.org_id = ? 
+      org.org_id = ?
 #end
 
 #sql("gettypecode")
-     SELECT 
+     SELECT
       *
     FROM
       la_biz_type
     WHERE
-      [type] = ? 
+      [type] = ?
 #end
 
 #sql("getatchment")
@@ -765,6 +767,6 @@ WHERE gmf.id = cwrei.bill_id  AND
     *
     FROM
         common_attachment_info_ref  ct
-    WHERE 
+    WHERE
       ct.biz_type=? and ct.bill_id=?
 #end
