@@ -1,5 +1,6 @@
 package com.qhjf.cfm.excel.config.validator.impl;
 
+import com.alibaba.fastjson.util.TypeUtils;
 import com.qhjf.cfm.excel.config.validator.IValidator;
 import com.qhjf.cfm.utils.TableDataCacheUtil;
 import org.apache.poi.ss.usermodel.Cell;
