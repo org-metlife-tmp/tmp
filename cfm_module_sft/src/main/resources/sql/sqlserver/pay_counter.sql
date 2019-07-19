@@ -495,7 +495,7 @@ UNION ALL
 	cwrei.init_dept_id,
 	cwrei.init_dept_name,
 	cwrei.start_time ,
-    pay.consumer_acc_name AS consumer_acc_name,
+    pay.consumer_acc_name AS consumer_acc_name ,
 	pay.pay_code AS pay_code,
 	ebs.preinsure_bill_no AS preinsure_bill_no,
 	ebs.insure_bill_no AS insure_bill_no,
