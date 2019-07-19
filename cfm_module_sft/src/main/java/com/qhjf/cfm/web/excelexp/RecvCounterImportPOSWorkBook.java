@@ -19,7 +19,8 @@ public class RecvCounterImportPOSWorkBook extends AbstractWorkBook {
 
     public RecvCounterImportPOSWorkBook() {
         this.optype = "recvcounterimportpos_listexport";                       
-        this.fileName = "import_pos_"+DateKit.toStr(new Date(), "YYYYMMdd")+".xls";
+        this.fileName = "import_pos_"+DateKit.toStr(new Date()).replaceAll("-", "")+".xls";
+        
         this.titleNames = new String[]{
                 "liquidation_date", "trade_date", "trade_time", "terminal_no", "trade_amount", "procedures_amount",
                 "entry_account_amount", "system_track_number", "retrieval_reference_number", "serial_number", "trade_type", "card_no", "card_type", "card_issue_bank"
