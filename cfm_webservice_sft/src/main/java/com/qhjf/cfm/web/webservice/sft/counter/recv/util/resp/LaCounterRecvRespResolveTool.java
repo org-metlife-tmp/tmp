@@ -66,7 +66,7 @@ public class LaCounterRecvRespResolveTool implements ResponseResolveTool {
 			bean.setSuspenseBalance(result.getString("AmtLPS"));
 			
 			//bankcode
-			bean.setBankcode(result.getString("bankcode"));
+			bean.setBankcode(result.getString("RENEW_BANKKEY"));
 			
 			
 			return bean;
