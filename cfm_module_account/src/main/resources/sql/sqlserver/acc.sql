@@ -47,7 +47,7 @@ and acc.org_id = org.org_id
               #end
             )
           #elseif("org_name".equals(x.key))
-            org.name like convert(varchar(5),'%')+convert(varchar(255),#para(x.value))+convert(varchar(5),'%')
+            org.name = #para(x.value)
           #elseif("level_code".equals(x.key))
             org.level_code like convert(varchar(5),'%')+convert(varchar(255),#para(x.value))+convert(varchar(5),'%')
           #elseif("level_num".equals(x.key))
