@@ -23,6 +23,7 @@ SELECT
 	check_service_number,
 	check_user_name,
 	check_date,
+	consumer_acc_name,
 	send_on
 FROM
 	v_gmf_index gmf
@@ -64,8 +65,8 @@ where 1 = 1
           gmf.preinsure_bill_no like convert(varchar(5),'%')+convert(varchar(255),#para(x.value))+convert(varchar(5),'%')
         #elseif("insure_bill_no".equals(x.key))
           gmf.insure_bill_no like convert(varchar(5),'%')+convert(varchar(255),#para(x.value))+convert(varchar(5),'%')
-        #elseif("recv_acc_name".equals(x.key))
-          gmf.recv_acc_name like convert(varchar(5),'%')+convert(varchar(255),#para(x.value))+convert(varchar(5),'%')
+        #elseif("consumer_acc_name".equals(x.key))
+          gmf.consumer_acc_name like convert(varchar(5),'%')+convert(varchar(255),#para(x.value))+convert(varchar(5),'%')
         #elseif("recv_account_no".equals(x.key))
           gmf.recv_account_no like convert(varchar(5),'%')+convert(varchar(255),#para(x.value))+convert(varchar(5),'%')
         #elseif("source_sys".equals(x.key))
