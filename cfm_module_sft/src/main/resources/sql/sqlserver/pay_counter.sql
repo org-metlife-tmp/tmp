@@ -592,12 +592,13 @@ WHERE gmf.id = cwrei.bill_id  AND
 	cwrei.init_dept_id,
 	cwrei.init_dept_name,
 	cwrei.start_time ,
-	mat.refund_on AS pay_date,
+	
 	'' AS pay_code,
 	'' AS preinsure_bill_no,
 	'' AS insure_bill_no,
 	'' AS biz_code,
-	'待匹配收款退费' AS type_name	
+	'待匹配收款退费' AS type_name	,
+	mat.refund_on AS pay_date
 FROM
 	gmf_bill AS gmf,
 	cfm_workflow_run_execute_inst AS cwrei ,
