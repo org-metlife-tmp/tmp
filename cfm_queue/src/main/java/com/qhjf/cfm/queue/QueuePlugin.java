@@ -7,7 +7,7 @@ import com.jfinal.plugin.IPlugin;
  * @author yunxw
  *
  */
-public class QueuePlugin implements IPlugin{
+public class QueuePlugin implements IPlugin{    //建个工行，
 	
 	private static final String cmbcThreadName = "招行消费者队列";
 	

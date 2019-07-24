@@ -28,13 +28,13 @@ public class ChannelManager {
 	private static final Map<String,ChannelInfo> channelMap = new HashMap<String,ChannelInfo>();
 
 	/**
-	 * 初始化map
+	 * 初始化map   ------放建行取前三位105
 	 */
 	static{
 		bankMap.put("308", "cmbc");
 		bankMap.put("102", "icbc");
 		channelMap.put("308", CmbcChannel.getInstance());
-		channelMap.put("102", IcbcChannel.getInstance());
+		channelMap.put("102", IcbcChannel.getInstance());  //=======key:号 value:
 	}
 
 	public static Map<String,String> getBankMap(){
@@ -77,7 +77,7 @@ public class ChannelManager {
 	 * @throws Exception
 	 */
 	public static String getSerianlNo(String bankCode) throws Exception{
-		if(bankCode.equals("308") || bankCode.equals("102")){
+		if(bankCode.equals("308") || bankCode.equals("102")){             //=====***建行加个或
 			return RedisSericalnoGenTool.genBankSeqNo();
 		}
 		throw new Exception("银行"+bankCode+"未开通");
