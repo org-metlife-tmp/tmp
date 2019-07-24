@@ -186,7 +186,7 @@ public class CFMAppConfig extends JFinalConfig {
         loadExcelConfig();
         WfApprovePermissionTool.getINSTANCE();
         //电子回单模版
-        ElectronicTemplateTool.getINSTANCE();
+        // ElectronicTemplateTool.getINSTANCE();
         
         
 

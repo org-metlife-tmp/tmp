@@ -39,7 +39,8 @@
         <module>cfm_webservice_la</module>
         <module>cfm_webservice_ebs</module>
         <module>cfm_webservice_sft</module>
-        <module>cfm_module_voucher</module>      <!-- 凭证查询  -->
+        <module>cfm_module_voucher</module>
+        <module>cfm_report</module>      <!-- 报表查询  -->
     </modules>
 
     <properties>
