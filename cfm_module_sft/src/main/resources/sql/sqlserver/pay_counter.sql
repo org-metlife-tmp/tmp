@@ -458,7 +458,7 @@ UNION ALL
 	gmf.pay_account_cur,
 	gmf.recv_account_no,
 	gmf.recv_account_no AS recv_acc_no,
-    case isnull(ebs.company_name,'') when '' then pay.recv_acc_name else ebs.company_name end  recv_account_name,
+    gmf.recv_account_name,
 	gmf.recv_bank_name,
 	gmf.recv_bank_cnaps,
 	gmf.persist_version,
