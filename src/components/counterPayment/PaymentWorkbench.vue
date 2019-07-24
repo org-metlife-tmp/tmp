@@ -238,6 +238,12 @@
                                :disabled="selectId.length == 0">提交
                     </el-button>
                 </div>
+                <div class="btn-right">
+                    <span>总笔数：</span>
+                    <span v-text="totalData.total_num" class="numText"></span>
+                    <span>总金额：</span>
+                    <span v-text="totalData.total_amount" class="numText"></span>
+                </div>
             </div>
 
             <el-pagination
@@ -426,6 +432,10 @@
             if(matchData){
                 this.setMatchData(matchData);
             }
+            this.totalData={ //汇总数据
+                total_amount: 0.00,
+                total_num: 0
+            }
         },
         props: ["tableData"],
         components: {
@@ -466,6 +476,10 @@
                 pagTotal: 1,
                 pagCurrent: 1,
                 sourceList: {}, //常量数据
+                totalData: { //汇总数据
+                    total_amount: 0.00,
+                    total_num: 0
+                },
                 payModeList: {},
                 orgList: [],
                 billstatusList: [],
@@ -980,12 +994,19 @@
             setId: function (selection) {
                 this.selectId = [];
                 this.selectVersion = [];
+                this.totalData={ //汇总数据
+                    total_amount: 0.00,
+                    total_num: 0
+                };
                 let selectId = this.selectId;
                 let selectVersion = this.selectVersion;
+                let totalData = this.totalData;
                 for (let i = 0; i < selection.length; i++) {
                     let row = selection[i];
                     selectId.push(row.pay_id);
                     selectVersion.push(row.persist_version);
+                    totalData.total_num++;
+                    totalData.total_amount = this.$common.transitSeparator(this.$common.transitNumber(totalData.total_amount) + row.amount);
                 }
             },
             //提交
@@ -1045,6 +1066,8 @@
                 this.pagCurrent = val.page_num;
                 this.selectId = [];
                 this.selectVersion = [];
+                this.totalData.total_num =0;
+                this.totalData.total_amount =0;
             }
         }
     }

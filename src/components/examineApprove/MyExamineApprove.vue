@@ -143,7 +143,14 @@
                 }
             }
         }
+        .numText1 {
+            color: #FF5800;
+            margin-right: 10px;
+        }
 
+        .numText1:last-child {
+            margin-right: 0;
+        }
         /*----批量调拨，支付弹框样式*/
         //批量调拨查看弹出框
         .view-mode {
@@ -267,6 +274,20 @@
             left: 0;
             .el-pagination {
                 text-align: center;
+            }
+        }
+        .allData1 {
+            height: 36px;
+            line-height: 36px;
+            width: 100%;
+            background-color: #F8F8F8;
+            border: 1px solid #ebeef5;
+            border-top: none;
+            box-sizing: border-box;
+
+            .btn-right {
+                float: right;
+                margin-right: 16px;
             }
         }
         /*汇总数据*/
@@ -509,7 +530,7 @@
                         <!--数据展示-->
                         <el-table :data="item.tableList"
                                   border
-                                  height="100%"
+                                  height="90%"
                                   @selection-change="handleSelectionChange"
                                   size="mini">
                             <el-table-column
@@ -638,11 +659,20 @@
                                 </template>
                             </el-table-column>
                         </el-table>
+                        <div class="allData1" v-show="activeName=='32'">
+                            <div class="btn-right">
+                                <span>总笔数：</span>
+                                <span v-text="totalData.total_num" class="numText1"></span>
+                                <span>总金额：</span>
+                                <span v-text="totalData.total_amount" class="numText1"></span>
+                            </div>
+                        </div>
                     </el-tab-pane>
                 </el-tabs>
             </div>
         </el-main>
         <el-footer>
+
             <!--加签同意功能-->
             <div class="button-list" v-if="isPending" v-show="activeName!='0'">
                 <el-button type="primary"
@@ -1127,6 +1157,10 @@
                 this.getTabList();
             } else {
                 this.$emit("getTableData", this.routerMessage);
+            }
+            this.totalData={ //汇总数据
+                total_amount: 0.00,
+                total_num: 0
             }
             //获取用户列表
             this.$axios({
@@ -2072,6 +2106,10 @@
                         }
                     }
                 },
+                totalData: { //汇总数据
+                    total_amount: 0.00,
+                    total_num: 0
+                },
                 doneTableList: [], //已办列表数据
                 pagSize: 7, //分页数据
                 pagTotal: 1,
@@ -2285,7 +2323,7 @@
                         {id: '6', prop: "type_name", name: '业务类型'},
                         {id: '7', prop: "pay_account_no", name: '付款账号'},
                         {id: '8', prop: "recv_account_no", name: '收款方账号'},
-                        {id: '9', prop: "submitter_name", name: '客户名称'},
+                        {id: '9', prop: "consumer_acc_name", name: '客户名称'},
                         {id: '10', prop: "recv_account_name", name: '收款账号户名'},
                         {id: '11', prop: "recv_bank_name", name: '开户名称'},
                         {id: '12', prop: "amount", name: '金额'},
@@ -2876,6 +2914,16 @@
             //选择加签的或者同意的数据
             handleSelectionChange: function (val) {
                 this.selectionData = val;
+                this.totalData={ //汇总数据
+                    total_amount: 0.00,
+                    total_num: 0
+                };
+                let totalData = this.totalData;
+                for (let i = 0; i < val.length; i++) {
+                    let row = val[i];
+                    totalData.total_num++;
+                    totalData.total_amount = this.$common.transitSeparator(this.$common.transitNumber(totalData.total_amount) + row.amount);
+                }
             },
             //切换弹框内tab
             changeTab: function (type) {
@@ -3044,6 +3092,8 @@
                 } else {
                     this.doneTableList = val.data;
                 }
+                this.totalData.total_num =0;
+                this.totalData.total_amount =0;
             }
         }
     }

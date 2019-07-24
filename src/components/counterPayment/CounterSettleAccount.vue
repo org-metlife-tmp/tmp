@@ -47,6 +47,53 @@
             <div class="search-setion">
                 <el-form :inline="true" :model="searchData" size="mini">
                     <el-row>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-select v-model="searchData.source_sys"
+                                           clearable filterable size="mini"
+                                           placeholder="请选择来源系统">
+                                    <el-option v-for="(item,key) in sourceList"
+                                               :key="key"
+                                               :label="item"
+                                               :value="key">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-select v-model="searchData.org_id" placeholder="请选择机构"
+                                           clearable filterable
+                                           style="width:100%">
+                                    <el-option v-for="item in orgList"
+                                               :key="item.org_id"
+                                               :label="item.name"
+                                               :value="item.org_id">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-input v-model="searchData.preinsure_bill_no" clearable placeholder="请输入投保单号"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-input v-model="searchData.insure_bill_no" clearable placeholder="请输入保单号"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="7">
+                            <el-form-item>
+                                <el-col :span="11">
+                                    <el-input v-model="searchData.min" clearable placeholder="最小金额"></el-input>
+                                </el-col>
+                                <el-col class="line" :span="1" style="text-align:center">-</el-col>
+                                <el-col :span="11">
+                                    <el-input v-model="searchData.max" clearable placeholder="最大金额"></el-input>
+                                </el-col>
+                            </el-form-item>
+                        </el-col>
                         <el-col :span="5">
                             <el-form-item>
                                 <el-date-picker
@@ -64,55 +111,15 @@
                         </el-col>
                         <el-col :span="4">
                             <el-form-item>
-                                <el-select v-model="searchData.source_sys"
-                                           clearable filterable size="mini"
-                                           placeholder="请选择来源系统">
-                                    <el-option v-for="(item,key) in sourceList"
-                                               :key="key"
-                                               :label="item"
-                                               :value="key">
-                                    </el-option>
-                                </el-select>
+                                <el-input v-model="searchData.consumer_acc_name" clearable placeholder="请输入客户名称"></el-input>
                             </el-form-item>
                         </el-col>
-                        <el-col :span="4">
-                            <el-form-item>
-                                <el-input v-model="searchData.preinsure_bill_no" clearable placeholder="请输入投保单号"></el-input>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="4">
-                            <el-form-item>
-                                <el-input v-model="searchData.insure_bill_no" clearable placeholder="请输入保单号"></el-input>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="4">
-                            <el-form-item>
-                                <el-input v-model="searchData.recv_acc_name" clearable placeholder="请输入客户名称"></el-input>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="2">
-                            <el-form-item>
-                                <el-button type="primary" plain @click="clearData" size="mini">清空筛选</el-button>
-                            </el-form-item>
-                        </el-col>
-
                         <el-col :span="4">
                             <el-form-item>
                                 <el-input v-model="searchData.recv_account_no" clearable placeholder="请输入收款银行账号"></el-input>
                             </el-form-item>
                         </el-col>
-                        <el-col :span="5">
-                            <el-form-item>
-                                <el-col :span="11">
-                                    <el-input v-model="searchData.min" clearable placeholder="最小金额"></el-input>
-                                </el-col>
-                                <el-col class="line" :span="1" style="text-align:center">-</el-col>
-                                <el-col :span="11">
-                                    <el-input v-model="searchData.max" clearable placeholder="最大金额"></el-input>
-                                </el-col>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="5">
+                        <el-col :span="4">
                             <el-form-item style="margin-bottom:0px">
                                 <el-checkbox-group v-model="searchData.is_checked">
                                     <el-checkbox :label="0" name="未核对">未核对</el-checkbox>
@@ -120,14 +127,14 @@
                                 </el-checkbox-group>
                             </el-form-item>
                         </el-col>
-                        <el-col :span="4">
+                        <el-col :span="3">
                             <el-form-item style="margin-bottom:0px">
                                 <el-checkbox v-model="selfMotion">自动匹配</el-checkbox>
                             </el-form-item>
                         </el-col>
-                        <el-col :span="4">
+                        <el-col :span="2">
                             <el-form-item>
-                                <el-input v-model="searchData.consumer_acc_name" clearable placeholder="请输入机构"></el-input>
+                                <el-button type="primary" plain @click="clearData" size="mini">清空筛选</el-button>
                             </el-form-item>
                         </el-col>
                         <el-col :span="2">
@@ -151,7 +158,7 @@
                 <el-table-column prop="biz_type" label="业务类型" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="amount" label="金额" :show-overflow-tooltip="true"
                                  :formatter="transitAmount"></el-table-column>
-                <el-table-column prop="recv_acc_name" label="客户名称" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="consumer_acc_name" label="客户名称" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="recv_cert_code" label="客户号码" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="recv_account_name" label="收款账号户名" width="120px"
                                  :show-overflow-tooltip="true"></el-table-column>
@@ -248,7 +255,7 @@
                       @selection-change="childChange"
                       @select-all="childChange"
                       height="200px" size="mini">
-                <el-table-column type="selection" width="40"></el-table-column>
+                <el-table-column type="selection" width="40" :selectable="isSelect"></el-table-column>
                 <el-table-column prop="trans_date" label="交易日期" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="bankcode" label="BankCode" width="100px"
                                  :show-overflow-tooltip="true"></el-table-column>
@@ -259,7 +266,7 @@
                 <el-table-column prop="opp_acc_no" label="对方银行账号" width="110px"
                                  :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="opp_acc_name" label="对方账户名称" width="110px"
-                                 :show-overflow-tooltip="true"></el-table-column>
+                                 :show-overflow-toolrecv_account_nametip="true"></el-table-column>
                 <el-table-column prop="opp_acc_bank" label="对方开户行" width="100px"
                                  :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="amount" label="交易金额" :show-overflow-tooltip="true"
@@ -309,6 +316,7 @@
             if(constants.SftDoubtPayMode){
                 this.paymodeList = constants.SftDoubtPayMode;
             }
+            this.getOrgList();
         },
         props: ["tableData"],
         data: function () {
@@ -326,11 +334,11 @@
                     source_sys: "",
                     preinsure_bill_no: "",
                     insure_bill_no: "",
-                    recv_acc_name: "",
-                    recv_account_no: "",
                     consumer_acc_name: "",
+                    recv_account_no: "",
                     min: "",
                     max: "",
+                    org_id: "",
                     is_checked: []
                 },
                 childSearch: {
@@ -366,6 +374,7 @@
                 isZero: true,
                 tradingList: [], //选中数据
                 currentId: "",
+                orgList: [], //常量数据
 
                 channelList: [],
                 bankcodeList: [],
@@ -410,6 +419,10 @@
                 this.routerMessage.params.page_num = 1;
                 this.$emit("getCommTable", this.routerMessage);
                 this.childList = [];
+            },
+            //当前列是否可以勾选
+            isSelect: function (row, index) {
+                return !(row.is_checked == "1" );
             },
             //查询交易流水
             queryChildData: function(){
@@ -564,6 +577,30 @@
             //展示格式转换-金额
             transitAmount: function (row, column, cellValue, index) {
                 return this.$common.transitSeparator(cellValue);
+            },
+            getOrgList: function () {
+                this.$axios({
+                    url: this.queryUrl + "normalProcess",
+                    method: "post",
+                    data: {
+                        optype: "sftbankkey_getorg",
+                        params: {}
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        });
+                    } else {
+                        var data = result.data.data;
+                        this.orgList = data;
+                    }
+
+                }).catch(function (error) {
+                    console.log(error);
+                });
             },
             //展示格式转换-状态
             transitStatus: function (row, column, cellValue, index) {
