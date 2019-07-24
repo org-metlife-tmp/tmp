@@ -18,7 +18,7 @@ import java.util.Map;
 public class CmbcSinglePayInter  implements ISingleResultChannelInter{
 
 	@Override
-	public Map<String, Object> genParamsMap(Record record) {
+	public Map<String, Object> genParamsMap(Record record) {  //给银行传参数
 		Map<String,Object> map = new HashMap<>();
         Map<String,Object> totMap = new HashMap<>();
         List<Map<String,Object>> details = new ArrayList<Map<String,Object>>();
@@ -56,7 +56,7 @@ public class CmbcSinglePayInter  implements ISingleResultChannelInter{
 	}
 
 	@Override
-	public Record parseResult(String jsonStr) {
+	public Record parseResult(String jsonStr) {    //银行反回的结果
 		Record record = new Record();
 		JSONObject json = JSONObject.parseObject(jsonStr);
 		JSONObject infoJson = json.getJSONArray("INFO").getJSONObject(0);
@@ -92,4 +92,5 @@ public class CmbcSinglePayInter  implements ISingleResultChannelInter{
 	public AtomicInterfaceConfig getInter() {
 		return CmbcConstant.DCPAYMNT;
 	}
+	//银行底层支付的接口  建行(区分调用哪个接口   CmbcConstant封装好的接口
 }

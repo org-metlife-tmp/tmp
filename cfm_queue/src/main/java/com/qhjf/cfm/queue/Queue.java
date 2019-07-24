@@ -9,7 +9,7 @@ import java.util.concurrent.LinkedBlockingDeque;
  *
  */
 @SuppressWarnings("unchecked")
-public class Queue {
+public class Queue {   //33建一个建行的队列，建个ccb
 
 	@SuppressWarnings("rawtypes")
 	private Queue(){
