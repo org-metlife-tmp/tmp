@@ -514,7 +514,7 @@ public interface WebConstant {
         PLS_HD_VOUCHER(37, "批量收回调", "PLS_HD_VOUCHER"),
         GMF_HD_VOUCHER(38, "柜面付回调", "GMF_HD_VOUCHER"),GMSGD(39, "柜面收个单", "GMSGD"),
         GMSTD(40, "柜面收团单", "GMSTD"),GMSCG_HD_VOUCHER(41, "柜面收常规回调", "GMSCG_HD_VOUCHER"),GMSWPP_HD_VOUCHER(42, "柜面收未匹配回调", "GMSWPP_HD_VOUCHER"),
-        GMS(43, "柜面收撤销审批", "GMS"), FCYJ(44, "防重预警", "FCYJ");
+        GMS(43, "柜面收撤销审批", "GMS"), FCYJ(44, "防重预警", "FCYJ"),OARQ(45, "OA报表查询", "OARQ");
         int key;
         String desc;
         String prefix;
@@ -970,7 +970,7 @@ public interface WebConstant {
         ACC_MGR(1, "账户管理"), OA_MGR(2, "OA审批"), DBT_MGR(3, "调拨通"), ZFT_MGR(4, "支付通"), GJT_MGR(5, "归集通"),
         GYL_MGR(6, "广银联备付金"), ZJXB_MGR(7, "资金下拨"), SKT_MGR(8, "收款通"), DZT_MGR(9, "对账通"), MONITOR_MGR(10, "资金监控"),
         OADATA_MGR(11, "OA付款管理"), ELECTRONIC_MGR(12, "电子回单"), REFUND_MGR(13, "退票"), SFF_MGR(14, "收付费")
-        , VOUCHER_QUERY(15, "凭证查询");
+        , VOUCHER_QUERY(15, "凭证查询"),REPORT_QUERY(16,"报表查询");
 
         int key;
         String desc;
@@ -1018,6 +1018,8 @@ public interface WebConstant {
                     );
                 } else if (bizType.equals(VOUCHER_QUERY)) {
                     map.put(bizType.name(), Arrays.asList(MajorBizType.VOUCHER_QUERY, MajorBizType.VOUCHER_QUERY));
+                }else if (bizType.equals(REPORT_QUERY)) {
+                    map.put(bizType.name(), Arrays.asList(MajorBizType.OARQ));
                 }
             }
             return map;
