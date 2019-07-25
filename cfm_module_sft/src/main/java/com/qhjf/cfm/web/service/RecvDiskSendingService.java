@@ -3,10 +3,12 @@ package com.qhjf.cfm.web.service;
 import com.alibaba.fastjson.util.TypeUtils;
 import com.jfinal.kit.Kv;
 import com.jfinal.plugin.activerecord.*;
+import com.qhjf.cfm.exceptions.EncryAndDecryException;
 import com.qhjf.cfm.exceptions.ReqDataException;
 import com.qhjf.cfm.queue.ProductQueue;
 import com.qhjf.cfm.queue.QueueBean;
 import com.qhjf.cfm.utils.CommonService;
+import com.qhjf.cfm.utils.SymmetricEncryptUtil;
 import com.qhjf.cfm.web.UodpInfo;
 import com.qhjf.cfm.web.UserInfo;
 import com.qhjf.cfm.web.channel.inter.api.IChannelInter;
@@ -137,7 +139,14 @@ public class RecvDiskSendingService {
 			l.set("id", r.get("id"));
 			l.set("package_seq", r.get("package_seq"));
 			l.set("amount", r.get("amount"));
-			l.set("pay_account_no", r.getStr("pay_acc_no"));
+			//付方账号做解密处理以便后续发送给银行端
+			String pay_acc_no = "";
+			try {
+				pay_acc_no = SymmetricEncryptUtil.getInstance().decryptToStr(r.getStr("pay_acc_no"));
+			} catch (EncryAndDecryException e) {
+				logger.error("RecvDiskSendingService.sendbank：付方账号解密失败！", e);
+			}
+			l.set("pay_account_no", pay_acc_no);
 			l.set("pay_account_name", r.getStr("pay_acc_name"));
 			l.set("pay_account_bank", r.getStr("pay_bank_name"));
 			l.set("pay_account_cur", "");

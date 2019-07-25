@@ -44,11 +44,11 @@ public class IcbcProtocolImportInter implements IMoreResultChannelInter {
 				Map<String, Object> rd = new HashMap<String, Object>();
 				// 指令顺序号
 				rd.put("iSeqno", r.getStr("package_seq"));
-				rd.put("PayNo", total.getStr("pay_no"));//缴费编号
+				rd.put("PayNo", r.getStr("pay_no"));//缴费编号
 				rd.put("PayAcctName", r.getStr("pay_acc_name"));
 				rd.put("PayAccNo", r.getStr("pay_acc_no"));
-				rd.put("CertType", r.getStr("pay_cert_type"));
-				rd.put("CertNo", r.getStr("pay_cert_code"));
+				rd.put("CertType", r.getStr("cert_type"));
+				rd.put("CertNo", r.getStr("cert_no"));
 				rd.put("DeadLine", r.getStr("dead_line"));
 				rdList.add(rd);
 			}

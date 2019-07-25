@@ -7,6 +7,7 @@ import com.jfinal.plugin.activerecord.IAtom;
 import com.jfinal.plugin.activerecord.Record;
 import com.jfinal.plugin.activerecord.SqlPara;
 import com.qhjf.bankinterface.api.exceptions.BankInterfaceException;
+import com.qhjf.bankinterface.api.utils.OminiUtils;
 import com.qhjf.cfm.exceptions.ReqDataException;
 import com.qhjf.cfm.utils.ArrayUtil;
 import com.qhjf.cfm.utils.CommKit;
@@ -463,7 +464,10 @@ public class SysBatchRecvInter implements ISysAtomicInterface {
     		//查询当天bus_type最大的值,如果为空，则值为2
     		String today = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
 			Record findFirst = Db.findFirst(Db.getSql("batchrecv.qryMaxBusTypeFromTotal"), today);
-			Integer busType = null == findFirst ? 1 : findFirst.getInt("bus_type_max");
+            Integer busType = null;
+			if(!OminiUtils.isNullOrEmpty(findFirst.getInt("bus_type_max"))){
+                busType = null == findFirst ? 1 : findFirst.getInt("bus_type_max");
+            }
 			busType = null == busType || busType == 0 ? 1 : busType;
 			if (++busType > 99) {
 				throw new ReqDataException("工行一天只支持97笔批收指令！");

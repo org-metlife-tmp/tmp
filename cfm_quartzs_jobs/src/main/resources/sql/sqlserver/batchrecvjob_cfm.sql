@@ -50,8 +50,7 @@
 	from 
 		protocol_import_instr_total
 	where
-		status = 0 or
-		status = 3
+		status in ('0','3')
 #end
 
 #sql('queryOldProtocolImportQueryLock')

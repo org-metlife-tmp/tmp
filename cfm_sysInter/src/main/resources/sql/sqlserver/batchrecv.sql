@@ -187,7 +187,7 @@
    	batch_recv_instr_queue_total
    where
    	recv_bank_cnaps like '102%' and
-   	init_send_time = ?
+   	CONVERT(VARCHAR(100),init_send_time,23) = ?
 #end
 
 #sql("updProtocolDetail")

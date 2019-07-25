@@ -46,6 +46,7 @@ public class IcbcTradeResultBatchRecvQueryInter implements IMoreResultChannelInt
 
 		Map<String, Object> rd = new HashMap<>();
 		rd.put("iSeqno", "");
+		rd.put("QryiSeqno","");
 		List<Map<String, Object>> rds = new ArrayList<Map<String, Object>>();
 		rds.add(rd);
 		result.put("rd", rds);
