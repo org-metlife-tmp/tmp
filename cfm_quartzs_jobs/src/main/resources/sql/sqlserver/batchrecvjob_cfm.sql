@@ -23,6 +23,15 @@
 		and reqnbr = ?
 #end
 
+#sql('getBatchRecvDetail')
+	select
+		*
+	from
+		batch_recv_instr_queue_detail
+	where
+		bank_serial_number = ?
+#end
+
 
 #sql('getNeedQueryStatusBatchRecv')
 	select

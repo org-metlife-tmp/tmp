@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.qhjf.bankinterface.api.utils.OminiUtils;
 import com.qhjf.cfm.web.config.DDHLARecvConfigSection;
 import com.qhjf.cfm.web.config.GlobalConfigSection;
 import com.qhjf.cfm.web.config.IConfigSectionType;
@@ -24,6 +25,8 @@ public class IcbcBatchRecvInter implements IChannelBatchInter {
 	private static DDHLARecvConfigSection section = GlobalConfigSection.getInstance().getExtraConfig(IConfigSectionType.DDHConfigSectionType.DDHLaRecv);
 
 	private JSONObject pub0;
+
+	private String iSeqno;
 
 	@Override
 	public Map<String, Object> genParamsMap(Record record) {
@@ -49,10 +52,11 @@ public class IcbcBatchRecvInter implements IChannelBatchInter {
 				Map<String, Object> rd = new HashMap<String, Object>(1<<6);
 				// 指令顺序号
 				rd.put("iSeqno", r.getStr("package_seq"));
-				rd.put("PayAccNo", total.getStr("pay_account_no"));
-				rd.put("PayAccNameCN", total.getStr("pay_account_name"));
-				rd.put("PayBranch", total.getStr("pay_account_bank"));
-				rd.put("Portno", total.getStr("insure_bill_no"));//缴费编号
+				this.iSeqno = r.getStr("package_seq");
+				rd.put("PayAccNo", r.getStr("pay_account_no"));
+				rd.put("PayAccNameCN", r.getStr("pay_account_name"));
+				rd.put("PayBranch", r.getStr("pay_account_bank"));
+				rd.put("Portno", r.getStr("insure_bill_no"));//缴费编号
 				rd.put("ContractNo", section.getProtocolNo());//协议编号
 				rd.put("CurrType", "CNY");// 币种total.getStr("pay_account_cur")
 				rd.put("PayAmt", r.getStr("amount"));// 金额
@@ -102,9 +106,23 @@ public class IcbcBatchRecvInter implements IChannelBatchInter {
 
 	@Override
 	public Record parseResult(String json, int index) throws Exception {
+		JSONObject jsonStr = JSONObject.parseObject(json);
+		JSONArray ebArray = jsonStr.getJSONArray("eb");
+		JSONObject eb0 = ebArray.getJSONObject(0);
 		Record rs = new Record();
 		if ("0".equals(this.pub0.getString("RetCode"))) {
-			return rs.set("status", "S");
+			JSONArray out = eb0.getJSONArray("out");
+			if(!OminiUtils.isNullOrEmpty(out)){
+				JSONObject out0 = out.getJSONObject(0);
+				JSONArray rd = out0.getJSONArray("rd");
+				JSONObject rd0 = rd.getJSONObject(0);
+				rs.set("iSeqno",rd0.get("iSeqno"));
+				rs.set("bankErrMsg",rd0.get("iRetMsg"));
+			} else {
+				rs.set("iSeqno",this.iSeqno);
+			}
+			rs.set("status", "S");
+			return rs;
 		}
 		return rs.set("status", "F")
 				.set("bankErrMsg", this.pub0.getString("RetMsg"))

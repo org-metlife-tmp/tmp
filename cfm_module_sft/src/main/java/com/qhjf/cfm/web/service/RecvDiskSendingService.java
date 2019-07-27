@@ -273,13 +273,13 @@ public class RecvDiskSendingService {
         	genInstr.set("detail", newDetails);
         	//保存指令
             boolean seveInstr = sysInter.seveInstr();
-            //指令入队
-            if (seveInstr) {
+            //指令入队 // 导入协议指令先屏蔽掉，后期再优化修改
+            /*if (seveInstr) {
             	QueueBean bean = new QueueBean(sysInter, channelInter.genParamsMap(genInstr), cnaps);
     			ProductQueue productQueue = new ProductQueue(bean);
     			new Thread(productQueue).start();
-    		}
-            return false;
+    		}*/
+            return seveInstr;
 		}else {//不存在未手工导入的协议
 			return true;
 		}

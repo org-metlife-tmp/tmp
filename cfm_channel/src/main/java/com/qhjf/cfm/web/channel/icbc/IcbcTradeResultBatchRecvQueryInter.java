@@ -7,6 +7,7 @@ import java.util.Map;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
 import com.qhjf.bankinterface.api.AtomicInterfaceConfig;
 import com.qhjf.bankinterface.icbc.IcbcConstant;
@@ -44,11 +45,15 @@ public class IcbcTradeResultBatchRecvQueryInter implements IMoreResultChannelInt
 		// 根据指令序列号查询
 		result.put("QryfSeqno", record.getStr("bank_serial_number"));
 
-		Map<String, Object> rd = new HashMap<>();
-		rd.put("iSeqno", "");
-		rd.put("QryiSeqno","");
+		List<Record> detail = Db.find(Db.getSql("batchrecvjob.getBatchRecvDetail"), record.getStr("bank_serial_number"));
+
 		List<Map<String, Object>> rds = new ArrayList<Map<String, Object>>();
-		rds.add(rd);
+		for(Record r : detail){
+			Map<String, Object> rd = new HashMap<>();
+			rd.put("iSeqno", r.getStr("package_seq"));
+			rd.put("QryiSeqno",r.getStr("package_seq"));
+			rds.add(rd);
+		}
 		result.put("rd", rds);
 		return result;
 	}

@@ -84,7 +84,7 @@ public class SysTradeResultRecvBatchQueryInter implements ISysAtomicInterface {
         	//		package_seq/bank_err_msg/bank_err_code/status
             Record channelRecord = channelInter.parseResult(jsonStr, i);
             channelRecord.set("id", instrTotalRecord.getLong("id"));
-            channelRecord.set("recv_bank_cnaps", instrTotalRecord.getLong("recv_bank_cnaps"));
+            channelRecord.set("recv_bank_cnaps", instrTotalRecord.getStr("recv_bank_cnaps"));
             
             //单条回写单据明细与指令明细
             singleResultWriteBack(channelRecord, billDetailTable, billTablePrimaryKey);
