@@ -8,7 +8,7 @@ import com.qhjf.cfm.web.validates.RequiredParamsValidate;
  * @Date: 2018/8/9
  * @Description:
  */
-//测试git可否正常提交代码07282019day
+//测试git可否正常提交代码07282019day1
 public class DbtOptypeMgr extends AbstractOptypeMgr {
     @Override
     public void registe() {
