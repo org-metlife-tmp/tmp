@@ -64,6 +64,7 @@ public class RecvGroupCounterService {
         String use_funds = TypeUtils.castToString(record.get("use_funds"));
         String consumer_bank_name = TypeUtils.castToString(record.get("consumer_bank_name"));
         String consumer_acc_no = TypeUtils.castToString(record.get("consumer_acc_no"));
+        String consumer_accname = TypeUtils.castToString(record.get("consumer_accname"));
         String consumer_no = TypeUtils.castToString(record.get("consumer_no"));
         String consumer_acc_name = TypeUtils.castToString(record.get("consumer_acc_name"));
         String preinsure_bill_no = TypeUtils.castToString(record.get("preinsure_bill_no"));
@@ -84,7 +85,7 @@ public class RecvGroupCounterService {
         StringBuilder sb = new StringBuilder();
         sb.append(recv_date).append(bill_org_id).append(recv_org_id).append(recv_date).append(currency).append(recv_mode).
                 append(bill_status).append(bill_number).append(bill_date).append(recv_bank_name).append(recv_acc_no).append(use_funds).append(consumer_bank_name).
-                append(consumer_acc_no).append(consumer_no).append(consumer_acc_name).append(preinsure_bill_no).append(insure_bill_no).append(batch_no).
+                append(consumer_acc_no).append(consumer_accname).append(consumer_no).append(consumer_acc_name).append(preinsure_bill_no).append(insure_bill_no).append(batch_no).
                 append(insure_name).append(insure_acc_no).append(business_acc).append(business_acc_no).append(amount).append(third_payment).append(payer).
                 append(pay_code).append(payer_relation_insured).append(pay_reason).append(agent_com);
         //防重校验
@@ -126,6 +127,7 @@ public class RecvGroupCounterService {
                 .set("use_funds", TypeUtils.castToInt(record.get("use_funds")))        //资金用途 0:客户账户、1:新单签发、2:保全收费、3:定期结算收费、4:续期收费、5:不定期收费
                 .set("consumer_bank_name", record.get("consumer_bank_name"))        //客户银行
                 .set("consumer_acc_no", record.get("consumer_acc_no"))        //客户账号
+                .set("consumer_accname", record.get("consumer_accname"))        //客户账号户名
                 .set("consumer_no", record.get("consumer_no"))        //客户号
                 .set("consumer_acc_name", record.get("consumer_acc_name"))    //客户名称
                 .set("preinsure_bill_no", record.get("preinsure_bill_no"))        //投保单号
