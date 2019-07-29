@@ -1,5 +1,6 @@
 package com.qhjf.cfm.web.webservice.ebs;
 
+import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
 import com.qhjf.cfm.web.constant.WebConstant;
 
@@ -16,10 +17,15 @@ public class EbsCallbackBean {
 	private String ErrCode;
 	private String ErrMsg;
 	private String PayMoney;
-	private String PayBankCode;
-	private String PayBankAccNo;
+	private String PayBankCode ;
+	private String PayBankAccNo ;
+	private String PayBankName ;  //EBS新接口,接收大都会支付银行名称
+	private String GetAccName ;  //EBS新接口,接收实际收款人账户名
+	private String GetBankName ;  //EBS新接口,接收实际收款人银行名称
+	private String GetAccNo ;  //EBS新接口,接收实际收款人账户名
 	
 	public EbsCallbackBean(Record origin) throws Exception{
+				
 		this.PayNo = origin.getStr("pay_code");
 		this.PayResult = origin.getStr("pay_code");
 		if(origin.getInt("tmp_status") == WebConstant.SftInterfaceStatus.SFT_INTER_PROCESS_S.getKey()){
@@ -35,6 +41,10 @@ public class EbsCallbackBean {
 		this.PayTime = origin.getStr("paytime");
 		this.PayBankAccNo = origin.getStr("paybankaccno");
 		this.PayBankCode = origin.getStr("paybankcode");
+		Record payRec = Db.findFirst(Db.getSql("nbdb.findAccountByAccno"), PayBankAccNo);
+		this.PayBankName = payRec.getStr("bank_name");
+		this.GetAccName = origin.getStr("recv_acc_name");
+		this.GetAccNo = origin.getStr("recv_acc_no");
 	}
 	
 	public Map<String,Object> toMap(){
@@ -49,6 +59,10 @@ public class EbsCallbackBean {
 		map.put("PayMoney", this.PayMoney);
 		map.put("PayBankCode", this.PayBankCode);
 		map.put("PayBankAccNo", this.PayBankAccNo);
+		map.put("PayBankName", this.PayBankName);
+		map.put("GetAccName", this.GetAccName);
+		map.put("GetAccNo", this.GetAccNo);
+		map.put("GetBankName", this.GetBankName);
 		return map;
 	}
 
@@ -131,6 +145,40 @@ public class EbsCallbackBean {
 	public void setPayBankAccNo(String payBankAccNo) {
 		PayBankAccNo = payBankAccNo;
 	}
+
+	public String getPayBankName() {
+		return PayBankName;
+	}
+
+	public void setPayBankName(String payBankName) {
+		PayBankName = payBankName;
+	}
+
+	public String getGetAccName() {
+		return GetAccName;
+	}
+
+	public void setGetAccName(String getAccName) {
+		GetAccName = getAccName;
+	}
+
+	public String getGetBankName() {
+		return GetBankName;
+	}
+
+	public void setGetBankName(String getBankName) {
+		GetBankName = getBankName;
+	}
+
+	public String getGetAccNo() {
+		return GetAccNo;
+	}
+
+	public void setGetAccNo(String getAccNo) {
+		GetAccNo = getAccNo;
+	}
+	
+	
 	
 	
 }
