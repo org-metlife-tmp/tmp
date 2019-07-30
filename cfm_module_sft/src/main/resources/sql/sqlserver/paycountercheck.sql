@@ -121,6 +121,8 @@ WHERE
         AND
         #if("summary".equals(x.key))
           his.#(x.key) like convert(varchar(5),'%')+convert(varchar(255),#para(x.value))+convert(varchar(5),'%')
+        #elseif("bankcode".equals(x.key))
+          acc.#(x.key) = #para(x.value)
         #elseif("is_checked".equals(x.key))
           his.is_checked in(
             #for(y : map.is_checked)
