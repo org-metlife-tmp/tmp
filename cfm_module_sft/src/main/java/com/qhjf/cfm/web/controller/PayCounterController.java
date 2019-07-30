@@ -18,9 +18,11 @@ import com.qhjf.cfm.web.constant.WebConstant;
 import com.qhjf.cfm.web.plugins.jwt.Auth;
 import com.qhjf.cfm.web.plugins.log.LogbackLog;
 import com.qhjf.cfm.web.service.PayCounterService;
+import com.qhjf.cfm.web.service.WorkflowProcessService;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 
@@ -106,7 +108,54 @@ public class PayCounterController extends CFMBaseController{
 				renderFail(e);
 			}			
 		}
-		
+
+		/**
+		 * 柜面批量拒绝
+		 */
+		@Auth(hasForces = {"PayCounterPlat"})
+		public  void  batchreject() {
+			try {
+
+				List<WfRequestObj> wfobjs = genBatchWfRequestObjs();
+				UserInfo userInfo = this.getUserInfo();
+				List<String> errBillcodes = new ArrayList();
+				WorkflowProcessService service = new WorkflowProcessService();
+				if (wfobjs != null && wfobjs.size() > 0) {
+					Iterator var4 = wfobjs.iterator();
+
+					while(var4.hasNext()) {
+						WfRequestObj wfobj = (WfRequestObj)var4.next();
+
+						try {
+							if (wfobj == null) {
+								throw new WorkflowException("审批拒绝失败，空的提交请求数据！");
+							}
+
+							boolean flag = service.approvReject(wfobj, userInfo);
+							if (!flag) {
+								throw new WorkflowException("提交失败");
+							}
+
+							this.renderOk(flag);
+						} catch (Exception var) {
+							logger.error("审批拒绝失败！", var);
+							service.compensateApprovePermission(wfobj, userInfo);
+							if (var instanceof BusinessException) {
+								this.renderFail((BusinessException)var);
+							} else {
+								this.renderFail(new WorkflowException("审批拒绝失败, 数据错误!"));
+							}
+						}
+					}
+
+					renderOk(Kv.create().set("error_list", errBillcodes));
+				} else {
+					renderFail(new WorkflowException("审批同意失败，空的提交请求数据！"));
+				}
+			} catch (BusinessException var2) {
+				this.renderFail(var2);
+			}
+		}
 		  /**
 		    * 柜面拒绝
 		    */	

@@ -1,7 +1,10 @@
 package com.qhjf.cfm.web;
 
+import com.alibaba.fastjson.util.TypeUtils;
 import com.qhjf.cfm.web.validates.Optype;
 import com.qhjf.cfm.web.validates.RequiredParamsValidate;
+
+import java.util.ArrayList;
 
 /**
  * 收付费管理路由
@@ -630,7 +633,13 @@ public class SftOptypeMgr extends AbstractOptypeMgr {
                 .registerValidate(new RequiredParamsValidate(new String[]{
                         "wf_inst_id", "define_id", "id", "service_status", "persist_version", "assignee_memo"
                 })));
-        
+        optypes.add(new Optype(Optype.Mode.NORMAL, "paycounter_batchreject")
+                .registKeepParams(new String[]{
+                        "batch_list"
+                })
+                .registerValidate(new RequiredParamsValidate(new String[]{
+                        "batch_list"
+                })));
         //加签
         optypes.add(new Optype(Optype.Mode.NORMAL, "paycounter_append")
                 .registKeepParams(new String[]{
@@ -729,6 +738,5 @@ public class SftOptypeMgr extends AbstractOptypeMgr {
                 .registerValidate(new RequiredParamsValidate(new String[]{"precondition"})));
 
         /** ============================ 资金系统月末预提凭证操作 end ============================ */
-
     }
 }
