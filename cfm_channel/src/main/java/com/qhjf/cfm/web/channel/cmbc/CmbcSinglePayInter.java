@@ -43,7 +43,7 @@ public class CmbcSinglePayInter  implements ISingleResultChannelInter{
 		detailMap1.put("BUSNAR", record.getStr("instruct_code"));
 
         detailMap1.put("CRTACC", record.getStr("recv_account_no"));
-//        detailMap1.put("CRTNAM", record.getStr("recv_account_name"));
+        detailMap1.put("CRTNAM", record.getStr("recv_account_name"));
         detailMap1.put("LRVEAN", record.getStr("recv_account_name"));
         detailMap1.put("BNKFLG", record.getStr("is_cross_bank"));
         detailMap1.put("CRTBNK", record.getStr("recv_account_bank"));

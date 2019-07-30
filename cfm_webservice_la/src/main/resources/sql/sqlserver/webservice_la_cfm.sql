@@ -36,6 +36,7 @@
     legal.*,
 		ext.insure_bill_no,
 		gmf.id detailId,
+		gmf.actual_payment_date,
     gmf.pay_account_no
   FROM
     pay_legal_data legal,

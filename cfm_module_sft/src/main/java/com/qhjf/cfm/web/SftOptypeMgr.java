@@ -678,7 +678,7 @@ public class SftOptypeMgr extends AbstractOptypeMgr {
 
         //查找交易流水 非自动
         optypes.add(new Optype(Optype.Mode.NORMAL, "sftpaycountercheck_tradingListNoAuto")
-                .registKeepParams(new String[]{"min", "max", "start_date", "end_date", "summary", "is_checked"}));
+                .registKeepParams(new String[]{"bankcode", "acc_no", "min", "max", "start_date", "end_date", "summary", "is_checked"}));
 
         //查找交易流水 自动
         optypes.add(new Optype(Optype.Mode.NORMAL, "sftpaycountercheck_tradingListAuto")

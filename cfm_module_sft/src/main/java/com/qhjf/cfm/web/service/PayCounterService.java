@@ -166,7 +166,7 @@ public class PayCounterService {
 			throw new ReqDataException("当前登录人未在用户信息表内配置");
 		}
 		Long pay_id = record.getLong("pay_id");
-		Record pay_legal_data = Db.findById("pay_legal_data", "id",pay_id);
+		final Record pay_legal_data = Db.findById("pay_legal_data", "id",pay_id);
 		if(WebConstant.SftLegalData.REVOKE.getKey() == pay_legal_data.getInt("status")
 				|| WebConstant.SftLegalData.GROUPBATCH.getKey() == pay_legal_data.getInt("status")) {
 			logger.error("====此状态的数据不能进行补录==="+pay_legal_data.getInt("status"));
@@ -179,7 +179,7 @@ public class PayCounterService {
 		
 		
 		SymmetricEncryptUtil  util = SymmetricEncryptUtil.getInstance();
-		String recv_acc_no = record.getStr("recv_acc_no");
+		final String recv_acc_no = record.getStr("recv_acc_no");
 		final String encry_recv_acc_no = util.encrypt(recv_acc_no);
 			
 		// 开始更新合法数据表
@@ -193,14 +193,23 @@ public class PayCounterService {
 						.set("recv_bank_name", record.get("recv_bank_name")).set("recv_bank_cnaps", record.get("recv_cnaps_code"))
 						.set("payment_summary", record.get("payment_summary")).set("persist_version", persist_version+1).set("recv_acc_name", record.get("recv_acc_name")), 
 						 new Record().set("id", record.get("pay_id")).set("persist_version", persist_version));
-					if(update) {
-						// 删除附件  暂时将附件与合法数据id关联 ===提交后将附件与单据关联
-						CommonService.delFileRef(WebConstant.MajorBizType.GMF.getKey(), record.getInt("pay_id"));
-						if (list != null && list.size() > 0) {
-							// 保存附件
-							return CommonService.saveFileRef(WebConstant.MajorBizType.GMF.getKey(), record.getInt("pay_id"), list);
-						}	
-						return true ;
+					if(update) {						
+						//将前端传输过来的 银行账号和 户名存入原始表
+						String dbencryno = Db.queryStr(Db.getSql("quartzs_job_cfm.ddhEncrypt"), recv_acc_no);
+						
+						boolean updateOrigin = CommonService.update("ebs_origin_pay_data",
+								new Record().set("recv_acc_name", record.get("recv_acc_name"))
+								            .set("recv_acc_no", dbencryno), 
+								new Record().set("id", pay_legal_data.get("origin_id")));
+						if(updateOrigin){
+							// 删除附件  暂时将附件与合法数据id关联 ===提交后将附件与单据关联
+							CommonService.delFileRef(WebConstant.MajorBizType.GMF.getKey(), record.getInt("pay_id"));
+							if (list != null && list.size() > 0) {
+								// 保存附件
+								return CommonService.saveFileRef(WebConstant.MajorBizType.GMF.getKey(), record.getInt("pay_id"), list);
+							}	
+							return true ;
+						}
 					}
 					return false ;
 				 
