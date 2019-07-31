@@ -204,7 +204,7 @@ public class PayCounterService {
 								            .set("ebs_recv_bank_name", record.get("recv_bank_name")), 
 								new Record().set("id", pay_legal_data.get("origin_id")));
 
-						if(update){
+						if(update ){
 							// 删除附件  暂时将附件与合法数据id关联 ===提交后将附件与单据关联
 							CommonService.delFileRef(WebConstant.MajorBizType.GMF.getKey(), record.getInt("pay_id"));
 							if (list != null && list.size() > 0) {
