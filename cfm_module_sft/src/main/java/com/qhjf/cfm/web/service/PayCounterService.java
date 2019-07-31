@@ -199,7 +199,8 @@ public class PayCounterService {
 						
 						boolean updateOrigin = CommonService.update("ebs_origin_pay_data",
 								new Record().set("recv_acc_name", record.get("recv_acc_name"))
-								            .set("recv_acc_no", dbencryno), 
+								            .set("recv_acc_no", dbencryno)
+								            .set("ebs_recv_bank_name", record.get("recv_bank_name")), 
 								new Record().set("id", pay_legal_data.get("origin_id")));
 						if(updateOrigin){
 							// 删除附件  暂时将附件与合法数据id关联 ===提交后将附件与单据关联
@@ -320,8 +321,17 @@ public class PayCounterService {
 						|| sta.getInt("status") == WebConstant.SftLegalData.REVOKE.getKey() ) {
 					throw new ReqDataException("选中提交的数据中不能包含已提交/已作废数据");
 				}
-				if(sta.getInt("supply_status") == WebConstant.Sft_supplyStatus.WBL.getKey()) {
+				/*if(sta.getInt("supply_status") == WebConstant.Sft_supplyStatus.WBL.getKey()) {
 					throw new ReqDataException("选中提交的数据中不能包含未补录数据");
+				}*/
+				//开户行不能为空
+				if(null == sta.get("recv_bank_name") || StringUtils.isBlank(sta.getStr("recv_bank_name"))) {
+					throw new ReqDataException(String.format("支付号码为%s的数据开户行为空,请进行补录", sta.get("pay_code")));
+				}
+				//开户行名称必须在TMP系统内可以找到
+				Record findById = Db.findById("all_bank_info", "name", sta.get("recv_bank_name"));
+				if(null == findById) {
+					throw new ReqDataException(String.format("支付号码为%s的数据开户行在TMP系统内未匹配成功,请重新进行补录", sta.get("pay_code")));
 				}
 			}
 		}
@@ -485,10 +495,13 @@ public class PayCounterService {
 		} catch (Exception e) {
 			throw new ReqDataException("此条数据已过期");
 		}
-		//解密,并改为掩码
-		SymmetricEncryptUtil  util = SymmetricEncryptUtil.getInstance();
+		//解密
 		try {
-			util.recvmaskforSingle(findFirst);
+	          SymmetricEncryptUtil util = SymmetricEncryptUtil.getInstance();
+	          String recv_acc_no = findFirst.getStr("recv_acc_no");
+	          String decryptToStr = util.decryptToStr(recv_acc_no);
+	          findFirst.set("recv_acc_no", decryptToStr);
+	          findFirst.set("recv_account_no", decryptToStr);
 		} catch (Exception e) {			
 			e.printStackTrace();
 			logger.error("===解密修改为掩码失败");

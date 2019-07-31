@@ -45,6 +45,7 @@ public class EbsCallbackBean {
 		this.PayBankName = payRec.getStr("bank_name");
 		this.GetAccName = origin.getStr("recv_acc_name");
 		this.GetAccNo = origin.getStr("recv_acc_no");
+		this.GetBankName = origin.getStr("ebs_recv_bank_name");
 	}
 	
 	public Map<String,Object> toMap(){
