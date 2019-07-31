@@ -174,7 +174,11 @@ public class PayCounterService {
 		}
 		if(StringUtils.isBlank(record.getStr("recv_cnaps_code"))) {
 			Record findFirst = Db.findFirst(Db.getSql("oa_interface.getBankJQ"), record.get("recv_bank_name"));
-			record.set("recv_cnaps_code", findFirst.get("cnaps_code"));
+			if(findFirst==null){
+				throw new ReqDataException(String.format("【%s】在系统中不存在", record.get("recv_bank_name")));
+			}else{
+				record.set("recv_cnaps_code", findFirst.get("cnaps_code"));
+			}
 		}
 		
 		
@@ -193,26 +197,29 @@ public class PayCounterService {
 						.set("recv_bank_name", record.get("recv_bank_name")).set("recv_bank_cnaps", record.get("recv_cnaps_code"))
 						.set("payment_summary", record.get("payment_summary")).set("persist_version", persist_version+1).set("recv_acc_name", record.get("recv_acc_name")), 
 						 new Record().set("id", record.get("pay_id")).set("persist_version", persist_version));
-					if(update) {						
-						//将前端传输过来的 银行账号和 户名存入原始表
-						String dbencryno = Db.queryStr(Db.getSql("quartzs_job_cfm.ddhEncrypt"), recv_acc_no);
+					if(update) {
+//                        if("1".equals(record.get("source_sys"))) {
+//                            //将前端传输过来的 银行账号和 户名存入原始表
+//                            String dbencryno = Db.queryStr(Db.getSql("quartzs_job_cfm.ddhEncrypt"), recv_acc_no);
+//
+//
+//                            boolean updateOrigin = CommonService.update("ebs_origin_pay_data",
+//                                    new Record().set("recv_acc_name", record.get("recv_acc_name"))
+//                                            .set("recv_acc_no", dbencryno)
+//                                            .set("ebs_recv_bank_name", record.get("recv_bank_name")),
+//                                    new Record().set("id", pay_legal_data.get("origin_id")));
+//
+//                        }
 
-
-						boolean updateOrigin = CommonService.update("ebs_origin_pay_data",
-								new Record().set("recv_acc_name", record.get("recv_acc_name"))
-								            .set("recv_acc_no", dbencryno)
-								            .set("ebs_recv_bank_name", record.get("recv_bank_name")), 
-								new Record().set("id", pay_legal_data.get("origin_id")));
-
-						if(update ){
 							// 删除附件  暂时将附件与合法数据id关联 ===提交后将附件与单据关联
+
 							CommonService.delFileRef(WebConstant.MajorBizType.GMF.getKey(), record.getInt("pay_id"));
 							if (list != null && list.size() > 0) {
 								// 保存附件
 								return CommonService.saveFileRef(WebConstant.MajorBizType.GMF.getKey(), record.getInt("pay_id"), list);
 							}	
 							return true ;
-						}
+
 					}
 					return false ;
 				 
