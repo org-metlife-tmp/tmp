@@ -236,7 +236,7 @@ public class SftEbsDataCheckJob implements Job{
             ebsOriginData.set("channel_id", 0);
             ebsOriginData.set("channel_code", "");
             ebsOriginData.set("recv_bank_type", "");
-            ebsOriginData.set("recv_bank_name", "");
+            ebsOriginData.set("recv_bank_name", TypeUtils.castToString(ebsOriginData.get("ebs_recv_bank_name")));
         }
         
         
@@ -298,7 +298,8 @@ public class SftEbsDataCheckJob implements Job{
                 checkDoubtful.set("origin_id", entry.getValue());
                 continue;
             }
-            if (key.equals("persist_version") || key.equals("source_sys") || key.equals("channel_code")) {
+            if (key.equals("persist_version") || key.equals("source_sys") || key.equals("channel_code")
+                    || key.equals("ebs_recv_bank_name")) {
                 continue;
             }
             checkDoubtful.set(key, entry.getValue());
