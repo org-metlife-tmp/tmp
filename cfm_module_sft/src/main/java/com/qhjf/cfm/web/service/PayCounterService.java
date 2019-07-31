@@ -196,12 +196,14 @@ public class PayCounterService {
 					if(update) {						
 						//将前端传输过来的 银行账号和 户名存入原始表
 						String dbencryno = Db.queryStr(Db.getSql("quartzs_job_cfm.ddhEncrypt"), recv_acc_no);
-						
+
+
 						boolean updateOrigin = CommonService.update("ebs_origin_pay_data",
 								new Record().set("recv_acc_name", record.get("recv_acc_name"))
 								            .set("recv_acc_no", dbencryno), 
 								new Record().set("id", pay_legal_data.get("origin_id")));
-						if(updateOrigin){
+
+						if(update){
 							// 删除附件  暂时将附件与合法数据id关联 ===提交后将附件与单据关联
 							CommonService.delFileRef(WebConstant.MajorBizType.GMF.getKey(), record.getInt("pay_id"));
 							if (list != null && list.size() > 0) {
