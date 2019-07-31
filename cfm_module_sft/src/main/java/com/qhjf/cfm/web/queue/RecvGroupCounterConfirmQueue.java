@@ -131,7 +131,7 @@ public class RecvGroupCounterConfirmQueue implements Runnable {
                 Record sebsBank = Db.findById("ebs_bank_mapping", "tmp_bank_code", TypeUtils.castToString(stmpBank.getStr("code")));
                 groupCustomerAccConfirmReqBean.setBankCode(TypeUtils.castToString(sebsBank.get("ebs_bank_code")));  //客户付款银行 需要做Mapping,缴费方式 2和3时 必传
                 groupCustomerAccConfirmReqBean.setBankAccNo(TypeUtils.castToString(record.get("consumer_acc_no")));  //客户付款银行账号;缴费方式 2和3时 必传
-                groupCustomerAccConfirmReqBean.setBankAccName("");  //客户付款银行户名;缴费方式 2和3时 必传
+                groupCustomerAccConfirmReqBean.setBankAccName("consumer_accname");  //客户付款银行户名;缴费方式 2和3时 必传
 
                 GroupCustomerAccConfirmRespBean groupCustomerAccConfirmRespBean = recvCounter.ebsCustomerAccConfirm(groupCustomerAccConfirmReqBean);
                 if ("SUCCESS".equals(groupCustomerAccConfirmRespBean.getResultCode())) {
@@ -177,7 +177,7 @@ public class RecvGroupCounterConfirmQueue implements Runnable {
                 Record sebsBank = Db.findById("ebs_bank_mapping", "tmp_bank_code", TypeUtils.castToString(stmpBank.getStr("code")));
                 groupBizPayConfirmReqBean.setBankCode(TypeUtils.castToString(sebsBank.get("ebs_bank_code")));  //客户付款银行 需要做Mapping,缴费方式 2和3时 必传
                 groupBizPayConfirmReqBean.setBankAccNo(TypeUtils.castToString(record.get("consumer_acc_no")));  //客户付款银行账号;缴费方式 2和3时 必传
-                groupBizPayConfirmReqBean.setBankAccName("");  //客户付款银行户名;缴费方式 2和3时 必传
+                groupBizPayConfirmReqBean.setBankAccName("consumer_accname");  //客户付款银行户名;缴费方式 2和3时 必传
 
                 GroupBizPayConfirmRespBean groupBizPayConfirmRespBean = recvCounter.ebsBizPayConfirm(groupBizPayConfirmReqBean);
                 if ("SUCCESS".equals(groupBizPayConfirmRespBean.getResultCode())) {
