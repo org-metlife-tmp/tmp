@@ -307,3 +307,7 @@
     	total.id = detail.base_id
     	and detail.status in (0,1,3)
 #end
+
+#sql("qryProtocolInfoImp")
+    select i.pay_no insure_bill_no from protocol_import_info i where i.pay_acct_no = ?
+#end

@@ -154,7 +154,12 @@ public class RecvDiskSendingService {
 			l.set("pay_bank_prov", "");
 			l.set("pay_bank_city", "");
 			l.set("pay_bank_type", "");
-			l.set("insure_bill_no",r.getStr("insure_bill_no"));
+			//暂时测试使用，上生产时该段判断代码需要去掉，保留保单号的使用
+			String cnaps = accountAndBankInfo.get("bank_cnaps_code").substring(0, 3);
+			if("102".equals(cnaps)){
+				Record pro = Db.findFirst(Db.getSql("recv_disk_downloading.qryProtocolInfoImp"), pay_acc_no);
+				l.set("insure_bill_no",pro.getStr("insure_bill_no"));
+			}
 			list.add(l);
 		}
 		Record instrRecord = new Record().set("list", list);
