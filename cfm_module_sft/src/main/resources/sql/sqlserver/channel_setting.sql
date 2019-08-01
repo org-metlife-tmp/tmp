@@ -179,6 +179,17 @@ WHERE
 	and pay_mode = ?
 #end
 
+#sql("getbankcodebyacc")
+SELECT
+	acc_id,
+	acc_no,
+	bankcode
+FROM
+	channel_setting
+WHERE is_checkout = 1
+  and acc_no = ?
+#end
+
 #sql("getchanbypaymode")
 SELECT
   id channel_id,
