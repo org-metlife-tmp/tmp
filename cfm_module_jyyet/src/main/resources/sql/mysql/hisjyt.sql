@@ -1,7 +1,7 @@
 ###当日交易明细列表
 #sql("hisdetaillist")
 SELECT
-  act.id,
+  act.ba,
   act.acc_id,
   act.amount,
   act.direction,
