@@ -635,7 +635,7 @@ public class PayCounterService {
         innerRec.set("repeat_count", old_repeat_count + 1);
         innerRec.set("bank_serial_number", ChannelManager.getSerianlNo(payBankCode));
         innerRec.set("payment_amount", innerRec.get("amount"));
-		innerRec.set("summary", "网银支付");
+		innerRec.set("summary", "网银给付");
         SysSftSinglePayInter sysInter = new SysSftSinglePayInter();
         sysInter.setChannelInter(channelInter);
         final Record instr = sysInter.genInstr(innerRec);
