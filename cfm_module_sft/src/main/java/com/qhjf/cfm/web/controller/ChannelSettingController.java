@@ -123,6 +123,19 @@ public class ChannelSettingController extends CFMBaseController {
     }
 
     /**
+     * 根据acc_no获取bankcode
+     */
+    public void getbankcodebyacc() {
+        Record record = getRecordByParamsStrong();
+        List<Record> records = null;
+        try {
+            record = service.getbankcodebyacc(record);
+        } catch (BusinessException e) {
+            e.printStackTrace();
+        }
+        renderOk(record);
+    }
+    /**
      * 根据收付属性获取报盘模板
      */
     public void getdoucument() {
