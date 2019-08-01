@@ -415,5 +415,14 @@ public class ChannelSettingService {
         List<Record> records = Db.find(Db.getSql("channel_setting.getdoucument"),documentType,payMode);
         return records;
     }
+    /**
+     * 根据acc_no获取bankcode
+     */
+    public Record getbankcodebyacc(Record record) throws BusinessException  {
 
+        String acc_no = TypeUtils.castToString(record.get("acc_no"));
+        // 根据通道id查询通道信息
+        Record record1 = Db.findFirst(Db.getSql("channel_setting.getbankcodebyacc"), acc_no);
+        return record1;
+    }
 }
