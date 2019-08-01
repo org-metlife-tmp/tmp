@@ -62,7 +62,11 @@ public class SftOptypeMgr extends AbstractOptypeMgr {
         //返回所有的bankcode
         optypes.add(new Optype(Optype.Mode.NORMAL, "sftchannel_getallbankcode")
         );
-
+        //根据银行账户查找bankcode
+        optypes.add(new Optype(Optype.Mode.NORMAL, "sftchannel_getbankcodebyacc")
+                .registKeepParams(new String[]{"acc_no"})
+                .registerValidate(new RequiredParamsValidate(new String[]{"acc_no"}))
+        );
         //通道导出
         optypes.add(new Optype(Optype.Mode.NORMAL, "sftchannel_listexport")
                 .registKeepParams(new String[]{"channel_code", "channel_desc", "pay_mode", "pay_attr", "interactive_mode",
