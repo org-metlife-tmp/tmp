@@ -283,6 +283,11 @@ public class PayCounterController extends CFMBaseController{
 			                            	UserInfo userInfo = getUserInfo();
 			                                return service.hookPass(rec,userInfo);
 			                            }
+										@Override
+										public boolean hookReject() {
+											UserInfo userInfo = getUserInfo();
+											return service.hookReject(rec,userInfo);
+										}
 			                        });
 			                    }
 			                }
