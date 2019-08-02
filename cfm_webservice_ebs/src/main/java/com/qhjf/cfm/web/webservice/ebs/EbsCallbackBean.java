@@ -3,6 +3,7 @@ package com.qhjf.cfm.web.webservice.ebs;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
 import com.qhjf.cfm.web.constant.WebConstant;
+import com.qhjf.cfm.web.service.SymmetricEncryptUtil;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -44,7 +45,10 @@ public class EbsCallbackBean {
 		Record payRec = Db.findFirst(Db.getSql("nbdb.findAccountByAccno"), PayBankAccNo);
 		this.PayBankName = payRec.getStr("bank_name");
 		this.GetAccName = origin.getStr("recv_acc_name");
-		this.GetAccNo = origin.getStr("recv_acc_no");
+		String encryRecvAccNo = origin.getStr("recv_acc_no");		
+		SymmetricEncryptUtil util = SymmetricEncryptUtil.getInstance();
+		String decryptRecvAccNo = util.decryptToStr(encryRecvAcc);
+		this.GetAccNo = decryptRecvAccNo;
 		this.GetBankName = origin.getStr("ebs_recv_bank_name");
 	}
 	
