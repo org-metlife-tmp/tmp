@@ -47,7 +47,7 @@ public class EbsCallbackBean {
 		this.GetAccName = origin.getStr("recv_acc_name");
 		String encryRecvAccNo = origin.getStr("recv_acc_no");		
 		SymmetricEncryptUtil util = SymmetricEncryptUtil.getInstance();
-		String decryptRecvAccNo = util.decryptToStr(encryRecvAcc);
+		String decryptRecvAccNo = util.decryptToStr(encryRecvAccNo);
 		this.GetAccNo = decryptRecvAccNo;
 		this.GetBankName = origin.getStr("ebs_recv_bank_name");
 	}
