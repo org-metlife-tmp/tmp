@@ -223,3 +223,11 @@
    	total.id = ? and
    	detail.status in (0,3)
 #end
+
+#sql("qryChannel")
+   select r.channel_id from recv_batch_total_master r where r.recv_acc_no = ?
+#end
+
+#sql("qryChannelSet")
+   select c.direct_channel shortPayCnaps from channel_setting c where c.id = ?
+#end

@@ -311,3 +311,7 @@
 #sql("qryProtocolInfoImp")
     select i.pay_no insure_bill_no from protocol_import_info i where i.pay_acct_no = ?
 #end
+
+#sql("qryChannelId")
+    select c.direct_channel shortPayCnaps from channel_setting c where c.id = ?
+#end

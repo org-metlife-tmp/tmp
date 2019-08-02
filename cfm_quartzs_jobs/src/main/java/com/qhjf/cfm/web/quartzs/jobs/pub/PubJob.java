@@ -2,6 +2,7 @@ package com.qhjf.cfm.web.quartzs.jobs.pub;
 
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
+import com.qhjf.bankinterface.api.utils.OminiUtils;
 import com.qhjf.cfm.queue.ProductQueue;
 import com.qhjf.cfm.queue.QueueBean;
 import com.qhjf.cfm.web.channel.inter.api.IChannelInter;
@@ -170,7 +171,18 @@ public abstract class PubJob implements Job{
 					return "fail";
 				}
 				String cnaps = record.getStr("bank_cnaps_code");
-				String bankCode = cnaps.substring(0, 3);
+				Record account = Db.findFirst(Db.getSql("batchrecv.findInstrTotal"),record.getStr("bank_serial_number"));
+				Record channel = Db.findFirst(Db.getSql("batchrecv.qryChannel"),account.getStr("recv_account_no"));
+				String bankCode = "";
+				if(!OminiUtils.isNullOrEmpty(channel)){
+					Record dircet = Db.findFirst(Db.getSql("batchrecv.qryChannelSet"),channel.getStr("channel_id"));
+					cnaps = dircet.getStr("shortPayCnaps");
+				}
+				if(cnaps.startsWith("fingard")){
+					bankCode = cnaps;
+				} else {
+					bankCode = cnaps.substring(0, 3);
+				}
 				IChannelInter channelInter = ChannelManager.getInter(bankCode, getJobCode());
 				ISysAtomicInterface sysInter = getSysInter();
 				sysInter.setChannelInter(channelInter);

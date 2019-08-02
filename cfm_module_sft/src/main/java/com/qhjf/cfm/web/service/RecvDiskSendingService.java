@@ -16,6 +16,7 @@ import com.qhjf.cfm.web.channel.manager.ChannelManager;
 import com.qhjf.cfm.web.constant.WebConstant;
 import com.qhjf.cfm.web.inter.impl.SysProtocolImportInter;
 import com.qhjf.cfm.web.inter.impl.batch.SysBatchRecvInter;
+import com.qhjf.cfm.web.webservice.tool.OminiUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -151,14 +152,16 @@ public class RecvDiskSendingService {
 			l.set("pay_account_bank", r.getStr("pay_bank_name"));
 			l.set("pay_account_cur", "");
 			l.set("pay_bank_cnaps", "");
-			l.set("pay_bank_prov", "");
+			l.set("pay_bank_prov", r.getStr("province"));
 			l.set("pay_bank_city", "");
-			l.set("pay_bank_type", "");
+			l.set("pay_bank_type", r.getStr("pay_bank_type"));
 			//暂时测试使用，上生产时该段判断代码需要去掉，保留保单号的使用
 			String cnaps = accountAndBankInfo.get("bank_cnaps_code").substring(0, 3);
 			if("102".equals(cnaps)){
 				Record pro = Db.findFirst(Db.getSql("recv_disk_downloading.qryProtocolInfoImp"), pay_acc_no);
-				l.set("insure_bill_no",pro.getStr("insure_bill_no"));
+				if(!OminiUtils.isNullOrEmpty(pro)){
+					l.set("insure_bill_no",pro.getStr("insure_bill_no"));
+				}
 			}
 			list.add(l);
 		}
@@ -166,6 +169,12 @@ public class RecvDiskSendingService {
 
 		String shortPayCnaps = accountAndBankInfo.get("bank_cnaps_code").substring(0, 3);
 		IChannelInter channelInter = null;
+		Record channel = Db.findFirst(Db.getSql("recv_disk_downloading.qryChannelId"),mbRecord.getStr("channel_id"));
+		if(!OminiUtils.isNullOrEmpty(channel)){
+			if("fingard".equals(channel.getStr("shortPayCnaps"))){
+				shortPayCnaps = channel.getStr("shortPayCnaps");
+			}
+		}
 		try {
 			channelInter = ChannelManager.getInter(shortPayCnaps, "BatchRecv");
 		} catch (Exception e) {
@@ -278,7 +287,7 @@ public class RecvDiskSendingService {
         	genInstr.set("detail", newDetails);
         	//保存指令
             boolean seveInstr = sysInter.seveInstr();
-            //指令入队 // 导入协议指令先屏蔽掉，后期再优化修改
+            //指令入队
             /*if (seveInstr) {
             	QueueBean bean = new QueueBean(sysInter, channelInter.genParamsMap(genInstr), cnaps);
     			ProductQueue productQueue = new ProductQueue(bean);
@@ -289,4 +298,5 @@ public class RecvDiskSendingService {
 			return true;
 		}
 	}
+
 }

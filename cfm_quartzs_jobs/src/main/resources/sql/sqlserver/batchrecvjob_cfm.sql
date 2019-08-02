@@ -72,4 +72,31 @@
 		channel_code = ?
 #end
 
+#sql("getTradeResultBatchQry")
+	select
+		id,reqnbr,bank_serial_number,source_ref,bill_id,recv_bank_type,trade_date,total_num,total_amount,recv_account_no,
+		recv_bank_cnaps as bank_cnaps_code
+	from
+		batch_recv_instr_queue_total
+	where
+		bank_serial_number = ?
+#end
+
+#sql("findInstrTotal")
+   select
+   	*
+   from
+   	batch_recv_instr_queue_total
+   where
+   	bank_serial_number = ?
+#end
+
+#sql("qryChannel")
+   select r.channel_id from recv_batch_total_master r where r.recv_acc_no = ?
+#end
+
+#sql("qryChannelSet")
+   select c.direct_channel shortPayCnaps from channel_setting c where c.id = ?
+#end
+
 #end
