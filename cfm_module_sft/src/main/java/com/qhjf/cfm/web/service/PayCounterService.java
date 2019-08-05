@@ -27,6 +27,7 @@ import com.qhjf.cfm.web.inter.impl.SysSftSinglePayInter;
 import com.qhjf.cfm.web.plugins.log.LogbackLog;
 import com.qhjf.cfm.web.webservice.sft.SftCallBack;
 import org.apache.commons.lang.StringUtils;
+import org.jsoup.helper.StringUtil;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
@@ -185,7 +186,6 @@ public class PayCounterService {
 		SymmetricEncryptUtil  util = SymmetricEncryptUtil.getInstance();
 		final String recv_acc_no = record.getStr("recv_acc_no");
 		final String encry_recv_acc_no = util.encrypt(recv_acc_no);
-			
 		// 开始更新合法数据表
 		// supply_status 更新为  1:已补录    
 		boolean flag = Db.tx(new IAtom() {			
@@ -638,7 +638,9 @@ public class PayCounterService {
         innerRec.set("repeat_count", old_repeat_count + 1);
         innerRec.set("bank_serial_number", ChannelManager.getSerianlNo(payBankCode));
         innerRec.set("payment_amount", innerRec.get("amount"));
-		innerRec.set("summary", "网银给付");
+        if (StringUtil.isBlank(innerRec.getStr("payment_summary"))){
+			innerRec.set("payment_summary", "网银给付");
+		}
         SysSftSinglePayInter sysInter = new SysSftSinglePayInter();
         sysInter.setChannelInter(channelInter);
         final Record instr = sysInter.genInstr(innerRec);
