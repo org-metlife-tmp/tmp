@@ -63,11 +63,11 @@ public class FingardTradeResultBatchRecvQueryInter implements IMoreResultChannel
                 record.set("package_seq", detailRecord.getJSONObject(index).getString("PostScript"));
                 record.set("status", 1);
             } else if("3".equals(detailRecord.getJSONObject(index).getString("Result"))){
+                record.set("package_seq", detailRecord.getJSONObject(index).getString("PostScript"));
                 record.set("status", 2);
             }
         } else {
-            record.set("package_seq", "000001");
-            record.set("status", 1);
+            record.set("status", 3);
         }
         return record;
     }
