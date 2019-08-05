@@ -12,10 +12,7 @@ import com.qhjf.cfm.exceptions.ReqDataException;
 import com.qhjf.cfm.exceptions.WorkflowException;
 import com.qhjf.cfm.queue.ProductQueue;
 import com.qhjf.cfm.queue.QueueBean;
-import com.qhjf.cfm.utils.ArrayUtil;
-import com.qhjf.cfm.utils.BizSerialnoGenTool;
-import com.qhjf.cfm.utils.CommonService;
-import com.qhjf.cfm.utils.SymmetricEncryptUtil;
+import com.qhjf.cfm.utils.*;
 import com.qhjf.cfm.web.UodpInfo;
 import com.qhjf.cfm.web.UserInfo;
 import com.qhjf.cfm.web.WfRequestObj;
@@ -655,6 +652,9 @@ public class PayCounterService {
             }
         });
         if (flag) {
+            if(CommKit.isNullOrEmpty(instr.getStr("summary"))){
+                instr.set("summary", "网银给付");
+            }
             QueueBean bean = new QueueBean(sysInter, channelInter.genParamsMap(instr), payBankCode);
             ProductQueue productQueue = new ProductQueue(bean);
             new Thread(productQueue).start();
