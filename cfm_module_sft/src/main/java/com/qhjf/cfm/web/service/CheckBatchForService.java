@@ -72,7 +72,12 @@ public class CheckBatchForService {
 		}
 		SymmetricEncryptUtil  util = SymmetricEncryptUtil.getInstance();
 		String recv_acc_no = record.getStr("recv_acc_no");
-		recv_acc_no = util.encrypt(recv_acc_no);
+		try {
+			recv_acc_no = util.encrypt(recv_acc_no);
+		}catch (Exception e) 
+		{
+			recv_acc_no = "异常数据===";
+		}	
 		record.set("recv_acc_no", recv_acc_no);
 		record.set("codes", codes);
 		record.set("pay_mode", WebConstant.SftDoubtPayMode.PLSF.getKeyc());
