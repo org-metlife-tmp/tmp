@@ -74,6 +74,7 @@ public class CheckBatchForService {
 		String recv_acc_no = record.getStr("recv_acc_no");
 		try {
 			recv_acc_no = util.encrypt(recv_acc_no);
+			logger.info("=======改完加密到没到这里？");
 		}catch (Exception e) 
 		{
 			recv_acc_no = "异常数据===";
