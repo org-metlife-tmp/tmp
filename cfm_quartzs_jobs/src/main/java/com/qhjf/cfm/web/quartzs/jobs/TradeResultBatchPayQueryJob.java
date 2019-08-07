@@ -22,7 +22,7 @@ public class TradeResultBatchPayQueryJob extends PubJob {
 
 	@Override
 	public String getJobCode() {
-		 return "TradeResultBatchRecvQuery";
+		 return "TradeResultBatchPayQuery";
 	}
 
 	@Override
