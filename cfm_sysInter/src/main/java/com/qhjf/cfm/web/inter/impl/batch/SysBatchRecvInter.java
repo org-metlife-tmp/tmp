@@ -7,6 +7,7 @@ import com.jfinal.plugin.activerecord.IAtom;
 import com.jfinal.plugin.activerecord.Record;
 import com.jfinal.plugin.activerecord.SqlPara;
 import com.qhjf.bankinterface.api.exceptions.BankInterfaceException;
+import com.qhjf.bankinterface.api.utils.OminiUtils;
 import com.qhjf.cfm.exceptions.ReqDataException;
 import com.qhjf.cfm.utils.ArrayUtil;
 import com.qhjf.cfm.utils.CommKit;
@@ -30,6 +31,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Auther: CHT
@@ -128,30 +130,35 @@ public class SysBatchRecvInter implements ISysAtomicInterface {
         for (int i = 0; i < resultCount; i++) {
             try {
                 final Record parseRecord = channelInter.parseResult(jsonStr, i);
-                
-                if (instrTotalRecord.getStr("recv_bank_cnaps").startsWith("308")) {
+                String cnaps = instrTotalRecord.getStr("recv_bank_cnaps");
+                Record channel = Db.findFirst(Db.getSql("batchrecv.qryChannel"),instrTotal.getStr("recv_account_no"));
+                if(!OminiUtils.isNullOrEmpty(channel)){
+                    Record dircet = Db.findFirst(Db.getSql("batchrecv.qryChannelSet"),channel.getStr("channel_id"));
+                    cnaps = dircet.getStr("shortPayCnaps");
+                }
+                if (cnaps.startsWith("308")) {
                 	String oldReqnbr = instrTotalRecord.getStr("reqnbr");
                 	if (oldReqnbr == null || "".equals(oldReqnbr.trim())) {
-                		
+
                     	//更新指令汇总表的‘流程实例号’
                     	Record instrTotalSet = new Record();
                     	instrTotalSet.set("init_resp_time", new Date());
-                    	
+
                     	if (instrTotal.getStr("recv_bank_cnaps").startsWith("308") ) {
                     		//招行该字段叫：流程实例号
                             String reqnbr = parseRecord.getStr("reqnbr");
                     		//CMBC会返回流程实例号reqnbr，用于查询交易状态与交易明细
                     		instrTotalSet.set("reqnbr", reqnbr);
 						}
-                    	
+
                     	if (StringUtils.isNotEmpty(parseRecord.getStr("bankErrMsg"))) {
                     		instrTotalSet.set("bank_err_msg", parseRecord.getStr("bankErrMsg"));
                     		instrTotalSet.set("bank_err_code", parseRecord.getStr("bankErrCode"));
 						}
-                    	
+
                     	Record instrTotalWhere = new Record();
                     	instrTotalWhere.set("id", instrTotalId);
-                    	
+
                     	int updIntrTotal = CommonService.updateRows(BATCH_RECV_INSTR_TOTLE_TALBE, instrTotalSet, instrTotalWhere);
                     	if (updIntrTotal != 1) {
     						log.error("******需要人工处理：批收指令回写指令汇总表失败！*****");
@@ -159,8 +166,60 @@ public class SysBatchRecvInter implements ISysAtomicInterface {
 					}else {
 						log.error("批量收付回调, 指令汇总表的reqnbr字段已经回写，又再次回写，请人工核查原因 ！");
 					}
-				}
-                
+				} else if(cnaps.startsWith("102")){
+                    String oldReqnbr = instrTotalRecord.getStr("reqnbr");
+                    if (oldReqnbr == null || "".equals(oldReqnbr.trim())) {
+
+                        //更新指令汇总表的‘流程实例号’
+                        Record instrTotalSet = new Record();
+                        instrTotalSet.set("init_resp_time", new Date());
+                        instrTotalSet.set("reqsta", 1);
+
+                        if (StringUtils.isNotEmpty(parseRecord.getStr("status"))) {
+                            String reqnbr = parseRecord.getStr("iSeqno");
+                            instrTotalSet.set("reqnbr", reqnbr);
+                            instrTotalSet.set("bank_err_msg", parseRecord.getStr("bankErrMsg"));
+                            instrTotalSet.set("bank_err_code", parseRecord.getStr("status"));
+                        }
+
+                        Record instrTotalWhere = new Record();
+                        instrTotalWhere.set("id", instrTotalId);
+
+                        int updIntrTotal = CommonService.updateRows(BATCH_RECV_INSTR_TOTLE_TALBE, instrTotalSet, instrTotalWhere);
+                        if (updIntrTotal != 1) {
+                            log.error("******需要人工处理：批收指令回写指令汇总表失败！*****");
+                        }
+                    }else {
+                        log.error("批量收付回调, 指令汇总表的reqnbr字段已经回写，又再次回写，请人工核查原因 ！");
+                    }
+                } else if (cnaps.startsWith("fingard")){
+                    String oldReqnbr = instrTotalRecord.getStr("reqnbr");
+                    if (oldReqnbr == null || "".equals(oldReqnbr.trim())) {
+
+                        //更新指令汇总表的‘流程实例号’
+                        Record instrTotalSet = new Record();
+                        instrTotalSet.set("init_resp_time", new Date());
+                        instrTotalSet.set("reqsta", 1);
+
+                        if (StringUtils.isNotEmpty(parseRecord.getStr("status"))) {
+                            String reqnbr = parseRecord.getStr("transSeqId");
+                            instrTotalSet.set("reqnbr", reqnbr);
+                            instrTotalSet.set("bank_err_msg", parseRecord.getStr("bankErrMsg"));
+                            instrTotalSet.set("bank_err_code", parseRecord.getStr("status"));
+                        }
+
+                        Record instrTotalWhere = new Record();
+                        instrTotalWhere.set("id", instrTotalId);
+
+                        int updIntrTotal = CommonService.updateRows(BATCH_RECV_INSTR_TOTLE_TALBE, instrTotalSet, instrTotalWhere);
+                        if (updIntrTotal != 1) {
+                            log.error("******需要人工处理：批收指令回写指令汇总表失败！*****");
+                        }
+                    }else {
+                        log.error("批量收付回调, 指令汇总表的reqnbr字段已经回写，又再次回写，请人工核查原因 ！");
+                    }
+                }
+
             } catch (Exception e) {
                 CommKit.errorPrint(log,"批量收付回调,第【i={}】次循环交易回写失败，回调数据：【{}】",jsonStr);
                 e.printStackTrace();
@@ -463,7 +522,10 @@ public class SysBatchRecvInter implements ISysAtomicInterface {
     		//查询当天bus_type最大的值,如果为空，则值为2
     		String today = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
 			Record findFirst = Db.findFirst(Db.getSql("batchrecv.qryMaxBusTypeFromTotal"), today);
-			Integer busType = null == findFirst ? 1 : findFirst.getInt("bus_type_max");
+            Integer busType = null;
+			if(!OminiUtils.isNullOrEmpty(findFirst.getInt("bus_type_max"))){
+                busType = null == findFirst ? 1 : findFirst.getInt("bus_type_max");
+            }
 			busType = null == busType || busType == 0 ? 1 : busType;
 			if (++busType > 99) {
 				throw new ReqDataException("工行一天只支持97笔批收指令！");

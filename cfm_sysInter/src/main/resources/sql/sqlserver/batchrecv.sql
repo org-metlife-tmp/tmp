@@ -187,7 +187,7 @@
    	batch_recv_instr_queue_total
    where
    	recv_bank_cnaps like '102%' and
-   	init_send_time = ?
+   	CONVERT(VARCHAR(100),init_send_time,23) = ?
 #end
 
 #sql("updProtocolDetail")
@@ -222,4 +222,12 @@
    	detail.base_id=total.id and 
    	total.id = ? and
    	detail.status in (0,3)
+#end
+
+#sql("qryChannel")
+   select r.channel_id from recv_batch_total_master r where r.recv_acc_no = ?
+#end
+
+#sql("qryChannelSet")
+   select c.direct_channel shortPayCnaps from channel_setting c where c.id = ?
 #end

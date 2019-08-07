@@ -1,9 +1,13 @@
 package com.qhjf.cfm.web.inter.impl;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
+import com.qhjf.cfm.exceptions.EncryAndDecryException;
+import com.qhjf.cfm.utils.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.jfinal.plugin.activerecord.Db;
@@ -11,10 +15,6 @@ import com.jfinal.plugin.activerecord.Record;
 import com.qhjf.bankinterface.api.exceptions.BankInterfaceException;
 import com.qhjf.cfm.queue.ProductQueue;
 import com.qhjf.cfm.queue.QueueBean;
-import com.qhjf.cfm.utils.ArrayUtil;
-import com.qhjf.cfm.utils.CommKit;
-import com.qhjf.cfm.utils.CommonService;
-import com.qhjf.cfm.utils.RedisSericalnoGenTool;
 import com.qhjf.cfm.web.channel.inter.api.IChannelInter;
 import com.qhjf.cfm.web.channel.inter.api.IMoreResultChannelInter;
 import com.qhjf.cfm.web.channel.manager.ChannelManager;
@@ -50,7 +50,7 @@ public class SysProtocolImportInter implements ISysAtomicInterface {
 		Long instrTotalId = record.getLong("instrTotalId");
 		Long batchTotalId = record.getLong("batchTotalId");
 		this.cnaps = record.getStr("cnaps");
-		this.instr.set("total", genTotal(batchDetailList.size(), instrTotalId, batchTotalId));
+		this.instr = record.set("total", genTotal(batchDetailList.size(), instrTotalId, batchTotalId));
 
 		List<Record> detailList = new ArrayList<>();
 		int index = 1;
@@ -60,7 +60,14 @@ public class SysProtocolImportInter implements ISysAtomicInterface {
 			// 缴费编号=保单号
 			detail.set("pay_no", r.getStr("insure_bill_no"));
 			detail.set("pay_acc_name", r.getStr("pay_acc_name"));
-			detail.set("pay_acc_no", r.getStr("pay_acc_no"));
+			//付方账号做解密处理以便后续发送给银行端
+			String pay_acc_no = "";
+			try {
+				pay_acc_no = SymmetricEncryptUtil.getInstance().decryptToStr(r.getStr("pay_acc_no"));
+			} catch (EncryAndDecryException e) {
+				log.error("SysProtocolImportInter.genInstr：付方账号解密失败！", e);
+			}
+			detail.set("pay_acc_no", pay_acc_no);
 			detail.set("cert_type", r.getStr("pay_cert_type"));
 			detail.set("cert_no", r.getStr("pay_cert_code"));
 			detail.set("dead_line", genDeadLine());
@@ -76,10 +83,11 @@ public class SysProtocolImportInter implements ISysAtomicInterface {
 	 * 
 	 * @return
 	 */
-	private Date genDeadLine() {
+	private String genDeadLine() {
 		Calendar c = Calendar.getInstance();
 		c.add(Calendar.YEAR, 70);
-		return c.getTime();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+		return sdf.format(c.getTime());
 	}
 
 	@Override

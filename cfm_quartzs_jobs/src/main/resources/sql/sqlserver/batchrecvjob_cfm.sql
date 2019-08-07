@@ -23,6 +23,15 @@
 		and reqnbr = ?
 #end
 
+#sql('getBatchRecvDetail')
+	select
+		*
+	from
+		batch_recv_instr_queue_detail
+	where
+		bank_serial_number = ?
+#end
+
 
 #sql('getNeedQueryStatusBatchRecv')
 	select
@@ -50,8 +59,7 @@
 	from 
 		protocol_import_instr_total
 	where
-		status = 0 or
-		status = 3
+		status in ('0','3')
 #end
 
 #sql('queryOldProtocolImportQueryLock')
@@ -62,6 +70,33 @@
 	where
 		bank_seriral_no = ? and
 		channel_code = ?
+#end
+
+#sql("getTradeResultBatchQry")
+	select
+		id,reqnbr,bank_serial_number,source_ref,bill_id,recv_bank_type,trade_date,total_num,total_amount,recv_account_no,
+		recv_bank_cnaps as bank_cnaps_code
+	from
+		batch_recv_instr_queue_total
+	where
+		bank_serial_number = ?
+#end
+
+#sql("findInstrTotal")
+   select
+   	*
+   from
+   	batch_recv_instr_queue_total
+   where
+   	bank_serial_number = ?
+#end
+
+#sql("qryChannel")
+   select r.channel_id from recv_batch_total_master r where r.recv_acc_no = ?
+#end
+
+#sql("qryChannelSet")
+   select c.direct_channel shortPayCnaps from channel_setting c where c.id = ?
 #end
 
 #end

@@ -298,12 +298,20 @@
 
 
 #sql("qryProtocolDetailBeforeImp")
-    select
+    select Top 1
     	detail.id
     from
     	(select * from protocol_import_instr_total where protocol_no = ?) total,
     	(select * from protocol_import_instr_detail where pay_acc_no = ? and pay_no = ?) detail
     where
     	total.id = detail.base_id
-    	and detail.status in (1,3)
+    	and detail.status in (0,1,3)
+#end
+
+#sql("qryProtocolInfoImp")
+    select i.pay_no insure_bill_no from protocol_import_info i where i.pay_acct_no = ?
+#end
+
+#sql("qryChannelId")
+    select c.direct_channel shortPayCnaps from channel_setting c where c.id = ?
 #end

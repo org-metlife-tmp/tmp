@@ -3,10 +3,12 @@ package com.qhjf.cfm.web.service;
 import com.alibaba.fastjson.util.TypeUtils;
 import com.jfinal.kit.Kv;
 import com.jfinal.plugin.activerecord.*;
+import com.qhjf.cfm.exceptions.EncryAndDecryException;
 import com.qhjf.cfm.exceptions.ReqDataException;
 import com.qhjf.cfm.queue.ProductQueue;
 import com.qhjf.cfm.queue.QueueBean;
 import com.qhjf.cfm.utils.CommonService;
+import com.qhjf.cfm.utils.SymmetricEncryptUtil;
 import com.qhjf.cfm.web.UodpInfo;
 import com.qhjf.cfm.web.UserInfo;
 import com.qhjf.cfm.web.channel.inter.api.IChannelInter;
@@ -14,6 +16,7 @@ import com.qhjf.cfm.web.channel.manager.ChannelManager;
 import com.qhjf.cfm.web.constant.WebConstant;
 import com.qhjf.cfm.web.inter.impl.SysProtocolImportInter;
 import com.qhjf.cfm.web.inter.impl.batch.SysBatchRecvInter;
+import com.qhjf.cfm.web.webservice.tool.OminiUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -137,21 +140,41 @@ public class RecvDiskSendingService {
 			l.set("id", r.get("id"));
 			l.set("package_seq", r.get("package_seq"));
 			l.set("amount", r.get("amount"));
-			l.set("pay_account_no", r.getStr("pay_acc_no"));
+			//付方账号做解密处理以便后续发送给银行端
+			String pay_acc_no = "";
+			try {
+				pay_acc_no = SymmetricEncryptUtil.getInstance().decryptToStr(r.getStr("pay_acc_no"));
+			} catch (EncryAndDecryException e) {
+				logger.error("RecvDiskSendingService.sendbank：付方账号解密失败！", e);
+			}
+			l.set("pay_account_no", pay_acc_no);
 			l.set("pay_account_name", r.getStr("pay_acc_name"));
 			l.set("pay_account_bank", r.getStr("pay_bank_name"));
 			l.set("pay_account_cur", "");
 			l.set("pay_bank_cnaps", "");
-			l.set("pay_bank_prov", "");
+			l.set("pay_bank_prov", r.getStr("province"));
 			l.set("pay_bank_city", "");
-			l.set("pay_bank_type", "");
-			l.set("insure_bill_no",r.getStr("insure_bill_no"));
+			l.set("pay_bank_type", r.getStr("pay_bank_type"));
+			//暂时测试使用，上生产时该段判断代码需要去掉，保留保单号的使用
+			String cnaps = accountAndBankInfo.get("bank_cnaps_code").substring(0, 3);
+			if("102".equals(cnaps)){
+				Record pro = Db.findFirst(Db.getSql("recv_disk_downloading.qryProtocolInfoImp"), pay_acc_no);
+				if(!OminiUtils.isNullOrEmpty(pro)){
+					l.set("insure_bill_no",pro.getStr("insure_bill_no"));
+				}
+			}
 			list.add(l);
 		}
 		Record instrRecord = new Record().set("list", list);
 
 		String shortPayCnaps = accountAndBankInfo.get("bank_cnaps_code").substring(0, 3);
 		IChannelInter channelInter = null;
+		Record channel = Db.findFirst(Db.getSql("recv_disk_downloading.qryChannelId"),mbRecord.getStr("channel_id"));
+		if(!OminiUtils.isNullOrEmpty(channel)){
+			if("fingard".equals(channel.getStr("shortPayCnaps"))){
+				shortPayCnaps = channel.getStr("shortPayCnaps");
+			}
+		}
 		try {
 			channelInter = ChannelManager.getInter(shortPayCnaps, "BatchRecv");
 		} catch (Exception e) {
@@ -265,14 +288,15 @@ public class RecvDiskSendingService {
         	//保存指令
             boolean seveInstr = sysInter.seveInstr();
             //指令入队
-            if (seveInstr) {
+            /*if (seveInstr) {
             	QueueBean bean = new QueueBean(sysInter, channelInter.genParamsMap(genInstr), cnaps);
     			ProductQueue productQueue = new ProductQueue(bean);
     			new Thread(productQueue).start();
-    		}
-            return false;
+    		}*/
+            return seveInstr;
 		}else {//不存在未手工导入的协议
 			return true;
 		}
 	}
+
 }

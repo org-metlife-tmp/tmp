@@ -361,6 +361,11 @@
                 <artifactId>bs_jlwj</artifactId>
                 <version>${bs_mvnbuild.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.qhjf.bankinterface</groupId>
+                <artifactId>bs_fingard</artifactId>
+                <version>${bs_mvnbuild.version}</version>
+            </dependency>
 
         </dependencies>
     </dependencyManagement>
@@ -384,7 +389,7 @@
                 <version>2.2</version>
                 <configuration>
                     <path>/cfm</path>
-                    <port>8080</port>
+                    <port>9527</port>
                     <uriEncoding>UTF-8</uriEncoding>
                 </configuration>
             </plugin>

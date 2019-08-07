@@ -15,6 +15,7 @@ import com.qhjf.cfm.web.inter.api.ISysAtomicInterface;
 import com.qhjf.cfm.web.inter.impl.batch.SysBatchRecvInter;
 import com.qhjf.cfm.web.inter.manager.SysInterManager;
 import com.qhjf.cfm.web.webservice.sft.SftRecvCallBack;
+import com.qhjf.cfm.web.webservice.tool.OminiUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,7 +85,16 @@ public class SysTradeResultRecvBatchQueryInter implements ISysAtomicInterface {
         	//		package_seq/bank_err_msg/bank_err_code/status
             Record channelRecord = channelInter.parseResult(jsonStr, i);
             channelRecord.set("id", instrTotalRecord.getLong("id"));
-            channelRecord.set("recv_bank_cnaps", instrTotalRecord.getLong("recv_bank_cnaps"));
+            channelRecord.set("recv_account_no",instrTotalRecord.getStr("recv_account_no"));
+            Record account = Db.findFirst(Db.getSql("batchrecv.qryChannel"),instrTotalRecord.getStr("recv_account_no"));
+            String cnaps = instrTotalRecord.getStr("recv_bank_cnaps");
+            if(!OminiUtils.isNullOrEmpty(account)){
+                Record channel = Db.findFirst(Db.getSql("batchrecv.qryChannelSet"),account.getStr("channel_id"));
+                if(!OminiUtils.isNullOrEmpty(channel)){
+                    cnaps = channel.getStr("shortPayCnaps");
+                }
+            }
+            channelRecord.set("recv_bank_cnaps", cnaps);
             
             //单条回写单据明细与指令明细
             singleResultWriteBack(channelRecord, billDetailTable, billTablePrimaryKey);
@@ -332,7 +342,11 @@ public class SysTradeResultRecvBatchQueryInter implements ISysAtomicInterface {
 			return Db.find(Db.getSql("batchrecv.selInstrDetailByPackageSeq")
 					, r.getLong("id")
 					, TypeUtils.castToString(r.get("package_seq")));
-		}
+		} else if(recvBankCnaps.startsWith("fingard")){
+            return Db.find(Db.getSql("batchrecv.selInstrDetailByPackageSeq")
+                    , r.getLong("id")
+                    , TypeUtils.castToString(r.get("package_seq")));
+        }
     	return null;
     }
     
