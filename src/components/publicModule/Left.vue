@@ -581,6 +581,7 @@
                     <el-menu-item index="/payment/batch-look-over" v-if="menuList.ZFTBatchView">批量支付-查看</el-menu-item>
                     <el-menu-item index="/payment/payee-message" v-if="menuList.ZFTSuplierAcc">收款方信息管理</el-menu-item>
                     <el-menu-item index="/payment/deal-check?bizType=9" v-if="menuList.ZFTCheck">交易核对</el-menu-item>
+                    <el-menu-item index="/payment/refund-ticket" v-if="menuList.ZFTRefund">退票重复</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
             <el-submenu index="12" v-if="menuList.GJT">
@@ -800,6 +801,19 @@
                     <el-menu-item index="/voucher/voucher-query" v-if="menuList.VoucherQuery">凭证查询</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
+            <el-submenu index="28" v-if="menuList.REPORT">
+                <template slot="title" height="200px" >
+                    <i class="icon-bb"></i>
+                    <p>报表查询</p>
+                </template>
+                <el-menu-item-group>
+                    <el-menu-item index="/report/oa-report-query" v-if="menuList.OAREPORTQUERY">OA支付记录查询</el-menu-item>
+                    <el-menu-item index="/report/gjt-report-query" v-if="menuList.GJTREPORTQUERY">归集通查询报表</el-menu-item>
+                    <el-menu-item index="/report/dj-report-query" v-if="menuList.GJTREPORTQUERY">成功交易单据查询报表</el-menu-item>
+                    <el-menu-item index="/report/dzd-report-query" v-if="menuList.DZDREPORTQUERY">银行对账单查询报表</el-menu-item>
+                    <el-menu-item index="/report/sff-report-query" v-if="menuList.GJTREPORTQUERY">收付费对账报表</el-menu-item>
+                </el-menu-item-group>
+            </el-submenu>
         </el-menu>
     </div>
 </template>
@@ -888,6 +902,7 @@
                     ZFTBatchView: false, //资金支付-批量查看
                     ZFTCheck: false, //资金支付-交易核对
                     ZFTSuplierAcc: false, //收款方账户维护
+                    ZFTRefund: false, //退票重复
 
                     GJT: false, //归集通
                     GJSetting: false, //自动归集设置
@@ -985,6 +1000,11 @@
                     RECVCOUNTERPOSDETAILCHECK: false, //POS记录与流水对账
                     RECVCOUNTEPOSIMPORT: false, //POS机明细导入
                     RECVCOUNTERMATCH: false, //待匹配收款
+
+                    REPORT: false,//报表
+                    OAREPORTQUERY: false,//OA报表查询
+                    GJTREPORTQUERY: false,//归集通报表查询
+                    DZDREPORTQUERY: false,//银行对账单报表查询
                 }
             }
         },
