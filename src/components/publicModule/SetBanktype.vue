@@ -6,7 +6,7 @@
 
 <template>
     <div id="setBanktype">
-        <el-input v-model="showBank" placeholder="请选择开户行" @focus="getBank"></el-input>
+        <el-input v-model="showBank" placeholder="请选择开户行" @focus="getBank" :disabled="isDisabled"></el-input>
         <!--开户行选择弹框-->
         <el-dialog :visible.sync="dialogVisible"
                    width="40%" title="选择开户行"
@@ -101,7 +101,7 @@
                 this.bankTypeList = bankAllTypeList.slice(0,200);
             }
         },
-        props: ["fillinBankName"],
+        props: ["fillinBankName","isDisabled"],
         data: function(){
             return {
                 queryUrl: this.$store.state.queryUrl,

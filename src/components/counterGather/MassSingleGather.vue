@@ -395,6 +395,12 @@
                                           :disabled="isLook"></el-input>
                             </el-form-item>
                         </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="客户银行户名">
+                                <el-input v-model="dialogData.consumer_accname" placeholder="请输入客户银行户名"
+                                          :disabled="isLook"></el-input>
+                            </el-form-item>
+                        </el-col>
 
                         <el-col :span="14">
                             <el-form-item label="资金用途">
@@ -743,6 +749,7 @@
                     recv_bank_name: "",
                     consumer_bank_name: "",
                     consumer_acc_no: "",
+                    consumer_accname:"",
                     use_funds: "",
                     consumer_no: "",
                     agent_com: "",
