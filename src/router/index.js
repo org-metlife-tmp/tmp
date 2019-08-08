@@ -85,6 +85,7 @@ import PayeeMessage from '@/components/payment/PayeeMessage'
 import DealCheck from '@/components/publicModule/DealCheck'
 import PayMoreBills from '@/components/payment/PayMoreBills'
 import BatchMoreBills from '@/components/payment/BatchMoreBills'
+import RefundTicket from '@/components/payment/RefundTicket'
 //归集通
 import CollectionSet from '@/components/collection/CollectionSet'
 import CollectionManage from '@/components/collection/CollectionManage'
@@ -159,6 +160,11 @@ import Review from '@/components/endMonthAdvance/Review'
 import AdvanceQuery from '@/components/endMonthAdvance/AdvanceQuery'
 //凭证
 import VoucherQuery from '@/components/voucher/VoucherQuery'
+//OA报表
+import OAReportQuery from '@/components/report/OAReportQuery'
+import GJTReportQuery from '@/components/report/GJTReportQuery'
+import DZDReportQuery from '@/components/report/DZDReportQuery'
+
 
 Vue.use(Router)
 
@@ -230,6 +236,7 @@ const router = new Router({
                         {path: '/payment/payee-message', name: 'PayeeMessage', component: PayeeMessage, meta: {requireAuth: true}},
                         {path: '/payment/pay-more-bills', name: 'PayMoreBills', component: PayMoreBills, meta: {requireAuth: true}},
                         {path: '/payment/batch-more-bills', name: 'BatchMoreBills', component: BatchMoreBills, meta: {requireAuth: true}},
+                        {path: '/payment/refund-ticket', name: 'RefundTicket', component: RefundTicket, meta: {requireAuth: true}},
                         //日历
                         {path: '/calendar/set-workday', name: 'SetWorkday', component: SetWorkday, meta: {requireAuth: true}},
                         {path: '/calendar/work-section', name: 'WorkSection', component: WorkSection, meta: {requireAuth: true}},
@@ -306,6 +313,12 @@ const router = new Router({
                         {path: '/endmonth-advance/advance-query', name: 'AdvanceQuery', component: AdvanceQuery, meta: {requireAuth: true}},
                         //系统设置
                         {path: '/voucher/voucher-query', name: 'VoucherQuery', component: VoucherQuery, meta: {requireAuth: true}},
+                        //报表管理
+                        {path: '/report/oa-report-query', name: 'OAReportQuery', component: OAReportQuery, meta: {requireAuth: false}},
+                        {path: '/report/gjt-report-query', name: 'GJTReportQuery', component: GJTReportQuery, meta: {requireAuth: false}},
+                        {path: '/report/dj-report-query', name: 'DJReportQuery', component: GJTReportQuery, meta: {requireAuth: false}},
+                        {path: '/report/dzd-report-query', name: 'DZDReportQuery', component: DZDReportQuery, meta: {requireAuth: false}},
+                        {path: '/report/sff-report-query', name: 'SFFReportQuery', component: GJTReportQuery, meta: {requireAuth: false}},
                     ]
                 },
                 //基础样式三（tab页）
