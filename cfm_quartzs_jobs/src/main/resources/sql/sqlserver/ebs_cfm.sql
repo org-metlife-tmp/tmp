@@ -26,7 +26,8 @@
 	 paydate,
 	 paytime,
 	 paybankcode,
-	 paybankaccno
+	 paybankaccno,
+	 ebs_recv_bank_name
   from ebs_origin_pay_data
   where tmp_status in (?,?) and ebs_callback_status in (?,?)
 #end
