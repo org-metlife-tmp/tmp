@@ -155,15 +155,6 @@
                        :visible.sync="dialogVisible"
                        width="900px" top="100px"
                        :close-on-click-modal="false">
-                <el-select v-model="bizType" placeholder="请选择业务类型"
-                           filterable size="mini"
-                           @change="getSelectData">
-                    <el-option v-for="(bizType,key) in bizTypeList"
-                               :key="key"
-                               :label="bizType"
-                               :value="key">
-                    </el-option>
-                </el-select>
                 <el-table :data="childList" border
                           highlight-current-row
                           height="100%" size="mini"
@@ -226,20 +217,6 @@
                 currSelectData: {}, //当前选中的数据
                 childList: [], //可疑退票数据
                 selectData: {}, //可疑退票数据选中项
-                bizTypeList: {
-                    "8": "调拨通-内部调拨",
-                    "10": "调拨通-批量调拨",
-                    "9": "支付通-单笔支付",
-                    "11": "支付通-批量支付",
-                    // "12": "归集通-直联归集",
-                    // "19": "归集通-非直联归集",
-                    // "13": "资金下拨",
-                    // "15": "收款通",
-                    // "14": "广银联备付金",
-                    "20": "OA总公司付款",
-                    "21": "OA分公司付款"
-                }, //业务类型
-                bizType: "",
             }
         },
         methods: {
@@ -327,15 +304,11 @@
             notarizeRefund: function (row) {
                 this.currSelectData = row;
                 this.childList = [];
-                this.bizType = "";
                 this.dialogVisible = true;
+                this.getSelectData(row);
             },
             //获取当前业务类型对应的可疑数据
-            getSelectData: function (val) {
-                if (!val) {
-                    return;
-                }
-                var currSelectData = this.currSelectData;
+            getSelectData: function (row) {
                 this.childList = [];
                 this.$axios({
                     url: this.queryUrl + "normalProcess",
@@ -345,8 +318,7 @@
                         params: {
                             page_num: 1,
                             page_size: 1000,
-                            biz_type: val,
-                            id: currSelectData.id
+                            id: row.id
                         }
                     }
                 }).then((result) => {
@@ -377,12 +349,10 @@
                     return;
                 }
                 var params = {
-                    biz_type: this.bizType,
                     id: this.currSelectData.id,
+                    biz_type: selectData.biz_type,
                     bill_id: selectData.bill_id,
-                    bill_persist_version: selectData.bill_persist_version,
-                    detail_id: selectData.detail_id,
-                    detail_persist_version: selectData.detail_persist_version
+                    bill_persist_version: selectData.bill_persist_version
                 }
 
                 this.$axios({
