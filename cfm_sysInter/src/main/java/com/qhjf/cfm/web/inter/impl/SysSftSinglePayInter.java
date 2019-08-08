@@ -265,7 +265,40 @@ public class SysSftSinglePayInter extends SysSinglePayInter {
                     bill_setRecord.set("feed_back", errMsg);
 
                     if (CommonService.updateRows(source_ref, bill_setRecord, bill_whereRecord) == 1) { //修改单据状态
-                        return CommonService.updateRows("single_pay_instr_queue", instr_setRecord, instr_whereRecord) == 1;
+                    	int updateSing = CommonService.updateRows("single_pay_instr_queue", instr_setRecord, instr_whereRecord);
+                        if(1 == updateSing) {  //billRecord
+                         	if(0 == billRecord.getInt("source_sys")) {
+                        		log.info("====LA系统数据");
+                        		int update = Db.update(Db.getSql("pay_counter.updateLaOriginData"), 2 ,bill_setRecord.get("feed_back") ,billRecord.get("origin_id"));
+                        		return  update > 0 ;
+                        	} else {
+                        		log.info("====EBS系统数据");
+                        		String pay_acc_no = GmfConfigAccnoSection.getInstance().getAccno();
+    							log.info("===========配置文件获取到的账号======="+pay_acc_no);
+    							
+    							final Map<String, Object> aRowData = TableDataCacheUtil.getInstance().getARowData("account", "acc_no", pay_acc_no);
+
+    							String bankcode = null;
+    							if (null != aRowData) {
+    								bankcode = TypeUtils.castToString(aRowData.get("bankcode"));
+    							}else {
+    								log.error("=====未查询到此账号");
+    								bankcode = String.format("银行账号：(%s)未维护到account表", pay_acc_no);
+    							}
+    							SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+    							SimpleDateFormat sdf1 = new SimpleDateFormat("HH:mm:ss");
+    							String pay_date = sdf.format(new Date());
+    							String pay_time = sdf1.format(new Date());
+    							int update = Db.update(Db.getSql("pay_counter.updateEbsOriginData"), 2 ,bill_setRecord.get("feed_back"), pay_acc_no , 
+    									bankcode , pay_date ,pay_time , billRecord.get("origin_id")) ;
+                        		return update > 0 ;
+                        	}
+                        	
+                        } else {
+                           log.error("更新指令表失败！");
+                           return false ;	
+                        }
+                   	
                     } else {
                         log.error("数据过期！");
                         return false;
@@ -274,7 +307,16 @@ public class SysSftSinglePayInter extends SysSinglePayInter {
             });
             if (!flag) {
                 log.error("修改单据状态失败！");
+            }           
+            //将回调写在事物外,回调失败,不影响表的回写
+            Record originRecord = null ;
+            if(0 == billRecord.getInt("source_sys")) {
+    			originRecord = Db.findById("la_origin_pay_data", "id", billRecord.getInt("origin_id"));                        			
+            }else {
+    			originRecord = Db.findById("ebs_origin_pay_data", "id", billRecord.getInt("origin_id"));                        			
             }
+            SftCallBack callback = new SftCallBack();
+			callback.callback(billRecord.getInt("source_sys"), originRecord);
         } else {
             log.error(e.getMessage());
         }
