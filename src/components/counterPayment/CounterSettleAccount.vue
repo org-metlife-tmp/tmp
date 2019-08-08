@@ -210,6 +210,37 @@
                                 </el-date-picker>
                             </el-form-item>
                         </el-col>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-select v-model="childSearch.bankcode" placeholder="请选择bankcode"
+                                           clearable filterable
+                                           style="width:100%">
+                                    <el-option v-for="acc_no in bankcodeList"
+                                               :key="acc_no.bankcode"
+                                               :label="acc_no.bankcode"
+                                               :value="acc_no.bankcode">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-select v-model="childSearch.acc_no" placeholder="请选择银行账号"
+                                           clearable filterable
+                                           style="width:100%">
+                                    <el-option v-for="bank in bankList"
+                                               :key="bank.acc_no"
+                                               :label="bank.acc_no"
+                                               :value="bank.acc_no">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-input v-model="childSearch.summary" clearable placeholder="请输入摘要"></el-input>
+                            </el-form-item>
+                        </el-col>
                         <el-col :span="5">
                             <el-form-item>
                                 <el-col :span="11">
@@ -221,12 +252,11 @@
                                 </el-col>
                             </el-form-item>
                         </el-col>
-                        <el-col :span="4">
-                            <el-form-item>
-                                <el-input v-model="childSearch.summary" clearable placeholder="请输入摘要"></el-input>
+                        <el-col :span="10">
+                            <el-form-item style="margin-bottom:0px">
                             </el-form-item>
                         </el-col>
-                        <el-col :span="6">
+                        <el-col :span="5">
                             <el-form-item style="margin-bottom:0px">
                                 <el-checkbox-group v-model="childSearch.is_checked">
                                     <el-checkbox :label="0" name="未核对">未核对</el-checkbox>
@@ -317,6 +347,10 @@
                 this.paymodeList = constants.SftDoubtPayMode;
             }
             this.getOrgList();
+            //bankcode
+            this.getBankcode();
+            //银行账号
+            this.getBankList();
         },
         props: ["tableData"],
         data: function () {
@@ -342,6 +376,8 @@
                     is_checked: []
                 },
                 childSearch: {
+                    bankcode: "",
+                    acc_no: "",
                     min: "",
                     max: "",
                     summary: "",
@@ -385,23 +421,23 @@
         },
         methods: {
             //清空搜索条件
-            clearData: function(){
+            clearData: function () {
                 var searchData = this.searchData;
                 for (var k in searchData) {
-                    if(k == "is_checked"){
+                    if (k == "is_checked") {
                         searchData[k] = [];
-                    }else{
+                    } else {
                         searchData[k] = "";
                     }
                 }
                 this.dateValue = "";
             },
-            clearChildData: function(){
+            clearChildData: function () {
                 var searchData = this.childSearch;
                 for (var k in searchData) {
-                    if(k == "is_checked"){
+                    if (k == "is_checked") {
                         searchData[k] = [];
-                    }else{
+                    } else {
                         searchData[k] = "";
                     }
                 }
@@ -422,10 +458,10 @@
             },
             //当前列是否可以勾选
             isSelect: function (row, index) {
-                return !(row.is_checked == "1" );
+                return !(row.is_checked == "1");
             },
             //查询交易流水
-            queryChildData: function(){
+            queryChildData: function () {
                 var searchData = this.childSearch;
                 var params = {};
                 for (var k in searchData) {
@@ -469,13 +505,19 @@
                 this.routerMessage.params.page_num = 1;
                 this.$emit("getCommTable", this.routerMessage);
             },
+            //当前页数据条数发生变化
+            sizeChange: function (val) {
+                this.routerMessage.params.page_size = val;
+                this.routerMessage.params.page_num = 1;
+                this.$emit("getCommTable", this.routerMessage);
+            },
             //列表选择框改变后
-            selectChange: function (row,oldRow) {
+            selectChange: function (row, oldRow) {
                 this.totalData.total_amount = row.amount;
                 this.currentId = row.id;
-
+                this.setBankcode(row.pay_account_no);
                 //自动匹配时触发自动搜索
-                if(this.selfMotion){
+                if (this.selfMotion) {
                     this.childList = [];
                     this.$axios({
                         url: this.queryUrl + "normalProcess",
@@ -496,7 +538,7 @@
                         } else {
                             var data = result.data.data;
                             this.childList = data;
-                            if(data.length === 1){
+                            if (data.length === 1) {
                                 setTimeout(() => {
                                     this.childSelect(this.childList[0]);
                                 }, 100);
@@ -513,9 +555,9 @@
                 var recvAmount = 0;
                 for (var i = 0; i < val.length; i++) {
                     var item = val[i];
-                    if(item.direction == "收"){
+                    if (item.direction == "收") {
                         recvAmount += item.amount;
-                    }else{
+                    } else {
                         payAmount += item.amount;
                     }
                     this.tradingList.push(item.id);
@@ -523,23 +565,25 @@
 
                 this.childTotalData.payAmount = this.$common.transitSeparator(payAmount);
                 this.childTotalData.recvAmount = this.$common.transitSeparator(recvAmount);
-                if(payAmount > recvAmount){
+                if (payAmount > recvAmount) {
                     this.isPay = true;
                     this.isZero = false;
                     this.childTotalData.totalAmount = this.$common.transitSeparator(payAmount - recvAmount);
-                }else if(payAmount == recvAmount){
+                } else if (payAmount == recvAmount) {
                     this.isPay = false;
                     this.isZero = true;
                     this.childTotalData.totalAmount = "";
-                }else{
+                } else {
                     this.isPay = false;
                     this.isZero = false;
                     this.childTotalData.totalAmount = this.$common.transitSeparator(recvAmount - payAmount);
                 }
+
+
             },
             //交易流水自动勾选
-            childSelect: function(selectItem) {
-                this.$refs.tableRef.toggleRowSelection(selectItem,true);
+            childSelect: function (selectItem) {
+                this.$refs.tableRef.toggleRowSelection(selectItem, true);
             },
             //对账确认
             affirm: function () {
@@ -665,15 +709,13 @@
                 });
             },
             //获取银行账号
-            getBankList: function(){
+            getBankList: function () {
                 this.$axios({
                     url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
                         optype: "sftpaycheck_getallaccountno",
-                        params: {
-
-                        }
+                        params: {}
                     }
                 }).then((result) => {
                     if (result.data.error_msg) {
@@ -692,24 +734,17 @@
                 });
             },
             //选择通道编码后设置bankcode
-            setBankcode: function(val){
-                var channelList = this.channelList;
+            setBankcode: function (val) {
                 var bankcodeList = this.bankcodeList;
                 this.childSearch.bankcode = "";
-                for(var i = 0; i < channelList.length; i++){
-                    var item = channelList[i];
-                    if(item.channel_id == val){
-                        var curBankcode = item.bankcode;
-                        for(var j = 0; j < bankcodeList.length; j++){
-                            if(bankcodeList[j].bankcode == curBankcode){
-                                this.childSearch.bankcode = bankcodeList[j].bankcode;
-                                break;
-                            }
-                        }
+                for (var j = 0; j < bankcodeList.length; j++) {
+                    if (bankcodeList[j].acc_no == val) {
+                        this.childSearch.bankcode = bankcodeList[j].bankcode;
                         break;
                     }
                 }
-            },
+
+            }
         },
         watch: {
             tableData: function (val, oldVal) {

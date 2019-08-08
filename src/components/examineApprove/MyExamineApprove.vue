@@ -681,6 +681,12 @@
                            @click="showThirdDialog('addLots','more')"
                            icon="el-icon-circle-plus-outline">加签
                 </el-button>
+                <el-button v-show="activeName=='32'"
+                           type="danger"
+                           size="mini"
+                           plain
+                           @click="showThirdDialog('reject','more')"
+                           icon="el-icon-circle-close-outline">拒 绝</el-button>
                 <el-button type="warning"
                            plain
                            size="small"
@@ -1405,7 +1411,8 @@
                     agree: "paycounter_agree",
                     reject: "paycounter_reject",
                     'more-addLots': "paycounter_batchappend",
-                    'more-agree': "paycounter_batchagree"
+                    'more-agree': "paycounter_batchagree",
+                    'more-reject': "paycounter_batchreject"
                 },
                 "43": {
                     text: "柜面收撤销审批",
@@ -2816,8 +2823,23 @@
                     }
                     message = "加签成功";
                 } else if (type == "reject") {
-                    this.currentData.assignee_memo = memo;
-                    optype = this.classParams[_index].reject;
+                    if (number) {//批量同意参数
+                        selData.forEach(ele => {
+                            let obj = {};
+                            obj.define_id = ele.define_id;
+                            obj.id = ele.bill_id;
+                            obj.persist_version = ele.persist_version;
+                            obj.service_status = ele.service_status;
+                            obj.wf_inst_id = ele.inst_id;
+                            obj.assignee_memo = memo;
+                            batch_list.push(obj);
+                        })
+                        lotParams.batch_list = batch_list;
+                        optype = this.classParams[_index]['more-reject'];
+                    } else {
+                        this.currentData.assignee_memo = memo;
+                        optype = this.classParams[_index].reject;
+                    }
                     message = "拒绝成功";
                 } else {
                     if (number) {//批量同意参数
