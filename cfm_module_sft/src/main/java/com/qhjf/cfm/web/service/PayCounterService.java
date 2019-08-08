@@ -238,6 +238,8 @@ public class PayCounterService {
 	 * @throws ReqDataException 
 	 */
 	public void revokeToLaOrEbs(final Record record, UserInfo userInfo) throws ReqDataException {
+		// 获取付款账号
+		final String pay_account_no = GmfConfigAccnoSection.getInstance().getAccno();
 		Long usr_id = userInfo.getUsr_id();
 		final Record user_record = Db.findById("user_info", "usr_id",usr_id);
 		if(null == user_record){
@@ -278,7 +280,8 @@ public class PayCounterService {
 						Record origin = Db.findById("ebs_origin_pay_data", "id", origin_id);
 						update1 = CommonService.update("ebs_origin_pay_data",
 								new Record().set("tmp_status", 2).set("tmp_err_message", record.get("feed_back"))
-										.set("persist_version", origin.getInt("persist_version") + 1),
+										.set("persist_version", origin.getInt("persist_version") + 1)
+										.set("paybankaccno", pay_account_no),
 								new Record().set("id", origin_id).set("persist_version",
 										origin.getInt("persist_version")));
 					}
