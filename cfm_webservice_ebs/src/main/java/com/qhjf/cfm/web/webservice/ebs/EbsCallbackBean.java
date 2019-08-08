@@ -45,9 +45,10 @@ public class EbsCallbackBean {
 		Record payRec = Db.findFirst(Db.getSql("nbdb.findAccountByAccno"), PayBankAccNo);
 		this.PayBankName = payRec.getStr("bank_name");
 		this.GetAccName = origin.getStr("recv_acc_name");
-		String encryRecvAccNo = origin.getStr("recv_acc_no");		
-		SymmetricEncryptUtil util = SymmetricEncryptUtil.getInstance();
-		String decryptRecvAccNo = util.decryptToStr(encryRecvAccNo);
+		String encryRecvAccNo = origin.getStr("recv_acc_no");
+		String decryptRecvAccNo = Db.queryStr(Db.getSql("quartzs_job_cfm.ddhDecrypt"), encryRecvAccNo);
+/*		SymmetricEncryptUtil util = SymmetricEncryptUtil.getInstance();
+		String decryptRecvAccNo = util.decryptToStr(encryRecvAccNo);*/
 		this.GetAccNo = decryptRecvAccNo;
 		this.GetBankName = origin.getStr("ebs_recv_bank_name");
 	}
