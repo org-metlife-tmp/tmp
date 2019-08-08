@@ -135,7 +135,7 @@ public class PayCounterService {
 		 Page<Record> paginate = Db.paginate(pageNum, pageSize, sqlPara);
 		 List<Record> list = paginate.getList();
 		 SymmetricEncryptUtil  util = SymmetricEncryptUtil.getInstance();
-		 if(null != list && list.size() > 0) {
+		  if(null != list && list.size() > 0) {
 			 for (Record rec : list) {
 				 String dec_recv_acc_no = StringUtils.isBlank(rec.getStr("recv_acc_no"))?null :
 					 util.decryptToStr(rec.getStr("recv_acc_no"));

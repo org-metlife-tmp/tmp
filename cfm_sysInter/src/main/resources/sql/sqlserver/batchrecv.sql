@@ -169,3 +169,65 @@
 		status = 1 and
 		reqsta = 0
 #end
+
+#sql("selInstrDetailByPackageSeq")
+   select
+   	*
+   from
+   	batch_recv_instr_queue_detail
+   where
+   	base_id = ? and
+   	package_seq = ?
+#end
+
+#sql("qryMaxBusTypeFromTotal")
+   select
+   	max(bus_type) as bus_type_max
+   from
+   	batch_recv_instr_queue_total
+   where
+   	recv_bank_cnaps like '102%' and
+   	CONVERT(VARCHAR(100),init_send_time,23) = ?
+#end
+
+#sql("updProtocolDetail")
+   update 
+	detail 
+   set 
+   	status = ?, dead_line = ?
+   from 
+   	protocol_import_instr_detail detail, 
+   	protocol_import_instr_total total
+   where 
+   	detail.base_id=total.id and detail.package_seq = ?
+#end
+
+#sql("qryProtocolDetail")
+   select detail.*
+   from 
+   	protocol_import_instr_detail detail, 
+   	protocol_import_instr_total total
+   where 
+   	detail.base_id=total.id and 
+   	total.bank_seriral_no = ? and
+   	detail.package_seq = ?
+#end
+
+#sql("qryHandllingProtocolSize")
+   select count(*) size
+   from 
+   	protocol_import_instr_detail detail, 
+   	protocol_import_instr_total total
+   where
+   	detail.base_id=total.id and 
+   	total.id = ? and
+   	detail.status in (0,3)
+#end
+
+#sql("qryChannel")
+   select r.channel_id from recv_batch_total_master r where r.recv_acc_no = ?
+#end
+
+#sql("qryChannelSet")
+   select c.direct_channel shortPayCnaps from channel_setting c where c.id = ?
+#end
