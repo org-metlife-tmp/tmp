@@ -93,7 +93,6 @@ public class SysProtocolImportQueryInter implements ISysAtomicInterface {
 	 * 发送批收指令
 	 * 
 	 * @param total
-	 * @param cnaps
 	 */
 	private void sendRecvInstr(Record total) {
 		String cnaps = total.getStr("cnaps");

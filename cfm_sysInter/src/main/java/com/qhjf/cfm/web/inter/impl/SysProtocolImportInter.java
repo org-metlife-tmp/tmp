@@ -90,6 +90,25 @@ public class SysProtocolImportInter implements ISysAtomicInterface {
 		return sdf.format(c.getTime());
 	}
 
+	/**
+	 * 保存导入协议指令数据
+	 * 这里的导入为新加的，需要修改，只需添加不存在的导入协议即可，但现在因循环的关系导致存在的数据也被导入
+	 * @param r
+	 */
+	public void seveInfo(Record r,Record total){
+		r.set("acct_name",total.getStr("enterprise_name"));
+		r.set("acct_no",total.getStr("enterprise_acc_no"));
+		r.set("contract_no",total.getStr("protocol_no"));
+		r.set("pay_type",total.getStr("pay_type"));
+		r.set("tmp_1",total.getStr("id"));
+		r.set("pay_acct_no",r.getStr("pay_acc_no"));
+		r.set("pay_acct_name",r.getStr("pay_acc_name"));
+		r.remove("package_seq");
+		r.remove("pay_acc_no");
+		r.remove("pay_acc_name");
+		Db.save("protocol_import_info", r);
+	}
+
 	@Override
 	public Record getInstr() {
 		return this.instr;

@@ -10,6 +10,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
 import com.qhjf.bankinterface.api.AtomicInterfaceConfig;
+import com.qhjf.bankinterface.api.utils.OminiUtils;
 import com.qhjf.bankinterface.icbc.IcbcConstant;
 import com.qhjf.cfm.utils.RedisSericalnoGenTool;
 import com.qhjf.cfm.web.channel.inter.api.IMoreResultChannelInter;
@@ -46,6 +47,9 @@ public class IcbcTradeResultBatchRecvQueryInter implements IMoreResultChannelInt
 		result.put("QryfSeqno", record.getStr("bank_serial_number"));
 
 		List<Record> detail = Db.find(Db.getSql("batchrecvjob.getBatchRecvDetail"), record.getStr("bank_serial_number"));
+		if(OminiUtils.isNullOrEmpty(detail) && detail.size() == 0){
+			detail = Db.find(Db.getSql("batchrecvjob.getBatchRecvDetailNo"), record.getStr("bank_serial_number"));
+		}
 
 		List<Map<String, Object>> rds = new ArrayList<Map<String, Object>>();
 		for(Record r : detail){

@@ -231,3 +231,7 @@
 #sql("qryChannelSet")
    select c.direct_channel shortPayCnaps from channel_setting c where c.id = ?
 #end
+
+#sql("qryTotalId")
+  SELECT TOP 1 d.base_id id from batch_recv_instr_queue_detail d where d.bank_serial_number_unpack = ?
+#end

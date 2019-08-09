@@ -29,7 +29,25 @@
 	from
 		batch_recv_instr_queue_detail
 	where
+		bank_serial_number_unpack = ?
+#end
+
+#sql('getBatchRecvDetailNo')
+	select
+		*
+	from
+		batch_recv_instr_queue_detail
+	where
 		bank_serial_number = ?
+#end
+
+#sql('getBankunPack')
+	select
+		bank_serial_number_unpack
+	from
+		batch_recv_instr_queue_detail
+	where
+		bank_serial_number = ? GROUP BY bank_serial_number_unpack
 #end
 
 
