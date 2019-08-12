@@ -58,6 +58,11 @@
 
         <!-- 内部模块引入 start -->
         <!-- ##公用模块 start## -->
+          <dependency>
+            <groupId>com.qhjf.cfm</groupId>
+            <artifactId>cfm_common</artifactId>  <!-- 公共模块 -->
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>com.qhjf.cfm</groupId>
             <artifactId>cfm_module_admin</artifactId>  <!-- 管理员模块 -->
