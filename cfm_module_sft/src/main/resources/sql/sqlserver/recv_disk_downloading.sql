@@ -1,4 +1,4 @@
-#sql("findTotalConfig")
+﻿#sql("findTotalConfig")
     select 
       *
     from
@@ -313,7 +313,7 @@
 #end
 
 #sql("qryChannelId")
-    select c.direct_channel shortPayCnaps from channel_setting c where c.id = ?
+    select c.direct_channel shortPayCnaps,c.card_type from channel_setting c where c.id = ?
 #end
 
 #sql("qryProtocol")

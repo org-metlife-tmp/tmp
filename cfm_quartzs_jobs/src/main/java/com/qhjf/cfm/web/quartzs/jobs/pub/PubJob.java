@@ -2,6 +2,7 @@ package com.qhjf.cfm.web.quartzs.jobs.pub;
 
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
+import com.qhjf.bankinterface.api.utils.OminiUtils;
 import com.qhjf.cfm.queue.ProductQueue;
 import com.qhjf.cfm.queue.QueueBean;
 import com.qhjf.cfm.web.channel.inter.api.IChannelInter;
@@ -177,7 +178,24 @@ public abstract class PubJob implements Job{
 				Record instr = sysInter.genInstr(record);
 				try{
 					if(Db.save(getInstrTableName(), instr)){
-						sendQueue(sysInter,record,bankCode);
+						if("102".equals(cnaps)){
+							List<Record> bankList = Db.find(Db.getSql("batchrecvjob.getBankunPack"),record.getStr("bank_serial_number"));
+							if(!OminiUtils.isNullOrEmpty(bankList) && bankList.size() > 0){
+								for (Record re : bankList){
+									if(!OminiUtils.isNullOrEmpty(re.getStr("bank_serial_number_unpack"))){
+										record.set("bank_serial_number",re.getStr("bank_serial_number_unpack"));
+										sendQueue(sysInter,record,bankCode);
+									} else {
+										sendQueue(sysInter,record,bankCode);
+									}
+								}
+							} else {
+								sendQueue(sysInter,record,bankCode);
+							}
+						} else {
+							sendQueue(sysInter,record,bankCode);
+						}
+						
 					}else{
 						reTry(sysInter,bankCode);
 					}
