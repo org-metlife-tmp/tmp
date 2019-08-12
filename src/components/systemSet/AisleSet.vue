@@ -335,8 +335,15 @@
                         </el-col>
                         <el-col :span="12">
                             <el-form-item label="支持卡种">
-                                <el-input v-model="dialogData.card_type" placeholder="请输入支持卡种"
-                                          :disabled="isLook"></el-input>
+                                <el-select v-model="dialogData.card_type" placeholder="请选择支持卡种"
+                                           clearable filterable :disabled="isLook"
+                                           style="width:100%">
+                                    <el-option v-for="(item,key) in cardTypeList"
+                                               :key="key"
+                                               :label="item"
+                                               :value="key">
+                                    </el-option>
+                                </el-select>
                             </el-form-item>
                         </el-col>
 
@@ -472,6 +479,10 @@
             if(constants.SftNetMode){
                 this.netModeList = constants.SftNetMode;
             }
+            //支持卡种
+            if(constants.CardType){
+                this.cardTypeList = constants.CardType;
+            }
             //省
             this.provinceList = JSON.parse(window.sessionStorage.getItem("provinceList"));
             //直连通道
@@ -519,6 +530,7 @@
                 orgList: [],
                 bankcodeList: [],
                 channelList: [],
+                cardTypeList: {},
                 dialogVisible: false, //弹框数据
                 dialogTitle: "新增",
                 dialogData: {
