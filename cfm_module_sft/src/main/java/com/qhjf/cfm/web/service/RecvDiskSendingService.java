@@ -330,8 +330,15 @@ public class RecvDiskSendingService {
 					, total.getStr("protocol_no")
 					, record.getStr("pay_acc_no")
 					, record.getStr("pay_no"));*/
+			//付方账号做解密处理以便后续发送给银行端
+			String pay_acc_no = "";
+			try {
+				pay_acc_no = SymmetricEncryptUtil.getInstance().decryptToStr(record.getStr("pay_acc_no"));
+			} catch (EncryAndDecryException e) {
+				logger.error("RecvDiskSendingService.sendbank：付方账号解密失败！", e);
+			}
 			Record findFirst = Db.findFirst(Db.getSql("recv_disk_downloading.qryProtocol")
-					, record.getStr("pay_acc_no")
+					, pay_acc_no
 					, TypeUtils.castToString(mbRecord.get("recv_acc_no")));
 			if (findFirst == null) {
 				//可以在这里添加未导入的协议数据
@@ -353,6 +360,29 @@ public class RecvDiskSendingService {
 					if (newDetails.size() > protocolSize) {
 						List<Record> newList = new ArrayList<>();
 						newList.addAll((Collection<? extends Record>) newDetails.subList(0,protocolSize));
+						newDetails.removeAll(newList);
+						//生成指令
+						Record batchDetailList = new Record()
+								.set("batchDetailList", newList)
+								.set("instrTotalId", instrTotalId)
+								.set("batchTotalId", batchTotalId)
+								.set("cnaps", cnaps)
+								.set("recv_account_no", TypeUtils.castToString(mbRecord.get("recv_acc_no")))
+								.set("recv_account_name", TypeUtils.castToString(mbRecord.get("recv_acc_name")))
+								.set("recv_account_bank", TypeUtils.castToString(mbRecord.get("recv_bank_name")));
+						Record genInstr = sysInter.genInstr(batchDetailList);
+						//保存指令
+						seveInstr = sysInter.seveInstr();
+						//指令入队
+						if (seveInstr) {
+							QueueBean bean = new QueueBean(sysInter, channelInter.genParamsMap(genInstr), cnaps);
+							ProductQueue productQueue = new ProductQueue(bean);
+							new Thread(productQueue).start();
+						}
+					} else {
+						List<Record> newList = new ArrayList<>();
+						newList.addAll((Collection<? extends Record>) newDetails.subList(0,protocolSize));
+						newDetails.removeAll(newList);
 						//生成指令
 						Record batchDetailList = new Record()
 								.set("batchDetailList", newList)

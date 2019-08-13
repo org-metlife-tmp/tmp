@@ -50,6 +50,7 @@ public class IcbcTradeResultBatchRecvQueryInter implements IMoreResultChannelInt
 		if(OminiUtils.isNullOrEmpty(detail) && detail.size() == 0){
 			detail = Db.find(Db.getSql("batchrecvjob.getBatchRecvDetailNo"), record.getStr("bank_serial_number"));
 		}
+
 		List<Map<String, Object>> rds = new ArrayList<Map<String, Object>>();
 		for(Record r : detail){
 			Map<String, Object> rd = new HashMap<>();
