@@ -317,5 +317,5 @@
 #end
 
 #sql("qryProtocol")
-    SELECT p.id from protocol_import_info p where p.pay_acct_no = ? and p.acct_no = ?
+    SELECT p.id from protocol_import_info p where p.pay_acct_no = ? and p.acct_no = ? and state = '0'
 #end

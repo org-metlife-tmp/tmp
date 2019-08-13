@@ -128,7 +128,8 @@ public class SysBatchRecvInter implements ISysAtomicInterface {
         Record instrTotalRecord = Db.findById(BATCH_RECV_INSTR_TOTLE_TALBE, "id", instrTotalId);
         if (instrTotalRecord == null) {
             throw new Exception("批收单据发送指令不存在！id=" + instrTotalId);
-        }        
+        }
+        
         for (int i = 0; i < resultCount; i++) {
             try {
                 final Record parseRecord = channelInter.parseResult(jsonStr, i);
@@ -428,6 +429,7 @@ public class SysBatchRecvInter implements ISysAtomicInterface {
         detail.set("pay_bank_type", batch.getStr("pay_bank_type"));
         detail.set("insure_bill_no",batch.getStr("insure_bill_no"));
         detail.set("contractNo",batch.getStr("ContractNo"));
+
         //批收只支持同行，默认不跨行
         int isCrossBank = 0;
         /*String cnaps = batch.getStr("pay_bank_cnaps");

@@ -55,18 +55,22 @@ public class SysProtocolImportQueryInter implements ISysAtomicInterface {
 			String bankSeriralNo = rd.getStr("bank_seriral_no");
 			String packageSeq = rd.getStr("package_seq");
 			Record detail = Db.findFirst(Db.getSql("batchrecv.qryProtocolDetail"), bankSeriralNo, packageSeq);
-			if (detail == null) {
+			//查询导入协议info信息
+			Record info = Db.findFirst(Db.getSql("batchrecv.qryProtocolInfo"), bankSeriralNo, packageSeq);
+			if (detail == null && info == null) {
 				log.error("批收协议导入状态查询，通过bankSeriralNo={}，packageSeq={}未查询到明细！", bankSeriralNo, packageSeq);
 				continue;
 			}
 			if (baseId == null) {
 				baseId = detail.getLong("base_id");
 			}
+			info.set("state","0");
 			detail.set("dead_line", rd.getStr("dead_line"));
 			detail.set("status", TypeUtils.castToInt(rd.get("status")));
 			detail.set("bank_err_code", rd.getStr("bank_err_code"));
 			detail.set("bank_err_msg", rd.getStr("bank_err_msg"));
 			boolean update = Db.update("protocol_import_instr_detail", detail);
+			boolean updInfo = Db.update("protocol_import_info", info);
 			if (!update) {
 				log.error("批收协议导入状态查询，更新明细失败！bankSeriralNo={}，packageSeq={}", bankSeriralNo, packageSeq);
 			}

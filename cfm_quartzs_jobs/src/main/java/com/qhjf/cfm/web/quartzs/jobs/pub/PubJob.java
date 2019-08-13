@@ -195,7 +195,6 @@ public abstract class PubJob implements Job{
 						} else {
 							sendQueue(sysInter,record,bankCode);
 						}
-						
 					}else{
 						reTry(sysInter,bankCode);
 					}

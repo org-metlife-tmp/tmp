@@ -22,7 +22,8 @@ public class DDHLARecvConfigSection extends AbstractConfigSection {
 	private String payType;//缴费种类
 	private String enterpriseName;//企业名称
 	private String enterpriseAccNo;//企业账号
-	private String countSize;
+	private String countSize; //拆包长度
+	private String protocolSize; //协议拆包长度
 
 	@SuppressWarnings("static-access")
 	protected DDHLARecvConfigSection() {
@@ -49,18 +50,10 @@ public class DDHLARecvConfigSection extends AbstractConfigSection {
 			this.enterpriseName = pros.getProperty("enterpriseName");
 			this.enterpriseAccNo = pros.getProperty("enterpriseAccNo");
 			this.countSize = pros.getProperty("countSize");
-			
+			this.protocolSize = pros.getProperty("protocolSize");
 		} else {
 			addErrMsg(SECTION_ERR_TEMP, getSectionName());
 		}
-	}
-
-	public String getCountSize() {
-		return countSize;
-	}
-
-	public void setCountSize(String countSize) {
-		this.countSize = countSize;
 	}
 
 	@Override
@@ -100,6 +93,14 @@ public class DDHLARecvConfigSection extends AbstractConfigSection {
 
 	public String getProtocolNo() {
 		return protocolNo;
+	}
+
+	public String getCountSize(){
+		return countSize;
+	}
+
+	public String getProtocolSize(){
+		return protocolSize;
 	}
 
 	public String getPayType() {
