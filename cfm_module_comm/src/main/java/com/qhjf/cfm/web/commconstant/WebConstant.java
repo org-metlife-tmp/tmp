@@ -47,6 +47,43 @@ public interface WebConstant {
             return desc;
         }
     }
+    @ConstantAnnotation("是与否")
+    enum CardType implements WebConstant {
+        CRADALL(0, "全部"),
+        DEBITCARD(1, "借记卡"),
+        CREDITCARD(2, "贷记卡"),
+        DCRADPASS(3, "借记卡+存折");
+
+        int key;
+        String desc;
+
+        CardType(int key, String desc) {
+            this.key = key;
+            this.desc = desc;
+        }
+
+        public static CardType getByKey(int key) {
+            CardType[] var1 = values();
+            int var2 = var1.length;
+
+            for(int var3 = 0; var3 < var2; ++var3) {
+                CardType cardType = var1[var3];
+                if (cardType.getKey() == key) {
+                    return cardType;
+                }
+            }
+
+            return null;
+        }
+
+        public int getKey() {
+            return this.key;
+        }
+
+        public String getDesc() {
+            return this.desc;
+        }
+    }
 
     /**
      * 用户访问UA
