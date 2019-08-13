@@ -213,6 +213,17 @@
    	detail.package_seq = ?
 #end
 
+#sql("qryProtocolInfo")
+   select info.*
+   from
+   	protocol_import_info info,
+   	protocol_import_instr_total total
+   where
+   	info.tmp_1=total.id and
+   	total.bank_seriral_no = ? and
+   	info.tmp_2 = ?
+#end
+
 #sql("qryHandllingProtocolSize")
    select count(*) size
    from 
