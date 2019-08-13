@@ -313,5 +313,9 @@
 #end
 
 #sql("qryChannelId")
-    select c.direct_channel shortPayCnaps from channel_setting c where c.id = ?
+    select c.direct_channel shortPayCnaps,c.card_type from channel_setting c where c.id = ?
+#end
+
+#sql("qryProtocol")
+    SELECT p.id from protocol_import_info p where p.pay_acct_no = ? and p.acct_no = ?
 #end

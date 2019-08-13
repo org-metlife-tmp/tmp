@@ -49,8 +49,10 @@ public class SysProtocolImportInter implements ISysAtomicInterface {
 
 		Long instrTotalId = record.getLong("instrTotalId");
 		Long batchTotalId = record.getLong("batchTotalId");
+		String acct_no = record.getStr("recv_account_no");
+		String acct_name = record.getStr("recv_account_name");
 		this.cnaps = record.getStr("cnaps");
-		this.instr = record.set("total", genTotal(batchDetailList.size(), instrTotalId, batchTotalId));
+		this.instr = record.set("total", genTotal(batchDetailList.size(), instrTotalId, batchTotalId,acct_name,acct_no));
 
 		List<Record> detailList = new ArrayList<>();
 		int index = 1;
@@ -148,7 +150,7 @@ public class SysProtocolImportInter implements ISysAtomicInterface {
 		return this.channelInter;
 	}
 
-	private Record genTotal(int num, Long instrTotalId, Long batchTotalId) {
+	private Record genTotal(int num, Long instrTotalId, Long batchTotalId,String acct_name,String acct_no) {
 		Record result = new Record();
 		result.set("instr_total_id", instrTotalId);
 		result.set("batch_total_id", batchTotalId);
@@ -156,8 +158,8 @@ public class SysProtocolImportInter implements ISysAtomicInterface {
 		result.set("total_num", num);
 		result.set("protocol_no", recvSection.getProtocolNo());
 		result.set("pay_type", recvSection.getPayType());
-		result.set("enterprise_name", recvSection.getEnterpriseName());
-		result.set("enterprise_acc_no", recvSection.getEnterpriseAccNo());
+		result.set("enterprise_name", acct_name);  //recvSection.getEnterpriseName()
+		result.set("enterprise_acc_no", acct_no);  //recvSection.getEnterpriseAccNo()
 		result.set("cnaps", this.cnaps);
 		result.set("send_time", new Date());
 
@@ -175,11 +177,30 @@ public class SysProtocolImportInter implements ISysAtomicInterface {
 		if (save) {
 			@SuppressWarnings("unchecked")
 			List<Record> detail = (List<Record>) this.instr.get("detail");
+			List<Record> info = new ArrayList<>();
 			for (Record record : detail) {
 				record.set("base_id", total.get("id"));
+				Record r = new Record();
+				r.set("acct_name",total.getStr("enterprise_name"));
+				r.set("acct_no",total.getStr("enterprise_acc_no"));
+				r.set("contract_no",total.getStr("protocol_no"));
+				r.set("pay_type",total.getStr("pay_type"));
+				r.set("tmp_1",total.get("id"));
+				r.set("tmp_2",record.getStr("package_seq"));
+				r.set("pay_acct_no",record.getStr("pay_acc_no"));
+				r.set("pay_acct_name",record.getStr("pay_acc_name"));
+				r.set("cert_type", record.getStr("cert_type"));
+				r.set("cert_no", record.getStr("cert_no"));
+				r.set("dead_line", record.getStr("dead_line"));
+				r.set("pay_no", record.getStr("pay_no"));
+				r.set("state","1");
+				info.add(r);
 			}
 
 			int[] batchSave = Db.batchSave("protocol_import_instr_detail", detail, 1000);
+			int[] batchInfoSave = Db.batchSave("protocol_import_info",info,1000);
+			boolean saveInfo = ArrayUtil.checkDbResult(batchInfoSave);
+			log.info("导入协议info表返回的数据库结果：" + saveInfo);
 			return ArrayUtil.checkDbResult(batchSave);
 		}
 

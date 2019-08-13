@@ -213,6 +213,17 @@
    	detail.package_seq = ?
 #end
 
+#sql("qryProtocolInfo")
+   select info.*
+   from
+   	protocol_import_info info,
+   	protocol_import_instr_total total
+   where
+   	info.tmp_1=total.id and
+   	total.bank_seriral_no = ? and
+   	info.tmp_2 = ?
+#end
+
 #sql("qryHandllingProtocolSize")
    select count(*) size
    from 
@@ -230,4 +241,8 @@
 
 #sql("qryChannelSet")
    select c.direct_channel shortPayCnaps from channel_setting c where c.id = ?
+#end
+
+#sql("qryTotalId")
+  SELECT TOP 1 d.base_id id from batch_recv_instr_queue_detail d where d.bank_serial_number_unpack = ?
 #end

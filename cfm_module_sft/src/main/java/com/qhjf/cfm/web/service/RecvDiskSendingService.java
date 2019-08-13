@@ -13,6 +13,9 @@ import com.qhjf.cfm.web.UodpInfo;
 import com.qhjf.cfm.web.UserInfo;
 import com.qhjf.cfm.web.channel.inter.api.IChannelInter;
 import com.qhjf.cfm.web.channel.manager.ChannelManager;
+import com.qhjf.cfm.web.config.DDHLARecvConfigSection;
+import com.qhjf.cfm.web.config.GlobalConfigSection;
+import com.qhjf.cfm.web.config.IConfigSectionType;
 import com.qhjf.cfm.web.constant.WebConstant;
 import com.qhjf.cfm.web.inter.impl.SysProtocolImportInter;
 import com.qhjf.cfm.web.inter.impl.batch.SysBatchRecvInter;
@@ -20,20 +23,17 @@ import com.qhjf.cfm.web.webservice.tool.OminiUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.math.BigDecimal;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
+import java.util.*;
 
 
 public class RecvDiskSendingService {
 	
     private static final Logger logger = LoggerFactory.getLogger(RecvDiskSendingService.class);
 
-    
+	private static DDHLARecvConfigSection section = GlobalConfigSection.getInstance().getExtraConfig(IConfigSectionType.DDHConfigSectionType.DDHLaRecv);
+
     /**
      * @盘片发送列表
      * @param record
@@ -158,9 +158,25 @@ public class RecvDiskSendingService {
 			//暂时测试使用，上生产时该段判断代码需要去掉，保留保单号的使用
 			String cnaps = accountAndBankInfo.get("bank_cnaps_code").substring(0, 3);
 			if("102".equals(cnaps)){
+				Record channel = Db.findFirst(Db.getSql("recv_disk_downloading.qryChannelId"),mbRecord.getStr("channel_id"));
 				Record pro = Db.findFirst(Db.getSql("recv_disk_downloading.qryProtocolInfoImp"), pay_acc_no);
 				if(!OminiUtils.isNullOrEmpty(pro)){
 					l.set("insure_bill_no",pro.getStr("insure_bill_no"));
+				}
+				//根据卡种判断协议编号的生成
+				if(!OminiUtils.isNullOrEmpty(channel)){
+					if("1".equals(channel.getStr("card_type")) || "2".equals(channel.getStr("card_type"))){
+						BigDecimal amt = new BigDecimal(r.getStr("amount"));
+						if(amt.compareTo(BigDecimal.valueOf(5000000)) == -1){
+							l.set("ContractNo","BDP300236427");
+						} else if(amt.compareTo(BigDecimal.valueOf(5000000)) == 1 && amt.compareTo(BigDecimal.valueOf(10000000)) == 0){
+							l.set("ContractNo","BDP300236427");
+						}
+					} else if("3".equals(channel.getStr("card_type"))){
+						l.set("ContractNo","BDP300236427");
+					} else {
+						l.set("ContractNo","BDP300236427");
+					}
 				}
 			}
 			list.add(l);
@@ -186,7 +202,7 @@ public class RecvDiskSendingService {
         if (instr == null) {
         	throw new ReqDataException("生成银行指令失败！");
 		}
-		
+
         final String[] errMsg = new String[1];
 		boolean flag = Db.tx(new IAtom() {
 			@Override
@@ -224,10 +240,62 @@ public class RecvDiskSendingService {
 			if ("102".equals(shortPayCnaps)) {
 				//工行业务逻辑：先查询协议明细表，判断是否已经完全上送了协议：如果是则直接发送收款指令，如果不是先发送上送协议指令
 				Record instrTotal = (Record) sysInter.getInstr().get("total");
-				if(sendProtocolInstr(shortPayCnaps, detailRecords, instrTotal.getLong("id"), id)){
-					QueueBean bean = new QueueBean(sysInter, channelInter.genParamsMap(instr), shortPayCnaps);
-					ProductQueue productQueue = new ProductQueue(bean);
-					new Thread(productQueue).start();
+				if(sendProtocolInstr(shortPayCnaps, detailRecords, mbRecord, instrTotal.getLong("id"), id)){
+					/**
+					 * 重新拆包操作，因工行不支持zip压缩的方式，故以xml方式发送，而xml最大支持数据为150笔，
+					 * 避免工行出现最大数据超限，因此暂拆包为一批次分多次发送，每次发送145笔交易。
+					 */
+					List<Record> detail = instrRecord.get("list");
+					List<Record> oldDetail = instr.get("detail");
+					Integer countSize = Integer.valueOf(section.getCountSize());
+					if(detail.size() > countSize){
+						int k = detail.size() / countSize;
+						int a = detail.size() % countSize;
+						if(a > 0){
+							k = k + 1;
+						}
+						for (int i = 0; i < k; i++) {
+							if (detail.size() > countSize) {
+								List<Record> newList = new ArrayList<>();
+								newList.addAll((Collection<? extends Record>) detail.subList(0,countSize));
+								instrRecord.set("list",newList);
+								detail.removeAll(newList);
+								final Record newInstr = sysInter.genInstr(instrRecord);
+								List<Record> updList = newInstr.get("detail");
+								Record newTotal = newInstr.get("total");
+								for(int j = 0; j < updList.size();j++){
+									CommonService.update("batch_recv_instr_queue_detail", new Record().set("bank_serial_number_unpack", newTotal.getStr("bank_serial_number")),
+											new Record().set("detail_bank_service_number", oldDetail.get(i).getStr("detail_bank_service_number")));
+								}
+								Record oldTotal = instr.get("total");
+								newTotal.set("bus_type",oldTotal.getStr("bus_type"));
+								QueueBean bean = new QueueBean(sysInter, channelInter.genParamsMap(newInstr), shortPayCnaps);
+								ProductQueue productQueue = new ProductQueue(bean);
+								new Thread(productQueue).start();
+							} else {
+								List<Record> newList = new ArrayList<>();
+								newList.addAll((Collection<? extends Record>) detail.subList(0,countSize));
+								instrRecord.set("list",newList);
+								detail.removeAll(newList);
+								final Record newInstr = sysInter.genInstr(instrRecord);
+								List<Record> updList = newInstr.get("detail");
+								Record newTotal = newInstr.get("total");
+								for(int j = 0; j < updList.size();j++){
+									CommonService.update("batch_recv_instr_queue_detail", new Record().set("bank_serial_number_unpack", newTotal.getStr("bank_serial_number")),
+											new Record().set("detail_bank_service_number", oldDetail.get(i).getStr("detail_bank_service_number")));
+								}
+								Record oldTotal = instr.get("total");
+								newTotal.set("bus_type",oldTotal.getStr("bus_type"));
+								QueueBean bean = new QueueBean(sysInter, channelInter.genParamsMap(newInstr), shortPayCnaps);
+								ProductQueue productQueue = new ProductQueue(bean);
+								new Thread(productQueue).start();
+							}
+						}
+					} else {
+						QueueBean bean = new QueueBean(sysInter, channelInter.genParamsMap(instr), shortPayCnaps);
+						ProductQueue productQueue = new ProductQueue(bean);
+						new Thread(productQueue).start();
+					}
 				}
 			} else {
 				QueueBean bean = new QueueBean(sysInter, channelInter.genParamsMap(instr), shortPayCnaps);
@@ -250,7 +318,7 @@ public class RecvDiskSendingService {
 	 * @return
 	 * @throws ReqDataException
 	 */
-	private boolean sendProtocolInstr(String cnaps, List<Record> instr, long instrTotalId, long batchTotalId) throws ReqDataException{
+	private boolean sendProtocolInstr(String cnaps, List<Record> instr,Record mbRecord, long instrTotalId, long batchTotalId) throws ReqDataException{
 		IChannelInter channelInter = null;
 		try {
 			channelInter = ChannelManager.getInter(cnaps, "ProtocolImport");
@@ -260,39 +328,107 @@ public class RecvDiskSendingService {
 		}
 		SysProtocolImportInter sysInter = new SysProtocolImportInter();
         sysInter.setChannelInter(channelInter);
-        //生成指令
-        Record batchDetailList = new Record()
-        		.set("batchDetailList", instr)
-        		.set("instrTotalId", instrTotalId)
-        		.set("batchTotalId", batchTotalId)
-        		.set("cnaps", cnaps);
-        Record genInstr = sysInter.genInstr(batchDetailList);
-        
-        //生成指令后，先判断指令是否已经被人工导入，如果存在未人工导入的收款协议，则通过指令自动导入
-        Record total = (Record) genInstr.get("total");
-        @SuppressWarnings("unchecked")
-		List<Record> details = (List<Record>)genInstr.get("detail");
+
+		//生成指令后，先判断指令是否已经被人工导入，如果存在未人工导入的收款协议，则通过指令自动导入
         List<Record> newDetails = new ArrayList<>();
-        for (Record record : details) {
-			Record findFirst = Db.findFirst(Db.getSql("recv_disk_downloading.qryProtocolDetailBeforeImp")
+        for (Record record : instr) {
+			/*Record findFirst = Db.findFirst(Db.getSql("recv_disk_downloading.qryProtocolDetailBeforeImp")
 					, total.getStr("protocol_no")
 					, record.getStr("pay_acc_no")
-					, record.getStr("pay_no"));
+					, record.getStr("pay_no"));*/
+			//付方账号做解密处理以便后续发送给银行端
+			String pay_acc_no = "";
+			try {
+				pay_acc_no = SymmetricEncryptUtil.getInstance().decryptToStr(record.getStr("pay_acc_no"));
+			} catch (EncryAndDecryException e) {
+				logger.error("RecvDiskSendingService.sendbank：付方账号解密失败！", e);
+			}
+			Record findFirst = Db.findFirst(Db.getSql("recv_disk_downloading.qryProtocol")
+					, pay_acc_no
+					, TypeUtils.castToString(mbRecord.get("recv_acc_no")));
 			if (findFirst == null) {
+				//可以在这里添加未导入的协议数据
+				//sysInter.seveInfo(record, total);
 				newDetails.add(record);
 			}
 		}
         
         if (newDetails.size() > 0) {//存在未手工导入的协议
-        	genInstr.set("detail", newDetails);
-        	//保存指令
-            boolean seveInstr = sysInter.seveInstr();
-            //指令入队
-            /*if (seveInstr) {
-            	QueueBean bean = new QueueBean(sysInter, channelInter.genParamsMap(genInstr), cnaps);
-    			ProductQueue productQueue = new ProductQueue(bean);
-    			new Thread(productQueue).start();
-    		}*/
+			Integer protocolSize = Integer.valueOf(section.getProtocolSize());
+			boolean seveInstr = false;
+			if(newDetails.size() > protocolSize){
+				int k = newDetails.size() / protocolSize;
+				int a = newDetails.size() % protocolSize;
+				if(a > 0){
+					k = k + 1;
+				}
+				for (int i = 0; i < k; i++) {
+					if (newDetails.size() > protocolSize) {
+						List<Record> newList = new ArrayList<>();
+						newList.addAll((Collection<? extends Record>) newDetails.subList(0,protocolSize));
+						newDetails.removeAll(newList);
+						//生成指令
+						Record batchDetailList = new Record()
+								.set("batchDetailList", newList)
+								.set("instrTotalId", instrTotalId)
+								.set("batchTotalId", batchTotalId)
+								.set("cnaps", cnaps)
+								.set("recv_account_no", TypeUtils.castToString(mbRecord.get("recv_acc_no")))
+								.set("recv_account_name", TypeUtils.castToString(mbRecord.get("recv_acc_name")))
+								.set("recv_account_bank", TypeUtils.castToString(mbRecord.get("recv_bank_name")));
+						Record genInstr = sysInter.genInstr(batchDetailList);
+						//保存指令
+						seveInstr = sysInter.seveInstr();
+						//指令入队
+						if (seveInstr) {
+							QueueBean bean = new QueueBean(sysInter, channelInter.genParamsMap(genInstr), cnaps);
+							ProductQueue productQueue = new ProductQueue(bean);
+							new Thread(productQueue).start();
+						}
+					} else {
+						List<Record> newList = new ArrayList<>();
+						newList.addAll((Collection<? extends Record>) newDetails.subList(0,protocolSize));
+						newDetails.removeAll(newList);
+						//生成指令
+						Record batchDetailList = new Record()
+								.set("batchDetailList", newList)
+								.set("instrTotalId", instrTotalId)
+								.set("batchTotalId", batchTotalId)
+								.set("cnaps", cnaps)
+								.set("recv_account_no", TypeUtils.castToString(mbRecord.get("recv_acc_no")))
+								.set("recv_account_name", TypeUtils.castToString(mbRecord.get("recv_acc_name")))
+								.set("recv_account_bank", TypeUtils.castToString(mbRecord.get("recv_bank_name")));
+						Record genInstr = sysInter.genInstr(batchDetailList);
+						//保存指令
+						seveInstr = sysInter.seveInstr();
+						//指令入队
+						if (seveInstr) {
+							QueueBean bean = new QueueBean(sysInter, channelInter.genParamsMap(genInstr), cnaps);
+							ProductQueue productQueue = new ProductQueue(bean);
+							new Thread(productQueue).start();
+						}
+					}
+				}
+			} else {
+				//生成指令
+				Record batchDetailList = new Record()
+						.set("batchDetailList", newDetails)
+						.set("instrTotalId", instrTotalId)
+						.set("batchTotalId", batchTotalId)
+						.set("cnaps", cnaps)
+						.set("recv_account_no", TypeUtils.castToString(mbRecord.get("recv_acc_no")))
+						.set("recv_account_name", TypeUtils.castToString(mbRecord.get("recv_acc_name")))
+						.set("recv_account_bank", TypeUtils.castToString(mbRecord.get("recv_bank_name")));
+				Record genInstr = sysInter.genInstr(batchDetailList);
+				//保存指令
+				seveInstr = sysInter.seveInstr();
+				//指令入队
+				if (seveInstr) {
+					QueueBean bean = new QueueBean(sysInter, channelInter.genParamsMap(genInstr), cnaps);
+					ProductQueue productQueue = new ProductQueue(bean);
+					new Thread(productQueue).start();
+				}
+			}
             return seveInstr;
 		}else {//不存在未手工导入的协议
 			return true;
