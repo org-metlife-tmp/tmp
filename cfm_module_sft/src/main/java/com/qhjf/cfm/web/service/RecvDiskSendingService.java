@@ -162,6 +162,8 @@ public class RecvDiskSendingService {
 				Record pro = Db.findFirst(Db.getSql("recv_disk_downloading.qryProtocolInfoImp"), pay_acc_no);
 				if(!OminiUtils.isNullOrEmpty(pro)){
 					l.set("insure_bill_no",pro.getStr("insure_bill_no"));
+				}else {
+					l.set("insure_bill_no", r.getStr("insure_bill_no"));
 				}
 				//根据卡种判断协议编号的生成
 				if(!OminiUtils.isNullOrEmpty(channel)){
