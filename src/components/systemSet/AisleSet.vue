@@ -153,7 +153,7 @@
                                  :formatter="transitMode"></el-table-column>
                 <el-table-column prop="interactive_mode" label="交互方式" :show-overflow-tooltip="true"
                                  :formatter="transitInteract"></el-table-column>
-                <el-table-column prop="card_type" label="支持卡种" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="card_type" label="支持卡种" :show-overflow-tooltip="true" :formatter="transitCardtype"></el-table-column>
                 <el-table-column prop="single_amount_limit" label="单笔金额限制" width="110px"
                                  :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="amount_percent" label="手续费(按金额)" width="120px"
@@ -1007,6 +1007,10 @@
             //展示格式转换-状态
             transitInteract: function (row, column, cellValue, index) {
                 return this.interactList[cellValue];
+            },
+            //展示格式转换-状态
+            transitCardtype: function (row, column, cellValue, index) {
+                return this.cardTypeList[cellValue];
             },
             //展示格式转换-状态
             transitStatus:  function (row, column, cellValue, index) {
