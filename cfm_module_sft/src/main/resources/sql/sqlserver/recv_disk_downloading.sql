@@ -317,5 +317,15 @@
 #end
 
 #sql("qryProtocol")
-    SELECT p.id from protocol_import_info p where p.pay_acct_no = ? and p.acct_no = ? and state = '0'
+    SELECT p.id from protocol_import_info p where p.pay_acct_no = ? and p.pay_no = ? and state = '0'
+#end
+
+#sql("queryProtocolTotal")
+	select
+		bank_seriral_no,
+		cnaps as bank_cnaps_code
+	from
+		protocol_import_instr_total
+	where
+		status in ('0','3')
 #end

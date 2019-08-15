@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
+import com.qhjf.cfm.web.webservice.tool.OminiUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,7 +58,7 @@ public class SysProtocolImportQueryInter implements ISysAtomicInterface {
 			Record detail = Db.findFirst(Db.getSql("batchrecv.qryProtocolDetail"), bankSeriralNo, packageSeq);
 			//查询导入协议info信息
 			Record info = Db.findFirst(Db.getSql("batchrecv.qryProtocolInfo"), bankSeriralNo, packageSeq);
-			if (detail == null && info == null) {
+			if (detail == null || info == null) {
 				log.error("批收协议导入状态查询，通过bankSeriralNo={}，packageSeq={}未查询到明细！", bankSeriralNo, packageSeq);
 				continue;
 			}
@@ -75,8 +76,10 @@ public class SysProtocolImportQueryInter implements ISysAtomicInterface {
 				log.error("批收协议导入状态查询，更新明细失败！bankSeriralNo={}，packageSeq={}", bankSeriralNo, packageSeq);
 			}
 		}
-		// 回写主表
-		writetBack(baseId);
+		if(!OminiUtils.isNullOrEmpty(baseId)){
+			// 回写主表
+			writetBack(baseId);
+		}
 	}
 
 	private void writetBack(Long baseId) {
@@ -86,10 +89,10 @@ public class SysProtocolImportQueryInter implements ISysAtomicInterface {
 			Record total = Db.findById("protocol_import_instr_total", baseId);
 			total.set("status", 1);
 			boolean update = Db.update("protocol_import_instr_total", total);
-			if (update) {
+			/*if (update) {
 				//发送批收指令
 				sendRecvInstr(total);
-			}
+			}*/
 		}
 	}
 	
