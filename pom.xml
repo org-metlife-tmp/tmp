@@ -264,7 +264,7 @@
                 <version>2.2</version>
                 <configuration>
                     <path>/cfm</path>
-                    <port>8080</port>
+                    <port>9527</port>
                     <uriEncoding>UTF-8</uriEncoding>
                 </configuration>
             </plugin>
