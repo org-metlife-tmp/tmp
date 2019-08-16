@@ -443,7 +443,7 @@ public class RecvDiskSendingService {
 						}
 					} else {
 						List<Record> newList = new ArrayList<>();
-						newList.addAll((Collection<? extends Record>) newDetails.subList(0,protocolSize));
+						newList.addAll((Collection<? extends Record>) newDetails.subList(0,newDetails.size()));
 						newDetails.removeAll(newList);
 						//生成指令
 						Record batchDetailList = new Record()
