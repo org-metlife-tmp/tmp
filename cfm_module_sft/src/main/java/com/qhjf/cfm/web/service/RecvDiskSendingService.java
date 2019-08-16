@@ -273,7 +273,7 @@ public class RecvDiskSendingService {
 									new Thread(productQueue).start();
 								} else {
 									List<Record> newList = new ArrayList<>();
-									newList.addAll((Collection<? extends Record>) detail.subList(0, countSize));
+									newList.addAll((Collection<? extends Record>) detail.subList(0, detail.size()));
 									instrRecord.set("list", newList);
 									detail.removeAll(newList);
 									final Record newInstr = sysInter.genInstr(instrRecord);
@@ -330,7 +330,7 @@ public class RecvDiskSendingService {
 								new Thread(productQueue).start();
 							} else {
 								List<Record> newList = new ArrayList<>();
-								newList.addAll((Collection<? extends Record>) detail.subList(0, countSize));
+								newList.addAll((Collection<? extends Record>) detail.subList(0, detail.size()));
 								instrRecord.set("list", newList);
 								detail.removeAll(newList);
 								final Record newInstr = sysInter.genInstr(instrRecord);
