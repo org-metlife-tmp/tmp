@@ -198,6 +198,7 @@
                 <el-table-column prop="use_funds" label="资金用途" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="bill_status" label="票据状态" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="bill_number" label="票据票号" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="bill_date" label="票据日期" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="terminal_no" label="终端机编号" width="110px"
                                  :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="amount" label="金额" :show-overflow-tooltip="true"
@@ -387,16 +388,7 @@
                                 <el-input v-model="dialogData.amount" placeholder="请输入金额"></el-input>
                             </el-form-item>
                         </el-col>
-                        <el-col :span="12">
-                            <el-form-item label="与投保人关系">
-                                <el-input v-model="dialogData.payer_relation_insured" placeholder="请输入与投保人关系"></el-input>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="12">
-                            <el-form-item label="代缴费原因">
-                                <el-input v-model="dialogData.pay_reason" placeholder="请输入代缴费原因"></el-input>
-                            </el-form-item>
-                        </el-col>
+
                         <el-col :span="24">
                             <el-form-item label="附件">
                                 <Upload @currentFielList="setFileList"
@@ -507,6 +499,18 @@
                                           :disabled="item.third_payment == '0'"></el-input>
                             </el-form-item>
                         </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="与投保人关系">
+                                <el-input v-model="dialogData.payer_relation_insured" placeholder="请输入与投保人关系"
+                                          :disabled="item.third_payment == '0'"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="代缴费原因">
+                                <el-input v-model="dialogData.pay_reason" placeholder="请输入代缴费原因"
+                                          :disabled="item.third_payment == '0'"></el-input>
+                            </el-form-item>
+                        </el-col>
                     </el-row>
                 </el-form>
                 <span slot="footer" class="dialog-footer">
@@ -530,8 +534,15 @@
             /*获取常量数据*/
             var constants = JSON.parse(window.sessionStorage.getItem("constants"));
             //来源系统
-            if (constants.SftOsSource) {
+           /* if (constants.SftOsSource) {
                 this.sourceList = constants.SftOsSourceCounter;
+            }*/
+            if (constants.SftOsSource) {
+                this.sourceList = {
+                    0: "LA",
+                    1: "EBS"
+                };
+                // this.sourceList = constants.SftOsSource;
             }
             //票据状态
             if(constants.SftRecvCounterBillStatus){
@@ -734,6 +745,8 @@
             setPayInfo: function(item){
                 if(item.third_payment == "0"){
                     item.payer_cer_no = "";
+                    item.payer = "";
+                    item.payer_relation_insured="";
                     item.payer = "";
                 }
             },
