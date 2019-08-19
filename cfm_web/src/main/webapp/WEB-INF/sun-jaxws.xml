@@ -3,4 +3,6 @@
 	xmlns="http://java.sun.com/xml/ns/jax-ws/ri/runtime">
 	<endpoint implementation="com.qhjf.cfm.web.webservice.oa.server.OAServer"
 		name="Web1" url-pattern="/services/OAServer" />
+	<endpoint implementation="com.qhjf.cfm.web.webservice.nc.server.NCServer"
+			  name="Web2" url-pattern="/services/NCServer" />
 </endpoints>

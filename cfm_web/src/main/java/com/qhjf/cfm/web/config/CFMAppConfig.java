@@ -151,8 +151,10 @@ public class CFMAppConfig extends JFinalConfig {
         if(iniMgr.hasConfig(IConfigSectionType.DDHConfigSectionType.DDHOAWS)){
             plugins.add(new WebServiceQueuePlugin());
         }
-        
 
+        if(iniMgr.hasConfig(IConfigSectionType.DDHConfigSectionType.DDHNCWS)){
+            plugins.add(new com.qhjf.cfm.web.webservice.nc.server.processQueue.WebServiceQueuePlugin());
+        }
         log.debug("Finsh configPlugin(Plugins plugins) !");
     }
 
@@ -184,9 +186,9 @@ public class CFMAppConfig extends JFinalConfig {
 
         //加载Excel校验配置信息
         loadExcelConfig();
-        WfApprovePermissionTool.getINSTANCE();
+         WfApprovePermissionTool.getINSTANCE();
         //电子回单模版
-        // ElectronicTemplateTool.getINSTANCE();
+         ElectronicTemplateTool.getINSTANCE();
         
         
 

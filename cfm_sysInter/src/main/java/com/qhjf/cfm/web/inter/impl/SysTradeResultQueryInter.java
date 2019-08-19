@@ -18,6 +18,7 @@ import com.qhjf.cfm.web.config.GmfConfigAccnoSection;
 import com.qhjf.cfm.web.constant.WebConstant;
 import com.qhjf.cfm.web.inter.api.ISysAtomicInterface;
 import com.qhjf.cfm.web.inter.manager.SysInterManager;
+import com.qhjf.cfm.web.webservice.nc.callback.NcCallback;
 import com.qhjf.cfm.web.webservice.oa.callback.OaCallback;
 import com.qhjf.cfm.web.webservice.sft.SftCallBack;
 import org.slf4j.Logger;
@@ -88,7 +89,10 @@ public class SysTradeResultQueryInter implements ISysAtomicInterface {
                 oaCallBack(billRecord, instrRecord, status, parseRecord);
             } else if("gmf_bill".equals(instrRecord.getStr("source_ref"))){
             	gmfCallBack(billRecord, instrRecord, status, parseRecord);
-            }else {
+            }else if("nc_head_payment".equals(instrRecord.getStr("source_ref"))){
+                ncCallBack(billRecord, instrRecord, status, parseRecord);
+            }
+            else {
 
                 boolean flag = Db.tx(new IAtom() {
                     @Override
@@ -277,7 +281,82 @@ public class SysTradeResultQueryInter implements ISysAtomicInterface {
         }
 
     }
+    private void ncCallBack(final Record billRecord, final Record instrRecord, final int status, final Record parseRecord) throws Exception {
 
+        boolean flag = Db.tx(new IAtom() {
+            @Override
+            public boolean run() throws SQLException {
+                Record instr_setRecord = new Record().set("status", status).set("init_resp_time", new Date()); //添加初始反馈时间;;
+                Record instr_whereRecord = new Record().set("id", instrRecord.getLong("id"));
+
+                Record bill_setRecord = new Record().set("persist_version", billRecord.getInt("persist_version") + 1);  //乐观锁机制
+                Record bill_whereRecord = new Record().set("id", billRecord.getLong("id"))
+                        .set("persist_version", billRecord.getInt("persist_version"));
+                String statusField = SysInterManager.getStatusFiled(instrRecord.getStr("source_ref"));
+                if (status == WebConstant.PayStatus.SUCCESS.getKey()) {
+                    bill_setRecord.set("feed_back", "success");
+                    instr_setRecord.set("bank_err_msg", " ").set("bank_err_code", "");
+                    if ("nc_head_payment".equals(instrRecord.getStr("source_ref"))) {
+                        bill_setRecord.set("service_status", WebConstant.BillStatus.SUCCESS.getKey());
+                        bill_setRecord.set("feed_back", "success");
+                        bill_whereRecord.set(statusField, WebConstant.BillStatus.PROCESSING.getKey());
+                        if (CommonService.updateRows("nc_head_payment", bill_setRecord, bill_whereRecord) == 1) {
+                            /**
+                             * 修改原始表状态，并加入oa回调队列
+                             */
+                            Long originDataId = billRecord.getLong("ref_id");
+                            Db.update(Db.getSql("nc_interface.updOriginDataInterfaceStatus"),
+                                    WebConstant.OaInterfaceStatus.OA_INTER_PROCESS_S.getKey(), null, null,
+                                    WebConstant.OaProcessStatus.OA_TRADE_SUCCESS.getKey(), originDataId);
+                            new NcCallback().callback(Db.findById("nc_origin_data", originDataId));
+                        } else {
+                            log.error("已进行过状态更新！");
+                            return false;
+                        }
+                    } else {
+                        log.error("source_ref is " + instrRecord.getStr("source_ref") + ", is error");
+                        return false;
+                    }
+                } else if (status == WebConstant.PayStatus.FAILD.getKey()) {
+                    bill_setRecord.set("feed_back", parseRecord.getStr("message"));
+                    instr_setRecord.set("bank_err_msg", parseRecord.getStr("message"));
+                     if ("nc_head_payment".equals(instrRecord.getStr("source_ref"))) {
+                        bill_setRecord.set("service_status", WebConstant.BillStatus.FAILED.getKey());
+                        bill_whereRecord.set(statusField, WebConstant.BillStatus.PROCESSING.getKey());
+
+                        if (CommonService.updateRows("nc_head_payment", bill_setRecord, bill_whereRecord) == 1) {
+
+                            Long originDataId = billRecord.getLong("ref_id");
+                            /**
+                             * 修改原始表状态，并加入nc回调队列
+                             */
+                            Db.update(Db.getSql("nc_interface.updOriginDataProcessStatus"),
+                                    WebConstant.OaProcessStatus.OA_TRADE_FAILED.getKey(), parseRecord.getStr("message"),
+                                    parseRecord.getStr("message"), originDataId);
+                            Db.update(Db.getSql("nc_interface.updOriginDataInterfaceStatus"),
+                                    WebConstant.OaInterfaceStatus.OA_INTER_PROCESS_F.getKey(), "P00098", parseRecord.getStr("message"),
+                                    WebConstant.OaProcessStatus.OA_TRADE_FAILED.getKey(), originDataId);
+                            new NcCallback().callback(Db.findById("nc_origin_data", originDataId));
+                        } else {
+                            log.error("已进行过状态更新！");
+                            return false;
+                        }
+                    } else {
+                        log.error("source_ref is " + instrRecord.getStr("source_ref") + ", is error");
+                        return false;
+                    }
+
+                }
+                //修改指令信息
+                return CommonService.update("single_pay_instr_queue", instr_setRecord, instr_whereRecord);
+            }
+        });
+
+        if (!flag){
+            log.error("修改单据状态失败！");
+        }
+
+    }
     /**
      * 柜面付更新表数据
      * @param billRecord  单据数据

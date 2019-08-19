@@ -24,6 +24,7 @@
         <module>cfm_module_gjt</module>
         <module>cfm_module_skt</module>
         <module>cfm_module_gyl</module>
+        <module>cfm_module_nc</module>
         <module>cfm_quartzs</module>
         <module>cfm_quartzs_jobs</module>
         <module>cfm_channel</module>
@@ -41,6 +42,7 @@
         <module>cfm_webservice_sft</module>
         <module>cfm_module_voucher</module>
         <module>cfm_report</module>      <!-- 报表查询  -->
+        <module>cfm_webservice_nc</module>
     </modules>
 
     <properties>
@@ -389,7 +391,7 @@
                 <version>2.2</version>
                 <configuration>
                     <path>/cfm</path>
-                    <port>9527</port>
+                    <port>8080</port>
                     <uriEncoding>UTF-8</uriEncoding>
                 </configuration>
             </plugin>

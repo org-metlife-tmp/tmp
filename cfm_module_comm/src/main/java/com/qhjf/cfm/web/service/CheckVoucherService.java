@@ -15,6 +15,7 @@ import com.qhjf.cfm.web.constant.WebConstant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -1423,7 +1424,92 @@ public class CheckVoucherService {
 
         return true;
     }
+    public static boolean ncHeadCheckVoucher(List<Integer> transIdList, long billId, Map<Integer, Date> transDateMap, UserInfo userInfo) throws BusinessException {
+        Record payRec = null;
+        Record set = null;
+        Record where = null;
+        Record billRec = null;
+        String tableName = "nc_head_payment";
+        String primartKey = "id";
 
+        //根据单据id查询单据信息
+        billRec = Db.findById(tableName, primartKey, billId);
+
+        String seqnoOrstatmentCode = RedisSericalnoGenTool.genVoucherSeqNo();//生成十六进制序列号/凭证号
+        String newStatmentCode = DateFormatThreadLocal.format("yyyyMMddhhmmss", new Date()) + seqnoOrstatmentCode;
+
+        Record[] infos = processTranIds(transIdList, newStatmentCode);
+        payRec = infos[0];
+
+        List<Record> list = new ArrayList<>();
+
+        //============ 付方向 凭证数据组装 begin ============
+        //凭证1
+        list.add(ncHeadPayVorcher(payRec, billRec, seqnoOrstatmentCode, newStatmentCode, 1, transDateMap, userInfo));
+        //凭证2
+        list.add(ncHeadPayVorcher(payRec, billRec, seqnoOrstatmentCode, newStatmentCode, 2, transDateMap, userInfo));
+        //============ 付方向 凭证数据组装 end ============
+
+
+        if (!CommonService.saveCheckVoucher(list)) {
+            throw new ReqDataException("生成凭证失败!");
+        }
+
+        //反写单据凭证码
+        set = new Record();
+        where = new Record();
+
+        int version = TypeUtils.castToInt(billRec.get("persist_version"));
+        set.set("statement_code", newStatmentCode);
+        set.set("persist_version", (version + 1));
+
+        where.set(primartKey, billId);
+        where.set("persist_version", version);
+
+        return CommonService.update(tableName, set, where);
+    }
+    public static Record ncHeadPayVorcher(Record payRec, Record billRec, String seqnoOrstatmentCode, String newStatmentCode, int iden, Map<Integer, Date> transDateMap, UserInfo userInfo) throws BusinessException {
+        String serviceSerialNumber = TypeUtils.castToString(billRec.get("service_serial_number"));
+        String curr = "";
+        String description = "";
+        BigDecimal paymentAmount = TypeUtils.castToBigDecimal(billRec.get("payment_amount"));
+        Record accRec = Db.findById("account", "acc_id", new Object[]{TypeUtils.castToLong(payRec.get("acc_id"))});
+        Record orgRec = Db.findById("organization", "org_id", new Object[]{TypeUtils.castToLong(accRec.get("org_id"))});
+        Long originDataId = TypeUtils.castToLong(billRec.get("ref_id"));
+        Record originDataRec = Db.findById("nc_origin_data", "id", new Object[]{originDataId});
+        if (originDataRec == null) {
+            throw new ReqDataException("未找到原始数据信息！");
+        } else {
+            String a_code10 = TypeUtils.castToString(orgRec.get("code"));
+            String flow_id = TypeUtils.castToString(originDataRec.get("flow_id"));
+            Long billOrgId = TypeUtils.castToLong(billRec.get("org_id"));
+            Record applyOrg = Db.findById("organization", "org_id", new Object[]{billOrgId});
+
+
+            Date payTransDate = TypeUtils.castToDate(payRec.get("trans_date"));
+            String subjectCode = null;
+            String debitCredit = null;
+            if (iden == 1) {
+                subjectCode = "8350000004";
+                debitCredit = "D";
+            } else if (iden == 2) {
+                subjectCode = "6100110704";
+                debitCredit = "C";
+            }  else {
+                throw new ReqDataException("借贷标识未定义!");
+            }
+
+            description = TypeUtils.castToString(originDataRec.get("bill_no"));
+            curr = TypeUtils.castToString(billRec.get("pay_account_cur"));
+            int tranId = (Integer)payRec.get("id");
+            Record record = (new Record()).set("trans_id", tranId).set("account_code", subjectCode).set("account_period", DateFormatThreadLocal.format("0MMyyyy", (Date)transDateMap.get(tranId))).set("a_code1", "G").set("a_code2", "SYS").set("a_code3", "S").set("a_code5", "SYS").set("a_code6", "SYS").set("a_code7", "SYS").set("a_code10", a_code10).set("base_amount", paymentAmount).set("currency_code", curr).set("debit_credit", debitCredit).set("description", DateFormatThreadLocal.format("yyMMdd", payTransDate)+"支付手续费"+flow_id).set("journal_source", "SST").set("transaction_amount", paymentAmount).set("transaction_date", DateFormatThreadLocal.format("ddMMyyyy", payTransDate)).set("transaction_reference", "SSAL" + DateFormatThreadLocal.format("YYMM", new Date()) + seqnoOrstatmentCode).set("local_transaction_date", DateFormatThreadLocal.format("yyyy-MM-dd", payTransDate)).set("accounting_period", DateFormatThreadLocal.format("yyyy-MM", (Date)transDateMap.get(tranId))).set("docking_status", 0).set("statement_code", newStatmentCode).set("business_ref_no", serviceSerialNumber).set("biz_type", "44");
+            if (userInfo != null) {
+                record.set("operator", userInfo.getUsr_id()).set("operator_org", userInfo.getCurUodp().getOrg_id());
+            }
+
+            return record;
+        }
+    }
     public static void main(String[] args) {
         SimpleDateFormat format = new SimpleDateFormat("0MMyyyy");
         System.out.println(format.format(new Date()));
