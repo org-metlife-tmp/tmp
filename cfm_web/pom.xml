@@ -85,6 +85,11 @@
         </dependency>
         <dependency>
             <groupId>com.qhjf.cfm</groupId>
+            <artifactId>cfm_module_nc</artifactId>     <!-- 调拨通模块 -->
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.qhjf.cfm</groupId>
             <artifactId>cfm_module_zft</artifactId>     <!-- 支付通模块 -->
             <version>${project.version}</version>
         </dependency>
@@ -121,6 +126,11 @@
         <dependency>
             <groupId>com.qhjf.cfm</groupId>
             <artifactId>cfm_webservice</artifactId>     <!-- OA webservice service and client  -->
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.qhjf.cfm</groupId>
+            <artifactId>cfm_webservice_nc</artifactId>     <!-- OA webservice service and client  -->
             <version>${project.version}</version>
         </dependency>
         <dependency>

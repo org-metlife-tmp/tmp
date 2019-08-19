@@ -11,6 +11,7 @@ import com.qhjf.cfm.queue.QueueBean;
 import com.qhjf.cfm.utils.RedisSericalnoGenTool;
 import com.qhjf.cfm.web.channel.inter.api.ISingleResultChannelInter;
 import com.qhjf.cfm.web.channel.util.IcbcResultParseUtil;
+import com.qhjf.cfm.web.inter.impl.SysNcSinglePayInter;
 import com.qhjf.cfm.web.inter.impl.SysOaSinglePayInter;
 import com.qhjf.cfm.web.inter.impl.SysSftSinglePayInter;
 import com.qhjf.cfm.web.inter.impl.SysSinglePayInter;
@@ -77,7 +78,9 @@ public class IcbcTradeResultQueryInter  implements ISingleResultChannelInter{
 							sysInter = new SysOaSinglePayInter();
 						}else if("gmf_bill".equals(sourceRef)){
 							sysInter = new SysSftSinglePayInter();
-			            }else {
+			            }else if("nc_head_payment".equals(sourceRef)){
+							sysInter = new SysNcSinglePayInter();
+						}else {
 							sysInter = new SysSinglePayInter();
 						}
 						sysInter.setInnerInstr(record);
