@@ -1,4 +1,0 @@
-
-#foreach($detail in $!map.get('details'))
-$!detail.get('package_seq')|$!detail.get('recv_acc_no')|$!detail.get('recv_acc_name')|$!detail.get('amount')|0|||$!detail.get('pay_summary')|$!detail.get('pay_code')
-#end
