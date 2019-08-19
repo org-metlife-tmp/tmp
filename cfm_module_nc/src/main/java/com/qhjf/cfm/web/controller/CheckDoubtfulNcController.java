@@ -19,7 +19,6 @@ public class CheckDoubtfulNcController extends CFMBaseController {
     /**
      * 可疑单据列表
      */
-    @Auth(hasForces = {"OACheckDoubtful"})
     public void list() {
         Record record = getRecordByParamsStrong();
         int pageNum = getPageNum(record);
@@ -32,14 +31,12 @@ public class CheckDoubtfulNcController extends CFMBaseController {
     /**
      * 查看疑似重复单据列表
      */
-    @Auth(hasForces = {"OACheckDoubtful"})
     public void doubtlist() {
         Record record = getRecordByParamsStrong();
         List<Record> list = service.doubtlist(record);
         renderOk(list);
     }
 
-    @Auth(hasForces = {"OACheckDoubtful"})
     public void payoff() throws Exception {
         try {
             Record record = getParamsToRecord();
@@ -51,7 +48,6 @@ public class CheckDoubtfulNcController extends CFMBaseController {
         }
     }
 
-    @Auth(hasForces = {"OACheckDoubtful"})
     public void pass() throws Exception {
         try {
             Record record = getParamsToRecord();

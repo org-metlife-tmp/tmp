@@ -26,7 +26,6 @@ public class HeadOrgNcCheckController extends CFMBaseController {
     /** head_org_oa_check
      * @OA分公司交易核对_单据列表
      */
-    @Auth(hasForces = {"OACheck"})
     public void checkbillList() throws Exception {
         Record record = getRecordByParamsStrong();
         int pageNum = getPageNum(record);
@@ -44,7 +43,6 @@ public class HeadOrgNcCheckController extends CFMBaseController {
      * @throws ReqDataException
      * @OA分公司交易核对_未核对交易列表
      */
-    @Auth(hasForces = {"OACheck"})
     public void checkTradeList() throws ReqDataException {
         Record record = getRecordByParamsStrong();
         List<Record> page = service.checkTradeList(record);
@@ -55,7 +53,6 @@ public class HeadOrgNcCheckController extends CFMBaseController {
      * @throws ReqDataException
      * @OA分公司交易核对_已核对交易列表
      */
-    @Auth(hasForces = {"OACheck"})
     public void checkAlreadyTradeList() throws ReqDataException {
         Record record = getRecordByParamsStrong();
         List<Record> page = service.checkAlreadyTradeList(record);
@@ -65,7 +62,6 @@ public class HeadOrgNcCheckController extends CFMBaseController {
     /**
      * @ 核对
      */
-    @Auth(hasForces = {"OACheck"})
     public void confirmCheck() throws Exception {
         try {
             Record record = getRecordByParamsStrong();

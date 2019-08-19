@@ -68,6 +68,7 @@ public class HeadOrgNcService {
                 QueueBean bean = new QueueBean(sysInter, channelInter.genParamsMap(instr), payBankCode);
                 ProductQueue productQueue = new ProductQueue(bean);
                 new Thread(productQueue).start();
+                return true;
             } else {
                 throw new DbProcessException("发送银行失败！");
             }
@@ -92,7 +93,7 @@ public class HeadOrgNcService {
 
         }
 
-        return true;
+        return false;
     }
 
 

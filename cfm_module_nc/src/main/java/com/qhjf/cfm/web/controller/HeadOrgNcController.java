@@ -29,7 +29,6 @@ public class HeadOrgNcController extends CFMBaseController {
 
     private HeadOrgNcService service = new HeadOrgNcService();
 
-    @Auth(hasForces = {"OAHeadPay"})
     public void todolist() {
         try {
             Record record = getParamsToRecord();
@@ -47,13 +46,16 @@ public class HeadOrgNcController extends CFMBaseController {
             renderFail(e);
         }
     }
-    @Auth(hasForces = {"OAHeadPay"})
     public void submit() {
         try {
             Record record = getParamsToRecord();
             if (record.get("id") != null && !"".equals(record.get("id"))) {
-                service.pass(record);
-                renderOk("银行处理该订单中！");
+                boolean flag=service.pass(record);
+                if (flag){
+                    renderOk("银行处理该订单中！");
+                }else{
+                    renderOk("发送银行失败！");
+                }
             } else {
                 throw new ReqDataException("请求数据错误！");
             }

@@ -153,6 +153,7 @@ public class SysNcSinglePayInter extends SysSinglePayInter {
                 throw new Exception("单据不存在");
             }
 
+
             final Record instr = this.getInstr();
             boolean flag = Db.tx(new IAtom() {
                 @Override
@@ -191,12 +192,21 @@ public class SysNcSinglePayInter extends SysSinglePayInter {
                             Db.update(Db.getSql("nc_interface.updOriginDataProcessStatus"),
                                     WebConstant.OaProcessStatus.OA_TRADE_FAILED.getKey(), e.getMessage(),
                                     e.getMessage(), originDataId);
+                            Db.update(Db.getSql("nc_interface.updOriginDataInterfaceStatus"),
+                                    WebConstant.OaInterfaceStatus.OA_INTER_PROCESS_F.getKey(), "P00098", e.getMessage(),
+                                    WebConstant.OaProcessStatus.OA_TRADE_FAILED.getKey(), originDataId);
+                            final Record  ncRecord = Db.findById("nc_origin_data", "id",
+                                    billRecord.getInt("ref_id"));
+                            if(ncRecord!=null){
+                                new NcCallback().callback(ncRecord);
+                            }
                         } else {
                             log.error("已进行过状态更新！");
                             return false;
                         }
                     }
-                    new NcCallback().callback(billRecord);
+
+
                     //修改指令信息
                     return CommonService.update("single_pay_instr_queue", instr_setRecord, instr_whereRecord);
                 }
