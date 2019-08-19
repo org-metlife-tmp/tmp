@@ -1,0 +1,53 @@
+<ProcessMessage xmlns="http://eai.metlife.com/">
+	<ESBEnvelope xmlns="http://MetLifeEAI.EAISchema">
+		<ESBHeader xmlns="">
+			<SrvDate>2019-02-28</SrvDate>
+			<SrvTime>11:48:14</SrvTime>
+			<SenderID>TMP</SenderID>
+			<ReceiverID>LA</ReceiverID>
+			<SrvOpName>PMTService</SrvOpName>
+			<SrvOpVer>20120606_1.1</SrvOpVer>
+			<MsgID>cd8057d9-0e3b-4fb2-9a27-69e628c16297</MsgID>
+			<CorrID>7d7acffe-e9fb-434d-9651-c79944fec1be</CorrID>
+			<ESBRspCode>0</ESBRspCode>
+			<ESBRspDec>Success</ESBRspDec>
+			<ResField1/>
+			<ResField2/>
+			<ResField3/>
+			<ResField4/>
+			<ResField5/>
+		</ESBHeader>
+		<MsgBody xmlns="">
+			<prm:PMTUPDI_REC xmlns:prm="http://www.csc.smart/bo/schemas/PMTUPDI">
+				<msp:MSPContext xmlns:msp="http://www.csc.smart/msp/schemas/MSPContext">
+					<msp:UserId>MSP</msp:UserId>
+					<msp:UserPassword>123</msp:UserPassword>
+					<msp:RequestParameters>
+						<msp:RequestParameter name="BRANCH" value="BJ"/>
+						<msp:RequestParameter name="COMPANY" value="5"/>
+						<msp:RequestParameter name="LANGUAGE" value="S"/>
+						<msp:RequestParameter name="COMMIT_FLAG" value="Y"/>
+						<msp:RequestParameter name="IGNORE_DRIVER_HELD" value="Y"/>
+						<msp:RequestParameter name="SUPPRESS_RCLRSC" value="N"/>
+					</msp:RequestParameters>
+				</msp:MSPContext>
+				<ADDITIONAL_FIELDS>
+					<PMTIN>
+						<COMPANY>5</COMPANY>
+						<BRANCH>BJ</BRANCH>
+						<REQNNO>000946618</REQNNO>
+						<STFLAG>Y</STFLAG>
+						<TXTLINE/>
+					</PMTIN>
+					<PMTIN>
+						<COMPANY>5</COMPANY>
+						<BRANCH>BJ</BRANCH>
+						<REQNNO>000946619</REQNNO>
+						<STFLAG>N</STFLAG>
+						<TXTLINE>用户名验证不成功#106001#IBPBDEPI##</TXTLINE>
+					</PMTIN>
+				</ADDITIONAL_FIELDS>
+			</prm:PMTUPDI_REC>
+		</MsgBody>
+	</ESBEnvelope>
+</ProcessMessage>

@@ -1,0 +1,78 @@
+package com.qhjf.cfm.web.excelexp;
+
+import com.alibaba.fastjson.util.TypeUtils;
+import com.jfinal.ext.kit.DateKit;
+import com.jfinal.kit.Kv;
+import com.jfinal.log.Log;
+import com.jfinal.plugin.activerecord.Db;
+import com.jfinal.plugin.activerecord.Record;
+import com.jfinal.plugin.activerecord.SqlPara;
+import com.qhjf.cfm.exceptions.BusinessException;
+import com.qhjf.cfm.exceptions.EncryAndDecryException;
+import com.qhjf.cfm.utils.RedisSericalnoGenTool;
+import com.qhjf.cfm.utils.SymmetricEncryptUtil;
+import com.qhjf.cfm.web.constant.WebConstant;
+import com.qhjf.cfm.web.plugins.excelexp.AbstractWorkBook;
+import com.qhjf.cfm.web.plugins.excelexp.POIUtil;
+import com.qhjf.cfm.web.plugins.log.LogbackLog;
+import org.apache.commons.lang.StringUtils;
+import org.apache.poi.ss.usermodel.Workbook;
+
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+
+/**
+ * @Description: 月度统一计提银行未达账项凭证
+ */
+public class TradWorkBook extends AbstractWorkBook {
+    private final static Log logger = LogbackLog.getLog(TradWorkBook.class);
+
+    public TradWorkBook() {
+        this.optype = "sftvoucherlist_tradxport";
+        this.fileName = "业务明细列表.xls";
+        this.titleNames = new String[]{
+                "trans_date", "bankcode", "acc_no", "acc_name", "bank_name",
+                "org_name", "direction", "opp_acc_no", "opp_acc_name", "opp_acc_bank", "period_date",
+                "summary", "amount", "is_checked", "precondition", "presubmit_user_name", "presubmit_date", "chargeoff_date",
+                "presubmit_code", "chargeoff_code"
+
+        };
+        this.titles = new String[]{
+                "对账单日期", "Bankcode", "银行账号", "账户名称", "开户行", "开户机构", "收付方向", "对方银行账号", "对方账户名称",
+                "对方开户行", "财务月" ,"摘要", "金额", "对账状态","预提状态","操作人", "预提日期", "冲销日期", "预提凭证号", "冲销凭证号"
+        };
+        this.sheetName = "业务明细列表";
+    }
+
+    @Override
+    public Workbook getWorkbook() {
+        Record record = getRecord();
+        int pageFlag = record.getInt("page_flag");
+        //pageFlag 0:查询所有的记录，1:查询确认页面，2:查询所有复核页面
+        List status = record.get("precondition");
+        if(pageFlag == 1){
+            if (status==null || status.size()==0) {
+                record.set("precondition", new int[]{
+                        WebConstant.PreSubmitStatus.WYT.getKey(),
+                        WebConstant.PreSubmitStatus.YYT.getKey()
+                });
+            }
+            record.set("is_checked", 0);
+        }else if(pageFlag == 2){
+            if (status==null || status.size()==0) {
+                record.set("precondition", new int[]{
+                        WebConstant.PreSubmitStatus.YTFHZ.getKey(),
+                        WebConstant.PreSubmitStatus.CXFHZ.getKey()
+                });
+            }
+            record.set("is_checked", 0);
+        }
+        record.remove("page_flag");
+        SqlPara sqlPara = Db.getSqlPara("voucher.voucherlist", Kv.by("map", record.getColumns()));
+        List<Record> recordList = Db.find(sqlPara);
+        return POIUtil.createExcel(recordList, this);
+    }
+}
