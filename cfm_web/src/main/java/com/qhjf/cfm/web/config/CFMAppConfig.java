@@ -153,6 +153,9 @@ public class CFMAppConfig extends JFinalConfig {
         }
         
 
+        if(iniMgr.hasConfig(IConfigSectionType.DDHConfigSectionType.DDHNCWS)){
+            plugins.add(new com.qhjf.cfm.web.webservice.nc.server.processQueue.WebServiceQueuePlugin());
+        }
         log.debug("Finsh configPlugin(Plugins plugins) !");
     }
 
