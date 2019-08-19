@@ -457,14 +457,18 @@
                         </el-col>
                         <el-col :span="12">
                             <el-form-item label="允许垫交">
-                                <el-select v-model="item.isnot_electric_pay" disabled>
-                                    <el-option v-for="(item,key) in YesOrNo"
-                                               :key="key"
-                                               :label="item"
-                                               :value="key">
-                                    </el-option>
-                                </el-select>
+                                <el-radio-group  v-model="item.isnot_electric_pay">
+                                    <el-radio class="radio" label="yes">是</el-radio>
+                                    <el-radio class="radio" label="no">否</el-radio>
+                                </el-radio-group>
                             </el-form-item>
+                                <!--<el-select v-model="item.isnot_electric_pay" disabled>
+                                    <el-option v-for="(item,key) in YesOrNo"-->
+                                               <!--:key="key"-->
+                                               <!--:label="item"-->
+                                               <!--:value="key">-->
+                                    <!--</el-option>
+                                     </el-select>-->
                         </el-col>
                         <el-col :span="12">
                             <el-form-item label="是否银行转账">
