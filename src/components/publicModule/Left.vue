@@ -814,6 +814,17 @@
                     <el-menu-item index="/report/sff-report-query" v-if="menuList.GJTREPORTQUERY">收付费对账报表</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
+            <el-submenu index="29" v-if="menuList.NEWCOMP">
+                <template slot="title" height="200px" >
+                    <i class="icon-ywfk"></i>
+                    <p>NC数据</p>
+                </template>
+                <el-menu-item-group>
+                    <el-menu-item index="/ncData/head-office-pay" v-if="menuList.NEWCOMPPAY">总公司支付</el-menu-item>
+                    <el-menu-item index="/ncData/suspicious-data" v-if="menuList.NEWCOMPDOUBTFUL">可疑数据管理</el-menu-item>
+                    <el-menu-item index="/ncData/deal-check" v-if="menuList.NEWCOMPCHECK">交易核对</el-menu-item>
+                </el-menu-item-group>
+            </el-submenu>
         </el-menu>
     </div>
 </template>
@@ -1005,6 +1016,11 @@
                     OAREPORTQUERY: false,//OA报表查询
                     GJTREPORTQUERY: false,//归集通报表查询
                     DZDREPORTQUERY: false,//银行对账单报表查询
+
+                    NEWCOMP: false,//报表
+                    NEWCOMPPAY: false,//OA报表查询
+                    NEWCOMPDOUBTFUL: false,//归集通报表查询
+                    NEWCOMPCHECK: false,//银行对账单报表查询
                 }
             }
         },

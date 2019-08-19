@@ -164,6 +164,12 @@ import VoucherQuery from '@/components/voucher/VoucherQuery'
 import OAReportQuery from '@/components/report/OAReportQuery'
 import GJTReportQuery from '@/components/report/GJTReportQuery'
 import DZDReportQuery from '@/components/report/DZDReportQuery'
+//NC数据
+import NCHeadOfficePay from '@/components/ncData/NCHeadOfficePay'
+import NCMakeBill from '@/components/ncData/NCMakeBill'
+import NCSuspiciousData from '@/components/ncData/NCSuspiciousData'
+import NCDealCheck from '@/components/ncData/NCDealCheck'
+
 
 
 Vue.use(Router)
@@ -319,6 +325,8 @@ const router = new Router({
                         {path: '/report/dj-report-query', name: 'DJReportQuery', component: GJTReportQuery, meta: {requireAuth: false}},
                         {path: '/report/dzd-report-query', name: 'DZDReportQuery', component: DZDReportQuery, meta: {requireAuth: false}},
                         {path: '/report/sff-report-query', name: 'SFFReportQuery', component: GJTReportQuery, meta: {requireAuth: false}},
+                        //nc查重
+                        {path: '/ncData/suspicious-data', name: 'NCSuspiciousData', component: NCSuspiciousData, meta: {requireAuth: true}}
                     ]
                 },
                 //基础样式三（tab页）
@@ -359,6 +367,10 @@ const router = new Router({
                         //OA数据
                         {path: '/OA-data/head-office-pay', name: 'HeadOfficePay', component: HeadOfficePay, meta: {requireAuth: true}},
                         {path: '/OA-data/filiale-payment', name: 'FilialePayment', component: FilialePayment, meta: {requireAuth: true}},
+                        //NC数据
+                        {path: '/ncData/head-office-pay', name: 'NCHeadOfficePay', component: NCHeadOfficePay, meta: {requireAuth: true}},
+                        {path: '/ncData/deal-check', name: 'NCDealCheck', component: NCDealCheck, meta: {requireAuth: true}}
+
                     ]
                 },
                 //调拨通
@@ -373,7 +385,8 @@ const router = new Router({
                 {path: '/receivables/receive-make-bill', name: 'ReceiveMakeBill', component: ReceiveMakeBill, meta: {requireAuth: true}},
                 //OA数据
                 {path: '/OA-data/OA-make-bill', name: 'OAMakeBill', component: OAMakeBill, meta: {requireAuth: true}},
-
+                //NC数据
+                {path: '/ncdata/NC-make-bill', name: 'NCMakeBill', component: NCMakeBill, meta: {requireAuth: true}}
             ]
         }
     ]

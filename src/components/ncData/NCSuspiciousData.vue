@@ -1,0 +1,449 @@
+<style scoped lang="less" type="text/less">
+    #suspiciousData {
+        /*查看弹框*/
+        .dialog-talbe {
+            width: 100%;
+            height: 260px;
+
+            li {
+                float: left;
+                box-sizing: border-box;
+                border: 1px solid #e2e2e2;
+                margin-left: -1px;
+                margin-top: -1px;
+                height: 30px;
+                line-height: 30px;
+            }
+
+            .table-li-title {
+                width: 12%;
+                text-align: right;
+                padding-right: 10px;
+                font-weight: bold;
+            }
+            .table-li-content {
+                width: 38%;
+                padding-left: 10px;
+            }
+
+            .table-two-row {
+                width: 88%;
+                margin-left: -3px;
+                border-left: none;
+            }
+        }
+
+        /*详情弹出框区域分割样式*/
+        .form-small-title {
+            // font-weight: bold;
+            border-bottom: 1px solid #e3e3e3;
+            padding-bottom: 8px;
+            margin-bottom: 15px;
+            span:first-child {
+                display: inline-block;
+                width: 4px;
+                height: 16px;
+                background-color: orange;
+                margin-right: 6px;
+                vertical-align: middle;
+            }
+        }
+
+        /*撤回样式*/
+        .withdraw {
+            width: 20px;
+            height: 20px;
+            background-image: url(../../assets/icon_common.png);
+            border: none;
+            padding: 0;
+            vertical-align: middle;
+            background-position: -48px 0;
+        }
+        /*通过样式*/
+        .pass{
+            width: 20px;
+            height: 20px;
+            background-image: url(../../assets/icon_common.png);
+            border: none;
+            padding: 0;
+            vertical-align: middle;
+            background-position: -465px -62px;
+        }
+    }
+</style>
+
+<template>
+    <el-container id="suspiciousData">
+        <el-header>
+            <div class="button-list-right">
+                <el-button type="warning" size="mini" @click="exportFun">导出</el-button>
+            </div>
+            <div class="search-setion">
+                <el-form :inline="true" :model="searchData" size="mini">
+                    <el-row>
+                        <el-col :span="5">
+                            <el-date-picker
+                                    v-model="dateValue"
+                                    type="daterange"
+                                    range-separator="至"
+                                    start-placeholder="开始日期"
+                                    end-placeholder="结束日期"
+                                    value-format="yyyy-MM-dd"
+                                    size="mini" clearable
+                                    unlink-panels
+                                    :picker-options="pickerOptions"
+                                    @change="">
+                            </el-date-picker>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-input v-model="searchData.flow_id" clearable
+                                          placeholder="请输入流程ID"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-input v-model="searchData.apply_user" clearable placeholder="请输入申请人"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-input v-model="searchData.recv_account_query_key" clearable
+                                          placeholder="请输入收款方账户号或名称"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="5">
+                            <el-form-item>
+                                <el-col :span="11">
+                                    <el-input v-model="searchData.min_amount" @blur="numberRule('min_amount')" clearable placeholder="最小金额"></el-input>
+                                </el-col>
+                                <el-col class="line" :span="1" style="text-align:center">-</el-col>
+                                <el-col :span="11">
+                                    <el-input v-model="searchData.max_amount"  @blur="numberRule('max_amount')" clearable placeholder="最大金额"></el-input>
+                                </el-col>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="2">
+                            <el-form-item>
+                                <el-button type="primary" plain @click="queryData" size="mini">搜索</el-button>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                </el-form>
+            </div>
+            <div class="split-bar"></div>
+        </el-header>
+        <el-main>
+            <el-table :data="tableList"
+                      height="100%"
+                      border size="mini">
+                <el-table-column prop="flow_id" label="流程ID" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="apply_user" label="申请人" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="amount" label="金额" :formatter="transitAmount" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="recv_acc_no" label="收款人账号" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="recv_acc_name" label="收款人账户名称" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="apply_date" label="申请日期" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="send_count" label="重发次数" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="memo" label="摘要" :show-overflow-tooltip="true"></el-table-column>
+
+                <el-table-column
+                        label="操作" width="110"
+                        fixed="right">
+                    <template slot-scope="scope" class="operationBtn">
+                        <el-tooltip content="查看" placement="bottom" effect="light"
+                                    :enterable="false" :open-delay="500">
+                            <el-button type="primary" icon="el-icon-search" size="mini"
+                                       @click="lookData(scope.row)"></el-button>
+                        </el-tooltip>
+                        <el-tooltip content="通过" placement="bottom" effect="light"
+                                    :enterable="false" :open-delay="500">
+                            <el-button class="pass" size="mini"
+                                       @click="passData(scope.row)"></el-button>
+                        </el-tooltip>
+                    </template>
+                </el-table-column>
+            </el-table>
+        </el-main>
+        <el-footer>
+            <div class="botton-pag">
+                <el-pagination
+                        background
+                        layout="sizes, prev, pager, next, jumper"
+                        :page-size="pagSize"
+                        :total="pagTotal"
+                        :page-sizes="[7, 50, 100, 500]"
+                        :pager-count="5"
+                        @current-change="getCurrentPage"
+                        @size-change="sizeChange"
+                        :current-page="pagCurrent">
+                </el-pagination>
+            </div>
+            <!--查看弹出框-->
+            <el-dialog title="单据信息"
+                       :visible.sync="dialogVisible"
+                       width="900px" top="76px"
+                       :close-on-click-modal="false">
+                <ul class="dialog-talbe">
+                    <li class="table-li-title">流程ID</li>
+                    <li class="table-li-content" v-text="dialogData.flow_id"></li>
+                    <li class="table-li-title">申请公司</li>
+                    <li class="table-li-content" v-text="dialogData.org_name"></li>
+
+                    <li class="table-li-title">申请部门</li>
+                    <li class="table-li-content" v-text="dialogData.apply_dept"></li>
+                    <li class="table-li-title">金额</li>
+                    <li class="table-li-content" style="color:#fd7d2f">￥{{ dialogData.amount }}</li>
+
+                    <li class="table-li-title">申请用户</li>
+                    <li class="table-li-content" v-text="dialogData.apply_user"></li>
+                    <li class="table-li-title">申请日期</li>
+                    <li class="table-li-content" v-text="dialogData.apply_date"></li>
+
+                    <li class="table-li-title">收款人账户</li>
+                    <li class="table-li-content" v-text="dialogData.recv_acc_no"></li>
+                    <li class="table-li-title">收款人账户名</li>
+                    <li class="table-li-content" v-text="dialogData.recv_acc_name"></li>
+
+                    <li class="table-li-title">收款人银行</li>
+                    <li class="table-li-content" v-text="dialogData.recv_bank"></li>
+                    <li class="table-li-title">银行所在省</li>
+                    <li class="table-li-content" v-text="dialogData.recv_bank_prov"></li>
+
+                    <li class="table-li-title">银行所在市</li>
+                    <li class="table-li-content" v-text="dialogData.recv_bank_city"></li>
+                    <li class="table-li-title">开户行地址</li>
+                    <li class="table-li-content" v-text="dialogData.recv_bank_addr"></li>
+
+                    <li class="table-li-title">开户行类型</li>
+                    <li class="table-li-content" v-text="dialogData.recv_bank_type"></li>
+                    <li class="table-li-title">CNAPS号</li>
+                    <li class="table-li-content" v-text="dialogData.recv_bank_cnaps"></li>
+
+                    <li class="table-li-title">付款机构类型</li>
+                    <li class="table-li-content" v-text="dialogData.pay_org_type"></li>
+                    <li class="table-li-title">摘要</li>
+                    <li class="table-li-content" v-text="dialogData.memo"></li>
+                </ul>
+            </el-dialog>
+        </el-footer>
+    </el-container>
+</template>
+
+<script>
+    export default {
+        name: "NCSuspiciousData",
+        created: function () {
+            //设置当前页基本信息
+            this.$emit("transmitTitle", "可疑数据管理");
+            this.$emit("getCommTable", this.routerMessage);
+        },
+        mounted: function(){
+            var constants = JSON.parse(window.sessionStorage.getItem("constants"));
+            if(constants.OaPayOrgType){
+                this.payOrgList = constants.OaPayOrgType;
+            }
+        },
+        data: function () {
+            return {
+                queryUrl: this.$store.state.queryUrl,
+                routerMessage: {
+                    optype: "checkdoubtfulnc_list",
+                    params: {
+                        page_size: 7,
+                        page_num: 1
+                    }
+                },
+                tableList: [],
+                dialogList: [],
+                pagSize: 8, //分页数据
+                pagTotal: 1,
+                pagCurrent: 1,
+                searchData:{ //搜索条件
+                    flow_id: "",
+                    apply_user: "",
+                    recv_acc_no: "",
+                    min_amount: "",
+                    max_amount: "",
+                    recv_account_query_key:""
+                },
+                dialogVisible: false, //弹框数据
+                dialogData: {},
+                payOrgList: {}, //常量数据
+                dateValue: "", //时间控件
+                pickerOptions: {
+                    disabledDate(time) {
+                        return time.getTime() > Date.now();
+                    }
+                }
+            }
+        },
+        props: ["tableData"],
+        methods: {
+            //导出
+            exportFun: function(){
+                if(this.tableList.length == 0){
+                    this.$message({
+                        type: "warning",
+                        message: "当前数据为空",
+                        duration: 2000
+                    });
+                    return;
+                }
+                var user = JSON.parse(window.sessionStorage.getItem("user"));
+                var params = this.routerMessage.params;
+                params.org_id = user.curUodp.org_id;
+                this.$emit("exportData",{
+                    optype: "checkdoubtfulnc_listexport",
+                    params: params
+                });
+            },
+            //根据条件查询数据
+            queryData: function () {
+                var searchData = this.searchData;
+
+                searchData.apply_start_date = this.dateValue ? this.dateValue[0] : "";
+                searchData.apply_end_date = this.dateValue ? this.dateValue[1] : "";
+                for (var k in searchData) {
+                    this.routerMessage.params[k] = searchData[k];
+                }
+                this.routerMessage.params.page_num = 1;
+                this.$emit("getCommTable", this.routerMessage);
+            },
+            numberRule: function (target) {
+                var targetVal = this.searchData[target];
+                if (targetVal && (typeof targetVal != "number" || targetVal < 0)) {
+                    this.$message({
+                        type: "warning",
+                        message: "请输入大于零的数字",
+                        duration: 2000
+                    });
+                    this.searchData[target] = "";
+                }
+            },
+            //换页后获取数据
+            getCurrentPage: function (currPage) {
+                this.routerMessage.params.page_num = currPage;
+                this.$emit("getCommTable", this.routerMessage);
+            },
+            //当前页数据条数发生变化
+            sizeChange: function (val) {
+                this.routerMessage.params.page_size = val;
+                this.routerMessage.params.page_num = 1;
+                this.$emit("getCommTable", this.routerMessage);
+            },
+
+            //查看
+            lookData: function(row){
+                this.dialogVisible = true;
+                var dialogData = this.dialogData;
+
+                for(var k in row){
+                    dialogData[k] = row[k];
+                }
+                dialogData.amount=this.$common.transitSeparator(row.amount);
+
+            },
+            //展示格式转换-金额
+            transitAmount: function (row, column, cellValue, index) {
+                return this.$common.transitSeparator(cellValue);
+            },
+            //通过
+            passData: function(row){
+                this.$confirm('确认通过当前单据吗?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.$axios({
+                        url: this.queryUrl + "normalProcess",
+                        method: "post",
+                        data: {
+                            optype: "checkdoubtfulnc_pass",
+                            params: {
+                                id: row.id,
+                                persist_version: row.persist_version
+                            }
+                        }
+                    }).then((result) => {
+                        if (result.data.error_msg) {
+                            this.$message({
+                                type: "error",
+                                message: result.data.error_msg,
+                                duration: 2000
+                            })
+                            return;
+                        } else {
+                            this.$message({
+                                type: "success",
+                                message: "通过成功",
+                                duration: 2000
+                            });
+                            this.$emit("getCommTable", this.routerMessage);
+                        }
+                    }).catch(function (error) {
+                        console.log(error);
+                    })
+                }).catch(() => {
+                });
+            },
+            //通过
+            withdrawData: function(row){
+                this.$prompt('请输入撤回原因', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    title: "撤回原因",
+                    inputValidator: function(value){
+                        if(!value){
+                            return false;
+                        }else{
+                            return true;
+                        }
+                    },
+                    inputErrorMessage: '请输入撤回原因'
+                }).then(({ value }) => {
+                    this.$axios({
+                        url: this.queryUrl + "normalProcess",
+                        method: "post",
+                        data: {
+                            optype: "checkdoubtfulnc_payoff",
+                            params: {
+                                ids: [row.id],
+                                persist_version: [row.persist_version],
+                                feed_back: value
+                            }
+                        }
+                    }).then((result) => {
+                        if (result.data.error_msg) {
+                            this.$message({
+                                type: "error",
+                                message: result.data.error_msg,
+                                duration: 2000
+                            });
+                            return;
+                        } else {
+                            this.$message({
+                                type: "success",
+                                message: "撤回成功",
+                                duration: 2000
+                            });
+                            this.$emit("getCommTable", this.routerMessage);
+                        }
+                    }).catch(function (error) {
+                        console.log(error);
+                    })
+                }).catch(() => {
+
+                });
+            }
+        },
+        watch: {
+            tableData: function (val, oldVal) {
+                this.pagSize = val.page_size;
+                this.pagTotal = val.total_line;
+                this.pagCurrent = val.page_num;
+                this.tableList = val.data;
+            }
+        }
+    }
+</script>
+
