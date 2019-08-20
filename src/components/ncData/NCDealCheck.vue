@@ -63,11 +63,11 @@
                         <el-col :span="7">
                             <el-form-item>
                                 <el-col :span="11">
-                                    <el-input v-model="searchData.min" @blur="numberRule('min')" placeholder="最小金额"></el-input>
+                                    <el-input v-model.number="searchData.min" @blur="numberRule('min')" placeholder="最小金额"></el-input>
                                 </el-col>
                                 <el-col class="line" :span="1" style="text-align:center">-</el-col>
                                 <el-col :span="11">
-                                    <el-input v-model="searchData.max" @blur="numberRule('max')" placeholder="最大金额"></el-input>
+                                    <el-input v-model.number="searchData.max" @blur="numberRule('max')" placeholder="最大金额"></el-input>
                                 </el-col>
                             </el-form-item>
                         </el-col>

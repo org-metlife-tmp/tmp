@@ -676,6 +676,9 @@
                         payer: "",
                         bank_code: "",
                         payer_cer_no: "",
+                        srce_bus:"",
+                        camp_aign:"",
+                        agnt_num:"",
                         $id: 1
                     }
                 ],
@@ -956,6 +959,9 @@
                         payer: "",
                         bank_code: "",
                         payer_cer_no: "",
+                        srce_bus:"",
+                        camp_aign:"",
+                        agnt_num:"",
                         $id: 1
                     }
                 ];
@@ -1115,6 +1121,9 @@
                         payer: "",
                         bank_code: "",
                         payer_cer_no: "",
+                        srce_bus:"",
+                        camp_aign:"",
+                        agnt_num:"",
                         $id: 1
                     }
                 ];

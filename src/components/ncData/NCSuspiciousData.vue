@@ -115,11 +115,11 @@
                         <el-col :span="5">
                             <el-form-item>
                                 <el-col :span="11">
-                                    <el-input v-model="searchData.min_amount" @blur="numberRule('min_amount')" clearable placeholder="最小金额"></el-input>
+                                    <el-input v-model.number="searchData.min_amount" @blur="numberRule('min_amount')" clearable placeholder="最小金额"></el-input>
                                 </el-col>
                                 <el-col class="line" :span="1" style="text-align:center">-</el-col>
                                 <el-col :span="11">
-                                    <el-input v-model="searchData.max_amount"  @blur="numberRule('max_amount')" clearable placeholder="最大金额"></el-input>
+                                    <el-input v-model.number="searchData.max_amount"  @blur="numberRule('max_amount')" clearable placeholder="最大金额"></el-input>
                                 </el-col>
                             </el-form-item>
                         </el-col>
