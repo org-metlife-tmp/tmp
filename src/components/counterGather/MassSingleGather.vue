@@ -1147,7 +1147,7 @@
                     insure_name: "customerName",
                     insure_acc_no: "customerNo",
                     agent_com: "agentCom",
-                    bussiness_no: "",
+                    bussiness_no: "bussinessNo",
                     business_acc: "appntName",
                     business_acc_no: "appntNo",
                 }
