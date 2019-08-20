@@ -43,6 +43,7 @@
         <module>cfm_module_voucher</module>
         <module>cfm_report</module>      <!-- 报表查询  -->
         <module>cfm_webservice_nc</module>
+        <module>cfm_webservice_sft</module>
     </modules>
 
     <properties>
