@@ -9,7 +9,7 @@ public class NcOptypeMgr extends AbstractOptypeMgr {
         optypes.add(new Optype(Optype.Mode.NORMAL, "headorgnc_todolist")
                 .registKeepParams(new String[]{
                         "page_num", "page_size", "service_status", "recv_account_query_key", "min", "max", "flow_id",
-                        "apply_start_date", "apply_end_date"
+                        "org_name","apply_start_date", "apply_end_date"
                 })
                 .registerValidate(new RequiredParamsValidate(new String[]{
                         "page_num", "page_size"
