@@ -55,6 +55,10 @@ public class PersonBillQryRespBean {
 	 */
 	private String isTransAccount;
 	private String bankcode;
+
+	private String srceBus;
+	private String campAign;
+	private String agntNum;
 	
 	/**
 	 * 
@@ -128,7 +132,30 @@ public class PersonBillQryRespBean {
 	public void setIsTransAccount(String isTransAccount) {
 		this.isTransAccount = isTransAccount;
 	}
-	
+	public String getSrceBus() {
+		return srceBus;
+	}
+
+	public void setSrceBus(String srceBus) {
+		this.srceBus = srceBus;
+	}
+
+	public String getCampAign() {
+		return campAign;
+	}
+
+	public void setCampAign(String campAign) {
+		this.campAign = campAign;
+	}
+
+	public String getAgntNum() {
+		return agntNum;
+	}
+
+	public void setAgntNum(String agntNum) {
+		this.agntNum = agntNum;
+	}
+
 	public String getBankcode() {
 		return bankcode;
 	}
@@ -140,8 +167,8 @@ public class PersonBillQryRespBean {
 	@Override
 	public String toString() {
 		return String.format("{投保人=[%s],投保人客户号=[%s],投保人证件号=[%s],保单机构编码=[%s],"
-				+ "核心系统=[%s],保费标准=[%s],暂记余额=[%s],保单状态=[%s],是否APL垫交中=[%s],是否银行转账中=[%s]}", policyHolder,
+				+ "核心系统=[%s],保费标准=[%s],暂记余额=[%s],保单状态=[%s],是否APL垫交中=[%s],是否银行转账中=[%s],销售渠道=[%s],专案代码=[%s],代理人号码=[%s]}", policyHolder,
 				policyHolderClientNo, policyHolderCert, insureOrgCode, sourceSys, premiumStandard, suspenseBalance,
-				insureStatus, isPadPayment, isTransAccount);
+				insureStatus, isPadPayment, isTransAccount,srceBus,campAign,agntNum);
 	}
 }

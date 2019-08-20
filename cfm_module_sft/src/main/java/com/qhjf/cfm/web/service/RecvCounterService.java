@@ -115,18 +115,20 @@ public class RecvCounterService {
 			String insure_bill_no = TypeUtils.castToString(rec.get("insure_bill_no"));
 			String bill_org_id = TypeUtils.castToString(rec.get("bill_org_id"));
 			String source_sys = TypeUtils.castToString(rec.get("source_sys"));
-			//String bank_code = TypeUtils.castToString(rec.get("bank_code"));
-			String bank_code = "31";
+			String bank_code = TypeUtils.castToString(rec.get("bank_code"));
 			String amount = TypeUtils.castToString(rec.get("amount"));
 			String insure_name = TypeUtils.castToString(rec.get("insure_name"));
 			String insure_cer_no = TypeUtils.castToString(rec.get("insure_cer_no"));
 			String isnot_electric_pay = TypeUtils.castToString(rec.get("isnot_electric_pay"));
-			String isnot_bank_transfer_premium  = TypeUtils.castToString(rec.get("isnot_bank_transfer_premium"));			
+			String isnot_bank_transfer_premium  = TypeUtils.castToString(rec.get("isnot_bank_transfer_premium"));
+			String srce_bus = TypeUtils.castToString(rec.get("srce_bus"));
+			String camp_aign = TypeUtils.castToString(rec.get("camp_aign"));
+			String agnt_num  = TypeUtils.castToString(rec.get("agnt_num"));
 			StringBuffer sb = new StringBuffer();
 			sb.append(recv_date).append(currency).append(insure_bill_no).append(bill_org_id).append(source_sys).
 			append(recv_mode).append(use_funds).append(bill_status).append(bill_number).append(bill_date).append(recv_bank_name).append(recv_acc_no).append(consumer_bank_name).
 			append(consumer_acc_no).append(terminal_no).append(amount).append(insure_name).append(insure_cer_no).append(isnot_electric_pay).append(isnot_bank_transfer_premium).append(third_payment).append(payer).
-			append(payer_cer_no).append(payer_relation_insured).append(pay_reason);			
+			append(payer_cer_no).append(payer_relation_insured).append(pay_reason);
 			//防重校验
 			String md5String = MD5Kit.string2MD5(sb.toString());
 			//record.set("md5", md5String) ;
@@ -190,9 +192,11 @@ public class RecvCounterService {
 			// 是否银行转账中的保单缴费
 			.set("isnot_bank_transfer_premium ", isnot_bank_transfer_premium)
 			.set("service_serial_number", serviceSerialNumber)
-			//.set("bank_code", bank_code)
-					.set("bank_code", "31")
-			.set("service_status", WebConstant.BillStatus.SAVED.getKey());
+			.set("bank_code", bank_code)
+			.set("service_status", WebConstant.BillStatus.SAVED.getKey())
+                    .set("srce_bus", srce_bus)
+                    .set("camp_aign", camp_aign)
+                    .set("agnt_num", agnt_num);
 	        records.add(insertRecord);						
 		}
 		
@@ -461,7 +465,6 @@ public class RecvCounterService {
 		try {
 			String insure_bill_no = record.getStr("insure_bill_no");
 			PersonBillQryReqBean bean = new  PersonBillQryReqBean(insure_bill_no);
-			logger.info("====保单号==="+insure_bill_no);
 			qryBillByInsureBillNo = recvCounterRemoteCall.qryBillByInsureBillNo(bean);			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -500,6 +503,9 @@ public class RecvCounterService {
 		rec.set("insure_cer_no", qryBillByInsureBillNo.getPolicyHolderCert());
 		rec.set("isnot_electric_pay", isPadPayment == null ? null :(isPadPayment.equals("N") ? "0":"1"));
 		rec.set("isnot_bank_transfer_premium", qryBillByInsureBillNo.getIsTransAccount());
+        rec.set("srce_bus", qryBillByInsureBillNo.getSrceBus());
+        rec.set("camp_aign", qryBillByInsureBillNo.getCampAign());
+        rec.set("agnt_num", qryBillByInsureBillNo.getAgntNum());
 		return rec ;
 	}
 }

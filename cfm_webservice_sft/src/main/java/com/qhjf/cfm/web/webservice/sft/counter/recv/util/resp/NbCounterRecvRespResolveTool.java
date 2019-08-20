@@ -32,6 +32,9 @@ public class NbCounterRecvRespResolveTool implements ResponseResolveTool {
 		
 		String standard = paramJo.getString("standard");//当前保单缴费标准
 		String ispay = paramJo.getString("ispay");//是否在垫交中
+		String srcebus = paramJo.getString("srcebus");//销售渠道
+		String campaign = paramJo.getString("campaign");//专案代码
+		String agntnum = paramJo.getString("agntnum");//代理人号码
 //		String isbank = jo.getString("isbank");//是否银行转账中的保单缴费
 		PersonBillQryRespBean bean = new PersonBillQryRespBean(ownname, ownsel, ownid, branch);
 		bean.setPremiumStandard(standard);
@@ -41,7 +44,9 @@ public class NbCounterRecvRespResolveTool implements ResponseResolveTool {
 		//请资金平台默认NB保单暂记余额为空，是否银行转账中为否。
 		bean.setSuspenseBalance("");
 		bean.setIsTransAccount("0");
-		
+		bean.setSrceBus(srcebus);
+		bean.setCampAign(campaign);
+		bean.setAgntNum(agntnum);
 		bean.setBankcode(paramJo.getString("bankcode"));
 		return bean;
 	}
