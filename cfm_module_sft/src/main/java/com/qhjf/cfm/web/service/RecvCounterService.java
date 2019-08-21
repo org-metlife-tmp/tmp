@@ -99,6 +99,7 @@ public class RecvCounterService {
 		String terminal_no = TypeUtils.castToString(record.get("terminal_no"));
 		String payer_relation_insured = TypeUtils.castToString(record.get("payer_relation_insured"));
 		String pay_reason = TypeUtils.castToString(record.get("pay_reason"));
+		//String bank_code = "31";
 		Set<String> MD5 = new HashSet<>();
 		final List<Record> records = new ArrayList<>();
 		final List<Object> list = record.get("files");
@@ -115,7 +116,8 @@ public class RecvCounterService {
 			String insure_bill_no = TypeUtils.castToString(rec.get("insure_bill_no"));
 			String bill_org_id = TypeUtils.castToString(rec.get("bill_org_id"));
 			String source_sys = TypeUtils.castToString(rec.get("source_sys"));
-			String bank_code = TypeUtils.castToString(rec.get("bank_code"));
+			//String bank_code = TypeUtils.castToString(rec.get("bank_code"));
+			String bank_code = "31";
 			String amount = TypeUtils.castToString(rec.get("amount"));
 			String insure_name = TypeUtils.castToString(rec.get("insure_name"));
 			String insure_cer_no = TypeUtils.castToString(rec.get("insure_cer_no"));
@@ -192,7 +194,8 @@ public class RecvCounterService {
 			// 是否银行转账中的保单缴费
 			.set("isnot_bank_transfer_premium ", isnot_bank_transfer_premium)
 			.set("service_serial_number", serviceSerialNumber)
-			.set("bank_code", bank_code)
+			//.set("bank_code", bank_code)
+					.set("bank_code", "31")
 			.set("service_status", WebConstant.BillStatus.SAVED.getKey())
                     .set("srce_bus", srce_bus)
                     .set("camp_aign", camp_aign)
@@ -498,7 +501,7 @@ public class RecvCounterService {
 		rec.set("bill_org_id", findById.get("org_id"));
 		rec.set("insure_name", qryBillByInsureBillNo.getPolicyHolder());
 		rec.set("source_sys", sourceSys);
-		rec.set("bank_code", bankcode);
+		rec.set("bank_code", "31");
 		rec.set("insure_cer_no", qryBillByInsureBillNo.getPolicyHolderCert());
 		rec.set("insure_cer_no", qryBillByInsureBillNo.getPolicyHolderCert());
 		rec.set("isnot_electric_pay", isPadPayment == null ? null :(isPadPayment.equals("N") ? "0":"1"));
