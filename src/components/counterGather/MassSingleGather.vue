@@ -1177,37 +1177,45 @@
                     wait_match_flag: currentData.wait_match_flag ? currentData.wait_match_flag : 0,
                     wait_match_id: currentData.wait_match_id
                 };
+                //判空
+                if(dialogData.currency ==""|| dialogData.recv_mode==""
+                        || dialogData.use_funds==""||dialogData.bill_status==""|| dialogData.bill_number==""|| dialogData.bill_date==""
+                        || dialogData.recv_bank_name==""|| dialogData.recv_acc_no==""|| dialogData.consumer_bank_name==""
+                        || dialogData.consumer_acc_no==""|| dialogData.terminal_no==""|| dialogData.amount==""){
+                    alert("温馨提示：请将必填字段补充完整！")
+                }else {
 
-                if(this.isLook){
-                    params.id = currentData.id;
-                }else{
-                    for (let k in dialogData) {
-                        params[k] = dialogData[k];
-                    }
-                }
-                let optype = this.isLook ? "recvgroupcounter_detailconfirm" : "recvgroupcounter_add";
-
-                this.$axios({
-                    url: this.queryUrl + "normalProcess",
-                    method: "post",
-                    data: {
-                        optype: optype,
-                        params: params
-                    }
-                }).then((result) => {
-                    if (result.data.error_msg) {
-                        this.$message({
-                            type: "error",
-                            message: result.data.error_msg,
-                            duration: 2000
-                        });
+                    if (this.isLook) {
+                        params.id = currentData.id;
                     } else {
-                        this.dialogVisible = false;
-                        this.$emit("getCommTable", this.routerMessage);
+                        for (let k in dialogData) {
+                            params[k] = dialogData[k];
+                        }
                     }
-                }).catch(function (error) {
-                    console.log(error);
-                });
+                    let optype = this.isLook ? "recvgroupcounter_detailconfirm" : "recvgroupcounter_add";
+
+                    this.$axios({
+                        url: this.queryUrl + "normalProcess",
+                        method: "post",
+                        data: {
+                            optype: optype,
+                            params: params
+                        }
+                    }).then((result) => {
+                        if (result.data.error_msg) {
+                            this.$message({
+                                type: "error",
+                                message: result.data.error_msg,
+                                duration: 2000
+                            });
+                        } else {
+                            this.dialogVisible = false;
+                            this.$emit("getCommTable", this.routerMessage);
+                        }
+                    }).catch(function (error) {
+                        console.log(error);
+                    });
+                }
             },
             //查看
             lookCurrent: function (row) {
