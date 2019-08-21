@@ -1042,60 +1042,69 @@
             },
             //保存新增数据
             saveData: function(){
-                this.$confirm('是否确认完成当前业务收款?', '提示', {
-                    confirmButtonText: '确认',
-                    cancelButtonText: '取消',
-                    type: 'warning'
-                }).then(() => {
-                    let dialogData = this.dialogData;
-                    let currentData = this.currentData;
-                    let items = this.items;
+                let dialogData = this.dialogData;
+                //判空
+                if(dialogData.currency ==""|| dialogData.recv_mode==""
+                        && dialogData.use_funds==""||dialogData.bill_status==""|| dialogData.bill_number==""|| dialogData.bill_date==""
+                        && dialogData.recv_bank_name==""|| dialogData.recv_acc_no==""|| dialogData.consumer_bank_name==""
+                        && dialogData.consumer_acc_no==""|| dialogData.terminal_no==""|| dialogData.amount==""){
+                    alert("温馨提示：请将必填字段补充完整！")
+                }else {
+                    this.$confirm('是否确认完成当前业务收款?', '提示', {
+                        confirmButtonText: '确认',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    }).then(() => {
+                        let dialogData = this.dialogData;
+                        let currentData = this.currentData;
+                        let items = this.items;
 
-                    let params = {
-                        files: this.fileList,
-                        policy_infos: items,
-                        wait_match_flag: currentData.wait_match_flag ? currentData.wait_match_flag : 0,
-                        wait_match_id: currentData.wait_match_id
-                    };
+                        let params = {
+                            files: this.fileList,
+                            policy_infos: items,
+                            wait_match_flag: currentData.wait_match_flag ? currentData.wait_match_flag : 0,
+                            wait_match_id: currentData.wait_match_id
+                        };
 
-                    if(this.dialogTitle == "查看"){
-                        params.id = this.currentData.id;
-                    }else{
-                        for(let k in dialogData){
-                            params[k] = dialogData[k];
-                        }
-                    }
-
-                    let optype = this.dialogTitle == "查看" ? "recvcounter_detailConfirm" : "recvcounter_add";
-
-                    this.$axios({
-                        url: this.queryUrl + "normalProcess",
-                        method: "post",
-                        data: {
-                            optype: optype,
-                            params: params
-                        }
-                    }).then((result) => {
-                        if (result.data.error_msg) {
-                            this.$message({
-                                type: "error",
-                                message: result.data.error_msg,
-                                duration: 2000
-                            });
+                        if (this.dialogTitle == "查看") {
+                            params.id = this.currentData.id;
                         } else {
-                            this.dialogVisible = false;
-                            this.$message({
-                                type: "success",
-                                message: "保存成功",
-                                duration: 2000
-                            });
-                            this.$emit("getCommTable", this.routerMessage);
+                            for (let k in dialogData) {
+                                params[k] = dialogData[k];
+                            }
                         }
-                    }).catch(function (error) {
-                        console.log(error);
+
+                        let optype = this.dialogTitle == "查看" ? "recvcounter_detailConfirm" : "recvcounter_add";
+
+                        this.$axios({
+                            url: this.queryUrl + "normalProcess",
+                            method: "post",
+                            data: {
+                                optype: optype,
+                                params: params
+                            }
+                        }).then((result) => {
+                            if (result.data.error_msg) {
+                                this.$message({
+                                    type: "error",
+                                    message: result.data.error_msg,
+                                    duration: 2000
+                                });
+                            } else {
+                                this.dialogVisible = false;
+                                this.$message({
+                                    type: "success",
+                                    message: "保存成功",
+                                    duration: 2000
+                                });
+                                this.$emit("getCommTable", this.routerMessage);
+                            }
+                        }).catch(function (error) {
+                            console.log(error);
+                        });
+                    }).catch(() => {
                     });
-                }).catch(() => {
-                });
+                }
             },
             //查看
             lookCurrent: function(row){
