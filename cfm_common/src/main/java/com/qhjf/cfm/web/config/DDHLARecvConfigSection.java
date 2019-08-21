@@ -24,6 +24,8 @@ public class DDHLARecvConfigSection extends AbstractConfigSection {
 	private String enterpriseAccNo;//企业账号
 	private String countSize; //拆包长度
 	private String protocolSize; //协议拆包长度
+	private String mixAmount;    //最小金额
+	private String maxAmount;    //最大金额
 
 	@SuppressWarnings("static-access")
 	protected DDHLARecvConfigSection() {
@@ -51,6 +53,8 @@ public class DDHLARecvConfigSection extends AbstractConfigSection {
 			this.enterpriseAccNo = pros.getProperty("enterpriseAccNo");
 			this.countSize = pros.getProperty("countSize");
 			this.protocolSize = pros.getProperty("protocolSize");
+			this.mixAmount = pros.getProperty("mixamount");
+			this.maxAmount = pros.getProperty("maxamount");
 		} else {
 			addErrMsg(SECTION_ERR_TEMP, getSectionName());
 		}
@@ -101,6 +105,14 @@ public class DDHLARecvConfigSection extends AbstractConfigSection {
 
 	public String getProtocolSize(){
 		return protocolSize;
+	}
+
+	public String getMixAmount(){
+		return mixAmount;
+	}
+
+	public String getMaxAmount(){
+		return maxAmount;
 	}
 
 	public String getPayType() {

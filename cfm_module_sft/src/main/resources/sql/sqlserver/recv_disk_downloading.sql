@@ -317,7 +317,7 @@
 #end
 
 #sql("qryProtocol")
-    SELECT p.id from protocol_import_info p where p.pay_acct_no = ? and p.pay_no = ? and state = '0'
+    SELECT p.id,p.rule_of_amt,p.contract_no from protocol_import_info p where p.pay_acct_no = ? and p.pay_no = ? and state = '0'
 #end
 
 #sql("queryProtocolTotal")

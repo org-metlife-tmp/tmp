@@ -170,9 +170,9 @@ public class RecvDiskSendingService {
 				if(!OminiUtils.isNullOrEmpty(channel)){
 					if("1".equals(channel.getStr("card_type")) || "2".equals(channel.getStr("card_type"))){
 						BigDecimal amt = new BigDecimal(r.getStr("amount"));
-						if(amt.compareTo(BigDecimal.valueOf(5000000)) == -1){
+						if(amt.compareTo(BigDecimal.valueOf(Integer.valueOf(section.getMixAmount()))) == -1){
 							l.set("ContractNo","BDP300236427");
-						} else if(amt.compareTo(BigDecimal.valueOf(5000000)) == 1 && amt.compareTo(BigDecimal.valueOf(10000000)) == 0){
+						} else if(amt.compareTo(BigDecimal.valueOf(Integer.valueOf(section.getMixAmount()))) == 1 && amt.compareTo(BigDecimal.valueOf(Integer.valueOf(section.getMaxAmount()))) == 0){
 							l.set("ContractNo","BDP300236427");
 						}
 					} else if("3".equals(channel.getStr("card_type"))){
@@ -240,118 +240,10 @@ public class RecvDiskSendingService {
 				if(sendProtocolInstr(shortPayCnaps, detailRecords, mbRecord, instrTotal.getLong("id"), id)){
 					//如果存在未导入的协议，则先走查询协议导入结果之后再进行付款操作
 					if (queryProtocolInstr(shortPayCnaps)) {
-						/**
-						 * 重新拆包操作，因工行不支持zip压缩的方式，故以xml方式发送，而xml最大支持数据为150笔，
-						 * 避免工行出现最大数据超限，因此暂拆包为一批次分多次发送，每次发送145笔交易。
-						 */
-						List<Record> detail = instrRecord.get("list");
-						List<Record> oldDetail = instr.get("detail");
-						Integer countSize = Integer.valueOf(section.getCountSize());
-						if (detail.size() > countSize) {
-							int k = detail.size() / countSize;
-							int a = detail.size() % countSize;
-							if (a > 0) {
-								k = k + 1;
-							}
-							for (int i = 0; i < k; i++) {
-								if (detail.size() > countSize) {
-									List<Record> newList = new ArrayList<>();
-									newList.addAll((Collection<? extends Record>) detail.subList(0, countSize));
-									instrRecord.set("list", newList);
-									detail.removeAll(newList);
-									final Record newInstr = sysInter.genInstr(instrRecord);
-									List<Record> updList = newInstr.get("detail");
-									Record newTotal = newInstr.get("total");
-									for (int j = 0; j < updList.size(); j++) {
-										CommonService.update("batch_recv_instr_queue_detail", new Record().set("bank_serial_number_unpack", newTotal.getStr("bank_serial_number")),
-												new Record().set("detail_bank_service_number", oldDetail.get(i).getStr("detail_bank_service_number")));
-									}
-									Record oldTotal = instr.get("total");
-									newTotal.set("bus_type", oldTotal.getStr("bus_type"));
-									QueueBean bean = new QueueBean(sysInter, channelInter.genParamsMap(newInstr), shortPayCnaps);
-									ProductQueue productQueue = new ProductQueue(bean);
-									new Thread(productQueue).start();
-								} else {
-									List<Record> newList = new ArrayList<>();
-									newList.addAll((Collection<? extends Record>) detail.subList(0, detail.size()));
-									instrRecord.set("list", newList);
-									detail.removeAll(newList);
-									final Record newInstr = sysInter.genInstr(instrRecord);
-									List<Record> updList = newInstr.get("detail");
-									Record newTotal = newInstr.get("total");
-									for (int j = 0; j < updList.size(); j++) {
-										CommonService.update("batch_recv_instr_queue_detail", new Record().set("bank_serial_number_unpack", newTotal.getStr("bank_serial_number")),
-												new Record().set("detail_bank_service_number", oldDetail.get(i).getStr("detail_bank_service_number")));
-									}
-									Record oldTotal = instr.get("total");
-									newTotal.set("bus_type", oldTotal.getStr("bus_type"));
-									QueueBean bean = new QueueBean(sysInter, channelInter.genParamsMap(newInstr), shortPayCnaps);
-									ProductQueue productQueue = new ProductQueue(bean);
-									new Thread(productQueue).start();
-								}
-							}
-						} else {
-							QueueBean bean = new QueueBean(sysInter, channelInter.genParamsMap(instr), shortPayCnaps);
-							ProductQueue productQueue = new ProductQueue(bean);
-							new Thread(productQueue).start();
-						}
+						sendBatchRecv(instrRecord,instr,sysInter,channelInter,shortPayCnaps);
 					}
 				} else {
-					/**
-					 * 重新拆包操作，因工行不支持zip压缩的方式，故以xml方式发送，而xml最大支持数据为150笔，
-					 * 避免工行出现最大数据超限，因此暂拆包为一批次分多次发送，每次发送145笔交易。
-					 */
-					List<Record> detail = instrRecord.get("list");
-					List<Record> oldDetail = instr.get("detail");
-					Integer countSize = Integer.valueOf(section.getCountSize());
-					if (detail.size() > countSize) {
-						int k = detail.size() / countSize;
-						int a = detail.size() % countSize;
-						if (a > 0) {
-							k = k + 1;
-						}
-						for (int i = 0; i < k; i++) {
-							if (detail.size() > countSize) {
-								List<Record> newList = new ArrayList<>();
-								newList.addAll((Collection<? extends Record>) detail.subList(0, countSize));
-								instrRecord.set("list", newList);
-								detail.removeAll(newList);
-								final Record newInstr = sysInter.genInstr(instrRecord);
-								List<Record> updList = newInstr.get("detail");
-								Record newTotal = newInstr.get("total");
-								for (int j = 0; j < updList.size(); j++) {
-									CommonService.update("batch_recv_instr_queue_detail", new Record().set("bank_serial_number_unpack", newTotal.getStr("bank_serial_number")),
-											new Record().set("detail_bank_service_number", oldDetail.get(i).getStr("detail_bank_service_number")));
-								}
-								Record oldTotal = instr.get("total");
-								newTotal.set("bus_type", oldTotal.getStr("bus_type"));
-								QueueBean bean = new QueueBean(sysInter, channelInter.genParamsMap(newInstr), shortPayCnaps);
-								ProductQueue productQueue = new ProductQueue(bean);
-								new Thread(productQueue).start();
-							} else {
-								List<Record> newList = new ArrayList<>();
-								newList.addAll((Collection<? extends Record>) detail.subList(0, detail.size()));
-								instrRecord.set("list", newList);
-								detail.removeAll(newList);
-								final Record newInstr = sysInter.genInstr(instrRecord);
-								List<Record> updList = newInstr.get("detail");
-								Record newTotal = newInstr.get("total");
-								for (int j = 0; j < updList.size(); j++) {
-									CommonService.update("batch_recv_instr_queue_detail", new Record().set("bank_serial_number_unpack", newTotal.getStr("bank_serial_number")),
-											new Record().set("detail_bank_service_number", oldDetail.get(i).getStr("detail_bank_service_number")));
-								}
-								Record oldTotal = instr.get("total");
-								newTotal.set("bus_type", oldTotal.getStr("bus_type"));
-								QueueBean bean = new QueueBean(sysInter, channelInter.genParamsMap(newInstr), shortPayCnaps);
-								ProductQueue productQueue = new ProductQueue(bean);
-								new Thread(productQueue).start();
-							}
-						}
-					} else {
-						QueueBean bean = new QueueBean(sysInter, channelInter.genParamsMap(instr), shortPayCnaps);
-						ProductQueue productQueue = new ProductQueue(bean);
-						new Thread(productQueue).start();
-					}
+					sendBatchRecv(instrRecord,instr,sysInter,channelInter,shortPayCnaps);
 				}
 			} else {
 				QueueBean bean = new QueueBean(sysInter, channelInter.genParamsMap(instr), shortPayCnaps);
@@ -365,6 +257,76 @@ public class RecvDiskSendingService {
             throw new ReqDataException("批收单据发送失败，请联系管理员！");
         }
 	}
+
+	/**
+	 * 重新拆包操作，因工行不支持zip压缩的方式，故以xml方式发送，而xml最大支持数据为150笔，
+	 * 避免工行出现最大数据超限，因此暂拆包为一批次分多次发送，每次发送145笔交易。
+	 * @param instrRecord
+	 * @param instr
+	 * @param sysInter
+	 * @param channelInter
+	 * @param shortPayCnaps
+	 */
+	private void sendBatchRecv(Record instrRecord,Record instr,SysBatchRecvInter sysInter,IChannelInter channelInter,String shortPayCnaps){
+		List<Record> detail = instrRecord.get("list");
+		List<Record> oldDetail = instr.get("detail");
+		Integer countSize = Integer.valueOf(section.getCountSize());
+		if (detail.size() > countSize) {
+			int k = detail.size() / countSize;
+			int a = detail.size() % countSize;
+			if (a > 0) {
+				k = k + 1;
+			}
+			for (int i = 0; i < k; i++) {
+				if (detail.size() > countSize) {
+					//用于拆包操作的list
+					List<Record> newList = new ArrayList<>();
+					//用于拆包后处理拆包结果的list
+					List<Record> oldList = new ArrayList<>();
+					newList.addAll((Collection<? extends Record>) detail.subList(0, countSize));
+					oldList.addAll(oldDetail.subList(0,countSize));
+					instrRecord.set("list", newList);
+					detail.removeAll(newList);
+					final Record newInstr = sysInter.genInstr(instrRecord);
+					List<Record> updList = newInstr.get("detail");
+					Record newTotal = newInstr.get("total");
+					for (int j = 0; j < updList.size(); j++) {
+						CommonService.update("batch_recv_instr_queue_detail", new Record().set("bank_serial_number_unpack", newTotal.getStr("bank_serial_number")),
+								new Record().set("detail_bank_service_number", oldDetail.get(j).getStr("detail_bank_service_number")));
+					}
+					oldDetail.removeAll(oldList);
+					Record oldTotal = instr.get("total");
+					newTotal.set("bus_type", oldTotal.getStr("bus_type"));
+					QueueBean bean = new QueueBean(sysInter, channelInter.genParamsMap(newInstr), shortPayCnaps);
+					ProductQueue productQueue = new ProductQueue(bean);
+					new Thread(productQueue).start();
+				} else {
+					List<Record> newList = new ArrayList<>();
+					newList.addAll((Collection<? extends Record>) detail.subList(0, detail.size()));
+					instrRecord.set("list", newList);
+					detail.removeAll(newList);
+					final Record newInstr = sysInter.genInstr(instrRecord);
+					List<Record> updList = newInstr.get("detail");
+					Record newTotal = newInstr.get("total");
+					for (int j = 0; j < updList.size(); j++) {
+						CommonService.update("batch_recv_instr_queue_detail", new Record().set("bank_serial_number_unpack", newTotal.getStr("bank_serial_number")),
+								new Record().set("detail_bank_service_number", oldDetail.get(j).getStr("detail_bank_service_number")));
+					}
+					Record oldTotal = instr.get("total");
+					newTotal.set("bus_type", oldTotal.getStr("bus_type"));
+					QueueBean bean = new QueueBean(sysInter, channelInter.genParamsMap(newInstr), shortPayCnaps);
+					ProductQueue productQueue = new ProductQueue(bean);
+					new Thread(productQueue).start();
+				}
+			}
+		} else {
+			QueueBean bean = new QueueBean(sysInter, channelInter.genParamsMap(instr), shortPayCnaps);
+			ProductQueue productQueue = new ProductQueue(bean);
+			new Thread(productQueue).start();
+		}
+	}
+
+
 	/**
 	 * 查询批收数据的收款协议是否已经导入，如果已经导入返回true，如果没有导入，这发送协议导入指令并返回false
 	 * @param cnaps 银行类型
@@ -406,7 +368,14 @@ public class RecvDiskSendingService {
 				//可以在这里添加未导入的协议数据
 				//sysInter.seveInfo(record, total);
 				newDetails.add(record);
-			}
+			} /*else {
+				//小于等于500万金额的数据
+				if("0".equals(findFirst.getStr("rule_of_amt"))){
+
+				} else if("1".equals(findFirst.getStr("rule_of_amt"))){
+
+				}
+			}*/
 		}
         
         if (newDetails.size() > 0) {//存在未手工导入的协议

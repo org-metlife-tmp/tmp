@@ -178,7 +178,7 @@ public abstract class PubJob implements Job{
 				Record instr = sysInter.genInstr(record);
 				try{
 					if(Db.save(getInstrTableName(), instr)){
-						if("102".equals(cnaps)){
+						if("102".equals(bankCode)){
 							List<Record> bankList = Db.find(Db.getSql("batchrecvjob.getBankunPack"),record.getStr("bank_serial_number"));
 							if(!OminiUtils.isNullOrEmpty(bankList) && bankList.size() > 0){
 								for (Record re : bankList){
