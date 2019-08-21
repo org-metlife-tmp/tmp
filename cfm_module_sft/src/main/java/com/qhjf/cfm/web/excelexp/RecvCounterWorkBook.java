@@ -43,16 +43,19 @@ public class RecvCounterWorkBook extends AbstractWorkBook {
         SqlPara sqlPara = Db.getSqlPara("recv_counter.personalList", Kv.by("map", rec.getColumns()));
         List<Record> recordList = Db.find(sqlPara);
         for(Record rd : recordList){
-            int match_status = TypeUtils.castToInt(rd.get("match_status"));
-            rd.set("match_status", WebConstant.SftRecvCounterMatchStatus.getByKey(match_status));
-            int source_sys = TypeUtils.castToInt(rd.get("source_sys"));
-            rd.set("source_sys", WebConstant.SftOsSourceCounter.getSftOsSource(source_sys));
-            int recv_mode = TypeUtils.castToInt(rd.get("recv_mode"));
-            rd.set("recv_mode", WebConstant.Sft_RecvPersonalCounter_Recvmode.getByKey(recv_mode));
-            int bill_status = TypeUtils.castToInt(rd.get("bill_status"));
-            rd.set("bill_status", WebConstant.SftRecvCounterBillStatus.getByKey(bill_status));
-            int third_payment = TypeUtils.castToInt(rd.get("third_payment"));
-            rd.set("third_payment", third_payment == 0 ?  "否" : "是");
+            //int match_status = rd.get("match_status");
+            //rd.set("match_status", WebConstant.SftRecvCounterMatchStatus.getByKey(match_status));
+            int pay_status = TypeUtils.castToInt(rd.get("pay_status"));
+            rd.set("pay_status", WebConstant.SftRecvCounterMatchStatus.getByKey(pay_status));
+            String source_sys = rd.get("source_sys");
+            rd.set("source_sys", source_sys);
+            String recv_mode = rd.get("recv_mode");
+            rd.set("recv_mode", recv_mode);
+            String bill_status = rd.get("bill_status");
+            rd.set("bill_status", bill_status);
+            String third_payment = rd.get("third_payment");
+            rd.set("third_payment", third_payment);
+            //rd.set("third_payment", third_payment == 0 ?  "否" : "是");
         }
         return POIUtil.createExcel(recordList, this);
     }
