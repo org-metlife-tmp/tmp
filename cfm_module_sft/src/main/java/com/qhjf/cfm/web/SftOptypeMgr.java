@@ -751,7 +751,7 @@ public class SftOptypeMgr extends AbstractOptypeMgr {
                 .registKeepParams(new String[]{"recv_date", "batch_process_no", "currency", "recv_mode", "use_funds",
                         "bill_status", "bill_number", "bill_date", "recv_bank_name", "recv_acc_no","consumer_bank_name",
                         "consumer_acc_no","terminal_no","third_payment","payer","payer_cer_no","payer_relation_insured",
-                        "pay_reason","files","policy_infos","wait_match_flag","wait_match_id","amount","bank_code"})
+                        "pay_reason","files","policy_infos","wait_match_flag","wait_match_id","amount"})//,"bank_code"
                 .registerValidate(new RequiredParamsValidate(new String[]{"recv_date","batch_process_no","currency","recv_mode",
                 		"use_funds","bill_status","bill_number","bill_date"/*,"recv_bank_name"*/,"recv_acc_no","consumer_bank_name",
                 		"consumer_acc_no"/*,"wait_match_flag"*/})));
