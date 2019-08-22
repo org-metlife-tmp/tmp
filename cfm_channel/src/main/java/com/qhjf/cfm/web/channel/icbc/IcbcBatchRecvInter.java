@@ -70,7 +70,7 @@ public class IcbcBatchRecvInter implements IChannelBatchInter {
 		// 银行支持1-99用于当天汇总记账，该字段相同的记为一笔；
 		//实时收BusType取1
 		//批量收BusType：取值范围[2,99)左闭右开，同一天的 从2开始递增，发一笔递增1，直到99停止，第二天又从2开始（一天只能组批97次）
-		result.put("BusType", total.get("bus_type"));
+		result.put("BusType", total.getStr("bus_type"));
 		result.put("RecAccNo", total.get("recv_account_no"));//收方帐号
 		result.put("RecAccNameCN", total.get("recv_account_name"));//收方账户名称
 		result.put("TotalNum", String.valueOf(detail.size()));

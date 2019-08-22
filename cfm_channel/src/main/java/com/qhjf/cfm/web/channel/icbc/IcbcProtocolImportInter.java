@@ -49,7 +49,7 @@ public class IcbcProtocolImportInter implements IMoreResultChannelInter {
 				rd.put("PayAccNo", r.getStr("pay_acc_no"));
 				rd.put("CertType", r.getStr("cert_type"));
 				rd.put("CertNo", r.getStr("cert_no"));
-				rd.put("DeadLine", r.getStr("dead_line"));
+				rd.put("DeadLine", "99991230");
 				rdList.add(rd);
 			}
 		} else {
