@@ -334,7 +334,7 @@
             //当前页数据条数发生变化
             sizeChange: function (val) {
                 this.routerMessage.todo.params.page_size = val;
-                this.routerMessage.params.page_num = 1;
+                this.routerMessage.todo.params.page_num = 1;
                 this.routerMessage.todo.params.is_checked = 0;
 
                 this.routerMessage.done.params.page_size = val;

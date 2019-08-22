@@ -491,9 +491,6 @@
                 this.routerMessage.todo.params.page_size = val;
                 this.routerMessage.todo.params.page_num = 1;
 
-                this.routerMessage.done.params.page_size = val;
-                this.routerMessage.done.params.page_num = 1;
-
                 this.$emit("getTableData", this.routerMessage);
             },
             //展示格式转换-付款方式
