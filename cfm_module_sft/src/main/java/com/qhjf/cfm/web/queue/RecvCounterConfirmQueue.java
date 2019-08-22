@@ -83,7 +83,7 @@ public class RecvCounterConfirmQueue implements Runnable {
 					.getPrefix();
 			PersonBillComfirmReqBean personBillComfirmReqBean = new PersonBillComfirmReqBean(
 					TypeUtils.castToString(policy.get("amount")), record.getStr("consumer_acc_no"), null,
-					policy.getStr("insure_bill_no"), paytype,"31");
+					policy.getStr("insure_bill_no"), paytype,TypeUtils.castToString(policy.get("bank_code")));
 			PersonBillComfirmReqBeans.add(personBillComfirmReqBean);			
 		}
 		
