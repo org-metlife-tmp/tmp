@@ -160,6 +160,11 @@
                             <el-button class="pass" size="mini"
                                        @click="passData(scope.row)"></el-button>
                         </el-tooltip>
+                        <el-tooltip content="撤回" placement="bottom" effect="light"
+                                    :enterable="false" :open-delay="500">
+                            <el-button size="mini" class="withdraw"
+                                       @click="withdrawData(scope.row)"></el-button>
+                        </el-tooltip>
                     </template>
                 </el-table-column>
             </el-table>

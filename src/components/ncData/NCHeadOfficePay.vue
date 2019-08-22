@@ -179,6 +179,14 @@
                             <el-button type="primary"  size="mini" :disabled="scope.row.service_status == 10"
                                       class="pass"  @click="submitBill(scope.row)"></el-button>
                         </el-tooltip>
+                        <el-tooltip content="作废" placement="bottom" effect="light"
+                                    :enterable="false" :open-delay="500"
+                                    v-show="scope.row.service_status == 0||scope.row.service_status == 10">
+                            <el-button size="mini" icon="el-icon-circle-close-outline" type="danger"
+                                       style="font-size:16px;padding: 1px;vertical-align: bottom;line-height: 15px;"
+                                       :disabled="scope.row.service_status == 10"
+                                       @click="cancellationData(scope.row)"></el-button>
+                        </el-tooltip>
                     </template>
                 </el-table-column>
             </el-table>
@@ -276,7 +284,8 @@
                 0: "未提交",
                 6: "处理中",
                 7: "已成功",
-                8: "已失败"
+                8: "已失败",
+                9: "已作废"
             }
 
 
