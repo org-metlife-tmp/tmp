@@ -1,0 +1,11 @@
+pk=3
+templateId=
+startRow=2
+startColumn=1
+excelDataType=1
+sheetNumber=
+sheetName=
+##账户余额 与 账户可用余额 相等
+[columnConfigs]=dataType:string, required:1, tips:提示信息, columnName:账户号,dbColumnName:acc_no, validator:com.qhjf.cfm.excel.config.validator.impl.AccNoValidator, convertor:none, statistics:none
+[columnConfigs]=dataType:date, dateFormat:HH_mm_ss, required:1, tips:提示信息, columnName:余额时间,dbColumnName:bal_date, validator:com.qhjf.cfm.excel.config.validator.impl.CurrBalDateValidator, convertor:none, statistics:none
+[columnConfigs]=dataType:double, required:1, tips:提示信息, columnName:余额,dbColumnName:bal, validator:none, convertor:none, statistics:none

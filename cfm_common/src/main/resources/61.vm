@@ -1,0 +1,4 @@
+$!map.get('sf_flag'),200455500003685,$!map.get('submit_date'),$!map.get('pay_total_num'),$!map.get('total_cent'),00600
+#foreach($detail in $!map.get('details'))
+$!detail.get('package_seq'),,$!detail.get('recv_bank_type'),,$!detail.get('recv_acc_no'),$!detail.get('recv_acc_name'),$!detail.get('province'),,,0,$!detail.get('detail_cent'),,,,$!detail.get('recv_cert_type'),$!detail.get('recv_cert_code'),,,$!detail.get('pay_code'),,
+#end

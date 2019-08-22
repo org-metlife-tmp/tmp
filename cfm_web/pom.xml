@@ -1,0 +1,343 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>metlife_cfm_main</artifactId>
+        <groupId>com.qhjf.cfm</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>cfm_web</artifactId>
+    <packaging>war</packaging>
+    <description>统一收付费平台web入口</description>
+
+    <dependencies>
+        <!-- 外部jar引入 start -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.jfinal</groupId>
+            <artifactId>jfinal</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.jfinal</groupId>
+            <artifactId>jetty-server</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.ws</groupId>
+            <artifactId>jaxws-rt</artifactId>
+        </dependency>
+
+        <!-- ##数据库连接 start##-->
+        <dependency>
+            <groupId>com.microsoft.sqlserver</groupId>
+            <artifactId>mssql-jdbc</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <!-- ##数据库连接 end##-->
+        <!-- 外部jar引入 end -->
+
+        <!-- 内部模块引入 start -->
+        <!-- ##公用模块 start## -->
+          <dependency>
+            <groupId>com.qhjf.cfm</groupId>
+            <artifactId>cfm_common</artifactId>  <!-- 公共模块 -->
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.qhjf.cfm</groupId>
+            <artifactId>cfm_module_admin</artifactId>  <!-- 管理员模块 -->
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.qhjf.cfm</groupId>
+            <artifactId>cfm_module_account</artifactId> <!--账户通模块 -->
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.qhjf.cfm</groupId>
+            <artifactId>cfm_module_jyyet</artifactId>   <!-- 交易余额通模块 -->
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.qhjf.cfm</groupId>
+            <artifactId>cfm_module_dbt</artifactId>     <!-- 调拨通模块 -->
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.qhjf.cfm</groupId>
+            <artifactId>cfm_module_zft</artifactId>     <!-- 支付通模块 -->
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.qhjf.cfm</groupId>
+            <artifactId>cfm_module_gjt</artifactId>      <!-- 归集通模块 -->
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.qhjf.cfm</groupId>
+            <artifactId>cfm_module_electronic</artifactId>  <!-- 电子回单模块 -->
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.qhjf.cfm</groupId>
+            <artifactId>cfm_module_workflow</artifactId>    <!-- 工作流模块 -->
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.qhjf.cfm</groupId>
+            <artifactId>cfm_module_working_cal</artifactId>  <!-- 工作日历模块 -->
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.qhjf.cfm</groupId>
+            <artifactId>cfm_quartzs_jobs</artifactId>        <!-- 自动任务 -->
+            <version>${project.version}</version>
+        </dependency>
+        <!-- ##公用模块 end## -->
+
+        <!-- ##项目特定模块模块 start## -->
+
+        <!-- #### 大都会特定模块 start ####-->
+        <dependency>
+            <groupId>com.qhjf.cfm</groupId>
+            <artifactId>cfm_webservice</artifactId>     <!-- OA webservice service and client  -->
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.qhjf.cfm</groupId>
+            <artifactId>cfm_module_pooling_acc</artifactId>  <!-- 资金池账户模块 -->
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.qhjf.cfm</groupId>
+            <artifactId>cfm_module_skt</artifactId>    <!-- 收款通模块 -->
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.qhjf.cfm</groupId>
+            <artifactId>cfm_module_sft</artifactId>     <!-- 收付通模块 -->
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.qhjf.cfm</groupId>
+            <artifactId>cfm_module_gyl</artifactId>
+            <version>${project.version}</version>       <!--  广银联备付金 -->
+        </dependency>
+        <dependency>
+            <groupId>com.qhjf.cfm</groupId>
+            <artifactId>cfm_module_dzt</artifactId>      <!--  对账通模块 -->
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.qhjf.cfm</groupId>
+            <artifactId>cfm_module_monitor</artifactId>   <!-- 资金监控模块 -->
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.qhjf.cfm</groupId>
+            <artifactId>cfm_module_oa</artifactId>        <!-- OA 数据管理模块 -->
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.qhjf.cfm</groupId>
+            <artifactId>cfm_module_refund</artifactId>    <!-- 退票模块 -->
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.qhjf.cfm</groupId>
+            <artifactId>cfm_module_voucher</artifactId>    <!-- 凭证查询模块 -->
+            <version>${project.version}</version>
+        </dependency>
+        <!-- #### 大都会特定模块 end ####-->
+        <!-- ##项目特定模块模块 end## -->
+        <!-- 内部模块引入 end -->
+    </dependencies>
+
+    <profiles>
+        <!-- 开发环境  start -->
+        <profile>
+            <id>dev</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <envconfig>dev</envconfig>
+                <package.name>cfm</package.name>
+            </properties>
+        </profile>
+        <profile>
+            <!-- 大都会1期开发环境 -->
+            <id>dev-ddh1</id>
+            <properties>
+                <envconfig>dev-ddh1</envconfig>
+                <package.name>cfm</package.name>
+            </properties>
+        </profile>
+        <profile>
+            <!-- 大都会2期开发环境 -->
+            <id>dev-ddh2</id>
+            <properties>
+                <envconfig>dev-ddh2</envconfig>
+                <package.name>cfm</package.name>
+            </properties>
+        </profile>
+        <profile>
+            <!-- 大都会2期北京开发环境 -->
+            <id>dev-beijin-ddh2</id>
+            <properties>
+                <envconfig>dev-beijin-ddh2</envconfig>
+                <package.name>cfm</package.name>
+            </properties>
+        </profile>
+        <!-- 开发环境  end -->
+
+
+        <!-- 测试环境  start-->
+        <profile>
+            <id>test</id>
+            <properties>
+                <envconfig>test</envconfig>
+                <package.name>cfm</package.name>
+            </properties>
+        </profile>
+        <profile>
+            <!-- 大都会1期测试环境 -->
+            <id>test-ddh1</id>
+            <properties>
+                <envconfig>test-ddh1</envconfig>
+                <package.name>cfm</package.name>
+            </properties>
+        </profile>
+        <profile>
+            <!-- 大都会2期测试环境 -->
+            <id>sit-ddh2</id>
+            <properties>
+                <envconfig>sit-ddh2</envconfig>
+                <package.name>cfm</package.name>
+            </properties>
+        </profile>
+        <!-- 测试环境  end-->
+
+        <!-- 预发布环境 start-->
+        <profile>
+            <id>release</id>
+            <properties>
+                <envconfig>release</envconfig>
+                <package.name>cfm</package.name>
+            </properties>
+        </profile>
+        <profile>
+            <!-- 大都会1期预发布环境 -->
+            <id>release-ddh1</id>
+            <properties>
+                <envconfig>release-ddh1</envconfig>
+                <package.name>cfm</package.name>
+            </properties>
+        </profile>
+        <profile>
+            <!-- 大都会2期预发布环境 -->
+            <id>uat-ddh2</id>
+            <properties>
+                <envconfig>uat-ddh2</envconfig>
+                <package.name>cfm</package.name>
+            </properties>
+        </profile>
+        <!-- 预发布环境 end-->
+
+        <!-- 正式环境 start-->
+        <profile>
+            <id>formal</id>
+            <properties>
+                <envconfig>formal</envconfig>
+                <package.name>cfm</package.name>
+            </properties>
+        </profile>
+        <profile>
+            <!-- 大都会92正式环境 -->
+            <id>formal-92-ddh2</id>
+            <properties>
+                <envconfig>formal-92-ddh2</envconfig>
+                <package.name>cfm.war</package.name>
+            </properties>
+        </profile>
+        <profile>
+            <!-- 大都会93正式环境 -->
+            <id>formal-93-ddh2</id>
+            <properties>
+                <envconfig>formal-93-ddh2</envconfig>
+                <package.name>cfm.war</package.name>
+            </properties>
+        </profile>
+        <!-- 正式环境 end-->
+    </profiles>
+
+    <build>
+        <finalName>${package.name}</finalName>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <excludes>
+                    <exclude>env_config/**</exclude>
+                </excludes>
+            </resource>
+            <resource>
+                <directory>src/main/resources/env_config/${envconfig}</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.tomcat.maven</groupId>
+                    <artifactId>tomcat7-maven-plugin</artifactId>
+                    <version>2.2</version>
+                    <configuration>
+                        <path>/cfm</path>
+                        <port>8080</port>
+                        <uriEncoding>UTF-8</uriEncoding>
+                    </configuration>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.mortbay.jetty</groupId>
+                    <artifactId>jetty-maven-plugin</artifactId>
+                    <version>7.6.12.v20130726</version>
+                    <configuration>
+                        <stopKey>stop</stopKey>
+                        <stopPort>8081</stopPort>
+                        <webApp>
+                            <contextPath>/cfm</contextPath>
+                        </webApp>
+                        <connectors>
+                            <connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
+                                <port>9001</port>
+                                <maxIdleTime>60000</maxIdleTime>
+                            </connector>
+                        </connectors>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+</project>
