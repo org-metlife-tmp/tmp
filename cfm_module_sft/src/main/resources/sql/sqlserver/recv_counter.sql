@@ -204,3 +204,12 @@ and counter.delete_flag = 0
   #end
   order by counter.id
 #end
+
+#sql("findbankcode")
+SELECT
+	lord.*
+FROM
+	la_origin_recv_data lord
+WHERE
+	lord.insure_bill_no = ?
+#end
