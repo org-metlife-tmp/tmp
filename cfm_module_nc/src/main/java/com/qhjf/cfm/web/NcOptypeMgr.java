@@ -43,6 +43,10 @@ public class NcOptypeMgr extends AbstractOptypeMgr {
                         "flow_id","apply_start_date", "apply_end_date","apply_user",
                         "recv_account_query_key", "min_amount", "max_amount"
                 }));
+        //总公司支付作废  payOff
+        optypes.add(new Optype(Optype.Mode.NORMAL, "headorgnc_payOff")
+                .registerValidate(new RequiredParamsValidate(new String[]{"ids", "persist_version"}))
+                .registKeepParams(new String[]{"ids", "persist_version", "feed_back"}));
         /** ============================ OA总公司交易核对 begin ============================ */
 
         //单据未核对查询
@@ -70,6 +74,13 @@ public class NcOptypeMgr extends AbstractOptypeMgr {
                 }))
                 .registKeepParams(new String[]{"id"}));
         /** ============================ OA总公司交易核对 end ============================ */
+        //可疑数据作废
+        optypes.add(new Optype(Optype.Mode.NORMAL, "checkdoubtfulnc_payoff")
+                .registerValidate(new RequiredParamsValidate(new String[]{
+                        "ids", "persist_version", "feed_back"
+                }))
+                .registKeepParams(new String[]{"ids", "persist_version", "feed_back"}));
+
     }
 
 

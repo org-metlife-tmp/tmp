@@ -9,6 +9,7 @@ import com.qhjf.cfm.exceptions.ReqDataException;
 import com.qhjf.cfm.utils.CommonService;
 import com.qhjf.cfm.web.UserInfo;
 import com.qhjf.cfm.web.constant.WebConstant;
+import com.qhjf.cfm.web.webservice.nc.callback.NcCallback;
 
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -23,7 +24,7 @@ import java.util.Map;
 public class HeadOrgNcCheckService {
 
   //  private BranchOrgNcService branchOrgOaService = new BranchOrgNCService();
-
+  NcCallback ncCallback = new NcCallback();
     /**
      * @param pageNum
      * @param pageSize
@@ -132,14 +133,6 @@ public class HeadOrgNcCheckService {
                         }
                     }
 
-                    try {
-                       // 生成凭证信息
-                        CheckVoucherService.ncHeadCheckVoucher(tradingId, billId, tradMap, userInfo);
-                    } catch (BusinessException e) {
-                        e.printStackTrace();
-                        return false;
-                    }
-
                     return true;
                 } else {
                     return false;
@@ -157,6 +150,64 @@ public class HeadOrgNcCheckService {
             SqlPara sqlPara = Db.getSqlPara("head_org_nc_check.billList", Kv.by("map", rd.getColumns()));
             return Db.paginate(1, 10, sqlPara);
         }
+    }
+
+    /**
+     *
+     *@  支付作废
+     * @param paramsToRecord
+     */
+    public void payOff(Record paramsToRecord) throws Exception {
+        //总公司支付作废按钮 nc_head_payment  , nc_origin_data 表
+
+        final List<Long> ids = paramsToRecord.get("ids");
+        final List<Integer> persist_versions = paramsToRecord.get("persist_version");
+        for (int i = 0; i < ids.size(); i++) {
+            long id = TypeUtils.castToLong(ids.get(i));
+            Integer old_version = TypeUtils.castToInt(persist_versions.get(i));
+            Record innerRec = Db.findById("nc_check_doubtful", "id", id);
+            if (innerRec == null) {
+                throw new ReqDataException("未找到有效的单据!");
+            }
+            Long originId = TypeUtils.castToLong(innerRec.get("origin_id"));
+            int is_doubtful = TypeUtils.castToInt(innerRec.get("is_doubtful"));
+            // 判断为可疑数据可以发送，其他状态需抛出异常！
+            if (is_doubtful == WebConstant.YesOrNo.YES.getKey()) {
+                Record set = new Record();
+                Record where = new Record();
+                set.set("persist_version", old_version + 1) ;
+                set.set("is_doubtful", WebConstant.YesOrNo.NO.getKey());
+                where.set("id", id);
+                where.set("persist_version", old_version);
+                boolean flag = CommonService.update("nc_check_doubtful", set, where);
+                if (flag) {
+                    set.clear();
+                    where.clear();
+                    Record originRecord = Db.findById("nc_origin_data", "id", originId);
+                    if(null == originRecord){
+                        throw new ReqDataException("未找到此单据的原始数据!");
+                    }
+                    set.set("lock_id", originId);
+                    set.set("interface_status", 4);
+                    set.set("interface_fb_code","P0098");
+                    set.set("interface_fb_msg", TypeUtils.castToString(paramsToRecord.get("feed_back")));
+                    where.set("id", originId);
+                    flag = CommonService.update("nc_origin_data", set, where);
+                    if(flag){
+                        //调用callback接口
+                        originRecord = Db.findById("nc_origin_data", "id", originId);
+                        ncCallback.callback(originRecord,null);
+                    }else {
+                        throw new DbProcessException("单据作废失败!");
+                    }
+                }else{
+                    throw new DbProcessException("单据作废失败!");
+                }
+            } else {
+                throw new ReqDataException("单据状态不正确!");
+            }
+        }
+
     }
 
 }

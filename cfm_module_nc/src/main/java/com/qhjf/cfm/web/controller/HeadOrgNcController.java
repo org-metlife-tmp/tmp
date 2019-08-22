@@ -65,7 +65,17 @@ public class HeadOrgNcController extends CFMBaseController {
         }
     }
 
-
+    public void payOff() throws Exception {
+        try {
+            UodpInfo uodpInfo = getCurUodp();
+            UserInfo userInfo = getUserInfo();
+            service.payOff(getParamsToRecord(), userInfo, uodpInfo);
+            renderOk(null);
+        } catch (BusinessException e) {
+            e.printStackTrace();
+            renderFail(e);
+        }
+    }
 
     /**
      * OA总公司付款未处理导出

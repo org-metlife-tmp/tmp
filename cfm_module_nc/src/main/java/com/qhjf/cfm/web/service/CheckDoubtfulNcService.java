@@ -97,7 +97,7 @@ public class CheckDoubtfulNcService {
             		if(flag){
             			//调用callback接口
                 		originRecord = Db.findById("nc_origin_data", "id", originId);
-						ncCallback.callback(originRecord);
+						ncCallback.callback(originRecord,null);
             		}else {
             			throw new DbProcessException("单据作废失败!");	
             		}

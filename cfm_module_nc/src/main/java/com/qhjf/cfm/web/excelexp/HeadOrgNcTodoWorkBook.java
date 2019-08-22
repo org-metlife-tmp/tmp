@@ -1,6 +1,7 @@
 package com.qhjf.cfm.web.excelexp;
 
 import com.alibaba.fastjson.util.TypeUtils;
+import com.jfinal.ext.kit.DateKit;
 import com.jfinal.kit.Kv;
 import com.jfinal.log.Log;
 import com.jfinal.plugin.activerecord.Db;
@@ -13,6 +14,7 @@ import com.qhjf.cfm.web.service.AccCommonService;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.ss.usermodel.Workbook;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -26,7 +28,7 @@ public class HeadOrgNcTodoWorkBook extends AbstractWorkBook {
 
     public HeadOrgNcTodoWorkBook() {
         this.optype = "headorgnc_todolistexport";
-        this.fileName = "总公司付款.xls";
+        this.fileName = "NEWCOMP_PAYMENT_"+ DateKit.toStr(new Date(), "YYYYMMdd")+".xls";
         this.titleNames = new String[]{
                 "flow_id", "apply_user","org_name", "create_on", "pay_account_no", "pay_account_bank", "payment_amount", "recv_account_name", "recv_account_no",
                 "recv_account_bank", "payment_summary", "service_status"

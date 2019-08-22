@@ -308,7 +308,7 @@ public class SysTradeResultQueryInter implements ISysAtomicInterface {
                             Db.update(Db.getSql("nc_interface.updOriginDataInterfaceStatus"),
                                     WebConstant.OaInterfaceStatus.OA_INTER_PROCESS_S.getKey(), null, null,
                                     WebConstant.OaProcessStatus.OA_TRADE_SUCCESS.getKey(), originDataId);
-                            new NcCallback().callback(Db.findById("nc_origin_data", originDataId));
+                            new NcCallback().callback(Db.findById("nc_origin_data", originDataId),parseRecord);
                         } else {
                             log.error("已进行过状态更新！");
                             return false;
@@ -336,7 +336,7 @@ public class SysTradeResultQueryInter implements ISysAtomicInterface {
                             Db.update(Db.getSql("nc_interface.updOriginDataInterfaceStatus"),
                                     WebConstant.OaInterfaceStatus.OA_INTER_PROCESS_F.getKey(), "P00098", parseRecord.getStr("message"),
                                     WebConstant.OaProcessStatus.OA_TRADE_FAILED.getKey(), originDataId);
-                            new NcCallback().callback(Db.findById("nc_origin_data", originDataId));
+                            new NcCallback().callback(Db.findById("nc_origin_data", originDataId),null);
                         } else {
                             log.error("已进行过状态更新！");
                             return false;
