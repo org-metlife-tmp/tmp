@@ -76,13 +76,13 @@ public class RecvCounterService {
 	 */
 	public void add(final Record record, final UserInfo userInfo, final UodpInfo curUodp) throws ReqDataException, ParseException, EncryAndDecryException{
 		// 是否包含中文
-		String currency = TypeUtils.castToString(record.get("currency"));
+		String currency = TypeUtils.castToString(record.get("currency"));  //获取币种
         boolean flag = StringKit.isContainChina(currency);
         if(!flag) {
 			Record currencyRec = Db.findById("currency", "id", TypeUtils.castToString(record.get("currency")));
 			currency = currencyRec.getStr("name");
         }
-		final List<Record> policys = record.get("policy_infos");
+		final List<Record> policys = record.get("policy_infos");  //获取前台传过来的保单信息
 		logger.info("====共传输保单号===="+policys.size());	
 		//Curreny需要取一下值	
 		String recv_date = TypeUtils.castToString(record.get("recv_date"));
@@ -106,14 +106,19 @@ public class RecvCounterService {
 		//总金额
 		BigDecimal total_amount = TypeUtils.castToBigDecimal(record.get("amount"));
 		BigDecimal total_amount_son =  new BigDecimal(0);
-		
-		
-		
+
+		String bcnum = null;
+		Record getbankcodeRecord = new Record();//新建的对象用来查询bankcode值
+		Record getbankcodeRecordEnd = new Record();//用来存放查询出的bankcode的该条对象
+
 		for (Record rec : policys) {
 			String third_payment = TypeUtils.castToString(rec.get("third_payment"));
 			String payer = TypeUtils.castToString(rec.get("payer"));
 			String payer_cer_no = TypeUtils.castToString(rec.get("payer_cer_no"));
 			String insure_bill_no = TypeUtils.castToString(rec.get("insure_bill_no"));
+			//把保单号放入getbankcodeRecord对象中
+			bcnum = TypeUtils.castToString(rec.get("insure_bill_no"));
+			getbankcodeRecord.set("insure_bill_no",TypeUtils.castToString(rec.get("insure_bill_no"))) ;
 			String bill_org_id = TypeUtils.castToString(rec.get("bill_org_id"));
 			String source_sys = TypeUtils.castToString(rec.get("source_sys"));
 			//String bank_code = TypeUtils.castToString(rec.get("bank_code"));
@@ -144,11 +149,25 @@ public class RecvCounterService {
 				throw new ReqDataException("待确认的保单在系统内已经存在") ;
 			}
 	        String serviceSerialNumber = BizSerialnoGenTool.getInstance().getSerial(WebConstant.MajorBizType.GMSGD);
-			total_amount_son = total_amount_son.add(new BigDecimal(amount));			
+			total_amount_son = total_amount_son.add(new BigDecimal(amount));
+
+			//查询bankcode值
+			//Record getbankcodeRecordEnd = new Record();
+			String bc = null;
+			String sql = Db.getSql("recv_counter.findbankcode");
+			logger.info("--------SQLSQLSQL---------------"+sql);
+			getbankcodeRecordEnd = Db.findFirst(Db.getSql("recv_counter.findbankcode"),bcnum);
+
+			//Db.find(Db.getSql("recv_counter.detailList"), batch_process_no);
+			logger.info("-------------查询bankcode值--------------"+getbankcodeRecordEnd.get("bankcode"));
+
 			Record insertRecord = new Record();
 			//加密
 			SymmetricEncryptUtil  util = SymmetricEncryptUtil.getInstance();
-			
+
+
+
+
 			insertRecord.set("create_on", new Date())
 			.set("create_user_name", userInfo.getName())
 			.set("md5", md5String) 
@@ -190,12 +209,13 @@ public class RecvCounterService {
 			.set("amount", TypeUtils.castToBigDecimal(amount)) // 保单金额
 			.set("insure_name", insure_name) // 投保人
 			.set("insure_cer_no", insure_cer_no) // 投保人证件号
-			.set("isnot_electric_pay", isnot_electric_pay) // 是否在电缴中
+			//.set("isnot_electric_pay", isnot_electric_pay) // 是否在电缴中(先注释）
 			// 是否银行转账中的保单缴费
 			.set("isnot_bank_transfer_premium ", isnot_bank_transfer_premium)
 			.set("service_serial_number", serviceSerialNumber)
+			//.set("bank_code", bcnum)
 			//.set("bank_code", bank_code)
-					.set("bank_code", "31")
+					//.set("bank_code", "31")
 			.set("service_status", WebConstant.BillStatus.SAVED.getKey())
                     .set("srce_bus", srce_bus)
                     .set("camp_aign", camp_aign)
@@ -254,6 +274,7 @@ public class RecvCounterService {
 		if (!tx) {
 			throw new ReqDataException("柜面收个单确认失败");
 		}
+		record.set("bank_code",getbankcodeRecordEnd.get("bankcode"));//把bankcode值封装到record对象传给la
 		logger.info("====校验成功,开启异步线程请求外部系统====");
 		RecvCounterConfirmQueue recvCounterConfirmQueue = new RecvCounterConfirmQueue();
 		recvCounterConfirmQueue.setUserInfo(userInfo);
