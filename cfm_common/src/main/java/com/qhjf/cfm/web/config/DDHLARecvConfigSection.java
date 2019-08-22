@@ -18,7 +18,9 @@ public class DDHLARecvConfigSection extends AbstractConfigSection {
 	private String nbBillQryUrl;//回调nb的url地址
 	private String nbIsOpen;//是否开启Nb回调
 	private static final int defBatchNum = 50;
-	private String protocolNo;//协议编号
+	private String protocolNo0;//协议编号0
+	private String protocolNo1;//协议编号1
+	private String protocolNo2;//协议编号2
 	private String payType;//缴费种类
 	private String enterpriseName;//企业名称
 	private String enterpriseAccNo;//企业账号
@@ -47,7 +49,9 @@ public class DDHLARecvConfigSection extends AbstractConfigSection {
 			String nbIsOpen = pros.getProperty("nbIsOpen");
 			this.nbIsOpen = nbIsOpen == null || nbIsOpen.trim().equals("") ? "0" : nbIsOpen;
 
-			this.protocolNo = pros.getProperty("protocolNo");
+			this.protocolNo0 = pros.getProperty("protocolNo0");
+			this.protocolNo1 = pros.getProperty("protocolNo1");
+			this.protocolNo2 = pros.getProperty("protocolNo2");
 			this.payType = pros.getProperty("payType");
 			this.enterpriseName = pros.getProperty("enterpriseName");
 			this.enterpriseAccNo = pros.getProperty("enterpriseAccNo");
@@ -95,8 +99,16 @@ public class DDHLARecvConfigSection extends AbstractConfigSection {
 		return tranType;
 	}
 
-	public String getProtocolNo() {
-		return protocolNo;
+	public String getProtocolNo0() {
+		return protocolNo1;
+	}
+
+	public String getProtocolNo1() {
+		return protocolNo1;
+	}
+
+	public String getProtocolNo2() {
+		return protocolNo2;
 	}
 
 	public String getCountSize(){

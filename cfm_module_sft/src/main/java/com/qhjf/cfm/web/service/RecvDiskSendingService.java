@@ -160,25 +160,25 @@ public class RecvDiskSendingService {
 			String cnaps = accountAndBankInfo.get("bank_cnaps_code").substring(0, 3);
 			if("102".equals(cnaps)){
 				Record channel = Db.findFirst(Db.getSql("recv_disk_downloading.qryChannelId"),mbRecord.getStr("channel_id"));
-				Record pro = Db.findFirst(Db.getSql("recv_disk_downloading.qryProtocolInfoImp"), pay_acc_no);
+				/*Record pro = Db.findFirst(Db.getSql("recv_disk_downloading.qryProtocolInfoImp"), pay_acc_no);
 				if(!OminiUtils.isNullOrEmpty(pro)){
 					l.set("insure_bill_no",pro.getStr("insure_bill_no"));
-				} else {
+				} else {*/
 					l.set("insure_bill_no",r.getStr("insure_bill_no"));
-				}
+				/*}*/
 				//根据卡种判断协议编号的生成
 				if(!OminiUtils.isNullOrEmpty(channel)){
-					if("1".equals(channel.getStr("card_type")) || "2".equals(channel.getStr("card_type"))){
+					if("1".equals(channel.getStr("card_type")) || "3".equals(channel.getStr("card_type"))){
 						BigDecimal amt = new BigDecimal(r.getStr("amount"));
 						if(amt.compareTo(BigDecimal.valueOf(Integer.valueOf(section.getMixAmount()))) == -1){
-							l.set("ContractNo","BDP300236427");
+							l.set("ContractNo",section.getProtocolNo1());
 						} else if(amt.compareTo(BigDecimal.valueOf(Integer.valueOf(section.getMixAmount()))) == 1 && amt.compareTo(BigDecimal.valueOf(Integer.valueOf(section.getMaxAmount()))) == 0){
-							l.set("ContractNo","BDP300236427");
+							l.set("ContractNo",section.getProtocolNo2());
 						}
-					} else if("3".equals(channel.getStr("card_type"))){
-						l.set("ContractNo","BDP300236427");
+					} else if("2".equals(channel.getStr("card_type"))){
+						l.set("ContractNo",section.getProtocolNo0());
 					} else {
-						l.set("ContractNo","BDP300236427");
+						l.set("ContractNo",section.getProtocolNo1());
 					}
 				}
 			}
