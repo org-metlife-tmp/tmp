@@ -1,5 +1,6 @@
 package com.qhjf.cfm.web.excelexp;
 
+import com.jfinal.ext.kit.DateKit;
 import com.jfinal.kit.Kv;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
@@ -9,6 +10,7 @@ import com.qhjf.cfm.web.plugins.excelexp.AbstractWorkBook;
 import com.qhjf.cfm.web.plugins.excelexp.POIUtil;
 import org.apache.poi.ss.usermodel.Workbook;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -20,7 +22,7 @@ public class CheckDoubtfulNcWorkBook extends AbstractWorkBook {
 
     public CheckDoubtfulNcWorkBook() {
         this.optype = "checkdoubtfulnc_listexport";
-        this.fileName = "可疑数据管理.xls";
+        this.fileName =  "NEWCOMP_DOUBTFUL_"+ DateKit.toStr(new Date(), "YYYYMMdd")+".xls";
         this.titleNames = new String[]{
                 "flow_id", "apply_user", "amount", "recv_acc_no", "recv_acc_name", "apply_date","send_count", "memo"
 

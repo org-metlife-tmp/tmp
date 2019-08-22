@@ -14,8 +14,8 @@ public class NcCallback {
 	 * @return
 	 * @throws Exception
 	 */
-	public void callback(Record originData){
-		CallBackQueueBean callBackQueueBean = new CallBackQueueBean(originData);
+	public void callback(Record originData,Record tranRecord){
+		CallBackQueueBean callBackQueueBean = new CallBackQueueBean(originData,tranRecord);
 		ProductQueue productQueue = new ProductQueue(callBackQueueBean);
 		new Thread(productQueue).start();
 	}

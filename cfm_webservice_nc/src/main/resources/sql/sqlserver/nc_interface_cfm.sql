@@ -69,5 +69,16 @@ where level_num = 1
   update nc_origin_data set process_status = ?,process_msg = ? ,bank_fb_msg = ? where id = ?
 #end
 
+
+#sql("getcheck")
+  SELECT
+	*
+FROM
+	nc_check_doubtful
+WHERE identification = ?
+
+#end
+
+
 #end
 
