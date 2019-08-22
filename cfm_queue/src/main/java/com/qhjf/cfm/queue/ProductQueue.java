@@ -30,6 +30,8 @@ public class ProductQueue implements Runnable{
 				if ("SysOaSinglePayInter".equals(className) 
 						|| "SysSinglePayInter".equals(className) 
 						|| "SysElectronicQueryInter".equals(className)
+						|| "SysNcSinglePayInter".equals(className)
+						|| "SysSftSinglePayInter".equals(className)
 						|| "SysBatchRecvInter".equals(className)) {
 					log.debug(ICBC_SIGN_LOG, className, queueBean.getParams());
 					Queue.getInstance().getIcbcSignQueue().put(queueBean);

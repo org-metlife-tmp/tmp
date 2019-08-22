@@ -46,3 +46,13 @@
       AND interactive_mode = #para(interactive_mode)
     #end
 #end
+
+#sql("getAcc")
+SELECT
+	acc_id
+FROM
+	account acc
+WHERE
+	acc_no=?
+	and acc_name=?
+#end
