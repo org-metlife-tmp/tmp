@@ -37,7 +37,7 @@ public class HeadOrgNcTodoWorkBook extends AbstractWorkBook {
         this.titles = new String[]{
                 "流程ID","申请人", "申请单位", "申请日期", "付款方帐号", "付款方银行", "收款金额", "收款人", "收款方帐号", "收款方开户行", "摘要", "状态"
         };
-        this.sheetName = "总公司付款-未处理";
+        this.sheetName = "NEWCOMP_PAYMENT_"+ DateKit.toStr(new Date(), "YYYYMMdd");
     }
 
     @Override
