@@ -73,5 +73,16 @@ public class HeadOrgNcCheckController extends CFMBaseController {
             renderFail(e);
         }
     }
+
+    public void payoff() throws Exception {
+        try {
+            Record record = getParamsToRecord();
+            service.payOff(record);
+            renderOk(null);
+        } catch (BusinessException e) {
+            log.error("单据作废失败！", e);
+            renderFail(e);
+        }
+    }
   
 }

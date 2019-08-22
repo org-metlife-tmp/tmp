@@ -72,7 +72,7 @@ public class SysNcSinglePayInter extends SysSinglePayInter {
                                 Db.update(Db.getSql("nc_interface.updOriginDataInterfaceStatus"),
                                         WebConstant.OaInterfaceStatus.OA_INTER_PROCESS_S.getKey(), null, null,
                                         WebConstant.OaProcessStatus.OA_TRADE_SUCCESS.getKey(), originDataId);
-                                new NcCallback().callback(Db.findById("nc_origin_data", originDataId));
+                                new NcCallback().callback(Db.findById("nc_origin_data", originDataId), parseRecord);
                             } else {
                                 log.error("已进行过状态更新！");
                                 return false;
@@ -101,7 +101,7 @@ public class SysNcSinglePayInter extends SysSinglePayInter {
                                 Db.update(Db.getSql("nc_interface.updOriginDataInterfaceStatus"),
                                         WebConstant.OaInterfaceStatus.OA_INTER_PROCESS_F.getKey(), "P00098", parseRecord.getStr("message"),
                                         WebConstant.OaProcessStatus.OA_TRADE_FAILED.getKey(), originDataId);
-                                new NcCallback().callback(Db.findById("nc_origin_data", originDataId));
+                                new NcCallback().callback(Db.findById("nc_origin_data", originDataId),null);
                             } else {
                                 log.error("已进行过状态更新！");
                                 return false;
@@ -198,7 +198,7 @@ public class SysNcSinglePayInter extends SysSinglePayInter {
                             final Record  ncRecord = Db.findById("nc_origin_data", "id",
                                     billRecord.getInt("ref_id"));
                             if(ncRecord!=null){
-                                new NcCallback().callback(ncRecord);
+                                new NcCallback().callback(ncRecord,null);
                             }
                         } else {
                             log.error("已进行过状态更新！");

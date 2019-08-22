@@ -69,7 +69,7 @@ public class ProcessService {
 	}
 
 	/**
-	 * 判断oa的数据是否为可疑数据，可疑根据收款账号+金额+摘要来判断
+	 * 判断nc的数据是否为可疑数据，可疑根据流程id+收款账号+金额+申请日期来判断
 	 * @param req
 	 * @param originData
 	 * @return
@@ -82,17 +82,18 @@ public class ProcessService {
 		record.set("bill_no", originData.get("bill_no"));
 		record.set("origin_id", originData.get("id"));
 		record.set("pay_org_type", originData.get("pay_org_type"));
-		String identification = MD5Kit.string2MD5(originData.getStr("recv_acc_no")
+		String identification = MD5Kit.string2MD5(
+				 originData.getStr("flow_id")
+				+ "_"+originData.getStr("recv_acc_no")
 				+ "_" +originData.getStr("amount")
-				+ "_" +originData.getStr("memo"));
+				+ "_"+originData.getStr("apply_date"));
 
 		record.set("identification", MD5Kit.string2MD5(identification));
 
 		Db.save("nc_check_doubtful", record);
 
-		NcDataDoubtfulCache ncCache = new NcDataDoubtfulCache();
-		ncCache.addNcCacheValue(identification, record.getStr("id"));
-		if(ncCache.getNcCacheValue(identification).size() > 1){
+		List<Record> checkRecordList = Db.find(Db.getSql("nc_interface.getcheck"),MD5Kit.string2MD5(identification));
+		if(checkRecordList!=null && checkRecordList.size()>1){
 			//可疑数据
 			CommonService.update("nc_check_doubtful",
 					new Record().set("is_doubtful", 1),

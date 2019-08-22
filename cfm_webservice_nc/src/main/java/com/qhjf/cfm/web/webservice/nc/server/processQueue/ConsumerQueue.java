@@ -28,7 +28,7 @@ public class ConsumerQueue implements Runnable{
 					new ProcessService().proces(req,originData);
 				}else if(type == 2){
 					CallBackQueueBean callBackQueueBean = (CallBackQueueBean) queueBean;
-					new CallBackService().callback(callBackQueueBean.getOriginData());
+					new CallBackService().callback(callBackQueueBean.getOriginData(),callBackQueueBean.getTranRecord());
 				}
 				
 			}catch(Exception e){
