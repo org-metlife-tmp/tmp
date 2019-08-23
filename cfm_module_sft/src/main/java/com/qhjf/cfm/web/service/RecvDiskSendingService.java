@@ -172,13 +172,17 @@ public class RecvDiskSendingService {
 						BigDecimal amt = new BigDecimal(r.getStr("amount"));
 						if(amt.compareTo(BigDecimal.valueOf(Integer.valueOf(section.getMixAmount()))) == -1){
 							l.set("ContractNo",section.getProtocolNo1());
+							l.set("UseCN",section.getPayType1());
 						} else if(amt.compareTo(BigDecimal.valueOf(Integer.valueOf(section.getMixAmount()))) == 1 && amt.compareTo(BigDecimal.valueOf(Integer.valueOf(section.getMaxAmount()))) == 0){
 							l.set("ContractNo",section.getProtocolNo2());
+							l.set("UseCN",section.getPayType2());
 						}
 					} else if("2".equals(channel.getStr("card_type"))){
 						l.set("ContractNo",section.getProtocolNo0());
+						l.set("UseCN",section.getPayType0());
 					} else {
 						l.set("ContractNo",section.getProtocolNo1());
+						l.set("UseCN",section.getPayType1());
 					}
 				}
 			}

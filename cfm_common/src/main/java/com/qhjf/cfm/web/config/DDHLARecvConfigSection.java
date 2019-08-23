@@ -21,7 +21,9 @@ public class DDHLARecvConfigSection extends AbstractConfigSection {
 	private String protocolNo0;//协议编号0
 	private String protocolNo1;//协议编号1
 	private String protocolNo2;//协议编号2
-	private String payType;//缴费种类
+	private String payType0;//缴费种类0
+	private String payType1;//缴费种类1
+	private String payType2;//缴费种类2
 	private String enterpriseName;//企业名称
 	private String enterpriseAccNo;//企业账号
 	private String countSize; //拆包长度
@@ -52,7 +54,9 @@ public class DDHLARecvConfigSection extends AbstractConfigSection {
 			this.protocolNo0 = pros.getProperty("protocolNo0");
 			this.protocolNo1 = pros.getProperty("protocolNo1");
 			this.protocolNo2 = pros.getProperty("protocolNo2");
-			this.payType = pros.getProperty("payType");
+			this.payType0 = pros.getProperty("payType0");
+			this.payType1 = pros.getProperty("payType1");
+			this.payType2 = pros.getProperty("payType2");
 			this.enterpriseName = pros.getProperty("enterpriseName");
 			this.enterpriseAccNo = pros.getProperty("enterpriseAccNo");
 			this.countSize = pros.getProperty("countSize");
@@ -127,8 +131,14 @@ public class DDHLARecvConfigSection extends AbstractConfigSection {
 		return maxAmount;
 	}
 
-	public String getPayType() {
-		return payType;
+	public String getPayType0() {
+		return payType0;
+	}
+	public String getPayType1() {
+		return payType1;
+	}
+	public String getPayType2() {
+		return payType2;
 	}
 
 	public String getEnterpriseName() {

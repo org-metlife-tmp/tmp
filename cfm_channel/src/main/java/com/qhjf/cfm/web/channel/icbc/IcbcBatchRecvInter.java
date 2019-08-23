@@ -58,6 +58,7 @@ public class IcbcBatchRecvInter implements IChannelBatchInter {
 				rd.put("PayBranch", r.getStr("pay_account_bank"));
 				rd.put("Portno", r.getStr("insure_bill_no"));//缴费编号
 				rd.put("ContractNo", r.getStr("contractNo"));//协议编号
+				rd.put("UseCN", r.getStr("useCN"));//用途中文描述
 				rd.put("CurrType", "CNY");// 币种total.getStr("pay_account_cur")
 				rd.put("PayAmt", r.getStr("amount"));// 金额
 				rd.put("Summary", "批量收款");

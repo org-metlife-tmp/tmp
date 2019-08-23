@@ -157,7 +157,7 @@ public class SysProtocolImportInter implements ISysAtomicInterface {
 		result.set("bank_seriral_no", RedisSericalnoGenTool.genBankSeqNo());
 		result.set("total_num", num);
 		result.set("protocol_no", recvSection.getProtocolNo1());
-		result.set("pay_type", recvSection.getPayType());
+		result.set("pay_type", recvSection.getPayType1());
 		result.set("enterprise_name", acct_name);  //recvSection.getEnterpriseName()
 		result.set("enterprise_acc_no", acct_no);  //recvSection.getEnterpriseAccNo()
 		result.set("cnaps", this.cnaps);

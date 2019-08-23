@@ -429,6 +429,7 @@ public class SysBatchRecvInter implements ISysAtomicInterface {
         detail.set("pay_bank_type", batch.getStr("pay_bank_type"));
         detail.set("insure_bill_no",batch.getStr("insure_bill_no"));
         detail.set("contractNo",batch.getStr("ContractNo"));
+        detail.set("useCN",batch.getStr("UseCN"));
 
         //批收只支持同行，默认不跨行
         int isCrossBank = 0;
