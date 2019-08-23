@@ -154,11 +154,7 @@ public class IcbcSinglePayInter  implements ISingleResultChannelInter{
 		if ("7".equals(result)) {
 
 			record.set("status", 1);
-			try {
-				record.set("trans_date", parseTransDate(rd));
-			} catch (ParseException e) {
-				e.printStackTrace();
-			}
+
 		} else if ("0".equals(result) || "1".equals(result) || "2".equals(result) || "3".equals(result)
 				|| "4".equals(result) || "5".equals(result) || "9".equals(result) || "20".equals(result)
 				|| "86".equals(result) || "95".equals(result)) {
@@ -172,27 +168,7 @@ public class IcbcSinglePayInter  implements ISingleResultChannelInter{
 		}
 		return record;
 	}
-	/**
-	 * 交易日期处理：优先取交易日志，其次取到账日期，最后返回指令查询条件中的：开始日期
-	 * @param rd
-	 * @return
-	 * @throws ParseException
-	 */
-	private static String parseTransDate(JSONObject rd) throws ParseException{
-		String result = null;
-		String date = rd.getString("Date");//交易日期
-		String BusiDate = rd.getString("BusiDate");//到账日期
 
-		if (null != date) {
-			result = date;
-		}else if (null != BusiDate) {
-			result = BusiDate;
-		}else {
-			int preDay = configSection.getPreDay();
-			result = DateUtil.getSpecifiedDayBefore(new Date(), preDay, "yyyyMMdd");
-		}
-		return result;
-	}
 	@Override
 	public AtomicInterfaceConfig getInter() {
 		return IcbcConstant.PAYENT;
