@@ -29,7 +29,6 @@
         <dependency>
             <groupId>com.jfinal</groupId>
             <artifactId>jetty-server</artifactId>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.alibaba</groupId>
@@ -59,6 +58,11 @@
 
         <!-- 内部模块引入 start -->
         <!-- ##公用模块 start## -->
+          <dependency>
+            <groupId>com.qhjf.cfm</groupId>
+            <artifactId>cfm_common</artifactId>  <!-- 公共模块 -->
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>com.qhjf.cfm</groupId>
             <artifactId>cfm_module_admin</artifactId>  <!-- 管理员模块 -->
@@ -172,11 +176,6 @@
         <dependency>
             <groupId>com.qhjf.cfm</groupId>
             <artifactId>cfm_module_voucher</artifactId>    <!-- 凭证查询模块 -->
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.qhjf.cfm</groupId>
-            <artifactId>cfm_report</artifactId>    <!-- 报表查询模块 -->
             <version>${project.version}</version>
         </dependency>
         <!-- #### 大都会特定模块 end ####-->
@@ -341,7 +340,7 @@
                         </webApp>
                         <connectors>
                             <connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
-                                <port>9002</port>
+                                <port>9001</port>
                                 <maxIdleTime>60000</maxIdleTime>
                             </connector>
                         </connectors>

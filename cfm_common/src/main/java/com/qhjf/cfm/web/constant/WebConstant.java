@@ -513,7 +513,7 @@ public interface WebConstant {
 		PLS_HD_VOUCHER(37, "批量收回调", "PLS_HD_VOUCHER"),
         GMF_HD_VOUCHER(38, "柜面付回调", "GMF_HD_VOUCHER"),GMSGD(39, "柜面收个单", "GMSGD"),
 		GMSTD(40, "柜面收团单", "GMSTD"),GMSCG_HD_VOUCHER(41, "柜面收常规回调", "GMSCG_HD_VOUCHER"),GMSWPP_HD_VOUCHER(42, "柜面收未匹配回调", "GMSWPP_HD_VOUCHER"),
-        GMS(43, "柜面收撤销审批", "GMS");
+        GMS(43, "柜面收撤销审批", "GMS"),NC_HEAD_PAY(44,"NC数据管理","NCHP");
         int key;
         String desc;
         String prefix;
