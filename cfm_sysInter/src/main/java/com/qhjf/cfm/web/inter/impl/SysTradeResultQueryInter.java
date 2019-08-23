@@ -14,6 +14,7 @@ import com.qhjf.cfm.utils.TableDataCacheUtil;
 import com.qhjf.cfm.web.channel.inter.api.IChannelInter;
 import com.qhjf.cfm.web.channel.inter.api.ISingleResultChannelInter;
 import com.qhjf.cfm.web.channel.manager.ChannelManager;
+import com.qhjf.cfm.web.channel.util.DateUtil;
 import com.qhjf.cfm.web.config.GmfConfigAccnoSection;
 import com.qhjf.cfm.web.constant.WebConstant;
 import com.qhjf.cfm.web.inter.api.ISysAtomicInterface;
@@ -308,6 +309,7 @@ public class SysTradeResultQueryInter implements ISysAtomicInterface {
                             Db.update(Db.getSql("nc_interface.updOriginDataInterfaceStatus"),
                                     WebConstant.OaInterfaceStatus.OA_INTER_PROCESS_S.getKey(), null, null,
                                     WebConstant.OaProcessStatus.OA_TRADE_SUCCESS.getKey(), originDataId);
+                            parseRecord.set("trans_date", DateUtil.getSpecifiedDayBefore(new Date(), 0, "yyyyMMdd"));
                             new NcCallback().callback(Db.findById("nc_origin_data", originDataId),parseRecord);
                         } else {
                             log.error("已进行过状态更新！");

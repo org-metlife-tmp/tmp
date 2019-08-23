@@ -10,6 +10,10 @@ import com.qhjf.cfm.utils.CommonService;
 import com.qhjf.cfm.web.channel.inter.api.IChannelInter;
 import com.qhjf.cfm.web.channel.inter.api.ISingleResultChannelInter;
 import com.qhjf.cfm.web.channel.manager.ChannelManager;
+<<<<<<< HEAD
+=======
+import com.qhjf.cfm.web.channel.util.DateUtil;
+>>>>>>> 866575b3... newcomp支付凭证付款时间
 import com.qhjf.cfm.web.constant.WebConstant;
 import com.qhjf.cfm.web.inter.manager.SysInterManager;
 import com.qhjf.cfm.web.webservice.nc.callback.NcCallback;
@@ -72,6 +76,10 @@ public class SysNcSinglePayInter extends SysSinglePayInter {
                                 Db.update(Db.getSql("nc_interface.updOriginDataInterfaceStatus"),
                                         WebConstant.OaInterfaceStatus.OA_INTER_PROCESS_S.getKey(), null, null,
                                         WebConstant.OaProcessStatus.OA_TRADE_SUCCESS.getKey(), originDataId);
+<<<<<<< HEAD
+=======
+                                parseRecord.set("trans_date", DateUtil.getSpecifiedDayBefore(new Date(), 0, "yyyyMMdd"));
+>>>>>>> 866575b3... newcomp支付凭证付款时间
                                 new NcCallback().callback(Db.findById("nc_origin_data", originDataId), parseRecord);
                             } else {
                                 log.error("已进行过状态更新！");
