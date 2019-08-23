@@ -12,7 +12,7 @@ public interface IConfigSectionType {
     }
 
     enum DDHConfigSectionType implements IConfigSectionType {
-        DDHOAWS,VOUCHER,DDHLA,DDHEBS,DDHLaRecv,DDHEbsRecv;
+        DDHOAWS,VOUCHER,DDHLA,DDHEBS,DDHLaRecv,DDHEbsRecv,DDHNCWS;
 
         @Override
         public String getConfigSectionType() {

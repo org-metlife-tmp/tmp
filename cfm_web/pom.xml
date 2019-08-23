@@ -85,11 +85,6 @@
         </dependency>
         <dependency>
             <groupId>com.qhjf.cfm</groupId>
-            <artifactId>cfm_module_nc</artifactId>     <!-- 调拨通模块 -->
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.qhjf.cfm</groupId>
             <artifactId>cfm_module_zft</artifactId>     <!-- 支付通模块 -->
             <version>${project.version}</version>
         </dependency>
@@ -176,6 +171,11 @@
         <dependency>
             <groupId>com.qhjf.cfm</groupId>
             <artifactId>cfm_module_voucher</artifactId>    <!-- 凭证查询模块 -->
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.qhjf.cfm</groupId>
+            <artifactId>cfm_module_nc</artifactId>    <!-- NC 数据管理模块 -->
             <version>${project.version}</version>
         </dependency>
         <!-- #### 大都会特定模块 end ####-->
