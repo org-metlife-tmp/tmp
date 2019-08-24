@@ -1524,7 +1524,7 @@ public class CheckVoucherService {
                     .set("business_ref_no", serviceSerialNumber)
                     .set("biz_type", "44")
                     .set("ref_bill_id", originDataRec.get("id"))
-                    .set("ref_bill", originDataRec.get("flow_id"));
+                    .set("ref_bill", "nc_head_payment");
 
 
             return record;
