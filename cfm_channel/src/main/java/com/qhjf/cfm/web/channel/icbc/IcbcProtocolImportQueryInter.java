@@ -58,7 +58,7 @@ public class IcbcProtocolImportQueryInter implements IMoreResultChannelInter {
 		if(!OminiUtils.isNullOrEmpty(rdArray)){
 			return rdArray.size();
 		} else {
-			return 0;
+			return 1;
 		}
 	}
 
