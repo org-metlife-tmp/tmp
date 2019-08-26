@@ -308,7 +308,8 @@
                             <el-form-item label="收款方式">
                                 <el-select v-model="dialogData.recv_mode" placeholder="请选择收款方式"
                                            clearable filterable :disabled="isLook"
-                                           style="width:100%">
+                                           style="width:100%"
+                                           @change="changeProduct()">
                                     <el-option v-for="(recvmode,key) in recvmodeList"
                                                :key="key"
                                                :label="recvmode"
@@ -317,11 +318,12 @@
                                 </el-select>
                             </el-form-item>
                         </el-col>
+
                         <el-col :span="12">
                             <el-form-item label="票据状态">
                                 <el-select v-model="dialogData.bill_status" placeholder="请选择票据状态"
-                                           clearable filterable :disabled="isLook"
-                                           style="width:100%">
+                                           clearable filterable :disabled="isdisables == 'true'"
+                                           style="width:100%"  @change="change('b',dialogData.bill_status)">
                                     <el-option v-for="(billStatus,key) in billStatusList"
                                                :key="key"
                                                :label="billStatus"
@@ -493,6 +495,14 @@
                                           :disabled="isLook"></el-input>
                             </el-form-item>
                         </el-col>
+
+                        <el-col :span="12">
+                            <el-form-item label="当前业务应缴：">
+                                <el-input v-model="dialogData.tsamount"
+                                          disabled></el-input>
+                            </el-form-item>
+                        </el-col>
+
                         <el-col :span="12">
                             <el-form-item label="是否第三方缴费">
                                 <el-switch :disabled="isLook"
@@ -537,6 +547,9 @@
                                 </Upload>
                             </el-form-item>
                         </el-col>
+
+
+
                     </el-row>
                 </el-form>
                 <span slot="footer" class="dialog-footer">
@@ -689,6 +702,9 @@
         },
         data: function () {
             return {
+
+                isdisables:"true",  //可编辑
+
                 queryUrl: this.$store.state.queryUrl,
                 routerMessage: {
                     optype: "recvgroupcounter_list",
@@ -735,6 +751,7 @@
                 YesOrNo: {},
                 currencyList: [],
                 recvBankList: [],
+                getBatchProcessno:[],
                 dialogVisible: false, //弹框
                 dialogTitle: "新增",
                 dialogData: {
@@ -764,11 +781,14 @@
                     business_acc: "",
                     business_acc_no: "",
                     amount: "",
+                    tsamount: "",
                     third_payment: "",
                     payer: "",
                     pay_code: "",
                     payer_relation_insured: "",
                     pay_reason: "",
+
+
                 },
                 formLabelWidth: "120px",
                 fileMessage: { //附件
@@ -787,6 +807,7 @@
                     preinsureBillNo: "",
                     insureBillNo: "",
                     bussinessNo: "",
+
                 },
                 currentVoucher: "",
                 outTime: "", //银行大类搜索控制
@@ -798,6 +819,7 @@
             }
         },
         methods: {
+
             //清空搜索条件
             clearData: function () {
                 var searchData = this.searchData;
@@ -971,7 +993,7 @@
                     if (k == "recv_date") {
                         let curDate = new Date();
                         dialogData[k] = curDate.getFullYear() + "-" + (curDate.getMonth() + 1) + "-" + curDate.getDate();
-                    } else if (k == "batch_process_no") {
+                    } else if (k == "batch_no") {
                         this.$axios({
                             url: this.queryUrl + "normalProcess",
                             method: "post",
@@ -990,6 +1012,7 @@
                                 });
                             } else {
                                 dialogData[k] = result.data.data.batch_process_no;
+                                this.dialogData.batch_process_no = result.data.data.batch_process_no; //给批单号赋值
                             }
                         }).catch(function (error) {
                             console.log(error);
@@ -1092,6 +1115,7 @@
                         });
                     } else {
                         this.voucherList = result.data.data;
+                        this.dialogData.tsamount =  result.data.data.needPayMoney;
                     }
                 }).catch(function (error) {
                     console.log(error);
@@ -1118,8 +1142,25 @@
                     this.dialogData.recv_acc_no = "";
                 }
             },
+
+            //根据支付方式改变票据状态
+            changeProduct:function(row)  {
+                let dialogData = this.dialogData;
+                let isdisables = this.isdisables;
+
+                if(dialogData.recv_mode==1 || dialogData.recv_mode==3 ){
+                    dialogData.bill_status ="已到账";
+                    this.isdisables = "true";
+                }else if(dialogData.recv_mode==2 ){
+                    this.isdisables = "false";
+                    console.log("======"+isdisables)
+                }
+
+
+            },
+
             //设置资金用途相关数据
-            setVoucherData: function(){
+            setVoucherData: function() {
                 this.innerVisible = false;
                 let keyValue = {
                     consumer_no: "customerNo",
@@ -1134,6 +1175,7 @@
                     bussiness_no: "",
                     business_acc: "appntName",
                     business_acc_no: "appntNo",
+                    tsamount: "needPayMoney",
                 };
                 let accKey = {
                     consumer_no: "customerNo",
@@ -1150,19 +1192,20 @@
                     bussiness_no: "bussinessNo",
                     business_acc: "appntName",
                     business_acc_no: "appntNo",
+                    tsamount:"needPayMoney",
                 }
 
                 let dialogData = this.dialogData;
                 let currentVoucher = this.currentVoucher;
-                for(let k in keyValue){
+                for (let k in keyValue) {
                     dialogData[k] = "";
                 }
-                if(this.dialogData.use_funds == '0'){
-                    for(let k in accKey){
+                if (this.dialogData.use_funds == '0') {
+                    for (let k in accKey) {
                         dialogData[k] = currentVoucher[accKey[k]];
                     }
-                }else{
-                    for(let k in elseKey){
+                } else {
+                    for (let k in elseKey) {
                         dialogData[k] = currentVoucher[elseKey[k]];
                     }
                 }
@@ -1349,5 +1392,6 @@
                 this.pagCurrent = val.page_num;
             }
         }
+
     }
 </script>
