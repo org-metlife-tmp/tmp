@@ -95,9 +95,8 @@ public class IcbcBatchRecvInter implements IChannelBatchInter {
         JSONObject pub0 = pubArray.getJSONObject(0);
         String retCode = pub0.getString("RetCode");
         String retMsg = pub0.getString("RetMsg");
-        
-        if ("0".equals(retCode)) {
-        	this.pub0 = pub0;
+		this.pub0 = pub0;
+		if ("0".equals(retCode)) {
         	log.debug("工行成功受理批收指令！");
 		}else {
 			log.error(ERROR_MSG, retCode, retMsg);
