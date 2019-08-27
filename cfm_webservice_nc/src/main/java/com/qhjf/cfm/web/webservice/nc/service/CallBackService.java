@@ -38,27 +38,27 @@ public class CallBackService {
 		log.debug(originData.getStr("flow_id")+"回调信息="+callBackMsg);
 		String result = push.payData(callBackMsg);
 		log.debug(originData.getStr("flow_id")+"回调结果="+result);
-		NCCallBackResp resp = null;
-		try{
-			resp = new NCCallBackResp(result);
-			String flowid=resp.getFlow_id();
-			if("1".equals(resp.getStatus())&& WebConstant.OaInterfaceStatus.OA_INTER_PROCESS_S.getKey()==originData.getInt("interface_status")
-					&& WebConstant.OaProcessStatus.OA_TRADE_SUCCESS.getKey()==originData.getInt("process_status")
-			&&tranRecord!=null){
-				try {
-					// 生成凭证信息
-					log.info("NC【"+flowid+"】的数据回调成功，生成凭证---begin");
-					CheckVoucherService.ncHeadCheckVoucher(originData,tranRecord);
-					log.info("NC【"+flowid+"】的数据回调成功，生成凭证---end");
-				} catch (BusinessException e) {
-					log.error("NC响应回写原始数据，NC接收成功，生成凭证失败！", e.getMessage());
-					e.printStackTrace();
-				}
-			}
-		}catch (Exception e){
-			e.printStackTrace();
-			log.debug(originData.getStr("flow_id")+"回调结果="+e.getMessage());
-		}
+//		NCCallBackResp resp = null;
+//		try{
+//			resp = new NCCallBackResp(result);
+//			String flowid=resp.getFlow_id();
+//			if("1".equals(resp.getStatus())&& WebConstant.OaInterfaceStatus.OA_INTER_PROCESS_S.getKey()==originData.getInt("interface_status")
+//					&& WebConstant.OaProcessStatus.OA_TRADE_SUCCESS.getKey()==originData.getInt("process_status")
+//			&&tranRecord!=null){
+//				try {
+//					// 生成凭证信息
+//					log.info("NC【"+flowid+"】的数据回调成功，生成凭证---begin");
+//					CheckVoucherService.ncHeadCheckVoucher(originData,tranRecord);
+//					log.info("NC【"+flowid+"】的数据回调成功，生成凭证---end");
+//				} catch (BusinessException e) {
+//					log.error("NC响应回写原始数据，NC接收成功，生成凭证失败！", e.getMessage());
+//					e.printStackTrace();
+//				}
+//			}
+//		}catch (Exception e){
+//			e.printStackTrace();
+//			log.debug(originData.getStr("flow_id")+"回调结果="+e.getMessage());
+//		}
 		return result;
 	}
 	
