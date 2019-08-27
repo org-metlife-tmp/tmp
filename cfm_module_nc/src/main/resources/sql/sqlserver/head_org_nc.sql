@@ -45,6 +45,7 @@
     CONVERT(varchar(100), head.update_on, 23) as update_on,
     od.flow_id,
     od.apply_user,
+    od.send_count,
     org.name as org_name,
     od.apply_date,
     left(head.recv_bank_cnaps,3) as recv_bank_type
