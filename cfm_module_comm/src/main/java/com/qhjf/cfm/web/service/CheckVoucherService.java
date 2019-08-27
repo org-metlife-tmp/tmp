@@ -1390,7 +1390,9 @@ public class CheckVoucherService {
                     .set("local_transaction_date", DateFormatThreadLocal.format("yyyy-MM-dd", payTransDate))
                     .set("accounting_period", DateFormatThreadLocal.format("yyyy-MM", (Date)transDateMap.get(tranId)))
                     .set("docking_status", 0).set("statement_code", newStatmentCode).set("business_ref_no", serviceSerialNumber)
-                    .set("biz_type", "44");
+                    .set("biz_type", "44")
+                    .set("ref_bill_id", originDataRec.get("id"))
+                    .set("ref_bill", "nc_head_payment");
             if (userInfo != null) {
                 record.set("operator", userInfo.getUsr_id()).set("operator_org", userInfo.getCurUodp().getOrg_id());
             }
