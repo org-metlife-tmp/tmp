@@ -1365,7 +1365,7 @@ public class CheckVoucherService {
                 subjectCode = "8350000004";
                 debitCredit = "D";
             } else if (iden == 2) {
-                subjectCode = "6100110704";
+                subjectCode = TypeUtils.castToString(accRec.get("subject_code"));
                 debitCredit = "C";
             }  else {
                 throw new ReqDataException("借贷标识未定义!");
@@ -1388,7 +1388,7 @@ public class CheckVoucherService {
                     .set("description", DateFormatThreadLocal.format("yyMMdd", payTransDate)+"支付手续费"+flow_id)
                     .set("journal_source", "SST")
                     .set("transaction_amount", paymentAmount)
-                    .set("transaction_date", DateFormatThreadLocal.format("ddMMyyyy", new Date()))
+                    .set("transaction_date", DateFormatThreadLocal.format("ddMMyyyy", payTransDate))
                     .set("transaction_reference", "SSAL" + DateFormatThreadLocal.format("YYMM", new Date()) + seqnoOrstatmentCode)
                     .set("local_transaction_date", DateFormatThreadLocal.format("yyyy-MM-dd", payTransDate))
                     .set("accounting_period", DateFormatThreadLocal.format("yyyy-MM", com.qhjf.cfm.utils.CommonService.getPeriodByCurrentDay(payTransDate)))
