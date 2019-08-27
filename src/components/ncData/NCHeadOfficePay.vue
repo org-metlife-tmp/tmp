@@ -132,13 +132,13 @@
             <el-table :data="tableList" border
                       size="mini" height="100%"
                       highlight-current-row>
-                <el-table-column prop="flow_id" label="流程ID" :show-overflow-tooltip="true"
+                <el-table-column prop="flow_id" label="结算号" :show-overflow-tooltip="true"
                                  width="120"></el-table-column>
                 <el-table-column prop="apply_user" label="申请人" :show-overflow-tooltip="true"
                                  width="120"></el-table-column>
                 <el-table-column prop="org_name" label="申请单位" :show-overflow-tooltip="true"
                                  width="120"></el-table-column>
-                <el-table-column prop="create_on" label="申请日期" :show-overflow-tooltip="true"
+                <el-table-column prop="apply_date" label="申请日期" :show-overflow-tooltip="true"
                                  width="100"></el-table-column>
                 <el-table-column prop="pay_account_no" label="付款方账号" :show-overflow-tooltip="true"
                                  width="120"></el-table-column>

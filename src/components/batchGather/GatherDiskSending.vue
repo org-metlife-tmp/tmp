@@ -361,6 +361,11 @@
             },
             //发送
             sendData: function (row) {
+                this.$message({
+                    type: "success",
+                    message: "数据已经发送",
+                    duration: 2000
+                });
                 this.$axios({
                     url: this.queryUrl + "normalProcess",
                     method: "post",
