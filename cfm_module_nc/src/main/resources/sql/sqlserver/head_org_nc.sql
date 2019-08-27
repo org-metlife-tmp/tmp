@@ -46,6 +46,7 @@
     od.flow_id,
     od.apply_user,
     org.name as org_name,
+    od.apply_date,
     left(head.recv_bank_cnaps,3) as recv_bank_type
   FROM
     nc_head_payment head
