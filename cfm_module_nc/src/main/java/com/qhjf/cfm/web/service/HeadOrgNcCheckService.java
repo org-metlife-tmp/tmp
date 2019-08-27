@@ -132,7 +132,12 @@ public class HeadOrgNcCheckService {
                             return false;
                         }
                     }
-
+                    try {
+					// 生成凭证信息
+					CheckVoucherService.ncHeadCheckVoucher(tradingId, billId, tradMap, userInfo);
+                    } catch (BusinessException e) {
+                        e.printStackTrace();
+                    }
                     return true;
                 } else {
                     return false;

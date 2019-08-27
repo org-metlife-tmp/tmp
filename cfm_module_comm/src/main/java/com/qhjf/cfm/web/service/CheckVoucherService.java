@@ -9,7 +9,7 @@ import com.jfinal.plugin.activerecord.SqlPara;
 import com.qhjf.cfm.exceptions.BusinessException;
 import com.qhjf.cfm.exceptions.ReqDataException;
 import com.qhjf.cfm.exceptions.ReqValidateException;
-import com.qhjf.cfm.utils.CommonService;
+import com.qhjf.cfm.web.commconstant.CommonService;
 import com.qhjf.cfm.utils.DateFormatThreadLocal;
 import com.qhjf.cfm.utils.RedisSericalnoGenTool;
 import com.qhjf.cfm.web.UserInfo;
@@ -127,9 +127,6 @@ public class CheckVoucherService {
                 break;
             case PLS:
                 flag = plsCheckVoucher(batchList, tradList, batchRecordList, tradRecordList, majorBizType, seqnoOrstatmentCode, userInfo);
-                break;
-            case GMSTD:
-                flag = gmsCheckVoucher(batchList, tradList, batchRecordList, tradRecordList, majorBizType, seqnoOrstatmentCode, userInfo);
                 break;
             default:
                 throw new ReqDataException(majorBizType.getDesc() + "，未实现生成凭证方法！");
@@ -438,7 +435,7 @@ public class CheckVoucherService {
                         Db.findById("organization", "org_id", TypeUtils.castToLong(acc.get("org_id")))
                                 .get("code"));
                 Record sftcheck = Db.findById("sftcheck_org_mapping", "tmp_org_code", orgcode);
-                transactionReference = "SS" + sftcheck.getStr("code_abbre") + DateFormatThreadLocal.format("YYMM", transDate) + seqnoOrstatmentCode;
+                transactionReference = "SS" + sftcheck.getStr("code_abbre") + DateFormatThreadLocal.format("YYMM", periodDate) + seqnoOrstatmentCode.substring(seqnoOrstatmentCode.length()-4);;
             }
             //内部调拨的分全额模式和净额模式两种 batchList 净额模式 0--净额模式 1--全额模式
             int netMode = TypeUtils.castToInt(detailLsit.get(0).get("net_mode"));
@@ -450,7 +447,7 @@ public class CheckVoucherService {
                             .set("xx_biz_type", bizType.getKey());
                     int status = TypeUtils.castToInt(detailRecord.get("status"));
                     if (status == WebConstant.SftInterfaceStatus.SFT_INTER_PROCESS_S.getKey()) {
-                        description = DateFormatThreadLocal.format("yyMMdd", transDate) + chann.getStr("bankcode") + "批量付款-银行净额模式-付款成功";
+                        description = DateFormatThreadLocal.format("yyMMdd", allLastDate) + chann.getStr("bankcode") + "批量付款-银行净额模式-付款成功";
                         //凭证1
                         list.add(CommonService.plfPayVorcher(acc, description, chann.getStr("channel_code") + chann.getStr("bankcode"), transactionReference, 1, periodDate, transDate, detailRecord, curr, orgcode));
                         //凭证2
@@ -466,13 +463,13 @@ public class CheckVoucherService {
                             .set("xx_biz_type", bizType.getKey());
                     int status = TypeUtils.castToInt(detailRecord.get("status"));
                     if (status == WebConstant.SftInterfaceStatus.SFT_INTER_PROCESS_F.getKey()) {
-                        description = DateFormatThreadLocal.format("yyMMdd", transDate) + chann.getStr("bankcode") + "批量付款-银行全额模式-资金退回";
+                        description = DateFormatThreadLocal.format("yyMMdd", allLastDate) + chann.getStr("bankcode") + "批量付款-银行全额模式-资金退回";
                         //凭证5
                         list.add(CommonService.plfPayVorcher(acc, description, "SYS", transactionReference, 5, periodDate, transDate, detailRecord, curr, orgcode));
                         //凭证6
                         list.add(CommonService.plfPayVorcher(acc, description, chann.getStr("channel_code") + chann.getStr("bankcode"), transactionReference, 6, periodDate, transDate, detailRecord, curr, orgcode));
                     }
-                    description = DateFormatThreadLocal.format("yyMMdd", transDate) + chann.getStr("bankcode") + "批量付款-银行全额模式-付款成功";
+                    description = DateFormatThreadLocal.format("yyMMdd", allLastDate) + chann.getStr("bankcode") + "批量付款-银行全额模式-付款成功";
                     //凭证3
                     list.add(CommonService.plfPayVorcher(acc, description, chann.getStr("channel_code") + chann.getStr("bankcode"), transactionReference, 3, periodDate, transDate, detailRecord, curr, orgcode));
                     //凭证4
@@ -495,7 +492,7 @@ public class CheckVoucherService {
                         Db.findById("organization", "org_id", TypeUtils.castToLong(acc.get("org_id")))
                                 .get("code"));
                 Record sftcheck = Db.findById("sftcheck_org_mapping", "tmp_org_code", orgcode);
-                transactionReference = "SS" + sftcheck.getStr("code_abbre") + DateFormatThreadLocal.format("YYMM", transDate) + seqnoOrstatmentCode;
+                transactionReference = "SS" + sftcheck.getStr("code_abbre") + DateFormatThreadLocal.format("YYMM", periodDate) + seqnoOrstatmentCode.substring(seqnoOrstatmentCode.length()-4);;
             }
             for(Record detailRecord : detailLsit){
                 detailRecord.set("xx_insure_bill_no", getplfInsureBill_no(detailRecord)).set("xx_seqnoOrstatmentCode", seqnoOrstatmentCode)
@@ -595,6 +592,7 @@ public class CheckVoucherService {
                 allLastDate = tempDate;
             }
         }
+        Date transLasetDate = allLastDate;      //对账当日期
         /**
          * （1）  如果对账单日期与实际对账日期（收付费对账操作日期）为同一财务月内，则财务记账日期为交易流水日期；
          * （2）  如果对账单日期与实际对账日期（收付费对账操作日期）为非同一财务月，则财务记账日期为操作日期。
@@ -623,7 +621,7 @@ public class CheckVoucherService {
                     Db.findById("organization", "org_id", TypeUtils.castToLong(acc.get("org_id")))
                             .get("code"));
             Record sftcheck = Db.findById("sftcheck_org_mapping", "tmp_org_code", orgcode);
-            transactionReference = "SS" + sftcheck.getStr("code_abbre") + DateFormatThreadLocal.format("YYMM", allLastDate) + seqnoOrstatmentCode;
+            transactionReference = "SS" + sftcheck.getStr("code_abbre") + DateFormatThreadLocal.format("YYMM", allLastDate) + seqnoOrstatmentCode.substring(seqnoOrstatmentCode.length()-4);;
         }
         for(Record detailRecord : detailLsit){
             detailRecord.set("xx_insure_bill_no", getPlsInsureBill_no(detailRecord)).set("xx_seqnoOrstatmentCode", seqnoOrstatmentCode)
@@ -631,7 +629,7 @@ public class CheckVoucherService {
                     .set("xx_biz_type", bizType.getKey());
             int status = TypeUtils.castToInt(detailRecord.get("status"));
             if (status == WebConstant.SftInterfaceStatus.SFT_INTER_PROCESS_S.getKey()) {
-                description = DateFormatThreadLocal.format("yyMMdd", allLastDate) + chann.getStr("bankcode") + "批量收款资金到帐";
+                description = DateFormatThreadLocal.format("yyMMdd", transLasetDate) + chann.getStr("bankcode") + "批量收款资金到帐";
                 //凭证1
                 list.add(CommonService.plsPayVorcher(acc, description, "SYS", transactionReference, 1, periodDate, allLastDate, detailRecord, curr, orgcode));
                 //凭证2
@@ -671,6 +669,7 @@ public class CheckVoucherService {
                 allLastDate = tempDate;
             }
         }
+        Date transLasetDate = allLastDate;      //对账当日期
         /**
          * （1）  如果对账单日期与实际对账日期（收付费对账操作日期）为同一财务月内，则财务记账日期为交易流水日期；
          * （2）  如果对账单日期与实际对账日期（收付费对账操作日期）为非同一财务月，则财务记账日期为操作日期。
@@ -687,8 +686,7 @@ public class CheckVoucherService {
         Record acc = null;
         String description = null, code6 = null, transactionReference = null;
         //根据账号找对应的bankcode
-        acc = Db.findById("account", "acc_no,acc_name", TypeUtils.castToString(billRecord.get("pay_account_no")),
-                TypeUtils.castToString(billRecord.get("pay_account_name")));
+        acc = Db.findById("account", "acc_id", TypeUtils.castToLong(tradRecordList.get(0).get("acc_id")));
         //根据机构id查询机构信息
         Record chann = Db.findFirst(Db.getSql("channel_setting.getchannelbybankcode"), acc.get("bankcode"));
         curr = TypeUtils.castToString(
@@ -698,30 +696,15 @@ public class CheckVoucherService {
                 Db.findById("organization", "org_id", TypeUtils.castToLong(acc.get("org_id")))
                         .get("code"));
         Record sftcheck = Db.findById("sftcheck_org_mapping", "tmp_org_code", orgcode);
-        transactionReference = "SS" + sftcheck.getStr("code_abbre") + DateFormatThreadLocal.format("YYMM",allLastDate) + seqnoOrstatmentCode;
-        description = DateFormatThreadLocal.format("yyMMdd",allLastDate) + acc.getStr("bankcode") + "柜面付款资金到帐";
+        transactionReference = "SS" + sftcheck.getStr("code_abbre") + DateFormatThreadLocal.format("YYMM",periodDate) + seqnoOrstatmentCode.substring(seqnoOrstatmentCode.length()-4);
+        description = DateFormatThreadLocal.format("yyMMdd",transLasetDate) + acc.getStr("bankcode") + "柜面付款资金到帐";
         billRecord.set("xx_insure_bill_no", getplfInsureBill_no(billRecord)).set("xx_seqnoOrstatmentCode", seqnoOrstatmentCode)
                 .set("xx_operator", userInfo.getUsr_id()).set("xx_operator_org", userInfo.getCurUodp().getOrg_id())
                 .set("xx_biz_type", bizType.getKey());
-        int source = TypeUtils.castToInt(billRecord.get("source_sys"));
-        if(source== WebConstant.SftOsSourceCounter.LA.getKey() || source==WebConstant.SftOsSourceCounter.EBS.getKey()){
-            description = DateFormatThreadLocal.format("yyMMdd",allLastDate) + acc.getStr("bankcode") + "柜面付款资金到帐";
-            transactionReference = "SS" + sftcheck.getStr("code_abbre") + DateFormatThreadLocal.format("YYMM",allLastDate) + seqnoOrstatmentCode;
-            //凭证1
-            list.add(CommonService.gmfPayVorcher(acc, description, "SYS", transactionReference, 1, periodDate, allLastDate, billRecord, curr, orgcode));
-            //凭证2
-            list.add(CommonService.gmfPayVorcher(acc, description, chann.getStr("channel_code") + acc.getStr("bankcode"), transactionReference, 2, periodDate, allLastDate, billRecord, curr, orgcode));
-        }else if(source == 3){  //3 代表TMP
-            Record matchRec = Db.findById("recv_counter_match", "id", TypeUtils.castToLong(billRecord.get("legal_id")));
-            periodDate = CommonService.getPeriodByCurrentDay(TypeUtils.castToDate(matchRec.get("refund_on")));
-            allLastDate = TypeUtils.castToDate(matchRec.get("refund_on"));
-            description = DateFormatThreadLocal.format("yyMMdd",allLastDate) + acc.getStr("bankcode") + "柜面收费确认-待匹配-退费";
-            transactionReference = "SS" + sftcheck.getStr("code_abbre") + DateFormatThreadLocal.format("YYMM",allLastDate) + seqnoOrstatmentCode;
-            //凭证1
-            list.add(CommonService.gmfPayVorcher(acc, description, "SYS", transactionReference, 3, periodDate, allLastDate, billRecord, curr, orgcode));
-            //凭证2
-            list.add(CommonService.gmfPayVorcher(acc, description, chann.getStr("channel_code") + acc.getStr("bankcode"), transactionReference, 4, periodDate, allLastDate, billRecord, curr, orgcode));
-        }
+        //凭证1
+        list.add(CommonService.gmfPayVorcher(acc, description, "SYS", transactionReference, 1, periodDate, allLastDate, billRecord, curr, orgcode));
+        //凭证2
+        list.add(CommonService.gmfPayVorcher(acc, description, chann.getStr("channel_code") + acc.getStr("bankcode"), transactionReference, 2, periodDate, allLastDate, billRecord, curr, orgcode));
 
         if (!CommonService.saveCheckVoucher(list)) {
             throw new ReqDataException("生成凭证失败!");
@@ -1317,123 +1300,13 @@ public class CheckVoucherService {
         return new Record[]{payRec, recvRec};
     }
 
-    /**
-     * 柜面收个单团单确认接口 生成凭证
-     * @param source
-     * @param payLegalRecord
-     * @return
-     * @throws BusinessException
-     */
-    public static boolean gmsConfirmVoucher(String source, Record payLegalRecord) throws BusinessException {
-
-        String seqnoOrstatmentCode = RedisSericalnoGenTool.genVoucherSeqNo();//生成十六进制序列号/凭证号
-        List<Record> list = new ArrayList<>();
-        int waitMatchFlag = TypeUtils.castToInt(payLegalRecord.get("wait_match_flag"));  //wait_match_flag 0 常规的 1 带匹配的
-        if(waitMatchFlag == 0){
-            payLegalRecord.set("xx_biz_type", WebConstant.MajorBizType.GMSCG_HD_VOUCHER.getKey());
-        }else if(waitMatchFlag == 1){
-            payLegalRecord.set("xx_biz_type", WebConstant.MajorBizType.GMSWPP_HD_VOUCHER.getKey());
-        }
-        if("LA".equals(source)){
-            //凭证1
-            list.add(CommonService.gmsConfirmVoucher(payLegalRecord, 1, seqnoOrstatmentCode, waitMatchFlag));
-        }else if("EBS".equals(source)){
-            //凭证1
-            list.add(CommonService.gmsConfirmVoucher(payLegalRecord, 2, seqnoOrstatmentCode, waitMatchFlag));
-        }
-        //凭证2
-        list.add(CommonService.gmsConfirmVoucher(payLegalRecord, 3, seqnoOrstatmentCode, waitMatchFlag));
-
-        if (!CommonService.saveCheckVoucher(list)) {
-            throw new ReqDataException("生成凭证失败!");
-        }
-
-        return true;
-    }
-
-    /**
-     * 柜面收 核对生成凭证
-     *
-     * @param batchList
-     * @param tradList
-     * @return
-     * @throws BusinessException
-     */
-    private static boolean gmsCheckVoucher(List<Integer> batchList, List<Integer> tradList,
-                                           List<Record> batchRecordList, List<Record> tradRecordList,
-                                           WebConstant.MajorBizType bizType, String seqnoOrstatmentCode, UserInfo userInfo) throws BusinessException {
-
-        String curr="",orgcode="";
-        List<Record> list = new ArrayList<>();
-        //所有交易的最晚日期
-        Date allLastDate = TypeUtils.castToDate(tradRecordList.get(0).get("trans_date")), periodDate=null;
-        Date tempDate = null;
-        for(Record r : tradRecordList){
-            tempDate = TypeUtils.castToDate(r.get("trans_date"));
-            if(tempDate.after(allLastDate)){
-                allLastDate = tempDate;
-            }
-        }
-        /**
-         * （1）  如果对账单日期与实际对账日期（收付费对账操作日期）为同一财务月内，则财务记账日期为交易流水日期；
-         * （2）  如果对账单日期与实际对账日期（收付费对账操作日期）为非同一财务月，则财务记账日期为操作日期。
-         */
-        periodDate = CommonService.getPeriodByCurrentDay(allLastDate);
-        Date periodCurr = CommonService.getPeriodByCurrentDay(new Date());
-        if(periodDate.getTime() == periodCurr.getTime()){
-            periodDate = periodDate;
-        }else{
-            periodDate = periodCurr;
-            allLastDate = new Date();
-        }
-
-        Record chann=null, acc=null;
-        String description=null, code6=null, transactionReference=null;
-        for(Record detailRecord : batchRecordList){
-            chann = Db.findFirst(Db.getSql("channel_setting.getchannelbybankcode"), detailRecord.get("recv_bank_name"));
-            acc = Db.findFirst(Db.getSql("paycheck.findaccount"), chann.getStr("bankcode"));
-            curr = TypeUtils.castToString(
-                    Db.findById("currency","id", TypeUtils.castToLong(acc.get("curr_id")))
-                            .get("iso_code"));
-            //根据机构id查询机构信息
-            orgcode = TypeUtils.castToString(
-                    Db.findById("organization","org_id", TypeUtils.castToLong(acc.get("org_id")))
-                            .get("code"));
-            Record sftcheck = Db.findById("sftcheck_org_mapping", "tmp_org_code", orgcode);
-            transactionReference = "SS" + sftcheck.getStr("code_abbre") + DateFormatThreadLocal.format("YYMM",new Date()) + seqnoOrstatmentCode;
-            int waitMatchFlag = TypeUtils.castToInt(detailRecord.get("wait_match_flag"));
-            detailRecord.set("xx_seqnoOrstatmentCode", seqnoOrstatmentCode).set("xx_operator", userInfo.getUsr_id()).set("xx_operator_org", userInfo.getCurUodp().getOrg_id())
-                    .set("xx_biz_type", bizType.getKey());
-            if(waitMatchFlag == 0){
-                description = DateFormatThreadLocal.format("yyMMdd",allLastDate) + chann.getStr("bankcode") + "柜面收款资金到帐-常规";
-                //凭证1
-                list.add(CommonService.gmsCheckVoucher(acc, description, "SYS", transactionReference, 1, periodDate, allLastDate, detailRecord, curr, orgcode));
-                //凭证2
-                list.add(CommonService.gmsCheckVoucher(acc, description, chann.getStr("channel_code")+chann.getStr("bankcode"), transactionReference, 2, periodDate, allLastDate, detailRecord, curr, orgcode));
-            }else if(waitMatchFlag == 1){
-                description = DateFormatThreadLocal.format("yyMMdd",allLastDate) + chann.getStr("bankcode") + "柜面收费确认-待匹配";
-                //凭证1
-                list.add(CommonService.gmsCheckVoucher(acc, description, "SYS", transactionReference, 3, periodDate, allLastDate, detailRecord, curr, orgcode));
-                //凭证2
-                list.add(CommonService.gmsCheckVoucher(acc, description, chann.getStr("channel_code")+chann.getStr("bankcode"), transactionReference, 4, periodDate, allLastDate, detailRecord, curr, orgcode));
-            }
-        }
-
-        if (!CommonService.saveCheckVoucher(list)) {
-            throw new ReqDataException("生成凭证失败!");
-        }
-
-
-        return true;
-    }
-    public static boolean ncHeadCheckVoucher(Record originData,Record tranRecord) throws BusinessException {
-        Record payRec = tranRecord;
+    public static boolean ncHeadCheckVoucher(List<Integer> transIdList, long billId, Map<Integer, Date> transDateMap, UserInfo userInfo) throws BusinessException {
+        Record payRec = null;
         Record set = null;
         Record where = null;
         Record billRec = null;
         String tableName = "nc_head_payment";
-        String primartKey = "ref_id";
-        int billId=originData.getInt("id");
+        String primartKey = "id";
 
         //根据单据id查询单据信息
         billRec = Db.findById(tableName, primartKey, billId);
@@ -1441,14 +1314,16 @@ public class CheckVoucherService {
         String seqnoOrstatmentCode = RedisSericalnoGenTool.genVoucherSeqNo();//生成十六进制序列号/凭证号
         String newStatmentCode = DateFormatThreadLocal.format("yyyyMMddhhmmss", new Date()) + seqnoOrstatmentCode;
 
+        Record[] infos = processTranIds(transIdList, newStatmentCode);
+        payRec = infos[0];
 
         List<Record> list = new ArrayList<>();
 
         //============ 付方向 凭证数据组装 begin ============
         //凭证1
-        list.add(ncHeadPayVorcher(originData,payRec, billRec, seqnoOrstatmentCode, newStatmentCode, 1));
+        list.add(ncHeadPayVorcher(payRec, billRec, seqnoOrstatmentCode, newStatmentCode, 1, transDateMap, userInfo));
         //凭证2
-        list.add(ncHeadPayVorcher(originData,payRec, billRec, seqnoOrstatmentCode, newStatmentCode, 2));
+        list.add(ncHeadPayVorcher(payRec, billRec, seqnoOrstatmentCode, newStatmentCode, 2, transDateMap, userInfo));
         //============ 付方向 凭证数据组装 end ============
 
 
@@ -1469,19 +1344,22 @@ public class CheckVoucherService {
 
         return CommonService.update(tableName, set, where);
     }
-    public static Record ncHeadPayVorcher(Record originDataRec,Record payRec, Record billRec, String seqnoOrstatmentCode, String newStatmentCode, int iden) throws BusinessException {
+    public static Record ncHeadPayVorcher(Record payRec, Record billRec, String seqnoOrstatmentCode, String newStatmentCode, int iden, Map<Integer, Date> transDateMap, UserInfo userInfo) throws BusinessException {
         String serviceSerialNumber = TypeUtils.castToString(billRec.get("service_serial_number"));
         String curr = "";
+        String description = "";
         BigDecimal paymentAmount = TypeUtils.castToBigDecimal(billRec.get("payment_amount"));
-
-        Record accRec = Db.findById("account", "acc_id", new Object[]{TypeUtils.castToLong(billRec.get("pay_account_id"))});
+        Record accRec = Db.findById("account", "acc_id", new Object[]{TypeUtils.castToLong(payRec.get("acc_id"))});
         Record orgRec = Db.findById("organization", "org_id", new Object[]{TypeUtils.castToLong(accRec.get("org_id"))});
+        Long originDataId = TypeUtils.castToLong(billRec.get("ref_id"));
+        Record originDataRec = Db.findById("nc_origin_data", "id", new Object[]{originDataId});
         if (originDataRec == null) {
             throw new ReqDataException("未找到原始数据信息！");
         } else {
             String a_code10 = TypeUtils.castToString(orgRec.get("code"));
             String flow_id = TypeUtils.castToString(originDataRec.get("flow_id"));
             Long billOrgId = TypeUtils.castToLong(billRec.get("org_id"));
+            Record applyOrg = Db.findById("organization", "org_id", new Object[]{billOrgId});
 
 
             Date payTransDate = TypeUtils.castToDate(payRec.get("trans_date"));
@@ -1497,34 +1375,25 @@ public class CheckVoucherService {
                 throw new ReqDataException("借贷标识未定义!");
             }
 
+            description = TypeUtils.castToString(originDataRec.get("bill_no"));
             curr = TypeUtils.castToString(billRec.get("pay_account_cur"));
-            Record record = (new Record()).set("trans_id", 0)
-                    .set("account_code", subjectCode)
-                    .set("account_period", DateFormatThreadLocal.format("0MMyyyy", com.qhjf.cfm.utils.CommonService.getPeriodByCurrentDay(payTransDate)))
-                    .set("a_code1", "G")
-                    .set("a_code2", "SYS")
-                    .set("a_code3", "S")
-                    .set("a_code5", "SYS")
-                    .set("a_code6", "SYS")
-                    .set("a_code7", "SYS")
-                    .set("a_code10", a_code10)
-                    .set("base_amount", paymentAmount)
-                    .set("currency_code", curr)
-                    .set("debit_credit", debitCredit)
+            int tranId = (Integer)payRec.get("id");
+            Record record = (new Record()).set("trans_id", tranId).set("account_code", subjectCode)
+                    .set("account_period", DateFormatThreadLocal.format("0MMyyyy", (Date)transDateMap.get(tranId)))
+                    .set("a_code1", "G").set("a_code2", "SYS").set("a_code3", "S").set("a_code5", "SYS")
+                    .set("a_code6", "SYS").set("a_code7", "SYS").set("a_code10", a_code10).set("base_amount", paymentAmount)
+                    .set("currency_code", curr).set("debit_credit", debitCredit)
                     .set("description", DateFormatThreadLocal.format("yyMMdd", payTransDate)+"支付手续费"+flow_id)
-                    .set("journal_source", "SST")
-                    .set("transaction_amount", paymentAmount)
+                    .set("journal_source", "SST").set("transaction_amount", paymentAmount)
                     .set("transaction_date", DateFormatThreadLocal.format("ddMMyyyy", payTransDate))
                     .set("transaction_reference", "SSAL" + DateFormatThreadLocal.format("YYMM", new Date()) + seqnoOrstatmentCode)
                     .set("local_transaction_date", DateFormatThreadLocal.format("yyyy-MM-dd", payTransDate))
-                    .set("accounting_period", DateFormatThreadLocal.format("yyyy-MM", com.qhjf.cfm.utils.CommonService.getPeriodByCurrentDay(payTransDate)))
-                    .set("docking_status", 0)
-                    .set("statement_code", newStatmentCode)
-                    .set("business_ref_no", serviceSerialNumber)
-                    .set("biz_type", "44")
-                    .set("ref_bill_id", originDataRec.get("id"))
-                    .set("ref_bill", "nc_head_payment");
-
+                    .set("accounting_period", DateFormatThreadLocal.format("yyyy-MM", (Date)transDateMap.get(tranId)))
+                    .set("docking_status", 0).set("statement_code", newStatmentCode).set("business_ref_no", serviceSerialNumber)
+                    .set("biz_type", "44");
+            if (userInfo != null) {
+                record.set("operator", userInfo.getUsr_id()).set("operator_org", userInfo.getCurUodp().getOrg_id());
+            }
 
             return record;
         }
