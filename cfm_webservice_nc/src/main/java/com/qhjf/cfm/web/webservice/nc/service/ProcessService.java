@@ -51,9 +51,9 @@ public class ProcessService {
 
 		try{
 				originDataCopy.set("id",originData.getLong("id"));
-				originDataCopy.set("interface_status", WebConstant.OaInterfaceStatus.OA_INTER_PROCEEING.getKey());
+				originDataCopy.set("interface_status", WebConstant.InterfaceStatus.INTER_PROCEEING.getKey());
 				processHeadPayment(applyOrg.getLong("org_id"),recvBank,originData, checkId);
-				originDataCopy.set("process_status", WebConstant.OaProcessStatus.OA_CONVERT_SUCCESS.getKey());
+				originDataCopy.set("process_status", WebConstant.NcProcessStatus.NC_CONVERT_SUCCESS.getKey());
 		}catch(Exception e){
 			e.printStackTrace();
 			String errMsg = null;
@@ -62,7 +62,7 @@ public class ProcessService {
 			}else{
 				errMsg = e.getMessage();
 			}
-			originDataCopy.set("process_status", WebConstant.OaProcessStatus.OA_CONVERT_FAILED.getKey());
+			originDataCopy.set("process_status", WebConstant.NcProcessStatus.NC_TRADE_FAILED.getKey());
 			originDataCopy.set("process_msg", errMsg);
 		}
 		Db.update("nc_origin_data", originDataCopy);

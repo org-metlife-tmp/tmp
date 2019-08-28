@@ -71,8 +71,8 @@ public class SysNcSinglePayInter extends SysSinglePayInter {
                                  */
                                 Long originDataId = billRecord.getLong("ref_id");
                                 Db.update(Db.getSql("nc_interface.updOriginDataInterfaceStatus"),
-                                        WebConstant.OaInterfaceStatus.OA_INTER_PROCESS_S.getKey(), null, null,
-                                        WebConstant.OaProcessStatus.OA_TRADE_SUCCESS.getKey(), originDataId);
+                                        WebConstant.InterfaceStatus.INTER_PROCESS_S.getKey(), null, null,
+                                        WebConstant.NcProcessStatus.NC_TRADE_SUCCESS.getKey(), originDataId);
                                 parseRecord.set("trans_date", DateUtil.getSpecifiedDayBefore(new Date(), 0, "yyyyMMdd"));
                                 new NcCallback().callback(Db.findById("nc_origin_data", originDataId), parseRecord);
                             } else {
@@ -98,11 +98,11 @@ public class SysNcSinglePayInter extends SysSinglePayInter {
                                  * 修改原始表状态，并加入nc回调队列
                                  */
                                 Db.update(Db.getSql("nc_interface.updOriginDataProcessStatus"),
-                                        WebConstant.OaProcessStatus.OA_TRADE_FAILED.getKey(), parseRecord.getStr("message"),
+                                        WebConstant.NcProcessStatus.NC_TRADE_FAILED.getKey(), parseRecord.getStr("message"),
                                         parseRecord.getStr("message"), originDataId);
                                 Db.update(Db.getSql("nc_interface.updOriginDataInterfaceStatus"),
-                                        WebConstant.OaInterfaceStatus.OA_INTER_PROCESS_F.getKey(), "P00098", parseRecord.getStr("message"),
-                                        WebConstant.OaProcessStatus.OA_TRADE_FAILED.getKey(), originDataId);
+                                        WebConstant.InterfaceStatus.INTER_PROCESS_F.getKey(), "P00098", parseRecord.getStr("message"),
+                                        WebConstant.NcProcessStatus.NC_TRADE_FAILED.getKey(), originDataId);
                                 new NcCallback().callback(Db.findById("nc_origin_data", originDataId),null);
                             } else {
                                 log.error("已进行过状态更新！");
@@ -192,11 +192,11 @@ public class SysNcSinglePayInter extends SysSinglePayInter {
 
                             Long originDataId = billRecord.getLong("ref_id");
                             Db.update(Db.getSql("nc_interface.updOriginDataProcessStatus"),
-                                    WebConstant.OaProcessStatus.OA_TRADE_FAILED.getKey(), e.getMessage(),
+                                    WebConstant.NcProcessStatus.NC_TRADE_FAILED.getKey(), e.getMessage(),
                                     e.getMessage(), originDataId);
                             Db.update(Db.getSql("nc_interface.updOriginDataInterfaceStatus"),
-                                    WebConstant.OaInterfaceStatus.OA_INTER_PROCESS_F.getKey(), "P00098", e.getMessage(),
-                                    WebConstant.OaProcessStatus.OA_TRADE_FAILED.getKey(), originDataId);
+                                    WebConstant.InterfaceStatus.INTER_PROCESS_F.getKey(), "P00098", e.getMessage(),
+                                    WebConstant.NcProcessStatus.NC_TRADE_FAILED.getKey(), originDataId);
                             final Record  ncRecord = Db.findById("nc_origin_data", "id",
                                     billRecord.getInt("ref_id"));
                             if(ncRecord!=null){

@@ -88,7 +88,7 @@ public class HeadOrgNcService {
                 billRecordCopy.set("service_status", WebConstant.BillStatus.FAILED.getKey());
                 billRecordCopy.set("feed_back", errMsg);
                 Db.update("nc_head_payment", billRecordCopy);
-                Db.update(Db.getSql("origin_data_nc.updProcessStatus"), WebConstant.OaProcessStatus.OA_TRADE_FAILED.getKey(),
+                Db.update(Db.getSql("origin_data_nc.updProcessStatus"), WebConstant.NcProcessStatus.NC_TRADE_FAILED.getKey(),
                         errMsg, originDateId);
             }
 
@@ -163,9 +163,9 @@ public class HeadOrgNcService {
                         log.error("=======nc_origin_data此条单据原始数据信息已过期========");
                         return false ;
                     }
-                    set.set("process_status", WebConstant.OaProcessStatus.OA_TRADE_CANCEL.getKey());
+                    set.set("process_status", WebConstant.NcProcessStatus.NC_TRADE_CANCEL.getKey());
                     set.set("lock_id", originId);
-                    set.set("interface_status", WebConstant.OaInterfaceStatus.OA_INTER_PROCESS_F.getKey());
+                    set.set("interface_status", WebConstant.InterfaceStatus.INTER_PROCESS_F.getKey());
                     set.set("interface_fb_code", "P0098");
                     set.set("interface_fb_msg", feed_back);
                     where.set("id", originId);

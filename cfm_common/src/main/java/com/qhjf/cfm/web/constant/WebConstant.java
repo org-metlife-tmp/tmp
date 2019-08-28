@@ -463,7 +463,7 @@ public interface WebConstant {
 
     @ConstantAnnotation("单据状态")
     enum BillStatus implements WebConstant {
-        SAVED(1, "已保存"), SUBMITED(2, "已提交"), AUDITING(3, "审批中"), PASS(4, "审批通过"), REJECT(5, "审批拒绝"),
+        NOSUBMIT(0, "未提交"),SAVED(1, "已保存"), SUBMITED(2, "已提交"), AUDITING(3, "审批中"), PASS(4, "审批通过"), REJECT(5, "审批拒绝"),
         PROCESSING(6, "处理中"), SUCCESS(7, "已成功"), FAILED(8, "已失败"), CANCEL(9, "已作废"), NOCOMPLETION(10, "未完结"),
         COMPLETION(11, "已完结"), WAITPROCESS(12, "待处理");
 
@@ -1241,6 +1241,41 @@ public interface WebConstant {
 
     }
 
+
+    @ConstantAnnotation("接口状态")
+    enum InterfaceStatus implements WebConstant {
+        INTER_RECV_SUCCESS(1, "接收成功"), INTER_PROCEEING(2, "处理中"), INTER_PROCESS_S(3, "处理成功"),
+        INTER_PROCESS_F(4, "处理失败");
+
+        int key;
+        String desc;
+
+        InterfaceStatus(int key, String desc) {
+            this.key = key;
+            this.desc = desc;
+        }
+
+        @Override
+        public int getKey() {
+            return key;
+        }
+
+        @Override
+        public String getDesc() {
+            return desc;
+        }
+
+        public static OaInterfaceStatus getOaInterfaceStatus(int key) {
+            for (OaInterfaceStatus value : OaInterfaceStatus.values()) {
+                if (value.getKey() == key) {
+                    return value;
+                }
+            }
+            return null;
+        }
+
+    }
+
     @ConstantAnnotation("OA内部处理状态")
     enum OaProcessStatus implements WebConstant {
         OA_CONVERT_SUCCESS(1, "转换成功"), OA_CONVERT_FAILED(2, "转换失败"), OA_TRADE_SUCCESS(3, "交易成功"),
@@ -1266,6 +1301,41 @@ public interface WebConstant {
 
         public static OaProcessStatus getOaProcessStatus(int key) {
             for (OaProcessStatus value : OaProcessStatus.values()) {
+                if (value.getKey() == key) {
+                    return value;
+                }
+            }
+            return null;
+        }
+
+    }
+
+
+    @ConstantAnnotation("NC内部处理状态")
+    enum NcProcessStatus implements WebConstant {
+        NC_CONVERT_SUCCESS(1, "转换成功"), NC_CONVERT_FAILED(2, "转换失败"),
+        NC_TRADE_SUCCESS(3, "交易成功"),NC_TRADE_FAILED(4, "交易失败"), NC_TRADE_CANCEL(5, "交易作废");
+
+        int key;
+        String desc;
+
+        NcProcessStatus(int key, String desc) {
+            this.key = key;
+            this.desc = desc;
+        }
+
+        @Override
+        public int getKey() {
+            return key;
+        }
+
+        @Override
+        public String getDesc() {
+            return desc;
+        }
+
+        public static NcProcessStatus getNcProcessStatus(int key) {
+            for (NcProcessStatus value : NcProcessStatus.values()) {
                 if (value.getKey() == key) {
                     return value;
                 }
@@ -1873,6 +1943,39 @@ public interface WebConstant {
         String desc;
 
         SftCallbackStatus(int key, String desc) {
+            this.key = key;
+            this.desc = desc;
+        }
+
+        @Override
+        public int getKey() {
+            return key;
+        }
+
+        @Override
+        public String getDesc() {
+            return desc;
+        }
+
+        public static SftCallbackStatus getSftCallbackStatus(int key) {
+            for (SftCallbackStatus value : SftCallbackStatus.values()) {
+                if (value.getKey() == key) {
+                    return value;
+                }
+            }
+            return null;
+        }
+
+    }
+
+    @ConstantAnnotation("收付通回调状态")
+    enum CallbackStatus implements WebConstant {
+        NO_CALLBACK(1, "未回调"), CALLBACK_S(2, "回调成功"), CALLBACK_F(3, "回调失败"), CALLBACKING(4, "回调中");
+
+        int key;
+        String desc;
+
+        CallbackStatus(int key, String desc) {
             this.key = key;
             this.desc = desc;
         }

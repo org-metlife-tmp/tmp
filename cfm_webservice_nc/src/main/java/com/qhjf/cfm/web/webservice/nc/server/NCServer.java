@@ -79,7 +79,7 @@ public class NCServer implements NCIServer{
 		originRecord.set("apply_dept", req.getApply_dept());
 		originRecord.set("pay_org_type", req.getPay_org_type());
 		originRecord.set("pay_mode", req.getPay_mode());
-		originRecord.set("interface_status", WebConstant.OaInterfaceStatus.OA_INTER_RECV_SUCCESS.getKey());
+		originRecord.set("interface_status", WebConstant.InterfaceStatus.INTER_RECV_SUCCESS.getKey());
 
 		boolean saveOriginFlg = Db.save("nc_origin_data", originRecord);
 		if(!saveOriginFlg){
