@@ -88,7 +88,7 @@
                         <el-col :span="4">
                             <el-form-item>
                                 <el-input v-model="searchData.flow_id" clearable
-                                          placeholder="请输入流程ID"></el-input>
+                                          placeholder="请输入结算号"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="4">
@@ -134,11 +134,13 @@
                       highlight-current-row>
                 <el-table-column prop="flow_id" label="结算号" :show-overflow-tooltip="true"
                                  width="120"></el-table-column>
+                <el-table-column prop="send_count" label="推送次数" :show-overflow-tooltip="true"
+                                 width="80"></el-table-column>
                 <el-table-column prop="apply_user" label="申请人" :show-overflow-tooltip="true"
                                  width="120"></el-table-column>
                 <el-table-column prop="org_name" label="申请单位" :show-overflow-tooltip="true"
                                  width="120"></el-table-column>
-                <el-table-column prop="apply_date" label="申请日期" :show-overflow-tooltip="true"
+                <el-table-column prop="apply_date" label="支付日期" :show-overflow-tooltip="true"
                                  width="100"></el-table-column>
                 <el-table-column prop="pay_account_no" label="付款方账号" :show-overflow-tooltip="true"
                                  width="120"></el-table-column>
@@ -212,7 +214,7 @@
                     [编号:<span v-text="dialogData.service_serial_number"></span>]
                 </div>
                 <ul class="dialog-talbe">
-                    <li class="table-li-title">报销单申请号</li>
+                    <li class="table-li-title">结算号</li>
                     <li class="table-li-content" v-text="dialogData.flow_id"></li>
                     <li class="table-li-title">申请公司</li>
                     <li class="table-li-content" v-text="dialogData.org_name"></li>

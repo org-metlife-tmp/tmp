@@ -98,7 +98,7 @@
                         <el-col :span="4">
                             <el-form-item>
                                 <el-input v-model="searchData.flow_id" clearable
-                                          placeholder="请输入流程ID"></el-input>
+                                          placeholder="请输入结算号"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="4">
@@ -137,13 +137,13 @@
             <el-table :data="tableList"
                       height="100%"
                       border size="mini">
-                <el-table-column prop="flow_id" label="流程ID" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="flow_id" label="结算号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="apply_user" label="申请人" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="amount" label="金额" :formatter="transitAmount" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="recv_acc_no" label="收款人账号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="recv_acc_name" label="收款人账户名称" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="apply_date" label="申请日期" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="send_count" label="重发次数" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="apply_date" label="支付日期" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="send_count" label="推送次数" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="memo" label="摘要" :show-overflow-tooltip="true"></el-table-column>
 
                 <el-table-column
@@ -189,7 +189,7 @@
                        width="900px" top="76px"
                        :close-on-click-modal="false">
                 <ul class="dialog-talbe">
-                    <li class="table-li-title">流程ID</li>
+                    <li class="table-li-title">结算号</li>
                     <li class="table-li-content" v-text="dialogData.flow_id"></li>
                     <li class="table-li-title">申请公司</li>
                     <li class="table-li-content" v-text="dialogData.org_name"></li>
@@ -201,7 +201,7 @@
 
                     <li class="table-li-title">申请用户</li>
                     <li class="table-li-content" v-text="dialogData.apply_user"></li>
-                    <li class="table-li-title">申请日期</li>
+                    <li class="table-li-title">支付日期</li>
                     <li class="table-li-content" v-text="dialogData.apply_date"></li>
 
                     <li class="table-li-title">收款人账户</li>
