@@ -64,27 +64,27 @@ public class RecvCounterService {
 	
     private RecvCounterRemoteCall recvCounter = new RecvCounterRemoteCall();
 
-	
+
 	/**
 	 * 个单新增   异步
 	 * @param record
 	 * @param userInfo
 	 * @param curUodp
 	 * @throws ReqDataException
-	 * @throws ParseException 
-	 * @throws EncryAndDecryException 
+	 * @throws ParseException
+	 * @throws EncryAndDecryException
 	 */
 	public void add(final Record record, final UserInfo userInfo, final UodpInfo curUodp) throws ReqDataException, ParseException, EncryAndDecryException{
 		// 是否包含中文
-		String currency = TypeUtils.castToString(record.get("currency"));  //获取币种
-        boolean flag = StringKit.isContainChina(currency);
-        if(!flag) {
+		String currency = TypeUtils.castToString(record.get("currency"));
+		boolean flag = StringKit.isContainChina(currency);
+		if(!flag) {
 			Record currencyRec = Db.findById("currency", "id", TypeUtils.castToString(record.get("currency")));
 			currency = currencyRec.getStr("name");
-        }
-		final List<Record> policys = record.get("policy_infos");  //获取前台传过来的保单信息
-		logger.info("====共传输保单号===="+policys.size());	
-		//Curreny需要取一下值	
+		}
+		final List<Record> policys = record.get("policy_infos");
+		logger.info("====共传输保单号===="+policys.size());
+		//Curreny需要取一下值
 		String recv_date = TypeUtils.castToString(record.get("recv_date"));
 		//String batch_process_no = TypeUtils.castToString(record.get("batch_process_no"));
 		String recv_mode = TypeUtils.castToString(record.get("recv_mode"));
@@ -99,7 +99,7 @@ public class RecvCounterService {
 		String terminal_no = TypeUtils.castToString(record.get("terminal_no"));
 		String payer_relation_insured = TypeUtils.castToString(record.get("payer_relation_insured"));
 		String pay_reason = TypeUtils.castToString(record.get("pay_reason"));
-		//String bank_code = "31";
+		String bank_code = "31";
 		Set<String> MD5 = new HashSet<>();
 		final List<Record> records = new ArrayList<>();
 		final List<Object> list = record.get("files");
@@ -107,22 +107,17 @@ public class RecvCounterService {
 		BigDecimal total_amount = TypeUtils.castToBigDecimal(record.get("amount"));
 		BigDecimal total_amount_son =  new BigDecimal(0);
 
-		String bcnum = null;
-		Record getbankcodeRecord = new Record();//新建的对象用来查询bankcode值
-		Record getbankcodeRecordEnd = new Record();//用来存放查询出的bankcode的该条对象
+
 
 		for (Record rec : policys) {
 			String third_payment = TypeUtils.castToString(rec.get("third_payment"));
 			String payer = TypeUtils.castToString(rec.get("payer"));
 			String payer_cer_no = TypeUtils.castToString(rec.get("payer_cer_no"));
 			String insure_bill_no = TypeUtils.castToString(rec.get("insure_bill_no"));
-			//把保单号放入getbankcodeRecord对象中
-			bcnum = TypeUtils.castToString(rec.get("insure_bill_no"));
-			getbankcodeRecord.set("insure_bill_no",TypeUtils.castToString(rec.get("insure_bill_no"))) ;
 			String bill_org_id = TypeUtils.castToString(rec.get("bill_org_id"));
 			String source_sys = TypeUtils.castToString(rec.get("source_sys"));
 			//String bank_code = TypeUtils.castToString(rec.get("bank_code"));
-			String bank_code = "31";
+			//String bank_code = "31";
 			String amount = TypeUtils.castToString(rec.get("amount"));
 			String insure_name = TypeUtils.castToString(rec.get("insure_name"));
 			String insure_cer_no = TypeUtils.castToString(rec.get("insure_cer_no"));
@@ -131,11 +126,12 @@ public class RecvCounterService {
 			String srce_bus = TypeUtils.castToString(rec.get("srce_bus"));
 			String camp_aign = TypeUtils.castToString(rec.get("camp_aign"));
 			String agnt_num  = TypeUtils.castToString(rec.get("agnt_num"));
+			String bill_num = TypeUtils.castToString(rec.get("bill_number"));
 			StringBuffer sb = new StringBuffer();
 			sb.append(recv_date).append(currency).append(insure_bill_no).append(bill_org_id).append(source_sys).
-			append(recv_mode).append(use_funds).append(bill_status).append(bill_number).append(bill_date).append(recv_bank_name).append(recv_acc_no).append(consumer_bank_name).
-			append(consumer_acc_no).append(terminal_no).append(amount).append(insure_name).append(insure_cer_no).append(isnot_electric_pay).append(isnot_bank_transfer_premium).append(third_payment).append(payer).
-			append(payer_cer_no).append(payer_relation_insured).append(pay_reason);
+					append(recv_mode).append(use_funds).append(bill_status).append(bill_num).append(bill_date).append(recv_bank_name).append(recv_acc_no).append(consumer_bank_name).
+					append(consumer_acc_no).append(terminal_no).append(amount).append(insure_name).append(insure_cer_no).append(isnot_electric_pay).append(isnot_bank_transfer_premium).append(third_payment).append(payer).
+					append(payer_cer_no).append(payer_relation_insured).append(pay_reason);
 			//防重校验
 			String md5String = MD5Kit.string2MD5(sb.toString());
 			//record.set("md5", md5String) ;
@@ -148,93 +144,78 @@ public class RecvCounterService {
 				logger.error("====录入的保单号已经确认完成了===="+insure_bill_no);
 				throw new ReqDataException("待确认的保单在系统内已经存在") ;
 			}
-	        String serviceSerialNumber = BizSerialnoGenTool.getInstance().getSerial(WebConstant.MajorBizType.GMSGD);
+			String serviceSerialNumber = BizSerialnoGenTool.getInstance().getSerial(WebConstant.MajorBizType.GMSGD);
 			total_amount_son = total_amount_son.add(new BigDecimal(amount));
-
-			//查询bankcode值
-			//Record getbankcodeRecordEnd = new Record();
-			String bc = null;
-			String sql = Db.getSql("recv_counter.findbankcode");
-			logger.info("--------SQLSQLSQL---------------"+sql);
-			getbankcodeRecordEnd = Db.findFirst(Db.getSql("recv_counter.findbankcode"),bcnum);
-
-			//Db.find(Db.getSql("recv_counter.detailList"), batch_process_no);
-			logger.info("-------------查询bankcode值--------------"+getbankcodeRecordEnd.get("bankcode"));
-
 			Record insertRecord = new Record();
 			//加密
 			SymmetricEncryptUtil  util = SymmetricEncryptUtil.getInstance();
 
-
-
-
 			insertRecord.set("create_on", new Date())
-			.set("create_user_name", userInfo.getName())
-			.set("md5", md5String) 
-	        .set("create_by", userInfo.getUsr_id())
-			.set("update_on", new Date())
-			.set("update_by", userInfo.getUsr_id())
-			.set("wait_match_flag", record.get("wait_match_flag"))
-			.set("wait_match_id", record.get("wait_match_id"))
-			.set("bill_type", WebConstant.SftRecvType.GDSK.getKey())
-			.set("insure_cer_no", insure_cer_no)
-			.set("total_amount", record.get("amount")) // 此批次号下的总金额
-			.set("batch_process_no", record.get("batch_process_no")) // 批处理号
-			.set("recv_date", record.get("recv_date")) // 收款日期
-			.set("currency",currency) // 币种
-			.set("recv_mode", recv_mode) // 收款方式
-			.set("use_funds", use_funds) // 资金用途
-			.set("bill_status", bill_status) // 票据状态
-			.set("bill_number", bill_number) // 票据编号/票据票号
-			.set("bill_date", record.get("bill_date")) // 票据日期
-			.set("terminal_no", terminal_no) // 终端机编号
-			.set("recv_acc_no", util.encrypt(recv_acc_no)) // 收款银行账号
-			.set("recv_bank_name", recv_bank_name) // 收款银行 取的是bankcode
-			.set("consumer_bank_name", consumer_bank_name) // 客户银行
-			.set("consumer_acc_no", util.encrypt(consumer_acc_no)) // 客户账号
-			.set("payer_relation_insured", record.get("payer_relation_insured")) // 与投保人关系
-			.set("pay_reason", record.get("pay_reason")) // 代缴费原因
-			.set("delete_flag", 0)
-			.set("persist_version", 0)
-			.set("attachment_count", list != null ? list.size() : 0) // 附件数量
-			.set("recv_org_id", curUodp.getOrg_id()) // 收款机构
-			.set("pay_status", WebConstant.SftRecvCounterPayStatus.QR.getKey()) // 直接将支付状态疯转改为确认
-			// 开始封装保单号的相关信息
-			.set("third_payment", rec.get("third_payment")) // 第三方缴费
-			.set("payer", (payer == null || StringUtils.isBlank(payer))? insure_name : payer) // 缴费人
-			.set("payer_cer_no", (payer_cer_no == null || StringUtils.isBlank(payer_cer_no))? insure_cer_no : payer_cer_no ) // 缴费人证件号
-			.set("insure_bill_no",insure_bill_no) // 保单号
-			.set("bill_org_id", TypeUtils.castToInt(bill_org_id)) // 保单机构
-			.set("source_sys",source_sys) // 保单核心系统
-			.set("amount", TypeUtils.castToBigDecimal(amount)) // 保单金额
-			.set("insure_name", insure_name) // 投保人
-			.set("insure_cer_no", insure_cer_no) // 投保人证件号
-			//.set("isnot_electric_pay", isnot_electric_pay) // 是否在电缴中(先注释）
-			// 是否银行转账中的保单缴费
-			.set("isnot_bank_transfer_premium ", isnot_bank_transfer_premium)
-			.set("service_serial_number", serviceSerialNumber)
-			//.set("bank_code", bcnum)
-			//.set("bank_code", bank_code)
-					//.set("bank_code", "31")
-			.set("service_status", WebConstant.BillStatus.SAVED.getKey())
-                    .set("srce_bus", srce_bus)
-                    .set("camp_aign", camp_aign)
-                    .set("agnt_num", agnt_num);
-	        records.add(insertRecord);						
+					.set("create_user_name", userInfo.getName())
+					.set("md5", md5String)
+					.set("create_by", userInfo.getUsr_id())
+					.set("update_on", new Date())
+					.set("update_by", userInfo.getUsr_id())
+					.set("wait_match_flag", record.get("wait_match_flag"))
+					.set("wait_match_id", record.get("wait_match_id"))
+					.set("bill_type", WebConstant.SftRecvType.GDSK.getKey())
+					.set("insure_cer_no", insure_cer_no)
+					.set("total_amount", record.get("amount")) // 此批次号下的总金额
+					.set("batch_process_no", record.get("batch_process_no")) // 批处理号
+					.set("recv_date", record.get("recv_date")) // 收款日期
+					.set("currency",currency) // 币种
+					.set("recv_mode", recv_mode) // 收款方式
+					.set("use_funds", use_funds) // 资金用途
+					.set("bill_status", bill_status) // 票据状态
+					.set("bill_number", bill_number) // 票据编号/票据票号
+					.set("bill_date", record.get("bill_date")) // 票据日期
+					.set("terminal_no", terminal_no) // 终端机编号
+					.set("recv_acc_no", util.encrypt(recv_acc_no)) // 收款银行账号
+					.set("recv_bank_name", recv_bank_name) // 收款银行 取的是bankcode
+					.set("consumer_bank_name", consumer_bank_name) // 客户银行
+					.set("consumer_acc_no", util.encrypt(consumer_acc_no)) // 客户账号
+					.set("payer_relation_insured", record.get("payer_relation_insured")) // 与投保人关系
+					.set("pay_reason", record.get("pay_reason")) // 代缴费原因
+					.set("delete_flag", 0)
+					.set("persist_version", 0)
+					.set("attachment_count", list != null ? list.size() : 0) // 附件数量
+					.set("recv_org_id", curUodp.getOrg_id()) // 收款机构
+					.set("pay_status", WebConstant.SftRecvCounterPayStatus.QR.getKey()) // 直接将支付状态疯转改为确认
+					// 开始封装保单号的相关信息
+					.set("third_payment", rec.get("third_payment")) // 第三方缴费
+					.set("payer", (payer == null || StringUtils.isBlank(payer))? insure_name : payer) // 缴费人
+					.set("payer_cer_no", (payer_cer_no == null || StringUtils.isBlank(payer_cer_no))? insure_cer_no : payer_cer_no ) // 缴费人证件号
+					.set("insure_bill_no",insure_bill_no) // 保单号
+					.set("bill_org_id", TypeUtils.castToInt(bill_org_id)) // 保单机构
+					.set("source_sys",source_sys) // 保单核心系统
+					.set("amount", TypeUtils.castToBigDecimal(amount)) // 保单金额
+					.set("insure_name", insure_name) // 投保人
+					.set("insure_cer_no", insure_cer_no) // 投保人证件号
+					.set("isnot_electric_pay", isnot_electric_pay) // 是否在电缴中
+					// 是否银行转账中的保单缴费
+					.set("isnot_bank_transfer_premium ", isnot_bank_transfer_premium)
+					.set("service_serial_number", serviceSerialNumber)
+					//.set("bank_code", bank_code)
+					.set("bank_code", "31")
+					.set("service_status", WebConstant.BillStatus.SAVED.getKey())
+					.set("srce_bus", srce_bus)
+					.set("camp_aign", camp_aign)
+					.set("agnt_num", agnt_num);
+			records.add(insertRecord);
 		}
-		
+
 		//校验外部总金额与所有保单的子金额是否一致
 		logger.info("====录入总金额===="+total_amount+"====所有保单金额之和===="+total_amount_son);
 		if(total_amount_son.compareTo(total_amount) != 0) {
 			throw new ReqDataException("录入的总金额与所有保单金额之和不一致");
 		}
-		
+
 		// 此处可以将数据直接修改为确认完成了.未匹配来的数据同时要修改主表为已匹配
 		boolean tx = Db.tx(new IAtom() {
-			
+
 			@Override
 			public boolean run() throws SQLException {
-				
+
 				logger.info("====存储recv_counter_bill表====");
 				for (int i = 0; i < records.size(); i++) {
 					Record rec = records.get(i);
@@ -245,45 +226,43 @@ public class RecvCounterService {
 					}
 					//开始库中插入共享附件
 					CommonService.delFileRef(WebConstant.MajorBizType.GMSGD.getKey(), rec.getInt("id"));
-		        	if (list != null && list.size() > 0) {
-		        		// 保存附件
-		        		boolean saveFileRef = CommonService.saveFileRef(WebConstant.MajorBizType.GMSGD.getKey(), rec.getInt("id"), list);
-		        	    if (!saveFileRef) {
+					if (list != null && list.size() > 0) {
+						// 保存附件
+						boolean saveFileRef = CommonService.saveFileRef(WebConstant.MajorBizType.GMSGD.getKey(), rec.getInt("id"), list);
+						if (!saveFileRef) {
 							logger.error("====附件存储错误===="+rec.get("insure_bill_no"));
 							return false ;
 						}
-		        	}
+					}
 				}
-								
+
 				if(null !=  record.get("wait_match_flag")&& StringUtils.isNotBlank(record.getStr("wait_match_flag"))
 						&& 1 == record.getInt("wait_match_flag")) {
 					logger.info("====来源未匹配数据,更新匹配主表====");
 					Integer wait_match_id = record.getInt("wait_match_id");
-					boolean updateMatch = CommonService.update("recv_counter_match", 
+					boolean updateMatch = CommonService.update("recv_counter_match",
 							new Record().set("match_on", new Date())
-							.set("match_status", WebConstant.SftRecvCounterMatchStatus.YPP.getKey())
-							.set("match_by",userInfo.getUsr_id())
-							.set("match_user_name", userInfo.getName()),
+									.set("match_status", WebConstant.SftRecvCounterMatchStatus.YPP.getKey())
+									.set("match_by",userInfo.getUsr_id())
+									.set("match_user_name", userInfo.getName()),
 							new Record().set("id", wait_match_id));
 					logger.info("====更新recv_counter_match数据===="+wait_match_id);
 					return updateMatch ;
-				}   		
+				}
 				return true;
 			}
 		});
 		if (!tx) {
 			throw new ReqDataException("柜面收个单确认失败");
 		}
-		record.set("bank_code",getbankcodeRecordEnd.get("bankcode"));//把bankcode值封装到record对象传给la
 		logger.info("====校验成功,开启异步线程请求外部系统====");
 		RecvCounterConfirmQueue recvCounterConfirmQueue = new RecvCounterConfirmQueue();
 		recvCounterConfirmQueue.setUserInfo(userInfo);
 		recvCounterConfirmQueue.setCurUodp(curUodp);
 		recvCounterConfirmQueue.setRecord(record);
 		Thread thread =  new Thread(recvCounterConfirmQueue);
-		thread.start();		
+		thread.start();
 	}
-
 	/**
 	 * 列表
 	 * @param record
