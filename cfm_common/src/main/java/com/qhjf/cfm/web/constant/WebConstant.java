@@ -463,7 +463,7 @@ public interface WebConstant {
 
     @ConstantAnnotation("单据状态")
     enum BillStatus implements WebConstant {
-        NOSUBMIT(0,"未提交"),SAVED(1, "已保存"), SUBMITED(2, "已提交"), AUDITING(3, "审批中"), PASS(4, "审批通过"), REJECT(5, "审批拒绝"),
+        SAVED(1, "已保存"), SUBMITED(2, "已提交"), AUDITING(3, "审批中"), PASS(4, "审批通过"), REJECT(5, "审批拒绝"),
         PROCESSING(6, "处理中"), SUCCESS(7, "已成功"), FAILED(8, "已失败"), CANCEL(9, "已作废"), NOCOMPLETION(10, "未完结"),
         COMPLETION(11, "已完结"), WAITPROCESS(12, "待处理");
 

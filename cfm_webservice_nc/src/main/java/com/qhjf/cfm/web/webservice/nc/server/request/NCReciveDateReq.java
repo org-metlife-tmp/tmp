@@ -2,6 +2,7 @@ package com.qhjf.cfm.web.webservice.nc.server.request;
 
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
+import com.qhjf.cfm.web.constant.WebConstant;
 import com.qhjf.cfm.web.constant.WebConstant.OaInterfaceStatus;
 import com.qhjf.cfm.web.webservice.ann.FieldValidate;
 import com.qhjf.cfm.web.webservice.nc.constant.ErrorCode;
@@ -25,7 +26,7 @@ public class NCReciveDateReq extends ParentReq {
 		}
 		this.recvBank = banks.get(0);
 
-		Record originRecord = Db.findFirst(Db.getSql("nc_interface.getSameBill"),this.getFlow_id(),OaInterfaceStatus.OA_INTER_PROCESS_F.getKey() );
+		Record originRecord = Db.findFirst(Db.getSql("nc_interface.getSameBill"),this.getFlow_id(), WebConstant.InterfaceStatus.INTER_PROCESS_F.getKey() );
 		if(originRecord != null){
 
 			throw new WebServiceException(ErrorCode.P0008,"该笔单据正在处理中或已成功,不允许重复发送");
