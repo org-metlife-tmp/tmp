@@ -162,7 +162,7 @@
                                     width="200" trigger="hover"
                                     :disabled="scope.row.service_status != 8"
                                     :content="scope.row.feed_back">
-                            <span slot="reference" style="cursor:default">{{ constants[scope.row.service_status] }}</span>
+                            <span slot="reference" style="cursor:default">{{ statusList[scope.row.service_status] }}</span>
                         </el-popover>
                     </template>
                 </el-table-column>
