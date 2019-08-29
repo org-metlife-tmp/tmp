@@ -28,7 +28,7 @@ public class CheckDoubtfulNcWorkBook extends AbstractWorkBook {
 
         };
         this.titles = new String[]{
-                "报销单申请号", "申请人", "金额", "收款人帐号", "收款人账户名称", "申请日期","重发次数", "摘要"
+                "结算号", "申请人", "金额", "收款人帐号", "收款人账户名称", "支付日期","推送次数", "摘要"
         };
         this.sheetName = "NEWCOMP_DOUBTFUL_"+ DateKit.toStr(new Date(), "YYYYMMdd");
     }
