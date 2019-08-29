@@ -52,22 +52,22 @@
                         </el-col>
                         <el-col :span="4">
                             <el-form-item>
-                                <el-input v-model="searchData.pay_account_no" placeholder="请输入付款方账号"></el-input>
+                                <el-input v-model="searchData.pay_account_no" clearable placeholder="请输入付款方账号"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="4" v-if="isPending">
                             <el-form-item>
-                                <el-input v-model="searchData.recv_account_no" placeholder="请输入收款方账号"></el-input>
+                                <el-input v-model="searchData.recv_account_no" clearable placeholder="请输入收款方账号"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="7">
                             <el-form-item>
                                 <el-col :span="11">
-                                    <el-input v-model.number="searchData.min" @blur="numberRule('min')" placeholder="最小金额"></el-input>
+                                    <el-input v-model.number="searchData.min" @blur="numberRule('min')" clearable placeholder="最小金额"></el-input>
                                 </el-col>
                                 <el-col class="line" :span="1" style="text-align:center">-</el-col>
                                 <el-col :span="11">
-                                    <el-input v-model.number="searchData.max" @blur="numberRule('max')" placeholder="最大金额"></el-input>
+                                    <el-input v-model.number="searchData.max" @blur="numberRule('max')" clearable placeholder="最大金额"></el-input>
                                 </el-col>
                             </el-form-item>
                         </el-col>
