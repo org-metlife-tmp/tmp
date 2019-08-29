@@ -30,12 +30,12 @@ public class HeadOrgNcTodoWorkBook extends AbstractWorkBook {
         this.optype = "headorgnc_todolistexport";
         this.fileName = "NEWCOMP_PAYMENT_"+ DateKit.toStr(new Date(), "YYYYMMdd")+".xls";
         this.titleNames = new String[]{
-                "flow_id", "apply_user","org_name", "create_on", "pay_account_no", "pay_account_bank", "payment_amount", "recv_account_name", "recv_account_no",
+                "flow_id","send_count", "apply_user","org_name", "create_on", "pay_account_no", "pay_account_bank", "payment_amount", "recv_account_name", "recv_account_no",
                 "recv_account_bank", "payment_summary", "service_status"
 
         };
         this.titles = new String[]{
-                "流程ID","申请人", "申请单位", "申请日期", "付款方帐号", "付款方银行", "收款金额", "收款人", "收款方帐号", "收款方开户行", "摘要", "状态"
+                "结算号","推送次数","申请人", "申请单位", "支付日期", "付款方帐号", "付款方银行", "收款金额", "收款人", "收款方帐号", "收款方开户行", "摘要", "状态"
         };
         this.sheetName = "NEWCOMP_PAYMENT_"+ DateKit.toStr(new Date(), "YYYYMMdd");
     }
