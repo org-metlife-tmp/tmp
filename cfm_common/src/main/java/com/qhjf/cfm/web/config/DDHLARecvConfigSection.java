@@ -104,7 +104,7 @@ public class DDHLARecvConfigSection extends AbstractConfigSection {
 	}
 
 	public String getProtocolNo0() {
-		return protocolNo1;
+		return protocolNo0;
 	}
 
 	public String getProtocolNo1() {
