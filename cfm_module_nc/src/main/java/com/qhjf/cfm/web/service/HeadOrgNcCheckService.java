@@ -58,15 +58,28 @@ public class HeadOrgNcCheckService {
         List<Record> find = Db.find(sqlPara);
         if (null != find && find.size() > 0) {
             for (Record rec : find) {
-//                Long acc_id = TypeUtils.castToLong(rec.get("acc_id"));
-//                //Record queryPayInfo = branchOrgncService.queryPayInfo(acc_id);
-//                String bank_name = TypeUtils.castToString(queryPayInfo.get("bank_name"));
-//                rec.set("bank_name", bank_name);
+                Long acc_id = TypeUtils.castToLong(rec.get("acc_id"));
+                Record queryPayInfo = queryPayInfo(acc_id);
+                String bank_name = TypeUtils.castToString(queryPayInfo.get("bank_name"));
+                rec.set("bank_name", bank_name);
             }
         }
         return find;
     }
 
+    /**
+     * 根据付款方id查询付款方信息
+     *
+     * @param payAccountId
+     * @throws ReqDataException
+     */
+    public Record queryPayInfo(long payAccountId) throws ReqDataException {
+        Record payRec = Db.findFirst(Db.getSql("nbdb.findAccountByAccId"), payAccountId);
+        if (payRec == null) {
+            throw new ReqDataException("未找到有效的付款方帐号!");
+        }
+        return payRec;
+    }
 
     /**
      * @param record
