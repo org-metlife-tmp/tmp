@@ -326,7 +326,8 @@ const router = new Router({
                         {path: '/report/dzd-report-query', name: 'DZDReportQuery', component: DZDReportQuery, meta: {requireAuth: false}},
                         {path: '/report/sff-report-query', name: 'SFFReportQuery', component: GJTReportQuery, meta: {requireAuth: false}},
                         //nc查重
-                        {path: '/ncData/suspicious-data', name: 'NCSuspiciousData', component: NCSuspiciousData, meta: {requireAuth: true}}
+                        {path: '/ncData/suspicious-data', name: 'NCSuspiciousData', component: NCSuspiciousData, meta: {requireAuth: true}},
+                        {path: '/ncData/head-office-pay', name: 'NCHeadOfficePay', component: NCHeadOfficePay, meta: {requireAuth: true}},
                     ]
                 },
                 //基础样式三（tab页）
@@ -368,7 +369,7 @@ const router = new Router({
                         {path: '/OA-data/head-office-pay', name: 'HeadOfficePay', component: HeadOfficePay, meta: {requireAuth: true}},
                         {path: '/OA-data/filiale-payment', name: 'FilialePayment', component: FilialePayment, meta: {requireAuth: true}},
                         //NC数据
-                        {path: '/ncData/head-office-pay', name: 'NCHeadOfficePay', component: NCHeadOfficePay, meta: {requireAuth: true}},
+
                         {path: '/ncData/deal-check', name: 'NCDealCheck', component: NCDealCheck, meta: {requireAuth: true}}
 
                     ]

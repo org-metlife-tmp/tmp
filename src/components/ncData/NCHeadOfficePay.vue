@@ -292,7 +292,6 @@
 
 
 
-            this.$emit("getTableData", this.routerMessage);
         },
         mounted: function () {
             var constants = JSON.parse(window.sessionStorage.getItem("constants"));
@@ -304,17 +303,15 @@
             Upload: Upload,
             BusinessTracking:BusinessTracking
         },
-        props: ["isPending", "tableData"],
+        props: [ "tableData"],
         data: function () {
             return {
                 queryUrl: this.$store.state.queryUrl,
                 routerMessage: {
-                    todo: {
-                        optype: "headorgnc_todolist",
-                        params: {
-                            page_size: 7,
-                            page_num: 1
-                        }
+                    optype: "headorgnc_todolist",
+                    params: {
+                        page_size: 7,
+                        page_num: 1
                     }
                 },
                 tableList: [],
@@ -369,7 +366,7 @@
                     return;
                 }
                 var user = JSON.parse(window.sessionStorage.getItem("user"));
-                var params = this.isPending ? this.routerMessage.todo.params : this.routerMessage.done.params;
+                var params = this.routerMessage.params ;
                 params.org_id = user.curUodp.org_id;
                 this.$emit("exportData",{
                     optype: "headorgnc_todolistexport",
@@ -465,23 +462,15 @@
                 searchData.apply_end_date = this.dateValue ? this.dateValue[1] : "";
 
                 for (var k in searchData) {
-                    if (this.isPending) {
-                        this.routerMessage.todo.params[k] = searchData[k];
-                        this.routerMessage.todo.params.page_num = 1;
-                    } else {
-                        this.routerMessage.done.params[k] = searchData[k];
-                        this.routerMessage.done.params.page_num = 1;
-                    }
+
+                    this.routerMessage.params[k] = searchData[k];
+                    this.routerMessage.params.page_num = 1;
                 }
-                this.$emit("getTableData", this.routerMessage);
+                this.$emit("getCommTable", this.routerMessage);
             },
             //换页后获取数据
             getCurrentPage: function (currPage) {
-                if (this.isPending) {
-                    this.routerMessage.todo.params.page_num = currPage;
-                } else {
-                    this.routerMessage.done.params.page_num = currPage;
-                }
+                this.routerMessage.params.page_num = currPage;
                 this.$emit("getTableData", this.routerMessage);
             },
             //展示格式转换-金额
@@ -490,8 +479,8 @@
             },
             //当前页数据条数发生变化
             sizeChange: function (val) {
-                this.routerMessage.todo.params.page_size = val;
-                this.routerMessage.todo.params.page_num = 1;
+                this.routerMessage.params.page_size = val;
+                this.routerMessage.params.page_num = 1;
 
                 this.$emit("getTableData", this.routerMessage);
             },
@@ -633,31 +622,6 @@
             },
         },
         watch: {
-            isPending: function (val, oldVal) {
-                if (val) {
-                    this.statusList = {
-                    }
-                } else {
-                    this.statusList = {
-                        2: "已提交",
-                        3: "审批中",
-                        4: "审批通过",
-                        6: "处理中",
-                        7: "已成功",
-                        8: "已失败",
-                        9: "已作废"
-                    }
-                }
-                var searchData = this.searchData;
-                for (var k in searchData) {
-                    if (k == "service_status") {
-                        searchData[k] = [];
-                    } else {
-                        searchData[k] = "";
-                    }
-                }
-                this.dateValue = "";
-            },
             tableData: function (val, oldVal) {
                 this.pagSize = val.page_size;
                 this.pagTotal = val.total_line;
