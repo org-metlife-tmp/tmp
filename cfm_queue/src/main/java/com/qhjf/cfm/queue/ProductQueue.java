@@ -31,15 +31,14 @@ public class ProductQueue implements Runnable{
 						|| "SysSinglePayInter".equals(className) 
 						|| "SysElectronicQueryInter".equals(className)
 						|| "SysNcSinglePayInter".equals(className)
-						|| "SysSftSinglePayInter".equals(className)) {
+						|| "SysSftSinglePayInter".equals(className)
+						|| "SysBatchRecvInter".equals(className)) {
 					log.debug(ICBC_SIGN_LOG, className, queueBean.getParams());
 					Queue.getInstance().getIcbcSignQueue().put(queueBean);
 				}else {
 					log.debug(ICBC_LOG, className, queueBean.getParams());
 					Queue.getInstance().getIcbcQueue().put(queueBean);
 				}
-			} else if("fingard".equals(queueBean.getBankCode())){
-				Queue.getInstance().getFingradQueue().put(queueBean);
 			}
 			
 		} catch (InterruptedException e) {
