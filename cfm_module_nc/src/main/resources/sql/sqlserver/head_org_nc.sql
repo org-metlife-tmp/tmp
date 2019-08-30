@@ -113,7 +113,7 @@
           #end
       #end
     #end
-    order by head.id desc
+    ORDER BY flow_id desc,send_count desc
 #end
 
 #sql("findHeadOrgNCPendingList")
