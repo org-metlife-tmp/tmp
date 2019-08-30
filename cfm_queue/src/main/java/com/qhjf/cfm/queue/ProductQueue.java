@@ -32,6 +32,7 @@ public class ProductQueue implements Runnable{
 						|| "SysElectronicQueryInter".equals(className)
 						|| "SysNcSinglePayInter".equals(className)
 						|| "SysSftSinglePayInter".equals(className)
+						|| "SysProtocolImportInter".equals(className)
 						|| "SysBatchRecvInter".equals(className)) {
 					log.debug(ICBC_SIGN_LOG, className, queueBean.getParams());
 					Queue.getInstance().getIcbcSignQueue().put(queueBean);
