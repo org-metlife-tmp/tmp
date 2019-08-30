@@ -471,7 +471,7 @@
             //换页后获取数据
             getCurrentPage: function (currPage) {
                 this.routerMessage.params.page_num = currPage;
-                this.$emit("getTableData", this.routerMessage);
+                this.$emit("getCommTable", this.routerMessage);
             },
             //展示格式转换-金额
             transitAmount: function (row, column, cellValue, index) {
@@ -482,7 +482,7 @@
                 this.routerMessage.params.page_size = val;
                 this.routerMessage.params.page_num = 1;
 
-                this.$emit("getTableData", this.routerMessage);
+                this.$emit("getCommTable", this.routerMessage);
             },
             //展示格式转换-付款方式
             transitPayMode: function (row, column, cellValue, index) {
@@ -563,7 +563,7 @@
                                 message: "撤回成功",
                                 duration: 2000
                             });
-                            this.$emit("getTableData", this.routerMessage);
+                            this.$emit("getCommTable", this.routerMessage);
                         }
                     }).catch(function (error) {
                         console.log(error);
@@ -611,7 +611,7 @@
                                 message: "作废成功",
                                 duration: 2000
                             });
-                            this.$emit("getTableData", this.routerMessage);
+                            this.$emit("getCommTable", this.routerMessage);
                         }
                     }).catch(function (error) {
                         console.log(error);
