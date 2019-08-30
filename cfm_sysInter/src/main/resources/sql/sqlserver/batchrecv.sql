@@ -92,6 +92,7 @@
 	set
 		success_num = 0,
 		success_amount = 0,
+		back_on = GETDATE(),
 		fail_num = total_num,
 		fail_amount = total_amount,
 		service_status = 5
