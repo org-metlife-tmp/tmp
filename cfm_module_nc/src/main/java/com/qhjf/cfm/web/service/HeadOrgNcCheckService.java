@@ -91,10 +91,10 @@ public class HeadOrgNcCheckService {
         List<Record> find = Db.find(Db.getSql("head_org_nc_check.alreaadyTradingList"), TypeUtils.castToLong(record.get("id")));
         if (null != find && find.size() > 0) {
             for (Record rec : find) {
-//                Long acc_id = TypeUtils.castToLong(rec.get("acc_id"));
-//                Record queryPayInfo = branchOrgncService.queryPayInfo(acc_id);
-//                String bank_name = TypeUtils.castToString(queryPayInfo.get("bank_name"));
-//                rec.set("bank_name", bank_name);
+                Long acc_id = TypeUtils.castToLong(rec.get("acc_id"));
+                Record queryPayInfo = queryPayInfo(acc_id);
+                String bank_name = TypeUtils.castToString(queryPayInfo.get("bank_name"));
+                rec.set("bank_name", bank_name);
             }
         }
         return find;
