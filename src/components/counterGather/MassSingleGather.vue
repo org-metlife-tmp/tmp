@@ -993,7 +993,15 @@
                     if (k == "recv_date") {
                         let curDate = new Date();
                         dialogData[k] = curDate.getFullYear() + "-" + (curDate.getMonth() + 1) + "-" + curDate.getDate();
-                    } else if (k == "batch_no") {
+                    } /*else if(k == "bill_status"){
+                      if(this.bill_status == "已到账"){
+                          dialogData[k] = this.bill_status.key;
+                      }else if(this.bill_status =="已退票"){
+                          dialogData[k] = this.bill_status.key;
+                      }else{
+                          dialogData[k] = "";
+                      }
+                    }*/else if (k == "batch_no") {
                         this.$axios({
                             url: this.queryUrl + "normalProcess",
                             method: "post",
@@ -1214,7 +1222,13 @@
             saveData: function () {
                 let dialogData = this.dialogData;
                 let currentData = this.currentData;
-
+                   /* if(this.bill_status == "已到账"){
+                        this.bill_status = this.bill_status.key;
+                    }else if(this.bill_status =="已退票"){
+                        this.bill_status = this.bill_status.key;
+                    }else{
+                        dialogData[k] = "";
+                    }*/
                 let params = {
                     files: this.fileList,
                     wait_match_flag: currentData.wait_match_flag ? currentData.wait_match_flag : 0,
