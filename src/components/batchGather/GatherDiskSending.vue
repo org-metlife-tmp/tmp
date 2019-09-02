@@ -10,7 +10,15 @@
             background-position: -440px -62px;
             vertical-align: middle;
         }
-
+        .send1, .export {
+            width: 20px;
+            height: 20px;
+            background-image: url(../../assets/icon_common.png);
+            border: none;
+            padding: 0;
+            background-position: -558px -62px;
+            vertical-align: middle;
+        }
         /*导出*/
         .export {
             background-position: -535px -62px;
@@ -150,8 +158,9 @@
                         </el-tooltip>
                         <el-tooltip content="发送" placement="bottom" effect="light"
                                     :enterable="false" :open-delay="500"
-                                    v-if="scope.row.interactive_mode=='直连' && (scope.row.status=='已组批未发送' || scope.row.status=='已回退')">
-                            <el-button class="send" size="mini"
+                                    v-if="scope.row.interactive_mode=='直连' && (scope.row.status=='已组批未发送' || scope.row.status=='已回退')||scope.row.status=='已组批已发送'">
+                            <el-button :class="scope.row.status=='已组批已发送'?'send1':'send'" size="mini"
+                                       :disabled="scope.row.status=='已组批已发送'"
                                        @click="sendData(scope.row)"></el-button>
                         </el-tooltip>
                         <el-tooltip content="导出" placement="bottom" effect="light"
@@ -229,10 +238,12 @@
                         return time.getTime() > Date.now();
                     }
                 },
+                send_status:false,
                 tableList: [], //列表数据
                 pagSize: 8, //分页数据
                 pagTotal: 1,
                 pagCurrent: 1,
+                button:'warning',
                 sourceList: {}, //常量数据
                 interactiveList: {},
                 statusList: {
@@ -361,6 +372,8 @@
             },
             //发送
             sendData: function (row) {
+                row.status='已组批已发送';
+                this.button='info';
                 this.$message({
                     type: "success",
                     message: "数据已经发送",
