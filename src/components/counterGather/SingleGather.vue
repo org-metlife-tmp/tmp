@@ -27,6 +27,10 @@
             vertical-align: middle;
             background-position: -48px 0;
         }
+
+        #yxdj{
+            width: 168px;
+        }
     }
 </style>
 
@@ -456,22 +460,34 @@
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
-                            <el-form-item label="允许垫交">
-                                <el-radio-group  v-model="item.isnot_electric_pay">
-                                    <el-radio class="radio" label="yes">是</el-radio>
-                                    <el-radio class="radio" label="no">否</el-radio>
-                                </el-radio-group>
+                            <!--<el-form-item label="允许垫交中的保单缴费" >
+                                <el-select v-model="item.isnot_electric_pay" :disabled="isdisables == 'true'">
+                                    <el-option v-for="(item,key) in YesOrNo"
+                                        :key="key"
+                                        :label="item"
+                                        :value="key">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>-->
+                            <el-form-item label="允许垫交中的保单缴费">
+                                <el-switch
+                                        v-model="item.isnot_electric_pay"
+                                        active-value="1"
+                                        inactive-value="0"
+                                        @change="setEP(item)">
+                                </el-switch>
                             </el-form-item>
-                                <!--<el-select v-model="item.isnot_electric_pay" disabled>
-                                    <el-option v-for="(item,key) in YesOrNo"-->
-                                               <!--:key="key"-->
-                                               <!--:label="item"-->
-                                               <!--:value="key">-->
-                                    <!--</el-option>
-                                     </el-select>-->
                         </el-col>
                         <el-col :span="12">
-                            <el-form-item label="是否银行转账">
+                            <el-form-item label="是否银行转账中的保单缴费">
+                                <el-switch
+                                        v-model="item.isnot_bank_transfer_premium"
+                                        active-value="1"
+                                        inactive-value="0"
+                                        @change="setBP(item)">
+                                </el-switch>
+                            </el-form-item>
+                          <!--  <el-form-item label="是否银行转账中的保单缴费">
                                 <el-select v-model="item.isnot_bank_transfer_premium" disabled>
                                     <el-option v-for="(item,key) in YesOrNo"
                                                :key="key"
@@ -479,7 +495,7 @@
                                                :value="key">
                                     </el-option>
                                 </el-select>
-                            </el-form-item>
+                            </el-form-item>-->
                         </el-col>
                         <el-col :span="12">
                             <el-form-item label="是否第三方缴费">
@@ -597,6 +613,9 @@
         },
         data: function () {
             return {
+                //文本框是否可编辑
+                isdisables:"true",
+
                 queryUrl: this.$store.state.queryUrl,
                 routerMessage: {
                     optype: "recvcounter_list",
@@ -1020,10 +1039,23 @@
                             });
                         } else {
                             let data = result.data.data;
+
                             for(let k in item){
-                                if(data[k]){
-                                    item[k] = data[k];
-                                }
+                                this.isdisables = "false";
+                                item[k] = data[k];
+
+                                //判断是否垫交
+                                //if(data[k].isnot_electric_pay == null){
+                                       // this.item.isnot_electric_pay = "";
+                                //}else if(data[k].isnot_electric_pay != null){
+                                   // this.item.isnot_electric_pay = "";
+                                //}
+                                //判断是否银行转账
+                                // if (data[k].isnot_bank_transfer_premium == null){
+                                       // this.item.isnot_bank_transfer_premium = "";
+                                //}else if(data[k].isnot_bank_transfer_premium != null){
+                                     //this.item.isnot_bank_transfer_premium = "";
+                                // }
                             }
                         }
                     }).catch(function (error) {

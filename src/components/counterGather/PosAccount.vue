@@ -240,6 +240,8 @@
                                  :formatter="transitStatus"></el-table-column>
                 <el-table-column prop="bill_check_service_number" label="对账流水号" :show-overflow-tooltip="true"></el-table-column>
             </el-table>
+
+
         </el-main>
         <el-footer>
 
@@ -299,7 +301,7 @@
                 batchidList: [], //选中数据
                 versionList: [],
                 tradingList: [],
-                childVersion: []
+                childVersion: [],
             }
         },
         methods: {
