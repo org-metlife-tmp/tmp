@@ -1045,17 +1045,17 @@
                                 item[k] = data[k];
 
                                 //判断是否垫交
-                               /* if(data[k].isnot_electric_pay == null){
-                                        this.item.isnot_electric_pay = "";
-                                }else if(data[k].isnot_electric_pay != null){
-                                    this.item.isnot_electric_pay = "";
-                                }*/
+                                //if(data[k].isnot_electric_pay == null){
+                                       // this.item.isnot_electric_pay = "";
+                                //}else if(data[k].isnot_electric_pay != null){
+                                   // this.item.isnot_electric_pay = "";
+                                //}
                                 //判断是否银行转账
-                                 /*if (data[k].isnot_bank_transfer_premium == null){
-                                        this.item.isnot_bank_transfer_premium = "";
-                                }else if(data[k].isnot_bank_transfer_premium != null){
-                                     this.item.isnot_bank_transfer_premium = "";
-                                 }*/
+                                // if (data[k].isnot_bank_transfer_premium == null){
+                                       // this.item.isnot_bank_transfer_premium = "";
+                                //}else if(data[k].isnot_bank_transfer_premium != null){
+                                     //this.item.isnot_bank_transfer_premium = "";
+                                // }
                             }
                         }
                     }).catch(function (error) {
