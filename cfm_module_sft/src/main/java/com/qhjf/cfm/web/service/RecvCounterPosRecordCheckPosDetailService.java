@@ -214,24 +214,25 @@ public class RecvCounterPosRecordCheckPosDetailService {
 			}
 			
 			Record rowRecord = new Record();
-			rowRecord.set("liquidate_date", liquidateDate);
-			rowRecord.set("trans_date", transDate);
-			rowRecord.set("trans_time", transTime);
+			rowRecord.set("liquidation_date", liquidateDate);
+			rowRecord.set("trade_date", transDate);
+			rowRecord.set("trade_time", transTime);
 			rowRecord.set("terminal_no", row.get("terminalNo"));
-			rowRecord.set("trans_amount", row.get("transAmount"));
-			rowRecord.set("service_charge", row.get("serviceCharge"));
-			rowRecord.set("entry_amount", row.get("entryAmount"));
-			rowRecord.set("sys_tracer_no", row.get("sysTracerNo"));
-			rowRecord.set("search_refer_no", row.get("searchReferNo"));
-			rowRecord.set("Service_no", row.get("serviceNo"));
-			rowRecord.set("tran_type", row.get("transType"));
-			rowRecord.set("account_no", row.get("accountNo"));
-			rowRecord.set("account_type", row.get("accountType"));
-			rowRecord.set("bank_name", row.get("bankName"));
-			rowRecord.set("non_touch_mark", row.get("nonTouchMark"));
-			rowRecord.set("import_time", time);
+			rowRecord.set("trade_amount", row.get("transAmount"));
+			//rowRecord.set("service_charge", row.get("serviceCharge"));
+			rowRecord.set("entry_account_amount", row.get("entryAmount"));
+			rowRecord.set("system_track_number", row.get("sysTracerNo"));
+			rowRecord.set("retrieval_reference_number", row.get("searchReferNo"));
+			rowRecord.set("serial_number", row.get("serviceNo"));
+			rowRecord.set("trade_type", row.get("transType"));
+			rowRecord.set("card_no", row.get("accountNo"));
+			rowRecord.set("card_type", row.get("accountType"));
+			//rowRecord.set("bank_name", row.get("bankName"));
+			rowRecord.set("no_identity_mark", row.get("nonTouchMark"));
+			rowRecord.set("import_date", time);
 			rowRecord.set("create_on", time);
-			rowRecord.set("create_by", userId);
+			rowRecord.set("update_by", userId);
+			rowRecord.set("procedures_amount",row.get("serviceCharge")); //手续费
 			
 			data.add(rowRecord);
 		}
@@ -243,7 +244,7 @@ public class RecvCounterPosRecordCheckPosDetailService {
     	boolean result = Db.tx(new IAtom() {
 			@Override
 			public boolean run() throws SQLException {
-		    	int[] batchSave = Db.batchSave("recv_counter_pos_data", data, BasicTypeConstant.BATCH_SIZE);
+		    	int[] batchSave = Db.batchSave("recv_counter_pos", data, BasicTypeConstant.BATCH_SIZE);
 		    	boolean checkDbResult = ArrayUtil.checkDbResult(batchSave);
 		    	if (!checkDbResult) {
 		    		logger.error(String.format("POS导入失败，[{}]", Arrays.toString(batchSave)));
