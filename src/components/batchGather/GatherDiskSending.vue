@@ -243,7 +243,6 @@
                 pagSize: 8, //分页数据
                 pagTotal: 1,
                 pagCurrent: 1,
-                button:'warning',
                 sourceList: {}, //常量数据
                 interactiveList: {},
                 statusList: {
@@ -373,7 +372,6 @@
             //发送
             sendData: function (row) {
                 row.status='已组批已发送';
-                this.button='info';
                 this.$message({
                     type: "success",
                     message: "数据已经发送",
