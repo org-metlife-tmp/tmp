@@ -1,28 +1,22 @@
 package com.qhjf.cfm.web.webservice.nc.service;
 
 import com.jfinal.plugin.activerecord.Record;
-import com.qhjf.cfm.exceptions.BusinessException;
-import com.qhjf.cfm.utils.StringKit;
 import com.qhjf.cfm.web.config.DDHNCWSConfigSection;
 import com.qhjf.cfm.web.config.GlobalConfigSection;
 import com.qhjf.cfm.web.config.IConfigSectionType;
-import com.qhjf.cfm.web.constant.WebConstant;
-import com.qhjf.cfm.web.service.CheckVoucherService;
+import com.qhjf.cfm.web.webservice.client.AuthorPortType;
 import com.qhjf.cfm.web.webservice.client.AuthorService;
-import com.qhjf.cfm.web.webservice.client.AuthorServiceLocator;
-import com.qhjf.cfm.web.webservice.client.AuthorServiceSoapBindingStub;
-import com.qhjf.cfm.web.webservice.nc.server.request.NCReciveDateReq;
-import com.qhjf.cfm.web.webservice.nc.server.response.NCReciveDataResp;
-import com.qhjf.cfm.web.webservice.nc.server.response.parent.NCCallBackResp;
 import com.qhjf.cfm.web.webservice.tool.XmlTool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.net.URL;
 
 public class CallBackService {
 	
 	private static Logger log = LoggerFactory.getLogger(CallBackService.class);
 
-	private static DDHNCWSConfigSection ddhNCWSConfigSection = new DDHNCWSConfigSection();
+	private static DDHNCWSConfigSection ddhNCWSConfigSection = GlobalConfigSection.getInstance().getExtraConfig(IConfigSectionType.DDHConfigSectionType.DDHNCWS);
 
 	/**
 	 * 推送
@@ -32,8 +26,8 @@ public class CallBackService {
 	 * @throws Exception
 	 */
 	public String callback(Record originData,Record tranRecord) throws Exception {
-		AuthorServiceLocator factory2 = new AuthorServiceLocator();
-		AuthorServiceSoapBindingStub push = (AuthorServiceSoapBindingStub) factory2.getauthorPortName();
+		AuthorService factory = new AuthorService(new URL(ddhNCWSConfigSection.getPushWsdl()));
+		AuthorPortType push =  factory.getAuthorPortName();
 		String callBackMsg = genXml(originData);
 		log.debug(originData.getStr("flow_id")+"回调信息="+callBackMsg);
 		String result = push.payData(callBackMsg);
