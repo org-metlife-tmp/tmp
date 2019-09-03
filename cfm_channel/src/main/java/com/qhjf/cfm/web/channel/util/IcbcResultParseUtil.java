@@ -44,13 +44,7 @@ public class IcbcResultParseUtil {
 		JSONObject pub0 = eb0.getJSONArray("pub").getJSONObject(0);
         String retCode = pub0.getString("RetCode");
         String retMsg = pub0.getString("RetMsg");
-        if ("0".equals(retCode)) {
-        	return eb0.getJSONArray("out");
-		} else if("D0420".equals(retCode)) {
-        	return null;
-		}else {
-			throw new Exception(String.format(ERROR_MSG, retCode, retMsg));
-		}
+		return eb0.getJSONArray("out");
 	}
 	
 	
