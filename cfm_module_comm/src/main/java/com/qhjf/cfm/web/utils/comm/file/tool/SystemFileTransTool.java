@@ -93,6 +93,7 @@ public class SystemFileTransTool implements FileTransTool {
 	
 	@Override
 	public FileInfo getFileByObjectid(String objectId) throws BusinessException {
+		System.out.println("================objectId+++++="+objectId);
 		String fileName = fileStoragePath.concat(File.separator).concat(objectId);
 		File file = new File(fileName);
 		if (!file.exists()) {

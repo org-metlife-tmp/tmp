@@ -751,7 +751,7 @@ public class SftOptypeMgr extends AbstractOptypeMgr {
                 .registKeepParams(new String[]{"recv_date", "batch_process_no", "currency", "recv_mode", "use_funds",
                         "bill_status", "bill_number", "bill_date", "recv_bank_name", "recv_acc_no","consumer_bank_name",
                         "consumer_acc_no","terminal_no","third_payment","payer","payer_cer_no","payer_relation_insured",
-                        "pay_reason","files","policy_infos","wait_match_flag","wait_match_id","amount","bank_code"})
+                        "pay_reason","files","policy_infos","wait_match_flag","wait_match_id","amount"})//,"bank_code"
                 .registerValidate(new RequiredParamsValidate(new String[]{"recv_date","batch_process_no","currency","recv_mode",
                 		"use_funds","bill_status","bill_number","bill_date"/*,"recv_bank_name"*/,"recv_acc_no","consumer_bank_name",
                 		"consumer_acc_no"/*,"wait_match_flag"*/})));
@@ -821,7 +821,7 @@ public class SftOptypeMgr extends AbstractOptypeMgr {
                         "use_funds","bill_status","bill_number","bill_date","consumer_bank_name","consumer_acc_no","bill_org_id","recv_org_id",
                         "preinsure_bill_no","insure_bill_no","amount","consumer_no","consumer_acc_name","batch_no","insure_name","insure_acc_no",
                         "third_payment","business_acc","business_acc_no","payer","payer_relation_insured","pay_reason","pay_code","files",
-                        "wait_match_flag","wait_match_id","agent_com","bussiness_no"})
+                        "wait_match_flag","wait_match_id","agent_com","bussiness_no","consumer_accname"})
                 .registerValidate(new RequiredParamsValidate(new String[]{"source_sys","recv_date","batch_process_no","recv_mode","recv_acc_no","recv_bank_name","currency",
                         "use_funds","bill_status","bill_number","bill_date","consumer_bank_name","consumer_acc_no"})));
 

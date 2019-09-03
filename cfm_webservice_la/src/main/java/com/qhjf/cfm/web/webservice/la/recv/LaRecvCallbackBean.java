@@ -115,7 +115,7 @@ public class LaRecvCallbackBean {
 //		this.znbnkkey = origin.getStr("pay_bank_name");
 		this.znbnkkey = origin.getStr("bank_key");
 		//开户行（收方）：付方账户名
-		this.bankdesc = origin.getStr("insure_bill_no") + origin.getStr("pay_code");
+		this.bankdesc = origin.getStr("insure_bill_no") + origin.getStr("pay_code")+origin.getStr("id");
 		this.bankaccdsc = origin.getStr("pay_acc_name");
 		this.insureBillNo = origin.getStr("insure_bill_no");
 		//批次号

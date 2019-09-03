@@ -178,12 +178,12 @@
             <artifactId>cfm_module_voucher</artifactId>    <!-- 凭证查询模块 -->
             <version>${project.version}</version>
         </dependency>
-        <!-- <dependency>
+         <dependency>
             <groupId>com.qhjf.cfm</groupId>
             <artifactId>cfm_report</artifactId>    
             <version>${project.version}</version>
         </dependency>
-         --><!-- 报表查询模块 -->
+         <!-- 报表查询模块 -->
         <!-- #### 大都会特定模块 end ####-->
         <!-- ##项目特定模块模块 end## -->
         <!-- 内部模块引入 end -->

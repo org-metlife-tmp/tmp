@@ -77,12 +77,13 @@ public class RecvCounterConfirmQueue implements Runnable {
 		List<PersonBillComfirmReqBean> PersonBillComfirmReqBeans = new ArrayList<PersonBillComfirmReqBean>();
 		
 		//目前确认个单只有LA,去LA映射表
+		record.set("bank_code","31");
 		for (Record policy : policys) {
 			String paytype = WebConstant.Sft_RecvPersonalCounter_Recvmode.getByKey(TypeUtils.castToInt(record.get("recv_mode")))
 					.getPrefix();
 			PersonBillComfirmReqBean personBillComfirmReqBean = new PersonBillComfirmReqBean(
 					TypeUtils.castToString(policy.get("amount")), record.getStr("consumer_acc_no"), null,
-					policy.getStr("insure_bill_no"), paytype,record.getStr("bank_code"));
+					policy.getStr("insure_bill_no"), paytype,"31");
 			PersonBillComfirmReqBeans.add(personBillComfirmReqBean);			
 		}
 		

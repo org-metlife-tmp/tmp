@@ -110,6 +110,15 @@ public class RecvGroupCounterService {
                 agentCom = null;
             }
         }
+        String bill_status2 = TypeUtils.castToString(record.get("bill_status"));
+        if(StringUtils.isNotBlank(bill_status2)){
+            if( "已到账".equals(bill_status2)){
+                bill_status2 = "0";
+            }else if("已退票".equals(bill_status2)){
+                bill_status2 = "1";
+            }
+        }
+
         insertRecord.set("bill_type", WebConstant.SftRecvType.TDSK.getKey())
                 .set("md5", md5String)
                 .set("bill_org_id", record.get("bill_org_id"))    //保单机构id
@@ -119,7 +128,7 @@ public class RecvGroupCounterService {
                 .set("batch_process_no", record.get("batch_process_no"))    //批处理号
                 .set("currency", record.get("currency"))
                 .set("recv_mode", record.get("recv_mode"))        //收款方式 1:现金解款单、2:支票、3:网银汇款
-                .set("bill_status", record.get("bill_status"))            //票据状态 0:已到账、1:已退票
+                .set("bill_status", bill_status2)            //票据状态 0:已到账、1:已退票
                 .set("bill_number", record.get("bill_number"))        //票据编号
                 .set("bill_date", record.get("bill_date"))    //票据日期
                 .set("recv_bank_name", record.get("recv_bank_name"))    //收款银行
