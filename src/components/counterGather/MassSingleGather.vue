@@ -185,7 +185,8 @@
         <el-main>
             <el-table :data="tableList"
                       border size="mini" height="100%">
-                <el-table-column prop="recv_date" label="收款日期" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="recv_date" label="收款日期" :show-overflow-tooltip="true"
+                                 :formatter="dateFormat"  ></el-table-column>
                 <el-table-column prop="batch_process_no" label="批处理号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="source_sys" label="核心系统" :show-overflow-tooltip="true"
                                  :formatter="transitSource"></el-table-column>
@@ -820,6 +821,10 @@
         },
         methods: {
 
+            //时间格式化
+            dateFormat: function (row, column, cellValue, index) {
+                return cellValue.slice(0,4)+cellValue.slice(4,6)+cellValue.slice(6,10);
+            },
             //清空搜索条件
             clearData: function () {
                 var searchData = this.searchData;
