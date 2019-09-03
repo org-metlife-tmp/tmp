@@ -20,6 +20,16 @@
 	  	pay_code = ?
 	#end
 
+#sql("getRecordByPayCode")
+	  select
+	  	*
+	  from
+	  	la_origin_recv_data
+	  where
+	  	pay_code = ?
+	#end
+
+
   #sql("getPayLegalByPayCode")
       SELECT
         legal.*,

@@ -6,6 +6,8 @@ import com.qhjf.cfm.web.config.DDHLARecvConfigSection;
 import com.qhjf.cfm.web.config.GlobalConfigSection;
 import com.qhjf.cfm.web.config.IConfigSectionType;
 import com.qhjf.cfm.web.constant.WebConstant;
+import com.qhjf.cfm.web.webservice.la.queue.noResp.LaNoRespProductQueue;
+import com.qhjf.cfm.web.webservice.la.queue.noResp.LaNoRespQueueBean;
 import com.qhjf.cfm.web.webservice.la.queue.recv.LaRecvProductQueue;
 import com.qhjf.cfm.web.webservice.la.queue.recv.LaRecvQueueBean;
 import com.qhjf.cfm.web.webservice.la.util.LaRecvOMElementSkipEAIUtil;
@@ -73,6 +75,31 @@ public class LaRecvCallback {
 				e.printStackTrace();
 			}
 			
+		}
+		log.debug("回调LA批收核心系统,将回写数据写至队列结束。。。。。。。。。");
+	}
+	/**
+	 *
+	 * @param record
+	 *            LA批收单笔回调
+	 */
+	public void callBack(Record record) {
+		if (record == null ) {
+			log.debug("回调LA批收核心系统,LA批收原始数据为空,不进行回调。");
+			return;
+		}
+
+		log.debug("回调LA批收核心系统,将回写数据写至队列开始。。。。。。。。。");
+		List<LaRecvCallbackBean> callbackBeans = new ArrayList<LaRecvCallbackBean>();
+		try {
+			LaRecvCallbackBean bean = createBean(record);
+			callbackBeans.add(bean);
+			OMElement oMElement = util.createOMElement(callbackBeans);
+			LaNoRespQueueBean queueBean = new LaNoRespQueueBean(callbackBeans, oMElement);
+			LaNoRespProductQueue productQueue = new LaNoRespProductQueue(queueBean);
+			new Thread(productQueue).start();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		log.debug("回调LA批收核心系统,将回写数据写至队列结束。。。。。。。。。");
 	}
