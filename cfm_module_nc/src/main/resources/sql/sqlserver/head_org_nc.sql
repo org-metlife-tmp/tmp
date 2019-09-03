@@ -1,5 +1,5 @@
 #sql("findHeadPayById")
-  select * from nc_head_payment where id = ? and delete_flag = 0
+  select * from nc_head_payment where id = ? and delete_flag = 0 and persist_version=?
 #end
 
 #sql("getTodoPage")
@@ -211,6 +211,6 @@ AND od.id = ohp.ref_id
 #end
 
 #sql("updBillById")
-   update nc_head_payment set bank_serial_number = ?,repeat_count = ?,service_status = ?,instruct_code = ?,update_on = ?
-   where id = ? and repeat_count = ?
+   update nc_head_payment set bank_serial_number = ?,repeat_count = ?,service_status = ?,instruct_code = ?,update_on = ?, persist_version=?
+   where id = ? and repeat_count = ? and persist_version=?
 #end

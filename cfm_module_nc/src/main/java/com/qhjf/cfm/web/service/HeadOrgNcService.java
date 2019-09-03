@@ -41,12 +41,16 @@ public class HeadOrgNcService {
     public boolean pass(final Record record) {
         Record headRecord = null;
         try {
-            headRecord = Db.findFirst(Db.getSql("head_org_nc.findHeadPayById"), record.get("id"));
+            headRecord = Db.findFirst(Db.getSql("head_org_nc.findHeadPayById"), record.get("id"),record.get("persist_version"));
+            if (headRecord==null){
+                throw new ReqDataException("此条单据信息已过期!");
+            }
             String payCnaps = headRecord.getStr("pay_bank_cnaps");
             String payBankCode = payCnaps.substring(0, 3);
             IChannelInter channelInter = ChannelManager.getInter(payBankCode, "SinglePay");
             headRecord.set("source_ref", "nc_head_payment");
             final int old_repeat_count = TypeUtils.castToInt(headRecord.get("repeat_count"));
+            final int old_persist_version = TypeUtils.castToInt(record.get("persist_version"));
             headRecord.set("repeat_count", old_repeat_count+ 1);
             headRecord.set("bank_serial_number", ChannelManager.getSerianlNo(payBankCode));
             SysNcSinglePayInter sysInter = new SysNcSinglePayInter();
@@ -60,7 +64,7 @@ public class HeadOrgNcService {
                     if (save) {
                         return Db.update(Db.getSql("head_org_nc.updBillById"), instr.getStr("bank_serial_number"),
                                 instr.getInt("repeat_count"), WebConstant.BillStatus.PROCESSING.getKey(), instr.getStr("instruct_code")
-                                ,new Date(), record.get("id"),old_repeat_count) == 1;
+                                ,new Date(),  old_persist_version+ 1,record.get("id"),old_repeat_count,old_persist_version) == 1;
                     }
                     return save;
                 }

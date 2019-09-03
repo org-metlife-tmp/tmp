@@ -16,10 +16,10 @@ public class NcOptypeMgr extends AbstractOptypeMgr {
                 })));
         optypes.add(new Optype(Optype.Mode.NORMAL, "headorgnc_submit")
                 .registKeepParams(new String[]{
-                        "id"
+                        "id", "persist_version"
                 })
                 .registerValidate(new RequiredParamsValidate(new String[]{
-                        "id"
+                        "id", "persist_version"
                 })));
         //查询列表
         optypes.add(new Optype(Optype.Mode.NORMAL, "checkdoubtfulnc_list")
