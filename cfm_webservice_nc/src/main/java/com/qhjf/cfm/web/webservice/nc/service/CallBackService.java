@@ -1,12 +1,19 @@
 package com.qhjf.cfm.web.webservice.nc.service;
 
 import com.jfinal.plugin.activerecord.Record;
+import com.qhjf.cfm.exceptions.BusinessException;
+import com.qhjf.cfm.utils.StringKit;
 import com.qhjf.cfm.web.config.DDHNCWSConfigSection;
 import com.qhjf.cfm.web.config.GlobalConfigSection;
 import com.qhjf.cfm.web.config.IConfigSectionType;
+import com.qhjf.cfm.web.constant.WebConstant;
+import com.qhjf.cfm.web.service.CheckVoucherService;
 import com.qhjf.cfm.web.webservice.client.AuthorService;
 import com.qhjf.cfm.web.webservice.client.AuthorServiceLocator;
 import com.qhjf.cfm.web.webservice.client.AuthorServiceSoapBindingStub;
+import com.qhjf.cfm.web.webservice.nc.server.request.NCReciveDateReq;
+import com.qhjf.cfm.web.webservice.nc.server.response.NCReciveDataResp;
+import com.qhjf.cfm.web.webservice.nc.server.response.parent.NCCallBackResp;
 import com.qhjf.cfm.web.webservice.tool.XmlTool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +31,7 @@ public class CallBackService {
 	 * @return
 	 * @throws Exception
 	 */
-	public String callback(Record originData) throws Exception {
+	public String callback(Record originData,Record tranRecord) throws Exception {
 		AuthorServiceLocator factory2 = new AuthorServiceLocator();
 		AuthorServiceSoapBindingStub push = (AuthorServiceSoapBindingStub) factory2.getauthorPortName();
 		String callBackMsg = genXml(originData);
