@@ -463,7 +463,7 @@
             },
             //展示格式转换-收款方式
             transitMode: function (row, column, cellValue, index) {
-                return this.recv_mode[cellValue];
+               // return this.recv_mode[cellValue];
             },
             //展示格式转换-资金用途
             transitFunds: function (row, column, cellValue, index) {
