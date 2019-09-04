@@ -103,8 +103,8 @@ public class UserLoginService implements IJwtUserService {
     private void tryTimeIncrease(Record userInfo){
     	
     	Integer tryTimes = userInfo.getInt("try_times");
-    	if (tryTimes != null && tryTimes >= 4) {
-    		userInfo.set("try_times", 5);
+    	if (tryTimes != null && tryTimes >= 999) {
+    		userInfo.set("try_times", 1000);
     		userInfo.set("status", WebConstant.UserStatus.FROZEN.getKey());
 			Db.update("user_info", "usr_id", userInfo);
 		}else {
