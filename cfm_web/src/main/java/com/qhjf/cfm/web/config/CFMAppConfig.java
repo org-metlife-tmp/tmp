@@ -136,7 +136,7 @@ public class CFMAppConfig extends JFinalConfig {
 
         if(CFMQuartzConfigSection.getInstance().isQuartzOpen()){
         	log.debug("添加quartz！");
-            plugins.add(MyQuartzPlugin.getInstance());
+        //    plugins.add(MyQuartzPlugin.getInstance());
         }
         
 
