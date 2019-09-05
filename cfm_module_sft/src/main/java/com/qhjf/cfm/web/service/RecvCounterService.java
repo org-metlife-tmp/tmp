@@ -107,7 +107,14 @@ public class RecvCounterService {
 		BigDecimal total_amount = TypeUtils.castToBigDecimal(record.get("amount"));
 		BigDecimal total_amount_son =  new BigDecimal(0);
 
+		//判断是否有重复票据编号
+		if(bill_number != null){
+			Record findBypjbh = Db.findFirst(Db.getSql("recv_counter.selbillnum"),bill_number);
+			if(findBypjbh != null){
+				throw new ReqDataException("待确认的保单票据票号已存在，请重新输入!") ;
+			}
 
+		}
 
 		for (Record rec : policys) {
 			String third_payment = TypeUtils.castToString(rec.get("third_payment"));
@@ -142,8 +149,9 @@ public class RecvCounterService {
 			Record findById = Db.findById("recv_counter_bill", "md5", md5String);
 			if(findById != null) {
 				logger.error("====录入的保单号已经确认完成了===="+insure_bill_no);
-				throw new ReqDataException("待确认的保单在系统内已经存在") ;
+				throw new ReqDataException("待确认的保单在系统内已经存在!") ;
 			}
+
 			String serviceSerialNumber = BizSerialnoGenTool.getInstance().getSerial(WebConstant.MajorBizType.GMSGD);
 			total_amount_son = total_amount_son.add(new BigDecimal(amount));
 			Record insertRecord = new Record();
