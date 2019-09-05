@@ -136,6 +136,15 @@ WHERE
       recv.delete_flag = 0
 #end
 
+#sql("selbillnum")
+      SELECT
+        *
+      FROM
+        recv_counter_bill
+      WHERE
+        bill_number = ?
+#end
+
 #sql("findPendingList")
 SELECT
 	counter.bill_type ,
