@@ -507,7 +507,7 @@
                             message: "请输入收款银行账号",
                             trigger: "blur"
                         },
-                        {
+                        /*{
                             validator: function (rule, value, callback, source, options) {
                                 var reg = /^[\w-]+$/;
                                 if (reg.test(value)) {
@@ -518,7 +518,7 @@
                                 }
                             },
                             trigger: "blur"
-                        }
+                        }*/
                     ],
                     recv_bank_name: {
                         required: true,
