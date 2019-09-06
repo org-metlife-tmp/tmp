@@ -451,7 +451,7 @@
                         </el-col>
                         <el-col :span="12">
                             <el-form-item label="批单号">
-                                <el-input v-model="dialogData.batch_no" disabled></el-input>
+                                <el-input v-model="dialogData.bussiness_no" disabled></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
@@ -1025,7 +1025,7 @@
                                 });
                             } else {
                                 dialogData[k] = result.data.data.batch_process_no;
-                                this.dialogData.batch_process_no = result.data.data.batch_process_no; //给批单号赋值
+                                //this.dialogData.batch_process_no = result.data.data.batch_process_no; //给批单号赋值
                             }
                         }).catch(function (error) {
                             console.log(error);
@@ -1129,6 +1129,7 @@
                     } else {
                         this.voucherList = result.data.data;
                         this.dialogData.tsamount =  result.data.data.needPayMoney;
+                        this.dialogData.batch_no = result.data.data.bussinessNo;
                     }
                 }).catch(function (error) {
                     console.log(error);
