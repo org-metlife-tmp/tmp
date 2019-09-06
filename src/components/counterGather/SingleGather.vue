@@ -1076,10 +1076,9 @@
             saveData: function(){
                 let dialogData = this.dialogData;
                 //判空
-                if(dialogData.currency ==""|| dialogData.recv_mode==""
-                        && dialogData.use_funds==""||dialogData.bill_status==""|| dialogData.bill_number==""|| dialogData.bill_date==""
-                        && dialogData.recv_bank_name==""|| dialogData.recv_acc_no==""|| dialogData.consumer_bank_name==""
-                        && dialogData.consumer_acc_no==""|| dialogData.terminal_no==""|| dialogData.amount==""){
+                if(dialogData.currency ==""|| dialogData.recv_mode=="" || dialogData.use_funds==""||dialogData.bill_status==""|| dialogData.bill_number==""|| dialogData.bill_date==""
+                        || dialogData.recv_bank_name==""|| dialogData.recv_acc_no==""|| dialogData.consumer_bank_name==""
+                        || dialogData.consumer_acc_no==""|| dialogData.terminal_no==""|| dialogData.amount==""){
                     alert("温馨提示：请将必填字段补充完整！")
                 }else {
                     this.$confirm('是否确认完成当前业务收款?', '提示', {
