@@ -318,8 +318,7 @@ WHERE
 
 #sql("findDistinctStatus")
 SELECT
-  DISTINCT(status) AS status ,
-  supply_status AS supply_status 
+   *
 FROM
   pay_legal_data AS pay
 WHERE 
