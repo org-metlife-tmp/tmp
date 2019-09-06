@@ -53,6 +53,25 @@ public class SftRecvCallBack {
 	}
 
 	/**
+	 * 未响应，单笔回调
+	 *
+	 * @param sftOsSource
+	 *            系统来源 0：LA，1：EBS
+	 * @param originData
+	 *            LA/EBS原始数据
+	 */
+	public void callbackNoResp(int sftOsSource, Record originData) {
+		if (sftOsSource == WebConstant.SftOsSource.LA.getKey()) {
+			LaRecvCallback callback = new LaRecvCallback();
+			callback.callBack(originData);
+		} else if (sftOsSource == WebConstant.SftOsSource.EBS.getKey()) {
+			//TODO：目前没有EBS批收业务
+			/*EbsRecvCallback callback = new EbsRecvCallback();
+			callback.callBack(originDatas);*/
+		}
+	}
+
+	/**
 	 * 重复预警，单笔回调
 	 * 
 	 * @param sftOsSource

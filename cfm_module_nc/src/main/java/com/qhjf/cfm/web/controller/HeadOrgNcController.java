@@ -61,10 +61,35 @@ public class HeadOrgNcController extends CFMBaseController {
             }
         } catch (BusinessException e) {
             log.error("newcomp总公司支付失败！", e);
-            renderFail(e);
+            renderFail(new ReqDataException("newcomp总公司支付失败！"));
         }
     }
 
+    public void batch_submit() {
+        try {
+            Record record_params = getParamsToRecord();
+            List<Integer> id_list = record_params.get("id");
+            List<Integer> persist_version_list = record_params.get("persist_version");
+            if (record_params.get("id") != null && !"".equals(record_params.get("id"))) {
+                for(int i=0;i<id_list.size();i++){
+                    Record record=new Record();
+                    record.set("id",id_list.get(i));
+                    record.set("persist_version",persist_version_list.get(i));
+                    try {
+                        service.pass(record);
+                    }catch (Exception var7) {
+                        throw new ReqDataException("请求数据错误！");
+                    }
+                }
+                renderOk(null);
+            }else {
+                throw new ReqDataException("请求数据错误！");
+            }
+        } catch (BusinessException e) {
+            log.error("newcomp总公司支付失败！", e);
+            renderFail(new ReqDataException("newcomp总公司支付失败！"));
+        }
+    }
     public void payOff() throws Exception {
         try {
             UodpInfo uodpInfo = getCurUodp();
