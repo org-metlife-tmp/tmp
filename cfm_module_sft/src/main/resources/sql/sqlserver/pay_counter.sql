@@ -395,6 +395,7 @@ select
 	cwrei.init_dept_id,
 	cwrei.init_dept_name,
 	cwrei.start_time ,
+	pay.consumer_acc_name AS consumer_acc_name,
 	pay.pay_code AS pay_code,
 	la.preinsure_bill_no AS preinsure_bill_no,
 	la.insure_bill_no AS insure_bill_no,
