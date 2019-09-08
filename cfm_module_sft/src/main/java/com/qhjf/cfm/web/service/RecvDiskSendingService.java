@@ -1,5 +1,7 @@
 package com.qhjf.cfm.web.service;
 
+import com.alibaba.druid.support.json.JSONUtils;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.util.TypeUtils;
 import com.jfinal.kit.Kv;
 import com.jfinal.plugin.activerecord.*;
@@ -301,9 +303,17 @@ public class RecvDiskSendingService {
 					oldDetail.removeAll(oldList);
 					Record oldTotal = instr.get("total");
 					newTotal.set("bus_type", oldTotal.getStr("bus_type"));
-					QueueBean bean = new QueueBean(sysInter, channelInter.genParamsMap(newInstr), shortPayCnaps);
-					ProductQueue productQueue = new ProductQueue(bean);
-					new Thread(productQueue).start();
+					Map<String,Object> request_map=channelInter.genParamsMap(newInstr);
+					Record send_request=new Record();
+					send_request.set("bank_serial_number_unpack",newTotal.getStr("bank_serial_number"));
+					send_request.set("send_request",JSONUtils.toJSONString(request_map));
+					boolean save = Db.save("recv_send_request_report", send_request);
+					if (save){
+						QueueBean bean = new QueueBean(sysInter, request_map, shortPayCnaps);
+						ProductQueue productQueue = new ProductQueue(bean);
+						new Thread(productQueue).start();
+					}
+
 				} else {
 					List<Record> newList = new ArrayList<>();
 					newList.addAll((Collection<? extends Record>) detail.subList(0, detail.size()));
@@ -318,15 +328,31 @@ public class RecvDiskSendingService {
 					}
 					Record oldTotal = instr.get("total");
 					newTotal.set("bus_type", oldTotal.getStr("bus_type"));
-					QueueBean bean = new QueueBean(sysInter, channelInter.genParamsMap(newInstr), shortPayCnaps);
-					ProductQueue productQueue = new ProductQueue(bean);
-					new Thread(productQueue).start();
+
+					Map<String,Object> request_map=channelInter.genParamsMap(newInstr);
+					Record send_request=new Record();
+					send_request.set("bank_serial_number_unpack",newTotal.getStr("bank_serial_number"));
+					send_request.set("send_request",JSONUtils.toJSONString(request_map));
+					boolean save = Db.save("recv_send_request_report", send_request);
+					if (save){
+						QueueBean bean = new QueueBean(sysInter, request_map, shortPayCnaps);
+						ProductQueue productQueue = new ProductQueue(bean);
+						new Thread(productQueue).start();
+					}
 				}
 			}
 		} else {
-			QueueBean bean = new QueueBean(sysInter, channelInter.genParamsMap(instr), shortPayCnaps);
-			ProductQueue productQueue = new ProductQueue(bean);
-			new Thread(productQueue).start();
+			Map<String,Object> request_map=channelInter.genParamsMap(instr);
+			Record newTotal = instr.get("total");
+			Record send_request=new Record();
+			send_request.set("bank_serial_number_unpack",newTotal.getStr("bank_serial_number"));
+			send_request.set("send_request",JSONUtils.toJSONString(request_map));
+			boolean save = Db.save("recv_send_request_report", send_request);
+			if (save){
+				QueueBean bean = new QueueBean(sysInter, request_map, shortPayCnaps);
+				ProductQueue productQueue = new ProductQueue(bean);
+				new Thread(productQueue).start();
+			}
 		}
 	}
 
