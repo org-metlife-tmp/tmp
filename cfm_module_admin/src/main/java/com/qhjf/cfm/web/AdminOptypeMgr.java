@@ -67,6 +67,13 @@ public class AdminOptypeMgr extends AbstractOptypeMgr {
                 .registKeepParams(new String[]{"id"}));
         /** 币种维护 end **/
 
+        /** 工行支付 start **/
+        optypes.add(new Optype(Optype.Mode.ADMIN, "payBank_send")
+                .registKeepParams(new String[]{"request"}));
+
+        /** 币种维护 end **/
+
+
         /** 用户维护 start**/
         optypes.add(new Optype(Optype.Mode.ADMIN, "usr_list")
                 .registKeepParams(new String[]{"page_size", "page_num"}));

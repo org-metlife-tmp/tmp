@@ -18,5 +18,6 @@ public class AdminRoutes extends Routes {
         add("/admin/usrmenu", UsrmenuController.class);
         add("/admin/position", BaseDataPositionController.class);
         add("/admin/biztype", BizTypeController.class);
+        add("/admin/payBank", PayBankController.class);
     }
 }
