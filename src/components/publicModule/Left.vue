@@ -435,6 +435,7 @@
                     <el-menu-item index="/data-manage/merch-set" v-if="menuList.MerchMgt">商户号设置</el-menu-item>
                     <el-menu-item index="/data-manage/channel-set" v-if="menuList.ChannelMgt">渠道设置</el-menu-item>
                     <el-menu-item index="/data-manage/router-set" v-if="menuList.RouteMgt">路由设置</el-menu-item>
+                    <el-menu-item index="/data-manage/bank-pay" v-if="menuList.PayBank">工行直连付款</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
             <el-submenu index="2" v-if="menuList.UMMGT">
@@ -845,6 +846,7 @@
                     MerchMgt: false, //商户号设置
                     ChannelMgt: false, //渠道设置
                     RouteMgt: false, //路由设置
+                    PayBank: false, //工行直连付款
 
                     UMMGT: false, //用户管理
                     UsrMgt: false, //用户维护

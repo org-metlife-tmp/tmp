@@ -17,6 +17,7 @@ import SettleAccount from '@/components/dataManage/SettleAccount'
 import ChannelSet from '@/components/dataManage/ChannelSet'
 import RouterSet from '@/components/dataManage/RouterSet'
 import MerchSet from '@/components/dataManage/MerchSet'
+import BankPay from '@/components/dataManage/BankPay'
 //用户管理
 import UserMaintain from '@/components/userManage/UserMaintain'
 import UserGroup from '@/components/userManage/UserGroup'
@@ -183,6 +184,7 @@ const router = new Router({
             children:[
                 //首页
                 {path: '/home', name: 'Home', component: Home, meta: {requireAuth: true}},
+                {path: '/data-manage/bank-pay', name: 'BankPay', component: BankPay, meta: {requireAuth: true}},
                 //基础样式一（中心内容）
                 {path: '/whiteContent', name: 'WhiteContent', component: WhiteContent,
                     children: [
