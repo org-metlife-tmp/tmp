@@ -1025,7 +1025,7 @@
                                 });
                             } else {
                                 dialogData[k] = result.data.data.batch_process_no;
-                                //this.dialogData.batch_process_no = result.data.data.batch_process_no; //给批单号赋值
+                                this.dialogData.batch_process_no = result.data.data.batch_process_no; //给批单号赋值
                             }
                         }).catch(function (error) {
                             console.log(error);
