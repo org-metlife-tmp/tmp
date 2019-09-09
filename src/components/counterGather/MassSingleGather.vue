@@ -149,11 +149,11 @@
                         <el-col :span="5">
                             <el-form-item>
                                 <el-col :span="11">
-                                    <el-input v-model.number="searchData.min" clearable placeholder="最小金额"></el-input>
+                                    <el-input v-model.number="searchData.min" type="number" clearable placeholder="最小金额"></el-input>
                                 </el-col>
                                 <el-col class="line" :span="1" style="text-align:center">-</el-col>
                                 <el-col :span="11">
-                                    <el-input v-model.number="searchData.max" clearable placeholder="最大金额"></el-input>
+                                    <el-input v-model.number="searchData.max" type="number" clearable placeholder="最大金额"></el-input>
                                 </el-col>
                             </el-form-item>
                         </el-col>
@@ -185,7 +185,8 @@
         <el-main>
             <el-table :data="tableList"
                       border size="mini" height="100%">
-                <el-table-column prop="recv_date" label="收款日期" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="recv_date" label="收款日期" :show-overflow-tooltip="true"
+                                 :formatter="dateFormat"  ></el-table-column>
                 <el-table-column prop="batch_process_no" label="批处理号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="source_sys" label="核心系统" :show-overflow-tooltip="true"
                                  :formatter="transitSource"></el-table-column>
@@ -450,7 +451,7 @@
                         </el-col>
                         <el-col :span="12">
                             <el-form-item label="批单号">
-                                <el-input v-model="dialogData.batch_no" disabled></el-input>
+                                <el-input v-model="dialogData.bussiness_no" disabled></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
@@ -820,6 +821,10 @@
         },
         methods: {
 
+            //时间格式化
+            dateFormat: function (row, column, cellValue, index) {
+                return cellValue.slice(0,4)+cellValue.slice(4,6)+cellValue.slice(6,10);
+            },
             //清空搜索条件
             clearData: function () {
                 var searchData = this.searchData;
@@ -993,7 +998,15 @@
                     if (k == "recv_date") {
                         let curDate = new Date();
                         dialogData[k] = curDate.getFullYear() + "-" + (curDate.getMonth() + 1) + "-" + curDate.getDate();
-                    } else if (k == "batch_no") {
+                    } /*else if(k == "bill_status"){
+                      if(this.bill_status == "已到账"){
+                          dialogData[k] = this.bill_status.key;
+                      }else if(this.bill_status =="已退票"){
+                          dialogData[k] = this.bill_status.key;
+                      }else{
+                          dialogData[k] = "";
+                      }
+                    }*/else if (k == "batch_no") {
                         this.$axios({
                             url: this.queryUrl + "normalProcess",
                             method: "post",
@@ -1012,7 +1025,7 @@
                                 });
                             } else {
                                 dialogData[k] = result.data.data.batch_process_no;
-                                this.dialogData.batch_process_no = result.data.data.batch_process_no; //给批单号赋值
+                                //this.dialogData.batch_process_no = result.data.data.batch_process_no; //给批单号赋值
                             }
                         }).catch(function (error) {
                             console.log(error);
@@ -1116,6 +1129,7 @@
                     } else {
                         this.voucherList = result.data.data;
                         this.dialogData.tsamount =  result.data.data.needPayMoney;
+                        this.dialogData.batch_no = result.data.data.bussinessNo;
                     }
                 }).catch(function (error) {
                     console.log(error);
@@ -1214,7 +1228,13 @@
             saveData: function () {
                 let dialogData = this.dialogData;
                 let currentData = this.currentData;
-
+                   /* if(this.bill_status == "已到账"){
+                        this.bill_status = this.bill_status.key;
+                    }else if(this.bill_status =="已退票"){
+                        this.bill_status = this.bill_status.key;
+                    }else{
+                        dialogData[k] = "";
+                    }*/
                 let params = {
                     files: this.fileList,
                     wait_match_flag: currentData.wait_match_flag ? currentData.wait_match_flag : 0,
@@ -1224,7 +1244,7 @@
                 if(dialogData.currency ==""|| dialogData.recv_mode==""
                         || dialogData.use_funds==""||dialogData.bill_status==""|| dialogData.bill_number==""|| dialogData.bill_date==""
                         || dialogData.recv_bank_name==""|| dialogData.recv_acc_no==""|| dialogData.consumer_bank_name==""
-                        || dialogData.consumer_acc_no==""|| dialogData.terminal_no==""|| dialogData.amount==""){
+                        || dialogData.consumer_acc_no==""|| dialogData.terminal_no==""|| dialogData.amount=="" || dialogData.consumer_accname == ""){
                     alert("温馨提示：请将必填字段补充完整！")
                 }else {
 

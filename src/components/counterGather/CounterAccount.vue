@@ -463,7 +463,17 @@
             },
             //展示格式转换-收款方式
             transitMode: function (row, column, cellValue, index) {
-                return this.recv_mode[cellValue];
+               // return this.recv_mode[cellValue];
+                //return cellValue == 0 ? "未核对" : "已核对";
+                if(cellValue == 0){
+                    return "POS机";
+                }else if(cellValue == 1){
+                    return "现金解款单";
+                }else if(cellValue == 2){
+                    return "支票";
+                }else if(cellValue == 3){
+                    return "网银/汇款";
+                }
             },
             //展示格式转换-资金用途
             transitFunds: function (row, column, cellValue, index) {

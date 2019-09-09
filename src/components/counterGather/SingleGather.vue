@@ -154,11 +154,11 @@
                         <el-col :span="5">
                             <el-form-item>
                                 <el-col :span="11">
-                                    <el-input v-model.number="searchData.min" clearable placeholder="最小金额"></el-input>
+                                    <el-input v-model.number="searchData.min" type="number" clearable placeholder="最小金额"></el-input>
                                 </el-col>
                                 <el-col class="line" :span="1" style="text-align:center">-</el-col>
                                 <el-col :span="11">
-                                    <el-input v-model.number="searchData.max" clearable placeholder="最大金额"></el-input>
+                                    <el-input v-model.number="searchData.max" type="number" clearable placeholder="最大金额"></el-input>
                                 </el-col>
                             </el-form-item>
                         </el-col>
@@ -191,7 +191,8 @@
         <el-main>
             <el-table :data="tableList"
                       border size="mini" height="100%">
-                <el-table-column prop="recv_date" label="收款日期" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="recv_date" label="收款日期" :show-overflow-tooltip="true"
+                                 :formatter="dateFormat"></el-table-column>
                 <el-table-column prop="batch_process_no" label="批处理号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="source_sys" label="核心系统" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="insure_bill_no" label="保单号" :show-overflow-tooltip="true"></el-table-column>
@@ -201,8 +202,9 @@
                 <el-table-column prop="recv_acc_no" label="收款账号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="use_funds" label="资金用途" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="bill_status" label="票据状态" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="bill_number" label="票据票号" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="bill_date" label="票据日期" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="bill_number" label="票据编号" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="bill_date" label="票据日期" :show-overflow-tooltip="true"
+                                 :formatter="dateFormat"></el-table-column>
                 <el-table-column prop="terminal_no" label="终端机编号" width="110px"
                                  :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="amount" label="金额" :show-overflow-tooltip="true"
@@ -719,6 +721,11 @@
             }
         },
         methods: {
+
+            //时间格式化
+            dateFormat: function (row, column, cellValue, index) {
+                return cellValue.slice(0,4)+cellValue.slice(4,6)+cellValue.slice(6,10);
+            },
             //清空搜索条件
             clearData: function(){
                 var searchData = this.searchData;
@@ -1076,10 +1083,9 @@
             saveData: function(){
                 let dialogData = this.dialogData;
                 //判空
-                if(dialogData.currency ==""|| dialogData.recv_mode==""
-                        && dialogData.use_funds==""||dialogData.bill_status==""|| dialogData.bill_number==""|| dialogData.bill_date==""
-                        && dialogData.recv_bank_name==""|| dialogData.recv_acc_no==""|| dialogData.consumer_bank_name==""
-                        && dialogData.consumer_acc_no==""|| dialogData.terminal_no==""|| dialogData.amount==""){
+                if(dialogData.currency ==""|| dialogData.recv_mode=="" || dialogData.use_funds==""||dialogData.bill_status==""|| dialogData.bill_number==""|| dialogData.bill_date==""
+                        || dialogData.recv_bank_name==""|| dialogData.recv_acc_no==""|| dialogData.consumer_bank_name==""
+                        || dialogData.consumer_acc_no==""|| dialogData.terminal_no==""|| dialogData.amount==""){
                     alert("温馨提示：请将必填字段补充完整！")
                 }else {
                     this.$confirm('是否确认完成当前业务收款?', '提示', {
