@@ -191,7 +191,8 @@
         <el-main>
             <el-table :data="tableList"
                       border size="mini" height="100%">
-                <el-table-column prop="recv_date" label="收款日期" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="recv_date" label="收款日期" :show-overflow-tooltip="true"
+                                 :formatter="dateFormat"></el-table-column>
                 <el-table-column prop="batch_process_no" label="批处理号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="source_sys" label="核心系统" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="insure_bill_no" label="保单号" :show-overflow-tooltip="true"></el-table-column>
@@ -201,8 +202,9 @@
                 <el-table-column prop="recv_acc_no" label="收款账号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="use_funds" label="资金用途" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="bill_status" label="票据状态" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="bill_number" label="票据票号" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="bill_date" label="票据日期" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="bill_number" label="票据编号" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="bill_date" label="票据日期" :show-overflow-tooltip="true"
+                                 :formatter="dateFormat"></el-table-column>
                 <el-table-column prop="terminal_no" label="终端机编号" width="110px"
                                  :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="amount" label="金额" :show-overflow-tooltip="true"
@@ -719,6 +721,11 @@
             }
         },
         methods: {
+
+            //时间格式化
+            dateFormat: function (row, column, cellValue, index) {
+                return cellValue.slice(0,4)+cellValue.slice(4,6)+cellValue.slice(6,10);
+            },
             //清空搜索条件
             clearData: function(){
                 var searchData = this.searchData;
