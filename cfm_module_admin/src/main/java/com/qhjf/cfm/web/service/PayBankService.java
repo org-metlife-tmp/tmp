@@ -34,9 +34,14 @@ public class PayBankService {
         final SysBatchRecvInter sysInter = new SysBatchRecvInter();
         sysInter.setChannelInter(channelInter);
         Map<String,Object> request_map = (Map) JSON.parse(request);
-        QueueBean bean = new QueueBean(sysInter, request_map, "102");
-        ProductQueue productQueue = new ProductQueue(bean);
-        new Thread(productQueue).start();
+        Map<String,Object> pub = (Map<String, Object>) request_map.get("pub");
+        String fSeqno= (String) pub.get("fSeqno");
+        Record record1=Db.findById("recv_send_request_report","bank_serial_number_unpack",fSeqno);
+        if (record1!=null){
+            QueueBean bean = new QueueBean(sysInter, request_map, "102");
+            ProductQueue productQueue = new ProductQueue(bean);
+            new Thread(productQueue).start();
+        }
     }
 
 
