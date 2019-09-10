@@ -41,6 +41,17 @@
             margin-bottom: 2px;
             margin-top: -15px;
         }
+
+        /*列表前侧图表*/
+        .el-icon-warning {
+            color: orange;
+            font-size: 18px;
+        }
+        .el-icon-caret-top {
+            color: #5daf34;
+            font-size: 20px;
+        }
+
     }
 </style>
 <style lang="less">
@@ -106,6 +117,13 @@
             <el-table :data="tableList"
                       height="100%"
                       border size="mini">
+                <el-table-column
+                        label="" width="50">
+                    <template slot-scope="scope" class="operationBtn">
+                        <i class="el-icon-warning" v-if="scope.row.billcount > 1"></i>
+                        <i class="el-icon-caret-top" v-if="scope.row.billcount == 1"></i>
+                    </template>
+                </el-table-column>
                 <el-table-column prop="acc_no" label="账户号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="acc_name" label="账户名称" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="direction" label="收付方向" :show-overflow-tooltip="true"
@@ -160,12 +178,18 @@
                           height="100%" size="mini"
                           @current-change="selectData = $event || {}">
                     <!--<el-table-column prop="service_serial_number" label="单据编号" :show-overflow-tooltip="true"></el-table-column>-->
-                    <el-table-column prop="pay_account_no" label="付款方账号" :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="pay_account_name" label="付款方账户名称" :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="pay_account_bank" label="付款方开户行" :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="recv_account_no" label="收款方账户号" :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="recv_account_name" label="收款方账户名称" :show-overflow-tooltip="true"></el-table-column>
-                    <el-table-column prop="recv_account_bank" label="收款方开户行" :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column prop="pay_account_no" label="付款方账号"
+                                     :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column prop="pay_account_name" label="付款方账户名称"
+                                     :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column prop="pay_account_bank" label="付款方开户行"
+                                     :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column prop="recv_account_no" label="收款方账户号"
+                                     :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column prop="recv_account_name" label="收款方账户名称"
+                                     :show-overflow-tooltip="true"></el-table-column>
+                    <el-table-column prop="recv_account_bank" label="收款方开户行"
+                                     :show-overflow-tooltip="true"></el-table-column>
                     <el-table-column prop="payment_summary" label="摘要" :show-overflow-tooltip="true"></el-table-column>
                     <el-table-column prop="payment_amount" label="金额" :show-overflow-tooltip="true"
                                      :formatter="transitAmount"></el-table-column>

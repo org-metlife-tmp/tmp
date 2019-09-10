@@ -193,7 +193,7 @@
         name: "RefundTicket",
         created: function () {
             //设置当前页基本信息
-            this.$emit("transmitTitle", "退票重复");
+            this.$emit("transmitTitle", "退票支付");
             this.$emit("getCommTable", this.routerMessage);
         },
         mounted: function () {
