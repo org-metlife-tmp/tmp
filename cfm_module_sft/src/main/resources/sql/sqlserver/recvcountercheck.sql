@@ -1,10 +1,11 @@
-#sql("recvcounterlist")
+  #sql("recvcounterlist")
 SELECT
     recv.*
 FROM
 	recv_counter_bill AS recv
 WHERE
 	recv.delete_flag = 0
+	AND recv.confirm_status = 1
   #if(map != null)
     #for(x : map)
       #if(x.value&&x.value!=""&&(!"[]".equals(x.value.toString())))
