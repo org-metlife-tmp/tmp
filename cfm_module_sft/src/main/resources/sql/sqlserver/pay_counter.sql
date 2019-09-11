@@ -410,12 +410,12 @@ FROM
 	pay_legal_data AS pay,
 	la_origin_pay_data AS origin
 WHERE gmf.id = cwrei.bill_id  AND
-      pay.id = la.legal_id AND 
+      pay.id = la.legal_id AND
 	  biztype.type_code = la.biz_type AND
 	  gmf.legal_id = pay.id AND
 	  gmf.delete_num = 0	AND
 	  biztype.[type] =1 AND
-      origin.id = pay.origin_id	  
+      origin.id = pay.origin_id
   #for(x : map)
     #if("in".equals(x.key))
       #if(map.in != null)
@@ -446,8 +446,8 @@ WHERE gmf.id = cwrei.bill_id  AND
     #elseif("biz_type".equals(x.key))
      AND  cwrei.#(x.key) = #(x.value)
     #end
-  #end 
-UNION ALL    
+  #end
+UNION ALL
   SELECT
 	gmf.id as ipd_id,
 	gmf.org_id,
@@ -509,7 +509,7 @@ FROM
 	pay_legal_data AS pay	,
 	ebs_origin_pay_data AS origin
 WHERE gmf.id = cwrei.bill_id  AND
-      pay.id = ebs.legal_id AND 
+      pay.id = ebs.legal_id AND
 	  gmf.legal_id = pay.id AND
 	  gmf.delete_num = 0	AND
 	  origin.id = pay.origin_id
@@ -542,11 +542,102 @@ WHERE gmf.id = cwrei.bill_id  AND
       #end
     #elseif("biz_type".equals(x.key))
      AND  cwrei.#(x.key) = #(x.value)
+#end
+#end
+UNION ALL
+  SELECT
+	gmf.id as ipd_id,
+	gmf.org_id,
+	gmf.source_sys,
+	gmf.pay_account_no,
+	gmf.pay_account_name,
+	gmf.pay_account_cur,
+	gmf.recv_account_no,
+	gmf.recv_account_no AS recv_acc_no,
+    gmf.recv_account_name,
+	gmf.recv_bank_name,
+	gmf.recv_bank_cnaps,
+	gmf.persist_version,
+	gmf.amount,
+	gmf.service_status,
+	gmf.create_on,
+	gmf.create_by,
+	gmf.bank_serial_number,
+	gmf.service_serial_number,
+	cwrei.id as inst_id,
+	cwrei.base_id,
+	cwrei.workflow_name,
+	cwrei.define_id,
+	cwrei.workflow_type,
+	cwrei.reject_strategy,
+	cwrei.def_version,
+	cwrei.workflow_node_id,
+	cwrei.step_number,
+	cwrei.shadow_execute,
+	cwrei.shadow_user_id,
+	cwrei.shadow_user_name,
+	cwrei.biz_type,
+	cwrei.bill_id,
+	cwrei.bill_code,
+	cwrei.submitter,
+	cwrei.submitter_name AS op_user_name,
+	cwrei.submitter_name,
+	cwrei.submitter_pos_id,
+	cwrei.submitter_pos_name,
+	cwrei.init_user_id,
+	cwrei.init_user_name,
+	cwrei.init_org_id,
+	cwrei.init_org_name,
+	cwrei.init_dept_id,
+	cwrei.init_dept_name,
+	cwrei.start_time ,
+  mat.consumer_bank_name AS consumer_acc_name,
+  '' AS pay_code,
+	'' AS preinsure_bill_no,
+	'' AS insure_bill_no,
+	'' AS biz_code,
+	'待匹配收款退费' AS type_name,
+	mat.refund_on AS pay_date
+FROM
+	gmf_bill AS gmf,
+	cfm_workflow_run_execute_inst AS cwrei ,
+	recv_counter_match AS mat
+WHERE gmf.id = cwrei.bill_id  AND
+      mat.id = gmf.legal_id AND
+	  gmf.delete_num = 0
+  #for(x : map)
+    #if("in".equals(x.key))
+      #if(map.in != null)
+        AND cwrei.id IN (
+          #for(y : map.in)
+            #for(z : y.instIds)
+              #if(for.index > 0)
+                #(",")
+              #end
+              #(z)
+            #end
+          #end
+        )
+      #end
+    #elseif("notin".equals(x.key))
+      #if(map.notin != null)
+        AND cwrei.id NOT IN (
+          #for(y : map.notin)
+            #for(z : y.excludeInstIds)
+              #if(for.index > 0)
+                #(",")
+              #end
+              #(z)
+            #end
+          #end
+        )
+      #end
+    #elseif("biz_type".equals(x.key))
+     AND  cwrei.#(x.key) = #(x.value)
     #end
   #end
-  ) tab  order by ipd_id 
+  ) tab  order by ipd_id
 #end
-
 
 
 #sql("updateLaOriginData")
