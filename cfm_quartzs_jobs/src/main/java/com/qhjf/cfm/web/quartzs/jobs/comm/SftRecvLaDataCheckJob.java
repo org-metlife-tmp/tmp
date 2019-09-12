@@ -1,6 +1,7 @@
 package com.qhjf.cfm.web.quartzs.jobs.comm;
 
 import com.alibaba.fastjson.util.TypeUtils;
+import com.jfinal.kit.Kv;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.IAtom;
 import com.jfinal.plugin.activerecord.Record;
@@ -48,7 +49,17 @@ public class SftRecvLaDataCheckJob implements Job{
         if (null == list || list.size() == 0) {
 			return;
 		}
-        
+        List<Long> listID = new ArrayList<Long>();
+        for (Record record : list) {
+            listID.add(record.getLong("id"));
+        }
+
+        int updRows1 = Db.update(Db.getSql("la_recv_cfm.updLaRecvOriginProcessAll"),
+                Kv.by("origin_id", listID));
+        if (updRows1 ==0) {
+            log.error("LA批收原始数据校验，更新原始数据失败！originId={}", listID.toString());
+            return ;
+        }
         log.debug("LA批收原始数据校验,待校验数据条数size = {}", list.size());
         for (Record record : list) {
             executeProcess(record);
@@ -57,6 +68,7 @@ public class SftRecvLaDataCheckJob implements Job{
     }
 
     public void executeProcess(final Record laRecvOiriginData){
+
         boolean flag = Db.tx(new IAtom() {
             @Override
             public boolean run() throws SQLException {

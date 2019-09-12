@@ -64,6 +64,21 @@
   	id = ? and persist_version = ?
 #end
 
+ #sql("updLaRecvOriginProcessAll")
+    update
+     la_origin_recv_data
+    set
+     is_process = 2
+      where
+      id in(
+         #for(x : origin_id)
+             #(for.index == 0 ? "" : ",") #para(x)
+             #end
+        )
+  #end
+#end
+
+
 #sql("getrecvlegal")
   SELECT
     legal.id,

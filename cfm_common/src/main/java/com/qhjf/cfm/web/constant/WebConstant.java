@@ -27,7 +27,7 @@ public interface WebConstant {
      */
     @ConstantAnnotation("是与否")
     enum YesOrNo implements WebConstant {
-        YES(1, "是"), NO(0, "否");
+        YES(1, "是"), NO(0, "否"), PROCESS(2, "处理中");
         protected int key;
         String desc;
 
