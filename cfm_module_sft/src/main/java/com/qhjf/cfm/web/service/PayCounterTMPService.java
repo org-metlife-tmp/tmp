@@ -72,7 +72,7 @@ public class PayCounterTMPService {
 			throw new ReqDataException("当前登录人的机构信息未维护");
 		}
 		record.set("match_status", new int[]{WebConstant.SftRecvCounterMatchStatus.TFZ.getKey(),
-				WebConstant.SftRecvCounterMatchStatus.DPP.getKey(),
+				//WebConstant.SftRecvCounterMatchStatus.DPP.getKey(),
 				WebConstant.SftRecvCounterMatchStatus.YTF.getKey()});
 		List<Integer> status = record.get("status");
 		String service_status_origin = TypeUtils.castToString(record.get("service_status"));
