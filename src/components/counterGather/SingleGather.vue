@@ -472,7 +472,8 @@
                                 </el-select>
                             </el-form-item>-->
                             <el-form-item label="">
-                                    <el-checkbox v-model="item.isnot_electric_pay" label="允许垫交中的保单缴费" :checked="ischeckofdj == 'true'"  name="type">
+                                    <el-checkbox v-model="item.isnot_electric_pay" label="允许垫交中的保单缴费" :checked="ischeckofdj == 'true'"
+                                                 :disabled="isdisableofdj == 'true'" name="type">
 
                                     </el-checkbox>
                                 <!--<el-switch
@@ -624,6 +625,7 @@
                 //文本框是否可编辑
                 isdisables:"true",
                 ischeckofdj:"true",
+                isdisableofdj:"true",
 
                 queryUrl: this.$store.state.queryUrl,
                 routerMessage: {
@@ -943,6 +945,7 @@
                 this.dialogTitle = "新增";
                 this.currentData = "";
                 this.ischeckofdj = "false"; //初始化允许垫交中保单缴费
+                this.isdisableofdj = "false"; //初始化允许垫交中保单缴费
                 let dialogData = this.dialogData;
                 for(let k in dialogData){
                     if(k == "recv_date"){
@@ -1063,8 +1066,10 @@
                                 if(k == "isnot_electric_pay"){
                                     if(data[k]== 1){
                                         this.ischeckofdj = "true";
+                                        this.isdisableofdj = "true";
                                     }else if(data[k] == 0 || data[k] == null){
                                         this.ischeckofdj = "false";
+                                        this.isdisableofdj = "false";
                                     }
                                 }
                                 //判断是否垫交
