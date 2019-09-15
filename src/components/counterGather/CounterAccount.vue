@@ -141,7 +141,8 @@
                 <el-table-column type="selection" width="40" ></el-table-column>
                 <el-table-column prop="bill_type" label="业务类型" :show-overflow-tooltip="true"
                                  :formatter="transitType"></el-table-column>
-                <el-table-column prop="recv_date" label="收款日期" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="recv_date" label="收款日期" :show-overflow-tooltip="true"
+                                 :formatter="dateFormat"></el-table-column>
                 <el-table-column prop="batch_process_no" label="批处理号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="batch_no" label="批单号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="preinsure_bill_no" label="投保单号" :show-overflow-tooltip="true"></el-table-column>
@@ -364,6 +365,10 @@
             }
         },
         methods: {
+            //时间格式化
+            dateFormat: function (row, column, cellValue, index) {
+                return cellValue.slice(0,4)+cellValue.slice(4,6)+cellValue.slice(6,10);
+            },
             //清空搜索条件
             clearData: function(){
                 var searchData = this.searchData;
