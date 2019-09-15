@@ -129,6 +129,12 @@ public class RecvCounterService {
 			String insure_name = TypeUtils.castToString(rec.get("insure_name"));
 			String insure_cer_no = TypeUtils.castToString(rec.get("insure_cer_no"));
 			String isnot_electric_pay = TypeUtils.castToString(rec.get("isnot_electric_pay"));
+
+			if(isnot_electric_pay == "true"){
+				isnot_electric_pay = "1";
+			}else if(isnot_electric_pay == "false"){
+				isnot_electric_pay = "0";
+			}
 			String isnot_bank_transfer_premium  = TypeUtils.castToString(rec.get("isnot_bank_transfer_premium"));
 			String srce_bus = TypeUtils.castToString(rec.get("srce_bus"));
 			String camp_aign = TypeUtils.castToString(rec.get("camp_aign"));
