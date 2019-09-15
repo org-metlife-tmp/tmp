@@ -471,23 +471,29 @@
                                     </el-option>
                                 </el-select>
                             </el-form-item>-->
-                            <el-form-item label="允许垫交中的保单缴费">
-                                <el-switch
+                            <el-form-item label="">
+                                    <el-checkbox v-model="item.isnot_electric_pay" label="允许垫交中的保单缴费" :checked="ischeckofdj == 'true'"  name="type">
+
+                                    </el-checkbox>
+                                <!--<el-switch
                                         v-model="item.isnot_electric_pay"
                                         active-value="1"
                                         inactive-value="0"
                                         @change="setEP(item)">
-                                </el-switch>
+                                </el-switch>-->
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
-                            <el-form-item label="是否银行转账中的保单缴费">
-                                <el-switch
+                            <el-form-item label="">
+                                <el-checkbox-group v-model="item.isnot_bank_transfer_premium">
+                                    <el-checkbox label="是否银行转账中的保单缴费" name="type"></el-checkbox>
+                                </el-checkbox-group>
+                                <!--<el-switch
                                         v-model="item.isnot_bank_transfer_premium"
                                         active-value="1"
                                         inactive-value="0"
                                         @change="setBP(item)">
-                                </el-switch>
+                                </el-switch>-->
                             </el-form-item>
                           <!--  <el-form-item label="是否银行转账中的保单缴费">
                                 <el-select v-model="item.isnot_bank_transfer_premium" disabled>
@@ -617,6 +623,7 @@
             return {
                 //文本框是否可编辑
                 isdisables:"true",
+                ischeckofdj:"true",
 
                 queryUrl: this.$store.state.queryUrl,
                 routerMessage: {
@@ -691,7 +698,7 @@
                         source_sys: "",
                         insure_name: "",
                         insure_cer_no: "",
-                        isnot_electric_pay: "",
+                        isnot_electric_pay:"",
                         isnot_bank_transfer_premium: "",
                         third_payment: "",
                         payer: "",
@@ -935,6 +942,7 @@
             addData: function () {
                 this.dialogTitle = "新增";
                 this.currentData = "";
+                this.ischeckofdj = "false"; //初始化允许垫交中保单缴费
                 let dialogData = this.dialogData;
                 for(let k in dialogData){
                     if(k == "recv_date"){
@@ -979,7 +987,7 @@
                         source_sys: "",
                         insure_name: "",
                         insure_cer_no: "",
-                        isnot_electric_pay: "",
+                        isnot_electric_pay:"",
                         isnot_bank_transfer_premium: "",
                         third_payment: "0",
                         payer: "",
@@ -1046,11 +1054,19 @@
                             });
                         } else {
                             let data = result.data.data;
+                            //let ischecks = item.isnot_electric_pay;
 
                             for(let k in item){
                                 this.isdisables = "false";
-                                item[k] = data[k];
 
+                                item[k] = data[k];
+                                if(k == "isnot_electric_pay"){
+                                    if(data[k]== 1){
+                                        this.ischeckofdj = "true";
+                                    }else if(data[k] == 0 || data[k] == null){
+                                        this.ischeckofdj = "false";
+                                    }
+                                }
                                 //判断是否垫交
                                 //if(data[k].isnot_electric_pay == null){
                                        // this.item.isnot_electric_pay = "";
