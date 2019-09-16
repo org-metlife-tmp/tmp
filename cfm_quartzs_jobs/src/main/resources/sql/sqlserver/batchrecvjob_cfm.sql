@@ -43,11 +43,11 @@
 
 #sql('getBankunPack')
 	select
-		bank_serial_number_unpack
+		distinct (bank_serial_number_unpack)
 	from
 		batch_recv_instr_queue_detail
 	where
-		bank_serial_number = ? GROUP BY bank_serial_number_unpack
+		bank_serial_number = ? and status=3 order by bank_serial_number_unpack
 #end
 
 
