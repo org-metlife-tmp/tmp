@@ -49,15 +49,17 @@ public class SftRecvLaDataCheckJob implements Job{
         if (null == list || list.size() == 0) {
 			return;
 		}
-        List<Long> listID = new ArrayList<Long>();
-        for (Record record : list) {
-            listID.add(record.getLong("id"));
-        }
 
-        int updRows1 = Db.update(Db.getSql("la_recv_cfm.updLaRecvOriginProcessAll"),
-                Kv.by("origin_id", listID));
+        int[] ids = new int[list.size()];
+        int i=0;
+        for (Record record : list) {
+            ids[i]=record.getInt("id");
+            i++;
+        }
+        Kv cond = Kv.by("ids", ids);
+        int updRows1 = Db.update(Db.getSqlPara("la_recv_cfm.updLaRecvOriginProcessAll",cond) );
         if (updRows1 ==0) {
-            log.error("LA批收原始数据校验，更新原始数据失败！originId={}", listID.toString());
+            log.error("LA批收原始数据校验，更新原始数据失败！originId={}", ids.toString());
             return ;
         }
         log.debug("LA批收原始数据校验,待校验数据条数size = {}", list.size());
@@ -68,7 +70,6 @@ public class SftRecvLaDataCheckJob implements Job{
     }
 
     public void executeProcess(final Record laRecvOiriginData){
-
         boolean flag = Db.tx(new IAtom() {
             @Override
             public boolean run() throws SQLException {
@@ -304,9 +305,9 @@ public class SftRecvLaDataCheckJob implements Job{
         checkDoubtful.set("identification", identification);
 
         //判断可疑表中是否存在可疑数据
-        List<Record> checkRecordList = Db.find(Db.getSql("la_recv_cfm.getrecvcheck"),originData.getStr("insure_bill_no")
+        List<Record> checkRecordList = Db.find(Db.getSql("la_recv_cfm.getrecvcheck"),"asda"
                 ,originData.getStr("pay_acc_name")
-                ,originData.getStr("amount")
+                ,originData.getStr("id")
                 ,originData.getStr("recv_date"));
         if(checkRecordList!=null && checkRecordList.size()!=0){
             checkDoubtful.set("is_doubtful", 1);
@@ -338,9 +339,9 @@ public class SftRecvLaDataCheckJob implements Job{
          * 根据保单号，收款人，金额查询合法表中是否存在数据，如果存在视为可疑数据，将合法表中的数据删除，更新可疑表数据状态为可疑
          */
         List<Record> legalRecordList = Db.find(Db.getSql("la_recv_cfm.getrecvlegal")
-                ,originData.getStr("insure_bill_no")
+                ,"asdas"
                 ,originData.getStr("pay_acc_name")
-                ,originData.getStr("amount")
+                ,originData.getStr("id")
                 ,originData.getStr("recv_date"));
         if(legalRecordList!=null && legalRecordList.size()!=0){
             //可疑数据
