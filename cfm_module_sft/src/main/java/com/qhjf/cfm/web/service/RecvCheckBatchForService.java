@@ -297,7 +297,7 @@ public class RecvCheckBatchForService {
 									.set("amount", rec.get("amount"))
 									.set("pay_acc_name", rec.get("pay_acc_name"))
 									.set("pay_cert_type", rec.get("pay_cert_type"))
-									.set("pay_cert_code", rec.get("pay_cert_code"))
+									.set("pay_cert_code", rec.get("pay_cert_code").toString().substring(0,20))
 									.set("pay_bank_name", rec.get("pay_bank_name"))
 									.set("pay_bank_type", rec.get("pay_bank_type"))
 									.set("pay_acc_no", rec.get("pay_acc_no"))

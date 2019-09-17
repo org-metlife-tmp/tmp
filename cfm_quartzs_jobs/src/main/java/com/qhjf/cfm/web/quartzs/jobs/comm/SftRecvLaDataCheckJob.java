@@ -2,9 +2,7 @@ package com.qhjf.cfm.web.quartzs.jobs.comm;
 
 import com.alibaba.fastjson.util.TypeUtils;
 import com.jfinal.kit.Kv;
-import com.jfinal.plugin.activerecord.Db;
-import com.jfinal.plugin.activerecord.IAtom;
-import com.jfinal.plugin.activerecord.Record;
+import com.jfinal.plugin.activerecord.*;
 import com.qhjf.cfm.exceptions.EncryAndDecryException;
 import com.qhjf.cfm.exceptions.ReqValidateException;
 import com.qhjf.cfm.utils.CommonService;
@@ -41,14 +39,14 @@ public class SftRecvLaDataCheckJob implements Job{
     private static final String CHANNEL_MULTY_MATCH = "TMPPJ:匹配到多个通道";
 //    private static final String BK_UNENABLE = "bankkey状态未启用";
 //    private static final String CHANNEL_UNENABLE = "通道状态未启用";
-    
+
     public void execute(JobExecutionContext context) throws JobExecutionException {
-    	log.debug("LA批收原始数据校验任务开始");
-    	
+        log.debug("LA批收原始数据校验任务开始");
+
         List<Record> list = getList();
         if (null == list || list.size() == 0) {
-			return;
-		}
+            return;
+        }
 
         int[] ids = new int[list.size()];
         int i=0;
@@ -64,26 +62,28 @@ public class SftRecvLaDataCheckJob implements Job{
         }
         log.debug("LA批收原始数据校验,待校验数据条数size = {}", list.size());
         for (Record record : list) {
-            executeProcess(record);
+            try {
+                executeProcess(record);
+            }catch (ActiveRecordException e){
+                log.error("LA批收原始数据校验任务错误"+record.get("id"));
+                e.printStackTrace();
+            }
         }
         log.debug("LA批收原始数据校验任务结束");
     }
 
-    public void executeProcess(final Record laRecvOiriginData){
-        boolean flag = Db.tx(new IAtom() {
-            @Override
-            public boolean run() throws SQLException {
-                boolean returnFlag = false;
-                try {
-                    //1.合法性校验
-                    validate(laRecvOiriginData);
-                } catch (ReqValidateException e) {
-                    e.printStackTrace();
-                    return failWriteBackAndPushCoreSys(e.getMessage(), laRecvOiriginData);
-                } catch (EncryAndDecryException e) {
-                    e.printStackTrace();
-                    return false;
-                }
+    public boolean executeProcess(final Record laRecvOiriginData){
+        boolean returnFlag = false;
+        try {
+            //1.合法性校验
+            validate(laRecvOiriginData);
+        } catch (ReqValidateException e) {
+            e.printStackTrace();
+            return failWriteBackAndPushCoreSys(e.getMessage(), laRecvOiriginData);
+        } catch (EncryAndDecryException e) {
+            e.printStackTrace();
+            return false;
+        }
 
                     /*//2.通道是否已经启用
                     boolean isChannelOnline = isChannelOnline(laRecvOiriginData.getStr("channel_code"));
@@ -104,36 +104,35 @@ public class SftRecvLaDataCheckJob implements Job{
                         }
                     }*/
 
-                //3.可疑校验
-                try{
-                    if (checkDoubtful(laRecvOiriginData).equals(WebConstant.YesOrNo.NO)) {
-                        boolean genAndSaveLegalDataBool = genAndSaveLegalData(laRecvOiriginData);
-                        if (!genAndSaveLegalDataBool) {
-                            return false;
-                        }
-                    }
-
-                    //更新原始数据为已处理
-                    int updRows = Db.update(Db.getSql("la_recv_cfm.updLaRecvOriginProcess"),
-                            WebConstant.YesOrNo.YES.getKey(),
-                            laRecvOiriginData.getLong("id"),
-                            laRecvOiriginData.getInt("persist_version"));
-                    if (updRows != 1) {
-                        log.error("LA批收原始数据校验，更新原始数据失败！originId={}", laRecvOiriginData.getLong("id"));
-                        return false;
-                    }
-
-                    returnFlag = true;
-                }catch (Exception e){
-                    log.error("LA批收原始数据校验，可疑校验/save合法数据/更新原始数据 失败！");
-                    e.printStackTrace();
+        //3.可疑校验
+        try{
+            if (checkDoubtful(laRecvOiriginData).equals(WebConstant.YesOrNo.NO)) {
+                boolean genAndSaveLegalDataBool = genAndSaveLegalData(laRecvOiriginData);
+                if (!genAndSaveLegalDataBool) {
+                    return false;
                 }
-                return returnFlag;
             }
-        });
-        if (!flag) {
+
+            //更新原始数据为已处理
+            int updRows = Db.update(Db.getSql("la_recv_cfm.updLaRecvOriginProcess"),
+                    WebConstant.YesOrNo.YES.getKey(),
+                    laRecvOiriginData.getLong("id"),
+                    laRecvOiriginData.getInt("persist_version"));
+            if (updRows != 1) {
+                log.error("LA批收原始数据校验，更新原始数据失败！originId={}", laRecvOiriginData.getLong("id"));
+                return false;
+            }
+
+            returnFlag = true;
+        }catch (Exception e){
+            log.error("LA批收原始数据校验，可疑校验/save合法数据/更新原始数据 失败！");
+            e.printStackTrace();
+        }
+        if (!returnFlag) {
             log.info("批量收LA数据【"+laRecvOiriginData.get("id")+"】执行失败！");
         }
+        return returnFlag;
+
     }
 
     /**
@@ -141,24 +140,24 @@ public class SftRecvLaDataCheckJob implements Job{
      * @return
      */
     private List<Record> getList(){
-    	Record total = Db.findFirst("select top 1 JOBNO from ZDDHPF where [STATUS] = 1");
-    	if (null == total) {
-			return null;
-		}
-    	
-    	List<Record> list =  Db.find(Db.getSql("la_recv_cfm.getLARecvUnCheckedOriginList")
-        		,total.get("JOBNO")
-        		, WebConstant.YesOrNo.NO.getKey());
-    	
-    	if (list == null || list.size() == 0) {
-        	if (Db.update(Db.getSql("la_recv_cfm.updLARecvTotle"), total.get("JOBNO")) > 0) {
-				log.debug("LA批收校验主子表数据，更新主表状态为4成功");
-        	}else {
-				log.debug("LA批收校验主子表数据，更新主表状态为4失败");
-			}
+        Record total = Db.findFirst("select top 1 JOBNO from ZDDHPF where [STATUS] = 1");
+        if (null == total) {
+            return null;
         }
-    	
-    	return list;
+
+        List<Record> list =  Db.find(Db.getSql("la_recv_cfm.getLARecvUnCheckedOriginList")
+                ,total.get("JOBNO")
+                , WebConstant.YesOrNo.NO.getKey());
+
+        if (list == null || list.size() == 0) {
+            if (Db.update(Db.getSql("la_recv_cfm.updLARecvTotle"), total.get("JOBNO")) > 0) {
+                log.debug("LA批收校验主子表数据，更新主表状态为4成功");
+            }else {
+                log.debug("LA批收校验主子表数据，更新主表状态为4失败");
+            }
+        }
+
+        return list;
     }
 
 
@@ -199,10 +198,11 @@ public class SftRecvLaDataCheckJob implements Job{
         }
 
         Record channel = channels.get(0);
-        
-        CommonService.update("la_origin_recv_data", 
-        		new Record().set("pay_bank_name", channel.getStr("name")), 
-        		new Record().set("id", laOiriginData.getLong("id")));
+
+
+        CommonService.update("la_origin_recv_data",
+                new Record().set("pay_bank_name", channel.getStr("name")),
+                new Record().set("id", laOiriginData.getLong("id")));
 
         //bankcode在回调LA批收时需要
         /*int i = Db.update(Db.getSql("la_recv_cfm.updLaRecvOrigin")

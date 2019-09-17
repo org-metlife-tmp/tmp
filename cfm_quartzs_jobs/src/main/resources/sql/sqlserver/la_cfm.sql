@@ -41,6 +41,26 @@
   	c.pay_attr = ?
 #end
 
+#sql("paybank")
+    update
+     la_origin_recv_data
+    set
+      #for(x : map.set)
+        #if(for.index > 0)
+          #(",")
+        #end
+        [#(x.key)] = #para(x.value)
+      #end
+      where
+      #for(y : map.where)
+        #if(for.index > 0)
+          and
+        #end
+        [#(y.key)] = #para(y.value)
+      #end
+  #end
+
+
 #sql("updLaOriginStatus")
   update la_origin_pay_data set is_process = ?,tmp_status = ?,tmp_err_message = ?, persist_version = persist_version + 1
   where id = ? and persist_version = ?
