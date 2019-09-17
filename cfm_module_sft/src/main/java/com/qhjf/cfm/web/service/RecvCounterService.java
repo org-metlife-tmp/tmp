@@ -336,8 +336,8 @@ public class RecvCounterService {
         for (int i = 0; i < find.size(); i++) {
 			Record reco = find.get(i);
 			reco.set("source_sys", WebConstant.SftOsSourceCounter.getSftOsSource(rec.getInt("source_sys")).getDesc());
-			reco.set("isnot_electric_pay", 1 == reco.getInt("isnot_electric_pay")? "是" : "否");
-			reco.set("isnot_bank_transfer_premium", 1 == reco.getInt("isnot_bank_transfer_premium")? "是" : "否");
+			//reco.set("isnot_electric_pay", 1 == reco.getInt("isnot_electric_pay")? "是" : "否");
+			//reco.set("isnot_bank_transfer_premium", 1 == reco.getInt("isnot_bank_transfer_premium")? "是" : "否");
 		}
         rec.set("policy_infos", find);
 
@@ -510,6 +510,7 @@ public class RecvCounterService {
 		Record findById = Db.findById("organization", "code", orgRecord.get("tmp_org_code"));
 		Record rec = new Record();
 		String isPadPayment = qryBillByInsureBillNo.getIsPadPayment();
+
 		rec.set("insure_bill_no", record.getStr("insure_bill_no"));
 		rec.set("bill_org_name", findById.get("name"));
 		rec.set("bill_org_id", findById.get("org_id"));
@@ -518,7 +519,7 @@ public class RecvCounterService {
 		rec.set("bank_code", "31");
 		rec.set("insure_cer_no", qryBillByInsureBillNo.getPolicyHolderCert());
 		rec.set("insure_cer_no", qryBillByInsureBillNo.getPolicyHolderCert());
-		rec.set("isnot_electric_pay", isPadPayment == null ? null :(isPadPayment.equals("N") ? "0":"1"));
+		rec.set("isnot_electric_pay", isPadPayment == null ? null :isPadPayment);
 		rec.set("isnot_bank_transfer_premium", qryBillByInsureBillNo.getIsTransAccount());
         rec.set("srce_bus", qryBillByInsureBillNo.getSrceBus());
         rec.set("camp_aign", qryBillByInsureBillNo.getCampAign());
