@@ -1,6 +1,7 @@
 package com.qhjf.cfm.web.channel.manager;
 
 import com.qhjf.bankinterface.api.ChannelInfo;
+import com.qhjf.bankinterface.ccb.CcbChannel;
 import com.qhjf.bankinterface.cmbc.CmbcChannel;
 import com.qhjf.bankinterface.fingard.api.channel.FingardTcpChannel;
 import com.qhjf.bankinterface.icbc.IcbcChannel;
@@ -39,6 +40,7 @@ public class ChannelManager {
 		channelMap.put("308", CmbcChannel.getInstance());
 		channelMap.put("102", IcbcChannel.getInstance());  //=======key:号 value:
 		channelMap.put("fingard", FingardTcpChannel.getInstance());
+		channelMap.put("105", CcbChannel.getInstance());
 	}
 
 	public static Map<String,String> getBankMap(){
