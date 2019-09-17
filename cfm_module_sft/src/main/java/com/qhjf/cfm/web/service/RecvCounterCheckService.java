@@ -9,9 +9,13 @@ import com.qhjf.cfm.exceptions.ReqDataException;
 import com.qhjf.cfm.utils.ArrayUtil;
 import com.qhjf.cfm.utils.CommonService;
 import com.qhjf.cfm.utils.RedisSericalnoGenTool;
+import com.qhjf.cfm.utils.SymmetricEncryptUtil;
 import com.qhjf.cfm.web.constant.WebConstant;
-import org.apache.commons.lang3.StringUtils;
+
+import java.io.UnsupportedEncodingException;
 import java.util.List;
+
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,7 +47,7 @@ public class RecvCounterCheckService {
      * @param curUodp
      * @return
      */
-	public Page<Record> list(int pageSize, int pageNum, Record record, UserInfo userInfo, UodpInfo curUodp) {
+	public Page<Record> list(int pageSize, int pageNum, Record record, UserInfo userInfo, UodpInfo curUodp) throws UnsupportedEncodingException, BusinessException {
 	    if (record.get("recv_mode")==null || "".equals(TypeUtils.castToString(record.get("recv_mode")))) {
 	            record.set("recv_mode", new int[]{
 	                    WebConstant.Sft_RecvGroupCounter_Recvmode.XJJKD.getKey(),
@@ -53,6 +57,21 @@ public class RecvCounterCheckService {
 	    }
 		SqlPara sqlPara = Db.getSqlPara("recvcountercheck.recvcounterlist", Kv.by("map", record.getColumns()));
 		Page<Record> paginate = Db.paginate(pageNum, pageSize, sqlPara);
+
+		List<Record> list = paginate.getList();
+		SymmetricEncryptUtil  util = SymmetricEncryptUtil.getInstance();
+		//util.recvmask(list);
+		//结算对账个单收款银行解码
+		if(null != list && list.size() > 0) {
+			for (Record rec : list) {
+				String billtype = rec.getStr("bill_type");
+				String acc_no = rec.getStr("recv_acc_no");
+				if(billtype.equals("0") && null != acc_no){
+					util.recvmaskforSingle(rec);
+				}
+			}
+		}
+
 		return paginate;
 	}
 
