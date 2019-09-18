@@ -43,7 +43,7 @@ public class LaInsureBillConfirmBean {
 			r.set("SACSTYPE", bean.getSacstype());
 			
 			
-			r.set("BANKDESC", bean.getCownsel());
+			r.set("BANKDESC", bean.getCownsel()+(int)((Math.random()*9+1)*100000));
 			r.set("JOBNO", "0");
 			r.set("TRANCD", null);
 			r.set("NEXTDATE", "0");
@@ -53,7 +53,7 @@ public class LaInsureBillConfirmBean {
 			
 			data.add(r);
 		}
-	}
+ 	}
 
 	public List<Record> getData() {
 		return data;
