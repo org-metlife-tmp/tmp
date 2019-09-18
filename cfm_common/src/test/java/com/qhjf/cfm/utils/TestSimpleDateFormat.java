@@ -13,11 +13,10 @@ public class TestSimpleDateFormat {
 
     @Test
     public void noSafeDateParse() throws ExecutionException, InterruptedException {
-        final SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
         Callable<Date> task = new Callable<Date>() {
             @Override
             public Date call() throws Exception { //
-
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
                 return sdf.parse("20170806");
             }
         };
