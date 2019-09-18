@@ -1,6 +1,7 @@
 package com.qhjf.cfm.web.channel.manager;
 
 import com.qhjf.bankinterface.api.ChannelInfo;
+import com.qhjf.bankinterface.ccb.CcbChannel;
 import com.qhjf.bankinterface.cmbc.CmbcChannel;
 import com.qhjf.bankinterface.fingard.api.channel.FingardTcpChannel;
 import com.qhjf.bankinterface.icbc.IcbcChannel;
@@ -35,9 +36,11 @@ public class ChannelManager {
 		bankMap.put("308", "cmbc");
 		bankMap.put("102", "icbc");
 		bankMap.put("fingard", "fingard");
+		bankMap.put("105","ccb");
 		channelMap.put("308", CmbcChannel.getInstance());
 		channelMap.put("102", IcbcChannel.getInstance());  //=======key:号 value:
 		channelMap.put("fingard", FingardTcpChannel.getInstance());
+		channelMap.put("105", CcbChannel.getInstance());
 	}
 
 	public static Map<String,String> getBankMap(){
@@ -80,7 +83,7 @@ public class ChannelManager {
 	 * @throws Exception
 	 */
 	public static String getSerianlNo(String bankCode) throws Exception{
-		if(bankCode.equals("308") || bankCode.equals("102") || bankCode.equals("fingard")){             //=====***建行加个或
+		if(bankCode.equals("308") || bankCode.equals("102") || bankCode.equals("fingard")|| bankCode.equals("105")){             //=====***建行加个或
 			return RedisSericalnoGenTool.genBankSeqNo();
 		}
 		throw new Exception("银行"+bankCode+"未开通");

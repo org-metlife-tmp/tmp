@@ -13,6 +13,8 @@ public class QueuePlugin implements IPlugin{
 	
 	private static final String icbcThreadName = "工行消费者队列";
 	
+	private static final String ccbThreadName = "建行消费者队列";
+	
 	private static final String icbcSignThreadName = "工行签名消费者队列";
 
 	private static final String fingardThreadName = "保融消费者队列";
@@ -25,6 +27,8 @@ public class QueuePlugin implements IPlugin{
     private static int icbcSignConsumerCount = 1;   //定义最大的消费线程数
 
 	private static int fingardConsumerCount = 1;   //定义最大的消费线程数
+	
+	private static int ccbConsumerCount = 1;   //定义最大的消费线程数
 
 	@Override
 	public boolean start() {
@@ -46,6 +50,11 @@ public class QueuePlugin implements IPlugin{
 		FingardConsumerQueue fingardConsumerQueue = new FingardConsumerQueue();
 		for(int i = 0;i < fingardConsumerCount;i++){
 			new Thread(fingardConsumerQueue,fingardThreadName+"["+(i+1)+"]").start();
+		}
+		
+		CcbConsumerQueue ccbConsumer = new CcbConsumerQueue();
+		for(int i = 0;i < ccbConsumerCount;i++){
+			new Thread(ccbConsumer,ccbThreadName+"["+(i+1)+"]").start();
 		}
 		return true;
 	}

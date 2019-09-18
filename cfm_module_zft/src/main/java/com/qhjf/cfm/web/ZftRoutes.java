@@ -1,10 +1,7 @@
 package com.qhjf.cfm.web;
 
 import com.jfinal.config.Routes;
-import com.qhjf.cfm.web.controller.SupplierAccController;
-import com.qhjf.cfm.web.controller.ZftBatchCheckController;
-import com.qhjf.cfm.web.controller.ZftBatchController;
-import com.qhjf.cfm.web.controller.ZftController;
+import com.qhjf.cfm.web.controller.*;
 
 /**
  * @Auther: zhangyuanyuan
@@ -18,5 +15,6 @@ public class ZftRoutes extends Routes {
         add("/normal/supplier", SupplierAccController.class);
         add("/normal/zftbatch", ZftBatchController.class);
         add("/normal/zftbatchcheck", ZftBatchCheckController.class);
+        add("/normal/zftrefund", ZftRefundController.class);
     }
 }
