@@ -41,6 +41,14 @@ public class RecvCounterConfirmQueue implements Runnable {
 
 	private UodpInfo curUodp;
 
+	public static final String policySuspense = "6";
+
+	public static final String additionalInvestmentSuspension = "7";
+
+	public static final String SACSTYPEZJ = "S";
+
+	public static final String SACSTYPEIV = "IV";
+
 	public UserInfo getUserInfo() {
 		return userInfo;
 	}
@@ -78,12 +86,13 @@ public class RecvCounterConfirmQueue implements Runnable {
 		
 		//目前确认个单只有LA,去LA映射表
 		record.set("bank_code","31");
+		//资金用途
 		for (Record policy : policys) {
 			String paytype = WebConstant.Sft_RecvPersonalCounter_Recvmode.getByKey(TypeUtils.castToInt(record.get("recv_mode")))
 					.getPrefix();
 			PersonBillComfirmReqBean personBillComfirmReqBean = new PersonBillComfirmReqBean(
 					TypeUtils.castToString(policy.get("amount")), record.getStr("consumer_acc_no"), null,
-					policy.getStr("insure_bill_no"), paytype,"31");
+					policy.getStr("insure_bill_no"), paytype,"31",getSacsTypeByusefund(record));
 			PersonBillComfirmReqBeans.add(personBillComfirmReqBean);			
 		}
 		
@@ -140,4 +149,26 @@ public class RecvCounterConfirmQueue implements Runnable {
         }   
         log.info("====开启异步线程确认支付结束,总耗时====" + (System.currentTimeMillis() - startMillis));
 	}
+	//通过usefoud增加回传LA报文SACSCODE和SACSTYPE字段
+	public String getSacsTypeByusefund(Record record)
+	{
+		String usefoud = TypeUtils.castToString(record.get("use_funds"));
+		try {
+			if(usefoud.equals(policySuspense))
+			{
+				return SACSTYPEZJ;
+			}else if(usefoud.equals(additionalInvestmentSuspension))
+			{
+				return SACSTYPEIV;
+			}
+			else {
+				return null;
+			}
+		}catch (Exception e)
+		{
+			log.error("====通过usefoud获取SACSTYPE失败=");
+		}
+		return null;
+	}
+
 }
