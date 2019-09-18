@@ -131,8 +131,10 @@ public class RecvCounterService {
 			String isnot_electric_pay = TypeUtils.castToString(rec.get("isnot_electric_pay"));
             if(isnot_electric_pay .equals("0")){
 				isnot_electric_pay = "0";
-			}else if("0" != TypeUtils.castToString(rec.get("isnot_electric_pay"))){
+			}else if("0" != TypeUtils.castToString(rec.get("isnot_electric_pay") )){
 				isnot_electric_pay = "1";
+			}else if( null == isnot_electric_pay){
+				isnot_electric_pay = "2";
 			}
 			String isnot_bank_transfer_premium  = TypeUtils.castToString(rec.get("isnot_bank_transfer_premium"));
 			String srce_bus = TypeUtils.castToString(rec.get("srce_bus"));
