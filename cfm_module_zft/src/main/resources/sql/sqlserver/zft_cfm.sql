@@ -15,3 +15,7 @@
 #namespace("zftbatchcheck")
   #include("zftbatchcheck.sql")
 #end
+
+#namespace("zftrefund")
+  #include("zftrefund.sql")
+#end

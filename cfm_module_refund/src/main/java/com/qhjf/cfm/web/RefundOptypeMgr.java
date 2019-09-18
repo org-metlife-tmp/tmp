@@ -45,18 +45,18 @@ public class RefundOptypeMgr extends AbstractOptypeMgr {
         
         optypes.add(new Optype(Optype.Mode.NORMAL, "doubtfulrefund_billList")
                 .registKeepParams(new String[]{
-                        "page_size", "page_num","biz_type","id"
+                        "page_size", "page_num", "id"
                 })
                 .registerValidate(new RequiredParamsValidate(new String[]{
-                        "page_size", "page_num","biz_type","id"
+                        "page_size", "page_num", "id"
                 })));
         
         optypes.add(new Optype(Optype.Mode.NORMAL, "doubtfulrefund_confirm")
                 .registKeepParams(new String[]{
-                        "biz_type", "id","bill_id","bill_persist_version","detail_id","detail_persist_version"
+                        "biz_type", "id", "bill_id", "bill_persist_version"
                 })
                 .registerValidate(new RequiredParamsValidate(new String[]{
-                        "biz_type", "id","bill_id","bill_persist_version"
+                        "biz_type", "id", "bill_id", "bill_persist_version"
                 })));
         optypes.add(new Optype(Optype.Mode.NORMAL, "doubtfulrefund_normalTrade")
                 .registKeepParams(new String[]{
