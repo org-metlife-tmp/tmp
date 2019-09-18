@@ -472,9 +472,7 @@
                                 </el-select>
                             </el-form-item>-->
                             <el-form-item label="">
-                                    <el-checkbox v-model="item.isnot_electric_pay" label="允许垫交中的保单缴费" :checked="ischeckofdj == 'true'"
-                                                 :disabled="isdisableofdj == 'true'" name="type">
-
+                                    <el-checkbox v-model="checked" label="允许垫交中的保单缴费" :disabled="isdisableofdj  == 'true'" name="type" >
                                     </el-checkbox>
                                 <!--<el-switch
                                         v-model="item.isnot_electric_pay"
@@ -538,6 +536,7 @@
                             <el-form-item label="代缴费原因">
                                 <el-input v-model="dialogData.pay_reason" placeholder="请输入代缴费原因"
                                           :disabled="item.third_payment == '0'"></el-input>
+                                <el-input v-model="item.isnot_electric_pay" disabled type="hidden"></el-input>
                             </el-form-item>
                         </el-col>
                     </el-row>
@@ -624,8 +623,9 @@
             return {
                 //文本框是否可编辑
                 isdisables:"true",
-                ischeckofdj:"true",
-                isdisableofdj:"true",
+                checked:false,
+                isdisableofdj:"",
+                zjl:"false",
 
                 queryUrl: this.$store.state.queryUrl,
                 routerMessage: {
@@ -731,6 +731,7 @@
         },
         methods: {
 
+            //监听点击事件
             //时间格式化
             dateFormat: function (row, column, cellValue, index) {
                 return cellValue.slice(0,4)+cellValue.slice(4,6)+cellValue.slice(6,10);
@@ -944,8 +945,6 @@
             addData: function () {
                 this.dialogTitle = "新增";
                 this.currentData = "";
-                this.ischeckofdj = "false"; //初始化允许垫交中保单缴费
-                this.isdisableofdj = "false"; //初始化允许垫交中保单缴费
                 let dialogData = this.dialogData;
                 for(let k in dialogData){
                     if(k == "recv_date"){
@@ -1063,12 +1062,12 @@
                                 this.isdisables = "false";
 
                                 item[k] = data[k];
-                                if(k == "isnot_electric_pay"){
-                                    if(data[k]== 1){
-                                        this.ischeckofdj = "true";
+                                    if(k == "isnot_electric_pay"){
+                                    if(data[k]== 0){
+                                        this.checked = false;
                                         this.isdisableofdj = "true";
-                                    }else if(data[k] == 0 || data[k] == null){
-                                        this.ischeckofdj = "false";
+                                    }else if (data[k]!= 0) {
+                                        this.checked = false;
                                         this.isdisableofdj = "false";
                                     }
                                 }
@@ -1103,6 +1102,12 @@
             //保存新增数据
             saveData: function(){
                 let dialogData = this.dialogData;
+                let item = this.items;
+                let val = item[0].isnot_electric_pay;
+                //判断允许垫交是否已勾选
+                if(val != 0 && this.checked == false){
+                   alert("该保单为允许垫交中保单，请勾选后再次提交~");
+                }else {
                 //判空
                 if(dialogData.currency ==""|| dialogData.recv_mode=="" || dialogData.use_funds==""||dialogData.bill_status==""|| dialogData.bill_number==""|| dialogData.bill_date==""
                         || dialogData.recv_bank_name==""|| dialogData.recv_acc_no==""|| dialogData.consumer_bank_name==""
@@ -1163,6 +1168,7 @@
                         });
                     }).catch(() => {
                     });
+                }
                 }
             },
             //查看
