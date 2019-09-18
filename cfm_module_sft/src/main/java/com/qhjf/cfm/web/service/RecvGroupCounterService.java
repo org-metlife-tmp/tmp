@@ -82,6 +82,15 @@ public class RecvGroupCounterService {
         String pay_reason = TypeUtils.castToString(record.get("pay_reason"));
         String agent_com = TypeUtils.castToString(record.get("agent_com"));
 
+        //判断是否有重复票据编号
+        if(bill_number != null){
+            Record findBypjbh = Db.findFirst(Db.getSql("recv_counter.selbillnum"),bill_number);
+            if(findBypjbh != null){
+                throw new ReqDataException("待确认的保单票据票号已存在，请重新输入!") ;
+            }
+
+        }
+
         StringBuilder sb = new StringBuilder();
         sb.append(recv_date).append(bill_org_id).append(recv_org_id).append(recv_date).append(currency).append(recv_mode).
                 append(bill_status).append(bill_number).append(bill_date).append(recv_bank_name).append(recv_acc_no).append(use_funds).append(consumer_bank_name).
