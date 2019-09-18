@@ -1262,7 +1262,7 @@
                         method: "post",
                         data: {
                             optype: optype,
-                            params: params
+                            params: params,
                         }
                     }).then((result) => {
                         if (result.data.error_msg) {
@@ -1273,7 +1273,13 @@
                             });
                         } else {
                             this.dialogVisible = false;
+                            this.$message({
+                                type: "success",
+                                message: "保存成功",
+                                duration: 2000
+                            });
                             this.$emit("getCommTable", this.routerMessage);
+
                         }
                     }).catch(function (error) {
                         console.log(error);
