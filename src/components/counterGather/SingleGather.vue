@@ -462,47 +462,15 @@
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
-                            <!--<el-form-item label="允许垫交中的保单缴费" >
-                                <el-select v-model="item.isnot_electric_pay" :disabled="isdisables == 'true'">
-                                    <el-option v-for="(item,key) in YesOrNo"
-                                        :key="key"
-                                        :label="item"
-                                        :value="key">
-                                    </el-option>
-                                </el-select>
-                            </el-form-item>-->
                             <el-form-item label="">
                                     <el-checkbox v-model="checked" label="允许垫交中的保单缴费" :disabled="isdisableofdj  == 'true'" name="type" >
                                     </el-checkbox>
-                                <!--<el-switch
-                                        v-model="item.isnot_electric_pay"
-                                        active-value="1"
-                                        inactive-value="0"
-                                        @change="setEP(item)">
-                                </el-switch>-->
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
                             <el-form-item label="">
-                                <el-checkbox-group v-model="item.isnot_bank_transfer_premium">
-                                    <el-checkbox label="是否银行转账中的保单缴费" name="type"></el-checkbox>
-                                </el-checkbox-group>
-                                <!--<el-switch
-                                        v-model="item.isnot_bank_transfer_premium"
-                                        active-value="1"
-                                        inactive-value="0"
-                                        @change="setBP(item)">
-                                </el-switch>-->
+                                    <el-checkbox v-model="checkedzz" label="是否银行转账中的保单缴费" name="type" :disabled="isdisableofzz  == 'true'"></el-checkbox>
                             </el-form-item>
-                          <!--  <el-form-item label="是否银行转账中的保单缴费">
-                                <el-select v-model="item.isnot_bank_transfer_premium" disabled>
-                                    <el-option v-for="(item,key) in YesOrNo"
-                                               :key="key"
-                                               :label="item"
-                                               :value="key">
-                                    </el-option>
-                                </el-select>
-                            </el-form-item>-->
                         </el-col>
                         <el-col :span="12">
                             <el-form-item label="是否第三方缴费">
@@ -536,7 +504,8 @@
                             <el-form-item label="代缴费原因">
                                 <el-input v-model="dialogData.pay_reason" placeholder="请输入代缴费原因"
                                           :disabled="item.third_payment == '0'"></el-input>
-                                <el-input v-model="item.isnot_electric_pay" disabled type="hidden"></el-input>
+                                <el-input v-model="item.isnot_electric_pay" disabled type="hidden"></el-input>   <!--是否垫交中-->
+                                <el-input v-model="item.isnot_bank_transfer_premium" disabled type="hidden"></el-input>  <!--是否银行转账隐藏域-->
                             </el-form-item>
                         </el-col>
                     </el-row>
@@ -624,8 +593,9 @@
                 //文本框是否可编辑
                 isdisables:"true",
                 checked:false,
+                checkedzz:false,
                 isdisableofdj:"",
-                zjl:"false",
+                isdisableofzz:"",
 
                 queryUrl: this.$store.state.queryUrl,
                 routerMessage: {
@@ -1062,7 +1032,7 @@
                                 this.isdisables = "false";
 
                                 item[k] = data[k];
-                                    if(k == "isnot_electric_pay"){
+                                if(k == "isnot_electric_pay"){
                                     if(data[k]== 0){
                                         this.checked = false;
                                         this.isdisableofdj = "true";
@@ -1071,18 +1041,15 @@
                                         this.isdisableofdj = "false";
                                     }
                                 }
-                                //判断是否垫交
-                                //if(data[k].isnot_electric_pay == null){
-                                       // this.item.isnot_electric_pay = "";
-                                //}else if(data[k].isnot_electric_pay != null){
-                                   // this.item.isnot_electric_pay = "";
-                                //}
-                                //判断是否银行转账
-                                // if (data[k].isnot_bank_transfer_premium == null){
-                                       // this.item.isnot_bank_transfer_premium = "";
-                                //}else if(data[k].isnot_bank_transfer_premium != null){
-                                     //this.item.isnot_bank_transfer_premium = "";
-                                // }
+                                if(k == "isnot_bank_transfer_premium"){
+                                    if(data[k]== "Y"){
+                                        this.checkedzz = false;
+                                        this.isdisableofzz = "false";
+                                    }else if (data[k]== "N") {
+                                        this.checkedzz = false;
+                                        this.isdisableofzz = "true";
+                                    }
+                                }
                             }
                         }
                     }).catch(function (error) {
@@ -1104,10 +1071,13 @@
                 let dialogData = this.dialogData;
                 let item = this.items;
                 let val = item[0].isnot_electric_pay;
+                let val2 = item[0].isnot_bank_transfer_premium;
                 //判断允许垫交是否已勾选
                 if(val != 0 && this.checked == false){
                    alert("该保单为允许垫交中保单，请勾选后再次提交~");
-                }else {
+                }else if (val2 == "Y" && this.checked == false){
+                    alert("该保单为银行转账中保单，请勾选后再次提交~");
+                } else {
                 //判空
                 if(dialogData.currency ==""|| dialogData.recv_mode=="" || dialogData.use_funds==""||dialogData.bill_status==""|| dialogData.bill_number==""|| dialogData.bill_date==""
                         || dialogData.recv_bank_name==""|| dialogData.recv_acc_no==""|| dialogData.consumer_bank_name==""
