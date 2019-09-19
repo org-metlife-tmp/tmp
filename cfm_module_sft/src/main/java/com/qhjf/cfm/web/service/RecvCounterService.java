@@ -495,8 +495,8 @@ public class RecvCounterService {
 		String sourceSys = qryBillByInsureBillNo.getSourceSys();
 		Record orgRecord = null ;
 		if("0".equalsIgnoreCase(sourceSys) || "2".equalsIgnoreCase(sourceSys)) {
-			//查询
-			orgRecord = Db.findById("la_org_mapping", "la_org_code", qryBillByInsureBillNo.getInsureOrgCode());
+			//查询getInsureOrgCode()
+			orgRecord = Db.findById("la_org_mapping", "la_org_code", qryBillByInsureBillNo.getCompany());
 		}else if("1".equalsIgnoreCase(sourceSys)) {
 			orgRecord = Db.findById("ebs_org_mapping", "ebs_org_code", qryBillByInsureBillNo.getInsureOrgCode());
 		}else {
