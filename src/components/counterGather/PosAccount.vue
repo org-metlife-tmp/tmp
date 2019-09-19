@@ -220,7 +220,7 @@
                       height="200px" size="mini">
                 <el-table-column type="selection" width="40"></el-table-column>
                 <el-table-column prop="liquidation_date" label="清算日期" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="trans_date" label="交易日期" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="trade_date" label="交易日期" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="trade_time" label="交易时间" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="terminal_no" label="终端机编号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="trade_amount" label="交易金额" :show-overflow-tooltip="true"
