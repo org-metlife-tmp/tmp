@@ -1075,7 +1075,7 @@
                 //判断允许垫交是否已勾选
                 if(val != 0 && this.checked == false){
                    alert("该保单为允许垫交中保单，请勾选后再次提交~");
-                }else if (val2 == "Y" && this.checked == false){
+                }else if (val2 == "Y" && this.checkedzz == false){
                     alert("该保单为银行转账中保单，请勾选后再次提交~");
                 } else {
                 //判空
