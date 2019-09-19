@@ -50,11 +50,14 @@ public class LaCounterRecvRespResolveTool implements ResponseResolveTool {
 			String OWN_LSURNAME = result.getString("OWN_LSURNAME");//保单人
 			String OWN_COWNNUM = result.getString("OWN_COWNNUM");//投保人客户号
 			String OWN_SECUITYNO = result.getString("OWN_SECUITYNO");//投保险人证件号
-			String CHDR_CHDRCOY = result.getString("CHDR_CNTBRANCH");//分公司code
 			//TODO:LA的状态字典是否与NB状态字典一致，
 			String CHDR_STATCODE = result.getString("CHDR_STATCODE");//保单状态
-			
-			PersonBillQryRespBean bean = new PersonBillQryRespBean(OWN_LSURNAME, OWN_COWNNUM, OWN_SECUITYNO, CHDR_CHDRCOY);
+
+			//获取到分公司code和简写，branch和company，设置给个单查询返回值
+			String CHDR_CHDRCOY = result.getString("CHDR_CHDRCOY");//分公司code
+			String CHDR_CNTBRANCH = result.getString("CHDR_CNTBRANCH");//分公司code
+
+			PersonBillQryRespBean bean = new PersonBillQryRespBean(OWN_LSURNAME, OWN_COWNNUM, OWN_SECUITYNO,CHDR_CHDRCOY, CHDR_CNTBRANCH);
 			bean.setInsureStatus(CHDR_STATCODE);
 			bean.setSourceSys("0");
 			//TODO：1、保费标准
