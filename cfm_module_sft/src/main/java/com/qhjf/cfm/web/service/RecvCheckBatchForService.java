@@ -289,9 +289,12 @@ public class RecvCheckBatchForService {
 						for (int i = 0; i < find.size(); i++) {
 							Record recv_batch_detail = new Record();
 							Record rec = find.get(i);
-							String pay_cert_code=rec.get("pay_cert_code").toString();
-							if (pay_cert_code!=null&&!"".equals(pay_cert_code)&&pay_cert_code.length()>20){
-								rec.set("pay_cert_code",rec.get("pay_cert_code").toString().substring(0,20));
+							String pay_cert_code=rec.get("pay_cert_code");
+							if(pay_cert_code!=null){
+								pay_cert_code=rec.get("pay_cert_code").toString();
+								if (!"".equals(pay_cert_code)&&pay_cert_code.length()>20){
+									rec.set("pay_cert_code",rec.get("pay_cert_code").toString().substring(0,20));
+								}
 							}
 							recv_batch_detail.set("legal_id", rec.get("recv_id"))
 									.set("base_id", recv_batch_total.getInt("id"))
