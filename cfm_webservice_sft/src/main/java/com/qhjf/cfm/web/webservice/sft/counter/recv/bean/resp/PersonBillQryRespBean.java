@@ -22,6 +22,7 @@ public class PersonBillQryRespBean {
 	 */
 	private String policyHolderCert;
 
+	private String company;
 	/**
 	 * 保单机构编码
 	 */
@@ -68,14 +69,21 @@ public class PersonBillQryRespBean {
 	 * @param insureOrgCode 保单机构编码
 	 * @param insureOrgName 保单机构名称
 	 */
-	public PersonBillQryRespBean(String policyHolder, String policyHolderClientNo,String policyHolderCert, String insureOrgCode/*, String insureOrgName*/){
+	public PersonBillQryRespBean(String policyHolder, String policyHolderClientNo,String policyHolderCert, String insureOrgCode,String company /*, String insureOrgName*/){
+		this.policyHolder = policyHolder;
+		this.policyHolderClientNo = policyHolderClientNo;
+		this.policyHolderCert = policyHolderCert;
+		this.insureOrgCode = insureOrgCode;
+		this.company = company;
+//		this.insureOrgName = insureOrgName;
+	}
+	public PersonBillQryRespBean(String policyHolder, String policyHolderClientNo,String policyHolderCert, String insureOrgCode /*, String insureOrgName*/){
 		this.policyHolder = policyHolder;
 		this.policyHolderClientNo = policyHolderClientNo;
 		this.policyHolderCert = policyHolderCert;
 		this.insureOrgCode = insureOrgCode;
 //		this.insureOrgName = insureOrgName;
 	}
-	
 	public String getPolicyHolder() {
 		return policyHolder;
 	}
@@ -159,6 +167,13 @@ public class PersonBillQryRespBean {
 	public String getBankcode() {
 		return bankcode;
 	}
+	public String getCompany() {
+		return company;
+	}
+
+	public void setCompany(String company) {
+		this.company = company;
+	}
 
 	public void setBankcode(String bankcode) {
 		this.bankcode = bankcode;
@@ -167,8 +182,8 @@ public class PersonBillQryRespBean {
 	@Override
 	public String toString() {
 		return String.format("{投保人=[%s],投保人客户号=[%s],投保人证件号=[%s],保单机构编码=[%s],"
-				+ "核心系统=[%s],保费标准=[%s],暂记余额=[%s],保单状态=[%s],是否APL垫交中=[%s],是否银行转账中=[%s],销售渠道=[%s],专案代码=[%s],代理人号码=[%s]}", policyHolder,
+				+ "核心系统=[%s],保费标准=[%s],暂记余额=[%s],保单状态=[%s],是否APL垫交中=[%s],是否银行转账中=[%s],销售渠道=[%s],专案代码=[%s],代理人号码=[%s],机构编号=[%s]}", policyHolder,
 				policyHolderClientNo, policyHolderCert, insureOrgCode, sourceSys, premiumStandard, suspenseBalance,
-				insureStatus, isPadPayment, isTransAccount,srceBus,campAign,agntNum);
+				insureStatus, isPadPayment, isTransAccount,srceBus,campAign,agntNum,company);
 	}
 }
