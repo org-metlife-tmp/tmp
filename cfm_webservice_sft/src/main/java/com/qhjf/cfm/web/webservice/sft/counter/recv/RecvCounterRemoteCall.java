@@ -1,7 +1,10 @@
 package com.qhjf.cfm.web.webservice.sft.counter.recv;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import org.apache.axiom.om.OMElement;
 import org.apache.commons.lang3.StringUtils;
 import com.alibaba.fastjson.JSON;
@@ -55,9 +58,14 @@ public class RecvCounterRemoteCall {
 	private static final String DATA_IS_NULL = "回调核心的单据信息为空";
 	private static final String BILLNO_IS_NULL = "个单回调核心的保单号为空";
 	// 固定的分公司编码
-	private static final String BRANCH_CODE = "1";
+	//private static final String BRANCH_CODE = "1";
 	// 固定的机构编码
-	private static final String ORG_CODE = "SH";
+	//private static final String ORG_CODE = "SH";
+
+	private static String BRANCH_CODE = "1";
+	private static String ORG_CODE = "SH";
+
+	protected static Map<String, String> map = new HashMap<>();
 
 	/**
 	 * 个单查询, 通过保单号查询保单:先查询LA，没有再查询NB
@@ -79,6 +87,10 @@ public class RecvCounterRemoteCall {
 		PersonBillQryRespBean response = null;
 		// 调用LA
 		response = laQryInsureBill(bean, ORG_CODE, BRANCH_CODE);
+
+		//定义缓存，设置
+		map.put("company",response.getCompany());
+		map.put("orgcode",response.getInsureOrgCode());
 
 		// 调用NB
 		if (response == null && "1".equals(config.getNbIsOpen())) {
@@ -134,7 +146,8 @@ public class RecvCounterRemoteCall {
 			throw new ReqDataException(DATA_IS_NULL);
 		}
 
-		List<PersonBillConfirmRespBean> bean = laConfirmInsureBill(bill, ORG_CODE, BRANCH_CODE);
+		List<PersonBillConfirmRespBean> bean = laConfirmInsureBill(bill,map.get("company"),map.get("orgcode"));
+		map.clear();
 		return bean;
 	}
 

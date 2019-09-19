@@ -88,7 +88,7 @@ public class BlanceController extends CFMBaseController {
 		Record record = getParamsToRecord();
 		String objectId = record.getStr("object_id");
 		if (StringUtils.isBlank(objectId)) {
-			throw new ReqDataException("请求参数object_id为空");
+			throw new ReqDataException("模板格式有误，请核对后提交！");
 		}
 
 		// 从redis中获取excel导入的数据

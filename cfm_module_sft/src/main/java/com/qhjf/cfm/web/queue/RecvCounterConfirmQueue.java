@@ -86,7 +86,6 @@ public class RecvCounterConfirmQueue implements Runnable {
 		
 		//目前确认个单只有LA,去LA映射表
 		record.set("bank_code","31");
-		//资金用途
 		for (Record policy : policys) {
 			String paytype = WebConstant.Sft_RecvPersonalCounter_Recvmode.getByKey(TypeUtils.castToInt(record.get("recv_mode")))
 					.getPrefix();
@@ -95,7 +94,6 @@ public class RecvCounterConfirmQueue implements Runnable {
 					policy.getStr("insure_bill_no"), paytype,"31",getSacsTypeByusefund(record));
 			PersonBillComfirmReqBeans.add(personBillComfirmReqBean);			
 		}
-		
 		log.info("=====调用外部接口开始进行确认====");
 		List<PersonBillConfirmRespBean> personConfirmBill = null;
 		try {
