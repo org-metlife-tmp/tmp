@@ -61,7 +61,9 @@ public class LaCounterRecvRespResolveTool implements ResponseResolveTool {
 		
 			//是否保费垫交中：la字段名改为LOANAPL
 //			bean.setIsPadPayment(result.getString("IsAPL"));
-			bean.setIsPadPayment(result.getString("LOANAPL"));
+			bean.setIsPadPayment(result.getString("LOAN_APL"));  //0915修改是否垫交中保单缴费LA返回的字段
+   			//是否银行转账中的保单缴费
+			bean.setIsTransAccount(result.getString("PREM_ONWAY"));
 			//暂记余额
 			bean.setSuspenseBalance(result.getString("AmtLPS"));
 			
