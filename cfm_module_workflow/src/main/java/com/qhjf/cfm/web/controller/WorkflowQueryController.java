@@ -159,8 +159,9 @@ public class WorkflowQueryController extends CFMBaseController {
         for (Record feature : page.getList()) {
             long billId = TypeUtils.castToLong(feature.get("bill_id"));
             int bizType = TypeUtils.castToInt(feature.get("biz_type"));
-            if(WebConstant.MajorBizType.GMF.getKey() == bizType) {
-            	//柜面付收款账号需要解密,再变成掩码
+
+            if(WebConstant.MajorBizType.GMF.getKey() == bizType || WebConstant.MajorBizType.GMS.getKey()==bizType) {
+            	//柜面付收款账号需要解密,再变成掩码                            //审批平台柜面收撤销收款账号变为明文
             	try {
             		SymmetricEncryptUtil  util = SymmetricEncryptUtil.getInstance();
             		util.recvmaskforSingle(feature);
@@ -168,6 +169,33 @@ public class WorkflowQueryController extends CFMBaseController {
             		e.printStackTrace();
             		logger.error("===解密修改为掩码失败");
             	}            	
+            }
+            if(WebConstant.MajorBizType.GMS.getKey()==bizType){
+                if(TypeUtils.castToString(feature.get("bill_type")).equals("0")){
+                    String recvdate = TypeUtils.castToString(feature.get("recv_date"));
+                    if (null != recvdate) {
+                        recvdate = recvdate.substring(0, 9);
+                        feature.set("recv_date", recvdate);
+                    }
+                    if (null != TypeUtils.castToString(feature.get("recv_mode"))) {
+                        if (TypeUtils.castToString(feature.get("recv_mode")).equals("0") || TypeUtils.castToString(feature.get("recv_mode"))=="0") {
+                            feature.set("recv_mode", "POS机");
+                        }else if(TypeUtils.castToString(feature.get("recv_mode")).equals("1") || TypeUtils.castToString(feature.get("recv_mode"))=="1"){
+                            feature.set("recv_mode", "现金解款单");
+                        }else if(TypeUtils.castToString(feature.get("recv_mode")).equals("2") || TypeUtils.castToString(feature.get("recv_mode"))=="2"){
+                            feature.set("recv_mode", "支票");
+                        }else if(TypeUtils.castToString(feature.get("recv_mode")).equals("3") || TypeUtils.castToString(feature.get("recv_mode"))=="3"){
+                            feature.set("recv_mode", "网银/汇款");
+                        }
+                    }
+                    if (null != TypeUtils.castToString(feature.get("use_funds"))) {
+                        if (TypeUtils.castToString(feature.get("use_funds")) == "6" || TypeUtils.castToString(feature.get("use_funds")).equals("6")) {
+                            feature.set("use_funds", "保单暂记");
+                        }else if(TypeUtils.castToString(feature.get("use_funds")) == "7" || TypeUtils.castToString(feature.get("use_funds")).equals("7")){
+                            feature.set("use_funds", "追加投资悬账");
+                        }
+                    }
+                }
             }
             List<Record> records = null;
             try {
