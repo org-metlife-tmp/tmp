@@ -174,7 +174,7 @@ public class WorkflowQueryController extends CFMBaseController {
                 if(TypeUtils.castToString(feature.get("bill_type")).equals("0")){
                     String recvdate = TypeUtils.castToString(feature.get("recv_date"));
                     if (null != recvdate) {
-                        recvdate = recvdate.substring(0, 9);
+                        recvdate = recvdate.substring(0, 10);
                         feature.set("recv_date", recvdate);
                     }
                     if (null != TypeUtils.castToString(feature.get("recv_mode"))) {
