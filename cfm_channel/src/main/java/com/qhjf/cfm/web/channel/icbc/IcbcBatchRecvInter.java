@@ -61,7 +61,7 @@ public class IcbcBatchRecvInter implements IChannelBatchInter {
 				rd.put("UseCN", r.getStr("useCN"));//用途中文描述
 				rd.put("CurrType", "CNY");// 币种total.getStr("pay_account_cur")
 				rd.put("PayAmt", r.getStr("amount"));// 金额
-				rd.put("Summary", "批量收款");
+				rd.put("Summary", "中美联泰");
 				rdList.add(rd);
 			}
 		} else {
