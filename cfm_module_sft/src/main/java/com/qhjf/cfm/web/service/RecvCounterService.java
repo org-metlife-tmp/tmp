@@ -129,12 +129,13 @@ public class RecvCounterService {
 			String insure_name = TypeUtils.castToString(rec.get("insure_name"));
 			String insure_cer_no = TypeUtils.castToString(rec.get("insure_cer_no"));
 			String isnot_electric_pay = TypeUtils.castToString(rec.get("isnot_electric_pay"));
-            if(isnot_electric_pay .equals("0")){
-				isnot_electric_pay = "0";
-			}else if("0" != TypeUtils.castToString(rec.get("isnot_electric_pay") )){
-				isnot_electric_pay = "1";
-			}else if( null == isnot_electric_pay){
-				isnot_electric_pay = "2";
+			if(null!=isnot_electric_pay)
+			{
+				if(isnot_electric_pay.equals("0")){
+					isnot_electric_pay = "0";
+				}else {
+					isnot_electric_pay = "1";
+				}
 			}
 			String isnot_bank_transfer_premium  = TypeUtils.castToString(rec.get("isnot_bank_transfer_premium"));
 			String srce_bus = TypeUtils.castToString(rec.get("srce_bus"));
@@ -511,6 +512,7 @@ public class RecvCounterService {
 		Record findById = Db.findById("organization", "code", orgRecord.get("tmp_org_code"));
 		Record rec = new Record();
 		String isPadPayment = qryBillByInsureBillNo.getIsPadPayment();
+		String isTransAccount = qryBillByInsureBillNo.getIsTransAccount();
 
 		rec.set("insure_bill_no", record.getStr("insure_bill_no"));
 		rec.set("bill_org_name", findById.get("name"));
@@ -521,7 +523,7 @@ public class RecvCounterService {
 		rec.set("insure_cer_no", qryBillByInsureBillNo.getPolicyHolderCert());
 		rec.set("insure_cer_no", qryBillByInsureBillNo.getPolicyHolderCert());
 		rec.set("isnot_electric_pay", isPadPayment == null ? null :isPadPayment);
-		rec.set("isnot_bank_transfer_premium", qryBillByInsureBillNo.getIsTransAccount());
+		rec.set("isnot_bank_transfer_premium", isTransAccount == null ? null : isTransAccount );
         rec.set("srce_bus", qryBillByInsureBillNo.getSrceBus());
         rec.set("camp_aign", qryBillByInsureBillNo.getCampAign());
         rec.set("agnt_num", qryBillByInsureBillNo.getAgntNum());
