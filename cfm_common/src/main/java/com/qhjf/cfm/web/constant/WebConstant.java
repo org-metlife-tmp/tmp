@@ -1615,7 +1615,7 @@ public interface WebConstant {
      */
     @ConstantAnnotation("收付费管理_系统来源")
     enum SftOsSource implements WebConstant {
-        LA(0, "LA"), EBS(1, "EBS");
+        LA(0, "LA"), EBS(1, "EBS"),DPP(3,"待匹配收款");;
         int key;
         String desc;
 
