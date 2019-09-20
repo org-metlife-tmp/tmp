@@ -964,7 +964,7 @@ public class SftOptypeMgr extends AbstractOptypeMgr {
         optypes.add(new Optype(Optype.Mode.NORMAL, "recvcounterpostranscheck_list")
                 .registKeepParams(new String[]{"trade_type", "liquidation_start_date", "liquidation_end_date", "page_size", "page_num",
                         "terminal_no","serial_number", "card_no", "card_issue_bank", "min", "max",
-                        "trade_checked"})
+                        "trade_checked","bill_checked"})
                 .registerValidate(new RequiredParamsValidate(new String[]{"page_size", "page_num"})));
 
         //银行流水列表
