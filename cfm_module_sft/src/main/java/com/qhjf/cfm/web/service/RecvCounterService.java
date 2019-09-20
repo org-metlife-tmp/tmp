@@ -280,10 +280,22 @@ public class RecvCounterService {
 			throw new ReqDataException("柜面收个单确认失败");
 		}
 		logger.info("====校验成功,开启异步线程请求外部系统====");
+
+		//再查一次保单，然后取到company和branch
+		PersonBillQryRespBean InsureBillNo = null ;
+		String insure_bill_no = record.getStr("insure_bill_no");
+		PersonBillQryReqBean bean = new  PersonBillQryReqBean(insure_bill_no);
+		InsureBillNo = recvCounterRemoteCall.qryBillByInsureBillNo(bean);
+		String company = InsureBillNo.getCompany();
+		String insureOrgCode = InsureBillNo.getInsureOrgCode();
+
+
 		RecvCounterConfirmQueue recvCounterConfirmQueue = new RecvCounterConfirmQueue();
 		recvCounterConfirmQueue.setUserInfo(userInfo);
 		recvCounterConfirmQueue.setCurUodp(curUodp);
 		recvCounterConfirmQueue.setRecord(record);
+		recvCounterConfirmQueue.setCompany(company);
+		recvCounterConfirmQueue.setInsureOrgCode(insureOrgCode);
 		Thread thread =  new Thread(recvCounterConfirmQueue);
 		thread.start();
 	}
