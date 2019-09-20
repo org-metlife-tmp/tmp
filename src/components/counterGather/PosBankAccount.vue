@@ -338,8 +338,8 @@
                     this.routerMessage.params[k] = searchData[k];
                 }
                 var val = this.dateValue;
-                this.routerMessage.params.start_date = val ? val[0] : "";
-                this.routerMessage.params.end_date = val ? val[1] : "";
+                this.routerMessage.params.liquidation_start_date = val ? val[0] : "";
+                this.routerMessage.params.liquidation_end_date = val ? val[1] : "";
                 this.routerMessage.params.page_num = 1;
                 this.$emit("getCommTable", this.routerMessage);
             },
