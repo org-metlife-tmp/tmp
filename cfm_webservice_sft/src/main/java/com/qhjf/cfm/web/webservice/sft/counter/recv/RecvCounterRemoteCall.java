@@ -89,8 +89,8 @@ public class RecvCounterRemoteCall {
 		response = laQryInsureBill(bean, ORG_CODE, BRANCH_CODE);
 
 		//定义缓存，设置
-		map.put("company",response.getCompany());
-		map.put("orgcode",response.getInsureOrgCode());
+		//map.put("company",response.getCompany());
+		//map.put("orgcode",response.getInsureOrgCode());
 
 		// 调用NB
 		if (response == null && "1".equals(config.getNbIsOpen())) {
@@ -150,7 +150,15 @@ public class RecvCounterRemoteCall {
 		map.clear();
 		return bean;
 	}
-
+	public List<PersonBillConfirmRespBean> personConfirmBill(List<PersonBillComfirmReqBean> bill,String company,String insureOrgCode)
+			throws ReqDataException {
+		if (null == bill || bill.size() == 0) {
+			throw new ReqDataException(DATA_IS_NULL);
+		}
+		List<PersonBillConfirmRespBean> bean = laConfirmInsureBill(bill,company,insureOrgCode);
+		//map.clear();
+		return bean;
+	}
 	/**
 	 * 针对资金用途为“客户账户”的  团单确认
 	 * 
