@@ -450,7 +450,7 @@ public class WorkflowQueryController extends CFMBaseController {
                         billRecord.set("org_id", billRecord.getLong("create_org_id"));
                     }
 
-                    judegByForces = CommonService.checkUseCanViewBill(userInfo.getCurUodp().getOrg_id(), billRecord.getLong("org_id"));
+                    judegByForces = CommonService.checkUseCanViewBill(userInfo.getCurUodp().getOrg_id(), billRecord.getLong("bill_org_id"));
                 } catch (BusinessException e) {
                     judegByForces = false;
                 }
