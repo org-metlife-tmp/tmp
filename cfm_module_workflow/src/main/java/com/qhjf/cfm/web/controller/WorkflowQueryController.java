@@ -173,25 +173,26 @@ public class WorkflowQueryController extends CFMBaseController {
             if(WebConstant.MajorBizType.GMS.getKey()==bizType){
                 if(TypeUtils.castToString(feature.get("bill_type")).equals("0")){
                     String recvdate = TypeUtils.castToString(feature.get("recv_date"));
+                    String recvmodes =TypeUtils.castToString(feature.get("recv_mode"));
                     if (null != recvdate) {
                         recvdate = recvdate.substring(0, 10);
                         feature.set("recv_date", recvdate);
                     }
-                    if (null != TypeUtils.castToString(feature.get("recv_mode"))) {
-                        if (TypeUtils.castToString(feature.get("recv_mode")).equals("0") || TypeUtils.castToString(feature.get("recv_mode"))=="0") {
+                    if (null != recvmodes) {
+                        if (TypeUtils.castToString(feature.get("recv_mode")).equals("0")) {
                             feature.set("recv_mode", "POS机");
-                        }else if(TypeUtils.castToString(feature.get("recv_mode")).equals("1") || TypeUtils.castToString(feature.get("recv_mode"))=="1"){
+                        }else if(TypeUtils.castToString(feature.get("recv_mode")).equals("1")){
                             feature.set("recv_mode", "现金解款单");
-                        }else if(TypeUtils.castToString(feature.get("recv_mode")).equals("2") || TypeUtils.castToString(feature.get("recv_mode"))=="2"){
+                        }else if(TypeUtils.castToString(feature.get("recv_mode")).equals("2")){
                             feature.set("recv_mode", "支票");
-                        }else if(TypeUtils.castToString(feature.get("recv_mode")).equals("3") || TypeUtils.castToString(feature.get("recv_mode"))=="3"){
+                        }else if(TypeUtils.castToString(feature.get("recv_mode")).equals("3")){
                             feature.set("recv_mode", "网银/汇款");
                         }
                     }
                     if (null != TypeUtils.castToString(feature.get("use_funds"))) {
-                        if (TypeUtils.castToString(feature.get("use_funds")) == "6" || TypeUtils.castToString(feature.get("use_funds")).equals("6")) {
+                        if (TypeUtils.castToString(feature.get("use_funds")).equals("6")) {
                             feature.set("use_funds", "保单暂记");
-                        }else if(TypeUtils.castToString(feature.get("use_funds")) == "7" || TypeUtils.castToString(feature.get("use_funds")).equals("7")){
+                        }else if(TypeUtils.castToString(feature.get("use_funds")).equals("7")){
                             feature.set("use_funds", "追加投资悬账");
                         }
                     }
