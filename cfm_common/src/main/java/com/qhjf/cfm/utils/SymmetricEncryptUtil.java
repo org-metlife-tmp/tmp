@@ -1,5 +1,6 @@
 package com.qhjf.cfm.utils;
 
+import com.jfinal.plugin.activerecord.Page;
 import com.jfinal.plugin.activerecord.Record;
 import com.qhjf.cfm.exceptions.BusinessException;
 import com.qhjf.cfm.exceptions.EncryAndDecryException;
@@ -212,6 +213,38 @@ public class SymmetricEncryptUtil {
 				lists.get(i).set("consumer_acc_no", dec_consumer_acc_no);
 			}
 		}		
+	}
+
+	/**
+	 *
+	 * @param lists
+	 * @return
+	 * @throws BusinessException
+	 * @throws UnsupportedEncodingException
+	 */
+	public void recvmaskforPage(Page<Record> lists) throws BusinessException, UnsupportedEncodingException {
+		for (int i = 0; i < lists.getList().size(); i++) {
+			String recv_acc_no = lists.getList().get(i).getStr("recv_acc_no");
+			if(StringUtils.isNoneBlank(recv_acc_no)) {
+				byte[] decrypt = decrypt(recv_acc_no);
+				String dec_recv_acc_no = new String(decrypt, "utf-8");
+				//待匹配列表掩码转明文
+         /*dec_recv_acc_no = dec_recv_acc_no.replaceAll("(?<=\\d{4})\\d(?=\\d{4})", "*")
+               .replaceAll("\\*+", "********");*/
+				lists.getList().get(i).set("recv_acc_no", dec_recv_acc_no);
+				lists.getList().get(i).set("recv_account_no", dec_recv_acc_no);
+			}
+
+			String consumer_acc_no = lists.getList().get(i).getStr("consumer_acc_no");
+			if(StringUtils.isNoneBlank(consumer_acc_no)) {
+				byte[] decrypt = decrypt(consumer_acc_no);
+				String dec_consumer_acc_no = new String(decrypt, "utf-8");
+				//待匹配列表掩码转明文
+         /*dec_consumer_acc_no = dec_consumer_acc_no.replaceAll("(?<=\\d{4})\\d(?=\\d{4})", "*")
+               .replaceAll("\\*+", "********");*/
+				lists.getList().get(i).set("consumer_acc_no", dec_consumer_acc_no);
+			}
+		}
 	}
 
 	/**
