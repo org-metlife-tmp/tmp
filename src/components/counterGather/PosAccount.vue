@@ -46,7 +46,15 @@
                         </el-col>
                         <el-col :span="4">
                             <el-form-item>
-                                <el-input v-model="searchData.recv_org_id" clearable placeholder="请输入收款机构"></el-input>
+                                    <el-select v-model="searchData.recv_org_id" placeholder="请选择收款机构"
+                                               clearable filterable
+                                               style="width:100%">
+                                        <el-option v-for="item in orgList"
+                                                   :key="item.org_id"
+                                                   :label="item.name"
+                                                   :value="item.org_id">
+                                        </el-option>
+                                    </el-select>
                             </el-form-item>
                         </el-col>
                         <el-col :span="4">
@@ -255,6 +263,8 @@
         created: function () {
             this.$emit("transmitTitle", "POS记录与明细对账");
             this.$emit("getCommTable", this.routerMessage);
+            //机构列表
+            this.getOrgList();
         },
         props: ["tableData"],
         data: function () {
@@ -302,9 +312,35 @@
                 versionList: [],
                 tradingList: [],
                 childVersion: [],
+                orgList: [],
             }
         },
         methods: {
+            //获取机构列表
+            getOrgList: function () {
+                this.$axios({
+                    url: this.queryUrl + "normalProcess",
+                    method: "post",
+                    data: {
+                        optype: "sftbankkey_getorg",
+                        params: {}
+                    }
+                }).then((result) => {
+                    if (result.data.error_msg) {
+                        this.$message({
+                            type: "error",
+                            message: result.data.error_msg,
+                            duration: 2000
+                        });
+                    } else {
+                        var data = result.data.data;
+                        this.orgList = data;
+                    }
+
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            },
             //时间格式化
             dateFormat: function (row, column, cellValue, index) {
                 return cellValue.slice(0,4)+cellValue.slice(4,6)+cellValue.slice(6,10);
