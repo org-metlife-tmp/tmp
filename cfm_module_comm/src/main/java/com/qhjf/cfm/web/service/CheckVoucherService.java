@@ -1391,7 +1391,8 @@ public class CheckVoucherService {
         Record chann=null, acc=null;
         String description=null, code6=null, transactionReference=null;
         for(Record detailRecord : batchRecordList){
-            chann = Db.findFirst(Db.getSql("channel_setting.getchannelbybankcode"), detailRecord.get("recv_bank_name"));
+            chann = Db.findFirst(Db.getSql("channel_setting.getchannelbybankcodeforgms"), detailRecord.get("recv_bank_name"));
+
             acc = Db.findFirst(Db.getSql("paycheck.findaccount"), chann.getStr("bankcode"));
             curr = TypeUtils.castToString(
                     Db.findById("currency","id", TypeUtils.castToLong(acc.get("curr_id")))
