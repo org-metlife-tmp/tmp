@@ -41,6 +41,10 @@ public class RecvCounterConfirmQueue implements Runnable {
 
 	private UodpInfo curUodp;
 
+	private String company;
+
+	private String insureOrgCode;
+
 	public static final String policySuspense = "6";
 
 	public static final String additionalInvestmentSuspension = "7";
@@ -65,7 +69,21 @@ public class RecvCounterConfirmQueue implements Runnable {
 		this.curUodp = curUodp;
 	}
 
-	
+	public String getCompany() {
+		return company;
+	}
+
+	public void setCompany(String company) {
+		this.company = company;
+	}
+
+	public String getInsureOrgCode() {
+		return insureOrgCode;
+	}
+
+	public void setInsureOrgCode(String insureOrgCode) {
+		this.insureOrgCode = insureOrgCode;
+	}
 
 	public Record getRecord() {
 		return record;
@@ -98,7 +116,7 @@ public class RecvCounterConfirmQueue implements Runnable {
 		List<PersonBillConfirmRespBean> personConfirmBill = null;
 		try {
 			RecvCounterRemoteCall recvCounterRemoteCall = new RecvCounterRemoteCall();
-			personConfirmBill = recvCounterRemoteCall.personConfirmBill(PersonBillComfirmReqBeans);
+			personConfirmBill = recvCounterRemoteCall.personConfirmBill(PersonBillComfirmReqBeans,company,insureOrgCode);
 		} catch (Exception e) {
 			log.error("====调用外部系统异常====");
 			e.printStackTrace();
