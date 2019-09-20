@@ -129,15 +129,23 @@ public class RecvCounterService {
 			String insure_name = TypeUtils.castToString(rec.get("insure_name"));
 			String insure_cer_no = TypeUtils.castToString(rec.get("insure_cer_no"));
 			String isnot_electric_pay = TypeUtils.castToString(rec.get("isnot_electric_pay"));
-			if(null!=isnot_electric_pay)
-			{
-				if(isnot_electric_pay.equals("0")){
-					isnot_electric_pay = "0";
-				}else {
-					isnot_electric_pay = "1";
-				}
-			}
-			String isnot_bank_transfer_premium  = TypeUtils.castToString(rec.get("isnot_bank_transfer_premium"));
+            if(null!=isnot_electric_pay)
+            {
+                if(isnot_electric_pay.equals("0")){
+                    isnot_electric_pay = "0";
+                }else {
+                    isnot_electric_pay = "1";
+                }
+            }
+            String isnot_bank_transfer_premium = TypeUtils.castToString(rec.get("isnot_bank_transfer_premium"));
+            if(null!=isnot_bank_transfer_premium)
+            {
+                if(isnot_bank_transfer_premium.equals("Y")){
+                    isnot_bank_transfer_premium = "1";
+                }else {
+                    isnot_bank_transfer_premium = "0";
+                }
+            }
 			String srce_bus = TypeUtils.castToString(rec.get("srce_bus"));
 			String camp_aign = TypeUtils.castToString(rec.get("camp_aign"));
 			String agnt_num  = TypeUtils.castToString(rec.get("agnt_num"));
