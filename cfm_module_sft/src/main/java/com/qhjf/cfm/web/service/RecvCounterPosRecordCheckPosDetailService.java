@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.*;
 
+import com.qhjf.cfm.utils.SymmetricEncryptUtil;
 import org.apache.commons.lang3.StringUtils;
 
 import com.alibaba.fastjson.util.TypeUtils;
@@ -50,7 +51,18 @@ public class RecvCounterPosRecordCheckPosDetailService {
 		record.set("recv_mode",  WebConstant.Sft_RecvPersonalCounter_Recvmode.POS.getKey());
 		SqlPara sqlPara = Db.getSqlPara("recv_counter.personalList", Kv.by("map", record.getColumns()));
 		Page<Record> paginate = Db.paginate(pageNum, pageSize, sqlPara);
-		return paginate;	
+		try
+		{
+			SymmetricEncryptUtil util = SymmetricEncryptUtil.getInstance();
+			util.recvmaskforPage(paginate);
+		}
+		catch (Exception e)
+		{
+			logger.info("数据解码失败",e);
+		}
+
+
+		return paginate;
 	}
 
 	/**
