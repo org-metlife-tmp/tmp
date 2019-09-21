@@ -223,3 +223,14 @@ FROM
 WHERE bankcode = ?
 #end
 
+
+#sql("getchannelbybankcodeforgms")
+SELECT
+ acc.bankcode,
+ acc.acc_no
+FROM
+ account acc,
+ organization org
+WHERE acc.bankcode IS NOT NULL
+AND acc.org_id = org.org_id and bankcode = ?
+#end

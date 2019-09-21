@@ -1,4 +1,6 @@
 # tmp
 metlife tmp system outer repository 
 
-1.0 此分支包含工行直连代码以及newcomp最新代码  2019/08/23
+-----依据各个环境创建不同分支
+
+合并代码流程：各个子分支--->SIT分支--->UAT分支--->master分支(永远与当前生产代码保持一致)

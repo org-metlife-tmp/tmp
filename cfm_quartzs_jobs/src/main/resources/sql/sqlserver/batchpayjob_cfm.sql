@@ -87,7 +87,8 @@
 	where
 		status = 1 and
 		reqsta = 0 and
-		rtnflg in (0, 9)
+		rtnflg in (0, 9) and 
+		pay_bank_cnaps like '308%'
 #end
 
 

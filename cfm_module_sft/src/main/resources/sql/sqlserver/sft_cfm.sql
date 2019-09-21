@@ -66,4 +66,30 @@
   #include("voucher.sql")
 #end
 
+#namespace("recv_counter")
+  #include("recv_counter.sql")
+#end
+
+#namespace("recv_group_counter")
+  #include("recv_group_counter.sql")
+#end
+
+#namespace("recvcountercheck")
+  #include("recvcountercheck.sql")
+#end
+
+#namespace("recv_counter_pos_import")
+  #include("recv_counter_pos_import.sql")
+#end
+
+#namespace("recv_counter_pos_trans_check")
+  #include("recv_counter_pos_trans_check.sql")
+#end
+
+#namespace("recv_counter_wait")
+  #include("recv_counter_wait.sql")
+#end
+
+
+
 

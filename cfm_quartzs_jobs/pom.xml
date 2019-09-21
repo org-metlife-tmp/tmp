@@ -26,5 +26,10 @@
             <artifactId>cfm_queue</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.qhjf.cfm</groupId>
+            <artifactId>cfm_webservice_sft</artifactId>
+            <version>${project.version}</version>
+        </dependency>
   </dependencies>
 </project>

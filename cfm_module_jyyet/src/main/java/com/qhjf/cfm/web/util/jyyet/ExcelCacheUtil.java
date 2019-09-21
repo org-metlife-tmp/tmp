@@ -29,7 +29,7 @@ public class ExcelCacheUtil {
 	public static List<Map<String, Object>> getExcelDataObj(Record record) throws BusinessException {
 		String objectId = record.getStr("object_id");
 		if (StringUtils.isBlank(objectId)) {
-			throw new ReqDataException("请求参数object_id为空");
+			throw new ReqDataException("模板格式有误，请核对后提交！");
 		}
 
 		// 从redis中获取excel导入的数据
@@ -53,7 +53,7 @@ public class ExcelCacheUtil {
 	public static ExcelResultBean getExcelResultBean(Record record) throws BusinessException {
 		String objectId = record.getStr("object_id");
 		if (StringUtils.isBlank(objectId)) {
-			throw new ReqDataException("请求参数object_id为空");
+			throw new ReqDataException("模板格式有误，请核对后提交！");
 		}
 
 		// 从redis中获取excel导入的数据

@@ -5,6 +5,7 @@ import java.util.concurrent.LinkedBlockingDeque;
 
 /**
  * 队列实现
+ * 
  * @author yunxw
  *
  */
@@ -12,20 +13,37 @@ import java.util.concurrent.LinkedBlockingDeque;
 public class Queue {
 
 	@SuppressWarnings("rawtypes")
-	private Queue(){
+	private Queue() {
 		this.cmbcQueue = new LinkedBlockingDeque();
 		this.icbcQueue = new LinkedBlockingDeque();
 		this.icbcSignQueue = new LinkedBlockingDeque();
+		this.fingradQueue = new LinkedBlockingDeque<>();
+		this.ccbQueue = new LinkedBlockingDeque();
 	}
+
 	private static Queue instance = new Queue();
-	public static Queue getInstance(){
+
+	public static Queue getInstance() {
 		return instance;
 	}
+
 	private BlockingQueue<QueueBean> cmbcQueue;
-	
+
 	private BlockingQueue<QueueBean> icbcQueue;
-	
+
 	private BlockingQueue<QueueBean> icbcSignQueue;
+
+	private BlockingQueue<QueueBean> fingradQueue;
+
+	private BlockingQueue<QueueBean> ccbQueue;
+
+	public BlockingQueue<QueueBean> getCcbQueue() {
+		return ccbQueue;
+	}
+
+	public void setCcbQueue(BlockingQueue<QueueBean> ccbQueue) {
+		this.ccbQueue = ccbQueue;
+	}
 
 	public BlockingQueue<QueueBean> getCmbcQueue() {
 		return cmbcQueue;
@@ -50,7 +68,12 @@ public class Queue {
 	public void setIcbcSignQueue(BlockingQueue<QueueBean> icbcSignQueue) {
 		this.icbcSignQueue = icbcSignQueue;
 	}
-	
-	
 
+	public BlockingQueue<QueueBean> getFingradQueue() {
+		return fingradQueue;
+	}
+
+	public void setFingradQueue(BlockingQueue<QueueBean> fingradQueue) {
+		this.fingradQueue = fingradQueue;
+	}
 }

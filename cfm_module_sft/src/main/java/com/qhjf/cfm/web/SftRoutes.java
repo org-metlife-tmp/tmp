@@ -28,5 +28,13 @@ public class SftRoutes extends Routes {
         add("/normal/paycounter", PayCounterController.class);
         add("/normal/sftpaycountercheck", PayCounterCheckController.class);
         add("/normal/sftvoucherlist", VoucherController.class);
+        add("/normal/recvcounter", RecvCounterController.class);
+        add("/normal/recvgroupcounter", RecvGroupCounterController.class);
+        add("/normal/recvcountercheck", RecvCounterCheckController.class);
+        add("/normal/recvcounterposrecordcheck", RecvCounterPosRecordCheckPosDetailController.class);
+        add("/normal/recvcounterpostranscheck", RecvCounterPosTransCheckController.class);
+        add("/normal/recvcounterwaitingformatch", RecvCounterWaitingForMatchController.class);
+        add("/normal/paycountertmp", PayCounterTMPController.class);
+        add("/normal/recvcounterimportpos", RecvCounterImportPOSController.class);
     }
 }

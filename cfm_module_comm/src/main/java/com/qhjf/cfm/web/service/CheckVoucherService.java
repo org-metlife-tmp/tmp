@@ -128,6 +128,9 @@ public class CheckVoucherService {
             case PLS:
                 flag = plsCheckVoucher(batchList, tradList, batchRecordList, tradRecordList, majorBizType, seqnoOrstatmentCode, userInfo);
                 break;
+            case GMSTD:
+                flag = gmsCheckVoucher(batchList, tradList, batchRecordList, tradRecordList, majorBizType, seqnoOrstatmentCode, userInfo);
+                break;
             default:
                 throw new ReqDataException(majorBizType.getDesc() + "，未实现生成凭证方法！");
         }

@@ -60,6 +60,7 @@ public class UploadController extends CFMBaseController {
 			}
 
 			String fileName = excelSheetConfig.getTemplateId();
+			System.out.println("=================="+fileName);
 			if (StringUtils.isBlank(fileName)) {
 				renderJson(getErrorResult(false, String.format("pk=【%s】excel配置文件中没有配置模板【templateId】", pk)));
 				return;
@@ -76,12 +77,14 @@ public class UploadController extends CFMBaseController {
 						logger.debug(String.format("【下载Excel模板】开始下载xlsx模板，templateId=%s", fileName));
 					}
 					fileContent = getMongoFileByFileName(fileName.concat(BasicTypeConstant.EXCEL2007_SUFFIX));
+					System.out.println("filename==================="+fileName.concat(BasicTypeConstant.EXCEL2007_SUFFIX));
 				} catch (Exception e) {
 					if (logger.isDebugEnabled()) {
 						logger.debug(String.format("【下载Excel模板】xlsx下载失败，开始下载xls模板，templateId=%s", fileName));
 					}
 					try {
 						fileContent = getMongoFileByFileName(fileName.concat(BasicTypeConstant.EXCEL97_SUFFIX));
+
 					} catch (Exception e1) {
 						logger.error(String.format("Excel模板%s下载失败", fileName.concat(BasicTypeConstant.EXCEL97_SUFFIX)), e1);
 						renderText("Excel模板已经损坏！");
@@ -134,7 +137,7 @@ public class UploadController extends CFMBaseController {
 		}
 		return fileContent;
 	}
-	
+
 	private Map<String, Object> getErrorResult(boolean success, String errorMessage){
 		Map<String, Object> result = new HashMap<>();
 		result.put("success", success);

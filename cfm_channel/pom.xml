@@ -31,7 +31,17 @@
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 		</dependency>
-	</dependencies>
+        <dependency>
+            <groupId>com.qhjf.bankinterface</groupId>
+            <artifactId>bs_fingard</artifactId>
+            <version>1.1.2-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.qhjf.bankinterface</groupId>
+            <artifactId>bs_ccb</artifactId>
+            <version>1.1.2-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
 
 
 </project>

@@ -25,7 +25,8 @@ public class RequiredParamsValidate extends ParamsValidate {
         if(params != null){
             for (String requireField : requireFields) {
                 if(CommKit.isNullOrEmpty(params.get(requireField))){
-                    throw new ReqValidateException("请求体params参数["+requireField+"]不能为空！");
+                    //throw new ReqValidateException("请求体params参数["+requireField+"]不能为空！");
+                    throw new ReqValidateException("必填项不能为空~/请选择要匹配的数据~");
                 }
             }
             return true && (innerVld != null ? innerVld.validate(jobj) : true);

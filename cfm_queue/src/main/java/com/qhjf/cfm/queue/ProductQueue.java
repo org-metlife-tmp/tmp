@@ -40,6 +40,8 @@ public class ProductQueue implements Runnable{
 					log.debug(ICBC_LOG, className, queueBean.getParams());
 					Queue.getInstance().getIcbcQueue().put(queueBean);
 				}
+			} else if("fingard".equals(queueBean.getBankCode())){
+				Queue.getInstance().getFingradQueue().put(queueBean);
 			}
 			
 		} catch (InterruptedException e) {

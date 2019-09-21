@@ -106,8 +106,8 @@ public class ZftOptypeMgr extends AbstractOptypeMgr {
                         "min", "max", "page_size", "page_num", "start_date", "end_date"}));
         //根据单据号,查询未核对交易号  checkAlreadyTradeList
         optypes.add(new Optype(Optype.Mode.NORMAL, "zft_checkTradeList")
-                .registKeepParams(new String[]{"id","date_validate","recv_validate"})
-                .registerValidate(new RequiredParamsValidate(new String[]{"id","date_validate","recv_validate"})));
+                .registKeepParams(new String[]{"id", "date_validate", "recv_validate"})
+                .registerValidate(new RequiredParamsValidate(new String[]{"id", "date_validate", "recv_validate"})));
         //根据单据号,查询已核对交易号  checkAlreadyTradeList
         optypes.add(new Optype(Optype.Mode.NORMAL, "zft_checkAlreadyTradeList")
                 .registKeepParams(new String[]{"id"})
@@ -391,9 +391,9 @@ public class ZftOptypeMgr extends AbstractOptypeMgr {
         //勾选 查找交易流水
         optypes.add(new Optype(Optype.Mode.NORMAL, "zftbatchcheck_checkNoCheckTradeList")
                 .registerValidate(new RequiredParamsValidate(new String[]{
-                        "id","date_validate","recv_validate"
+                        "id", "date_validate", "recv_validate"
                 }))
-                .registKeepParams(new String[]{"id","date_validate","recv_validate"}));
+                .registKeepParams(new String[]{"id", "date_validate", "recv_validate"}));
 
         //确认交易
         optypes.add(new Optype(Optype.Mode.NORMAL, "zftbatchcheck_confirmCheck")
@@ -409,6 +409,23 @@ public class ZftOptypeMgr extends AbstractOptypeMgr {
                 .registKeepParams(new String[]{"id"}));
         /** ============================ 支付通批量交易核对 end ============================ */
 
+        /** ============================ 支付通-重复退票 begin =============================*/
+        //支付通-重复退票-列表
+        optypes.add(new Optype(Optype.Mode.NORMAL, "zftrefund_list")
+                .registKeepParams(new String[]{
+                        "page_size", "page_num",
+                        "start_trans_date", "end_trans_date",
+                        "min", "max", "direction", "acc_no", "opp_acc_no"
+                }));
+        optypes.add(new Optype(Optype.Mode.NORMAL, "zftrefund_confirm")
+                .registerValidate(new RequiredParamsValidate(new String[]{
+                        "trans_id", "biz_id"
+                }))
+                .registKeepParams(new String[]{
+                        "trans_id", "biz_id", "opp_acc_id", "opp_acc_no",
+                        "opp_acc_name", "opp_cnaps_code", "summary"
+                }));
+        /** ============================ 支付通-重复退票 end =============================*/
     }
 
 

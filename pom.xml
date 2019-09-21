@@ -38,12 +38,12 @@
         <module>cfm_module_sft</module>
         <module>cfm_webservice_la</module>
         <module>cfm_webservice_ebs</module>
-        <module>cfm_webservice_sft</module>
         <module>cfm_common</module>
         <module>cfm_module_voucher</module>      <!-- 凭证查询  -->
         <module>cfm_module_nc</module>
         <module>cfm_webservice_nc</module>
-
+        <module>cfm_webservice_sft</module>
+        <module>cfm_report</module>
     </modules>
 
     <properties>
@@ -217,6 +217,11 @@
             <dependency>
                 <groupId>com.qhjf.bankinterface</groupId>
                 <artifactId>bs_cmbc</artifactId>
+                <version>${bs_mvnbuild.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.qhjf.bankinterface</groupId>
+                <artifactId>bs_ccb</artifactId>
                 <version>${bs_mvnbuild.version}</version>
             </dependency>
             <dependency>
