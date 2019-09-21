@@ -194,6 +194,12 @@ public class RecvDiskSendingService {
 
 		String shortPayCnaps = accountAndBankInfo.get("bank_cnaps_code").substring(0, 3);
 		IChannelInter channelInter = null;
+		Record channel = Db.findFirst(Db.getSql("recv_disk_downloading.qryChannelId"),mbRecord.getStr("channel_id"));
+		if(!OminiUtils.isNullOrEmpty(channel)){
+			if("fingard".equals(channel.getStr("shortPayCnaps"))){
+				shortPayCnaps = channel.getStr("shortPayCnaps");
+			}
+		}
 		try {
 			channelInter = ChannelManager.getInter(shortPayCnaps, "BatchRecv");
 		} catch (Exception e) {
