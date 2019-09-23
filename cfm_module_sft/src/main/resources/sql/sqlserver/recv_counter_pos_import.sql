@@ -17,7 +17,7 @@ SELECT
     recv.card_issue_bank ,
     recv.no_identity_mark ,
     recv.import_date ,
-    case recv.bill_checked when '0' then '未核对'  when '1' then '未核对'  end bill_checked,
+    case recv.bill_checked when '0' then '未核对'  when '1' then '已核对'  end bill_checked,
     recv.bill_statement_code ,
     recv.bill_check_user_name ,
     recv.bill_check_service_number,
