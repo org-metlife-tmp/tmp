@@ -71,15 +71,15 @@ public class PersonBillComfirmReqBean {
 	 * @param paytype 缴费方式（E：现金解款单，1：POS机，I：支票，D：贷记凭证==网银/汇款）
 	 * @param bankcode 个单表的recv_bank_name（bankcode）转换成的LA的bankcode
 	 */
-	public PersonBillComfirmReqBean(String docorigamt, String bankacckey, String bankaccdsc, String cownsel, String paytype, String bankcode,String sacstype){
-		this.branch = "SH";
+	public PersonBillComfirmReqBean(String company,String branch,String docorigamt, String bankacckey, String bankaccdsc, String cownsel, String paytype, String bankcode,String sacstype){
+		this.branch = branch;
 		this.docorigamt = docorigamt;
 		this.bankacckey = bankacckey;
 		this.bankaccdsc = bankaccdsc;
 		this.bankkey = null;
 		this.cownsel = cownsel;
 		this.paytype = paytype;
-		this.company = "1";
+		this.company = company;
 		this.tchqdate = new SimpleDateFormat("yyyyMMdd").format(new Date());
 		this.bankcode = bankcode;
 		this.sacscode = "LP";
