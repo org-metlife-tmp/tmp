@@ -107,7 +107,7 @@ public class RecvCounterConfirmQueue implements Runnable {
 		for (Record policy : policys) {
 			String paytype = WebConstant.Sft_RecvPersonalCounter_Recvmode.getByKey(TypeUtils.castToInt(record.get("recv_mode")))
 					.getPrefix();
-			PersonBillComfirmReqBean personBillComfirmReqBean = new PersonBillComfirmReqBean(
+			PersonBillComfirmReqBean personBillComfirmReqBean = new PersonBillComfirmReqBean(insureOrgCode,company,
 					TypeUtils.castToString(policy.get("amount")), record.getStr("consumer_acc_no"), null,
 					policy.getStr("insure_bill_no"), paytype,"31",getSacsTypeByusefund(record));
 			PersonBillComfirmReqBeans.add(personBillComfirmReqBean);			
