@@ -1074,6 +1074,7 @@
                 let item = this.items;
                 let val = item[0].isnot_electric_pay;
                 let val2 = item[0].isnot_bank_transfer_premium;
+                let insurebillno = item[0].insure_bill_no;
                 //判断允许垫交是否已勾选
                 if(val != 0 && this.checked == false){
                    alert("该保单为允许垫交中保单，请勾选后再次提交~");
@@ -1083,8 +1084,7 @@
                 //判空
                 if(dialogData.currency ==""|| dialogData.recv_mode=="" || dialogData.use_funds==""||dialogData.bill_status==""|| dialogData.bill_number==""|| dialogData.bill_date==""
                         || dialogData.recv_bank_name==""|| dialogData.recv_acc_no==""|| dialogData.consumer_bank_name==""
-                        || dialogData.consumer_acc_no==""|| dialogData.terminal_no==""|| dialogData.amount==""
-                ||item.insure_bill_no){
+                        || dialogData.consumer_acc_no==""|| dialogData.terminal_no==""|| dialogData.amount=="" ||insurebillno == ""){
                     alert("温馨提示：请将必填字段补充完整！")
                 }else {
                     this.$confirm('是否确认完成当前业务收款?', '提示', {
