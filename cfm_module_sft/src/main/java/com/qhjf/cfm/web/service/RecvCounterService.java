@@ -407,7 +407,7 @@ public class RecvCounterService {
 		//点击撤回,撤回同一批次下的所有保单
 		final Long usr_id = userInfo.getUsr_id();
 		final Integer id = record.getInt("id");
-		final Record recv_counter_data = Db.findById("recv_counter_bill", "id", id);
+		final Record recv_counter_data = Db.findById("recv_counter_bill", "wait_match_id", id);
 		if(null == recv_counter_data) {
 			throw new ReqDataException("此条数据已过期,请刷新页面");
 		}
