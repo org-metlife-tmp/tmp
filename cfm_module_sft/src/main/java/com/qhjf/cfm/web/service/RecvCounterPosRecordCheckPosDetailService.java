@@ -239,7 +239,7 @@ public class RecvCounterPosRecordCheckPosDetailService {
 			rowRecord.set("trade_type", row.get("transType"));
 			rowRecord.set("card_no", row.get("accountNo"));
 			rowRecord.set("card_type", row.get("accountType"));
-			rowRecord.set("no_identity_mark", row.get("bankName"));
+			rowRecord.set("card_issue_bank", row.get("bankName"));
 			rowRecord.set("no_identity_mark", row.get("nonTouchMark"));
 			rowRecord.set("import_date", time);
 			rowRecord.set("create_on", time);
