@@ -275,12 +275,12 @@
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
-                            <el-form-item label="批处理号">
+                            <el-form-item label="批处理号" >
                                 <el-input v-model="dialogData.batch_process_no" disabled></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
-                            <el-form-item label="币种">
+                            <el-form-item label="币种" >
                                 <el-select v-model="dialogData.currency" placeholder="请选择币种"
                                            filterable clearable>
                                     <el-option v-for="currency in currencyList"
@@ -292,7 +292,7 @@
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
-                            <el-form-item label="收款方式">
+                            <el-form-item label="* 收款方式">
                                 <el-select v-model="dialogData.recv_mode" placeholder="请选择收款方式"
                                            clearable filterable
                                            style="width:100%">
@@ -305,7 +305,7 @@
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
-                            <el-form-item label="资金用途">
+                            <el-form-item label="* 资金用途">
                                 <el-select v-model="dialogData.use_funds" placeholder="请选择资金用途"
                                            clearable filterable
                                            style="width:100%">
@@ -318,7 +318,7 @@
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
-                            <el-form-item label="票据状态">
+                            <el-form-item label="* 票据状态">
                                 <el-select v-model="dialogData.bill_status" placeholder="请选择票据状态"
                                            clearable filterable
                                            style="width:100%">
@@ -331,23 +331,24 @@
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
-                            <el-form-item label="票据编号">
+                            <el-form-item label="* 票据编号">
                                 <el-input v-model="dialogData.bill_number" placeholder="请输入票据编号"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
-                            <el-form-item label="票据日期">
+                            <el-form-item label="* 票据日期">
                                 <el-date-picker
                                         v-model="dialogData.bill_date"
                                         type="date"
                                         placeholder="请选择票据日期"
                                         value-format="yyyy-MM-dd"
-                                        style="width:100%">
+                                        style="width:100%"
+                                        :picker-options="pickerOptions" >
                                 </el-date-picker>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
-                            <el-form-item label="收款银行">
+                            <el-form-item label="* 收款银行">
                                 <el-select v-model="dialogData.recv_bank_name" placeholder="请选择收款银行"
                                            filterable clearable @change="setAccNo">
                                     <el-option v-for="bank in recvBankList"
@@ -359,12 +360,12 @@
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
-                            <el-form-item label="银行账号">
+                            <el-form-item label="* 银行账号">
                                 <el-input v-model="dialogData.recv_acc_no" placeholder="请输入银行账号"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
-                            <el-form-item label="客户银行">
+                            <el-form-item label="* 客户银行">
                                 <el-select v-model="dialogData.consumer_bank_name" placeholder="请选择银行大类"
                                            clearable filterable
                                            style="width:100%"
@@ -380,17 +381,17 @@
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
-                            <el-form-item label="客户账号">
+                            <el-form-item label="* 客户账号">
                                 <el-input v-model="dialogData.consumer_acc_no" placeholder="请输入客户账号"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
-                            <el-form-item label="终端机编号">
+                            <el-form-item label="* 终端机编号">
                                 <el-input v-model="dialogData.terminal_no" placeholder="请输入终端机编号"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
-                            <el-form-item label="金额">
+                            <el-form-item label="* 金额">
                                 <el-input v-model="dialogData.amount" placeholder="请输入金额"></el-input>
                             </el-form-item>
                         </el-col>
@@ -425,13 +426,13 @@
                             </div>
                         </el-col>
                         <el-col :span="12">
-                            <el-form-item label="保单号">
+                            <el-form-item label="* 保单号">
                                 <el-input v-model="item.insure_bill_no" placeholder="请输入保单号"
                                           @change="setBillInfo(item)"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
-                            <el-form-item label="金额">
+                            <el-form-item label="* 金额">
                                 <el-input v-model="item.amount" placeholder="请输入金额"></el-input>
                             </el-form-item>
                         </el-col>
@@ -511,8 +512,8 @@
                     </el-row>
                 </el-form>
                 <span slot="footer" class="dialog-footer">
-                <el-button type="warning" size="mini" plain @click="dialogVisible = false">取 消</el-button>
-                <el-button type="warning" size="mini" @click="saveData">确 定</el-button>
+                <el-button type="warning" size="mini" plain @click="dialogVisible = false" >取 消</el-button>
+                <el-button type="warning" size="mini" @click="saveData" >确 定</el-button>
             </span>
             </el-dialog>
         </el-footer>
@@ -596,6 +597,7 @@
                 checkedzz:false,
                 isdisableofdj:"",
                 isdisableofzz:"",
+                isdisabledtck:"false",
 
                 queryUrl: this.$store.state.queryUrl,
                 routerMessage: {
@@ -1081,7 +1083,8 @@
                 //判空
                 if(dialogData.currency ==""|| dialogData.recv_mode=="" || dialogData.use_funds==""||dialogData.bill_status==""|| dialogData.bill_number==""|| dialogData.bill_date==""
                         || dialogData.recv_bank_name==""|| dialogData.recv_acc_no==""|| dialogData.consumer_bank_name==""
-                        || dialogData.consumer_acc_no==""|| dialogData.terminal_no==""|| dialogData.amount==""){
+                        || dialogData.consumer_acc_no==""|| dialogData.terminal_no==""|| dialogData.amount==""
+                ||item.insure_bill_no){
                     alert("温馨提示：请将必填字段补充完整！")
                 }else {
                     this.$confirm('是否确认完成当前业务收款?', '提示', {
@@ -1145,7 +1148,7 @@
             lookCurrent: function(row){
                 this.dialogTitle = "查看";
                 this.currentData = row;
-
+                this.isdisabledtck = "true";
                 let dialogData = this.dialogData;
                 for(let k in dialogData){
                     dialogData[k] = "";
