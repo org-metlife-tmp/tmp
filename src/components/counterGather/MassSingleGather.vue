@@ -306,7 +306,7 @@
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
-                            <el-form-item label="收款方式">
+                            <el-form-item label="* 收款方式">
                                 <el-select v-model="dialogData.recv_mode" placeholder="请选择收款方式"
                                            clearable filterable :disabled="isLook"
                                            style="width:100%"
@@ -321,7 +321,7 @@
                         </el-col>
 
                         <el-col :span="12">
-                            <el-form-item label="票据状态">
+                            <el-form-item label="* 票据状态">
                                 <el-select v-model="dialogData.bill_status" placeholder="请选择票据状态"
                                            clearable filterable :disabled="isdisables == 'true'"
                                            style="width:100%"  @change="change('b',dialogData.bill_status)">
@@ -334,25 +334,26 @@
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
-                            <el-form-item label="票据编号">
+                            <el-form-item label="* 票据编号">
                                 <el-input v-model="dialogData.bill_number" placeholder="请输入票据编号"
                                           :disabled="isLook"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
-                            <el-form-item label="票据日期">
+                            <el-form-item label="* 票据日期">
                                 <el-date-picker
                                         v-model="dialogData.bill_date"
                                         type="date"
                                         placeholder="请选择票据日期"
                                         value-format="yyyy-MM-dd"
                                         style="width:100%"
-                                        :disabled="isLook">
+                                        :disabled="isLook"
+                                        :picker-options="pickerOptions" >
                                 </el-date-picker>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
-                            <el-form-item label="收款银行">
+                            <el-form-item label="* 收款银行">
                                 <el-select v-model="dialogData.recv_bank_name" placeholder="请选择收款银行"
                                            filterable clearable @change="saveAccNo" :disabled="isLook">
                                     <el-option v-for="bank in recvBankList"
@@ -364,7 +365,7 @@
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
-                            <el-form-item label="银行账号">
+                            <el-form-item label="* 银行账号">
                                 <el-select v-model="dialogData.recv_acc_no"
                                            filterable clearable disabled>
                                     <el-option v-for="bank in recvBankList"
@@ -376,7 +377,7 @@
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
-                            <el-form-item label="客户银行">
+                            <el-form-item label="* 客户银行">
                                 <el-select v-model="dialogData.consumer_bank_name" placeholder="请选择银行大类"
                                            clearable filterable
                                            style="width:100%"
@@ -393,20 +394,20 @@
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
-                            <el-form-item label="客户账号">
+                            <el-form-item label="* 客户账号">
                                 <el-input v-model="dialogData.consumer_acc_no" placeholder="请输入客户账号"
                                           :disabled="isLook"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
-                            <el-form-item label="客户银行户名">
+                            <el-form-item label="* 客户银行户名">
                                 <el-input v-model="dialogData.consumer_accname" placeholder="请输入客户银行户名"
                                           :disabled="isLook"></el-input>
                             </el-form-item>
                         </el-col>
 
                         <el-col :span="14">
-                            <el-form-item label="资金用途">
+                            <el-form-item label="* 资金用途">
                                 <el-select v-model="dialogData.use_funds" placeholder="请选择资金用途"
                                            clearable filterable :disabled="isLook"
                                            style="width:100%">
@@ -470,28 +471,29 @@
                                 <el-switch
                                         v-model="dialogData.agent_com"
                                         active-value="1"
-                                        inactive-value="0">
+                                        inactive-value="0"
+                                        @change="setZJYW(dialogData)">
                                 </el-switch>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
                             <el-form-item label="业务号码">
-                                <el-input v-model="dialogData.bussiness_no" disabled></el-input>
+                                <el-input v-model="dialogData.bussiness_no" :disabled="dialogData.agent_com == '0'"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
                             <el-form-item label="业务所属客户">
-                                <el-input v-model="dialogData.business_acc" disabled></el-input>
+                                <el-input v-model="dialogData.business_acc" :disabled="dialogData.agent_com == '0'"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
                             <el-form-item label="业务所属客户号">
-                                <el-input v-model="dialogData.business_acc_no" disabled></el-input>
+                                <el-input v-model="dialogData.business_acc_no" :disabled="dialogData.agent_com == '0'"></el-input>
                             </el-form-item>
                         </el-col>
 
                         <el-col :span="12">
-                            <el-form-item label="金额">
+                            <el-form-item label="* 金额">
                                 <el-input v-model="dialogData.amount" placeholder="请输入金额"
                                           :disabled="isLook"></el-input>
                             </el-form-item>
@@ -509,33 +511,34 @@
                                 <el-switch :disabled="isLook"
                                         v-model="dialogData.third_payment"
                                         active-value="1"
-                                        inactive-value="0">
+                                        inactive-value="0"
+                                        @change="setPayInfo(dialogData)">
                                 </el-switch>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
                             <el-form-item label="缴费人">
                                 <el-input v-model="dialogData.payer" placeholder="请输入缴费人"
-                                          :disabled="isLook"></el-input>
+                                          :disabled="dialogData.third_payment == '0'"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
                             <el-form-item label="缴费编码">
                                 <el-input v-model="dialogData.pay_code" placeholder="请输入缴费人"
-                                          :disabled="isLook"></el-input>
+                                          :disabled="dialogData.third_payment == '0'"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
                             <el-form-item label="与投保人关系">
                                 <el-input v-model="dialogData.payer_relation_insured"
-                                          :disabled="isLook"
+                                          :disabled="dialogData.third_payment == '0'"
                                           placeholder="请输入与投保人关系"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
                             <el-form-item label="代缴费原因">
                                 <el-input v-model="dialogData.pay_reason" placeholder="请输入代缴费原因"
-                                          :disabled="isLook"></el-input>
+                                          :disabled="dialogData.third_payment == '0'"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="24">
@@ -824,6 +827,22 @@
             //时间格式化
             dateFormat: function (row, column, cellValue, index) {
                 return cellValue.slice(0,4)+cellValue.slice(4,6)+cellValue.slice(6,10);
+            },
+            setZJYW:function(dialogData){
+                if(dialogData.agent_com == "0"){
+                    dialogData.bussiness_no = "";
+                    dialogData.business_acc = "";
+                    dialogData.business_acc_no = "";
+                }
+            },
+            //是否第三方缴费状态改变后设置缴费人信息
+            setPayInfo: function(item){
+                if(item.third_payment == "0"){
+                    item.payer_cer_no = "";
+                    item.payer = "";
+                    item.payer_relation_insured="";
+                    item.payer = "";
+                }
             },
             //清空搜索条件
             clearData: function () {
