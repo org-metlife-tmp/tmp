@@ -282,12 +282,20 @@ public class RecvCounterService {
 		logger.info("====校验成功,开启异步线程请求外部系统====");
 
 		//再查一次保单，然后取到company和branch
-		PersonBillQryRespBean InsureBillNo = null ;
-		String insure_bill_no = record.getStr("insure_bill_no");
+		//final List<Record> policys = record.get("policy_infos");
+		String insure_bill_no = null;
+		String company = null;
+		String insureOrgCode = null;
+		for(Record r : policys)
+		{
+			 insure_bill_no = TypeUtils.castToString(r.get("insure_bill_no"));
+			 break;
+		}
+		PersonBillQryRespBean InsureBillNo = null;
 		PersonBillQryReqBean bean = new  PersonBillQryReqBean(insure_bill_no);
 		InsureBillNo = recvCounterRemoteCall.qryBillByInsureBillNo(bean);
-		String company = InsureBillNo.getCompany();
-		String insureOrgCode = InsureBillNo.getInsureOrgCode();
+		company = InsureBillNo.getCompany();
+		insureOrgCode = InsureBillNo.getInsureOrgCode();
 
 
 		RecvCounterConfirmQueue recvCounterConfirmQueue = new RecvCounterConfirmQueue();
