@@ -137,7 +137,7 @@
                       highlight-current-row
                       size="mini" height="100%"
                       @current-change="saveCurrent">
-                <el-table-column prop="recv_date" label="收款日期" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="recv_date" label="收款日期" :show-overflow-tooltip="true" :formatter="dateFormat"></el-table-column>
                 <el-table-column prop="batch_process_no" label="批处理号" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="recv_mode" label="收款方式" :show-overflow-tooltip="true"
                                  :formatter="transitMode"></el-table-column>
@@ -309,7 +309,8 @@
                                         type="date"
                                         placeholder="请选择票据日期"
                                         value-format="yyyy-MM-dd"
-                                        style="width:100%">
+                                        style="width:100%"
+                                        :picker-options="pickerOptions" >
                                 </el-date-picker>
                             </el-form-item>
                         </el-col>
@@ -447,6 +448,11 @@
                     max: "",
                     match_status: []
                 },
+                pickerOptions: {
+                    disabledDate(time) {
+                        return time.getTime() > Date.now();
+                    }
+                },
                 dateValue: "", //时间控件
                 pickerOptions: {
                     disabledDate(time) {
@@ -501,6 +507,10 @@
             }
         },
         methods: {
+            //时间格式化
+            dateFormat: function (row, column, cellValue, index) {
+                return cellValue.slice(0,4)+cellValue.slice(4,6)+cellValue.slice(6,10);
+            },
             //清空搜索条件
             clearData: function () {
                 var searchData = this.searchData;
