@@ -295,7 +295,8 @@
                             <el-form-item label="* 收款方式">
                                 <el-select v-model="dialogData.recv_mode" placeholder="请选择收款方式"
                                            clearable filterable
-                                           style="width:100%">
+                                           style="width:100%"
+                                           @change="changeProduct()">
                                     <el-option v-for="(recvmode,key) in recvmodeList"
                                                :key="key"
                                                :label="recvmode"
@@ -321,7 +322,8 @@
                             <el-form-item label="* 票据状态">
                                 <el-select v-model="dialogData.bill_status" placeholder="请选择票据状态"
                                            clearable filterable
-                                           style="width:100%">
+                                           style="width:100%"
+                                           :disabled="isdisablespjzt == 'true'">
                                     <el-option v-for="(billStatus,key) in billStatusList"
                                                :key="key"
                                                :label="billStatus"
@@ -854,6 +856,7 @@
         },
         data: function () {
             return {
+                isdisablespjzt:"true",
                 //文本框是否可编辑
                 isdisables:"true",
                 checked:false,
@@ -968,6 +971,18 @@
         },
         methods: {
 
+            changeProduct:function(){
+                let dialogData = this.dialogData;
+                let isdisablespjzt = this.isdisablespjzt;
+
+                if(dialogData.recv_mode==0 || dialogData.recv_mode==1 || dialogData.recv_mode ==3){
+                    dialogData.bill_status ="已到账";
+                    this.isdisablespjzt = "true";
+                }else if(dialogData.recv_mode==2 ){
+                    dialogData.bill_status ="";
+                    this.isdisablespjzt = "false";
+                }
+            },
             //监听点击事件
             //时间格式化
             dateFormat: function (row, column, cellValue, index) {
