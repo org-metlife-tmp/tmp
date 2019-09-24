@@ -21,6 +21,7 @@ import com.qhjf.cfm.web.webservice.sft.counter.recv.bean.resp.*;
 import org.apache.commons.lang.StringUtils;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -322,6 +323,13 @@ public class RecvGroupCounterService {
      * @return
      */
     public Page<Record> list(Record record, UodpInfo curUodp, int pageSize, int pageNum) {
+            List<Integer> org_ids = new ArrayList<>();
+            List<Record> find = Db.find(Db.getSql("pay_counter.getSonOrg"), curUodp.getOrg_id());
+            for (int i = 0; i < find.size(); i++) {
+                org_ids.add(find.get(i).getInt("org_id"));
+            }
+            record.set("org_ids", org_ids);
+
         SqlPara sqlPara = Db.getSqlPara("recv_group_counter.grouplist", Kv.by("map", record.getColumns()));
         Page<Record> paginate = Db.paginate(pageNum, pageSize, sqlPara);
         return paginate;

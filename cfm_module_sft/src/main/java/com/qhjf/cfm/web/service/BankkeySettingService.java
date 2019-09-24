@@ -2,6 +2,7 @@ package com.qhjf.cfm.web.service;
 
 import com.alibaba.fastjson.util.TypeUtils;
 import com.jfinal.kit.Kv;
+import com.jfinal.kit.Ret;
 import com.jfinal.plugin.activerecord.*;
 import com.qhjf.cfm.exceptions.BusinessException;
 import com.qhjf.cfm.exceptions.DbProcessException;
@@ -12,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -161,7 +163,37 @@ public class BankkeySettingService {
         List<Record> records = Db.find(Db.getSql("bankkey_setting.getorg"));
         return records;
     }
+    /**
+     * 获取当前用户所属机构及子机构
+     *
+     * @param record
+     * @return
+     * @throws ReqDataException
+     */
+    public List<Record> getcurrentorg(Record record,Long org_id) throws BusinessException {
 
+//        List<Record> records = Db.find(Db.getSql("bankkey_setting.getorg"));
+
+        Record findById = Db.findById("organization", "org_id", org_id);
+        if(null == findById){
+            throw new ReqDataException("当前登录人的机构信息未维护");
+        }
+
+        List<Integer> org_ids = new ArrayList<>();
+        if(findById.getInt("level_num") != 1){
+
+            List<Record> find = Db.find(Db.getSql("pay_counter.getSonOrg"), org_id);
+            for (int i = 0; i < find.size(); i++) {
+                org_ids.add(find.get(i).getInt("org_id"));
+            }
+            record.set("org_ids", org_ids);
+        }
+//        List<Record> records = Db.find(Db.getSql("bankkey_setting.getcurrentorg"),org_ids);
+        SqlPara sqlPara = Db.getSqlPara("bankkey_setting.getcurrentorg", Ret.by("map", record.getColumns()));
+        List<Record> records = Db.find(sqlPara);
+
+        return records;
+    }
     /**
      * 获取通道根据收付属性
      */

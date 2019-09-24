@@ -319,6 +319,14 @@ public class RecvCounterService {
 	 */
 	public Page<Record> list(Record record, UodpInfo curUodp, int pageSize, int pageNum) throws UnsupportedEncodingException, BusinessException {
 		record.set("bill_type", WebConstant.SftRecvType.GDSK.getKey());
+
+		List<Integer> org_ids = new ArrayList<>();
+		List<Record> find = Db.find(Db.getSql("pay_counter.getSonOrg"), curUodp.getOrg_id());
+		for (int i = 0; i < find.size(); i++) {
+			org_ids.add(find.get(i).getInt("org_id"));
+		}
+		record.set("org_ids", org_ids);
+
 		record.set("wait_match_flag", 0);
 		SqlPara sqlPara = Db.getSqlPara("recv_counter.personalList", Kv.by("map", record.getColumns()));
 		Page<Record> paginate = Db.paginate(pageNum, pageSize, sqlPara);

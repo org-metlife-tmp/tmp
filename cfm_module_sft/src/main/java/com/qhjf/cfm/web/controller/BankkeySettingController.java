@@ -97,7 +97,19 @@ public class BankkeySettingController extends CFMBaseController {
             renderFail(e);
         }
     }
-
+    /**
+     * 获取当前机构及下层机构
+     */
+    public void getcurrentorg() {
+        try {
+            Record record = getRecordByParamsStrong();
+            List<Record> records = service.getcurrentorg(record,getCurUodp().getOrg_id());
+            renderOk(records);
+        } catch (BusinessException e) {
+            e.printStackTrace();
+            renderFail(e);
+        }
+    }
     /**
      * 获取通道根据收付属性
      */

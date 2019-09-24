@@ -98,6 +98,15 @@ WHERE
                 #(y)
               #end
             )
+        #elseif("org_ids".equals(x.key))
+            recv.recv_org_id in(
+              #for(z : map.org_ids)
+                #if(for.index > 0)
+                  #(",")
+                #end
+                #(z)
+              #end
+            )
         #elseif("pay_status".equals(x.key))
             recv.pay_status in(
               #for(z : map.pay_status)
