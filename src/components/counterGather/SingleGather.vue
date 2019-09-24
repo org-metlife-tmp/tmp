@@ -389,7 +389,8 @@
                         </el-col>
                         <el-col :span="12">
                             <el-form-item label="终端机编号">
-                                <el-input v-model="dialogData.terminal_no" placeholder="请输入终端机编号"></el-input>
+                                <el-input v-model="dialogData.terminal_no" placeholder="请输入终端机编号"
+                                          :disabled="isdisableszdj == 'true'"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
@@ -857,6 +858,7 @@
         data: function () {
             return {
                 isdisablespjzt:"true",
+                isdisableszdj:"true",
                 //文本框是否可编辑
                 isdisables:"true",
                 checked:false,
@@ -976,11 +978,19 @@
                 let isdisablespjzt = this.isdisablespjzt;
 
                 if(dialogData.recv_mode==0 || dialogData.recv_mode==1 || dialogData.recv_mode ==3){
-                    dialogData.bill_status ="已到账";
-                    this.isdisablespjzt = "true";
+                    if(dialogData.recv_mode==0){
+                        dialogData.bill_status ="已到账";
+                        this.isdisablespjzt = "true";
+                        this.isdisableszdj = "false";
+                    }else if(dialogData.recv_mode==1 || dialogData.recv_mode ==3){
+                        dialogData.bill_status ="已到账";
+                        this.isdisablespjzt = "true";
+                        this.isdisableszdj = "true";
+                    }
                 }else if(dialogData.recv_mode==2 ){
                     dialogData.bill_status ="";
                     this.isdisablespjzt = "false";
+                    this.isdisableszdj = "true";
                 }
             },
             //监听点击事件
@@ -1366,6 +1376,8 @@
                         || dialogData.recv_bank_name==""|| dialogData.recv_acc_no==""|| dialogData.consumer_bank_name==""
                         || dialogData.consumer_acc_no==""||dialogData.amount=="" ||insurebillno == ""){
                     alert("温馨提示：请将必填字段补充完整！")
+                }else if(dialogData.recv_mode =="0" && dialogData.terminal_no == ""){
+                    alert("温馨提示：您选择的收款模式为POS机，请将终端机编号填写完整");
                 }else {
                     this.$confirm('是否确认完成当前业务收款?', '提示', {
                         confirmButtonText: '确认',
