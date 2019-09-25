@@ -448,9 +448,11 @@ public class WorkflowQueryController extends CFMBaseController {
                     //归集通机构特殊处理
                     if (majorBizType == MajorBizType.GJT) {
                         billRecord.set("org_id", billRecord.getLong("create_org_id"));
+                    }else if( majorBizType == MajorBizType.GMS){
+                        billRecord.set("org_id", billRecord.getLong("recv_org_id"));
                     }
 
-                    judegByForces = CommonService.checkUseCanViewBill(userInfo.getCurUodp().getOrg_id(), billRecord.getLong("bill_org_id"));
+                    judegByForces = CommonService.checkUseCanViewBill(userInfo.getCurUodp().getOrg_id(), billRecord.getLong("org_id"));
                 } catch (BusinessException e) {
                     judegByForces = false;
                 }
