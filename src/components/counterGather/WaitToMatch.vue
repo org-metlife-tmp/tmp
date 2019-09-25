@@ -379,6 +379,154 @@
                 <el-button type="warning" size="mini" @click="saveData">确 定</el-button>
             </span>
             </el-dialog>
+
+
+            <!--详情 弹出框-->
+            <el-dialog :visible.sync="dialogVisibleXQ"
+                       width="860px" top="100px"
+                       :close-on-click-modal="false">
+                <h1 slot="title" v-text="dialogTitle" class="dialog-title"></h1>
+                <el-form :model="dialogData" size="small"
+                         :label-width="formLabelWidth">
+                    <el-row>
+                        <el-col :span="12">
+                            <el-form-item label="收款日期">
+                                <el-date-picker
+                                        v-model="dialogData.recv_date"
+                                        type="date" disabled
+                                        placeholder="请选择日期"
+                                        value-format="yyyy-MM-dd"
+                                        style="width:100%">
+                                </el-date-picker>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="批处理号">
+                                <el-input v-model="dialogData.batch_process_no" disabled></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="币种">
+                                <el-select v-model="dialogData.currency" placeholder="请选择币种"
+                                           filterable clearable disabled>
+                                    <el-option v-for="currency in currencyList"
+                                               :key="currency.id"
+                                               :label="currency.name"
+                                               :value="currency.id" >
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="收款方式">
+                                <el-select v-model="dialogData.recv_mode" placeholder="请选择收款方式"
+                                           clearable filterable
+                                           style="width:100%"
+                                           disabled>
+                                    <el-option v-for="(recvmode,key) in recvmodeList"
+                                               :key="key"
+                                               :label="recvmode"
+                                               :value="key" >
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="票据状态">
+                                <el-select v-model="dialogData.bill_status" placeholder="请选择票据状态"
+                                           clearable filterable
+                                           style="width:100%"
+                                           disabled>
+                                    <el-option v-for="(billStatus,key) in billStatusList"
+                                               :key="key"
+                                               :label="billStatus"
+                                               :value="key" >
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="票据编号">
+                                <el-input v-model="dialogData.bill_number" placeholder="请输入票据编号" disabled></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="票据日期">
+                                <el-date-picker
+                                        v-model="dialogData.bill_date"
+                                        type="date"
+                                        placeholder="请选择票据日期"
+                                        value-format="yyyy-MM-dd"
+                                        style="width:100%"
+                                        :picker-options="pickerOptions" disabled>
+                                </el-date-picker>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="收款银行">
+                                <el-select v-model="dialogData.recv_bank_name" placeholder="请选择收款银行"
+                                           filterable clearable @change="setAccNo" disabled>
+                                    <el-option v-for="bank in recvBankList"
+                                               :key="bank.bankcode"
+                                               :label="bank.bankcode"
+                                               :value="bank.bankcode" disabled>
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="银行账号">
+                                <el-input v-model="dialogData.recv_acc_no" placeholder="请输入银行账号" disabled></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="客户银行">
+                                <el-select v-model="dialogData.consumer_bank_name" placeholder="请选择银行大类"
+                                           clearable filterable
+                                           style="width:100%"
+                                           :filter-method="filterBankType"
+                                           :loading="bankLongding"
+                                           @visible-change="clearSearch" disabled>
+                                    <el-option v-for="bankType in bankTypeList"
+                                               :key="bankType.name"
+                                               :label="bankType.display_name"
+                                               :value="bankType.code">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="客户账号">
+                                <el-input v-model="dialogData.consumer_acc_no" placeholder="请输入客户账号" disabled></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="终端机编号">
+                                <el-input v-model="dialogData.terminal_no" placeholder="请输入终端机编号" disabled></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="金额">
+                                <el-input v-model="dialogData.amount" placeholder="请输入金额" disabled></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="缴费人">
+                                <el-input v-model="dialogData.payer" placeholder="请输入缴费人" disabled></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="缴费人证件号">
+                                <el-input v-model="dialogData.payer_cer_no" placeholder="请输入缴费人证件号" disabled></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                </el-form>
+                <span slot="footer" class="dialog-footer">
+                <el-button type="warning" size="mini" plain @click="dialogVisibleXQ = false" >取 消</el-button>
+                <el-button type="warning" size="mini" @click="saveData" disabled>确 定</el-button>
+            </span>
+            </el-dialog>
         </el-footer>
     </el-container>
 </template>
@@ -483,6 +631,7 @@
                 bankTypeList: [],
                 bankAllTypeList: [], //银行大类全部(不重复)
                 dialogVisible: false, //弹框
+                dialogVisibleXQ:false, //详情
                 dialogTitle: "新增",
                 dialogData: {
                     recv_date: "",
@@ -942,7 +1091,7 @@
                     }
                 ];
 
-                this.dialogVisible = true;
+                this.dialogVisibleXQ = true;
 
                 this.$axios({
                     url: this.queryUrl + "normalProcess",
@@ -961,7 +1110,7 @@
                             duration: 2000
                         });
                     } else {
-                        let data = result.data.data;
+                        let data = result.data.data.detail;
                         let dialogData = this.dialogData;
                         for (let k in data) {
                             if (k == "policy_infos") {
@@ -971,8 +1120,27 @@
                                 });
                                 this.items = infoList;
                             } else {
+                                if(k == "recv_mode"){
+                                    if(data[k] == "0"){
+                                        data[k] = "POS机"
+                                    }else if(data[k] == "1"){
+                                        data[k] = "现金解款单"
+                                    }else if(data[k] == "2"){
+                                        data[k] = "支票"
+                                    }else if(data[k] == "3"){
+                                        data[k] = "网银/汇款"
+                                    }
+                                }
+                                if(k == "bill_status"){
+                                    if(data[k] == "0"){
+                                        data[k] = "已到账"
+                                    }else if(data[k] == "1"){
+                                        data[k] = "已退票"
+                                    }
+                                }
                                 dialogData[k] = data[k];
                             }
+
                         }
                     }
                 }).catch(function (error) {
