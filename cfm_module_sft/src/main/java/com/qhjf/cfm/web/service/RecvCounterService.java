@@ -290,6 +290,10 @@ public class RecvCounterService {
 		if (!tx) {
 			throw new ReqDataException("柜面收个单确认失败");
 		}
+		//已退款的新增不调用核心，只入库
+		if (bill_status.equals("1")){
+			return;
+		}
 		logger.info("====校验成功,开启异步线程请求外部系统====");
 
 		//再查一次保单，然后取到company和branch
