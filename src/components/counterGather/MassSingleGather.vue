@@ -919,7 +919,7 @@
                     url: this.queryUrl + "normalProcess",
                     method: "post",
                     data: {
-                        optype: "sftbankkey_getorg",
+                        optype: "sftbankkey_getcurrentorg",
                         params: {}
                     }
                 }).then((result) => {
