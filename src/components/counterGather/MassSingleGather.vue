@@ -437,7 +437,7 @@
                         </el-col>
                         <el-col :span="12">
                             <el-form-item label="保单机构">
-                                <el-input v-model="dialogData.bill_org_id" disabled></el-input>
+                                <el-input v-model="dialogData.bill_org_name" disabled></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
@@ -791,7 +791,7 @@
                     pay_code: "",
                     payer_relation_insured: "",
                     pay_reason: "",
-
+                    bill_org_name:"",
 
                 },
                 formLabelWidth: "120px",
