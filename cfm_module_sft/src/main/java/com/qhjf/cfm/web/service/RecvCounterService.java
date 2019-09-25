@@ -63,6 +63,8 @@ public class RecvCounterService {
 	private  RecvCounterRemoteCall recvCounterRemoteCall = new RecvCounterRemoteCall();
 	
     private RecvCounterRemoteCall recvCounter = new RecvCounterRemoteCall();
+    public static final String zero = "0";
+	public static final String one = "1";
 
 
 	/**
@@ -90,6 +92,13 @@ public class RecvCounterService {
 		String recv_mode = TypeUtils.castToString(record.get("recv_mode"));
 		String use_funds = TypeUtils.castToString(record.get("use_funds"));
 		String bill_status = TypeUtils.castToString(record.get("bill_status"));
+		if(null != bill_status){
+			if(bill_status.equals("已到账")){
+				bill_status = zero;  //0代表已到账
+			}else if(bill_status.equals("已退票")){
+				bill_status = one;  //1代表已退票
+			}
+		}
 		String bill_number = TypeUtils.castToString(record.get("bill_number"));
 		String bill_date = TypeUtils.castToString(record.get("bill_date"));
 		String recv_bank_name = TypeUtils.castToString(record.get("recv_bank_name"));
@@ -107,14 +116,6 @@ public class RecvCounterService {
 		BigDecimal total_amount = TypeUtils.castToBigDecimal(record.get("amount"));
 		BigDecimal total_amount_son =  new BigDecimal(0);
 
-		//判断是否有重复票据编号
-		if(bill_number != null){
-			Record findBypjbh = Db.findFirst(Db.getSql("recv_counter.selbillnum"),bill_number);
-			if(findBypjbh != null){
-				throw new ReqDataException("待确认的保单票据票号已存在，请重新输入!") ;
-			}
-
-		}
 
 		for (Record rec : policys) {
 			String third_payment = TypeUtils.castToString(rec.get("third_payment"));
@@ -170,6 +171,16 @@ public class RecvCounterService {
 
 			String serviceSerialNumber = BizSerialnoGenTool.getInstance().getSerial(WebConstant.MajorBizType.GMSGD);
 			total_amount_son = total_amount_son.add(new BigDecimal(amount));
+
+			//判断是否有重复票据编号
+			if(bill_number != null){
+				Record findBypjbh = Db.findFirst(Db.getSql("recv_counter.selbillnum"),bill_number);
+				if(findBypjbh != null){
+					throw new ReqDataException("待确认的保单票据票号已存在，请重新输入!") ;
+				}
+
+			}
+
 			Record insertRecord = new Record();
 			//加密
 			SymmetricEncryptUtil  util = SymmetricEncryptUtil.getInstance();
