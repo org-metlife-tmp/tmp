@@ -185,11 +185,11 @@ public class RecvCounterWaitingForMatchService {
 		try {
 						
 			Record recv_counter_bill = Db.findById("recv_counter_bill", "wait_match_id", wait_match_id);
-			
+
 			if(null == recv_counter_bill) {
 				throw new ReqDataException("此条数据已过期,请刷新页面");
 			}
-			
+			record.set("id",record.get("recv_id"));//修复
 			if(0 == TypeUtils.castToInt(recv_counter_bill.get("bill_type"))) {
 				logger.info("====待匹配页面撤销数据为个单====");
 				recvCounterService.revoke(record, userInfo, uodpInfo);
