@@ -1365,7 +1365,6 @@
                 let val = item[0].isnot_electric_pay;
                 let val2 = item[0].isnot_bank_transfer_premium;
                 let insurebillno = item[0].insure_bill_no;
-                let amount = item[0].amount;
                 //判断允许垫交是否已勾选
                 if(val != 0 && this.checked == false){
                    alert("该保单为允许垫交中保单，请勾选后再次提交~");
@@ -1375,7 +1374,7 @@
                 //判空
                 if(dialogData.currency ==""|| dialogData.recv_mode=="" || dialogData.use_funds==""||dialogData.bill_status==""|| dialogData.bill_number==""|| dialogData.bill_date==""
                         || dialogData.recv_bank_name==""|| dialogData.recv_acc_no==""|| dialogData.consumer_bank_name==""
-                        || dialogData.consumer_acc_no==""||dialogData.amount=="" ||insurebillno == "" ||amount == ""){
+                        || dialogData.consumer_acc_no==""||dialogData.amount=="" ||insurebillno == ""){
                     alert("温馨提示：请将必填字段补充完整！")
                 }else if(dialogData.recv_mode =="0" && dialogData.terminal_no == ""){
                     alert("温馨提示：您选择的收款模式为POS机，请将终端机编号填写完整");
