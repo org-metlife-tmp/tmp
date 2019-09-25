@@ -222,7 +222,7 @@ public class RecvCounterWaitingForMatchService {
 	 * @param curUodp
 	 * @return
 	 */
-	public Record detail(Record record, UserInfo userInfo, UodpInfo curUodp) {
+	public Record detail(Record record, UserInfo userInfo, UodpInfo curUodp) throws BusinessException, UnsupportedEncodingException {
 		
 		
 		Record retunRecord = new Record();
@@ -230,7 +230,17 @@ public class RecvCounterWaitingForMatchService {
 		Integer id = TypeUtils.castToInt(record.get("id"));
 		
 		Record recv_counter_match = Db.findById("recv_counter_match", "id", id);
-		
+
+		SymmetricEncryptUtil  util = SymmetricEncryptUtil.getInstance();
+		try{
+			util.recvmaskforSingle(recv_counter_match);
+		}catch (BusinessException e) {
+			throw  e;
+		}catch (UnsupportedEncodingException e) {
+			throw  e;
+		}
+
+
 		retunRecord.set("detail", recv_counter_match);
 		
 		return retunRecord;
