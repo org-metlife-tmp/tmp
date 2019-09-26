@@ -562,6 +562,7 @@ public class RecvCounterService {
 				
 		Record findById = Db.findById("organization", "code", orgRecord.get("tmp_org_code"));
 		Record rec = new Record();
+		Record bsobj = new Record();
 		String isPadPayment = qryBillByInsureBillNo.getIsPadPayment();
 		String isTransAccount = qryBillByInsureBillNo.getIsTransAccount();
 
@@ -578,6 +579,10 @@ public class RecvCounterService {
         rec.set("srce_bus", qryBillByInsureBillNo.getSrceBus());
         rec.set("camp_aign", qryBillByInsureBillNo.getCampAign());
         rec.set("agnt_num", qryBillByInsureBillNo.getAgntNum());
+        rec.set("premiumStandard",qryBillByInsureBillNo.getPremiumStandard()); //保费标准
+        String bs = qryBillByInsureBillNo.getInsureStatus();
+		bsobj= Db.findFirst(Db.getSql("recv_counter.findbillstatus"),bs);
+		rec.set("insureStatus",bsobj.get("billstatusmean"));
 		return rec ;
 	}
 }
