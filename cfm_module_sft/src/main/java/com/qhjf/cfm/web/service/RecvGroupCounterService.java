@@ -214,6 +214,10 @@ public class RecvGroupCounterService {
             throw new ReqDataException("团单新增失败!");
         }
 
+        //已退款的新增不调用核心，只入库
+        if (bill_status.equals("1")){
+            return;
+        }
         logger.info("====团单新增开启异步线程请求外部系统====");
         RecvGroupCounterConfirmQueue recvGroupCounterConfirmQueue = new RecvGroupCounterConfirmQueue();
         recvGroupCounterConfirmQueue.setUserInfo(userInfo);
