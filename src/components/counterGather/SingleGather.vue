@@ -440,6 +440,26 @@
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
+                            <el-form-item label="保单标准">
+                                <el-input v-model="premiumStandard" disabled></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="保单状态">
+                                <el-input v-model="insureStatus" disabled></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="暂记余额">
+                                <el-input disabled></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="是否垫交中保单缴费">
+                                <el-input v-model="ispaying" disabled></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
                             <el-form-item label="保单机构">
                                 <el-input v-model="item.bill_org_name" disabled></el-input>
                             </el-form-item>
@@ -789,6 +809,7 @@
 <script>
     import Upload from "../publicModule/Upload.vue";
 
+
     export default {
         name: "SingleGather",
         created: function () {
@@ -855,6 +876,7 @@
         components: {
             Upload: Upload
         },
+
         data: function () {
             return {
                 isdisablespjzt:"true",
@@ -866,7 +888,10 @@
                 isdisableofdj:"",
                 isdisableofzz:"",
                 isdisabledtck:"false",
-
+                //保单标准、状态、垫交、保单暂记提示
+                premiumStandard:"",
+                insureStatus:"",
+                ispaying:"",
                 queryUrl: this.$store.state.queryUrl,
                 routerMessage: {
                     optype: "recvcounter_list",
@@ -951,7 +976,9 @@
                         srce_bus:"",
                         camp_aign:"",
                         agnt_num:"",
-                        $id: 1
+                        $id: 1,
+                        premiumStandard:"",
+                        insureStatus:""
                     }
                 ],
                 formLabelWidth: "120px",
@@ -986,11 +1013,13 @@
                         dialogData.bill_status ="已到账";
                         this.isdisablespjzt = "true";
                         this.isdisableszdj = "true";
+                        dialogData.terminal_no = "";
                     }
                 }else if(dialogData.recv_mode==2 ){
                     dialogData.bill_status ="";
                     this.isdisablespjzt = "false";
                     this.isdisableszdj = "true";
+                    dialogData.terminal_no = "";
                 }
             },
             //监听点击事件
@@ -1053,6 +1082,8 @@
                     item.payer = "";
                     item.payer_relation_insured="";
                     item.payer = "";
+                    this.dialogData.pay_reason = "";
+                    this.dialogData.payer_relation_insured = ""
                 }
             },
             //获取机构列表
@@ -1286,7 +1317,9 @@
                     payer: "",
                     bank_code: "",
                     payer_cer_no: "",
-                    $id: Date.now()
+                    $id: Date.now(),
+                    premiumStandard:"",
+                    insureStatus:""
                 };
                 this.items.push(item);
             },
@@ -1319,7 +1352,12 @@
                         } else {
                             let data = result.data.data;
                             //let ischecks = item.isnot_electric_pay;
-
+                            if(data.premiumStandard){
+                                this.premiumStandard = data.premiumStandard;
+                            }
+                            if(data.insureStatus){
+                                this.insureStatus = data.insureStatus;
+                            }
                             for(let k in item){
                                 this.isdisables = "false";
 
@@ -1328,9 +1366,11 @@
                                     if(data[k]== 0){
                                         this.checked = false;
                                         this.isdisableofdj = "true";
+                                        this.ispaying = "否";
                                     }else if (data[k]!= 0) {
                                         this.checked = false;
                                         this.isdisableofdj = "false";
+                                        this.ispaying = "是";
                                     }
                                 }
                                 if(k == "isnot_bank_transfer_premium"){
@@ -1370,14 +1410,18 @@
                    alert("该保单为允许垫交中保单，请勾选后再次提交~");
                 }else if (val2 == "Y" && this.checkedzz == false){
                     alert("该保单为银行转账中保单，请勾选后再次提交~");
-                } else {
-                //判空
-                if(dialogData.currency ==""|| dialogData.recv_mode=="" || dialogData.use_funds==""||dialogData.bill_status==""|| dialogData.bill_number==""|| dialogData.bill_date==""
-                        || dialogData.recv_bank_name==""|| dialogData.recv_acc_no==""|| dialogData.consumer_bank_name==""
-                        || dialogData.consumer_acc_no==""||dialogData.amount=="" ||insurebillno == ""){
-                    alert("温馨提示：请将必填字段补充完整！")
                 }else if(dialogData.recv_mode =="0" && dialogData.terminal_no == ""){
                     alert("温馨提示：您选择的收款模式为POS机，请将终端机编号填写完整");
+                }else if(item[0].third_payment == "1" ){
+                    if(item[0].payer_cer_no == "" || item[0].payer == "" || dialogData.pay_reason == "" || dialogData.payer_relation_insured == ""){
+                        alert("请将第三方缴费相关字段补充完整。");
+                    }
+                }else if(item[0].amount == null || item[0].amount == undefined){
+                    alert("请将必填字段补充完整！")
+                } else if(dialogData.currency ==""|| dialogData.recv_mode=="" || dialogData.use_funds==""||dialogData.bill_status==""|| dialogData.bill_number==""|| dialogData.bill_date==""
+                        || dialogData.recv_bank_name==""|| dialogData.recv_acc_no==""|| dialogData.consumer_bank_name==""
+                        || dialogData.consumer_acc_no==""||dialogData.amount=="" ||insurebillno == ""){
+                    alert("请将必填字段补充完整！")
                 }else {
                     this.$confirm('是否确认完成当前业务收款?', '提示', {
                         confirmButtonText: '确认',
@@ -1434,7 +1478,6 @@
                     }).catch(() => {
                     });
                 }
-                }
             },
             //查看
             lookCurrent: function(row){
@@ -1463,7 +1506,9 @@
                         srce_bus:"",
                         camp_aign:"",
                         agnt_num:"",
-                        $id: 1
+                        $id: 1,
+                        premiumStandard:"",
+                        insureStatus:"",
                     }
                 ];
 
