@@ -185,11 +185,11 @@ public class RecvCounterWaitingForMatchService {
 		try {
 						
 			Record recv_counter_bill = Db.findById("recv_counter_bill", "wait_match_id", wait_match_id);
-			
+
 			if(null == recv_counter_bill) {
 				throw new ReqDataException("此条数据已过期,请刷新页面");
 			}
-			
+			record.set("id",record.get("recv_id"));//修复
 			if(0 == TypeUtils.castToInt(recv_counter_bill.get("bill_type"))) {
 				logger.info("====待匹配页面撤销数据为个单====");
 				recvCounterService.revoke(record, userInfo, uodpInfo);
@@ -222,7 +222,7 @@ public class RecvCounterWaitingForMatchService {
 	 * @param curUodp
 	 * @return
 	 */
-	public Record detail(Record record, UserInfo userInfo, UodpInfo curUodp) {
+	public Record detail(Record record, UserInfo userInfo, UodpInfo curUodp) throws BusinessException, UnsupportedEncodingException {
 		
 		
 		Record retunRecord = new Record();
@@ -230,7 +230,17 @@ public class RecvCounterWaitingForMatchService {
 		Integer id = TypeUtils.castToInt(record.get("id"));
 		
 		Record recv_counter_match = Db.findById("recv_counter_match", "id", id);
-		
+
+		SymmetricEncryptUtil  util = SymmetricEncryptUtil.getInstance();
+		try{
+			util.recvmaskforSingle(recv_counter_match);
+		}catch (BusinessException e) {
+			throw  e;
+		}catch (UnsupportedEncodingException e) {
+			throw  e;
+		}
+
+
 		retunRecord.set("detail", recv_counter_match);
 		
 		return retunRecord;

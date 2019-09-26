@@ -56,6 +56,34 @@ ORDER BY
 	org_id
 #end
 
+#sql("getcurrentorg")
+SELECT
+	org_id,
+	name
+FROM
+	organization org
+WHERE 1 = 1
+   #if(map != null)
+    #for(x : map)
+      #if(x.value&&x.value!="")
+        AND
+       #if("org_ids".equals(x.key))
+            org_id in(
+              #for(z : map.org_ids)
+                #if(for.index > 0)
+                  #(",")
+                #end
+                #(z)
+              #end
+            )
+        #end
+      #end
+    #end
+  #end
+ORDER BY
+	org_id
+#end
+
 #sql("getbankkeybyid")
 SELECT
 	bankkey.*,

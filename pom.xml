@@ -44,6 +44,7 @@
         <module>cfm_webservice_nc</module>
         <module>cfm_webservice_sft</module>
         <module>cfm_report</module>
+        <module>cfm_module_workflow</module>    <!-- 工作流模块 -->
     </modules>
 
     <properties>

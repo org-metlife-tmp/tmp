@@ -701,11 +701,12 @@ public class CheckVoucherService {
         Record sftcheck = Db.findById("sftcheck_org_mapping", "tmp_org_code", orgcode);
         transactionReference = "SS" + sftcheck.getStr("code_abbre") + DateFormatThreadLocal.format("YYMM",periodDate) + seqnoOrstatmentCode.substring(seqnoOrstatmentCode.length()-4);
         description = DateFormatThreadLocal.format("yyMMdd",transLasetDate) + acc.getStr("bankcode") + "柜面付款资金到帐";
-        billRecord.set("xx_insure_bill_no", getplfInsureBill_no(billRecord)).set("xx_seqnoOrstatmentCode", seqnoOrstatmentCode)
-                .set("xx_operator", userInfo.getUsr_id()).set("xx_operator_org", userInfo.getCurUodp().getOrg_id())
-                .set("xx_biz_type", bizType.getKey());
+
         int source = TypeUtils.castToInt(billRecord.get("source_sys"));
         if(source== WebConstant.SftOsSourceCounter.LA.getKey() || source==WebConstant.SftOsSourceCounter.EBS.getKey()){
+            billRecord.set("xx_insure_bill_no", getplfInsureBill_no(billRecord)).set("xx_seqnoOrstatmentCode", seqnoOrstatmentCode)
+                    .set("xx_operator", userInfo.getUsr_id()).set("xx_operator_org", userInfo.getCurUodp().getOrg_id())
+                    .set("xx_biz_type", bizType.getKey());
             description = DateFormatThreadLocal.format("yyMMdd",allLastDate) + acc.getStr("bankcode") + "柜面付款资金到帐";
             transactionReference = "SS" + sftcheck.getStr("code_abbre") + DateFormatThreadLocal.format("YYMM",allLastDate) + seqnoOrstatmentCode;
             //凭证1
@@ -721,7 +722,7 @@ public class CheckVoucherService {
             //凭证1
             list.add(CommonService.gmfPayVorcher(acc, description, "SYS", transactionReference, 3, periodDate, allLastDate, billRecord, curr, orgcode));
             //凭证2
-            list.add(CommonService.gmfPayVorcher(acc, description, chann.getStr("channel_code") + acc.getStr("bankcode"), transactionReference, 4, periodDate, allLastDate, billRecord, curr, orgcode));
+            list.add(CommonService.gmfPayVorcher(acc, description, chann==null?"":chann.getStr("channel_code") + acc.getStr("bankcode"), transactionReference, 4, periodDate, allLastDate, billRecord, curr, orgcode));
         }
 
         if (!CommonService.saveCheckVoucher(list)) {

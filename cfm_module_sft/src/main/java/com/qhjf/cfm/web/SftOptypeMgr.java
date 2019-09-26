@@ -104,6 +104,9 @@ public class SftOptypeMgr extends AbstractOptypeMgr {
         //bank获取所有机构
         optypes.add(new Optype(Optype.Mode.NORMAL, "sftbankkey_getorg"));
 
+        //BANK获取当前机构及下层机构
+        optypes.add(new Optype(Optype.Mode.NORMAL, "sftbankkey_getcurrentorg"));
+
         //根据收付属性获取通道编码
         optypes.add(new Optype(Optype.Mode.NORMAL, "sftbankkey_getchanbypaymode")
                 .registKeepParams(new String[]{"pay_mode"})

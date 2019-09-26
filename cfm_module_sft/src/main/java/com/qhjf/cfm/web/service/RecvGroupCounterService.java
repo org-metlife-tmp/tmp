@@ -21,6 +21,7 @@ import com.qhjf.cfm.web.webservice.sft.counter.recv.bean.resp.*;
 import org.apache.commons.lang.StringUtils;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -213,6 +214,10 @@ public class RecvGroupCounterService {
             throw new ReqDataException("团单新增失败!");
         }
 
+        //已退款的新增不调用核心，只入库
+        if (bill_status.equals("1")){
+            return;
+        }
         logger.info("====团单新增开启异步线程请求外部系统====");
         RecvGroupCounterConfirmQueue recvGroupCounterConfirmQueue = new RecvGroupCounterConfirmQueue();
         recvGroupCounterConfirmQueue.setUserInfo(userInfo);
@@ -322,6 +327,13 @@ public class RecvGroupCounterService {
      * @return
      */
     public Page<Record> list(Record record, UodpInfo curUodp, int pageSize, int pageNum) {
+            List<Integer> org_ids = new ArrayList<>();
+            List<Record> find = Db.find(Db.getSql("pay_counter.getSonOrg"), curUodp.getOrg_id());
+            for (int i = 0; i < find.size(); i++) {
+                org_ids.add(find.get(i).getInt("org_id"));
+            }
+            record.set("org_ids", org_ids);
+
         SqlPara sqlPara = Db.getSqlPara("recv_group_counter.grouplist", Kv.by("map", record.getColumns()));
         Page<Record> paginate = Db.paginate(pageNum, pageSize, sqlPara);
         return paginate;

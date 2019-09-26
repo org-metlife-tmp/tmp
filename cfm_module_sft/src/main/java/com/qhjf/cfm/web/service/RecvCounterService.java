@@ -63,6 +63,8 @@ public class RecvCounterService {
 	private  RecvCounterRemoteCall recvCounterRemoteCall = new RecvCounterRemoteCall();
 	
     private RecvCounterRemoteCall recvCounter = new RecvCounterRemoteCall();
+    public static final String zero = "0";
+	public static final String one = "1";
 
 
 	/**
@@ -90,6 +92,13 @@ public class RecvCounterService {
 		String recv_mode = TypeUtils.castToString(record.get("recv_mode"));
 		String use_funds = TypeUtils.castToString(record.get("use_funds"));
 		String bill_status = TypeUtils.castToString(record.get("bill_status"));
+		if(null != bill_status){
+			if(bill_status.equals("已到账")){
+				bill_status = zero;  //0代表已到账
+			}else if(bill_status.equals("已退票")){
+				bill_status = one;  //1代表已退票
+			}
+		}
 		String bill_number = TypeUtils.castToString(record.get("bill_number"));
 		String bill_date = TypeUtils.castToString(record.get("bill_date"));
 		String recv_bank_name = TypeUtils.castToString(record.get("recv_bank_name"));
@@ -107,14 +116,6 @@ public class RecvCounterService {
 		BigDecimal total_amount = TypeUtils.castToBigDecimal(record.get("amount"));
 		BigDecimal total_amount_son =  new BigDecimal(0);
 
-		//判断是否有重复票据编号
-		if(bill_number != null){
-			Record findBypjbh = Db.findFirst(Db.getSql("recv_counter.selbillnum"),bill_number);
-			if(findBypjbh != null){
-				throw new ReqDataException("待确认的保单票据票号已存在，请重新输入!") ;
-			}
-
-		}
 
 		for (Record rec : policys) {
 			String third_payment = TypeUtils.castToString(rec.get("third_payment"));
@@ -170,6 +171,16 @@ public class RecvCounterService {
 
 			String serviceSerialNumber = BizSerialnoGenTool.getInstance().getSerial(WebConstant.MajorBizType.GMSGD);
 			total_amount_son = total_amount_son.add(new BigDecimal(amount));
+
+			//判断是否有重复票据编号
+			if(bill_number != null){
+				Record findBypjbh = Db.findFirst(Db.getSql("recv_counter.selbillnum"),bill_number);
+				if(findBypjbh != null){
+					throw new ReqDataException("待确认的保单票据票号已存在，请重新输入!") ;
+				}
+
+			}
+
 			Record insertRecord = new Record();
 			//加密
 			SymmetricEncryptUtil  util = SymmetricEncryptUtil.getInstance();
@@ -279,6 +290,10 @@ public class RecvCounterService {
 		if (!tx) {
 			throw new ReqDataException("柜面收个单确认失败");
 		}
+		//已退款的新增不调用核心，只入库
+		if (bill_status.equals("1")){
+			return;
+		}
 		logger.info("====校验成功,开启异步线程请求外部系统====");
 
 		//再查一次保单，然后取到company和branch
@@ -319,6 +334,14 @@ public class RecvCounterService {
 	 */
 	public Page<Record> list(Record record, UodpInfo curUodp, int pageSize, int pageNum) throws UnsupportedEncodingException, BusinessException {
 		record.set("bill_type", WebConstant.SftRecvType.GDSK.getKey());
+
+		List<Integer> org_ids = new ArrayList<>();
+		List<Record> find = Db.find(Db.getSql("pay_counter.getSonOrg"), curUodp.getOrg_id());
+		for (int i = 0; i < find.size(); i++) {
+			org_ids.add(find.get(i).getInt("org_id"));
+		}
+		record.set("org_ids", org_ids);
+
 		record.set("wait_match_flag", 0);
 		SqlPara sqlPara = Db.getSqlPara("recv_counter.personalList", Kv.by("map", record.getColumns()));
 		Page<Record> paginate = Db.paginate(pageNum, pageSize, sqlPara);

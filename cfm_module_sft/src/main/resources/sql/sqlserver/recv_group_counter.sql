@@ -55,6 +55,15 @@ FROM
                     #(z)
                   #end
                 )
+            #elseif("org_ids".equals(x.key))
+            recv.recv_org_id in(
+              #for(z : map.org_ids)
+                #if(for.index > 0)
+                  #(",")
+                #end
+                #(z)
+              #end
+            )
              #elseif("min".equals(x.key))
                 recv.amount >= #para(x.value)
              #elseif("max".equals(x.key))
