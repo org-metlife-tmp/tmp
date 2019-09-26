@@ -440,7 +440,7 @@
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
-                            <el-form-item label="保单标准">
+                            <el-form-item label="保费标准">
                                 <el-input v-model="premiumStandard" disabled></el-input>
                             </el-form-item>
                         </el-col>
@@ -455,7 +455,7 @@
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
-                            <el-form-item label="是否垫交中保单缴费">
+                            <el-form-item label="自动垫交中">
                                 <el-input v-model="ispaying" disabled></el-input>
                             </el-form-item>
                         </el-col>
