@@ -199,6 +199,7 @@
             <properties>
                 <envconfig>dev</envconfig>
                 <package.name>cfm</package.name>
+                <envpath></envpath>
             </properties>
         </profile>
         <profile>
@@ -207,6 +208,7 @@
             <properties>
                 <envconfig>dev-ddh1</envconfig>
                 <package.name>cfm</package.name>
+                <envpath></envpath>
             </properties>
         </profile>
         <profile>
@@ -215,6 +217,7 @@
             <properties>
                 <envconfig>dev-ddh2</envconfig>
                 <package.name>cfm</package.name>
+                <envpath></envpath>
             </properties>
         </profile>
         <profile>
@@ -223,6 +226,7 @@
             <properties>
                 <envconfig>dev-beijin-ddh2</envconfig>
                 <package.name>cfm</package.name>
+                <envpath></envpath>
             </properties>
         </profile>
         <!-- 开发环境  end -->
@@ -234,6 +238,7 @@
             <properties>
                 <envconfig>test</envconfig>
                 <package.name>cfm</package.name>
+                <envpath></envpath>
             </properties>
         </profile>
         <profile>
@@ -242,6 +247,7 @@
             <properties>
                 <envconfig>test-ddh1</envconfig>
                 <package.name>cfm</package.name>
+                <envpath></envpath>
             </properties>
         </profile>
         <profile>
@@ -250,6 +256,7 @@
             <properties>
                 <envconfig>sit-ddh2</envconfig>
                 <package.name>cfm</package.name>
+                <envpath></envpath>
             </properties>
         </profile>
         <!-- 测试环境  end-->
@@ -260,6 +267,7 @@
             <properties>
                 <envconfig>release</envconfig>
                 <package.name>cfm</package.name>
+                <envpath></envpath>
             </properties>
         </profile>
         <profile>
@@ -268,6 +276,7 @@
             <properties>
                 <envconfig>release-ddh1</envconfig>
                 <package.name>cfm</package.name>
+                <envpath></envpath>
             </properties>
         </profile>
         <profile>
@@ -276,6 +285,7 @@
             <properties>
                 <envconfig>uat-ddh2</envconfig>
                 <package.name>cfm</package.name>
+                <envpath></envpath>
             </properties>
         </profile>
         <!-- 预发布环境 end-->
@@ -286,6 +296,7 @@
             <properties>
                 <envconfig>formal</envconfig>
                 <package.name>cfm</package.name>
+                <envpath></envpath>
             </properties>
         </profile>
         <profile>
@@ -293,7 +304,8 @@
             <id>formal-92-ddh2</id>
             <properties>
                 <envconfig>formal-92-ddh2</envconfig>
-                <package.name>cfm.war</package.name>
+                <package.name>cfm</package.name>
+                <envpath></envpath>
             </properties>
         </profile>
         <profile>
@@ -301,7 +313,8 @@
             <id>formal-93-ddh2</id>
             <properties>
                 <envconfig>formal-93-ddh2</envconfig>
-                <package.name>cfm.war</package.name>
+                <package.name>cfm</package.name>
+                <envpath>\93</envpath>
             </properties>
         </profile>
         <!-- 正式环境 end-->
@@ -350,6 +363,14 @@
                                 <maxIdleTime>60000</maxIdleTime>
                             </connector>
                         </connectors>
+                    </configuration>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-war-plugin</artifactId>
+                    <configuration>
+                        <outputDirectory> ${project.build.directory}${envpath}</outputDirectory>
                     </configuration>
                 </plugin>
             </plugins>
