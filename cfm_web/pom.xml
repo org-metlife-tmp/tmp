@@ -305,7 +305,7 @@
             <properties>
                 <envconfig>formal-92-ddh2</envconfig>
                 <package.name>cfm</package.name>
-                <envpath></envpath>
+                <envpath>/92</envpath>
             </properties>
         </profile>
         <profile>
@@ -314,7 +314,7 @@
             <properties>
                 <envconfig>formal-93-ddh2</envconfig>
                 <package.name>cfm</package.name>
-                <envpath>\93</envpath>
+                <envpath>/93</envpath>
             </properties>
         </profile>
         <!-- 正式环境 end-->
