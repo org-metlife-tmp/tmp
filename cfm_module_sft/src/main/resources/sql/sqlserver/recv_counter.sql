@@ -231,3 +231,13 @@ FROM
 WHERE
 	lord.insure_bill_no = ?
 #end
+
+#sql("findbillstatus")
+SELECT
+	bs.billstatus,
+	bs.billstatusmean
+FROM
+	la_bill_status AS bs
+WHERE
+	bs.billstatus = ?
+#end
