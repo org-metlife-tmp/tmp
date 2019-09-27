@@ -1294,7 +1294,10 @@
                         $id: 1
                     }
                 ];
-
+                premiumStandard:"",
+                this.insureStatus="",
+                this.ispaying="",
+                this.premiumStandard = "",
                 this.isLook = false;
                 this.fileMessage.bill_id = "";
                 this.emptyFileList = [];
