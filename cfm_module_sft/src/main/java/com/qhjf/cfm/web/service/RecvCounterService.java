@@ -530,12 +530,12 @@ public class RecvCounterService {
 	 * @throws ReqDataException 
 	 */
 	public Record getPolicyInfo(Record record) throws ReqDataException {
-		PersonBillQryRespBean qryBillByInsureBillNo = null ;
+		PersonBillQryRespBean qryBillByInsureBillNo = null;
 		logger.info("====进入接口查询保单信息====");
 		try {
 			String insure_bill_no = record.getStr("insure_bill_no");
-			PersonBillQryReqBean bean = new  PersonBillQryReqBean(insure_bill_no);
-			qryBillByInsureBillNo = recvCounterRemoteCall.qryBillByInsureBillNo(bean);			
+			PersonBillQryReqBean bean = new PersonBillQryReqBean(insure_bill_no);
+			qryBillByInsureBillNo = recvCounterRemoteCall.qryBillByInsureBillNo(bean);
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new ReqDataException("调用外部系统查询保单信息异常");
@@ -544,22 +544,22 @@ public class RecvCounterService {
 			throw new ReqDataException("调用外部系统查询保单信息为空");
 		}
 		String sourceSys = qryBillByInsureBillNo.getSourceSys();
-		Record orgRecord = null ;
-		if("0".equalsIgnoreCase(sourceSys) || "2".equalsIgnoreCase(sourceSys)) {
+		Record orgRecord = null;
+		if ("0".equalsIgnoreCase(sourceSys) || "2".equalsIgnoreCase(sourceSys)) {
 			//查询getInsureOrgCode()
 			orgRecord = Db.findById("la_org_mapping", "la_org_code", qryBillByInsureBillNo.getCompany());
-		}else if("1".equalsIgnoreCase(sourceSys)) {
+		} else if ("1".equalsIgnoreCase(sourceSys)) {
 			orgRecord = Db.findById("ebs_org_mapping", "ebs_org_code", qryBillByInsureBillNo.getInsureOrgCode());
-		}else {
+		} else {
 			throw new ReqDataException("调用外部系统返回来源系统错误");
 		}
-		if(null ==orgRecord) {
+		if (null == orgRecord) {
 			throw new ReqDataException("未根据外部系统的机构码在本系统内找到对应的机构");
 		}
-		
+
 		//根据查询回来的值,封装一下表里的bank_code
 		String bankcode = qryBillByInsureBillNo.getBankcode();
-				
+
 		Record findById = Db.findById("organization", "code", orgRecord.get("tmp_org_code"));
 		Record rec = new Record();
 		Record bsobj = new Record();
@@ -574,16 +574,18 @@ public class RecvCounterService {
 		rec.set("bank_code", "31");
 		rec.set("insure_cer_no", qryBillByInsureBillNo.getPolicyHolderCert());
 		rec.set("insure_cer_no", qryBillByInsureBillNo.getPolicyHolderCert());
-		rec.set("isnot_electric_pay", isPadPayment == null ? null :isPadPayment);
-		rec.set("isnot_bank_transfer_premium", isTransAccount == null ? null : isTransAccount );
-        rec.set("srce_bus", qryBillByInsureBillNo.getSrceBus());
-        rec.set("camp_aign", qryBillByInsureBillNo.getCampAign());
-        rec.set("agnt_num", qryBillByInsureBillNo.getAgntNum());
-        rec.set("premiumStandard",qryBillByInsureBillNo.getPremiumStandard()); //保费标准
-        String bs = qryBillByInsureBillNo.getInsureStatus();
-		bsobj= Db.findFirst(Db.getSql("recv_counter.findbillstatus"),bs);
-		rec.set("insureStatus",bsobj.get("billstatusmean"));
-		return rec ;
+		rec.set("isnot_electric_pay", isPadPayment == null ? null : isPadPayment);
+		rec.set("isnot_bank_transfer_premium", isTransAccount == null ? null : isTransAccount);
+		rec.set("srce_bus", qryBillByInsureBillNo.getSrceBus());
+		rec.set("camp_aign", qryBillByInsureBillNo.getCampAign());
+		rec.set("agnt_num", qryBillByInsureBillNo.getAgntNum());
+		rec.set("premiumStandard", qryBillByInsureBillNo.getPremiumStandard()); //保费标准
+		String bs = qryBillByInsureBillNo.getInsureStatus();
+		if (null != bs) {
+			bsobj = Db.findFirst(Db.getSql("recv_counter.findbillstatus"), bs);
+			rec.set("insureStatus", bsobj.get("billstatusmean"));
+		}
+			return rec;
 	}
 }
 
