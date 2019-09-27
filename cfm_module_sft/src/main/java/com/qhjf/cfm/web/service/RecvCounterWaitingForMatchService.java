@@ -1,6 +1,7 @@
 package com.qhjf.cfm.web.service;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -47,7 +48,14 @@ public class RecvCounterWaitingForMatchService {
 	 * @throws UnsupportedEncodingException 
 	 */
 	public Page<Record> list(int pageSize, int pageNum, Record record, UserInfo userInfo, UodpInfo curUodp) throws UnsupportedEncodingException, BusinessException {
-		logger.info("====查询待匹配列表===="); 
+		logger.info("====查询待匹配列表====");
+		List<Integer> org_ids = new ArrayList<>();
+		List<Record> find = Db.find(Db.getSql("pay_counter.getSonOrg"), curUodp.getOrg_id());
+		for (int i = 0; i < find.size(); i++) {
+			org_ids.add(find.get(i).getInt("org_id"));
+		}
+		record.set("org_ids", org_ids);
+
 		 SqlPara sqlPara = Db.getSqlPara("recv_counter_wait.personalWaitList", Kv.by("map", record.getColumns()));
 		 Page<Record> paginate = Db.paginate(pageNum, pageSize, sqlPara);
 		 List<Record> list = paginate.getList();

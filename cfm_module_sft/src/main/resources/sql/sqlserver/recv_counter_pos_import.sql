@@ -17,11 +17,11 @@ SELECT
     recv.card_issue_bank ,
     recv.no_identity_mark ,
     recv.import_date ,
-    case recv.bill_checked when '0' then '未核对'  when '1' then '已核对'  end bill_checked,
+    case recv.trade_checked when '0' then '未核对'  when '1' then '已核对'  end trade_checked,
     recv.bill_statement_code ,
     recv.bill_check_user_name ,
     recv.bill_check_service_number,
-    recv.trade_checked ,
+    recv.bill_checked,
     recv.trade_statement_code ,
     recv.trade_check_user_name ,
     recv.trade_check_service_number,
@@ -60,9 +60,9 @@ WHERE
               recv.trade_amount >= #para(x.value)
          #elseif("max".equals(x.key))
               recv.trade_amount <= #para(x.value)
-         #elseif("bill_checked".equals(x.key))
-            recv.bill_checked in(
-              #for(y : map.bill_checked)
+         #elseif("trade_checked".equals(x.key))
+            recv.trade_checked in(
+              #for(y : map.trade_checked)
                 #if(for.index > 0)
                   #(",")
                 #end
