@@ -88,7 +88,7 @@
                         </el-col>
                         <el-col :span="14">
                             <el-form-item style="margin-bottom:0px">
-                                <el-checkbox-group v-model="searchData.bill_checked">
+                                <el-checkbox-group v-model="searchData.trade_checked">
                                     <el-checkbox :label="0" name="未核对">未核对</el-checkbox>
                                     <el-checkbox :label="1" name="已核对">已核对</el-checkbox>
                                 </el-checkbox-group>
@@ -275,7 +275,7 @@
                     max: "",
                     card_no: "",
                     card_issue_bank: "",
-                    bill_checked: []
+                    trade_checked: []
                 },
                 childSearch: {
                     min: "",
