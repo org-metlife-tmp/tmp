@@ -107,7 +107,7 @@
                       @select-all="selectChange"
                       height="200px" border size="mini">
                 <el-table-column type="selection" width="40" ></el-table-column>
-                <el-table-column prop="liquidation_date" label="清算日期" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="liquidation_date" label="清算日期" :show-overflow-tooltip="true" :formatter="dateFormat"></el-table-column>
                 <el-table-column prop="trade_date" label="交易日期" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="trade_time" label="交易时间" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="terminal_no" label="终端机编号" width="100px"
@@ -308,6 +308,10 @@
             }
         },
         methods: {
+            //时间格式化
+            dateFormat: function (row, column, cellValue, index) {
+                return cellValue.slice(0,4)+cellValue.slice(4,6)+cellValue.slice(6,10);
+            },
             //清空搜索条件
             clearData: function(){
                 var searchData = this.searchData;
