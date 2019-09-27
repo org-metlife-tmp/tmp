@@ -40,10 +40,10 @@ public class NbCounterRecvRespResolveTool implements ResponseResolveTool {
 		bean.setPremiumStandard(standard);
 		bean.setIsPadPayment(ispay);
 		bean.setSourceSys("2");
-		
+		bean.setCompany(branch); //Nb返回保单机构
 		//请资金平台默认NB保单暂记余额为空，是否银行转账中为否。
 		bean.setSuspenseBalance("");
-		bean.setIsTransAccount("0");
+		bean.setIsTransAccount("N");
 		bean.setSrceBus(srcebus);
 		bean.setCampAign(campaign);
 		bean.setAgntNum(agntnum);
