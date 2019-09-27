@@ -78,6 +78,15 @@ left join (
                 #(y)
               #end
             )
+           #elseif("org_ids".equals(x.key))
+              mat.recv_org_id in(
+                #for(z : map.org_ids)
+                  #if(for.index > 0)
+                    #(",")
+                  #end
+                  #(z)
+                #end
+              )
         #elseif("match_status".equals(x.key))
             mat.match_status in(
               #for(z : map.match_status)
