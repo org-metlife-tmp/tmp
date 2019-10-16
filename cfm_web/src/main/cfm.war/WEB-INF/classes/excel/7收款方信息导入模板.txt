@@ -1,0 +1,18 @@
+pk=7
+templateId=
+startRow=2
+startColumn=1
+excelDataType=1
+sheetNumber=
+sheetName=
+
+[columnConfigs]=dataType:string, required:1, tips:提示信息, columnName:账户号,dbColumnName:acc_no, validator:none, convertor:none, statistics:none
+[columnConfigs]=dataType:string, required:1, tips:提示信息, columnName:账户名称,dbColumnName:acc_name, validator:none, convertor:none, statistics:none
+[columnConfigs]=dataType:string, required:1, tips:提示信息, columnName:银行cnaps,dbColumnName:cnaps_code, validator:none, convertor:none, statistics:none
+[columnConfigs]=dataType:String, required:0, tips:提示信息, columnName:银行名称,dbColumnName:bank_name, validator:none, convertor:none, statistics:none
+[columnConfigs]=dataType:String, required:0, tips:提示信息, columnName:银行所在省,dbColumnName:province, validator:none, convertor:none, statistics:none
+[columnConfigs]=dataType:String, required:0, tips:提示信息, columnName:银行所在市,dbColumnName:city, validator:none, convertor:none, statistics:none
+[columnConfigs]=dataType:String, required:0, tips:提示信息, columnName:银行地址,dbColumnName:address, validator:none, convertor:none, statistics:none
+[columnConfigs]=dataType:int, required:1, tips:提示信息, columnName:币种id,dbColumnName:curr_id, validator:none, convertor:none, statistics:none
+[columnConfigs]=dataType:int, required:0, tips:提示信息, columnName:供应商类型(公司或个人),dbColumnName:curr_id, validator:none, convertor:none, statistics:none
+[columnConfigs]=dataType:int, required:0, tips:提示信息, columnName:附件ID,dbColumnName:attach_id, validator:none, convertor:none, statistics:none
